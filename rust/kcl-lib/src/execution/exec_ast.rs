@@ -1079,46 +1079,14 @@ impl Node<SketchBlock> {
         #[cfg(feature = "artifact-graph")]
         {
             // Store variable solutions so that the sketch refactoring API can
-            // write them back to the source. Overwrite any previous solutions
-            // since the sketch refactoring API should only care about one
-            // sketch block.
-            exec_state.mod_local.artifacts.var_solutions = sketch_block_state
-                .sketch_vars
-                .iter()
-                .map(|v| {
-                    use crate::front::Number;
-
-                    let Some(sketch_var) = v.as_sketch_var() else {
-                        return Err(KclError::new_internal(KclErrorDetails::new(
-                            "Expected sketch variable".to_owned(),
-                            vec![SourceRange::from(self)],
-                        )));
-                    };
-                    let var_index = sketch_var.id.0;
-                    let solved_n = solve_outcome.final_values.get(var_index).ok_or_else(|| {
-                        let message = format!("No solution for sketch variable with id {}", var_index);
-                        debug_assert!(false, "{}", &message);
-                        KclError::new_internal(KclErrorDetails::new(
-                            message,
-                            sketch_var.meta.iter().map(|m| m.source_range).collect(),
-                        ))
-                    })?;
-                    let solved_value = Number {
-                        value: *solved_n,
-                        units: solution_ty.try_into().map_err(|_| {
-                            KclError::new_internal(KclErrorDetails::new(
-                                "Failed to convert numeric type to units".to_owned(),
-                                vec![SourceRange::from(self)],
-                            ))
-                        })?,
-                    };
-                    let Some(source_range) = sketch_var.meta.first().map(|m| m.source_range) else {
-                        return Ok(None);
-                    };
-                    Ok(Some((source_range, solved_value)))
-                })
-                .filter_map(Result::transpose)
-                .collect::<Result<Vec<_>, KclError>>()?;
+            // write them back to the source. Because of how the frontend works
+            // and how we don't really support more than one sketch block yet,
+            // we only update it if it's empty so that empty blocks at the end
+            // are ignored.
+            if exec_state.mod_local.artifacts.var_solutions.is_empty() {
+                exec_state.mod_local.artifacts.var_solutions =
+                    sketch_block_state.var_solutions(solve_outcome, solution_ty, SourceRange::from(self))?;
+            }
         }
 
         // Create scene objects after unknowns are solved.

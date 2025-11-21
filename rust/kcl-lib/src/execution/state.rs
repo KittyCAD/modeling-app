@@ -652,6 +652,51 @@ impl SketchBlockState {
     pub(crate) fn next_sketch_var_id(&self) -> SketchVarId {
         SketchVarId(self.sketch_vars.len())
     }
+
+    /// Given a solve outcome, return the solutions for the sketch variables and
+    /// enough information to update them in the source.
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn var_solutions(
+        &self,
+        solve_outcome: kcl_ezpz::SolveOutcome,
+        solution_ty: NumericType,
+        range: SourceRange,
+    ) -> Result<Vec<(SourceRange, Number)>, KclError> {
+        self.sketch_vars
+            .iter()
+            .map(|v| {
+                let Some(sketch_var) = v.as_sketch_var() else {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        "Expected sketch variable".to_owned(),
+                        vec![range],
+                    )));
+                };
+                let var_index = sketch_var.id.0;
+                let solved_n = solve_outcome.final_values.get(var_index).ok_or_else(|| {
+                    let message = format!("No solution for sketch variable with id {}", var_index);
+                    debug_assert!(false, "{}", &message);
+                    KclError::new_internal(KclErrorDetails::new(
+                        message,
+                        sketch_var.meta.iter().map(|m| m.source_range).collect(),
+                    ))
+                })?;
+                let solved_value = Number {
+                    value: *solved_n,
+                    units: solution_ty.try_into().map_err(|_| {
+                        KclError::new_internal(KclErrorDetails::new(
+                            "Failed to convert numeric type to units".to_owned(),
+                            vec![range],
+                        ))
+                    })?,
+                };
+                let Some(source_range) = sketch_var.meta.first().map(|m| m.source_range) else {
+                    return Ok(None);
+                };
+                Ok(Some((source_range, solved_value)))
+            })
+            .filter_map(Result::transpose)
+            .collect::<Result<Vec<_>, KclError>>()
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
