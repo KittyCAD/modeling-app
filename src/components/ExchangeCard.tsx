@@ -93,7 +93,11 @@ export const ResponseCardToolBar = (props: {
 
   return (
     <div className="pl-9 flex flex-row justify-between">
-      {isEndOfStream ? <ButtonCopy content={contentForClipboard ?? ''}/> : <div></div> }
+      {isEndOfStream ? (
+        <ButtonCopy content={contentForClipboard ?? ''} />
+      ) : (
+        <div></div>
+      )}
       {props.isLastResponse && (
         <ButtonClearChat onClick={props.onClickClearChat} />
       )}
