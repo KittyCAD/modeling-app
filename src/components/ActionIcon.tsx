@@ -1,7 +1,3 @@
-import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 
@@ -13,7 +9,7 @@ const iconSizes = {
 }
 
 export interface ActionIconProps extends React.PropsWithChildren {
-  icon?: IconDefinition | CustomIconName
+  icon?: CustomIconName
   iconColor?: string
   className?: string
   bgClassName?: string
@@ -24,7 +20,7 @@ export interface ActionIconProps extends React.PropsWithChildren {
 
 export const ActionIcon = (props: ActionIconProps) => {
   const {
-    icon = faCircleExclamation,
+    icon = 'exclamationMark',
     iconColor,
     className,
     bgClassName,
@@ -47,16 +43,9 @@ export const ActionIcon = (props: ActionIconProps) => {
       >
         {children ? (
           children
-        ) : typeof icon === 'string' ? (
+        ) : (
           <CustomIcon
             name={icon}
-            width={iconSizes[size]}
-            height={iconSizes[size]}
-            className={computedIconClassName}
-          />
-        ) : (
-          <FontAwesomeIcon
-            icon={icon}
             width={iconSizes[size]}
             height={iconSizes[size]}
             className={computedIconClassName}
