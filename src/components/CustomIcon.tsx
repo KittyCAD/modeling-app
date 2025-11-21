@@ -106,6 +106,22 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  arrowShortLeft: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M10.8535 4.85349L6.20697 9.49997H14.9999V10.5H6.20697L10.8535 15.1465L10.1464 15.8535L4.29291 9.99997L10.1464 4.14645L10.8535 4.85349Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  arrowShortRight: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M15.7071 9.99997L9.85358 15.8535L9.14655 15.1465L13.793 10.5H5.00006V9.49997H13.793L9.14655 4.85349L9.85358 4.14645L15.7071 9.99997Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   arrowUp: (
     <svg
       viewBox="0 0 20 20"
