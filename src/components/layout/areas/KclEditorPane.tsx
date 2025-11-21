@@ -54,6 +54,8 @@ import { useSettings } from '@src/lib/singletons'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection, trap } from '@src/lib/trap'
 import { onMouseDragMakeANewNumber, onMouseDragRegex } from '@src/lib/utils'
+import { artifactAnnotationsExtension } from '@src/editor/plugins/artifacts'
+import { getArtifactAnnotationsAtCursor } from '@src/lib/getArtifactAnnotationsAtCursor'
 import {
   editorIsMountedSelector,
   kclEditorActor,
@@ -151,6 +153,7 @@ export const KclEditorPaneContents = () => {
         cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
       }),
       lineHighlightField,
+      artifactAnnotationsExtension(),
       historyCompartment.of(initialHistory),
       closeBrackets(),
       codeFolding(),
@@ -208,6 +211,25 @@ export const KclEditorPaneContents = () => {
       })
     )
     if (textWrapping.current) extensions.push(EditorView.lineWrapping)
+
+    if (context.app.showDebugPanel.current) {
+      extensions.push(
+        keymap.of([
+          {
+            key: 'Mod-Shift-d',
+            preventDefault: true,
+            run: () => {
+              const view = editorManager.getEditorView()
+              if (!view) return false
+              const data = getArtifactAnnotationsAtCursor(view.state)
+              // eslint-disable-next-line no-console
+              console.log('Artifact annotations at cursor:', data)
+              return true
+            },
+          },
+        ])
+      )
+    }
 
     return extensions
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
