@@ -258,7 +258,7 @@ profile001 = startProfile(sketch001, at = [-2.7, -2.76])
         await expect(page.locator('#code-pane')).not.toBeVisible()
       })
 
-       ///await page.waitForTimeout(99999)
+      ///await page.waitForTimeout(99999)
 
       await test.step('Open the code pane', async () => {
         await u.openKclCodePanel()

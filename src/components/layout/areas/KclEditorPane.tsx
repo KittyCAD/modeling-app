@@ -237,7 +237,7 @@ export const KclEditorPaneContents = () => {
             // when opening a project.
             // kclManager.executeCode().then(() => {
             // }).catch(reportRejection)
-            
+
             // Update diagnostics as they are cleared when the editor is unmounted.
             // Without this, errors would not be shown when closing and reopening the editor.
             kclManager
