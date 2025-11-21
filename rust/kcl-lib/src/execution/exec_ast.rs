@@ -1063,13 +1063,22 @@ impl Node<SketchBlock> {
             .collect::<Result<Vec<_>, KclError>>()?;
         // Solve constraints.
         let config = kcl_ezpz::Config {
-            max_iterations: 1000,
+            max_iterations: 200,
             ..Default::default()
         };
         let solve_outcome = match kcl_ezpz::solve_with_priority(&constraints, initial_guesses.clone(), config) {
             Ok(o) => o,
             Err(failure) => {
                 if let kcl_ezpz::Error::Solver(_) = &failure.error {
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::warn_1(
+                        &format!(
+                            "constraints={:#?}, initial_guesses={:#?}",
+                            &constraints, &initial_guesses,
+                        )
+                        .into(),
+                    );
+
                     // Constraint solver failed to find a solution. Build a
                     // solution that is the initial guesses.
                     exec_state.warn(
