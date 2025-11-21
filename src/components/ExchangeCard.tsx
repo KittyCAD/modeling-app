@@ -290,6 +290,7 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
         className="w-4 h-4 inline valign"
       />
       <span
+        className="parsed-markdown"
         dangerouslySetInnerHTML={{
           __html: Marked.parse(props.maybeError?.error.detail, {
             renderer: new SafeRenderer(MarkedOptions),
@@ -326,6 +327,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   const deltasAggregatedMarkdown =
     props.deltasAggregated !== '' ? (
       <span
+        className="parsed-markdown"
         dangerouslySetInnerHTML={{
           __html: Marked.parse(props.deltasAggregated, {
             renderer: new SafeRenderer(MarkedOptions),
