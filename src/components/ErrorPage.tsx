@@ -1,4 +1,3 @@
-import { faBug, faHome, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
