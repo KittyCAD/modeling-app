@@ -69,7 +69,9 @@ export const ErrorPage = () => {
           <ActionButton
             Element="button"
             iconStart={{ icon: 'arrowRotateFullRight' }}
-            onClick={() => refreshPage('Crash page').catch(reportRejection)}
+            onClick={() => {
+              refreshPage('Crash page').catch(reportRejection)
+            }}
           >
             Reload
           </ActionButton>
