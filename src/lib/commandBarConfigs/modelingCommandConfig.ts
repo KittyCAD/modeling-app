@@ -1934,9 +1934,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       name: {
         inputType: 'string',
-        defaultValue: (commandBarContext) => {
-          return getNextAvailableDatumName(kclManager.ast)
-        },
+        defaultValue: (_) => getNextAvailableDatumName(kclManager.ast),
         required: true,
       },
       framePosition: {
