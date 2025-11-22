@@ -227,9 +227,7 @@ export const ChatBubble = (props: {
           {hasVisibleChildren(props.children) ? (
             props.children
           ) : (
-            <div className="pb-4">
-              <PlaceholderLine data-testid={props.placeholderTestId} />
-            </div>
+            <PlaceholderLine data-testid={props.placeholderTestId} />
           )}
         </div>
       </div>
@@ -344,7 +342,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
       dataTestId="ml-response-chat-bubble"
       placeholderTestId="ml-response-chat-bubble-thinking"
-      className="pt-4"
+      className="py-4"
     >
       {[
         itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,

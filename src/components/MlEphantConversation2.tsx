@@ -338,7 +338,6 @@ export const MlEphantConversationInput = (
 }
 
 export const StarterCard = () => {
-  const fakeStartedAt = useRef<Date>(new Date())
   const [, setTrigger] = useState<number>(0)
 
   useEffect(() => {
@@ -354,22 +353,7 @@ export const StarterCard = () => {
     <ExchangeCard
       onClickClearChat={() => {}}
       isLastResponse={false}
-      responses={[
-        {
-          reasoning: {
-            type: 'text',
-            content: 'I need to help this user achieve their goals and dreams!',
-          },
-        },
-        { delta: { delta: '' } },
-        {
-          end_of_stream: {
-            whole_response: '',
-            started_at: fakeStartedAt.current.toString(),
-            completed_at: fakeStartedAt.current.toString(),
-          },
-        },
-      ]}
+      responses={[]}
       deltasAggregated="Try requesting a model, ask engineering questions, or let's explore ideas."
     />
   )
