@@ -3708,16 +3708,35 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['GDT Datum'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Datum'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+              rustContext?: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
+
         // Remove once this command isn't experimental anymore
         let astWithNewSetting: Node<Program> | undefined
-        if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
-          const ast = setExperimentalFeatures(codeManager.code, {
+        if (theKclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+          const ast = setExperimentalFeatures(theCodeManager.code, {
             type: 'Allow',
           })
           if (err(ast)) {
@@ -3728,9 +3747,9 @@ export const modelingMachine = setup({
         }
 
         const result = addDatumGdt({
-          ...input,
-          ast: astWithNewSetting ?? kclManager.ast,
-          artifactGraph: kclManager.artifactGraph,
+          ...input.data,
+          ast: astWithNewSetting ?? theKclManager.ast,
+          artifactGraph: theKclManager.artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3740,10 +3759,10 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
-            rustContext,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -6092,9 +6111,15 @@ export const modelingMachine = setup({
       invoke: {
         src: 'gdtDatumAstMod',
         id: 'gdtDatumAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'GDT Datum') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+            rustContext: context.rustContext,
+          }
         },
         onDone: ['idle'],
         onError: {
