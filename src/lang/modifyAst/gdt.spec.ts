@@ -6,7 +6,12 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
-import { addFlatnessGdt } from '@src/lang/modifyAst/gdt'
+import {
+  addFlatnessGdt,
+  addDatumGdt,
+  getUsedDatumNames,
+  getNextAvailableDatumName,
+} from '@src/lang/modifyAst/gdt'
 import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
@@ -532,7 +537,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
 
       // Test the full GDT workflow
-      const { addFlatnessGdt } = await import('@src/lang/modifyAst/gdt')
       const tolerance = await getKclCommandValue(
         '0.1mm',
         instanceInThisFile,
@@ -577,7 +581,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getCapFromCylinder(artifactGraph)
       const name = 'A'
-      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
       const result = addDatumGdt({ ast, artifactGraph, faces, name })
       if (err(result)) throw result
 
@@ -606,7 +609,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getWallsFromBox(artifactGraph, 1)
       const name = 'C'
-      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
       const result = addDatumGdt({ ast, artifactGraph, faces, name })
       if (err(result)) throw result
 
@@ -650,7 +652,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
 
       const name = 'D'
-      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
       const result = addDatumGdt({ ast, artifactGraph, faces, name })
       if (err(result)) throw result
 
@@ -681,7 +682,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getWallsFromBox(artifactGraph, 2)
       const name = 'A'
-      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
       const result = addDatumGdt({ ast, artifactGraph, faces, name })
 
       expect(err(result)).toBeTruthy()
@@ -700,7 +700,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces: Selections = { graphSelections: [], otherSelections: [] }
       const name = 'A'
-      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
       const result = addDatumGdt({ ast, artifactGraph, faces, name })
 
       expect(err(result)).toBeTruthy()
@@ -716,7 +715,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getCapFromCylinder(artifactGraph)
       const name = 'AB'
-      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
       const result = addDatumGdt({ ast, artifactGraph, faces, name })
 
       // Should fail with validation error
@@ -734,7 +732,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getCapFromCylinder(artifactGraph)
       const name = ''
-      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
       const result = addDatumGdt({ ast, artifactGraph, faces, name })
 
       // Should fail with validation error
@@ -751,7 +748,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getCapFromCylinder(artifactGraph)
       const name = '"'
-      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
       const result = addDatumGdt({ ast, artifactGraph, faces, name })
 
       // Should fail with validation error
@@ -788,7 +784,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         rustContextInThisFile
       )
 
-      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
       const result = addDatumGdt({
         ast,
         artifactGraph,
@@ -827,7 +822,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> close()
 extrude001 = extrude(profile001, length = 10)`
       const ast = assertParse(code, instanceInThisFile)
-      const { getUsedDatumNames } = await import('@src/lang/modifyAst/gdt')
       const usedNames = getUsedDatumNames(ast)
       expect(usedNames).toEqual([])
     })
@@ -843,7 +837,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 gdt::datum(face = capEnd001, name = "A")`
       const ast = assertParse(code, instanceInThisFile)
-      const { getUsedDatumNames } = await import('@src/lang/modifyAst/gdt')
       const usedNames = getUsedDatumNames(ast)
       expect(usedNames).toEqual(['A'])
     })
@@ -861,7 +854,6 @@ gdt::datum(face = capEnd001, name = "A")
 gdt::datum(face = seg01, name = "B")
 gdt::datum(face = capStart001, name = "C")`
       const ast = assertParse(code, instanceInThisFile)
-      const { getUsedDatumNames } = await import('@src/lang/modifyAst/gdt')
       const usedNames = getUsedDatumNames(ast)
       expect(usedNames).toEqual(['A', 'B', 'C'])
     })
@@ -878,7 +870,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 gdt::datum(face = capEnd001, name = "a")
 gdt::datum(face = seg01, name = "B")`
       const ast = assertParse(code, instanceInThisFile)
-      const { getUsedDatumNames } = await import('@src/lang/modifyAst/gdt')
       const usedNames = getUsedDatumNames(ast)
       expect(usedNames).toEqual(['a', 'B'])
     })
@@ -895,7 +886,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001, tagStart = $c
 gdt::flatness(faces = [capEnd001, capStart001], tolerance = 0.1)
 gdt::datum(face = seg01, name = "A")`
       const ast = assertParse(code, instanceInThisFile)
-      const { getUsedDatumNames } = await import('@src/lang/modifyAst/gdt')
       const usedNames = getUsedDatumNames(ast)
       expect(usedNames).toEqual(['A'])
     })
@@ -912,7 +902,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 gdt::datum(face = seg01)
 gdt::datum(face = capEnd001, name = "A")`
       const ast = assertParse(code, instanceInThisFile)
-      const { getUsedDatumNames } = await import('@src/lang/modifyAst/gdt')
       const usedNames = getUsedDatumNames(ast)
       expect(usedNames).toEqual(['A'])
     })
@@ -929,7 +918,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 gdt::datum(face = seg01, name = 123)
 gdt::datum(face = capEnd001, name = "A")`
       const ast = assertParse(code, instanceInThisFile)
-      const { getUsedDatumNames } = await import('@src/lang/modifyAst/gdt')
       const usedNames = getUsedDatumNames(ast)
       expect(usedNames).toEqual(['A'])
     })
@@ -946,9 +934,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> close()
 extrude001 = extrude(profile001, length = 10)`
       const ast = assertParse(code, instanceInThisFile)
-      const { getNextAvailableDatumName } = await import(
-        '@src/lang/modifyAst/gdt'
-      )
       const nextName = getNextAvailableDatumName(ast)
       expect(nextName).toBe('A')
     })
@@ -964,9 +949,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 gdt::datum(face = capEnd001, name = "A")`
       const ast = assertParse(code, instanceInThisFile)
-      const { getNextAvailableDatumName } = await import(
-        '@src/lang/modifyAst/gdt'
-      )
       const nextName = getNextAvailableDatumName(ast)
       expect(nextName).toBe('B')
     })
@@ -983,9 +965,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 gdt::datum(face = capEnd001, name = "A")
 gdt::datum(face = seg01, name = "B")`
       const ast = assertParse(code, instanceInThisFile)
-      const { getNextAvailableDatumName } = await import(
-        '@src/lang/modifyAst/gdt'
-      )
       const nextName = getNextAvailableDatumName(ast)
       expect(nextName).toBe('C')
     })
@@ -1003,9 +982,6 @@ gdt::datum(face = capEnd001, name = "A")
 gdt::datum(face = seg01, name = "C")
 gdt::datum(face = capStart001, name = "E")`
       const ast = assertParse(code, instanceInThisFile)
-      const { getNextAvailableDatumName } = await import(
-        '@src/lang/modifyAst/gdt'
-      )
       const nextName = getNextAvailableDatumName(ast)
       expect(nextName).toBe('B')
     })
@@ -1022,9 +998,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 gdt::datum(face = capEnd001, name = "a")
 gdt::datum(face = seg01, name = "b")`
       const ast = assertParse(code, instanceInThisFile)
-      const { getNextAvailableDatumName } = await import(
-        '@src/lang/modifyAst/gdt'
-      )
       const nextName = getNextAvailableDatumName(ast)
       expect(nextName).toBe('C')
     })
@@ -1090,9 +1063,6 @@ gdt::datum(face = seg24, name = "X")
 gdt::datum(face = seg25, name = "Y")
 gdt::datum(face = seg26, name = "Z")`
       const ast = assertParse(code, instanceInThisFile)
-      const { getNextAvailableDatumName } = await import(
-        '@src/lang/modifyAst/gdt'
-      )
       const nextName = getNextAvailableDatumName(ast)
       expect(nextName).toBe('A') // Fallback
     })
