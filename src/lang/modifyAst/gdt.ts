@@ -280,6 +280,7 @@ export function addDatumGdt({
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // Clone the AST to avoid mutating the original
   let modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // Filter to only include face selections
   const faceSelections = faces.graphSelections.filter((selection) =>
@@ -332,7 +333,7 @@ export function addDatumGdt({
     'variableName' in framePosition &&
     framePosition.variableName
   ) {
-    insertVariableAndOffsetPathToNode(framePosition, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(framePosition, modifiedAst, mNodeToEdit)
   }
   // Only insert framePlane variable if we used valueOrVariable (not for strings)
   if (
@@ -341,17 +342,17 @@ export function addDatumGdt({
     'variableName' in framePlane &&
     framePlane.variableName
   ) {
-    insertVariableAndOffsetPathToNode(framePlane, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(framePlane, modifiedAst, mNodeToEdit)
   }
   if (
     fontPointSize &&
     'variableName' in fontPointSize &&
     fontPointSize.variableName
   ) {
-    insertVariableAndOffsetPathToNode(fontPointSize, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(fontPointSize, modifiedAst, mNodeToEdit)
   }
   if (fontScale && 'variableName' in fontScale && fontScale.variableName) {
-    insertVariableAndOffsetPathToNode(fontScale, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(fontScale, modifiedAst, mNodeToEdit)
   }
 
   // Handle framePlane parameter - can be a named plane (XY, XZ, YZ) or variable
@@ -411,7 +412,7 @@ export function addDatumGdt({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: undefined, // GDT annotations don't pipe
     variableIfNewDecl: undefined, // Creates expression statement at the end
   })
