@@ -28,6 +28,7 @@ import {
   groupOperationTypeStreaks,
   stdLibMap,
 } from '@src/lib/operations'
+import { stripQuotes } from '@src/lib/utils'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import {
@@ -997,7 +998,7 @@ export function getFeatureTreeValueDetail(
     const nameArg = operation.labeledArgs?.name
     if (nameArg?.sourceRange) {
       const nameRaw = code.slice(nameArg.sourceRange[0], nameArg.sourceRange[1])
-      const datumName = nameRaw?.replace(/^["']|["']$/g, '') || ''
+      const datumName = stripQuotes(nameRaw)
       if (datumName) {
         const stringValue: OpKclValue = {
           type: 'String',

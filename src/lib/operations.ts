@@ -40,6 +40,7 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
+import { stripQuotes } from '@src/lib/utils'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
@@ -1539,7 +1540,7 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({ operation }) => {
 
   // Extract name argument as a plain string (strip quotes if present)
   const nameRaw = extractStringArgument(operation, 'name')
-  const name = nameRaw?.replace(/^["']|["']$/g, '') || ''
+  const name = stripQuotes(nameRaw)
 
   // Extract optional parameters
   const optionalArgs = await Promise.all([
