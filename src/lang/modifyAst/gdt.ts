@@ -111,41 +111,24 @@ export function addFlatnessGdt({
     return new Error('No unique faces found after deduplication')
   }
 
-  // Insert variables for labeled arguments only once (before creating any calls)
+  // Insert variables for tolerance and precision parameters
   if ('variableName' in tolerance && tolerance.variableName) {
     insertVariableAndOffsetPathToNode(tolerance, modifiedAst, nodeToEdit)
   }
   if (precision && 'variableName' in precision && precision.variableName) {
     insertVariableAndOffsetPathToNode(precision, modifiedAst, nodeToEdit)
   }
-  // Only insert framePosition variable if we used valueOrVariable (not for arrays)
-  if (
-    framePosition &&
-    !('value' in framePosition && isArray(framePosition.value)) &&
-    'variableName' in framePosition &&
-    framePosition.variableName
-  ) {
-    insertVariableAndOffsetPathToNode(framePosition, modifiedAst, nodeToEdit)
-  }
-  // Only insert framePlane variable if we used valueOrVariable (not for strings)
-  if (
-    framePlane &&
-    typeof framePlane !== 'string' &&
-    'variableName' in framePlane &&
-    framePlane.variableName
-  ) {
-    insertVariableAndOffsetPathToNode(framePlane, modifiedAst, nodeToEdit)
-  }
-  if (
-    fontPointSize &&
-    'variableName' in fontPointSize &&
-    fontPointSize.variableName
-  ) {
-    insertVariableAndOffsetPathToNode(fontPointSize, modifiedAst, nodeToEdit)
-  }
-  if (fontScale && 'variableName' in fontScale && fontScale.variableName) {
-    insertVariableAndOffsetPathToNode(fontScale, modifiedAst, nodeToEdit)
-  }
+
+  // Process common GDT style parameters
+  const styleResult = processGdtStyleParameters({
+    modifiedAst,
+    nodeToEdit,
+    framePosition,
+    framePlane,
+    fontPointSize,
+    fontScale,
+  })
+  if (err(styleResult)) return styleResult
 
   // Create one gdt::flatness call for each unique face
   let lastPathToNode: PathToNode | undefined
@@ -153,54 +136,21 @@ export function addFlatnessGdt({
   for (const faceExpr of uniqueFacesExprs) {
     const facesArray = createArrayExpression([faceExpr])
 
-    // Handle framePlane parameter - can be a named plane (XY, XZ, YZ) or variable
-    let framePlaneExpr
-    if (framePlane) {
-      if (typeof framePlane === 'string') {
-        // Named plane like 'XY', 'XZ', 'YZ'
-        framePlaneExpr = createLocalName(framePlane)
-      } else {
-        // Variable reference
-        framePlaneExpr = valueOrVariable(framePlane)
-      }
-    }
-
-    // Handle framePosition parameter - should be Point2d [x, y]
-    let framePositionExpr: Node<Expr> | undefined
-    if (framePosition) {
-      const res = createPoint2dExpression(framePosition)
-      if (err(res)) return res
-      framePositionExpr = res
-    }
-
-    // Build labeled arguments
+    // Build labeled arguments starting with function-specific parameters
     const labeledArgs = [
       createLabeledArg('faces', facesArray),
       createLabeledArg('tolerance', valueOrVariable(tolerance)),
     ]
 
-    // Add optional labeled arguments if provided
+    // Add precision if provided
     if (precision !== undefined) {
       labeledArgs.push(
         createLabeledArg('precision', valueOrVariable(precision))
       )
     }
-    if (framePositionExpr !== undefined) {
-      labeledArgs.push(createLabeledArg('framePosition', framePositionExpr))
-    }
-    if (framePlaneExpr !== undefined) {
-      labeledArgs.push(createLabeledArg('framePlane', framePlaneExpr))
-    }
-    if (fontPointSize !== undefined) {
-      labeledArgs.push(
-        createLabeledArg('fontPointSize', valueOrVariable(fontPointSize))
-      )
-    }
-    if (fontScale !== undefined) {
-      labeledArgs.push(
-        createLabeledArg('fontScale', valueOrVariable(fontScale))
-      )
-    }
+
+    // Add common style parameter labeled arguments
+    labeledArgs.push(...styleResult.labeledArgs)
 
     // Create the gdt::flatness call
     // Using null for unlabeled args since all args are labeled
@@ -325,77 +275,25 @@ export function addDatumGdt({
   // Create expression from the first tag
   const faceExpr = createLocalName(tagResult.tags[0])
 
-  // Insert variables for labeled arguments only once (before creating the call)
-  // Only insert framePosition variable if we used valueOrVariable (not for arrays)
-  if (
-    framePosition &&
-    !('value' in framePosition && isArray(framePosition.value)) &&
-    'variableName' in framePosition &&
-    framePosition.variableName
-  ) {
-    insertVariableAndOffsetPathToNode(framePosition, modifiedAst, mNodeToEdit)
-  }
-  // Only insert framePlane variable if we used valueOrVariable (not for strings)
-  if (
-    framePlane &&
-    typeof framePlane !== 'string' &&
-    'variableName' in framePlane &&
-    framePlane.variableName
-  ) {
-    insertVariableAndOffsetPathToNode(framePlane, modifiedAst, mNodeToEdit)
-  }
-  if (
-    fontPointSize &&
-    'variableName' in fontPointSize &&
-    fontPointSize.variableName
-  ) {
-    insertVariableAndOffsetPathToNode(fontPointSize, modifiedAst, mNodeToEdit)
-  }
-  if (fontScale && 'variableName' in fontScale && fontScale.variableName) {
-    insertVariableAndOffsetPathToNode(fontScale, modifiedAst, mNodeToEdit)
-  }
+  // Process common GDT style parameters
+  const styleResult = processGdtStyleParameters({
+    modifiedAst,
+    nodeToEdit: mNodeToEdit,
+    framePosition,
+    framePlane,
+    fontPointSize,
+    fontScale,
+  })
+  if (err(styleResult)) return styleResult
 
-  // Handle framePlane parameter - can be a named plane (XY, XZ, YZ) or variable
-  let framePlaneExpr
-  if (framePlane) {
-    if (typeof framePlane === 'string') {
-      // Named plane like 'XY', 'XZ', 'YZ'
-      framePlaneExpr = createLocalName(framePlane)
-    } else {
-      // Variable reference
-      framePlaneExpr = valueOrVariable(framePlane)
-    }
-  }
-
-  // Handle framePosition parameter - should be Point2d [x, y]
-  let framePositionExpr: Node<Expr> | undefined
-  if (framePosition) {
-    const res = createPoint2dExpression(framePosition)
-    if (err(res)) return res
-    framePositionExpr = res
-  }
-
-  // Build labeled arguments
+  // Build labeled arguments starting with function-specific parameters
   const labeledArgs = [
     createLabeledArg('face', faceExpr),
     createLabeledArg('name', createLiteral(name)),
   ]
 
-  // Add optional labeled arguments if provided
-  if (framePositionExpr !== undefined) {
-    labeledArgs.push(createLabeledArg('framePosition', framePositionExpr))
-  }
-  if (framePlaneExpr !== undefined) {
-    labeledArgs.push(createLabeledArg('framePlane', framePlaneExpr))
-  }
-  if (fontPointSize !== undefined) {
-    labeledArgs.push(
-      createLabeledArg('fontPointSize', valueOrVariable(fontPointSize))
-    )
-  }
-  if (fontScale !== undefined) {
-    labeledArgs.push(createLabeledArg('fontScale', valueOrVariable(fontScale)))
-  }
+  // Add common style parameter labeled arguments
+  labeledArgs.push(...styleResult.labeledArgs)
 
   // Create the gdt::datum call
   const nonCodeMeta = undefined
@@ -516,4 +414,97 @@ export function getNextAvailableDatumName(ast: Node<Program>): string {
 
   // Fallback if all A-Z are used (unlikely but safe)
   return 'A'
+}
+
+/**
+ * Handles common GDT style parameters for all GDT annotation functions.
+ * Inserts variables into AST if needed and creates labeled arguments for style parameters.
+ *
+ * @param params - Object containing style parameters and AST modification context
+ * @param params.modifiedAst - The AST being modified (will be mutated for variable insertion)
+ * @param params.nodeToEdit - Path to node being edited (for edit mode)
+ * @param params.framePosition - Position of the feature control frame [x, y] (optional)
+ * @param params.framePlane - Plane for displaying the frame (XY, XZ, YZ) or variable (optional)
+ * @param params.fontPointSize - Font point size for annotation text (optional)
+ * @param params.fontScale - Scale factor for annotation text (optional)
+ * @returns Object containing labeled arguments for the style parameters, or Error if parameter processing fails
+ */
+function processGdtStyleParameters({
+  modifiedAst,
+  nodeToEdit,
+  framePosition,
+  framePlane,
+  fontPointSize,
+  fontScale,
+}: {
+  modifiedAst: Node<Program>
+  nodeToEdit?: PathToNode
+  framePosition?: KclCommandValue
+  framePlane?: KclCommandValue | string
+  fontPointSize?: KclCommandValue
+  fontScale?: KclCommandValue
+}): Error | { labeledArgs: ReturnType<typeof createLabeledArg>[] } {
+  const labeledArgs: ReturnType<typeof createLabeledArg>[] = []
+
+  // Insert variables for labeled arguments only once (before creating any calls)
+  // Only insert framePosition variable if we used valueOrVariable (not for arrays)
+  if (
+    framePosition &&
+    !('value' in framePosition && isArray(framePosition.value)) &&
+    'variableName' in framePosition &&
+    framePosition.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(framePosition, modifiedAst, nodeToEdit)
+  }
+  // Only insert framePlane variable if we used valueOrVariable (not for strings)
+  if (
+    framePlane &&
+    typeof framePlane !== 'string' &&
+    'variableName' in framePlane &&
+    framePlane.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(framePlane, modifiedAst, nodeToEdit)
+  }
+  if (
+    fontPointSize &&
+    'variableName' in fontPointSize &&
+    fontPointSize.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(fontPointSize, modifiedAst, nodeToEdit)
+  }
+  if (fontScale && 'variableName' in fontScale && fontScale.variableName) {
+    insertVariableAndOffsetPathToNode(fontScale, modifiedAst, nodeToEdit)
+  }
+
+  // Handle framePlane parameter - can be a named plane (XY, XZ, YZ) or variable
+  if (framePlane) {
+    let framePlaneExpr
+    if (typeof framePlane === 'string') {
+      // Named plane like 'XY', 'XZ', 'YZ'
+      framePlaneExpr = createLocalName(framePlane)
+    } else {
+      // Variable reference
+      framePlaneExpr = valueOrVariable(framePlane)
+    }
+    labeledArgs.push(createLabeledArg('framePlane', framePlaneExpr))
+  }
+
+  // Handle framePosition parameter - should be Point2d [x, y]
+  if (framePosition) {
+    const framePositionExpr = createPoint2dExpression(framePosition)
+    if (err(framePositionExpr)) return framePositionExpr
+    labeledArgs.push(createLabeledArg('framePosition', framePositionExpr))
+  }
+
+  // Add font-related optional labeled arguments if provided
+  if (fontPointSize !== undefined) {
+    labeledArgs.push(
+      createLabeledArg('fontPointSize', valueOrVariable(fontPointSize))
+    )
+  }
+  if (fontScale !== undefined) {
+    labeledArgs.push(createLabeledArg('fontScale', valueOrVariable(fontScale)))
+  }
+
+  return { labeledArgs }
 }
