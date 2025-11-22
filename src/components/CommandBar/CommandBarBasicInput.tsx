@@ -85,6 +85,10 @@ function CommandBarBasicInput({
           className={`flex-grow ${arg.inputType === 'color' ? 'h-[41px]' : 'px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80'} !bg-transparent focus:outline-none`}
           placeholder="Enter a value"
           defaultValue={defaultValue}
+          data-1p-ignore
+          data-lpignore="true"
+          data-form-type="other"
+          data-bwignore
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
