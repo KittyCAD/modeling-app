@@ -52,7 +52,7 @@ import {
   settingsActor,
 } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
-import { platform, uuidv4 } from '@src/lib/utils'
+import { getDeleteKeys, uuidv4 } from '@src/lib/utils'
 
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
@@ -121,6 +121,9 @@ import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
+import type { SketchArgs } from '@rust/kcl-lib/bindings/FrontendApi'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { toPlaneName } from '@src/lib/planes'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -536,7 +539,6 @@ export const ModelingMachineProvider = ({
             if (!err(defaultResult) && defaultResult) {
               result = defaultResult
             }
-            console.log('result', result)
 
             // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
             if (!result) {
@@ -546,7 +548,6 @@ export const ModelingMachineProvider = ({
                 result = offsetResult
               }
             }
-            console.log('result', result)
             if (!result) {
               const sweepFaceSelected =
                 await selectionBodyFace(artifactOrPlaneId)
@@ -564,7 +565,42 @@ export const ModelingMachineProvider = ({
               result.type === 'extrudeFace' ? result.faceId : result.planeId
             await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
             sceneInfra.camControls.syncDirection = 'clientToEngine'
-            console.log('result', result)
+
+            // Call newSketch API
+            try {
+              const project = theProject.current
+              if (!project) {
+                console.warn('No project available for newSketch call')
+              } else {
+                // Construct SketchArgs based on the result
+                let sketchArgs: SketchArgs
+
+                // Determine the plane type from the result
+                if (result.type === 'defaultPlane') {
+                  sketchArgs = {
+                    on: { default: toPlaneName(result.plane) },
+                  }
+                } else {
+                  sketchArgs = { on: { default: 'xy' } }
+                }
+
+                await rustContext.hackSetProgram(
+                  kclManager.ast,
+                  await jsAppSettings()
+                )
+                const newSketchResult = await rustContext.newSketch(
+                  0, // projectId - using 0 as placeholder
+                  0, // fileId - using 0 as placeholder
+                  0, // version - using 0 as placeholder
+                  sketchArgs,
+                  { settings: { modeling: { base_unit: defaultUnit.current } } }
+                )
+                codeManager.updateCodeEditor(newSketchResult.kclSource.text)
+              }
+            } catch (error) {
+              console.error('Error calling newSketch:', error)
+            }
+
             return result
           }
         ),
@@ -1484,10 +1520,18 @@ export const ModelingMachineProvider = ({
 
   // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
   // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
-  const deleteKeys =
-    platform() === 'macos' ? ['backspace', 'delete', 'del'] : ['delete', 'del']
+  const deleteKeys = getDeleteKeys()
 
   useHotkeys(deleteKeys, () => {
+    // Check if we're in sketch solve mode
+    const inSketchSolveMode = modelingState.matches('sketchSolveMode')
+    if (inSketchSolveMode) {
+      // Forward delete event to sketch solve mode
+      // it's probably save to send this regardless of inSketchSolveMode, but still
+      modelingSend({ type: 'delete selected' })
+      return
+    }
+
     // When the current selection is a segment, delete that directly ('Delete selection' doesn't support it)
     const segmentNodePaths = Object.keys(modelingState.context.segmentOverlays)
     const selections =

@@ -1222,6 +1222,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         description: 'Exit the current sketch',
         links: [],
       },
+      'break',
       {
         id: 'line',
         onClick: ({ modelingSend, isActive }) =>
@@ -1231,7 +1232,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               })
             : modelingSend({
                 type: 'equip tool',
-                data: { tool: 'dimensionTool' },
+                data: { tool: 'lineTool' },
               }),
         icon: 'line',
         status: 'available',
@@ -1241,7 +1242,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [],
         isActive: (state) =>
           state.matches('sketchSolveMode') &&
-          state.context.sketchSolveToolName === 'dimensionTool',
+          state.context.sketchSolveToolName === 'lineTool',
       },
       {
         id: 'point',
@@ -1254,7 +1255,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'equip tool',
                 data: { tool: 'pointTool' },
               }),
-        icon: 'arrowDown',
+        icon: 'oneDot',
         status: 'available',
         title: 'Point',
         hotkey: 'L',
@@ -1263,6 +1264,91 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         isActive: (state) =>
           state.matches('sketchSolveMode') &&
           state.context.sketchSolveToolName === 'pointTool',
+      },
+      'break',
+      {
+        id: 'coincident',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'coincident',
+          }),
+        icon: 'coincident',
+        status: 'available',
+        title: 'coincident',
+        hotkey: 'L',
+        description: 'make things coincident',
+        links: [],
+        isActive: (state) => false,
+      },
+      {
+        id: 'Parallel',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'Parallel',
+          }),
+        icon: 'parallel',
+        status: 'available',
+        title: 'Parallel',
+        hotkey: 'L',
+        description: 'make things Parallel',
+        links: [],
+        isActive: (state) => false,
+      },
+      {
+        id: 'equalLength',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'LinesEqualLength',
+          }),
+        icon: 'equal',
+        status: 'available',
+        title: 'LinesEqualLength',
+        hotkey: 'L',
+        description: 'make things LinesEqualLength',
+        links: [],
+        isActive: (state) => false,
+      },
+      {
+        id: 'vertical',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'Vertical',
+          }),
+        icon: 'vertical',
+        status: 'available',
+        title: 'Vertical',
+        hotkey: 'L',
+        description: 'make things Vertical',
+        links: [],
+        isActive: (state) => false,
+      },
+      {
+        id: 'Horizontal',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'Horizontal',
+          }),
+        icon: 'horizontal',
+        status: 'available',
+        title: 'Horizontal',
+        hotkey: 'L',
+        description: 'make things Horizontal',
+        links: [],
+        isActive: (state) => false,
+      },
+      {
+        id: 'Distance',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'Distance',
+          }),
+        icon: 'dimension',
+        status: 'available',
+        title: 'Distance',
+        hotkey: 'L',
+        description: 'make things Distance',
+        links: [],
+        isActive: (state) => false,
       },
     ],
   },

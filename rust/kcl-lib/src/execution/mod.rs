@@ -1,5 +1,7 @@
 //! The executor for the AST.
 
+#[cfg(feature = "artifact-graph")]
+use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -10,6 +12,7 @@ pub use cache::{bust_cache, clear_mem_cache};
 #[cfg(feature = "artifact-graph")]
 pub use cad_op::Group;
 pub use cad_op::Operation;
+pub(crate) use exec_ast::normalize_to_solver_unit;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
@@ -28,6 +31,8 @@ pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
+#[cfg(feature = "artifact-graph")]
+use crate::front::{Number, Object, ObjectId};
 use crate::{
     CompilationError, ExecError, KclErrorWithOutputs, SourceRange,
     engine::{EngineManager, GridScaleBehavior},
@@ -79,6 +84,18 @@ pub struct ExecOutcome {
     /// Output artifact graph.
     #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
+    /// Objects in the scene, created from execution.
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub scene_objects: Vec<Object>,
+    /// Map from source range to object ID for lookup of objects by their source
+    /// range.
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub var_solutions: Vec<(SourceRange, Number)>,
     /// Non-fatal errors and warnings.
     pub errors: Vec<CompilationError>,
     /// File Names in module Id array index order
@@ -241,6 +258,20 @@ impl From<&Expr> for Metadata {
     fn from(expr: &Expr) -> Self {
         Self {
             source_range: SourceRange::from(expr),
+        }
+    }
+}
+
+impl Metadata {
+    pub fn to_source_ref(meta: &[Metadata]) -> crate::front::SourceRef {
+        if meta.len() == 1 {
+            let meta = &meta[0];
+            return crate::front::SourceRef::Simple {
+                range: meta.source_range,
+            };
+        }
+        crate::front::SourceRef::BackTrace {
+            ranges: meta.iter().map(|m| m.source_range).collect(),
         }
     }
 }

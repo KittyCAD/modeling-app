@@ -62,7 +62,10 @@ mod engine;
 mod errors;
 mod execution;
 mod fmt;
+mod frontend;
 mod fs;
+#[cfg(feature = "artifact-graph")]
+pub(crate) mod id;
 pub mod lint;
 mod log;
 mod lsp;
@@ -137,13 +140,30 @@ pub mod native_engine {
 }
 
 pub mod std_utils {
-    pub use crate::std::utils::{TangentialArcInfoInput, get_tangential_arc_to_info, is_points_ccw_wasm};
+    pub use crate::std::utils::{
+        TangentialArcInfoInput, get_tangential_arc_to_info, is_points_ccw_wasm, untyped_point_to_unit,
+    };
 }
 
 pub mod pretty {
     pub use crate::{
         fmt::{format_number_literal, format_number_value, human_display_number},
         parsing::token::NumericSuffix,
+    };
+}
+
+pub mod front {
+    pub use crate::frontend::{
+        FrontendState,
+        api::{
+            Error, Expr, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane, ProjectId, Result,
+            SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version,
+        },
+        sketch::{
+            Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Freedom,
+            Horizontal, Line, LineCtor, LinesEqualLength, Parallel, Point, Point2d, PointCtor, Segment, SegmentCtor,
+            Sketch, SketchApi, SketchApiStub, SketchArgs, StartOrEnd, TangentArcCtor, Vertical,
+        },
     };
 }
 

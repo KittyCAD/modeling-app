@@ -13,8 +13,14 @@ import {
 } from '@kittycad/codemirror-lsp-client'
 import { updateOutsideEditorEvent } from '@src/editor/manager'
 import { codeManagerUpdateEvent } from '@src/lang/codeManager'
-import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import {
+  codeManager,
+  editorManager,
+  kclManager,
+  rustContext,
+} from '@src/lib/singletons'
 import { deferExecution } from '@src/lib/utils'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import type { UpdateCanExecuteParams } from '@rust/kcl-lib/bindings/UpdateCanExecuteParams'
 import type { UpdateCanExecuteResponse } from '@rust/kcl-lib/bindings/UpdateCanExecuteResponse'
@@ -145,9 +151,33 @@ export class KclPlugin implements PluginValue {
       this.sendScheduledInput = null
     }
 
-    if (!this.client.ready) return
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    kclManager.executeCode()
+    if (!this.client.ready)
+      return // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      // If we're in sketchSolveMode, update Rust state with the latest AST
+      // This handles the case where the user directly edits in the CodeMirror editor
+      // these are short term hacks while in rapid development for sketch revamp
+      // should be clean up.
+    ;(async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const modelingState = (editorManager as any)._modelingState
+      if (modelingState?.matches('sketchSolveMode')) {
+        try {
+          await kclManager.executeCode()
+          await rustContext.hackSetProgram(
+            kclManager.ast,
+            await jsAppSettings()
+          )
+          console.log('rustContext', rustContext)
+        } catch (error) {
+          console.error('Error calling hackSetProgram after user edit:', error)
+        }
+      }
+    })().catch((error) => {
+      console.error(
+        'Unexpected error when updating Rust state after user edit:',
+        error
+      )
+    })
   }
 
   ensureDocUpdated() {
