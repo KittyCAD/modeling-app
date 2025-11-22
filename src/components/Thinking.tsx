@@ -127,6 +127,7 @@ export const KclDocs = (props: {
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
         <div
+          className="parsed-markdown"
           dangerouslySetInnerHTML={{
             __html: Marked.parse(props.content, {
               renderer: new SafeRenderer(options),
@@ -165,6 +166,7 @@ export const FeatureTreeOutline = (props: {
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
         <div
+          className="parsed-markdown"
           dangerouslySetInnerHTML={{
             __html: Marked.parse(props.content, {
               renderer: new SafeRenderer(options),
@@ -371,6 +373,7 @@ export const NothingInParticular = (props: {
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
         <div
+          className="parsed-markdown"
           dangerouslySetInnerHTML={{
             __html: Marked.parse(props.content, {
               renderer: new SafeRenderer(options),
@@ -631,7 +634,7 @@ export const Thinking = (props: {
     <div
       ref={refViewFull}
       style={{ maxHeight: '20lh' }}
-      className="overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
+      className="select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
     >
       {componentThoughts.length > 0 ? componentThoughts : <PlaceholderLine />}
       {anyRowCollapse.length > 0 && (
@@ -646,7 +649,7 @@ export const Thinking = (props: {
   )
 
   const ViewImmediate = (
-    <div data-testid="thinking-immediate" className="animate-shimmer p-2">
+    <div data-testid="thinking-immediate" className="animate-shimmer p-2 pb-4">
       {componentLastGenericThought}
     </div>
   )

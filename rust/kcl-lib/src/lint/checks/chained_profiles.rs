@@ -5,7 +5,7 @@ use kcl_error::SourceRange;
 
 use crate::{
     errors::Suggestion,
-    lint::rule::{Discovered, Finding, def_finding},
+    lint::rule::{Discovered, Finding, FindingFamily, def_finding},
     parsing::ast::types::{
         ArrayExpression, BinaryPart, BodyItem, CallExpressionKw, Expr, ImportSelector, ItemVisibility, Name,
         Node as AstNode, PipeExpression, Program, VariableDeclaration, VariableDeclarator, VariableKind,
@@ -22,7 +22,8 @@ Functions like startProfile, circle, ellipse, rectangle, polygon and others that
 When using multiple profile functions in a pipeline, only the last profile is returned. This can lead to unexpected results if earlier profiles are intended to contribute to the final shape.
 
 Instead, try assigning the result of each profile to a variable and when extruding, use an array of those variables.
-"
+",
+FindingFamily::Correctness
 );
 
 const NEW_VAR_PREFIX: &str = "profile";

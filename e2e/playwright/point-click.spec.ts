@@ -4569,7 +4569,7 @@ extrude001 = extrude(profile001, length = 10)`
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'blindDepth',
-        currentArgValue: '5',
+        currentArgValue: '2',
         commandName: 'Hole',
         headerArguments: {
           Face: '1 cap',
@@ -4592,7 +4592,7 @@ extrude001 = extrude(profile001, length = 10)`
           Face: '1 cap',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '',
           HoleType: '',
           HoleBottom: '',
@@ -4609,7 +4609,7 @@ extrude001 = extrude(profile001, length = 10)`
           Face: '1 cap',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '1',
           HoleType: '',
           HoleBottom: '',
@@ -4626,7 +4626,7 @@ extrude001 = extrude(profile001, length = 10)`
           Face: '1 cap',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '1',
           HoleType: 'simple',
           HoleBottom: '',
@@ -4641,7 +4641,7 @@ extrude001 = extrude(profile001, length = 10)`
           Face: '1 cap',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '1',
           HoleType: 'simple',
           HoleBottom: 'flat',
@@ -4662,7 +4662,7 @@ extrude001 = extrude(profile001, length = 10)`
   face = END,
   cutAt = [0, 0],
   holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeBody =   hole::blind(depth = 2, diameter = 1),
   holeType =   hole::simple(),
 )`,
         { shouldNormalise: true }
@@ -4680,7 +4680,7 @@ extrude001 = extrude(profile001, length = 10)`
         headerArguments: {
           CutAt: '[0, 0]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '1',
           HoleType: 'simple',
           HoleBottom: 'flat',
@@ -4696,7 +4696,7 @@ extrude001 = extrude(profile001, length = 10)`
         headerArguments: {
           CutAt: '[0, 0]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '1',
           HoleType: 'simple',
           HoleBottom: 'flat',
@@ -4713,7 +4713,7 @@ extrude001 = extrude(profile001, length = 10)`
         headerArguments: {
           CutAt: '[2, 2]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '1',
           HoleType: 'simple',
           HoleBottom: 'flat',
@@ -4728,7 +4728,7 @@ extrude001 = extrude(profile001, length = 10)`
         headerArguments: {
           CutAt: '[2, 2]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '1',
           HoleType: 'simple',
           HoleBottom: 'flat',
@@ -4744,7 +4744,7 @@ extrude001 = extrude(profile001, length = 10)`
         headerArguments: {
           CutAt: '[2, 2]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '1',
           HoleType: 'countersink',
           CountersinkDiameter: '',
@@ -4763,7 +4763,7 @@ extrude001 = extrude(profile001, length = 10)`
         headerArguments: {
           CutAt: '[2, 2]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '1',
           HoleType: 'countersink',
           CountersinkDiameter: '',
@@ -4780,7 +4780,7 @@ extrude001 = extrude(profile001, length = 10)`
         headerArguments: {
           CutAt: '[2, 2]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '1',
           HoleType: 'countersink',
           CountersinkDiameter: '3',
@@ -4800,7 +4800,7 @@ extrude001 = extrude(profile001, length = 10)`
   face = END,
   cutAt = [2, 2],
   holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeBody =   hole::blind(depth = 2, diameter = 1),
   holeType =   hole::countersink(angle = 80deg, diameter = 3),
 )`,
         { shouldNormalise: true }

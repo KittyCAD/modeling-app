@@ -919,7 +919,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ['blind'].includes(context.argumentsToSubmit.holeBody as string),
         hidden: (context) =>
           !['blind'].includes(context.argumentsToSubmit.holeBody as string),
-        defaultValue: KCL_DEFAULT_LENGTH,
+        defaultValue: '2',
       },
       blindDiameter: {
         inputType: 'kcl',
