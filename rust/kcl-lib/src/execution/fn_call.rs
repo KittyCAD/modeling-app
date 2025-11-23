@@ -5,8 +5,8 @@ use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
-        annotations,
+        BodyType, ExecState, ExecutorContext, Geometry, KclValue, Metadata, StatementKind, TagEngineInfo,
+        TagIdentifier, annotations,
         cad_op::{Group, OpArg, OpKclValue, Operation},
         kcl_value::{FunctionBody, FunctionSource},
         memory,
@@ -424,7 +424,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
 
                         let mut info = info.clone();
                         info.surface = Some(v.clone());
-                        info.sketch = value.id;
+                        info.geometry = Geometry::Solid(*value.clone());
                         t.info.push((exec_state.stack().current_epoch(), info));
                         t
                     } else {
@@ -438,7 +438,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                                     id: v.get_id(),
                                     surface: Some(v.clone()),
                                     path: None,
-                                    sketch: value.id,
+                                    geometry: Geometry::Solid(*value.clone()),
                                 },
                             )],
                             meta: vec![Metadata {
