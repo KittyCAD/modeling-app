@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
+import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-
 import styles from './index.module.css'
 
 export interface LayoutPanelProps {
