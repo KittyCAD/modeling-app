@@ -17,6 +17,8 @@ use crate::{
 
 #[derive(Debug, Clone)]
 pub struct Args<Status: ArgsStatus = Desugared> {
+    /// Name of the function these args are being passed into.
+    pub fn_name: Option<String>,
     /// Unlabeled keyword args. Currently only the first formal arg can be unlabeled.
     /// If the argument was a local variable, then the first element of the tuple is its name
     /// which may be used to treat this arg as a labelled arg.
@@ -54,8 +56,10 @@ impl Args<Sugary> {
         source_range: SourceRange,
         exec_state: &mut ExecState,
         ctx: ExecutorContext,
+        fn_name: Option<String>,
     ) -> Args<Sugary> {
         Args {
+            fn_name,
             labeled,
             unlabeled,
             source_range,
@@ -79,8 +83,9 @@ impl<Status: ArgsStatus> Args<Status> {
 }
 
 impl Args<Desugared> {
-    pub fn new_no_args(source_range: SourceRange, ctx: ExecutorContext) -> Args {
+    pub fn new_no_args(source_range: SourceRange, ctx: ExecutorContext, fn_name: Option<String>) -> Args {
         Args {
+            fn_name,
             unlabeled: Default::default(),
             labeled: Default::default(),
             source_range,
@@ -172,7 +177,14 @@ impl Node<CallExpressionKw> {
             }
         }
 
-        let args = Args::new(fn_args, unlabeled, callsite, exec_state, ctx.clone());
+        let args = Args::new(
+            fn_args,
+            unlabeled,
+            callsite,
+            exec_state,
+            ctx.clone(),
+            Some(fn_name.name.name.clone()),
+        );
 
         let return_value = fn_src
             .call_kw(Some(fn_name.to_string()), exec_state, ctx, args, callsite)
@@ -540,7 +552,7 @@ fn type_check_params_kw(
     mut args: Args<Sugary>,
     exec_state: &mut ExecState,
 ) -> Result<Args<Desugared>, KclError> {
-    let mut result = Args::new_no_args(args.source_range, args.ctx);
+    let mut result = Args::new_no_args(args.source_range, args.ctx, fn_name.map(|f| f.to_string()));
 
     // If it's possible the input arg was meant to be labelled and we probably don't want to use
     // it as the input arg, then treat it as labelled.
@@ -965,6 +977,7 @@ mod test {
             exec_state.mod_local.stack = Stack::new_for_tests();
 
             let args = Args {
+                fn_name: Some("test".to_owned()),
                 labeled,
                 unlabeled: Vec::new(),
                 source_range: SourceRange::default(),

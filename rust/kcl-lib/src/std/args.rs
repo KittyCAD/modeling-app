@@ -129,7 +129,11 @@ impl Args {
     {
         let Some(arg) = self.labeled.get(label) else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("This function requires a keyword argument `{label}`"),
+                if let Some(ref fname) = self.fn_name {
+                    format!("The `{fname}` function requires a keyword argument `{label}`")
+                } else {
+                    format!("This function requires a keyword argument `{label}`")
+                },
                 vec![self.source_range],
             )));
         };
@@ -140,10 +144,11 @@ impl Args {
                 .as_ref()
                 .map(|t| t.to_string())
                 .unwrap_or_else(|| arg.value.human_friendly_type());
-            let msg_base = format!(
-                "This function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}",
-                ty.human_friendly_type(),
-            );
+            let msg_base = if let Some(ref fname) = self.fn_name {
+                format!("The `{fname}` function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}", ty.human_friendly_type())
+            } else {
+                format!("This function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}", ty.human_friendly_type())     
+            };
             let suggestion = match (ty, actual_type) {
                 (RuntimeType::Primitive(PrimitiveType::Solid), Some(RuntimeType::Primitive(PrimitiveType::Sketch))) => {
                     Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
@@ -181,7 +186,11 @@ impl Args {
     ) -> Result<Vec<(EdgeReference, SourceRange)>, KclError> {
         let Some(arg) = self.labeled.get(label) else {
             let err = KclError::new_semantic(KclErrorDetails::new(
-                format!("This function requires a keyword argument '{label}'"),
+                if let Some(ref fname) = self.fn_name {
+                    format!("The `{fname}` function requires a keyword argument '{label}'")
+                } else {
+                    format!("This function requires a keyword argument '{label}'")
+                },
                 vec![self.source_range],
             ));
             return Err(err);
@@ -230,7 +239,13 @@ impl Args {
         let arg = self
             .unlabeled_kw_arg_unconverted()
             .ok_or(KclError::new_semantic(KclErrorDetails::new(
-                format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
+                if let Some(ref fname) = self.fn_name {
+                    format!(
+                        "The `{fname}` function requires a value for the special unlabeled first parameter, '{label}'"
+                    )
+                } else {
+                    format!("This function requires a value for the special unlabeled first parameter, '{label}'")
+                },
                 vec![self.source_range],
             )))?;
 
@@ -240,10 +255,17 @@ impl Args {
                 .as_ref()
                 .map(|t| t.to_string())
                 .unwrap_or_else(|| arg.value.human_friendly_type());
-            let msg_base = format!(
-                "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
-                ty.human_friendly_type(),
-            );
+            let msg_base = if let Some(ref fname) = self.fn_name {
+                format!(
+                    "The `{fname}` function expected the input argument to be {} but it's actually of type {actual_type_name}",
+                    ty.human_friendly_type(),
+                )
+            } else {
+                format!(
+                    "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
+                    ty.human_friendly_type(),
+                )
+            };
             let suggestion = match (ty, actual_type) {
                 (RuntimeType::Primitive(PrimitiveType::Solid), Some(RuntimeType::Primitive(PrimitiveType::Sketch))) => {
                     Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
