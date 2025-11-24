@@ -168,8 +168,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const faces = getCapFromCylinder(artifactGraph)
       const thickness = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
@@ -209,8 +207,6 @@ extrude(p, length = 1000)`
       const faces = getCapFromCylinder(artifactGraph)
       const thickness = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
@@ -241,8 +237,6 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       const faces = getCapFromCylinder(artifactGraph)
       const thickness = (await stringToKclExpression(
         '2',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(ast)
@@ -279,8 +273,6 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       const faces = getFacesFromBox(artifactGraph, 2)
       const thickness = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
@@ -309,8 +301,6 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`,
       const faces = getFacesFromBox(artifactGraph, 2)
       const thickness = (await stringToKclExpression(
         '2',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(ast)
@@ -349,8 +339,6 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
       const faces = createSelectionFromArtifacts(twoCaps, artifactGraph)
       const thickness = (await stringToKclExpression(
         '5',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
@@ -397,8 +385,6 @@ extrude002 = extrude(profile002, length = 200)`
       const faces = createSelectionFromArtifacts(firstCap, artifactGraph)
       const thickness = (await stringToKclExpression(
         '0.1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
@@ -440,20 +426,15 @@ ${cylinder}`
       const face = getCapFromCylinder(artifactGraph)
       const cutAt = (await stringToKclExpression(
         '[0, 0]',
-        true,
-        instanceInThisFile,
-        rustContextInThisFile
+        rustContextInThisFile,
+        { allowArrays: true }
       )) as KclCommandValue
       const depth = (await stringToKclExpression(
         '5',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const diameter = (await stringToKclExpression(
         '1',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addHole({
@@ -494,20 +475,15 @@ ${simpleHole}`,
       const face = getCapFromCylinder(artifactGraph)
       const cutAt = (await stringToKclExpression(
         '[3, 3]',
-        true,
-        instanceInThisFile,
-        rustContextInThisFile
+        rustContextInThisFile,
+        { allowArrays: true }
       )) as KclCommandValue
       const depth = (await stringToKclExpression(
         '3',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const diameter = (await stringToKclExpression(
         '2',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addHole({
@@ -555,32 +531,23 @@ hole002 = hole::hole(
       const face = getCapFromCylinder(artifactGraph)
       const cutAt = (await stringToKclExpression(
         '[0, 0]',
-        true,
-        instanceInThisFile,
-        rustContextInThisFile
+        rustContextInThisFile,
+        { allowArrays: true }
       )) as KclCommandValue
       const depth = (await stringToKclExpression(
         '5',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const diameter = (await stringToKclExpression(
         '1',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const cDepth = (await stringToKclExpression(
         '1',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const cDiameter = (await stringToKclExpression(
         '2',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addHole({
@@ -631,38 +598,27 @@ ${simpleHole}`,
       const face = getCapFromCylinder(artifactGraph)
       const cutAt = (await stringToKclExpression(
         '[1, 1]',
-        true,
-        instanceInThisFile,
-        rustContextInThisFile
+        rustContextInThisFile,
+        { allowArrays: true }
       )) as KclCommandValue
       const depth = (await stringToKclExpression(
         '6',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const diameter = (await stringToKclExpression(
         '1.1',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const dAngle = (await stringToKclExpression(
         '110',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const cAngle = (await stringToKclExpression(
         '120',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const cDiameter = (await stringToKclExpression(
         '2',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addHole({
@@ -1050,8 +1006,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
         )
         const offset = (await stringToKclExpression(
           '1',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue
         const id = rustContextInThisFile.getDefaultPlaneId(name)
@@ -1084,8 +1038,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
 
         const newOffset = (await stringToKclExpression(
           '2',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue
         const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
@@ -1123,8 +1075,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       )
       const offset = (await stringToKclExpression(
         '2',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const artifact = [...artifactGraph.values()].find(
@@ -1162,8 +1112,6 @@ plane002 = offsetPlane(plane001, offset = 2)`)
 
       const newOffset = (await stringToKclExpression(
         '3',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
@@ -1199,8 +1147,6 @@ plane002 = offsetPlane(plane001, offset = 3)`)
       const plane = getCapFromCylinder(artifactGraph)
       const offset = (await stringToKclExpression(
         '2',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addOffsetPlane({
@@ -1226,8 +1172,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 2)`)
 
       const newOffset = (await stringToKclExpression(
         '3',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
@@ -1263,8 +1207,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 3)`)
       const plane = getFacesFromBox(artifactGraph, 1)
       const offset = (await stringToKclExpression(
         '10',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addOffsetPlane({

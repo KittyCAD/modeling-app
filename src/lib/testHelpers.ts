@@ -124,11 +124,11 @@ export async function getKclCommandValue(
   instance: ModuleType,
   rustContext: RustContext
 ) {
+  const allowArrays = value.trim().startsWith('[')
   const result = await stringToKclExpression(
     value,
-    undefined,
-    instance,
-    rustContext
+    rustContext,
+    allowArrays ? { allowArrays: true } : undefined
   )
   if (err(result) || 'errors' in result) {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw

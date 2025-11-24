@@ -74,26 +74,18 @@ describe('geometry.test.ts', () => {
         axis: 'X',
         revolutions: (await stringToKclExpression(
           '1',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '2',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         radius: (await stringToKclExpression(
           '3',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         length: (await stringToKclExpression(
           '4',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
       })
@@ -123,26 +115,18 @@ describe('geometry.test.ts', () => {
         axis: 'X',
         revolutions: (await stringToKclExpression(
           '1',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '2',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         radius: (await stringToKclExpression(
           '3',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         length: (await stringToKclExpression(
           '4',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         ccw: true,
@@ -179,26 +163,18 @@ describe('geometry.test.ts', () => {
         axis: 'Y',
         revolutions: (await stringToKclExpression(
           '11',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '12',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         radius: (await stringToKclExpression(
           '13',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         length: (await stringToKclExpression(
           '14',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         nodeToEdit: createPathToNodeForLastVariable(ast),
@@ -255,20 +231,14 @@ helix001 = helix(
         edge,
         revolutions: (await stringToKclExpression(
           '1',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '2',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         radius: (await stringToKclExpression(
           '3',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
       })
@@ -302,20 +272,14 @@ helix001 = helix(
         edge,
         revolutions: (await stringToKclExpression(
           '4',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '5',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         radius: (await stringToKclExpression(
           '6',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         ccw: true,
@@ -410,14 +374,10 @@ helix001 = helix(
         cylinder,
         revolutions: (await stringToKclExpression(
           '11',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '22',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         ccw: false,
