@@ -147,7 +147,7 @@ impl Args {
             let msg_base = if let Some(ref fname) = self.fn_name {
                 format!("The `{fname}` function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}", ty.human_friendly_type())
             } else {
-                format!("This function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}", ty.human_friendly_type())     
+                format!("This function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}", ty.human_friendly_type())
             };
             let suggestion = match (ty, actual_type) {
                 (RuntimeType::Primitive(PrimitiveType::Solid), Some(RuntimeType::Primitive(PrimitiveType::Sketch))) => {
