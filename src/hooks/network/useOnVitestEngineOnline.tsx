@@ -27,5 +27,5 @@ export function useOnVitestEngineOnline({
         onlineRequest as EventListener
       )
     }
-  }, [callback])
+  }, [callback, engineCommandManager])
 }

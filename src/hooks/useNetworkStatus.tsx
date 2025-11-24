@@ -131,7 +131,7 @@ export function useNetworkStatus(engineCommandManager: ConnectionManager) {
         offlineCallback
       )
     }
-  }, [])
+  }, [engineCommandManager])
 
   useEffect(() => {
     const issues = {
@@ -261,7 +261,7 @@ export function useNetworkStatus(engineCommandManager: ConnectionManager) {
         onConnectionStateChange as EventListener
       )
     }
-  }, [])
+  }, [engineCommandManager])
 
   return {
     immediateState,

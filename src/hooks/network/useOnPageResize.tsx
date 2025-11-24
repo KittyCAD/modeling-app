@@ -86,5 +86,11 @@ export const useOnPageResize = ({
     return () => {
       observer.disconnect()
     }
-  }, [videoWrapperRef, videoRef, canvasRef, isStreamAcceptingInput])
+  }, [
+    videoWrapperRef,
+    videoRef,
+    canvasRef,
+    isStreamAcceptingInput,
+    engineCommandManager,
+  ])
 }
