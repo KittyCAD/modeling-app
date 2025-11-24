@@ -233,6 +233,7 @@ export const ConnectionStream = (props: {
     engineCommandManager,
   })
   useOnVitestEngineOnline({
+    engineCommandManager,
     callback: () => {
       setShowManualConnect(false)
       tryConnecting({
