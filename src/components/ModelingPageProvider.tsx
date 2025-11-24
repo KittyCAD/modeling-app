@@ -9,7 +9,11 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import {
+  codeManager,
+  engineCommandManager,
+  kclManager,
+} from '@src/lib/singletons'
 import { useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { type IndexLoaderData } from '@src/lib/types'
@@ -40,7 +44,7 @@ export const ModelingPageProvider = ({
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
-    } = createNamedViewsCommand()
+    } = createNamedViewsCommand(engineCommandManager)
 
     const commands = [
       createNamedViewCommand,
