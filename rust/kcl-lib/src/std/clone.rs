@@ -64,7 +64,10 @@ async fn inner_clone(
         GeometryWithImportedGeometry::Solid(solid) => {
             // We flush before the clone so all the shit exists.
             exec_state
-                .flush_batch_for_solids((&args).into(), std::slice::from_ref(solid))
+                .flush_batch_for_solids(
+                    ModelingCmdMeta::from_args(exec_state, &args),
+                    std::slice::from_ref(solid),
+                )
                 .await?;
 
             let mut new_solid = solid.clone();
@@ -81,7 +84,7 @@ async fn inner_clone(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, new_id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, new_id),
             ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }),
         )
         .await?;
@@ -111,6 +114,7 @@ async fn fix_tags_and_references(
     match new_geometry {
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
+            sketch.clone = Some(old_geometry_id);
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
@@ -118,6 +122,7 @@ async fn fix_tags_and_references(
             solid.sketch.id = new_geometry_id;
             solid.sketch.original_id = new_geometry_id;
             solid.sketch.artifact_id = new_geometry_id.into();
+            solid.sketch.clone = Some(old_geometry_id);
 
             fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state, Some(solid.value.clone()))
                 .await?;
@@ -155,6 +160,7 @@ async fn fix_tags_and_references(
                 exec_state,
                 args,
                 None,
+                Some(&entity_id_map.clone()),
             )
             .await?;
 
@@ -174,7 +180,7 @@ async fn get_old_new_child_map(
     // Get the old geometries entity ids.
     let response = exec_state
         .send_modeling_cmd(
-            args.into(),
+            ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(mcmd::EntityGetAllChildUuids {
                 entity_id: old_geometry_id,
             }),
@@ -193,7 +199,7 @@ async fn get_old_new_child_map(
     // Get the new geometries entity ids.
     let response = exec_state
         .send_modeling_cmd(
-            args.into(),
+            ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(mcmd::EntityGetAllChildUuids {
                 entity_id: new_geometry_id,
             }),

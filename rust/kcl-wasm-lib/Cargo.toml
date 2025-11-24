@@ -1,6 +1,6 @@
 [package]
 name = "kcl-wasm-lib"
-version = "0.1.105"
+version = "0.1.110"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 publish = false
@@ -51,7 +51,7 @@ features = [
 [dev-dependencies]
 anyhow.workspace = true
 pretty_assertions = "1.4.1"
-wasm-bindgen-test = "0.3.54"
+wasm-bindgen-test = "0.3.55"
 
 # Local development only. Placeholder to speed up development cycle
 #[package.metadata.wasm-pack.profile.release]

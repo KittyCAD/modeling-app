@@ -76,7 +76,7 @@ async fn inner_loft(
     let id = exec_state.next_uuid();
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::Loft {
                 section_ids: sketches.iter().map(|group| group.id).collect(),
                 base_curve_index,
@@ -103,6 +103,7 @@ async fn inner_loft(
             kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
             exec_state,
             &args,
+            None,
             None,
         )
         .await?,

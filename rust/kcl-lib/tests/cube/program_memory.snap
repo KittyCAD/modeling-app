@@ -114,23 +114,6 @@ description: Variables in memory after executing cube.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -20.0,
-              -20.0
-            ],
-            "tag": null,
-            "to": [
-              -20.0,
-              -20.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {

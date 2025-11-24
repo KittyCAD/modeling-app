@@ -221,8 +221,6 @@ export class SceneInfra {
     }, 100) as unknown as number
   }
 
-  overlayThrottleMap: { [pathToNodeString: string]: number } = {}
-
   updateOverlayDetails({
     handle,
     group,

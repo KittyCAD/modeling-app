@@ -1,6 +1,6 @@
 [package]
 name = "kcl-api"
-version = "0.1.105"
+version = "0.1.110"
 edition = "2024"
 description = "KCL interpreter API"
 license = "MIT"

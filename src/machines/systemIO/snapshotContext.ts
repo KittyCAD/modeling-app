@@ -1,3 +1,4 @@
+import { getEXTNoPeriod, isExtensionAnImportExtension } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import { isArray } from '@src/lib/utils'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
@@ -31,4 +32,47 @@ export function getAllSubDirectoriesAtProjectRoot(
   }
 
   return subDirectories
+}
+
+export function listAllImportFilesWithinProject(
+  context: SystemIOContext,
+  {
+    projectFolderName,
+    importExtensions,
+  }: { projectFolderName: string; importExtensions: string[] }
+) {
+  const relativeFilePaths = []
+  // copy the folders
+  let projectFolder = context.folders.find((folder) => {
+    return folder.name === projectFolderName
+  })
+  const clonedProjectFolder = structuredClone(projectFolder)
+  if (window.electron && clonedProjectFolder?.children) {
+    const projectPath = clonedProjectFolder.path
+    let children = clonedProjectFolder.children
+    while (children.length > 0) {
+      const v = children.pop()
+      if (!v) {
+        continue
+      }
+
+      if (v.children) {
+        children.push(...v.children)
+        continue
+      }
+
+      const relativeFilePath = v.path.replace(
+        projectPath + window.electron.sep,
+        ''
+      )
+      const extension = getEXTNoPeriod(relativeFilePath)
+      if (
+        extension &&
+        isExtensionAnImportExtension(extension, importExtensions)
+      ) {
+        relativeFilePaths.push(relativeFilePath)
+      }
+    }
+  }
+  return relativeFilePaths
 }

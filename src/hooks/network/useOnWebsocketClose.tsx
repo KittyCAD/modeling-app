@@ -1,14 +1,24 @@
 import { EngineDebugger } from '@src/lib/debugger'
-import { engineCommandManager } from '@src/lib/singletons'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { EngineCommandManagerEvents } from '@src/network/utils'
 import { useEffect } from 'react'
+
+export interface IUseOnWebsocketClose {
+  callback: () => void
+  infiniteDetectionLoopCallback: () => void
+  engineCommandManager: ConnectionManager
+}
 
 /**
  * The one location that the websocket close event will be handled within the /file page.
  * If the websocket closes we want to be able to reconnect or stop forever depending on the disconnection type
  * Look at WebSocketStatusCodes for more details on the code that is sent when the websocket close event happens
  */
-export function useOnWebsocketClose({ callback }: { callback: () => void }) {
+export function useOnWebsocketClose({
+  callback,
+  infiniteDetectionLoopCallback,
+  engineCommandManager,
+}: IUseOnWebsocketClose) {
   useEffect(() => {
     const onWebsocketClose = (event: CustomEvent) => {
       if (event?.detail?.code === '1006') {
@@ -21,6 +31,8 @@ export function useOnWebsocketClose({ callback }: { callback: () => void }) {
             code: event?.detail?.code,
           },
         })
+
+        infiniteDetectionLoopCallback()
         return
       }
 
@@ -38,5 +50,5 @@ export function useOnWebsocketClose({ callback }: { callback: () => void }) {
         onWebsocketClose as EventListener
       )
     }
-  }, [callback])
+  }, [callback, infiniteDetectionLoopCallback, engineCommandManager])
 }

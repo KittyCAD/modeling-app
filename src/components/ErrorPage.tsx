@@ -32,8 +32,10 @@ function stackTraceMessage(error: unknown): string {
 }
 
 /** Generate a GitHub issue URL from the error */
-function generateToUrl(error: unknown) {
-  const title: string = 'An unexpected error occurred'
+export function generateToUrl(
+  error: unknown,
+  title: string = 'An unexpected error occurred'
+) {
   const newLine = '%0A'
   const body = `${errorMessage(error)} ${newLine} >${stackTraceMessage(error)} ${newLine}`
   const result = `https://github.com/KittyCAD/modeling-app/issues/new?title=${title}&body=${body}`

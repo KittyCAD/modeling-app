@@ -194,7 +194,7 @@ async fn inner_involute_circular(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -347,7 +347,7 @@ async fn straight_line(
     let id = exec_state.next_uuid();
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -572,7 +572,7 @@ async fn inner_angled_line_length(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -1045,7 +1045,7 @@ pub async fn make_sketch_plane_from_orientation(
     let hide = Some(true);
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(args, plane.id),
+            ModelingCmdMeta::from_args_id(exec_state, args, plane.id),
             ModelingCmd::from(mcmd::MakePlane {
                 clobber,
                 origin: plane.info.origin.into(),
@@ -1088,7 +1088,7 @@ pub(crate) async fn inner_start_profile(
             // Flush the batch for our fillets/chamfers if there are any.
             // If we do not do these for sketch on face, things will fail with face does not exist.
             exec_state
-                .flush_batch_for_solids((&args).into(), &[(*face.solid).clone()])
+                .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &[(*face.solid).clone()])
                 .await?;
         }
         SketchSurface::Plane(plane) if !plane.is_standard() => {
@@ -1096,7 +1096,7 @@ pub(crate) async fn inner_start_profile(
             // This is especially helpful for offset planes, which would be visible otherwise.
             exec_state
                 .batch_end_cmd(
-                    (&args).into(),
+                    ModelingCmdMeta::from_args(exec_state, &args),
                     ModelingCmd::from(mcmd::ObjectVisible {
                         object_id: plane.id,
                         hidden: true,
@@ -1113,7 +1113,7 @@ pub(crate) async fn inner_start_profile(
     let disable_sketch_id = exec_state.next_uuid();
     exec_state
         .batch_modeling_cmds(
-            (&args).into(),
+            ModelingCmdMeta::from_args(exec_state, &args),
             &[
                 // Enter sketch mode on the surface.
                 // We call this here so you can reuse the sketch surface for multiple sketches.
@@ -1175,6 +1175,7 @@ pub(crate) async fn inner_start_profile(
         inner_paths: vec![],
         units,
         mirror: Default::default(),
+        clone: Default::default(),
         meta: vec![args.source_range.into()],
         tags: Default::default(),
         start: current_path.clone(),
@@ -1260,29 +1261,46 @@ pub(crate) async fn inner_close(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
         )
         .await?;
 
-    let current_path = Path::ToPoint {
-        base: BasePath {
-            from: from.ignore_units(),
-            to,
-            tag: tag.clone(),
-            units: sketch.units,
-            geo_meta: GeoMeta {
-                id,
-                metadata: args.source_range.into(),
-            },
-        },
-    };
-
     let mut new_sketch = sketch;
-    if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state, None);
+
+    let distance = ((from.x - to[0]).powi(2) + (from.y - to[1]).powi(2)).sqrt();
+    if distance > super::EQUAL_POINTS_DIST_EPSILON {
+        // These will NOT be the same point in the engine, and an additional segment will be created.
+        let current_path = Path::ToPoint {
+            base: BasePath {
+                from: from.ignore_units(),
+                to,
+                tag: tag.clone(),
+                units: new_sketch.units,
+                geo_meta: GeoMeta {
+                    id,
+                    metadata: args.source_range.into(),
+                },
+            },
+        };
+
+        if let Some(tag) = &tag {
+            new_sketch.add_tag(tag, &current_path, exec_state, None);
+        }
+        new_sketch.paths.push(current_path);
+    } else if tag.is_some() {
+        exec_state.warn(
+            crate::CompilationError {
+                source_range: args.source_range,
+                message: "A tag declarator was specified, but no segment was created".to_string(),
+                suggestion: None,
+                severity: crate::errors::Severity::Warning,
+                tag: crate::errors::Tag::Unnecessary,
+            },
+            annotations::WARN_UNUSED_TAGS,
+        );
     }
-    new_sketch.paths.push(current_path);
+
     new_sketch.is_closed = true;
 
     Ok(new_sketch)
@@ -1365,7 +1383,7 @@ pub async fn absolute_arc(
     // The start point is taken from the path you are extending.
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(args, id),
+            ModelingCmdMeta::from_args_id(exec_state, args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -1441,7 +1459,7 @@ pub async fn relative_arc(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(args, id),
+            ModelingCmdMeta::from_args_id(exec_state, args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -1614,7 +1632,7 @@ async fn inner_tangential_arc_radius_angle(
 
             exec_state
                 .batch_modeling_cmd(
-                    ModelingCmdMeta::from_args_id(&args, id),
+                    ModelingCmdMeta::from_args_id(exec_state, &args, id),
                     ModelingCmd::from(mcmd::ExtendPath {
                         label: Default::default(),
                         path: sketch.id.into(),
@@ -1716,7 +1734,10 @@ async fn inner_tangential_arc_to_point(
     };
     let id = exec_state.next_uuid();
     exec_state
-        .batch_modeling_cmd(ModelingCmdMeta::from_args_id(&args, id), tan_arc_to(&sketch, delta))
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            tan_arc_to(&sketch, delta),
+        )
         .await?;
 
     let current_path = Path::TangentialArcTo {
@@ -1807,7 +1828,7 @@ async fn inner_bezier_curve(
 
             exec_state
                 .batch_modeling_cmd(
-                    ModelingCmdMeta::from_args_id(&args, id),
+                    ModelingCmdMeta::from_args_id(exec_state, &args, id),
                     ModelingCmd::from(mcmd::ExtendPath {
                         label: Default::default(),
                         path: sketch.id.into(),
@@ -1827,7 +1848,7 @@ async fn inner_bezier_curve(
             let to = [end[0].to_length_units(from.units), end[1].to_length_units(from.units)];
             exec_state
                 .batch_modeling_cmd(
-                    ModelingCmdMeta::from_args_id(&args, id),
+                    ModelingCmdMeta::from_args_id(exec_state, &args, id),
                     ModelingCmd::from(mcmd::ExtendPath {
                         label: Default::default(),
                         path: sketch.id.into(),
@@ -1901,7 +1922,7 @@ async fn inner_subtract_2d(
     for hole_sketch in tool {
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from(&args),
+                ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(mcmd::Solid2dAddHole {
                     object_id: sketch.id,
                     hole_id: hole_sketch.id,
@@ -1913,7 +1934,7 @@ async fn inner_subtract_2d(
         // it's just used to modify some other profile.
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from(&args),
+                ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(mcmd::ObjectVisible {
                     object_id: hole_sketch.id,
                     hidden: true,
@@ -2083,7 +2104,7 @@ pub(crate) async fn inner_elliptic(
     let axis = major_axis.map(|x| x.to_mm());
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -2250,7 +2271,7 @@ pub(crate) async fn inner_hyperbolic(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -2464,7 +2485,7 @@ pub(crate) async fn inner_parabolic(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -2619,7 +2640,7 @@ pub(crate) async fn inner_conic(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),

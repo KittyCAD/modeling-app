@@ -10,7 +10,7 @@ use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, KclValue, SolidOrImportedGeometry,
+        ExecState, KclValue, ModelingCmdMeta, SolidOrImportedGeometry,
         types::{ArrayLen, RuntimeType},
     },
     std::Args,
@@ -108,7 +108,7 @@ async fn inner_appearance(
 
         exec_state
             .batch_modeling_cmd(
-                (&args).into(),
+                ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
                     object_id: solid_id,
                     color,

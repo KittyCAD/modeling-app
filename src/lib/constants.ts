@@ -1,6 +1,6 @@
-import type { WebSocketResponse } from '@kittycad/lib'
+import type { MlCopilotMode, WebSocketResponse } from '@kittycad/lib'
 
-import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 export const APP_NAME = 'Design Studio'
@@ -32,8 +32,6 @@ export const FILE_EXT = '.kcl'
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
 export const PROJECT_IMAGE_NAME = `thumbnail.png`
-/** The localStorage key for last-opened projects */
-export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
 export const DEFAULT_FILE_NAME = 'Untitled'
 /** The default name for a tutorial project */
@@ -56,6 +54,8 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   CLONE: 'clone',
   SOLID: 'solid',
   PATTERN: 'pattern',
+  CHAMFER: 'chamfer',
+  FILLET: 'fillet',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
@@ -80,9 +80,6 @@ export const KCL_DEFAULT_ORIGIN = `[0, 0, 0]`
 
 /** The default KCL vector2d origin expression */
 export const KCL_DEFAULT_ORIGIN_2D = `[0, 0]`
-
-/** The default KCL color expression */
-export const KCL_DEFAULT_COLOR = `#3c73ff`
 
 /** The default KCL font point size expression */
 export const KCL_DEFAULT_FONT_POINT_SIZE = `36`
@@ -137,9 +134,6 @@ export const MAKE_TOAST_MESSAGES = {
   SUCCESS: 'Started print successfully',
 }
 
-/** The URL for the KCL samples manifest files */
-export const KCL_SAMPLES_MANIFEST_URL = '/kcl-samples/manifest.json'
-
 /** Toast id for the app auto-updater toast */
 export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
 
@@ -156,9 +150,6 @@ export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
 export const KCL_AXIS_X = 'X'
 export const KCL_AXIS_Y = 'Y'
 export const KCL_AXIS_Z = 'Z'
-export const KCL_AXIS_NEG_X = '-X'
-export const KCL_AXIS_NEG_Y = '-Y'
-export const KCL_DEFAULT_AXIS = 'X'
 
 export enum AxisNames {
   X = 'x',
@@ -182,9 +173,6 @@ export const VIEW_NAMES_SEMANTIC = {
 export const KCL_PLANE_XY = 'XY'
 export const KCL_PLANE_XZ = 'XZ'
 export const KCL_PLANE_YZ = 'YZ'
-export const KCL_PLANE_XY_NEG = '-XY'
-export const KCL_PLANE_XZ_NEG = '-XZ'
-export const KCL_PLANE_YZ_NEG = '-YZ'
 
 /** The modeling sidebar buttons' IDs get a suffix to prevent collisions */
 export const SIDEBAR_BUTTON_SUFFIX = '-pane-button'
@@ -197,12 +185,6 @@ export const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
  * to "open in desktop app" when present in the URL
  */
 export const ASK_TO_OPEN_QUERY_PARAM = 'ask-open-desktop'
-
-/**
- * When no annotation is in the KCL file to specify the defaults, we use these
- * default units.
- */
-export const DEFAULT_DEFAULT_ANGLE_UNIT: UnitAngle = 'degrees'
 
 /**
  * When no annotation is in the KCL file to specify the defaults, we use these
@@ -296,22 +278,6 @@ export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'
 export const SEARCH_PARAM_ML_PROMPT_KEY = 'ttc-prompt'
 
 /**
- * Used by the modeling sidebar to validate persisted pane IDs.
- */
-export const VALID_PANE_IDS = [
-  'code',
-  'debug',
-  'export',
-  'files',
-  'feature-tree',
-  'logs',
-  'lspMessages',
-  'variables',
-  'text-to-cad',
-  'text-to-cad-2',
-] as const
-
-/**
  * Number of engine connection retries within a cycle before the application stops automatically trying
  */
 export const NUMBER_OF_ENGINE_RETRIES = 5
@@ -325,3 +291,6 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 export const LAYOUT_SAVE_THROTTLE = 500
 /** prefix for localStorage persisted layout data */
 export const LAYOUT_PERSIST_PREFIX = 'layout-'
+
+// Copilot input
+export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'

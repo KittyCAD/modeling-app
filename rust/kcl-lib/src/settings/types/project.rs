@@ -74,9 +74,9 @@ pub struct PerProjectSettings {
 pub struct ProjectMetaSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub id: uuid::Uuid,
-    /// Disable the new Copilot in Text-to-CAD for this project, only available in Zoo Design Studio (Staging).
+    /// Enable the conversational agent in Text-to-CAD for this project.
     #[serde(default, skip_serializing_if = "is_default")]
-    pub disable_copilot: bool,
+    pub enable_zookeeper: bool,
 }
 
 /// Project specific application settings.
@@ -271,7 +271,7 @@ mod tests {
             settings: PerProjectSettings {
                 meta: ProjectMetaSettings {
                     id: uuid::Uuid::nil(),
-                    disable_copilot: Default::default(),
+                    enable_zookeeper: Default::default(),
                 },
                 app: ProjectAppSettings {
                     onboarding_status: Default::default(),

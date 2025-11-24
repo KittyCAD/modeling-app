@@ -24,11 +24,9 @@ import {
 import {
   bracketMatching,
   codeFolding,
-  defaultHighlightStyle,
   foldGutter,
   foldKeymap,
   indentOnInput,
-  syntaxHighlighting,
 } from '@codemirror/language'
 import { diagnosticCount, lintGutter, lintKeymap } from '@codemirror/lint'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
@@ -65,6 +63,7 @@ import {
 } from '@src/machines/kclEditorMachine'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { kclSyntaxHighlightingExtension } from '@src/lib/codeEditor'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -190,9 +189,7 @@ export const KclEditorPaneContents = () => {
       closeBrackets(),
       highlightActiveLine(),
       highlightSelectionMatches(),
-      syntaxHighlighting(defaultHighlightStyle, {
-        fallback: true,
-      }),
+      kclSyntaxHighlightingExtension,
       rectangularSelection(),
       dropCursor(),
       interact({

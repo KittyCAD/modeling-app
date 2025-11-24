@@ -11,10 +11,20 @@ test.describe('Snap to Grid', () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 
+    await page.waitForTimeout(1000)
+
+    // Ensure Fixed size grid is ON via Command Bar
+    const commands = page.getByRole('button', { name: 'Commands' })
+    await commands.click()
+    await page
+      .getByRole('option', {
+        name: 'Settings · modeling · fixed size grid',
+      })
+      .click()
+    await page.getByRole('option', { name: 'On', exact: true }).click()
+
     // Enter sketch mode and select a default axis from the Feature Tree
-    await toolbar.startSketchBtn.click()
-    await toolbar.openFeatureTreePane()
-    await page.getByRole('button', { name: 'Front plane' }).click()
+    await toolbar.startSketchOnDefaultPlane('Front plane')
     await page.waitForTimeout(600)
 
     // Ensure the line tool is equipped
@@ -37,6 +47,6 @@ test.describe('Snap to Grid', () => {
     await clickB()
 
     // Check if snapping is working
-    await editor.expectEditor.toContain('line(end = [0.15, 0.1])')
+    await editor.expectEditor.toContain('line(end = [0.25, 0.25])')
   })
 })

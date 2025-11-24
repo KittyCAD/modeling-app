@@ -67,15 +67,6 @@ import {
   insertNamedConstant,
   replaceValueAtNodePath,
 } from '@src/lang/modifyAst'
-import type {
-  ChamferParameters,
-  FilletParameters,
-} from '@src/lang/modifyAst/addEdgeTreatment'
-import {
-  EdgeTreatmentType,
-  editEdgeTreatment,
-  modifyAstWithEdgeTreatmentAndTag,
-} from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   addIntersect,
   addSubtract,
@@ -169,6 +160,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
+import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 
 export type ModelingMachineEvent =
   | {
@@ -3196,15 +3188,24 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Hole'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Hole'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+              rustContext?: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
         // Remove once this command isn't experimental anymore
         let astWithNewSetting: Node<Program> | undefined
-        if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+        if (theKclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
           const ast = setExperimentalFeatures(codeManager.code, {
             type: 'Allow',
           })
@@ -3216,29 +3217,35 @@ export const modelingMachine = setup({
         }
 
         const astResult = addHole({
-          ...input,
-          ast: astWithNewSetting ?? kclManager.ast,
-          artifactGraph: kclManager.artifactGraph,
+          ...input.data,
+          ast: astWithNewSetting ?? theKclManager.ast,
+          artifactGraph: theKclManager.artifactGraph,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
         }
 
         const { modifiedAst, pathToNode } = astResult
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
-            rustContext,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [pathToNode],
-            // This is needed because hole::hole is experimental,
-            // and mock exec will fail due to that
-            skipErrorsOnMockExecution: true,
           }
         )
       }
@@ -3263,87 +3270,27 @@ export const modelingMachine = setup({
         }
         const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        // Extract inputs
-        const ast = theKclManager.ast
-        let modifiedAst = structuredClone(ast)
-        let focusPath: PathToNode[] = []
-        const { nodeToEdit, selection, radius } = input.data
-
-        const parameters: FilletParameters = {
-          type: EdgeTreatmentType.Fillet,
-          radius,
+        const { ast, artifactGraph } = theKclManager
+        const astResult = addFillet({
+          ...input.data,
+          ast,
+          artifactGraph,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
         }
 
+        const { modifiedAst, pathToNode } = astResult
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
-        const theEngineCommandManager = input.engineCommandManager
-          ? input.engineCommandManager
-          : engineCommandManager
-
-        const dependencies = {
-          kclManager: theKclManager,
-          engineCommandManager: theEngineCommandManager,
-          editorManager: theEditorManager,
-          codeManager: theCodeManager,
-        }
-
-        // Apply or edit fillet
-        if (nodeToEdit) {
-          // Edit existing fillet
-          // selection is not the edge treatment itself,
-          // but just the first edge in the fillet expression >
-          // we need to find the edgeCut artifact
-          // and build a new selection from it
-          // TODO: this is a bit of a hack, we should be able
-          // to get the edgeCut artifact from the selection
-          const firstSelection = selection.graphSelections[0]
-          const edgeCutArtifact = Array.from(
-            theKclManager.artifactGraph.values()
-          ).find(
-            (artifact) =>
-              artifact.type === 'edgeCut' &&
-              artifact.consumedEdgeId === firstSelection.artifact?.id
-          )
-          if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
-            return Promise.reject(
-              new Error(
-                'Failed to retrieve edgeCut artifact from sweepEdge selection'
-              )
-            )
-          }
-          const edgeTreatmentSelection = {
-            artifact: edgeCutArtifact,
-            codeRef: edgeCutArtifact.codeRef,
-          }
-
-          const editResult = await editEdgeTreatment(
-            ast,
-            edgeTreatmentSelection,
-            parameters
-          )
-          if (err(editResult)) return Promise.reject(editResult)
-
-          modifiedAst = editResult.modifiedAst
-          focusPath = [editResult.pathToEdgeTreatmentNode]
-        } else {
-          // Apply fillet to selection
-          const filletResult = await modifyAstWithEdgeTreatmentAndTag(
-            ast,
-            selection,
-            parameters,
-            dependencies
-          )
-          if (err(filletResult)) return Promise.reject(filletResult)
-          modifiedAst = filletResult.modifiedAst
-          focusPath = filletResult.pathToEdgeTreatmentNode
-        }
         const theRustContext = input.rustContext
           ? input.rustContext
           : rustContext
+
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3354,7 +3301,7 @@ export const modelingMachine = setup({
             rustContext: theRustContext,
           },
           {
-            focusPath: focusPath,
+            focusPath: pathToNode,
           }
         )
       }
@@ -3378,85 +3325,25 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Extract inputs
         const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const ast = theKclManager.ast
-        let modifiedAst = structuredClone(ast)
-        let focusPath: PathToNode[] = []
-        const { nodeToEdit, selection, length } = input.data
-
-        const parameters: ChamferParameters = {
-          type: EdgeTreatmentType.Chamfer,
-          length,
+        const { ast, artifactGraph } = theKclManager
+        const astResult = addChamfer({
+          ...input.data,
+          ast,
+          artifactGraph,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
         }
+
+        const { modifiedAst, pathToNode } = astResult
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
-        const theEngineCommandManager = input.engineCommandManager
-          ? input.engineCommandManager
-          : engineCommandManager
-
-        const dependencies = {
-          kclManager: theKclManager,
-          engineCommandManager: theEngineCommandManager,
-          editorManager: theEditorManager,
-          codeManager: theCodeManager,
-        }
-
-        // Apply or edit chamfer
-        if (nodeToEdit) {
-          // Edit existing chamfer
-          // selection is not the edge treatment itself,
-          // but just the first edge in the chamfer expression >
-          // we need to find the edgeCut artifact
-          // and build a new selection from it
-          // TODO: this is a bit of a hack, we should be able
-          // to get the edgeCut artifact from the selection
-          const firstSelection = selection.graphSelections[0]
-          const edgeCutArtifact = Array.from(
-            theKclManager.artifactGraph.values()
-          ).find(
-            (artifact) =>
-              artifact.type === 'edgeCut' &&
-              artifact.consumedEdgeId === firstSelection.artifact?.id
-          )
-          if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
-            return Promise.reject(
-              new Error(
-                'Failed to retrieve edgeCut artifact from sweepEdge selection'
-              )
-            )
-          }
-          const edgeTreatmentSelection = {
-            artifact: edgeCutArtifact,
-            codeRef: edgeCutArtifact.codeRef,
-          }
-
-          const editResult = await editEdgeTreatment(
-            ast,
-            edgeTreatmentSelection,
-            parameters
-          )
-          if (err(editResult)) return Promise.reject(editResult)
-
-          modifiedAst = editResult.modifiedAst
-          focusPath = [editResult.pathToEdgeTreatmentNode]
-        } else {
-          // Apply chamfer to selection
-          const chamferResult = await modifyAstWithEdgeTreatmentAndTag(
-            ast,
-            selection,
-            parameters,
-            dependencies
-          )
-          if (err(chamferResult)) return Promise.reject(chamferResult)
-          modifiedAst = chamferResult.modifiedAst
-          focusPath = chamferResult.pathToEdgeTreatmentNode
-        }
         const theRustContext = input.rustContext
           ? input.rustContext
           : rustContext
@@ -3471,7 +3358,7 @@ export const modelingMachine = setup({
             rustContext: theRustContext,
           },
           {
-            focusPath: focusPath,
+            focusPath: pathToNode,
           }
         )
       }
@@ -3812,7 +3699,6 @@ export const modelingMachine = setup({
           },
           {
             focusPath: [result.pathToNode],
-            skipErrorsOnMockExecution: true, // Skip validation since gdt::flatness may not be available in runtime yet
           }
         )
       }
@@ -5926,9 +5812,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'holeAstMod',
         id: 'holeAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Hole') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {

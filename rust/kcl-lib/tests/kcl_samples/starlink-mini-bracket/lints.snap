@@ -1,0 +1,30 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints starlink-mini-bracket.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false
+    },
+    "description": "found 'FLIP'",
+    "pos": [
+      332,
+      336,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'FLIP' to 'flip'",
+      "insert": "// Starlink Mini Bracket\n// Bracket for holding a starlink device\n\n// Set units in inches (in)\n@settings(defaultLengthUnit = in)\n\n// Define parameters\ncutoutEdgeLength = 2\ncutoutWidth = 0.52\ncutoutAngleBase = 8 // degrees\ncutoutAngleSide = 14 // degrees\ncutoutDepth = 1\ncutoutBaseDepth = 0.1\ntotalWidth = 1.25\nblockEdgeLength = 0.5\nflip = 0\n\nsketch001 = startSketchOn(XZ)\n  |> startProfile(at = [0.0, 0.0])\n  |> xLine(length = blockEdgeLength + cutoutEdgeLength)\n  |> yLine(length = blockEdgeLength, tag = $seg01)\n  |> xLine(endAbsolute = blockEdgeLength)\n  |> yLine(endAbsolute = blockEdgeLength + cutoutEdgeLength)\n  |> xLine(endAbsolute = 0, tag = $seg02)\n  |> close()\n  |> extrude(length = totalWidth)\n\nsketch002 = startSketchOn(sketch001, face = seg01)\n  |> startProfile(at = [blockEdgeLength, 0.0])\n  |> xLine(length = cutoutDepth + cutoutBaseDepth)\n  |> yLine(length = (totalWidth - cutoutWidth) / 2 - ((1 - flip) * cutoutDepth * sin(units::toRadians(cutoutAngleBase))))\n  |> angledLine(angle = 180 - ((1 - flip) * cutoutAngleBase), lengthX = cutoutDepth)\n  |> yLine(length = cutoutWidth)\n  |> angledLine(angle = flip * cutoutAngleBase, lengthX = cutoutDepth)\n  |> yLine(endAbsolute = totalWidth)\n  |> xLine(endAbsolute = blockEdgeLength)\n  |> close()\n  |> extrude(length = -1 * cutoutEdgeLength)\n\nsketch003 = startSketchOn(sketch001, face = seg02)\n  |> startProfile(at = [-1 * blockEdgeLength, 0.0])\n  |> xLine(length = -1 * (cutoutDepth + cutoutBaseDepth))\n  |> yLine(length = (totalWidth - cutoutWidth) / 2 - ((1 - flip) * cutoutDepth * sin(units::toRadians(cutoutAngleSide))))\n  |> angledLine(angle = (1 - flip) * cutoutAngleSide, lengthX = cutoutDepth)\n  |> yLine(length = cutoutWidth)\n  |> angledLine(angle = 180 - (flip * cutoutAngleSide), lengthX = cutoutDepth)\n  |> yLine(endAbsolute = totalWidth)\n  |> xLine(endAbsolute = -1 * blockEdgeLength)\n  |> close()\n  |> extrude(length = -1 * cutoutEdgeLength)\n\nbarrelD = 0.700\nbarrelL = 1.10\nnRidges = 36\nbarrelC = 1.25 / 2 // guess\nholeD = 0.253\nridgeHeight = 1.1135 - barrelL\nridgeWidth = 0.042\n\nsketch004 = startSketchOn(XY)\n  |> startProfile(at = [\n       -1 * (barrelC + barrelD / 2),\n       -totalWidth / 2\n     ])\n  |> arc(angleStart = 180, angleEnd = 90, radius = barrelD / 2)\n  |> xLine(endAbsolute = 0)\n  |> yLine(endAbsolute = -(totalWidth / 2 + barrelD / 2))\n  |> xLine(endAbsolute = -barrelC)\n  |> arc(angleEnd = 180, angleStart = 270, radius = barrelD / 2)\n  |> close()\n  |> extrude(length = barrelL)\nsketch005 = startSketchOn(sketch004, face = START)\n  |> circle(center = [barrelC, -totalWidth / 2], radius = holeD / 2)\n  |> extrude(length = -1 * barrelL)\n\nridgePlane = offsetPlane(YZ, offset = -(barrelC + holeD / 2))\n\nsketch006 = startSketchOn(ridgePlane)\n  |> startProfile(at = [-totalWidth / 2, barrelL])\n  |> xLine(length = ridgeWidth / 2)\n  |> line(end = [-ridgeWidth / 2, ridgeHeight])\n  |> line(end = [-ridgeWidth / 2, -ridgeHeight])\n  |> close()\n  |> extrude(length = -((barrelD - holeD) / 2 - .003))\n  |> patternCircular3d(\n       arcDegrees = 360,\n       axis = [0, 0, barrelL],\n       center = [-barrelC, -totalWidth / 2, barrelL],\n       instances = nRidges,\n       rotateDuplicates = true,\n     )\n",
+      "source_range": [
+        0,
+        3185,
+        0
+      ]
+    }
+  }
+]

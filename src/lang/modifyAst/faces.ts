@@ -3,11 +3,13 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
   createCallExpressionStdLibKw,
+  createIdentifier,
   createLabeledArg,
   createLiteral,
   createLocalName,
 } from '@src/lang/create'
 import {
+  createPoint2dExpression,
   createVariableExpressionsArray,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
@@ -41,6 +43,7 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   Selection,
@@ -71,11 +74,15 @@ export function addShell({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
+  // Because of START and END untagged caps, we can't rely on last child here
+  // Haven't found a case where it would be needed anyway
+  const lastChildLookup = false
   const result = buildSolidsAndFacesExprs(
     faces,
     artifactGraph,
     modifiedAst,
-    mNodeToEdit
+    mNodeToEdit,
+    lastChildLookup
   )
   if (err(result)) {
     return result
@@ -156,18 +163,17 @@ export function addHole({
   | Error {
   // 1. Clone the ast so we can edit it
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Setting this to 'false' as it should be is breaking hole on hole.
-  // This is believed to be due to an empty nodePath and pathToNode on the subtract artifact,
-  // see https://github.com/KittyCAD/modeling-app/issues/8616
-  const lastChildLookup = false
+  const lastChildLookup = true
   const result = buildSolidsAndFacesExprs(
     face,
     artifactGraph,
     modifiedAst,
-    nodeToEdit,
-    lastChildLookup
+    mNodeToEdit,
+    lastChildLookup,
+    ['compositeSolid', 'sweep']
   )
   if (err(result)) {
     return result
@@ -175,82 +181,137 @@ export function addHole({
 
   const { solidsExpr, facesExpr, pathIfPipe } = result
 
+  // Extra args for createCallExpressionStdLibKw as we're calling functions from a module
+  const nonCodeMeta = undefined
+  const modulePath = [createIdentifier('hole')]
+
   // Prep the big label args
   let holeBodyNode: Node<CallExpressionKw> | undefined
   if (holeBody === 'blind' && blindDepth && blindDiameter) {
-    holeBodyNode = createCallExpressionStdLibKw('hole::blind', null, [
-      createLabeledArg('depth', valueOrVariable(blindDepth)),
-      createLabeledArg('diameter', valueOrVariable(blindDiameter)),
-    ])
+    holeBodyNode = createCallExpressionStdLibKw(
+      'blind',
+      null,
+      [
+        createLabeledArg('depth', valueOrVariable(blindDepth)),
+        createLabeledArg('diameter', valueOrVariable(blindDiameter)),
+      ],
+      nonCodeMeta,
+      modulePath
+    )
   } else {
     return new Error('Unsupported hole body type')
   }
 
   let holeBottomNode: Node<CallExpressionKw> | undefined
   if (holeBottom === 'flat') {
-    holeBottomNode = createCallExpressionStdLibKw('hole::flat', null, [])
+    holeBottomNode = createCallExpressionStdLibKw(
+      'flat',
+      null,
+      [],
+      nonCodeMeta,
+      modulePath
+    )
   } else if (holeBottom === 'drill' && drillPointAngle) {
-    holeBottomNode = createCallExpressionStdLibKw('hole::drill', null, [
-      createLabeledArg('pointAngle', valueOrVariable(drillPointAngle)),
-    ])
+    holeBottomNode = createCallExpressionStdLibKw(
+      'drill',
+      null,
+      [createLabeledArg('pointAngle', valueOrVariable(drillPointAngle))],
+      nonCodeMeta,
+      modulePath
+    )
   } else {
     return new Error('Unsupported hole bottom type or missing parameters')
   }
 
   let holeTypeNode: Node<CallExpressionKw> | undefined
   if (holeType === 'simple') {
-    holeTypeNode = createCallExpressionStdLibKw('hole::simple', null, [])
+    holeTypeNode = createCallExpressionStdLibKw(
+      'simple',
+      null,
+      [],
+      nonCodeMeta,
+      modulePath
+    )
   } else if (
     holeType === 'counterbore' &&
     counterboreDepth &&
     counterboreDiameter
   ) {
-    holeTypeNode = createCallExpressionStdLibKw('hole::counterbore', null, [
-      createLabeledArg('depth', valueOrVariable(counterboreDepth)),
-      createLabeledArg('diameter', valueOrVariable(counterboreDiameter)),
-    ])
+    holeTypeNode = createCallExpressionStdLibKw(
+      'counterbore',
+      null,
+      [
+        createLabeledArg('depth', valueOrVariable(counterboreDepth)),
+        createLabeledArg('diameter', valueOrVariable(counterboreDiameter)),
+      ],
+      nonCodeMeta,
+      modulePath
+    )
   } else if (
     holeType === 'countersink' &&
     countersinkAngle &&
     countersinkDiameter
   ) {
-    holeTypeNode = createCallExpressionStdLibKw('hole::countersink', null, [
-      createLabeledArg('angle', valueOrVariable(countersinkAngle)),
-      createLabeledArg('diameter', valueOrVariable(countersinkDiameter)),
-    ])
+    holeTypeNode = createCallExpressionStdLibKw(
+      'countersink',
+      null,
+      [
+        createLabeledArg('angle', valueOrVariable(countersinkAngle)),
+        createLabeledArg('diameter', valueOrVariable(countersinkDiameter)),
+      ],
+      nonCodeMeta,
+      modulePath
+    )
   } else {
     return new Error('Unsupported hole type or missing parameters')
   }
 
-  // TODO: should there be a createCallExpression for modules?
-  const call = createCallExpressionStdLibKw('hole::hole', solidsExpr, [
-    createLabeledArg('face', facesExpr),
-    createLabeledArg('cutAt', valueOrVariable(cutAt)),
-    createLabeledArg('holeBottom', holeBottomNode),
-    createLabeledArg('holeBody', holeBodyNode),
-    createLabeledArg('holeType', holeTypeNode),
-  ])
+  let cutAtExpr = createPoint2dExpression(cutAt)
+  if (err(cutAtExpr)) return cutAtExpr
+
+  const call = createCallExpressionStdLibKw(
+    'hole',
+    solidsExpr,
+    [
+      createLabeledArg('face', facesExpr),
+      createLabeledArg('cutAt', cutAtExpr),
+      createLabeledArg('holeBottom', holeBottomNode),
+      createLabeledArg('holeBody', holeBodyNode),
+      createLabeledArg('holeType', holeTypeNode),
+    ],
+    nonCodeMeta,
+    modulePath
+  )
 
   // Insert variables for labeled arguments if provided
-  if ('variableName' in cutAt && cutAt.variableName) {
-    insertVariableAndOffsetPathToNode(cutAt, modifiedAst, nodeToEdit)
+  // Only insert cutAt variable if we used valueOrVariable (not for arrays)
+  if (
+    !('value' in cutAt && isArray(cutAt.value)) &&
+    'variableName' in cutAt &&
+    cutAt.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(cutAt, modifiedAst, mNodeToEdit)
   }
   if (blindDepth && 'variableName' in blindDepth && blindDepth.variableName) {
-    insertVariableAndOffsetPathToNode(blindDepth, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(blindDepth, modifiedAst, mNodeToEdit)
   }
   if (
     blindDiameter &&
     'variableName' in blindDiameter &&
     blindDiameter.variableName
   ) {
-    insertVariableAndOffsetPathToNode(blindDiameter, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(blindDiameter, modifiedAst, mNodeToEdit)
   }
   if (
     counterboreDepth &&
     'variableName' in counterboreDepth &&
     counterboreDepth.variableName
   ) {
-    insertVariableAndOffsetPathToNode(counterboreDepth, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(
+      counterboreDepth,
+      modifiedAst,
+      mNodeToEdit
+    )
   }
   if (
     counterboreDiameter &&
@@ -260,7 +321,7 @@ export function addHole({
     insertVariableAndOffsetPathToNode(
       counterboreDiameter,
       modifiedAst,
-      nodeToEdit
+      mNodeToEdit
     )
   }
   if (
@@ -268,7 +329,11 @@ export function addHole({
     'variableName' in countersinkAngle &&
     countersinkAngle.variableName
   ) {
-    insertVariableAndOffsetPathToNode(countersinkAngle, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(
+      countersinkAngle,
+      modifiedAst,
+      mNodeToEdit
+    )
   }
   if (
     countersinkDiameter &&
@@ -278,7 +343,7 @@ export function addHole({
     insertVariableAndOffsetPathToNode(
       countersinkDiameter,
       modifiedAst,
-      nodeToEdit
+      mNodeToEdit
     )
   }
   if (
@@ -286,7 +351,7 @@ export function addHole({
     'variableName' in drillPointAngle &&
     drillPointAngle.variableName
   ) {
-    insertVariableAndOffsetPathToNode(drillPointAngle, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(drillPointAngle, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -294,7 +359,7 @@ export function addHole({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HOLE,
   })
@@ -854,7 +919,8 @@ export function buildSolidsAndFacesExprs(
   artifactGraph: ArtifactGraph,
   modifiedAst: Node<Program>,
   nodeToEdit?: PathToNode,
-  lastChildLookup = true
+  lastChildLookup = true,
+  artifactTypeFilter: Array<Artifact['type']> = ['sweep']
 ) {
   const solids: Selections = {
     graphSelections: faces.graphSelections.flatMap((f) => {
@@ -877,7 +943,8 @@ export function buildSolidsAndFacesExprs(
     modifiedAst,
     nodeToEdit,
     lastChildLookup,
-    artifactGraph
+    artifactGraph,
+    artifactTypeFilter
   )
   if (err(vars)) {
     return vars

@@ -95,8 +95,9 @@ export const MlEphantConversationInput = (
     if (props.disabled) return
 
     const value = refDiv.current?.value
-    if (!value) return
-    setHeightConvo(refDiv.current.getBoundingClientRect().height)
+    const boundingRect = refDiv.current?.getBoundingClientRect()
+    if (!(value && boundingRect)) return
+    setHeightConvo(boundingRect.height)
 
     props.onProcess(value)
     setLettersForAnimation(
@@ -334,7 +335,7 @@ export const MLEphantConversationPaneMenu = () => (
           </p>
         </div>
         <p className="text-sm">
-          Text-to-CAD treats every prompt as separate. Full copilot mode with
+          Text-to-CAD treats every prompt as separate. Full Zookeeper agent with
           conversational memory is coming soon. Conversations are not currently
           shared between computers.
         </p>

@@ -8,7 +8,6 @@ import {
   createLiteral,
   createObjectExpression,
 } from '@src/lang/create'
-import { deleteEdgeTreatment } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   findPipesWithImportAlias,
   getNodeFromPath,
@@ -36,6 +35,7 @@ import type {
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { err, reportRejection } from '@src/lib/trap'
 import { isArray, roundOff } from '@src/lib/utils'
+import { deleteEdgeTreatment } from '@src/lang/modifyAst/edges'
 
 export async function deleteFromSelection(
   ast: Node<Program>,
@@ -160,6 +160,7 @@ export async function deleteFromSelection(
     selection.artifact?.type === 'plane' ||
     selection.artifact?.type === 'compositeSolid' ||
     selection.artifact?.type === 'helix' ||
+    selection.artifact?.type === 'planeOfFace' ||
     !selection.artifact // aka expected to be a shell at this point
   ) {
     let extrudeNameToDelete = ''
@@ -169,7 +170,8 @@ export async function deleteFromSelection(
       selection.artifact.type !== 'sweep' &&
       selection.artifact.type !== 'plane' &&
       selection.artifact.type !== 'compositeSolid' &&
-      selection.artifact.type !== 'helix'
+      selection.artifact.type !== 'helix' &&
+      selection.artifact.type !== 'planeOfFace'
     ) {
       const varDecName = varDec.node.id.name
       traverse(astClone, {

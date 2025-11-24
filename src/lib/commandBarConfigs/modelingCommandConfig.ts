@@ -48,9 +48,10 @@ import {
   addLoft,
   addRevolve,
   addSweep,
+  type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
-import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
+import { addHole, addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
 import {
   addIntersect,
   addSubtract,
@@ -68,6 +69,8 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
+import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import { addFlatnessGdt } from '@src/lang/modifyAst/gdt'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -146,7 +149,7 @@ export type ModelingCommandSchema = {
     path: Selections
     sectional?: boolean
     // TODO: figure out if we should expose `tolerance` or not
-    relativeTo?: string
+    relativeTo?: SweepRelativeTo
     tagStart?: string
     tagEnd?: string
   }
@@ -206,15 +209,19 @@ export type ModelingCommandSchema = {
     // Enables editing workflow
     nodeToEdit?: PathToNode
     // KCL stdlib arguments
-    selection: Selections
+    selection: Selections // this is named 'tags' in the stdlib
     radius: KclCommandValue
+    tag?: string
   }
   Chamfer: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
     // KCL stdlib arguments
-    selection: Selections
+    selection: Selections // this is named 'tags' in the stdlib
     length: KclCommandValue
+    secondLength?: KclCommandValue
+    angle?: KclCommandValue
+    tag?: string
   }
   'Offset plane': {
     // Enables editing workflow
@@ -289,6 +296,7 @@ export type ModelingCommandSchema = {
     x?: KclCommandValue
     y?: KclCommandValue
     z?: KclCommandValue
+    factor?: KclCommandValue
     global?: boolean
   }
   Clone: {
@@ -558,7 +566,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       to: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
+        selectionTypes: ['cap', 'wall'],
         clearSelectionFirst: true,
         required: false,
         multiple: false,
@@ -638,7 +647,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       path: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'helix'],
+        selectionTypes: ['path', 'helix'],
+        selectionFilter: ['object'],
         required: true,
         multiple: false,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -651,8 +661,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         required: false,
         options: [
-          { name: 'sketchPlane', value: 'sketchPlane' },
-          { name: 'trajectoryCurve', value: 'trajectoryCurve' },
+          { name: 'Sketch Plane', value: 'SKETCH_PLANE' },
+          { name: 'Trajectory Curve', value: 'TRAJECTORY' },
         ],
       },
       tagStart: {
@@ -850,9 +860,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Standard holes that could be drilled or cut into a 3D solid.',
     icon: 'hole',
     needsReview: true,
-    status: 'experimental',
     reviewMessage:
       'The argument cutAt specifies where to place the hole given as absolute coordinates in the global scene. Point selection will be allowed in the future, and more hole bottoms and hole types are coming soon.',
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addHole({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Hole']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -865,10 +891,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       cutAt: {
-        inputType: 'kcl',
-        allowArrays: true,
+        inputType: 'vector2d',
         required: true,
-        defaultValue: '[0, 0]',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
       },
       holeBody: {
         inputType: 'options',
@@ -1214,7 +1239,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Fillet edge',
     icon: 'fillet3d',
     needsReview: true,
-    // TODO: add reviewMessage with mock exec once refactored
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addFillet({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Fillet']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1232,13 +1273,34 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
       },
+      tag: {
+        inputType: 'tagDeclarator',
+        required: false,
+        // TODO: add validation like for Clone command
+      },
     },
   },
   Chamfer: {
     description: 'Chamfer edge',
     icon: 'chamfer3d',
     needsReview: true,
-    // TODO: add reviewMessage with mock exec once refactored
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addChamfer({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Chamfer']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1255,6 +1317,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+      },
+      secondLength: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: false,
+      },
+      angle: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DEGREE,
+        required: false,
+      },
+      tag: {
+        inputType: 'tagDeclarator',
+        required: false,
+        // TODO: add validation like for Clone command
       },
     },
   },
@@ -1543,6 +1620,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: false,
       },
+      factor: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        required: false,
+      },
       global: {
         inputType: 'boolean',
         required: false,
@@ -1737,6 +1819,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add flatness geometric dimensioning & tolerancing annotation to faces.',
     icon: 'gdtFlatness',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addFlatnessGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Flatness']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     status: 'experimental',
     args: {
       nodeToEdit: {

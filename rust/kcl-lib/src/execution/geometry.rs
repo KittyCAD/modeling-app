@@ -173,10 +173,10 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
         match value {
             SolidOrSketchOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
             SolidOrSketchOrImportedGeometry::SolidSet(mut s) => {
-                if s.len() == 1 {
-                    crate::execution::KclValue::Solid {
-                        value: Box::new(s.pop().unwrap()),
-                    }
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Solid { value: Box::new(s) }
                 } else {
                     crate::execution::KclValue::HomArray {
                         value: s
@@ -188,10 +188,10 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
                 }
             }
             SolidOrSketchOrImportedGeometry::SketchSet(mut s) => {
-                if s.len() == 1 {
-                    crate::execution::KclValue::Sketch {
-                        value: Box::new(s.pop().unwrap()),
-                    }
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Sketch { value: Box::new(s) }
                 } else {
                     crate::execution::KclValue::HomArray {
                         value: s
@@ -235,10 +235,10 @@ impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
         match value {
             SolidOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
             SolidOrImportedGeometry::SolidSet(mut s) => {
-                if s.len() == 1 {
-                    crate::execution::KclValue::Solid {
-                        value: Box::new(s.pop().unwrap()),
-                    }
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Solid { value: Box::new(s) }
                 } else {
                     crate::execution::KclValue::HomArray {
                         value: s
@@ -660,6 +660,9 @@ pub struct Sketch {
     /// If the sketch includes a mirror.
     #[serde(skip)]
     pub mirror: Option<uuid::Uuid>,
+    /// If the sketch is a clone of another sketch.
+    #[serde(skip)]
+    pub clone: Option<uuid::Uuid>,
     pub units: UnitLength,
     /// Metadata.
     #[serde(skip)]
@@ -710,8 +713,6 @@ pub enum Extrudable {
     Sketch(Box<Sketch>),
     /// Face.
     Face(FaceTag),
-    /// Tagged face.
-    TaggedFace(Box<TagIdentifier>),
 }
 
 impl Extrudable {
@@ -725,16 +726,6 @@ impl Extrudable {
         match self {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
             Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
-            Extrudable::TaggedFace(tag_id) => {
-                if let Some(cur_info) = tag_id.get_cur_info() {
-                    Ok(cur_info.id)
-                } else {
-                    Err(KclError::new_semantic(KclErrorDetails::new(
-                        "Tagged face not found".to_owned(),
-                        vec![args.source_range],
-                    )))
-                }
-            }
         }
     }
 
@@ -746,16 +737,6 @@ impl Extrudable {
                 Some(Geometry::Solid(solid)) => Some(solid.sketch),
                 _ => None,
             },
-            Extrudable::TaggedFace(tag_id) => {
-                if let Some(cur_info) = tag_id.geometry() {
-                    match cur_info {
-                        Geometry::Sketch(sketch) => Some(sketch),
-                        Geometry::Solid(solid) => Some(solid.sketch),
-                    }
-                } else {
-                    None
-                }
-            }
         }
     }
 }
