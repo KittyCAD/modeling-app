@@ -1010,6 +1010,20 @@ msg2 = makeMessage(prefix = 1, suffix = 3)"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn map_closure_error_mentions_fn_name() {
+        let program = r#"
+arr = ["hello"]
+map(array = arr, f = fn(@item: number) { return item })
+"#;
+        let err = parse_execute(program).await.unwrap_err();
+        assert!(
+            err.message().contains("map closure"),
+            "expected map closure errors to include the closure name, got: {}",
+            err.message()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn array_input_arg() {
         let ast = r#"fn f(@input: [mm]) { return 1 }
 f([1, 2, 3])
