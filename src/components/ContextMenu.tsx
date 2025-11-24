@@ -19,7 +19,7 @@ import { hotkeyDisplay } from '@src/lib/hotkeys'
 export interface ContextMenuProps
   extends Omit<React.HTMLAttributes<HTMLUListElement>, 'children'> {
   items?: React.ReactElement[]
-  menuTargetElement?: RefObject<HTMLElement>
+  menuTargetElement?: RefObject<HTMLElement | null>
   guard?: (e: globalThis.MouseEvent) => boolean
   event?: 'contextmenu' | 'mouseup'
   callback?: (event: globalThis.MouseEvent) => void

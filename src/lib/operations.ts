@@ -12,6 +12,9 @@ import {
 import {
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveTagDeclaratorFromOpArg,
+  SWEEP_CONSTANTS,
+  SWEEP_MODULE,
+  type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import {
   getNodeFromPath,
@@ -37,6 +40,7 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
+import { stripQuotes } from '@src/lib/utils'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
@@ -899,15 +903,22 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
       ) === 'true'
   }
 
-  let relativeTo: string | undefined
+  let relativeTo: SweepRelativeTo | undefined
   if (
     'relativeTo' in operation.labeledArgs &&
     operation.labeledArgs.relativeTo
   ) {
-    relativeTo = codeManager.code.slice(
+    const result = codeManager.code.slice(
       operation.labeledArgs.relativeTo.sourceRange[0],
       operation.labeledArgs.relativeTo.sourceRange[1]
     )
+    if (result === `${SWEEP_MODULE}::${SWEEP_CONSTANTS.SKETCH_PLANE}`) {
+      relativeTo = SWEEP_CONSTANTS.SKETCH_PLANE
+    } else if (result === `${SWEEP_MODULE}::${SWEEP_CONSTANTS.TRAJECTORY}`) {
+      relativeTo = SWEEP_CONSTANTS.TRAJECTORY
+    } else {
+      return { reason: "Couldn't retrieve relativeTo argument" }
+    }
   }
 
   // tagStart and tagEng arguments
@@ -1505,6 +1516,61 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtDatum: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'GDT Datum',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const faceArg = operation.labeledArgs?.['face']
+  if (!faceArg || !faceArg.sourceRange) {
+    return { reason: 'Missing or invalid face argument' }
+  }
+
+  // Extract face selections (datum uses single face)
+  const graphSelections = extractFaceSelections(faceArg)
+  if ('error' in graphSelections) {
+    return { reason: graphSelections.error }
+  }
+
+  const faces = { graphSelections, otherSelections: [] }
+
+  // Extract name argument as a plain string (strip quotes if present)
+  const nameRaw = extractStringArgument(operation, 'name')
+  const name = stripQuotes(nameRaw)
+
+  // Extract optional parameters
+  const optionalArgs = await Promise.all([
+    extractKclArgument(operation, 'framePosition', true),
+    extractKclArgument(operation, 'fontPointSize'),
+    extractKclArgument(operation, 'fontScale'),
+  ])
+
+  const [framePosition, fontPointSize, fontScale] = optionalArgs.map((arg) =>
+    'error' in arg ? undefined : arg
+  )
+
+  const framePlane = extractStringArgument(operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Datum'] = {
+    faces,
+    name,
+    framePosition,
+    framePlane,
+    fontPointSize,
+    fontScale,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 /**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
@@ -1547,6 +1613,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   'gdt::datum': {
     label: 'Datum',
     icon: 'gdtDatum',
+    prepareToEdit: prepareToEditGdtDatum,
   },
   'gdt::flatness': {
     label: 'Flatness',
@@ -1729,6 +1796,73 @@ export function getOperationLabel(op: Operation): string {
     default:
       const _exhaustiveCheck: never = op
       return '' // unreachable
+  }
+}
+
+type NestedOpList = (Operation | Operation[])[]
+
+/**
+ * Given an operations list, group streaks of provided types
+ * into arrays if they are of a given minimum length
+ */
+export function groupOperationTypeStreaks(
+  opList: Operation[],
+  typesToGroup: Operation['type'][],
+  minLength = 5
+): NestedOpList {
+  const result: NestedOpList = []
+
+  let currentType: Operation['type'] | null = null
+  let currentStreak: Operation[] = []
+
+  const flushStreak = () => {
+    if (currentStreak.length === 0) return
+    const shouldGroup =
+      currentType !== null &&
+      typesToGroup.includes(currentType) &&
+      currentStreak.length >= minLength
+    if (shouldGroup) {
+      result.push([...currentStreak])
+    } else {
+      for (const op of currentStreak) result.push(op)
+    }
+    currentStreak = []
+    currentType = null
+  }
+
+  for (const op of opList) {
+    if (currentType === null) {
+      currentType = op.type
+      currentStreak.push(op)
+      continue
+    }
+    if (op.type === currentType) {
+      currentStreak.push(op)
+    } else {
+      // Type changed; flush the previous streak and start anew
+      flushStreak()
+      currentType = op.type
+      currentStreak.push(op)
+    }
+  }
+
+  // Flush any remaining streak
+  flushStreak()
+
+  return result
+}
+
+/**
+ * Return a more human-readable operation type label
+ */
+export function getOpTypeLabel(opType: Operation['type']): string {
+  switch (opType) {
+    case 'StdLibCall':
+      return 'Operation'
+    case 'VariableDeclaration':
+      return 'Parameter'
+    default:
+      return 'Function'
   }
 }
 
@@ -2153,46 +2287,28 @@ async function prepareToEditScale({ operation }: EnterEditFlowProps) {
   let x: KclCommandValue | undefined = undefined
   let y: KclCommandValue | undefined = undefined
   let z: KclCommandValue | undefined = undefined
+  let factor: KclCommandValue | undefined = undefined
   let global: boolean | undefined
   if (operation.labeledArgs.x) {
-    const result = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.x.sourceRange[0],
-        operation.labeledArgs.x.sourceRange[1]
-      )
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve x argument" }
-    }
-    x = result
+    const res = await extractKclArgument(operation, 'x')
+    if ('error' in res) return { reason: res.error }
+    x = res
   }
-
   if (operation.labeledArgs.y) {
-    const result = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.y.sourceRange[0],
-        operation.labeledArgs.y.sourceRange[1]
-      )
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve y argument" }
-    }
-    y = result
+    const res = await extractKclArgument(operation, 'y')
+    if ('error' in res) return { reason: res.error }
+    y = res
   }
-
   if (operation.labeledArgs.z) {
-    const result = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.z.sourceRange[0],
-        operation.labeledArgs.z.sourceRange[1]
-      )
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve z argument" }
-    }
-    z = result
+    const res = await extractKclArgument(operation, 'z')
+    if ('error' in res) return { reason: res.error }
+    z = res
   }
-
+  if (operation.labeledArgs.factor) {
+    const res = await extractKclArgument(operation, 'factor')
+    if ('error' in res) return { reason: res.error }
+    factor = res
+  }
   if (operation.labeledArgs.global) {
     global =
       codeManager.code.slice(
@@ -2209,6 +2325,7 @@ async function prepareToEditScale({ operation }: EnterEditFlowProps) {
     x,
     y,
     z,
+    factor,
     global,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }

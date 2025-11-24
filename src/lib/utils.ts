@@ -659,3 +659,23 @@ export function promiseFactory<T = void>() {
   })
   return { promise, resolve, reject }
 }
+
+/**
+ * Strips leading and trailing quotes (both single and double) from a string.
+ * Removes any quote character from the beginning AND any quote character from the end,
+ * regardless of whether they match. If the input is null/undefined, returns an empty string.
+ *
+ * @param str - The string to strip quotes from
+ * @returns The string with quotes removed, or empty string if input is null/undefined
+ *
+ * @example
+ * stripQuotes('"hello"') // returns 'hello'
+ * stripQuotes("'world'") // returns 'world'
+ * stripQuotes('"mixed\'') // returns 'mixed' (mismatched quotes)
+ * stripQuotes('"only-leading') // returns 'only-leading'
+ * stripQuotes('no-quotes') // returns 'no-quotes'
+ * stripQuotes(null) // returns ''
+ */
+export function stripQuotes(str: string | null | undefined): string {
+  return str?.replace(/^["']|["']$/g, '') || ''
+}

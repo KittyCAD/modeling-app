@@ -1,6 +1,5 @@
 import type { EditorStateConfig, Extension } from '@codemirror/state'
 import { EditorState, StateEffect } from '@codemirror/state'
-import { oneDark } from '@codemirror/theme-one-dark'
 import { EditorView } from '@codemirror/view'
 import {
   forwardRef,
@@ -12,6 +11,7 @@ import {
 } from 'react'
 
 import { isArray } from '@src/lib/utils'
+import { editorTheme } from '@src/lib/codeEditor'
 
 //reference: https://github.com/sachinraja/rodemirror/blob/main/src/use-first-render.ts
 const useFirstRender = () => {
@@ -23,17 +23,6 @@ const useFirstRender = () => {
 
   return firstRender.current
 }
-
-const defaultLightThemeOption = EditorView.theme(
-  {
-    '&': {
-      backgroundColor: '#fff',
-    },
-  },
-  {
-    dark: false,
-  }
-)
 
 interface CodeEditorRef {
   editor?: HTMLDivElement | null
@@ -116,9 +105,9 @@ export function useCodeMirror(props: UseCodeMirror) {
   const targetExtensions = useMemo(() => {
     let exts = isExtensionArray(extensions) ? extensions : []
     if (theme === 'dark') {
-      exts = [...exts, oneDark]
+      exts = [...exts, editorTheme.dark]
     } else if (theme === 'light') {
-      exts = [...exts, defaultLightThemeOption]
+      exts = [...exts, editorTheme.light]
     }
 
     return exts

@@ -88,7 +88,7 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
-import { addFlatnessGdt } from '@src/lang/modifyAst/gdt'
+import { addFlatnessGdt, addDatumGdt } from '@src/lang/modifyAst/gdt'
 import {
   addAppearance,
   addClone,
@@ -262,6 +262,7 @@ export type ModelingMachineEvent =
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
+  | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
   | {
       type:
         | 'Add circle origin'
@@ -3188,15 +3189,24 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Hole'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Hole'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+              rustContext?: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
         // Remove once this command isn't experimental anymore
         let astWithNewSetting: Node<Program> | undefined
-        if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+        if (theKclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
           const ast = setExperimentalFeatures(codeManager.code, {
             type: 'Allow',
           })
@@ -3208,23 +3218,32 @@ export const modelingMachine = setup({
         }
 
         const astResult = addHole({
-          ...input,
-          ast: astWithNewSetting ?? kclManager.ast,
-          artifactGraph: kclManager.artifactGraph,
+          ...input.data,
+          ast: astWithNewSetting ?? theKclManager.ast,
+          artifactGraph: theKclManager.artifactGraph,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
         }
 
         const { modifiedAst, pathToNode } = astResult
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
-            rustContext,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [pathToNode],
@@ -3642,16 +3661,35 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['GDT Flatness'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Flatness'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+              rustContext?: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
+
         // Remove once this command isn't experimental anymore
         let astWithNewSetting: Node<Program> | undefined
-        if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
-          const ast = setExperimentalFeatures(codeManager.code, {
+        if (theKclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+          const ast = setExperimentalFeatures(theCodeManager.code, {
             type: 'Allow',
           })
           if (err(ast)) {
@@ -3662,9 +3700,9 @@ export const modelingMachine = setup({
         }
 
         const result = addFlatnessGdt({
-          ...input,
-          ast: astWithNewSetting ?? kclManager.ast,
-          artifactGraph: kclManager.artifactGraph,
+          ...input.data,
+          ast: astWithNewSetting ?? theKclManager.ast,
+          artifactGraph: theKclManager.artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3674,10 +3712,76 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
-            rustContext,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
+            rustContext: theRustContext,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtDatumAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Datum'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+              rustContext?: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
+
+        // Remove once this command isn't experimental anymore
+        let astWithNewSetting: Node<Program> | undefined
+        if (theKclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+          const ast = setExperimentalFeatures(theCodeManager.code, {
+            type: 'Allow',
+          })
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const result = addDatumGdt({
+          ...input.data,
+          ast: astWithNewSetting ?? theKclManager.ast,
+          artifactGraph: theKclManager.artifactGraph,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -4152,6 +4256,10 @@ export const modelingMachine = setup({
 
         'GDT Flatness': {
           target: 'Applying GDT Flatness',
+        },
+
+        'GDT Datum': {
+          target: 'Applying GDT Datum',
         },
 
         'Boolean Subtract': {
@@ -5794,9 +5902,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'holeAstMod',
         id: 'holeAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Hole') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -6001,9 +6114,37 @@ export const modelingMachine = setup({
       invoke: {
         src: 'gdtFlatnessAstMod',
         id: 'gdtFlatnessAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'GDT Flatness') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Datum': {
+      invoke: {
+        src: 'gdtDatumAstMod',
+        id: 'gdtDatumAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Datum') return undefined
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+            rustContext: context.rustContext,
+          }
         },
         onDone: ['idle'],
         onError: {

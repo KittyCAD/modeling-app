@@ -3,6 +3,7 @@ import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import {
   createCallExpressionStdLibKw,
+  createName,
   createLabeledArg,
   createLiteral,
   createLocalName,
@@ -202,6 +203,14 @@ export function addExtrude({
   }
 }
 
+// From rust/kcl-lib/std/sweep.kcl
+export type SweepRelativeTo = 'SKETCH_PLANE' | 'TRAJECTORY'
+export const SWEEP_CONSTANTS: Record<string, SweepRelativeTo> = {
+  SKETCH_PLANE: 'SKETCH_PLANE',
+  TRAJECTORY: 'TRAJECTORY',
+}
+export const SWEEP_MODULE = 'sweep'
+
 export function addSweep({
   ast,
   sketches,
@@ -216,7 +225,7 @@ export function addSweep({
   sketches: Selections
   path: Selections
   sectional?: boolean
-  relativeTo?: string
+  relativeTo?: SweepRelativeTo
   tagStart?: string
   tagEnd?: string
   nodeToEdit?: PathToNode
@@ -238,6 +247,7 @@ export function addSweep({
   }
 
   // Find the path declaration for the labeled argument
+  // TODO: see if we can replace this with `getVariableExprsFromSelection`
   const pathDeclaration = getNodeFromPath<VariableDeclaration>(
     ast,
     path.graphSelections[0].codeRef.pathToNode,
@@ -253,7 +263,7 @@ export function addSweep({
     ? [createLabeledArg('sectional', createLiteral(sectional))]
     : []
   const relativeToExpr = relativeTo
-    ? [createLabeledArg('relativeTo', createLiteral(relativeTo))]
+    ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
     : []
   const tagStartExpr = tagStart
     ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]

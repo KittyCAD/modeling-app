@@ -117,6 +117,13 @@ The controls for how to navigate the 3D view.
 
 **Default:** None
 
+##### gizmo_type
+
+Which type of orientation gizmo to use.
+
+
+**Default:** None
+
 ##### enable_touch_controls
 
 Toggle touch controls for 3D view navigation

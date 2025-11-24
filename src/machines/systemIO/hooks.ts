@@ -14,10 +14,7 @@ import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
-import {
-  type MlEphantManagerActor2,
-  MlEphantManagerTransitions2,
-} from '@src/machines/mlEphantManagerMachine2'
+import { type MlEphantManagerActor2 } from '@src/machines/mlEphantManagerMachine2'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -57,10 +54,6 @@ export const useProjectIdToConversationId = (
     // If the project id changes at all, we need to clear the mlephant machine state.
     mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.ClearProjectSpecificState,
-    })
-
-    mlEphantManagerActor2.send({
-      type: MlEphantManagerTransitions2.ConversationClose,
     })
 
     const subscription = mlEphantManagerActor.subscribe((next) => {

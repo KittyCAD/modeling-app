@@ -42,15 +42,25 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let scale_x: Option<TyF64> = args.get_kw_arg_opt("x", &RuntimeType::count(), exec_state)?;
     let scale_y: Option<TyF64> = args.get_kw_arg_opt("y", &RuntimeType::count(), exec_state)?;
     let scale_z: Option<TyF64> = args.get_kw_arg_opt("z", &RuntimeType::count(), exec_state)?;
+    let factor: Option<TyF64> = args.get_kw_arg_opt("factor", &RuntimeType::count(), exec_state)?;
+    let (scale_x, scale_y, scale_z) = match (scale_x, scale_y, scale_z, factor) {
+        (None, None, None, Some(factor)) => (Some(factor.clone()), Some(factor.clone()), Some(factor)),
+        // Ensure at least one scale value is provided.
+        (None, None, None, None) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Expected `x`, `y`, `z` or `factor` to be provided.".to_string(),
+                vec![args.source_range],
+            )));
+        }
+        (x, y, z, None) => (x, y, z),
+        _ => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "If you give `factor` then you cannot use  `x`, `y`, or `z`".to_string(),
+                vec![args.source_range],
+            )));
+        }
+    };
     let global = args.get_kw_arg_opt("global", &RuntimeType::bool(), exec_state)?;
-
-    // Ensure at least one scale value is provided.
-    if scale_x.is_none() && scale_y.is_none() && scale_z.is_none() {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Expected `x`, `y`, or `z` to be provided.".to_string(),
-            vec![args.source_range],
-        )));
-    }
 
     let objects = inner_scale(
         objects,
@@ -690,7 +700,7 @@ sweepSketch = startSketchOn(XY)
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().message(),
-            r#"Expected `x`, `y`, or `z` to be provided."#.to_string()
+            r#"Expected `x`, `y`, `z` or `factor` to be provided."#.to_string()
         );
     }
 }

@@ -30,7 +30,6 @@ export function addTranslate({
   z,
   global,
   nodeToEdit,
-  callName,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
@@ -40,7 +39,6 @@ export function addTranslate({
   z?: KclCommandValue
   global?: boolean
   nodeToEdit?: PathToNode
-  callName?: string
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
@@ -68,11 +66,12 @@ export function addTranslate({
     : []
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw(
-    callName ?? 'translate',
-    objectsExpr,
-    [...xExpr, ...yExpr, ...zExpr, ...globalExpr]
-  )
+  const call = createCallExpressionStdLibKw('translate', objectsExpr, [
+    ...xExpr,
+    ...yExpr,
+    ...zExpr,
+    ...globalExpr,
+  ])
 
   // Insert variables for labeled arguments if provided
   if (x && 'variableName' in x && x.variableName) {
@@ -195,6 +194,7 @@ export function addScale({
   x,
   y,
   z,
+  factor,
   global,
   nodeToEdit,
 }: {
@@ -204,20 +204,78 @@ export function addScale({
   x?: KclCommandValue
   y?: KclCommandValue
   z?: KclCommandValue
+  factor?: KclCommandValue
   global?: boolean
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  return addTranslate({
-    ast,
-    artifactGraph,
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
+  const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
+
+  // 2. Prepare unlabeled and labeled arguments
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+  const lastChildLookup = true
+  const vars = getVariableExprsFromSelection(
     objects,
-    x,
-    y,
-    z,
-    global,
-    nodeToEdit,
-    callName: 'scale',
+    modifiedAst,
+    mNodeToEdit,
+    lastChildLookup,
+    artifactGraph
+  )
+  if (err(vars)) {
+    return vars
+  }
+
+  const xExpr = x ? [createLabeledArg('x', valueOrVariable(x))] : []
+  const yExpr = y ? [createLabeledArg('y', valueOrVariable(y))] : []
+  const zExpr = z ? [createLabeledArg('z', valueOrVariable(z))] : []
+  const factorExpr = factor
+    ? [createLabeledArg('factor', valueOrVariable(factor))]
+    : []
+  const globalExpr = global
+    ? [createLabeledArg('global', createLiteral(global))]
+    : []
+
+  const objectsExpr = createVariableExpressionsArray(vars.exprs)
+  const call = createCallExpressionStdLibKw('scale', objectsExpr, [
+    ...xExpr,
+    ...yExpr,
+    ...zExpr,
+    ...factorExpr,
+    ...globalExpr,
+  ])
+
+  // Insert variables for labeled arguments if provided
+  if (x && 'variableName' in x && x.variableName) {
+    insertVariableAndOffsetPathToNode(x, modifiedAst, mNodeToEdit)
+  }
+  if (y && 'variableName' in y && y.variableName) {
+    insertVariableAndOffsetPathToNode(y, modifiedAst, mNodeToEdit)
+  }
+  if (z && 'variableName' in z && z.variableName) {
+    insertVariableAndOffsetPathToNode(z, modifiedAst, mNodeToEdit)
+  }
+  if (factor && 'variableName' in factor && factor.variableName) {
+    insertVariableAndOffsetPathToNode(factor, modifiedAst, mNodeToEdit)
+  }
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: mNodeToEdit,
+    pathIfNewPipe: vars.pathIfPipe,
+    variableIfNewDecl: undefined, // No variable declaration for translate
   })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
 }
 
 export function addClone({
