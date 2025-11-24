@@ -122,6 +122,7 @@ export class Connection extends EventTarget {
       message: 'constructor start',
       metadata: { id: this.id },
     })
+    url = ensureRequiredWebSocketParams(url)
     this.url = url
     this._token = token
     this.handleOnDataChannelMessage = handleOnDataChannelMessage
@@ -942,4 +943,13 @@ export class Connection extends EventTarget {
       typeof message === 'string' ? message : JSON.stringify(message)
     )
   }
+}
+
+function ensureRequiredWebSocketParams(url: string): string {
+  const urlObj = new URL(url)
+  const zooDesignStudio = urlObj.searchParams.get('zoo_design_studio')
+  if (zooDesignStudio === null || zooDesignStudio === undefined) {
+    urlObj.searchParams.set('zoo_design_studio', '1')
+  }
+  return urlObj.toString()
 }

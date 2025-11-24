@@ -56,7 +56,7 @@ describe('useOnFileRoute', () => {
       const engineCommandManager = new ConnectionManager()
       engineCommandManager.started = true
       engineCommandManager.connection = new Connection({
-        url: 'abc',
+        url: 'ws://abc',
         token: 'abc',
         handleOnDataChannelMessage: () => {},
         tearDownManager: () => {},
@@ -101,7 +101,7 @@ describe('useOnFileRoute', () => {
       const engineCommandManager = new ConnectionManager()
       engineCommandManager.started = true
       engineCommandManager.connection = new Connection({
-        url: 'abc',
+        url: 'ws://abc',
         token: 'abc',
         handleOnDataChannelMessage: () => {},
         tearDownManager: () => {},
@@ -158,7 +158,7 @@ describe('useOnFileRoute', () => {
       const engineCommandManager = new ConnectionManager()
       engineCommandManager.started = true
       engineCommandManager.connection = new Connection({
-        url: 'abc',
+        url: 'ws://abc',
         token: 'abc',
         handleOnDataChannelMessage: () => {},
         tearDownManager: () => {},
@@ -217,7 +217,7 @@ describe('useOnFileRoute', () => {
       const engineCommandManager = new ConnectionManager()
       engineCommandManager.started = true
       engineCommandManager.connection = new Connection({
-        url: 'abc',
+        url: 'ws://abc',
         token: 'abc',
         handleOnDataChannelMessage: () => {},
         tearDownManager: () => {},
