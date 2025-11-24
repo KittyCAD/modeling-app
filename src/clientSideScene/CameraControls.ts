@@ -272,6 +272,17 @@ export class CameraControls {
       cmd_id: uuidv4(),
     })
     this.handleEnd()
+
+    // After zoom, request latest camera settings because default_camera_zoom callback is never called (engine bug?)
+    // Without this, FE doesn't update its camera after the zoom.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
   }
 
   constructor(
