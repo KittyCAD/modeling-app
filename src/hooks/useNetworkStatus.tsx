@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { engineCommandManager } from '@src/lib/singletons'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import {
   ConnectingTypeGroup,
   DisconnectingType,
@@ -36,7 +36,7 @@ export interface NetworkStatus {
 
 // Must be called from one place in the application.
 // We've chosen the <Router /> component for this.
-export function useNetworkStatus() {
+export function useNetworkStatus(engineCommandManager: ConnectionManager) {
   const [immediateState, setImmediateState] = useState<EngineConnectionState>({
     type: EngineConnectionStateType.Disconnected,
   })
