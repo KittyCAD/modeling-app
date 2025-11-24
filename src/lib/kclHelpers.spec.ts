@@ -37,7 +37,8 @@ describe('KCL expression calculations', () => {
     const { rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue(
       '[1, 2, 3]',
-      rustContext
+      rustContext,
+      { allowArrays: false }
     )
     const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
     expect(coercedActual.valueAsString).toEqual('NAN')
@@ -48,7 +49,8 @@ describe('KCL expression calculations', () => {
     const { rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue(
       '[1, 2, 3]',
-      rustContext
+      rustContext,
+      { allowArrays: false }
     )
     const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
     expect(coercedActual.valueAsString).toEqual('NAN')
@@ -59,7 +61,8 @@ describe('KCL expression calculations', () => {
     const { rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue(
       '[1, 2, 3]',
-      rustContext
+      rustContext,
+      { allowArrays: true }
     )
     const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
     expect(coercedActual).not.toHaveProperty('errors')
@@ -71,7 +74,8 @@ describe('KCL expression calculations', () => {
     const { rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue(
       '[1mm, 2mm, 3mm]',
-      rustContext
+      rustContext,
+      { allowArrays: true }
     )
     const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
     expect(coercedActual).not.toHaveProperty('errors')
@@ -83,7 +87,8 @@ describe('KCL expression calculations', () => {
     const { rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue(
       '[0, 1, 0]',
-      rustContext
+      rustContext,
+      { allowArrays: true }
     )
     const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
     expect(coercedActual).not.toHaveProperty('errors')
@@ -96,7 +101,8 @@ describe('KCL expression calculations', () => {
     // Arrays non-numeric values should be rejected even when allowArrays is true
     const actual = await getCalculatedKclExpressionValue(
       '[1, true, 0]',
-      rustContext
+      rustContext,
+      { allowArrays: true }
     )
     const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
     expect(coercedActual.valueAsString).toEqual('NAN')
@@ -108,7 +114,8 @@ describe('KCL expression calculations', () => {
     // Arrays different numeric types should work fine
     const actual = await getCalculatedKclExpressionValue(
       '[1, 2.5, 0]',
-      rustContext
+      rustContext,
+      { allowArrays: true }
     )
     const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
     expect(coercedActual).not.toHaveProperty('errors')
@@ -121,7 +128,8 @@ describe('KCL expression calculations', () => {
     // Test happens with arrays containing undefined variables like [0, x, 0]
     const actual = await getCalculatedKclExpressionValue(
       '[0, x, 0]',
-      rustContext
+      rustContext,
+      { allowArrays: true }
     )
     const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
     // This returns 'NAN' because 'x' is undefined - the entire array expression fails
@@ -134,7 +142,8 @@ describe('KCL expression calculations', () => {
     // Test containing expressions like [0, 2 + 3, 0] that evaluate to numbers
     const actual = await getCalculatedKclExpressionValue(
       '[0, 2 + 3, 0]',
-      rustContext
+      rustContext,
+      { allowArrays: true }
     )
     const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
     expect(coercedActual).not.toHaveProperty('errors')

@@ -125,6 +125,9 @@ export async function getCalculatedKclExpressionValue(
       ? String(resultRawValue)
       : 'NAN'
 
+  console.log('resultRawValue', resultRawValue)
+  console.log('valueAsString', valueAsString)
+
   return {
     astNode: variableDeclaratorAstNode,
     valueAsString,
