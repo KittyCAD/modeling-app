@@ -944,7 +944,7 @@ impl Node<SketchBlock> {
                 }
             }
         }
-        let mut args = Args::new_no_args(range, ctx.clone());
+        let mut args = Args::new_no_args(range, ctx.clone(), Some("sketch block".to_owned()));
         args.labeled = labeled;
 
         #[cfg(feature = "artifact-graph")]
