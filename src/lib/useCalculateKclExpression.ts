@@ -11,6 +11,8 @@ import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { getInVariableCase } from '@src/lib/utils'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type RustContext from '@src/lib/rustContext'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -25,13 +27,15 @@ export function useCalculateKclExpression({
   initialVariableName: valueName = '',
   sourceRange,
   selectionRanges,
-  allowArrays,
+  rustContext,
+  options,
 }: {
   value: string
   initialVariableName?: string
   sourceRange?: SourceRange
   selectionRanges: Selections
-  allowArrays?: boolean
+  rustContext: RustContext
+  options?: { allowArrays?: boolean }
 }): {
   inputRef: React.RefObject<HTMLInputElement | null>
   valueNode: Expr | null
@@ -128,7 +132,11 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
-      const result = await getCalculatedKclExpressionValue(value, allowArrays)
+      const result = await getCalculatedKclExpressionValue(
+        value,
+        rustContext,
+        options
+      )
       setIsExecuting(false)
       if (result instanceof Error || 'errors' in result || !result.astNode) {
         setCalcResult('NAN')
@@ -148,7 +156,14 @@ export function useCalculateKclExpression({
       setValueNode(null)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [value, availableVarInfo, code, kclManager.variables, allowArrays])
+  }, [
+    value,
+    availableVarInfo,
+    code,
+    kclManager.variables,
+    rustContext,
+    options,
+  ])
 
   return {
     valueNode,

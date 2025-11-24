@@ -23,7 +23,7 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
-import { kclManager } from '@src/lib/singletons'
+import { kclManager, rustContext } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { getSystemTheme } from '@src/lib/theme'
@@ -140,7 +140,10 @@ function CommandBarKclInput({
     initialVariableName,
     sourceRange: sourceRangeForPrevVariables,
     selectionRanges,
-    allowArrays,
+    rustContext,
+    options: {
+      allowArrays,
+    },
   })
 
   const varMentionData: Completion[] = prevVariables.map((v) => {

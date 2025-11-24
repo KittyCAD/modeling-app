@@ -11,6 +11,7 @@ import {
 import type { Expr } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import { rustContext } from '@src/lib/singletons'
 
 type ModalResolve = {
   value: string
@@ -65,6 +66,7 @@ export const SetAngleLengthModal = ({
     value,
     initialVariableName: valueName,
     selectionRanges,
+    rustContext,
   })
   const isDisabled =
     (calcResult === 'NAN' || !isNewVariableNameUnique) && shouldCreateVariable

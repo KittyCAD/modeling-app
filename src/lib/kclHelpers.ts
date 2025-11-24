@@ -7,7 +7,6 @@ import {
   resultIsOk,
 } from '@src/lang/wasm'
 import type { KclExpression } from '@src/lib/commandTypes'
-import { rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
@@ -29,20 +28,21 @@ function isNumberValueItem(item: KclValue): item is KclNumber {
  */
 export async function getCalculatedKclExpressionValue(
   value: string,
-  allowArrays?: boolean,
-  instance?: ModuleType,
-  providedRustContext?: RustContext
+  rustContext: RustContext,
+  options?: {
+    allowArrays?: boolean
+  }
 ) {
   // Create a one-line program that assigns the value to a variable
   const dummyProgramCode = `${DUMMY_VARIABLE_NAME} = ${value}`
-  const pResult = parse(dummyProgramCode, instance)
+  const pResult = parse(dummyProgramCode, rustContext.getRustInstance())
   if (err(pResult) || !resultIsOk(pResult)) return pResult
   const ast = pResult.program
 
   // Execute the program without hitting the engine
   const { execState } = await executeAstMock({
     ast,
-    rustContext: providedRustContext ? providedRustContext : rustContext,
+    rustContext,
   })
 
   // Find the variable declaration for the result
@@ -58,7 +58,7 @@ export async function getCalculatedKclExpressionValue(
 
   // Handle array values when allowArrays is true
   if (
-    allowArrays &&
+    options?.allowArrays &&
     varValue &&
     (varValue.type === 'Tuple' || varValue.type === 'HomArray')
   ) {
@@ -84,7 +84,11 @@ export async function getCalculatedKclExpressionValue(
 
     const arrayValues = varValue.value.map((item: KclValue) => {
       if (isNumberValueItem(item)) {
-        const formatted = formatNumberValue(item.value, item.ty, instance)
+        const formatted = formatNumberValue(
+          item.value,
+          item.ty,
+          rustContext.getRustInstance()
+        )
         if (!err(formatted)) {
           return formatted
         }
@@ -106,7 +110,11 @@ export async function getCalculatedKclExpressionValue(
     if (!varValue || varValue.type !== 'Number') {
       return undefined
     }
-    const formatted = formatNumberValue(varValue.value, varValue.ty, instance)
+    const formatted = formatNumberValue(
+      varValue.value,
+      varValue.ty,
+      rustContext.getRustInstance()
+    )
     if (err(formatted)) return undefined
     return formatted
   })()
@@ -126,15 +134,15 @@ export async function getCalculatedKclExpressionValue(
 
 export async function stringToKclExpression(
   value: string,
-  allowArrays?: boolean,
-  instance?: ModuleType,
-  providedRustContext?: RustContext
+  providedRustContext: RustContext,
+  options?: {
+    allowArrays?: boolean
+  }
 ) {
   const calculatedResult = await getCalculatedKclExpressionValue(
     value,
-    allowArrays,
-    instance,
-    providedRustContext
+    providedRustContext,
+    options
   )
   if (err(calculatedResult) || 'errors' in calculatedResult) {
     return calculatedResult
