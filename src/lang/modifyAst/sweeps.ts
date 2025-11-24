@@ -40,10 +40,7 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import {
-  buildSolidsAndFacesExprs,
-  isFaceArtifact,
-} from '@src/lang/modifyAst/faces'
+import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 
 export function addExtrude({
