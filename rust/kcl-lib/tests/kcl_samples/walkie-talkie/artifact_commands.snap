@@ -335,7 +335,7 @@ description: Artifact commands walkie-talkie.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     }
@@ -1220,7 +1220,7 @@ description: Artifact commands walkie-talkie.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     }
@@ -9831,7 +9831,7 @@ description: Artifact commands walkie-talkie.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     }
@@ -10210,7 +10210,7 @@ description: Artifact commands walkie-talkie.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -10506,7 +10506,7 @@ description: Artifact commands walkie-talkie.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -10802,7 +10802,7 @@ description: Artifact commands walkie-talkie.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -11125,7 +11125,7 @@ description: Artifact commands walkie-talkie.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },

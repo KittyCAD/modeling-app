@@ -33,7 +33,7 @@ export function useCalculateKclExpression({
   selectionRanges: Selections
   allowArrays?: boolean
 }): {
-  inputRef: React.RefObject<HTMLInputElement>
+  inputRef: React.RefObject<HTMLInputElement | null>
   valueNode: Expr | null
   calcResult: string
   prevVariables: PrevVariable<unknown>[]

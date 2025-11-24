@@ -42,7 +42,6 @@ export type AreaTypeDefinition = {
 export enum ActionType {
   Export = 'export',
   AddFile = 'addFileToProject',
-  Refresh = 'refreshApp',
   Make = 'make',
 }
 

@@ -594,12 +594,16 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
           {
             id: 'gdt-datum',
-            onClick: () => {},
-            status: 'unavailable',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'GDT Datum', groupId: 'modeling' },
+              }),
+            status: 'experimental',
             title: 'Datum',
             icon: 'gdtDatum',
             description:
-              'Defines reference surfaces for measuring other geometric tolerances.',
+              'Establishes a reference surface for other GD&T measurements.',
             links: [
               {
                 label: 'KCL docs',

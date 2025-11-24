@@ -8,7 +8,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'ZOO_O'",
     "pos": [
@@ -32,7 +33,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'scale_factor'",
     "pos": [
@@ -56,7 +58,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'R'",
     "pos": [
@@ -80,7 +83,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'theta_r'",
     "pos": [
@@ -104,7 +108,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'theta_R'",
     "pos": [
@@ -128,7 +133,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'O_SKETCH'",
     "pos": [
@@ -152,7 +158,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'cos_theta'",
     "pos": [
@@ -176,7 +183,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'sin_theta'",
     "pos": [
@@ -200,7 +208,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'ZOO'",
     "pos": [
@@ -224,7 +233,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'scale_factor'",
     "pos": [
@@ -248,7 +258,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'Z_SKETCH'",
     "pos": [
@@ -272,7 +283,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'O_ANGLE'",
     "pos": [
@@ -296,7 +308,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'O_DELTA'",
     "pos": [
@@ -320,7 +333,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'O_Y'",
     "pos": [
@@ -344,7 +358,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'O_X'",
     "pos": [
@@ -368,7 +383,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'O_SPACEING'",
     "pos": [
@@ -392,7 +408,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'O1_1'",
     "pos": [
@@ -416,7 +433,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'O1_2'",
     "pos": [
@@ -440,7 +458,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'O2_1'",
     "pos": [
@@ -464,7 +483,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'O2_2'",
     "pos": [
@@ -488,7 +508,8 @@ description: Lints zoo-logo.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'LOGO'",
     "pos": [

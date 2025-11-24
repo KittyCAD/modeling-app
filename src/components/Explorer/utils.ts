@@ -71,7 +71,7 @@ export interface FileExplorerRender extends FileExplorerRow {
 }
 
 export interface FileExplorerRowContextMenuProps {
-  itemRef: React.RefObject<HTMLElement>
+  itemRef: React.RefObject<HTMLElement | null>
   onRename: () => void
   onDelete: () => void
   onOpenInNewWindow: () => void

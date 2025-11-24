@@ -4,7 +4,7 @@ use crate::{
     errors::Suggestion,
     lint::{
         checks::offset_plane::start_sketch_on_check_specific_plane,
-        rule::{Discovered, Finding, def_finding},
+        rule::{Discovered, Finding, FindingFamily, def_finding},
     },
     parsing::ast::types::{Node as AstNode, Program},
     walk::Node,
@@ -20,7 +20,8 @@ The startSketchOn stdlib function has the ability to define a default Plane
 to begin the sketch on.
 
 These are the default planes: XY, -XY, XZ, -XZ, YZ, -YZ.
-"
+",
+    FindingFamily::Simplify
 );
 
 pub fn lint_should_be_default_plane(node: Node, _prog: &AstNode<Program>) -> Result<Vec<Discovered>> {

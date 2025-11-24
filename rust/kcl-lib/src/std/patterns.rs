@@ -209,6 +209,7 @@ async fn make_transform<T: GeometryTrait>(
         source_range,
         exec_state,
         ctxt.clone(),
+        Some("transform closure".to_owned()),
     );
     let transform_fn_return = transform
         .call_kw(None, exec_state, ctxt, transform_fn_args, source_range)

@@ -8,7 +8,8 @@ description: Lints array_elem_pop.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'new_arr1'",
     "pos": [
@@ -32,7 +33,8 @@ description: Lints array_elem_pop.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'new_arr2'",
     "pos": [
@@ -56,7 +58,8 @@ description: Lints array_elem_pop.kcl
       "code": "Z0001",
       "title": "Identifiers should be lowerCamelCase",
       "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
-      "experimental": false
+      "experimental": false,
+      "family": "style"
     },
     "description": "found 'new_arr3'",
     "pos": [

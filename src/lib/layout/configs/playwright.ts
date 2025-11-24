@@ -101,12 +101,6 @@ export const playwrightLayoutConfig: Layout = {
           icon: 'printer3d',
           actionType: ActionType.Make,
         },
-        {
-          id: 'refresh',
-          label: 'Refresh app',
-          icon: 'exclamationMark',
-          actionType: ActionType.Refresh,
-        },
       ],
     },
     {

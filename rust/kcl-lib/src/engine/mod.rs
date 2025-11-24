@@ -906,7 +906,7 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
         token
     } else {
         return Err(anyhow::anyhow!(
-            "No API token found in environment variables. Use KITTYCAD_API_TOKEN or ZOO_API_TOKEN"
+            "No API token found in environment variables. Use ZOO_API_TOKEN"
         ));
     };
 
