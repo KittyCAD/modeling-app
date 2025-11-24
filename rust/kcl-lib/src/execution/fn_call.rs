@@ -552,7 +552,12 @@ fn type_check_params_kw(
     mut args: Args<Sugary>,
     exec_state: &mut ExecState,
 ) -> Result<Args<Desugared>, KclError> {
-    let mut result = Args::new_no_args(args.source_range, args.ctx, fn_name.map(|f| f.to_string()));
+    let fn_name = fn_name.or(args.fn_name.as_deref());
+    let mut result = Args::new_no_args(
+        args.source_range,
+        args.ctx,
+        fn_name.map(|f| f.to_string()).or_else(|| args.fn_name.clone()),
+    );
 
     // If it's possible the input arg was meant to be labelled and we probably don't want to use
     // it as the input arg, then treat it as labelled.
