@@ -67,6 +67,14 @@ If you're not a Zoo employee you won't be able to access the dev environment, yo
 
 The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_ZOO_API_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
 
+### Developing in the browser
+
+If you're not a Zoo employee, modeling commands are **billable** when running in
+the browser during local development! This is also true of non-Electron
+web-based tests that use the production API for modeling commands.
+
+To work around this, you must develop using Electron.
+
 ### Developing in Chrome
 
 Chrome is in the process of rolling out a new default which
