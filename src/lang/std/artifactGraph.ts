@@ -831,3 +831,23 @@ export function coerceSelectionsToBody(
     otherSelections: selections.otherSelections,
   }
 }
+
+/**
+ * Utility to filter down the artifact graph to artifacts that we
+ * on the frontend deem "bodies". There is no fixed definition of a "body"
+ * in the engine, but we mean: Solid3Ds of any kind, as well as 3D curves like helices.
+ */
+export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
+  const artifacts = filterArtifacts(
+    { types: ['compositeSolid', 'sweep'] },
+    artifactGraph
+  )
+
+  // TODO: This simply filtered list doesn't coerce to the corresponding object IDs
+  // engine-side. Maybe we don't need to do that here, and instead we coerce
+  // in a `toggleEngineVisibility` function (which will be ported to Rust shortly)?
+  console.log('artifactGraph we want to filter', artifactGraph)
+  console.log('filtered to bodies', artifacts)
+
+  return artifacts
+}
