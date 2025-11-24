@@ -42,7 +42,7 @@ import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
 import { stripQuotes } from '@src/lib/utils'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
+import { codeManager, kclManager } from '@src/lib/singletons'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
@@ -188,7 +188,10 @@ function extractStringArgument(
  * Gather up the a Parameter operation's data
  * to be used in the command bar edit flow.
  */
-const prepareToEditParameter: PrepareToEditCallback = async ({ operation }) => {
+const prepareToEditParameter: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+}) => {
   if (operation.type !== 'VariableDeclaration') {
     return { reason: 'Called on something not a variable declaration' }
   }
@@ -228,7 +231,10 @@ const prepareToEditParameter: PrepareToEditCallback = async ({ operation }) => {
  * Gather up the argument values for the Extrude command
  * to be used in the command bar edit flow.
  */
-const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
+const prepareToEditExtrude: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+}) => {
   const baseCommand = {
     name: 'Extrude',
     groupId: 'modeling',
@@ -417,7 +423,10 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
  * Gather up the argument values for the Loft command
  * to be used in the command bar edit flow.
  */
-const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
+const prepareToEditLoft: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+}) => {
   const baseCommand = {
     name: 'Loft',
     groupId: 'modeling',
@@ -528,7 +537,10 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
  * Gather up the argument values for the Chamfer command
  * to be used in the command bar edit flow.
  */
-const prepareToEditFillet: PrepareToEditCallback = async ({ operation }) => {
+const prepareToEditFillet: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+}) => {
   const baseCommand = {
     name: 'Fillet',
     groupId: 'modeling',
@@ -573,7 +585,10 @@ const prepareToEditFillet: PrepareToEditCallback = async ({ operation }) => {
  * Gather up the argument values for the Chamfer command
  * to be used in the command bar edit flow.
  */
-const prepareToEditChamfer: PrepareToEditCallback = async ({ operation }) => {
+const prepareToEditChamfer: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+}) => {
   const baseCommand = {
     name: 'Chamfer',
     groupId: 'modeling',
@@ -629,7 +644,10 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({ operation }) => {
  * Gather up the argument values for the Shell command
  * to be used in the command bar edit flow.
  */
-const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
+const prepareToEditShell: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+}) => {
   const baseCommand = {
     name: 'Shell',
     groupId: 'modeling',
@@ -684,7 +702,10 @@ const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
  * Gather up the argument values for the Hole command
  * to be used in the command bar edit flow.
  */
-const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
+const prepareToEditHole: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+}) => {
   const baseCommand = {
     name: 'Hole',
     groupId: 'modeling',
@@ -775,6 +796,7 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
 
 const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   operation,
+  rustContext,
 }) => {
   const baseCommand = {
     name: 'Offset plane',
@@ -984,7 +1006,10 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
   }
 }
 
-const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
+const prepareToEditHelix: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+}) => {
   const baseCommand = {
     name: 'Helix',
     groupId: 'modeling',
@@ -1129,6 +1154,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
 const prepareToEditRevolve: PrepareToEditCallback = async ({
   operation,
   artifact,
+  rustContext,
 }) => {
   const baseCommand = {
     name: 'Revolve',
@@ -1254,6 +1280,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
  */
 const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
   operation,
+  rustContext,
 }) => {
   const baseCommand = {
     name: 'Pattern Circular 3D',
@@ -1391,6 +1418,7 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
  */
 const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
   operation,
+  rustContext,
 }) => {
   const baseCommand = {
     name: 'Pattern Linear 3D',
@@ -1500,6 +1528,7 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
  */
 const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   operation,
+  rustContext,
 }) => {
   const baseCommand = {
     name: 'GDT Flatness',
@@ -1560,7 +1589,10 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   }
 }
 
-const prepareToEditGdtDatum: PrepareToEditCallback = async ({ operation }) => {
+const prepareToEditGdtDatum: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+}) => {
   const baseCommand = {
     name: 'GDT Datum',
     groupId: 'modeling',
@@ -2208,7 +2240,10 @@ export async function enterEditFlow({
   )
 }
 
-async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
+async function prepareToEditTranslate({
+  operation,
+  rustContext,
+}: EnterEditFlowProps) {
   const baseCommand = {
     name: 'Translate',
     groupId: 'modeling',
@@ -2307,7 +2342,10 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
   }
 }
 
-async function prepareToEditScale({ operation }: EnterEditFlowProps) {
+async function prepareToEditScale({
+  operation,
+  rustContext,
+}: EnterEditFlowProps) {
   const baseCommand = {
     name: 'Scale',
     groupId: 'modeling',
@@ -2386,7 +2424,10 @@ async function prepareToEditScale({ operation }: EnterEditFlowProps) {
   }
 }
 
-async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
+async function prepareToEditRotate({
+  operation,
+  rustContext,
+}: EnterEditFlowProps) {
   const baseCommand = {
     name: 'Rotate',
     groupId: 'modeling',
@@ -2485,7 +2526,10 @@ async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
   }
 }
 
-async function prepareToEditAppearance({ operation }: EnterEditFlowProps) {
+async function prepareToEditAppearance({
+  operation,
+  rustContext,
+}: EnterEditFlowProps) {
   const baseCommand = {
     name: 'Appearance',
     groupId: 'modeling',

@@ -255,8 +255,6 @@ fillet001 = fillet(
       const nodeToEdit = createPathToNodeForLastVariable(ast, false)
       const radius = (await stringToKclExpression(
         '1.1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addFillet({

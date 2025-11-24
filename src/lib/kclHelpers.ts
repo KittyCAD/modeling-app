@@ -8,7 +8,6 @@ import {
 } from '@src/lang/wasm'
 import type { KclExpression } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
 
 const DUMMY_VARIABLE_NAME = '__result__'

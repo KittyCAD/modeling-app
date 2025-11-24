@@ -12,7 +12,6 @@ import { err } from '@src/lib/trap'
 import { getInVariableCase } from '@src/lib/utils'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type RustContext from '@src/lib/rustContext'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)

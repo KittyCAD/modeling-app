@@ -1232,8 +1232,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 10)`)
 
       const newOffset = (await stringToKclExpression(
         '20',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
@@ -1272,8 +1270,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       const plane = createSelectionFromArtifacts([chamfer!], artifactGraph)
       const offset = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addOffsetPlane({
@@ -1298,8 +1294,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
 
       const newOffset = (await stringToKclExpression(
         '2',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)

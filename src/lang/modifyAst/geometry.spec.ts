@@ -36,11 +36,7 @@ afterAll(() => {
   engineCommandManagerInThisFile.tearDown()
 })
 
-async function getAstAndArtifactGraph(
-  code: string,
-  instance: ModuleType,
-  rustContext: RustContext
-) {
+async function getAstAndArtifactGraph(code: string, rustContext: RustContext) {
   const ast = assertParse(code, instanceInThisFile)
   if (err(ast)) throw ast
 
@@ -65,7 +61,6 @@ describe('geometry.test.ts', () => {
 )`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         '',
-        instanceInThisFile,
         rustContextInThisFile
       )
       const result = addHelix({
@@ -106,7 +101,6 @@ describe('geometry.test.ts', () => {
 )`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         '',
-        instanceInThisFile,
         rustContextInThisFile
       )
       const result = addHelix({
@@ -154,7 +148,6 @@ describe('geometry.test.ts', () => {
 )`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
-        instanceInThisFile,
         rustContextInThisFile
       )
       const result = addHelix({
@@ -210,7 +203,6 @@ helix001 = helix(
     it('should add a standalone call on segment selection', async () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         segmentInPath,
-        instanceInThisFile,
         rustContextInThisFile
       )
       const segment = [...artifactGraph.values()].find(
@@ -251,7 +243,6 @@ helix001 = helix(
     it('should edit a standalone call on segment selection', async () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         helixFromSegmentInPath,
-        instanceInThisFile,
         rustContextInThisFile
       )
       const segment = [...artifactGraph.values()].find(
@@ -315,7 +306,6 @@ helix001 = helix(
     it('should add a standalone call on cylinder selection', async () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         cylinderExtrude,
-        instanceInThisFile,
         rustContextInThisFile
       )
       const sweep = [...artifactGraph.values()].find((n) => n.type === 'sweep')
@@ -334,14 +324,10 @@ helix001 = helix(
         cylinder,
         revolutions: (await stringToKclExpression(
           '1',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '2',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue,
         ccw: true,
@@ -355,7 +341,6 @@ helix001 = helix(
     it('should edit a standalone call on cylinder selection', async () => {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         helixFromCylinder,
-        instanceInThisFile,
         rustContextInThisFile
       )
       const sweep = [...artifactGraph.values()].find((n) => n.type === 'sweep')
