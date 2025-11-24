@@ -2,15 +2,23 @@ import type { WebSocketResponse } from '@kittycad/lib/dist/types/src'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
-import { filterArtifacts } from '@src/lang/std/artifactGraph'
+import {
+  Artifact,
+  filterArtifacts,
+  getBodiesFromArtifactGraph,
+} from '@src/lang/std/artifactGraph'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 
 export function BodiesPane(props: AreaTypeComponentProps) {
+  const artifactGraph = kclManager.artifactGraph
+  const bodies = artifactGraph
+    ? getBodiesFromArtifactGraph(artifactGraph)
+    : undefined
   return (
     <LayoutPanel
       title={props.layout.label}
@@ -22,37 +30,15 @@ export function BodiesPane(props: AreaTypeComponentProps) {
         icon="model"
         title={props.layout.label}
       />
-      <BodiesList />
+      {bodies && <BodiesList bodies={bodies} />}
     </LayoutPanel>
   )
 }
 
-async function getBodiesFromEngine(skip = 0) {
-  return engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'scene_get_entity_ids',
-      filter: ['solid3d'],
-      skip,
-      take: 5,
-    },
-  })
-}
-
-function getBodiesFromArtifactGraph() {
-  const artifacts = filterArtifacts(
-    { types: ['compositeSolid', 'sweep'] },
-    kclManager.artifactGraph
-  )
-
-  console.log('FRANK FRILTERED FARTIFACTS', artifacts)
-  return artifacts
-    .values()
-    .map((item) => (item.type === 'sweep' ? item.pathId : item.toolIds[0]))
-    .toArray()
-}
-
+/**
+ * Temporary function to toggle visibility directly through engine.
+ * Visibility ultimately should be written to KCL via a codemod API.
+ */
 async function setEngineVisibility(id: string, isVisible: boolean) {
   return engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
@@ -65,73 +51,19 @@ async function setEngineVisibility(id: string, isVisible: boolean) {
   })
 }
 
-function BodiesList() {
-  const [bodies, setBodies] = useState<Record<string, boolean>>({})
-
-  // subscribe to the bodies list and show what's up
-
-  // add a click handler to send a request to toggle a body's visibility
-  const onClick = () => {
-    const newBodiesFromArtifactGraph = getBodiesFromArtifactGraph()
-    console.log(
-      'BODIES ACCORDING TO ARTIFACT GRAPH',
-      newBodiesFromArtifactGraph
-    )
-    getBodiesFromEngine()
-      .then((resp) => {
-        if (!resp) {
-          console.warn('No response')
-          return
-        }
-
-        if (isArray(resp)) {
-          resp = resp[0]
-        }
-        const singleResp = resp
-
-        if (isModelingResponse(singleResp)) {
-          const mr = singleResp.resp.data.modeling_response
-          if (mr?.type === 'scene_get_entity_ids') {
-            const newIDs = mr.data.entity_ids as [string[]]
-            console.log('BODIES ACCORDING TO ENGINE', newIDs)
-            setBodies((current) => {
-              const newBodies = Object.assign(
-                {},
-                current,
-                Object.fromEntries(
-                  newBodiesFromArtifactGraph.map((id) => [id, true])
-                )
-              )
-              return newBodies
-            })
-          }
-        }
-      })
-      .catch(reportRejection)
-  }
-
-  function setVisibility(id: string, newValue: boolean) {
-    setEngineVisibility(id, newValue)
-      .then(() => {
-        setBodies((current) => ({
-          ...current,
-          [id]: newValue,
-        }))
-      })
-      .catch(reportRejection)
-  }
-
+function BodiesList({ bodies }: { bodies: Map<string, Artifact> }) {
   return (
     <section className="overflow-auto mr-1 pb-8">
-      <button onClick={onClick}>Get Bodies</button>
       <ul>
-        {Object.entries(bodies).map(([id, isVisible], i) => (
+        {bodies.entries().map(([id, _artifact], i) => (
           <li key={id || i} className="flex px-1 py-0.5 group/visibilityToggle">
             <CustomIcon name="body" className="w-6 h-6" />
             <span className="flex-1">Body {i}</span>
             <VisibilityToggle
-              visible={isVisible}
-              onVisibilityChange={() => setVisibility(id, !isVisible)}
+              visible={true}
+              onVisibilityChange={() => {
+                /** no-op for now **/
+              }}
             />
           </li>
         ))}
