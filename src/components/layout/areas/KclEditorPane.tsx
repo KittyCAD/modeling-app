@@ -340,7 +340,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
                 zoo.dev
                 <CustomIcon
                   name="link"
-                  className="ml-1 text-align-top w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+                  className="inline-block ml-1 text-align-top w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
                 />
               </small>
             </a>
@@ -380,7 +380,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
                 zoo.dev
                 <CustomIcon
                   name="link"
-                  className="ml-1 text-align-top w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
+                  className="inline-block ml-1 text-align-top w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
                 />
               </small>
             </a>
