@@ -83,16 +83,24 @@ export function filterArtifacts<T extends Artifact['type'][]>(
     predicate,
   }: {
     types: T
-    predicate?: (value: Extract<Artifact, { type: T[number] }>) => boolean
+    predicate?: (
+      value: Extract<Artifact, { type: T[number] }>,
+      index: number,
+      graphEntries: [string, Artifact][]
+    ) => boolean
   },
   map: ArtifactGraph
 ) {
   return new Map(
     Array.from(map).filter(
-      ([_, value]) =>
+      ([_, value], index, fullGraph) =>
         types.includes(value.type) &&
         (!predicate ||
-          predicate(value as Extract<Artifact, { type: T[number] }>))
+          predicate(
+            value as Extract<Artifact, { type: T[number] }>,
+            index,
+            fullGraph
+          ))
     )
   ) as Map<ArtifactId, Extract<Artifact, { type: T[number] }>>
 }
@@ -833,20 +841,46 @@ export function coerceSelectionsToBody(
 }
 
 /**
+ * Utility to determine whether a "body" artifact has been used anywhere else in the
+ * scene, combined into a compiteSolid for example.
+ *
+ * TODO: This is likely a very expensive operation to be done on the TS side, as
+ * we exhaustively check the rest of the artifact graph's IDs to confirm one ID isn't there.
+ * Do this instead in Rust as the artifact gets used, flagging it as a "consumed" body or something.
+ */
+function artifactIsUsedInSolidOperation(
+  solidId: string,
+  artifactGraphEntries: [string, Artifact][]
+): boolean {
+  for (let [id, artifact] of artifactGraphEntries) {
+    if (
+      artifact.type === 'compositeSolid' &&
+      (artifact.toolIds.includes(solidId) ||
+        artifact.solidIds.includes(solidId))
+    ) {
+      return true
+    }
+  }
+
+  return false
+}
+/**
  * Utility to filter down the artifact graph to artifacts that we
  * on the frontend deem "bodies". There is no fixed definition of a "body"
  * in the engine, but we mean: Solid3Ds of any kind, as well as 3D curves like helices.
  */
 export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
   const artifacts = filterArtifacts(
-    { types: ['compositeSolid', 'sweep'] },
+    {
+      types: ['compositeSolid', 'sweep'],
+      predicate: (a, _, g) => !artifactIsUsedInSolidOperation(a.id, g),
+    },
     artifactGraph
   )
 
   // TODO: This simply filtered list doesn't coerce to the corresponding object IDs
   // engine-side. Maybe we don't need to do that here, and instead we coerce
   // in a `toggleEngineVisibility` function (which will be ported to Rust shortly)?
-  console.log('artifactGraph we want to filter', artifactGraph)
   console.log('filtered to bodies', artifacts)
 
   return artifacts
