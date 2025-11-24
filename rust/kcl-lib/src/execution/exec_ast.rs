@@ -954,10 +954,16 @@ impl Node<SketchBlock> {
             // stable across sketch block edits.
 
             use crate::engine::PlaneName;
+            use crate::execution::{Artifact, ArtifactId, CodeRef, SketchBlock};
             let sketch_id = exec_state.next_object_id();
             let arg_on: Option<crate::execution::Plane> =
                 args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
-            let on_object = arg_on.and_then(|plane| plane.object_id);
+            let on_object = arg_on.as_ref().and_then(|plane| plane.object_id);
+            
+            // Get the plane artifact ID if the plane is an object plane
+            let plane_artifact_id = arg_on.as_ref().map(|plane| plane.artifact_id);
+            
+            let artifact_id = ArtifactId::from(exec_state.next_uuid());
             let sketch_scene_object = Object {
                 id: sketch_id,
                 kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
@@ -971,11 +977,20 @@ impl Node<SketchBlock> {
                 }),
                 label: Default::default(),
                 comments: Default::default(),
-                // TODO: sketch-api: implement
+                // TODO: sketch-api: implement - convert ArtifactId to usize when this is properly implemented
                 artifact_id: 0,
                 source: range.into(),
             };
             exec_state.add_scene_object(sketch_scene_object, range);
+            
+            // Create and add the sketch block artifact
+            exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
+                id: artifact_id,
+                plane_id: plane_artifact_id,
+                code_ref: CodeRef::placeholder(range),
+                sketch_id: sketch_id.0,
+            }));
+            
             sketch_id
         };
 
@@ -1122,6 +1137,13 @@ impl Node<SketchBlock> {
             sketch
                 .constraints
                 .extend(std::mem::take(&mut sketch_block_state.sketch_constraints));
+
+            // Push sketch solve operation
+            exec_state.push_op(Operation::SketchSolve {
+                sketch_id: sketch_id.0,
+                node_path: NodePath::placeholder(),
+                source_range: range,
+            });
         }
 
         // TODO: sketch-api: send everything to the engine.

@@ -201,13 +201,44 @@ impl SketchApi for FrontendState {
 
     async fn edit_sketch(
         &mut self,
-        _ctx: &ExecutorContext,
+        ctx: &ExecutorContext,
         _project: ProjectId,
         _file: FileId,
         _version: Version,
-        _sketch: ObjectId,
+        sketch: ObjectId,
     ) -> api::Result<SceneGraphDelta> {
-        todo!()
+        // TODO: Check version.
+
+        // Look up existing sketch.
+        let sketch_object = self.scene_graph.objects.get(sketch.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch:?}"),
+        })?;
+        let ObjectKind::Sketch(_) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+
+        // Enter sketch mode by setting the sketch_mode.
+        self.scene_graph.sketch_mode = Some(sketch);
+
+        // Execute in mock mode to ensure state is up to date.
+        let outcome = ctx.run_mock(&self.program, true).await.map_err(|err| {
+            // TODO: sketch-api: Yeah, this needs to change. We need to
+            // return the full error.
+            Error {
+                msg: err.error.message().to_owned(),
+            }
+        })?;
+
+        let outcome = self.update_state_after_exec(outcome);
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            invalidates_ids: false,
+            new_objects: Vec::new(),
+            exec_outcome: outcome,
+        };
+        Ok(scene_graph_delta)
     }
 
     async fn exit_sketch(

@@ -369,6 +369,7 @@ type SpawnToolActor = <K extends EquipTool>(
       sceneInfra: SceneInfra
       rustContext: RustContext
       kclManager: KclManager
+      sketchId: number
     }
   }
 ) => ActorRefFrom<(typeof equipTools)[K]>
@@ -410,8 +411,8 @@ type SketchSolveContext = {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }
-  // Plane/face data from the 'animate-to-sketch-solve' actor
   initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+  sketchId: number
   // Dependencies passed from parent
   codeManager: CodeManager
   sceneInfra: SceneInfra
@@ -430,6 +431,7 @@ export const sketchSolveMachine = setup({
         | OffsetPlane
         | ExtrudeFacePlane
         | null
+      sketchId: number
       codeManager: CodeManager
       sceneInfra: SceneInfra
       sceneEntitiesManager: SceneEntities
@@ -1228,7 +1230,12 @@ export const sketchSolveMachine = setup({
           }
 
           const result = await context.rustContext
-            .editSegments(0, 0, segmentsToEdit, await jsAppSettings())
+            .editSegments(
+              0,
+              context.sketchId,
+              segmentsToEdit,
+              await jsAppSettings()
+            )
             .catch((err) => {
               console.error('failed to edit segment', err)
               return null
@@ -1506,7 +1513,6 @@ export const sketchSolveMachine = setup({
       }
     },
     'cleanup sketch solve group': ({ context }) => {
-      console.log('Cleaning up sketch solve group...')
       const sketchSegments =
         context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
       if (!sketchSegments || !(sketchSegments instanceof Group)) {
@@ -1665,7 +1671,20 @@ export const sketchSolveMachine = setup({
           })
         }
       }
+
+      // TODO ask Jon if there's a better way to determine what objects are part of the current sketch
+      let skipBecauseBeforeCurrentSketch = true
+      let skipBecauseAfterCurrentSketch = false
       sceneGraphDelta.new_graph.objects.forEach((obj) => {
+        if (obj.kind.type === 'Sketch' && obj.id === context.sketchId) {
+          skipBecauseBeforeCurrentSketch = false
+        }
+        if (obj.kind.type === 'Sketch' && obj.id > context.sketchId) {
+          skipBecauseAfterCurrentSketch = true
+        }
+        if (skipBecauseBeforeCurrentSketch || skipBecauseAfterCurrentSketch) {
+          return
+        }
         if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
           return
         }
@@ -1751,6 +1770,7 @@ export const sketchSolveMachine = setup({
           sceneInfra: context.sceneInfra,
           rustContext: context.rustContext,
           kclManager: context.kclManager,
+          sketchId: context.sketchId,
         },
       })
 
@@ -1768,17 +1788,20 @@ export const sketchSolveMachine = setup({
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZNXllRX1jDQM1A3lpA1lzKwQAWgNjA2U1aTVC+07jRQ0NNS8fdGx8IjIKalo6cKiYvFgx-0JQ7EIAWzA0iSzhXIz82sV241qNeW1L+X7nBsQWk2VDaXV1cp1tGxGQX3GAlNgrNQqIwABHULMPh4DCEEi7DL7HLiI6IbSKFRXAyKWRODTaDiFbQPZpGaTKIZvGzyGqlWTSbS-f7+SZBGb0LCEZiiLDMWiidjcPaCA6o0CNJpKSnGYyyGwExW6eqSRBGDjGVSaHR6QwmZkrCaBaYhOgAGR5cAAopDIsQzWBRFAMDhEfxRSiJJLpSY5QrrgH5Cr8urNeotLpSnrjAa-EagRy6AA1MAAJ2SWDtbsyHpSXsePtl8oGAYJQfMIY0Gq1Ed1Rhj3j+hsB7NNAAlCKnmAAvMQYLPCpG5w4SgsqX3FpVl4Nqqth7WR-T12MAtkmkERaKxeKJGIQPD82DZ5F5jLe8dF-1K8uqhChms6qPLxss+Ot2jKTaEIKRUT7uIJEkdAQGIYDKDypCEOgn7fmAAAq8LEMew7iretTnJSQx1IoHDaHIZiWNYaglPIlRqBi+jyFWTIvs2a7AmBX4-n+Sw7kBaapp2yh8MQ0QAGadpsMHkAhCKDu62SnqAxytO09ikZ0QZ4toOKkrU2iqJUNRqLK0guBwtQrqyxoMcJFC-v+bEYAwkLQrCiHIZJI5oXYLyyP0xhUdUcqYvIpIGO4qilMYHBDKROKVEZb7rmBoRCE69kkHMYK2TCcJiekElinkMi4cUGhdHi6iyKFQwkoRCARiUiiysYKl4Woai4VFLYxcocU8lAiXEDZUJpQ54k5k5qH5HKFKtKF2i6CYshkaS3zFDYuIaAooUltILX0RyyiwAA7qwuCdd1dCMLA-YxMoIFgsokRJFxjnZWiCByu0tzGEUuE1RwOlqKS5HFHps0VAM3SkRttFxq1pmghCfV8Ed6U9ad51gVdYG3XCqbKA9npPXY3zKAYrSXJc0hqRhoOhZUjikXKXiNqIITwBkr5QxyIrDTlCBVG5HlebcS1+RVUoXnKQYGTpQZVJtJnbUx5ksQBu4c490mICtsiE20s16U1ROqRVdjtAoE1E1WOGyDLCYhO18VdYjKu42rlX9ITpEFeo1Q6IopJVsUpyFIMmIYooVvvmBe0HTgCOIY7Um3q0Gk1WR5yDCYbx-XUyhTUGSoGES0sQ6uss20wwhOnHznHLoxHfN01yyk4Okqo0sqaR93yYnVNNh21MOpfDCUO0OnN40YmvSO9XRKO9EuksHygMjYem4p5OLg14QA */
-  context: ({ input }): SketchSolveContext => ({
-    sketchSolveToolName: null,
-    selectedIds: [],
-    duringAreaSelectIds: [],
-    initialPlane: input?.initialSketchSolvePlane ?? undefined,
-    codeManager: input.codeManager,
-    sceneInfra: input.sceneInfra,
-    sceneEntitiesManager: input.sceneEntitiesManager,
-    rustContext: input.rustContext,
-    kclManager: input.kclManager,
-  }),
+  context: ({ input }): SketchSolveContext => {
+    return {
+      sketchSolveToolName: null,
+      selectedIds: [],
+      duringAreaSelectIds: [],
+      initialPlane: input?.initialSketchSolvePlane ?? undefined,
+      sketchId: input?.sketchId || 0,
+      codeManager: input.codeManager,
+      sceneInfra: input.sceneInfra,
+      sceneEntitiesManager: input.sceneEntitiesManager,
+      rustContext: input.rustContext,
+      kclManager: input.kclManager,
+    }
+  },
   id: 'Sketch Solve Mode',
   initial: 'move and select',
   on: {
@@ -1813,7 +1836,7 @@ export const sketchSolveMachine = setup({
         // TODO this is not how coincident should operate long term, as it should be an equipable tool
         const result = await context.rustContext.addConstraint(
           0,
-          0,
+          context.sketchId,
           {
             type: 'Coincident',
             points: context.selectedIds,
@@ -1883,7 +1906,7 @@ export const sketchSolveMachine = setup({
         }
         const result = await context.rustContext.addConstraint(
           0,
-          0,
+          context.sketchId,
           {
             type: 'Distance',
             distance: { value: distance, units },
@@ -1904,7 +1927,7 @@ export const sketchSolveMachine = setup({
         // TODO this is not how coincident should operate long term, as it should be an equipable tool
         const result = await context.rustContext.addConstraint(
           0,
-          0,
+          context.sketchId,
           {
             type: 'Parallel',
             lines: context.selectedIds,
@@ -1924,7 +1947,7 @@ export const sketchSolveMachine = setup({
         // TODO this is not how LinesEqualLength should operate long term, as it should be an equipable tool
         const result = await context.rustContext.addConstraint(
           0,
-          0,
+          context.sketchId,
           {
             type: 'LinesEqualLength',
             lines: context.selectedIds,
@@ -1946,7 +1969,7 @@ export const sketchSolveMachine = setup({
           // TODO this is not how Vertical should operate long term, as it should be an equipable tool
           result = await context.rustContext.addConstraint(
             0,
-            0,
+            context.sketchId,
             {
               type: 'Vertical',
               line: id,
@@ -1969,7 +1992,7 @@ export const sketchSolveMachine = setup({
           // TODO this is not how Horizontal should operate long term, as it should be an equipable tool
           result = await context.rustContext.addConstraint(
             0,
-            0,
+            context.sketchId,
             {
               type: 'Horizontal',
               line: id,
@@ -1999,7 +2022,13 @@ export const sketchSolveMachine = setup({
 
         // Call deleteObjects with the selected segment IDs
         const result = await context.rustContext
-          .deleteObjects(0, 0, [], selectedIds, await jsAppSettings())
+          .deleteObjects(
+            0,
+            context.sketchId,
+            [],
+            selectedIds,
+            await jsAppSettings()
+          )
           .catch((err) => {
             console.error('failed to delete objects', err)
             return null

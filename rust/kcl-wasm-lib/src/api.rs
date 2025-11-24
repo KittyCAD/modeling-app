@@ -171,6 +171,42 @@ impl Context {
             .map_err(|e| format!("Could not serialize new sketch result. {TRUE_BUG} Details: {e}"))?)
     }
 
+    /// Enter sketch mode for an existing sketch.
+    #[wasm_bindgen]
+    pub async fn edit_sketch(
+        &self,
+        project_json: &str,
+        file_json: &str,
+        version_json: &str,
+        sketch_json: &str,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let project: kcl_lib::front::ProjectId =
+            serde_json::from_str(project_json).map_err(|e| format!("Could not deserialize ProjectId: {e}"))?;
+        let file: kcl_lib::front::FileId =
+            serde_json::from_str(file_json).map_err(|e| format!("Could not deserialize FileId: {e}"))?;
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
+
+        let ctx = self
+            .create_executor_ctx(settings, None, true)
+            .map_err(|e| format!("Could not create KCL executor context for edit sketch. {TRUE_BUG} Details: {e}"))?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let result = guard
+            .edit_sketch(&ctx, project, file, version, sketch)
+            .await
+            .map_err(|e| format!("Failed to edit sketch: {:?}", e))?;
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize edit sketch result. {TRUE_BUG} Details: {e}"))?)
+    }
+
     /// Exit sketch mode.
     #[wasm_bindgen]
     pub async fn exit_sketch(&self, version_json: &str, sketch_json: &str, settings: &str) -> Result<JsValue, JsValue> {

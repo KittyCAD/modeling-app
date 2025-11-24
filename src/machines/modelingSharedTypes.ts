@@ -208,7 +208,6 @@ export interface ModelingMachineContext {
   selectionRanges: Selections
   sketchDetails: SketchDetails | null
   // Data returned by 'animate-to-sketch-solve' to initialize sketch solve
-  sketchSolveInit?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
   sketchPlaneId: string
   sketchEnginePathId: string
   moveDescs: MoveDesc[]
@@ -219,7 +218,6 @@ export interface ModelingMachineContext {
   defaultPlaneVisibility: PlaneVisibilityMap
   savedDefaultPlaneVisibility: PlaneVisibilityMap
   planesInitialized: boolean
-  sketchSolveTool: EquipTool | null
   codeManager?: CodeManager
   kclManager?: KclManager
   engineCommandManager?: ConnectionManager
@@ -229,6 +227,11 @@ export interface ModelingMachineContext {
   wasmInstance?: ModuleType
   kclEditorMachine?: ActorRefFrom<typeof kclEditorMachine>
   rustContext?: RustContext
+  // sketch solve context
+  sketchSolveInit?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
+  sketchSolveId?: number
+  // TODO are these both used?
+  sketchSolveTool: EquipTool | null
   sketchSolveToolName: EquipTool | null
 }
 

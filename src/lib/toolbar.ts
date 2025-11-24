@@ -113,6 +113,47 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
         ],
       },
+      {
+        // TODO probably remove, don't need an extra button
+        id: 'edit-sketch-solve',
+        onClick: ({ modelingState, modelingSend }) => {
+          const artifact =
+            modelingState.context.selectionRanges.graphSelections[0]?.artifact
+          if (!(artifact?.type === 'sketchBlock' && artifact.sketchId)) {
+            console.warn('No artifact selected for edit sketch solve')
+            return
+          }
+          modelingSend({
+            type: 'Enter existing sketch solve',
+            data: artifact.sketchId,
+          })
+        },
+        icon: 'sketch',
+        status: 'available',
+        title: 'Edit Sketch Solve',
+        showTitle: true,
+        description: 'Edit an existing sketch in sketch solve mode',
+        links: [],
+        disabled: (state) => {
+          const artifact =
+            state.context.selectionRanges.graphSelections[0]?.artifact
+          if (artifact?.type === 'sketchBlock') {
+            return typeof artifact.sketchId !== 'number'
+          }
+          return true
+        },
+        disabledReason: (state) => {
+          const artifact =
+            state.context.selectionRanges.graphSelections[0]?.artifact
+          if (
+            artifact?.type === 'sketchBlock' &&
+            typeof artifact.sketchId !== 'number'
+          ) {
+            return
+          }
+          return 'Please select a sketch solve block to edit.'
+        },
+      },
       'break',
       {
         id: 'extrude',

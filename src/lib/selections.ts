@@ -658,7 +658,11 @@ function getBestCandidate(
     }
 
     // Other valid artifact types
-    if (['plane', 'cap', 'wall', 'sweep'].includes(entry.artifact.type)) {
+    if (
+      ['plane', 'cap', 'wall', 'sweep', 'sketchBlock'].includes(
+        entry.artifact.type
+      )
+    ) {
       return entry
     }
   }

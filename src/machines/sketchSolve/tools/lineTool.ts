@@ -34,6 +34,7 @@ type ToolContext = {
   sceneInfra: SceneInfra
   rustContext: RustContext
   kclManager: KclManager
+  sketchId: number
 }
 
 export const machine = setup({
@@ -44,6 +45,7 @@ export const machine = setup({
       sceneInfra: SceneInfra
       rustContext: RustContext
       kclManager: KclManager
+      sketchId: number
     },
   },
   actions: {
@@ -65,7 +67,7 @@ export const machine = setup({
               // Note: twoD comes from intersectionPoint.unscaledTwoD which is in world coordinates, and always mm
               const result = await context.rustContext.editSegments(
                 0,
-                0,
+                context.sketchId,
                 [
                   {
                     id: context.draftPointId,
@@ -185,9 +187,10 @@ export const machine = setup({
           pointData: [number, number]
           rustContext: RustContext
           kclManager: KclManager
+          sketchId: number
         }
       }) => {
-        const { pointData, rustContext, kclManager } = input
+        const { pointData, rustContext, kclManager, sketchId } = input
         const [x, y] = pointData
 
         const units = baseUnitToNumericSuffix(
@@ -213,7 +216,7 @@ export const machine = setup({
           // Call the addSegment method using the rustContext from context
           const result = await rustContext.addSegment(
             0, // version - TODO: Get this from actual context
-            0, // sketchId - TODO: Get this from actual context
+            sketchId, // sketchId from context
             segmentCtor,
             'line-segment', // label
             await jsAppSettings()
@@ -239,9 +242,10 @@ export const machine = setup({
           id: number
           rustContext: RustContext
           kclManager: KclManager
+          sketchId: number
         }
       }) => {
-        const { pointData, id, rustContext, kclManager } = input
+        const { pointData, id, rustContext, kclManager, sketchId } = input
         console.log('input', input)
         const [x, y] = pointData
         const units = baseUnitToNumericSuffix(
@@ -263,7 +267,7 @@ export const machine = setup({
           // Call the editSegments method using the rustContext from context
           const result = await rustContext.editSegments(
             0, // version - TODO: Get this from actual context
-            0, // sketchId - TODO: Get this from actual context
+            sketchId, // sketchId from context
             [
               {
                 id,
@@ -291,6 +295,7 @@ export const machine = setup({
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
     kclManager: input.kclManager,
+    sketchId: input.sketchId || 0,
   }),
   id: TOOL_ID,
   initial: 'ready for user click',
@@ -324,6 +329,7 @@ export const machine = setup({
             id: event.id || 0,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
+            sketchId: context.sketchId,
           }
         },
 
@@ -357,6 +363,7 @@ export const machine = setup({
             pointData: event.data,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
+            sketchId: context.sketchId,
           }
         },
         onDone: {

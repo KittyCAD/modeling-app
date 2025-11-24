@@ -526,7 +526,10 @@ export const ModelingMachineProvider = ({
         'animate-to-sketch-solve': fromPromise(
           async ({
             input: artifactOrPlaneId,
-          }): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane> => {
+          }): Promise<{
+            plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+            sketchSolveId: number
+          }> => {
             if (!artifactOrPlaneId) {
               const errorMessage = 'No artifact or plane ID provided'
               toast.error(errorMessage)
@@ -567,6 +570,7 @@ export const ModelingMachineProvider = ({
             sceneInfra.camControls.syncDirection = 'clientToEngine'
 
             // Call newSketch API
+            let sketchId: number | undefined
             try {
               const project = theProject.current
               if (!project) {
@@ -596,12 +600,125 @@ export const ModelingMachineProvider = ({
                   { settings: { modeling: { base_unit: defaultUnit.current } } }
                 )
                 codeManager.updateCodeEditor(newSketchResult.kclSource.text)
+                sketchId = newSketchResult.sketchId
               }
             } catch (error) {
               console.error('Error calling newSketch:', error)
             }
 
-            return result
+            if (sketchId === undefined) {
+              const errorMessage = 'Failed to create sketch'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            return {
+              plane: result,
+              sketchSolveId: sketchId,
+            }
+          }
+        ),
+        'animate-to-existing-sketch-solve': fromPromise(
+          async ({
+            input: sketchId,
+          }): Promise<{
+            plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+            sketchSolveId: number
+          }> => {
+            // TODO, I think I need to set up the sketch scene here
+            // if (!artifactId) {
+            //   const errorMessage = 'No artifact ID provided'
+            //   toast.error(errorMessage)
+            //   return reject(new Error(errorMessage))
+            // }
+
+            // const artifact = kclManager.artifactGraph.get(artifactId)
+            // if (!artifact) {
+            //   const errorMessage = 'No artifact found for the provided ID'
+            //   toast.error(errorMessage)
+            //   return reject(new Error(errorMessage))
+            // }
+
+            // const plane = getPlaneFromArtifact(
+            //   artifact,
+            //   kclManager.artifactGraph
+            // )
+            // if (err(plane)) return Promise.reject(plane)
+
+            // // Get plane information for animation
+            let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane = {
+              type: 'defaultPlane',
+              planeId: '',
+              plane: 'XY',
+              zAxis: [0, 0, 1],
+              yAxis: [0, 1, 0],
+            }
+
+            // const planeId = plane.id
+            // const defaultResult = getDefaultSketchPlaneData(planeId)
+            // if (!err(defaultResult) && defaultResult) {
+            //   result = defaultResult
+            // }
+
+            // if (!result) {
+            //   const offsetResult = await getOffsetSketchPlaneData(artifact)
+            //   if (!err(offsetResult) && offsetResult) {
+            //     result = offsetResult
+            //   }
+            // }
+
+            // if (!result) {
+            //   const sweepFaceSelected = await selectionBodyFace(planeId)
+            //   if (sweepFaceSelected) {
+            //     result = sweepFaceSelected
+            //   }
+            // }
+
+            // if (!result) {
+            //   const errorMessage = 'Could not determine plane information'
+            //   toast.error(errorMessage)
+            //   return reject(new Error(errorMessage))
+            // }
+
+            // const id =
+            //   result.type === 'extrudeFace' ? result.faceId : result.planeId
+            // await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+            // sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+            // Call editSketch API with hardcoded sketchId = 0
+            // const sketchId = 0 // Hardcoded as requested
+            try {
+              const project = theProject.current
+              if (!project) {
+                console.warn('No project available for editSketch call')
+              } else {
+                await rustContext.hackSetProgram(
+                  kclManager.ast,
+                  await jsAppSettings()
+                )
+                const editSketchResult = await rustContext.editSketch(
+                  0, // projectId
+                  0, // fileId
+                  0, // version
+                  sketchId || 0,
+                  { settings: { modeling: { base_unit: defaultUnit.current } } }
+                )
+                console.log('editSketchResult', editSketchResult)
+                // Note: editSketch doesn't return kclSource, so we don't update the editor
+              }
+            } catch (error) {
+              console.error('Error calling editSketch:', error)
+              return reject(
+                error instanceof Error
+                  ? error
+                  : new Error('Failed to edit sketch')
+              )
+            }
+
+            return {
+              plane: result,
+              sketchSolveId: sketchId,
+            }
           }
         ),
         'animate-to-face': fromPromise(async ({ input }) => {

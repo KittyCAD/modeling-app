@@ -1669,6 +1669,15 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: false,
     supportsTransform: true,
   },
+  sketchSolve: {
+    label: 'Solve Sketch',
+    icon: 'sketch',
+    async prepareToEdit() {
+      return {
+        reason: 'Problem with editing this sketch',
+      }
+    },
+  },
   startSketchOn: {
     label: 'Sketch',
     icon: 'sketch',
@@ -1734,6 +1743,8 @@ export function getOperationLabel(op: Operation): string {
         const _exhaustiveCheck: never = op.group
         return '' // unreachable
       }
+    case 'SketchSolve':
+      return 'Solve Sketch'
     case 'GroupEnd':
       return 'Group end'
     default:
@@ -1826,6 +1837,8 @@ export function getOperationIcon(op: Operation): CustomIconName {
         return 'function'
       }
       return 'make-variable'
+    case 'SketchSolve':
+      return 'sketch'
     case 'GroupEnd':
       return 'questionMark'
     default:
@@ -2068,12 +2081,15 @@ export async function enterEditFlow({
   }
 
   // Begin StdLibCall processing
-  if (operation.type !== 'StdLibCall') {
+  if (operation.type !== 'StdLibCall' && operation.type !== 'SketchSolve') {
     return new Error(
       'Feature tree editing not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
   }
-  const stdLibInfo = stdLibMap[operation.name]
+  const stdLibInfo =
+    operation.type === 'SketchSolve'
+      ? stdLibMap.sketchSolve
+      : stdLibMap[operation.name]
 
   if (stdLibInfo && stdLibInfo.prepareToEdit) {
     if (typeof stdLibInfo.prepareToEdit === 'function') {

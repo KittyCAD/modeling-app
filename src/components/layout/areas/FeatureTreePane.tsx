@@ -583,7 +583,8 @@ const OperationItem = (props: OperationProps) => {
   function enterEditFlow() {
     if (
       props.item.type === 'StdLibCall' ||
-      props.item.type === 'VariableDeclaration'
+      props.item.type === 'VariableDeclaration' ||
+      props.item.type === 'SketchSolve'
     ) {
       props.send({
         type: 'enterEditFlow',
@@ -853,6 +854,17 @@ const OperationItem = (props: OperationProps) => {
               data-testid="context-menu-delete"
             >
               Delete
+            </ContextMenuItem>,
+          ]
+        : []),
+      ...(props.item.type === 'SketchSolve'
+        ? [
+            <ContextMenuItem
+              // TODO disabled
+              onClick={enterEditFlow}
+              hotkey="Double click"
+            >
+              Edit
             </ContextMenuItem>,
           ]
         : []),

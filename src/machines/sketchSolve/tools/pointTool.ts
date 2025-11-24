@@ -32,12 +32,14 @@ export const machine = setup({
       sceneInfra: SceneInfra
       rustContext: RustContext
       kclManager: KclManager
+      sketchId: number
     },
     events: {} as ToolEvents,
     input: {} as {
       sceneInfra: SceneInfra
       rustContext: RustContext
       kclManager: KclManager
+      sketchId: number
     },
   },
   actions: {
@@ -88,9 +90,10 @@ export const machine = setup({
           pointData: [number, number]
           rustContext: RustContext
           kclManager: KclManager
+          sketchId: number
         }
       }) => {
-        const { pointData, rustContext, kclManager } = input
+        const { pointData, rustContext, kclManager, sketchId } = input
         const [x, y] = pointData
 
         try {
@@ -111,7 +114,7 @@ export const machine = setup({
           // Call the addSegment method using the rustContext from context
           const result = await rustContext.addSegment(
             0, // version - TODO: Get this from actual context
-            0, // sketchId - TODO: Get this from actual context
+            sketchId, // sketchId from context
             segmentCtor,
             'point-tool-point', // label
             await jsAppSettings()
@@ -135,6 +138,7 @@ export const machine = setup({
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
     kclManager: input.kclManager,
+    sketchId: input.sketchId,
   }),
   id: TOOL_ID,
   initial: 'ready for user click',
@@ -167,6 +171,7 @@ export const machine = setup({
             pointData: event.data,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
+            sketchId: context.sketchId,
           }
         },
         onDone: {
