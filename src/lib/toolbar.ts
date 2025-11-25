@@ -125,7 +125,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }
           modelingSend({
             type: 'Enter existing sketch solve',
-            data: artifact.sketchId,
+            data: artifact.id,
           })
         },
         icon: 'sketch',

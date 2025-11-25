@@ -92,6 +92,7 @@ import {
   updateSelections,
   getEventForSegmentSelection,
   updateExtraSegments,
+  getPlaneDataFromSketchBlock,
 } from '@src/lib/selections'
 import {
   codeManager,
@@ -620,73 +621,52 @@ export const ModelingMachineProvider = ({
         ),
         'animate-to-existing-sketch-solve': fromPromise(
           async ({
-            input: sketchId,
+            input: artifactId,
           }): Promise<{
             plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
             sketchSolveId: number
           }> => {
-            // TODO, I think I need to set up the sketch scene here
-            // if (!artifactId) {
-            //   const errorMessage = 'No artifact ID provided'
-            //   toast.error(errorMessage)
-            //   return reject(new Error(errorMessage))
-            // }
-
-            // const artifact = kclManager.artifactGraph.get(artifactId)
-            // if (!artifact) {
-            //   const errorMessage = 'No artifact found for the provided ID'
-            //   toast.error(errorMessage)
-            //   return reject(new Error(errorMessage))
-            // }
-
-            // const plane = getPlaneFromArtifact(
-            //   artifact,
-            //   kclManager.artifactGraph
-            // )
-            // if (err(plane)) return Promise.reject(plane)
-
-            // // Get plane information for animation
-            let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane = {
-              type: 'defaultPlane',
-              planeId: '',
-              plane: 'XY',
-              zAxis: [0, 0, 1],
-              yAxis: [0, 1, 0],
+            if (!artifactId) {
+              const errorMessage = 'No artifact ID provided'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
             }
 
-            // const planeId = plane.id
-            // const defaultResult = getDefaultSketchPlaneData(planeId)
-            // if (!err(defaultResult) && defaultResult) {
-            //   result = defaultResult
-            // }
+            // Get the sketchBlock artifact from the artifact graph
+            const artifact = kclManager.artifactGraph.get(artifactId)
+            if (!artifact || artifact.type !== 'sketchBlock') {
+              const errorMessage = 'Invalid sketchBlock artifact'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
 
-            // if (!result) {
-            //   const offsetResult = await getOffsetSketchPlaneData(artifact)
-            //   if (!err(offsetResult) && offsetResult) {
-            //     result = offsetResult
-            //   }
-            // }
+            if (!artifact.sketchId) {
+              const errorMessage = 'SketchBlock does not have a sketchId'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
 
-            // if (!result) {
-            //   const sweepFaceSelected = await selectionBodyFace(planeId)
-            //   if (sweepFaceSelected) {
-            //     result = sweepFaceSelected
-            //   }
-            // }
+            // Get plane/face data from the sketchBlock
+            const planeData = await getPlaneDataFromSketchBlock(artifact)
+            console.log('planeData', planeData)
+            if (!planeData) {
+              console.trace('yo!!')
 
-            // if (!result) {
-            //   const errorMessage = 'Could not determine plane information'
-            //   toast.error(errorMessage)
-            //   return reject(new Error(errorMessage))
-            // }
+              const errorMessage = 'Could not determine plane/face information'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
 
-            // const id =
-            //   result.type === 'extrudeFace' ? result.faceId : result.planeId
-            // await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
-            // sceneInfra.camControls.syncDirection = 'clientToEngine'
+            const sketchId = artifact.sketchId
 
-            // Call editSketch API with hardcoded sketchId = 0
-            // const sketchId = 0 // Hardcoded as requested
+            const id =
+              planeData.type === 'extrudeFace'
+                ? planeData.faceId
+                : planeData.planeId
+            await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+            // Call editSketch API
             try {
               const project = theProject.current
               if (!project) {
@@ -700,7 +680,7 @@ export const ModelingMachineProvider = ({
                   0, // projectId
                   0, // fileId
                   0, // version
-                  sketchId || 0,
+                  sketchId,
                   { settings: { modeling: { base_unit: defaultUnit.current } } }
                 )
                 console.log('editSketchResult', editSketchResult)
@@ -716,7 +696,7 @@ export const ModelingMachineProvider = ({
             }
 
             return {
-              plane: result,
+              plane: planeData,
               sketchSolveId: sketchId,
             }
           }
