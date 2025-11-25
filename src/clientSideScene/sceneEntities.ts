@@ -98,7 +98,7 @@ import {
   segmentUtils,
 } from '@src/clientSideScene/segments'
 import type EditorManager from '@src/editor/manager'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import { ARG_AT, ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,

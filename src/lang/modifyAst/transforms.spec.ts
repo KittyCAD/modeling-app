@@ -1,7 +1,7 @@
 import type { PathToNode } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   addTranslate,
   addRotate,

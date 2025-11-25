@@ -153,7 +153,7 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveMode'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import type EditorManager from '@src/editor/manager'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
