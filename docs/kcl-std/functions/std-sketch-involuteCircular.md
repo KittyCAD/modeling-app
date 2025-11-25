@@ -71,4 +71,64 @@ startSketchOn(XZ)
 >
 </model-viewer>
 
+```kcl
+// Example: a gear that uses an involute circular profile for the teeth.
+@settings(defaultLengthUnit = mm)
+
+/// // Define gear parameters
+nTeeth = 21
+module = 1.5
+pressureAngle = 14deg
+gearHeight = 6
+pitchDiameter = module * nTeeth
+addendum = module
+deddendum = 1.25 * module
+baseDiameter = pitchDiameter * cos(pressureAngle)
+tipDiameter = pitchDiameter + 2 * module
+
+// Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
+gearSketch = startSketchOn(XY)
+  |> startProfile(at = polar(angle = 0, length = baseDiameter / 2))
+  |> involuteCircular(
+       startDiameter = baseDiameter,
+       endDiameter = tipDiameter,
+       angle = 0,
+       tag = $seg01,
+     )
+  |> line(endAbsolute = polar(angle = 160deg / nTeeth, length = tipDiameter / 2))
+  |> involuteCircular(
+       startDiameter = baseDiameter,
+       endDiameter = tipDiameter,
+       angle = -atan(segEndY(seg01) / segEndX(seg01)) - (180deg / nTeeth),
+       reverse = true,
+     )
+  // Position the end line of the sketch at the start of the next tooth
+  |> line(endAbsolute = polar(angle = 360deg / nTeeth, length = baseDiameter / 2))
+  // Pattern the sketch about the center by the specified number of teeth, then close the sketch
+  |> patternCircular2d(
+       instances = nTeeth,
+       center = [0, 0],
+       arcDegrees = 360deg,
+       rotateDuplicates = true,
+     )
+  |> close()
+  // Extrude the gear to the specified height
+  |> extrude(length = gearHeight)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the involuteCircular function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-involuteCircular1_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-involuteCircular1.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 
