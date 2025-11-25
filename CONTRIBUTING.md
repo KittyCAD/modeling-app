@@ -9,7 +9,7 @@ On Windows, it's also recommended to [upgrade your PowerShell version](https://l
 Then in the repo run the following to install and use the node version specified in `.nvmrc`. You might need to specify your processor architecture with `--arch arm64` or `--arch x64` if it's not autodetected.
 
 ```
-fnm install --corepack-enabled
+fnm install
 fnm use
 ```
 
@@ -55,13 +55,13 @@ npm run fetch:wasm:windows
 
 That will build the WASM binary and put in the `public` dir (though gitignored).
 
-Finally, to package the app locally, pointing to the the production infra (accessible by everyone)
+Finally, to build the desktop app locally, pointing to the the production infra (which is accessible by everyone), run:
 
 ```
 npm run tronb:package:prod
 ```
 
-This will run electron-builder and generate installable artifacts in the `out` directory. The regular sign in flow should work as expected.
+This will use electron-builder to generate installable artifacts in the `out` directory (eg. `Zoo Design Studio.app` on macOS and `Zoo Design Studio.exe` on Windows). The regular sign-in flow should work as expected.
 
 ### Development environment variables
 
@@ -75,15 +75,6 @@ web-based tests that use the production API for modeling commands.
 
 To work around this, you must develop using Electron.
 
-### Developing in Chrome
-
-Chrome is in the process of rolling out a new default which
-[blocks Third-Party Cookies](https://developer.chrome.com/en/docs/privacy-sandbox/third-party-cookie-phase-out/).
-If you're having trouble logging into the `modeling-app`, you may need to
-enable third-party cookies. You can enable third-party cookies by clicking on
-the eye with a slash through it in the URL bar, and clicking on "Enable
-Third-Party Cookies".
-
 ### Developing with Electron
 
 To spin up the desktop app, `npm install` and `npm run build:wasm` need to have been done before hand then:
@@ -94,9 +85,9 @@ npm run tron:start
 
 This will start the application and hot-reload on changes.
 
-Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (Linux and Windows).
+Note that it leverages a web server and by default points to our non-production dev.zoo.dev infrastructure, which isn't accessible to everyone. Refer to _Building the app_ if `tron:start` doesnt work for you.
 
-To package the app for your platform with electron-builder, run `npm run tronb:package:dev` (or `npm run tronb:package:prod` to point to the .env.production variables).
+Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (Linux and Windows).
 
 ## Running tests
 
