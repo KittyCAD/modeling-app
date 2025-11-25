@@ -2486,6 +2486,8 @@ w = f() + f()
         let ids2 = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
 
         assert_eq!(ids, ids2, "Generated IDs should match");
+        ctx.close().await;
+        ctx2.close().await;
     }
 
     #[cfg(feature = "artifact-graph")]
