@@ -28,7 +28,7 @@ import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { fileLoader, homeLoader } from '@src/lib/routeLoaders'
 import {
-  codeManager,
+  editorManager,
   engineCommandManager,
   rustContext,
 } from '@src/lib/singletons'
@@ -177,7 +177,7 @@ function CoreDump() {
     () =>
       new CoreDumpManager(
         engineCommandManager,
-        codeManager,
+        editorManager,
         rustContext,
         token
       ),

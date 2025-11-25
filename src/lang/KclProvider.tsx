@@ -3,13 +3,13 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { useRouteLoaderData } from 'react-router-dom'
 
 import { PATHS } from '@src/lib/paths'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import { editorManager, kclManager } from '@src/lib/singletons'
 import { type IndexLoaderData } from '@src/lib/types'
 
 import type { KCLError } from '@src/lang/errors'
 
 const KclContext = createContext({
-  code: codeManager?.code || '',
+  code: editorManager?.code || '',
   variables: kclManager?.variables,
   ast: kclManager?.ast,
   isExecuting: kclManager?.isExecuting,
@@ -34,7 +34,7 @@ export function KclContextProvider({
   const loadedCode = data?.code
 
   // Both the code state and the editor state start off with the same code.
-  const [code, setCode] = useState(loadedCode || codeManager.code)
+  const [code, setCode] = useState(loadedCode || editorManager.code)
 
   const [variables, setVariables] = useState(kclManager.variables)
   const [ast, setAst] = useState(kclManager.ast)
@@ -45,7 +45,7 @@ export function KclContextProvider({
   const [wasmInitFailed, setWasmInitFailed] = useState(false)
 
   useEffect(() => {
-    codeManager.registerCallBacks({
+    editorManager.registerCallBacks({
       setCode,
     })
     kclManager.registerCallBacks({

@@ -37,7 +37,6 @@ import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import {
   billingActor,
-  codeManager,
   editorManager,
   getSettings,
   kclManager,
@@ -172,7 +171,7 @@ export function App() {
           TutorialRequestToast({
             onboardingStatus: settings.app.onboardingStatus.current,
             navigate,
-            codeManager,
+            editorManager,
             kclManager,
             theme: getResolvedTheme(settings.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),

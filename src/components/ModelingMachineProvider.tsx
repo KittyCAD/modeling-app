@@ -94,7 +94,6 @@ import {
   updateExtraSegments,
 } from '@src/lib/selections'
 import {
-  codeManager,
   editorManager,
   engineCommandManager,
   kclManager,
@@ -511,7 +510,7 @@ export const ModelingMachineProvider = ({
               newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
               const didReParse = await kclManager.executeAstMock(newAst)
               if (err(didReParse)) return reject(didReParse)
-              await codeManager.updateEditorWithAstAndWriteToFile(newAst)
+              await editorManager.updateEditorWithAstAndWriteToFile(newAst)
             }
             sceneInfra.setCallbacks({
               onClick: () => {},
@@ -571,7 +570,7 @@ export const ModelingMachineProvider = ({
         'animate-to-face': fromPromise(async ({ input }) => {
           if (!input) return null
           if (input.type === 'extrudeFace' || input.type === 'offsetPlane') {
-            const originalCode = codeManager.code
+            const originalCode = editorManager.code
             const sketched =
               input.type === 'extrudeFace'
                 ? sketchOnExtrudedFace(
@@ -598,7 +597,7 @@ export const ModelingMachineProvider = ({
             const didReParse = await kclManager.executeAstMock(modifiedAst)
             if (err(didReParse)) {
               // there was a problem, restore the original code
-              codeManager.code = originalCode
+              editorManager.code = originalCode
               await kclManager.executeCode()
               return reject(didReParse)
             }
@@ -680,7 +679,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await codeManager.updateEditorWithAstAndWriteToFile(
+            await editorManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -738,7 +737,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await codeManager.updateEditorWithAstAndWriteToFile(
+            await editorManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -806,7 +805,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await codeManager.updateEditorWithAstAndWriteToFile(
+            await editorManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -869,7 +868,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await codeManager.updateEditorWithAstAndWriteToFile(
+            await editorManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -925,7 +924,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await codeManager.updateEditorWithAstAndWriteToFile(
+            await editorManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -982,7 +981,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await codeManager.updateEditorWithAstAndWriteToFile(
+            await editorManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -1039,7 +1038,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await codeManager.updateEditorWithAstAndWriteToFile(
+            await editorManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -1072,7 +1071,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await editorManager.updateEditorWithAstAndWriteToFile(
+              kclManager.ast
+            )
 
             return result
           }
@@ -1093,7 +1094,9 @@ export const ModelingMachineProvider = ({
                 data.p2
               )
             if (err(result)) return reject(result)
-            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await editorManager.updateEditorWithAstAndWriteToFile(
+              kclManager.ast
+            )
 
             return result
           }
@@ -1112,7 +1115,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await editorManager.updateEditorWithAstAndWriteToFile(
+              kclManager.ast
+            )
 
             return result
           }
@@ -1130,7 +1135,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await editorManager.updateEditorWithAstAndWriteToFile(
+              kclManager.ast
+            )
 
             return result
           }
@@ -1148,7 +1155,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await editorManager.updateEditorWithAstAndWriteToFile(
+              kclManager.ast
+            )
 
             return result
           }
@@ -1166,7 +1175,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await editorManager.updateEditorWithAstAndWriteToFile(
+              kclManager.ast
+            )
 
             return result
           }
@@ -1260,7 +1271,6 @@ export const ModelingMachineProvider = ({
               await updateModelingState(moddedAst, EXECUTION_TYPE_MOCK, {
                 kclManager,
                 editorManager,
-                codeManager,
                 rustContext,
               })
             }

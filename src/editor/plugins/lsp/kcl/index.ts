@@ -13,7 +13,7 @@ import {
 } from '@kittycad/codemirror-lsp-client'
 import {
   updateOutsideEditorEvent,
-  codeManagerUpdateEvent,
+  editorCodeUpdateEvent,
 } from '@src/editor/manager'
 import { editorManager, kclManager } from '@src/lib/singletons'
 import { deferExecution } from '@src/lib/utils'
@@ -93,7 +93,7 @@ export class KclPlugin implements PluginValue {
       }
 
       // Don't make this an else.
-      if (tr.annotation(codeManagerUpdateEvent.type)) {
+      if (tr.annotation(editorCodeUpdateEvent.type)) {
         // We want to ignore when we are forcing the editor to update.
         isRelevant = false
         break

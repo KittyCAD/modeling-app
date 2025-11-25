@@ -35,7 +35,7 @@ import type RustContext from '@src/lib/rustContext'
 import { binaryToUuid, isArray, promiseFactory, uuidv4 } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import type CodeManager from '@src/lang/codeManager'
+import type EditorManager from '@src/editor/manager'
 import { BSON } from 'bson'
 import {
   decode as msgpackDecode,
@@ -95,7 +95,7 @@ export class ConnectionManager extends EventTarget {
 
   connection: Connection | undefined
   sceneInfra: SceneInfra | undefined
-  codeManager: CodeManager | undefined
+  editorManager: EditorManager | undefined
   kclManager: KclManager | undefined
 
   // Circular dependency that is why it can be undefined
@@ -354,7 +354,7 @@ export class ConnectionManager extends EventTarget {
       rustContext: this.rustContext,
       settings: this.settings,
       jsAppSettings: await jsAppSettings(),
-      path: this.codeManager?.currentFilePath || '',
+      path: this.editorManager?.currentFilePath || '',
       sendSceneCommand: this.sendSceneCommand.bind(this),
       setTheme: this.setTheme.bind(this),
       listenToDarkModeMatcher: this.listenToDarkModeMatcher.bind(this),

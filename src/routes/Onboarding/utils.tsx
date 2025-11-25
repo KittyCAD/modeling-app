@@ -46,7 +46,7 @@ import {
 } from '@src/lib/layout'
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import EditorManager from '@src/editor/manager'
+import type EditorManager from '@src/editor/manager'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(

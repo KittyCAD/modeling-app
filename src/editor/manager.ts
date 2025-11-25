@@ -40,8 +40,9 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { bracket } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
 import { err, reportRejection } from '@src/lib/trap'
-import { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import toast from 'react-hot-toast'
+import { parse, type Program, recast } from '@src/lang/wasm'
 
 declare global {
   interface Window {
