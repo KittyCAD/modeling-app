@@ -17,6 +17,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { kclEditorMachine } from '@src/machines/kclEditorMachine'
 import type { ActorRefFrom } from 'xstate'
 import type RustContext from '@src/lib/rustContext'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -230,6 +231,7 @@ export interface ModelingMachineContext {
   // sketch solve context
   sketchSolveInit?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
   sketchSolveId?: number
+  initialSceneGraphDelta?: SceneGraphDelta
   // TODO are these both used?
   sketchSolveTool: EquipTool | null
   sketchSolveToolName: EquipTool | null

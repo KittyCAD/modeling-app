@@ -10,6 +10,7 @@ import { assign, fromPromise } from 'xstate'
 
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
@@ -625,6 +626,7 @@ export const ModelingMachineProvider = ({
           }): Promise<{
             plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
             sketchSolveId: number
+            initialSceneGraphDelta?: SceneGraphDelta
           }> => {
             if (!artifactId) {
               const errorMessage = 'No artifact ID provided'
@@ -667,6 +669,7 @@ export const ModelingMachineProvider = ({
             sceneInfra.camControls.syncDirection = 'clientToEngine'
 
             // Call editSketch API
+            let editSketchSceneGraph: SceneGraphDelta | undefined
             try {
               const project = theProject.current
               if (!project) {
@@ -676,14 +679,13 @@ export const ModelingMachineProvider = ({
                   kclManager.ast,
                   await jsAppSettings()
                 )
-                const editSketchResult = await rustContext.editSketch(
+                editSketchSceneGraph = await rustContext.editSketch(
                   0, // projectId
                   0, // fileId
                   0, // version
                   sketchId,
                   { settings: { modeling: { base_unit: defaultUnit.current } } }
                 )
-                console.log('editSketchResult', editSketchResult)
                 // Note: editSketch doesn't return kclSource, so we don't update the editor
               }
             } catch (error) {
@@ -698,6 +700,7 @@ export const ModelingMachineProvider = ({
             return {
               plane: planeData,
               sketchSolveId: sketchId,
+              initialSceneGraphDelta: editSketchSceneGraph,
             }
           }
         ),

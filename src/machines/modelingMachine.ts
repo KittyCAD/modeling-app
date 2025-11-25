@@ -5666,6 +5666,7 @@ export const modelingMachine = setup({
         input: ({ context }) => ({
           initialSketchSolvePlane: context.sketchSolveInit,
           sketchId: context.sketchSolveId || 0,
+          initialSceneGraphDelta: context.initialSceneGraphDelta,
           // Use context values if available, otherwise fall back to singletons
           codeManager: context.codeManager ?? codeManager,
           sceneInfra: context.sceneInfra ?? sceneInfra,
@@ -6267,6 +6268,7 @@ export const modelingMachine = setup({
               // Pipe the plane/face data from the actor into context
               sketchSolveInit: output?.plane ?? null,
               sketchSolveId: output?.sketchSolveId || 0,
+              initialSceneGraphDelta: output?.initialSceneGraphDelta,
             }
           }),
         },

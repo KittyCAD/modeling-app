@@ -190,9 +190,10 @@ function initSegmentGroup({
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }) => void
-}): Promise<Group> {
+}): Group | Error {
+  let group
   if (input.type === 'Point') {
-    return segmentUtilsMap.PointSegment.init({
+    group = segmentUtilsMap.PointSegment.init({
       input,
       theme,
       scale,
@@ -200,7 +201,7 @@ function initSegmentGroup({
       onUpdateSketchOutcome,
     })
   } else if (input.type === 'Line') {
-    return segmentUtilsMap.LineSegment.init({
+    group = segmentUtilsMap.LineSegment.init({
       input,
       theme,
       scale,
@@ -208,7 +209,136 @@ function initSegmentGroup({
       onUpdateSketchOutcome,
     })
   }
-  return Promise.reject(new Error(`Unknown input type: ${(input as any).type}`))
+  if (group instanceof Group) return group
+  return new Error(`Unknown input type: ${(input as any).type}`)
+}
+
+/**
+ * Updates the Three.js scene graph based on a SceneGraphDelta.
+ * This handles creating, updating, and invalidating segment groups.
+ */
+function updateSceneGraphFromDelta({
+  sceneGraphDelta,
+  context,
+  selectedIds,
+  duringAreaSelectIds,
+  onUpdateSketchOutcome,
+}: {
+  sceneGraphDelta: SceneGraphDelta
+  context: SketchSolveContext
+  selectedIds: Array<number>
+  duringAreaSelectIds: Array<number>
+  onUpdateSketchOutcome?: (data: {
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }) => void
+}): void {
+  const objects = sceneGraphDelta.new_graph.objects
+  const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
+  const factor =
+    (context.sceneInfra.camControls.camera instanceof OrthographicCamera ||
+    !context.sceneEntitiesManager.axisGroup
+      ? orthoFactor
+      : perspScale(
+          context.sceneInfra.camControls.camera,
+          context.sceneEntitiesManager.axisGroup
+        )) / context.sceneInfra.baseUnitMultiplier
+  const sketchSegments = context.sceneInfra.scene.children.find(
+    ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
+  )
+
+  // If invalidates_ids is true, we need to delete everything and start fresh
+  // because the old IDs can't be trusted
+  if (sceneGraphDelta.invalidates_ids && sketchSegments instanceof Group) {
+    disposeGroupChildren(sketchSegments)
+  } else {
+    // This invalidation logic is kinda based on some heuristics and is not exchaustive.
+    // so there are bugs, it's here to let some direct editing of the code from
+    // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
+    // The proper way to do this is to get an invalidation signal from the rust side.
+    const invalidateScene = sketchSegments?.children.some((child) => {
+      const childId = Number(child.name)
+      // check if number
+      if (Number.isNaN(childId)) {
+        return
+      }
+      // check id is not greater than new_graph.objects length
+      return childId >= sceneGraphDelta.new_graph.objects.length
+    })
+    if (invalidateScene) {
+      sketchSegments?.children.forEach((child) => {
+        context.sceneInfra.scene.remove(child)
+      })
+    }
+  }
+
+  // TODO ask Jon if there's a better way to determine what objects are part of the current sketch
+  let skipBecauseBeforeCurrentSketch = true
+  let skipBecauseAfterCurrentSketch = false
+  sceneGraphDelta.new_graph.objects.forEach((obj) => {
+    if (obj.kind.type === 'Sketch' && obj.id === context.sketchId) {
+      skipBecauseBeforeCurrentSketch = false
+    }
+    if (obj.kind.type === 'Sketch' && obj.id > context.sketchId) {
+      skipBecauseAfterCurrentSketch = true
+    }
+    if (skipBecauseBeforeCurrentSketch || skipBecauseAfterCurrentSketch) {
+      return
+    }
+    if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
+      return
+    }
+    const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
+    const ctor = buildSegmentCtorFromObject(obj, objects)
+    if (!(group instanceof Group)) {
+      if (!ctor) {
+        return
+      }
+      if (!onUpdateSketchOutcome) {
+        console.warn(
+          'Cannot init segment group without onUpdateSketchOutcome callback'
+        )
+        return
+      }
+      const group = initSegmentGroup({
+        input: ctor,
+        theme: context.sceneInfra.theme,
+        scale: factor,
+        id: obj.id,
+        onUpdateSketchOutcome,
+      })
+      if (group instanceof Error) {
+        console.error('Failed to init PointSegment for object', obj.id)
+        return
+      }
+      const sketchSceneGroup =
+        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+      if (sketchSceneGroup) {
+        group.traverse((child) => {
+          child.layers.set(SKETCH_LAYER)
+        })
+        group.layers.set(SKETCH_LAYER)
+        sketchSceneGroup.add(group)
+      }
+      return
+    }
+    if (!ctor) {
+      return
+    }
+
+    // Combine selectedIds and duringAreaSelectIds for highlighting
+    const allSelectedIds = Array.from(
+      new Set([...selectedIds, ...duringAreaSelectIds])
+    )
+
+    updateSegmentGroup({
+      group,
+      input: ctor,
+      selectedIds: allSelectedIds,
+      scale: factor,
+      theme: context.sceneInfra.theme,
+    })
+  })
 }
 
 function getLinkedPoint({
@@ -412,6 +542,7 @@ type SketchSolveContext = {
     sceneGraphDelta: SceneGraphDelta
   }
   initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+  initialSceneGraphDelta?: SceneGraphDelta
   sketchId: number
   // Dependencies passed from parent
   codeManager: CodeManager
@@ -432,6 +563,7 @@ export const sketchSolveMachine = setup({
         | ExtrudeFacePlane
         | null
       sketchId: number
+      initialSceneGraphDelta?: SceneGraphDelta
       codeManager: CodeManager
       sceneInfra: SceneInfra
       sceneEntitiesManager: SceneEntities
@@ -445,6 +577,22 @@ export const sketchSolveMachine = setup({
         context.sceneEntitiesManager.initSketchSolveEntityOrientation(
           context.initialPlane
         )
+      }
+    },
+    'initialize initial scene graph': ({ context }) => {
+      if (context.initialSceneGraphDelta) {
+        // Update the scene graph directly without sending an event
+        // This is for initial setup, so we use a no-op callback since we're just
+        // rendering existing state and don't want to trigger recursive updates
+        updateSceneGraphFromDelta({
+          sceneGraphDelta: context.initialSceneGraphDelta,
+          context,
+          selectedIds: context.selectedIds,
+          duringAreaSelectIds: context.duringAreaSelectIds,
+          onUpdateSketchOutcome: () => {
+            // No-op for initial setup - we're just rendering existing state
+          },
+        })
       }
     },
     setUpOnDragAndSelectionClickCallbacks: ({ self, context }) => {
@@ -1632,111 +1780,17 @@ export const sketchSolveMachine = setup({
     'update sketch outcome': assign(({ event, self, context }) => {
       assertEvent(event, 'update sketch outcome')
       context.codeManager.updateCodeEditor(event.data.kclSource.text)
-      const sceneGraphDelta = event.data.sceneGraphDelta
-      const objects = sceneGraphDelta.new_graph.objects
-      const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
-      const factor =
-        (context.sceneInfra.camControls.camera instanceof OrthographicCamera ||
-        !context.sceneEntitiesManager.axisGroup
-          ? orthoFactor
-          : perspScale(
-              context.sceneInfra.camControls.camera,
-              context.sceneEntitiesManager.axisGroup
-            )) / context.sceneInfra.baseUnitMultiplier
-      const sketchSegments = context.sceneInfra.scene.children.find(
-        ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
-      )
 
-      // If invalidates_ids is true, we need to delete everything and start fresh
-      // because the old IDs can't be trusted
-      if (sceneGraphDelta.invalidates_ids && sketchSegments instanceof Group) {
-        disposeGroupChildren(sketchSegments)
-      } else {
-        // This invalidation logic is kinda based on some heuristics and is not exchaustive.
-        // so there are bugs, it's here to let some direct editing of the code from
-        // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
-        // The proper way to do this is to get an invalidation signal from the rust side.
-        const invalidateScene = sketchSegments?.children.some((child) => {
-          const childId = Number(child.name)
-          // check if number
-          if (Number.isNaN(childId)) {
-            return
-          }
-          // check id is not greater than new_graph.objects length
-          return childId >= sceneGraphDelta.new_graph.objects.length
-        })
-        if (invalidateScene) {
-          sketchSegments?.children.forEach((child) => {
-            context.sceneInfra.scene.remove(child)
-          })
-        }
-      }
-
-      // TODO ask Jon if there's a better way to determine what objects are part of the current sketch
-      let skipBecauseBeforeCurrentSketch = true
-      let skipBecauseAfterCurrentSketch = false
-      sceneGraphDelta.new_graph.objects.forEach((obj) => {
-        if (obj.kind.type === 'Sketch' && obj.id === context.sketchId) {
-          skipBecauseBeforeCurrentSketch = false
-        }
-        if (obj.kind.type === 'Sketch' && obj.id > context.sketchId) {
-          skipBecauseAfterCurrentSketch = true
-        }
-        if (skipBecauseBeforeCurrentSketch || skipBecauseAfterCurrentSketch) {
-          return
-        }
-        if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
-          return
-        }
-        const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
-        const ctor = buildSegmentCtorFromObject(obj, objects)
-        if (!(group instanceof Group)) {
-          if (!ctor) {
-            return
-          }
-          initSegmentGroup({
-            input: ctor,
-            theme: context.sceneInfra.theme,
-            scale: factor,
-            id: obj.id,
-            onUpdateSketchOutcome: (data) =>
-              self.send({
-                type: 'update sketch outcome',
-                data,
-              }),
-          })
-            .then((group) => {
-              const sketchSceneGroup =
-                context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-              if (sketchSceneGroup) {
-                group.traverse((child) => {
-                  child.layers.set(SKETCH_LAYER)
-                })
-                group.layers.set(SKETCH_LAYER)
-                sketchSceneGroup.add(group)
-              }
-            })
-            .catch((e) => {
-              console.error('Failed to init PointSegment for object', obj.id, e)
-            })
-          return
-        }
-        if (!ctor) {
-          return
-        }
-
-        // Combine selectedIds and duringAreaSelectIds for highlighting
-        const allSelectedIds = Array.from(
-          new Set([...context.selectedIds, ...context.duringAreaSelectIds])
-        )
-
-        updateSegmentGroup({
-          group,
-          input: ctor,
-          selectedIds: allSelectedIds,
-          scale: factor,
-          theme: context.sceneInfra.theme,
-        })
+      updateSceneGraphFromDelta({
+        sceneGraphDelta: event.data.sceneGraphDelta,
+        context,
+        selectedIds: context.selectedIds,
+        duringAreaSelectIds: context.duringAreaSelectIds,
+        onUpdateSketchOutcome: (data) => {},
+        // self.send({
+        //   type: 'update sketch outcome',
+        //   data,
+        // }),
       })
 
       return {
@@ -1794,6 +1848,7 @@ export const sketchSolveMachine = setup({
       selectedIds: [],
       duringAreaSelectIds: [],
       initialPlane: input?.initialSketchSolvePlane ?? undefined,
+      initialSceneGraphDelta: input?.initialSceneGraphDelta,
       sketchId: input?.sketchId || 0,
       codeManager: input.codeManager,
       sceneInfra: input.sceneInfra,
@@ -2133,6 +2188,7 @@ export const sketchSolveMachine = setup({
 
   entry: [
     'initialize intersection plane',
+    'initialize initial scene graph',
     'setUpOnDragAndSelectionClickCallbacks',
   ],
 })
