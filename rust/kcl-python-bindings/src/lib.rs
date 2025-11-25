@@ -193,6 +193,7 @@ async fn execute(path: String) -> PyResult<()> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(())
         })
         .await
@@ -216,6 +217,7 @@ async fn execute_code(code: String) -> PyResult<()> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(())
         })
         .await
@@ -239,6 +241,7 @@ async fn mock_execute_code(code: String) -> PyResult<bool> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(true)
         })
         .await
@@ -265,6 +268,7 @@ async fn mock_execute(path: String) -> PyResult<bool> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(true)
         })
         .await
@@ -310,7 +314,9 @@ async fn import_and_snapshot_views(
         .spawn(async move {
             let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
             import(&ctx, filepaths, format).await?;
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -376,7 +382,10 @@ async fn execute_and_snapshot_views(
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -443,7 +452,10 @@ async fn execute_code_and_snapshot_views(
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -556,6 +568,9 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
                 )
                 .await?;
 
+            ctx.close().await;
+            drop(ctx);
+
             let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(
                     "Unexpected response from engine: {resp:?}"
@@ -603,6 +618,9 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
                     }),
                 )
                 .await?;
+
+            ctx.close().await;
+            drop(ctx);
 
             let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(

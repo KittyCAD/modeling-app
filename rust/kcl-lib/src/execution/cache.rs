@@ -378,6 +378,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(false));
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -423,6 +424,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(false));
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -468,6 +470,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(false));
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -517,6 +520,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(false));
+        exec_ctxt.close().await;
     }
 
     // Changing the grid settings with the exact same file should NOT bust the cache.
@@ -554,6 +558,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(true));
+        exec_ctxt.close().await;
     }
 
     // Changing the edge visibility settings with the exact same file should NOT bust the cache.
@@ -627,6 +632,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(true));
+        exec_ctxt.close().await;
     }
 
     // Changing the units settings using an annotation with the exact same file
@@ -665,6 +671,7 @@ startSketchOn(XY)
                 program: new_program.ast,
             }
         );
+        exec_ctxt.close().await;
     }
 
     // Removing the units settings using an annotation, when it was non-default
@@ -703,6 +710,7 @@ startSketchOn(XY)
                 program: new_program.ast,
             }
         );
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -769,6 +777,7 @@ extrude(profile001, length = 100)"#
         };
 
         assert_eq!(reapply_settings, false);
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -853,5 +862,6 @@ extrude(profile001, length = 100)
         };
 
         assert_eq!(reapply_settings, false);
+        exec_ctxt.close().await;
     }
 }

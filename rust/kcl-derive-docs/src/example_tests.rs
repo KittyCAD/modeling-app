@@ -281,6 +281,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-vector-normalize-0",
     "std-hole-countersink-0",
     "std-hole-counterbore-0",
+    "std-hole-holes-0",
     "std-hole-hole-0",
     "std-hole-hole-1",
     "std-hole-drill-0",
