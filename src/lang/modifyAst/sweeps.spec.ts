@@ -1,4 +1,4 @@
-import { assertParse, recast, type Program, type Name } from '@src/lang/wasm'
+import { assertParse, recast, type Name } from '@src/lang/wasm'
 import {
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
@@ -7,6 +7,8 @@ import {
   getAstAndSketchSelections,
   getCapFromCylinder,
   getFacesFromBox,
+  getKclCommandValue,
+  runNewAstAndCheckForSweep,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
@@ -18,7 +20,6 @@ import {
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclSingleton'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
 import {
   addExtrude,
   addLoft,
@@ -57,37 +58,6 @@ beforeEach(async () => {
 afterAll(() => {
   engineCommandManagerInThisFile.tearDown()
 })
-
-async function runNewAstAndCheckForSweep(
-  ast: Node<Program>,
-  rustContext: RustContext
-) {
-  const { artifactGraph } = await enginelessExecutor(
-    ast,
-    undefined,
-    undefined,
-    rustContext
-  )
-  const sweepArtifact = artifactGraph.values().find((a) => a.type === 'sweep')
-  expect(sweepArtifact).toBeDefined()
-}
-
-async function getKclCommandValue(
-  value: string,
-  instance: ModuleType,
-  rustContext: RustContext
-) {
-  const result = await stringToKclExpression(
-    value,
-    undefined,
-    instance,
-    rustContext
-  )
-  if (err(result) || 'errors' in result) {
-    throw new Error('Failed to create KCL expression')
-  }
-  return result
-}
 
 // TODO: two different methods for the same thing. Why?
 async function getAstAndArtifactGraphEngineless(
@@ -542,7 +512,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
         kclManagerInThisFile
       )
       const sectional = true
-      const relativeTo = 'sketchPlane'
+      const relativeTo = 'SKETCH_PLANE'
       const result = addSweep({ ast, sketches, path, sectional, relativeTo })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -552,7 +522,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
   profile001,
   path = profile002,
   sectional = true,
-  relativeTo = 'sketchPlane',
+  relativeTo = sweep::SKETCH_PLANE,
 )`)
     })
 
@@ -562,7 +532,7 @@ sweep001 = sweep(
   profile001,
   path = profile002,
   sectional = true,
-  relativeTo = 'sketchPlane',
+  relativeTo = sweep::SKETCH_PLANE,
 )`
       const { ast, sketches, path } = await getAstAndSketchesForSweep(
         circleAndLineCodeWithSweep,
@@ -570,7 +540,7 @@ sweep001 = sweep(
         kclManagerInThisFile
       )
       const sectional = false
-      const relativeTo = 'trajectoryCurve'
+      const relativeTo = 'TRAJECTORY'
       const nodeToEdit = createPathToNodeForLastVariable(ast)
       const result = addSweep({
         ast,
@@ -585,7 +555,7 @@ sweep001 = sweep(
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineCode)
       expect(newCode).toContain(
-        `sweep001 = sweep(profile001, path = profile002, relativeTo = 'trajectoryCurve')`
+        `sweep001 = sweep(profile001, path = profile002, relativeTo = sweep::TRAJECTORY)`
       )
     })
 

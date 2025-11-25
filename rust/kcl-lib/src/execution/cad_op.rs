@@ -2,8 +2,6 @@ use indexmap::IndexMap;
 use serde::Serialize;
 
 use super::{ArtifactId, KclValue, types::NumericType};
-#[cfg(feature = "artifact-graph")]
-use crate::parsing::ast::types::{Node, Program};
 use crate::{ModuleId, NodePath, SourceRange, parsing::ast::types::ItemVisibility};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
@@ -22,8 +20,12 @@ pub enum Operation {
         labeled_args: IndexMap<String, OpArg>,
         /// The node path of the operation in the source code.
         node_path: NodePath,
-        /// The source range of the operation in the source code.
+        /// The true source range of the operation in the source code.
         source_range: SourceRange,
+        /// The source range that's the boundary of calling the standard
+        /// library.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        stdlib_entry_source_range: Option<SourceRange>,
         /// True if the operation resulted in an error.
         #[serde(default, skip_serializing_if = "is_false")]
         is_error: bool,
@@ -64,14 +66,22 @@ impl Operation {
     }
 
     #[cfg(feature = "artifact-graph")]
-    pub(crate) fn fill_node_paths(&mut self, program: &Node<Program>, cached_body_items: usize) {
+    pub(crate) fn fill_node_paths(&mut self, programs: &crate::execution::ProgramLookup, cached_body_items: usize) {
         match self {
             Operation::StdLibCall {
                 node_path,
                 source_range,
+                stdlib_entry_source_range,
                 ..
+            } => {
+                // If there's a stdlib entry source range, use that to fill the
+                // node path. For example, this will point to the `hole()` call
+                // instead of the `subtract()` call that's deep inside the
+                // stdlib.
+                let range = stdlib_entry_source_range.as_ref().unwrap_or(source_range);
+                node_path.fill_placeholder(programs, cached_body_items, *range);
             }
-            | Operation::VariableDeclaration {
+            Operation::VariableDeclaration {
                 node_path,
                 source_range,
                 ..
@@ -81,7 +91,7 @@ impl Operation {
                 source_range,
                 ..
             } => {
-                node_path.fill_placeholder(program, cached_body_items, *source_range);
+                node_path.fill_placeholder(programs, cached_body_items, *source_range);
             }
             Operation::GroupEnd => {}
         }

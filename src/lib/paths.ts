@@ -296,3 +296,25 @@ export const isExtensionARelevantExtension = (
 ) => {
   return relevantExtensions.includes(extension.toLowerCase())
 }
+
+/**
+ * Given an absolute file path, remove everything
+ * up to and including the project name to get
+ * the path to the file relative to the project root.
+ */
+export function getFilePathRelativeToProject(
+  absoluteFilePath: string,
+  projectName: string,
+  sep = window.electron?.sep
+) {
+  // Gotcha: below we're gonna look for the index of the project name,
+  // but what if the project name happens to be in the path earlier than the real one?
+  // Let's put separators on either side of it and offset by one, so we know
+  // it matches a whole directory name.
+  const projectNameWithSeparators = sep + projectName + sep
+  const projectIndexInPath = absoluteFilePath.indexOf(projectNameWithSeparators)
+  // Let's leave the leading separator
+  const sliceOffset = projectNameWithSeparators.length - 1
+
+  return absoluteFilePath.slice(projectIndexInPath + sliceOffset) ?? ''
+}

@@ -47,36 +47,6 @@ test.describe('Text-to-CAD tests', () => {
     const submittedMessageSecond = page.getByText(newPrompt)
     await expect(submittedMessageSecond.first()).toBeVisible()
   })
-
-  test('sending a bad prompt fails, can start over from convo', async ({
-    page,
-    homePage,
-    cmdBar,
-    toolbar,
-    scene,
-    editor,
-  }) => {
-    await page.setBodyDimensions({ width: 2000, height: 1000 })
-    await expect(homePage.textToCadBtn).toBeEnabled()
-
-    const badPrompt = 'akjsndladf lajbhflauweyfaaaljhr472iouafyvsssssss'
-    await sendPromptFromCommandBarAndSetNewProject(page, badPrompt, cmdBar)
-
-    // Look out for the message
-    const submittedMessage = page.getByText(badPrompt)
-    await expect(submittedMessage.first()).toBeVisible()
-
-    const failureToastMessage = page.getByText(
-      `The prompt must clearly describe a CAD model`
-    )
-    await expect(failureToastMessage.first()).toBeVisible({ timeout: 30_000 })
-
-    // Start a new prompt
-    await toolbar.fireTtcPrompt('create a cube')
-
-    // Make sure the new prompt works
-    await editor.expectEditor.toContain('startSketchOn', { timeout: 60_000 })
-  })
 })
 
 async function sendPromptFromCommandBarAndSetNewProject(
@@ -139,7 +109,7 @@ async function sendPromptFromCommandBarAndSetNewProject(
 
 /**
  * Below there are twelve (12) tests for testing the navigation and file creation
- * logic around text to cad. The Text to CAD command is now globally available
+ * logic around text to cad. The Text-to-CAD command is now globally available
  * within the application and is the same command for all parts of the application.
  * There are many new user scenarios to test because we can navigate to any project
  * you can accept and reject the creation and everything needs to be updated properly.
@@ -203,7 +173,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
   }
 
   test(
-    'Home Page -> Text To CAD -> New Project -> Stay in home page -> should navigate to file',
+    'Home Page -> Text-to-CAD -> New Project -> Stay in home page -> should navigate to file',
     { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       await page.setBodyDimensions({ width: 2000, height: 1000 })
@@ -216,7 +186,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       await page.getByTestId('command-bar-open-button').click()
 
       // search Text To CAD
-      await page.keyboard.type('Text To CAD')
+      await page.keyboard.type('Text-to-CAD')
       await page.keyboard.press('Enter')
 
       // new project

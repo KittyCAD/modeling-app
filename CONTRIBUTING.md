@@ -55,10 +55,10 @@ npm run fetch:wasm:windows
 
 That will build the WASM binary and put in the `public` dir (though gitignored).
 
-Finally, to run the web app only, run:
+Finally, to run the app only, run:
 
 ```
-npm start
+npm run tron:start
 ```
 
 If you're not a Zoo employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development.local` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to `localhost:3000` again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
@@ -66,6 +66,14 @@ If you're not a Zoo employee you won't be able to access the dev environment, yo
 ### Development environment variables
 
 The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_ZOO_API_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
+
+### Developing in the browser
+
+If you're not a Zoo employee, modeling commands are **billable** when running in
+the browser during local development! This is also true of non-Electron
+web-based tests that use the production API for modeling commands.
+
+To work around this, you must develop using Electron.
 
 ### Developing in Chrome
 

@@ -1,5 +1,6 @@
 import env from '@src/env'
 import { BSON } from 'bson'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
 import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
@@ -31,6 +32,8 @@ export enum MlEphantSetupErrors {
   InvalidConversationId = 'Invalid conversation_id',
   NoRefParentSend = 'no ref parent send',
 }
+
+type TypeVariant<T, U = T> = U extends T ? keyof U : never
 
 type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
   type: 'user'
@@ -130,6 +133,7 @@ export interface MlEphantManagerContext2 {
   conversation?: Conversation
   conversationId?: string
   lastMessageId?: number
+  lastMessageType?: TypeVariant<MlCopilotServerMessage>
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
   cachedSetup?: {
@@ -147,7 +151,9 @@ export const mlEphantDefaultContext2 = (args: {
   ws: undefined,
   abruptlyClosed: false,
   conversation: undefined,
+  cachedSetup: undefined,
   lastMessageId: undefined,
+  lastMessageType: undefined,
   fileFocusedOnInEditor: undefined,
   projectNameCurrentlyOpened: undefined,
 })
@@ -243,7 +249,8 @@ export const mlEphantManagerMachine2 = setup({
       // On future reenters of this actor it will not have args.input.event
       // You must read from the context for the cached conversationId
       const maybeConversationId =
-        args.input.context?.cachedSetup?.conversationId
+        args.input.context?.cachedSetup?.conversationId ??
+        args.input.context?.conversationId
       const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
 
       const ws = await Socket(
@@ -283,10 +290,18 @@ export const mlEphantManagerMachine2 = setup({
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
             if (!isString(event.data)) {
+              const binaryData = new Uint8Array(event.data)
               try {
-                response = BSON.deserialize(new Uint8Array(event.data))
-              } catch (e: unknown) {
-                return console.error(e)
+                response = msgpackDecode(binaryData)
+              } catch (msgpackError) {
+                try {
+                  response = BSON.deserialize(binaryData)
+                } catch (bsonError) {
+                  return console.error(
+                    'failed to deserialize binary websocket message',
+                    { msgpackError, bsonError }
+                  )
+                }
               }
             } else {
               try {
@@ -387,6 +402,10 @@ export const mlEphantManagerMachine2 = setup({
             // to us. That means data is being stored and the system is ready.
             if ('conversation_id' in response) {
               onFulfilled({
+                abruptlyClosed: false,
+                lastMessageId: undefined,
+                lastMessageType: undefined,
+                cachedSetup: undefined,
                 conversation: {
                   exchanges: maybeReplayedExchanges,
                 },
@@ -481,7 +500,16 @@ export const mlEphantManagerMachine2 = setup({
       on: {
         [MlEphantManagerTransitions2.CacheSetupAndConnect]: {
           target: MlEphantManagerStates2.Setup,
-          actions: [assign({ abruptlyClosed: false }), 'cacheSetup'],
+          actions: [
+            assign({
+              abruptlyClosed: false,
+              lastMessageId: undefined,
+              lastMessageType: undefined,
+              conversation: undefined,
+              conversationId: undefined,
+            }),
+            'cacheSetup',
+          ],
         },
         ...transitions([MlEphantManagerStates2.Setup]),
       },
@@ -517,6 +545,11 @@ export const mlEphantManagerMachine2 = setup({
               if (event.error === MlEphantSetupErrors.ConversationNotFound) {
                 // set the conversation Id to undefined to have the reenter make a new conversation id
                 return {
+                  abruptlyClosed: false,
+                  conversation: undefined,
+                  conversationId: undefined,
+                  lastMessageId: undefined,
+                  lastMessageType: undefined,
                   cachedSetup: {
                     refParentSend: context.cachedSetup?.refParentSend,
                     conversationId: undefined,
@@ -618,9 +651,28 @@ export const mlEphantManagerMachine2 = setup({
                       lastExchange.responses.push(event.response)
                     }
 
+                    // This sucks but must be done because we can't
+                    // enumerate the message types.
+                    const r = event.response
+                    const ts: TypeVariant<MlCopilotServerMessage>[] = [
+                      'info',
+                      'error',
+                      'end_of_stream',
+                      'session_data',
+                      'conversation_id',
+                      'delta',
+                      'tool_output',
+                      'reasoning',
+                      'replay',
+                    ]
+                    const lastMessageType:
+                      | TypeVariant<MlCopilotServerMessage>
+                      | undefined = ts.find((t) => t in r)
+
                     return {
                       conversation,
                       lastMessageId,
+                      lastMessageType,
                     }
                   }),
                 ],
@@ -685,8 +737,12 @@ export const mlEphantManagerMachine2 = setup({
               return
             }
             return assign({
+              abruptlyClosed: false,
               conversation: undefined,
               conversationId: undefined,
+              cachedSetup: undefined,
+              lastMessageId: undefined,
+              lastMessageType: undefined,
             })
           },
           (args) => {

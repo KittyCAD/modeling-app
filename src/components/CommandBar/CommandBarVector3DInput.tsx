@@ -23,7 +23,7 @@ function CoordinateInput({
   value: string
   onChange: (value: string) => void
   calculation: ReturnType<typeof useCalculateKclExpression>
-  inputRef: React.RefObject<HTMLInputElement>
+  inputRef: React.RefObject<HTMLInputElement | null>
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
   testId: string
 }) {
@@ -232,7 +232,7 @@ function CommandBarVector3DInput({
 
   function handleKeyDown(
     e: React.KeyboardEvent<HTMLInputElement>,
-    nextInputRef?: React.RefObject<HTMLInputElement>
+    nextInputRef?: React.RefObject<HTMLInputElement | null>
   ) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
       commandBarActor.send({ type: 'Close' })

@@ -60,6 +60,10 @@ import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
 import { defaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { defaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { getResolvedTheme } from '@src/lib/theme'
+import {
+  MlEphantManagerReactContext,
+  MlEphantManagerTransitions2,
+} from '@src/machines/mlEphantManagerMachine2'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -72,6 +76,7 @@ export function App() {
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
+  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -92,6 +97,14 @@ export function App() {
   useEffect(() => {
     onProjectOpen({ name: projectName, path: projectPath }, file || null)
   }, [onProjectOpen, projectName, projectPath, file])
+
+  useEffect(() => {
+    // Clear conversation
+    mlEphantManagerActor2.send({
+      type: MlEphantManagerTransitions2.ConversationClose,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [projectName, projectPath])
 
   useHotKeyListener()
 
@@ -223,6 +236,7 @@ export function App() {
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={
               <UndoRedoButtons
+                data-testid="app-header-undo-redo"
                 editorManager={editorManager}
                 className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
               />

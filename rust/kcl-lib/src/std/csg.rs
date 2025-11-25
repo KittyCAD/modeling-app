@@ -50,11 +50,13 @@ pub(crate) async fn inner_union(
     }
 
     // Flush the fillets for the solids.
-    exec_state.flush_batch_for_solids((&args).into(), &solids).await?;
+    exec_state
+        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &solids)
+        .await?;
 
     let result = exec_state
         .send_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, solid_out_id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, solid_out_id),
             ModelingCmd::from(mcmd::BooleanUnion {
                 solid_ids: solids.iter().map(|s| s.id).collect(),
                 tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
@@ -119,11 +121,13 @@ pub(crate) async fn inner_intersect(
     }
 
     // Flush the fillets for the solids.
-    exec_state.flush_batch_for_solids((&args).into(), &solids).await?;
+    exec_state
+        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &solids)
+        .await?;
 
     let result = exec_state
         .send_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, solid_out_id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, solid_out_id),
             ModelingCmd::from(mcmd::BooleanIntersection {
                 solid_ids: solids.iter().map(|s| s.id).collect(),
                 tolerance: LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
@@ -185,12 +189,12 @@ pub(crate) async fn inner_subtract(
     // Flush the fillets for the solids and the tools.
     let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
     exec_state
-        .flush_batch_for_solids((&args).into(), &combined_solids)
+        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &combined_solids)
         .await?;
 
     let result = exec_state
         .send_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, solid_out_id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, solid_out_id),
             ModelingCmd::from(mcmd::BooleanSubtract {
                 target_ids: solids.iter().map(|s| s.id).collect(),
                 tool_ids: tools.iter().map(|s| s.id).collect(),

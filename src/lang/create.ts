@@ -38,7 +38,6 @@ export function createLiteral(
   suffix?: NumericSuffix,
   wasmInstance?: ModuleType
 ): Node<Literal> {
-  // TODO: Should we handle string escape sequences?
   return {
     type: 'Literal',
     start: 0,
@@ -60,7 +59,15 @@ function createRawStr(
   suffix?: NumericSuffix,
   wasmInstance?: ModuleType
 ): string {
-  if (typeof value !== 'number' || !suffix) {
+  // For strings, include double quotes in raw so they're preserved during unparse
+  // Escape backslashes and double quotes to create valid KCL string literals
+  if (typeof value === 'string') {
+    const escaped = value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+    return `"${escaped}"`
+  }
+
+  // For booleans or numbers without suffix, just return the value
+  if (typeof value === 'boolean' || !suffix) {
     return `${value}`
   }
 

@@ -23,7 +23,6 @@ import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
 import { useTryConnect } from '@src/hooks/network/useTryConnect'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
-import { ManualReconnection } from '@src/components/ManualReconnection'
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import { useOnFileRoute } from '@src/hooks/network/useOnFileRoute'
@@ -36,6 +35,9 @@ import type { IndexLoaderData } from '@src/lib/types'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { EngineDebugger } from '@src/lib/debugger'
+
+const TIME_TO_CONNECT = 30_000
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -144,7 +146,7 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
       })
@@ -189,7 +191,7 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
       }).catch((e) => {
@@ -212,7 +214,7 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
       }).catch((e) => {
@@ -223,6 +225,7 @@ export const ConnectionStream = (props: {
     infiniteDetectionLoopCallback: () => {
       setShowManualConnect(true)
     },
+    engineCommandManager,
   })
   useOnVitestEngineOnline({
     callback: () => {
@@ -235,7 +238,7 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
       }).catch((e) => {
@@ -255,7 +258,7 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
       }).catch((e) => {
@@ -263,10 +266,15 @@ export const ConnectionStream = (props: {
         setShowManualConnect(true)
       })
     },
+    engineCommandManager,
   })
   useOnWindowOnlineOffline({
     close: () => {
       setShowManualConnect(true)
+      EngineDebugger.addLog({
+        label: 'ConnectionStream.tsx',
+        message: 'window offline, calling tearDown()',
+      })
       engineCommandManager.tearDown()
     },
     connect: () => {
@@ -279,7 +287,7 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
       }).catch((e) => {
@@ -300,6 +308,7 @@ export const ConnectionStream = (props: {
     callback: () => {
       modelingSend({ type: 'Cancel' })
     },
+    engineCommandManager,
   })
 
   return (
@@ -344,19 +353,13 @@ export const ConnectionStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
-      {!isSceneReady && !showManualConnect && (
+      {(!isSceneReady || showManualConnect) && (
         <Loading
           isRetrying={false}
           retryAttemptCountdown={0}
           dataTestId="loading-engine"
           className="absolute inset-0 h-screen"
-        >
-          Connecting and setting up scene...
-        </Loading>
-      )}
-      {showManualConnect && (
-        <ManualReconnection
-          className="absolute inset-0 h-screen"
+          showManualConnect={showManualConnect}
           callback={() => {
             setShowManualConnect(false)
             tryConnecting({
@@ -367,7 +370,7 @@ export const ConnectionStream = (props: {
               setIsSceneReady,
               isConnecting,
               numberOfConnectionAttempts,
-              timeToConnect: 30_000,
+              timeToConnect: TIME_TO_CONNECT,
               settings: settingsEngine,
               setShowManualConnect,
             }).catch((e) => {
@@ -375,7 +378,9 @@ export const ConnectionStream = (props: {
               setShowManualConnect(true)
             })
           }}
-        ></ManualReconnection>
+        >
+          Connecting and setting up scene...
+        </Loading>
       )}
       )
     </div>

@@ -791,8 +791,7 @@ openSketch = startSketchOn(XY)
         highlightedHeaderArg: 'plane',
         commandName: 'Offset plane',
       })
-      const xz = await toolbar.getFeatureTreeOperation('Front plane', 0)
-      await xz.click()
+      await toolbar.selectDefaultPlane('Front plane')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'offset',
@@ -1154,7 +1153,7 @@ sketch002 = startSketchOn(plane001)
 sketch001 = startSketchOn(XZ)
 profile001 = ${circleCode}`
     const sweepDeclaration = 'sweep001 = sweep(profile001, path = helix001)'
-    const editedSweepDeclaration = `sweep001 = sweep(profile001, path = helix001, relativeTo = 'sketchPlane')`
+    const editedSweepDeclaration = `sweep001 = sweep(profile001, path = helix001, relativeTo = sweep::SKETCH_PLANE)`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -1236,11 +1235,11 @@ profile001 = ${circleCode}`
         highlightedHeaderArg: 'relativeTo',
         commandName: 'Sweep',
       })
-      await cmdBar.selectOption({ name: 'sketchPlane' }).click()
+      await cmdBar.selectOption({ name: 'Sketch Plane' }).click()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          RelativeTo: 'sketchPlane',
+          RelativeTo: 'SKETCH_PLANE',
         },
         commandName: 'Sweep',
       })
@@ -2556,8 +2555,8 @@ box = extrude(profile, length = 30)`
     const initialCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
-    const declaration = `appearance(extrude001, color = '#ff0000')`
-    const editedDeclaration = `appearance(extrude001, color = '#00ff00')`
+    const declaration = `appearance(extrude001, color = "#ff0000")`
+    const editedDeclaration = `appearance(extrude001, color = "#00ff00")`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
@@ -4048,6 +4047,445 @@ extrude001 = extrude(sketch001, length = 30)
     })
   })
 
+  test('GDT Datum from command bar', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)
+    `
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      // Close panes to ensure toolbar buttons are visible
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+    })
+
+    // Adjusted coordinates to center screen for clicking on cap
+    const testPoint = { x: 500, y: 200 }
+    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    await test.step('Add GDT Datum to the scene', async () => {
+      await test.step('Open GDT Datum command from toolbar', async () => {
+        await page
+          .getByRole('button', { name: 'caret down gdt: open menu' })
+          .click()
+        await expect(page.getByTestId('dropdown-gdt-datum')).toBeVisible()
+        await page.getByTestId('dropdown-gdt-datum').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'GDT Datum',
+          currentArgKey: 'faces',
+          currentArgValue: '',
+          headerArguments: {
+            Faces: '',
+            Name: '',
+          },
+          highlightedHeaderArg: 'faces',
+        })
+      })
+
+      await test.step('Select face and configure basic parameters', async () => {
+        await test.step('Select face', async () => {
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Datum',
+            currentArgKey: 'faces',
+            currentArgValue: '',
+            headerArguments: {
+              Faces: '',
+              Name: '',
+            },
+            highlightedHeaderArg: 'faces',
+          })
+          await clickOnCap()
+        })
+
+        await test.step('Configure name', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Datum',
+            currentArgKey: 'name',
+            currentArgValue: '',
+            headerArguments: {
+              Faces: '1 cap',
+              Name: '',
+            },
+            highlightedHeaderArg: 'name',
+          })
+          // Keep default name 'A'
+        })
+
+        await test.step('Review basic parameters', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Datum',
+            headerArguments: {
+              Faces: '1 cap',
+              Name: 'A',
+            },
+          })
+        })
+      })
+
+      await test.step('Configure optional parameters', async () => {
+        await test.step('Configure frame position', async () => {
+          await cmdBar.clickOptionalArgument('framePosition')
+
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Datum',
+            currentArgKey: 'framePosition',
+            currentArgValue: '[0, 0]',
+            headerArguments: {
+              Faces: '1 cap',
+              Name: 'A',
+              FramePosition: '',
+            },
+            highlightedHeaderArg: 'framePosition',
+          })
+          // Update frame position from [0, 0] to [5, 0]
+          await page.getByTestId('vector2d-x-input').fill('5')
+          await page.getByTestId('vector2d-y-input').fill('0')
+          await cmdBar.progressCmdBar()
+          // Review changes to frame position
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Datum',
+            headerArguments: {
+              Faces: '1 cap',
+              Name: 'A',
+              FramePosition: '[5, 0]',
+            },
+          })
+        })
+
+        await test.step('Configure frame plane', async () => {
+          await cmdBar.clickOptionalArgument('framePlane')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Datum',
+            currentArgKey: 'framePlane',
+            currentArgValue: '',
+            headerArguments: {
+              Faces: '1 cap',
+              Name: 'A',
+              FramePosition: '[5, 0]',
+              FramePlane: '',
+            },
+            highlightedHeaderArg: 'framePlane',
+          })
+          // Select XZ plane and auto-progress
+          await cmdBar.selectOption({ name: 'XZ' }).click()
+          // Review changes to frame plane
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Datum',
+            headerArguments: {
+              Faces: '1 cap',
+              Name: 'A',
+              FramePosition: '[5, 0]',
+              FramePlane: 'XZ',
+            },
+          })
+        })
+
+        await test.step('Configure font point size', async () => {
+          await cmdBar.clickOptionalArgument('fontPointSize')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Datum',
+            currentArgKey: 'fontPointSize',
+            currentArgValue: '36',
+            headerArguments: {
+              Faces: '1 cap',
+              Name: 'A',
+              FramePosition: '[5, 0]',
+              FramePlane: 'XZ',
+              FontPointSize: '',
+            },
+            highlightedHeaderArg: 'fontPointSize',
+          })
+          // Update font point size from 36 to 48
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('48')
+          await cmdBar.progressCmdBar()
+          // Review changes to font point size
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Datum',
+            headerArguments: {
+              Faces: '1 cap',
+              Name: 'A',
+              FramePosition: '[5, 0]',
+              FramePlane: 'XZ',
+              FontPointSize: '48',
+            },
+          })
+        })
+
+        await test.step('Configure font scale', async () => {
+          await cmdBar.clickOptionalArgument('fontScale')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Datum',
+            currentArgKey: 'fontScale',
+            currentArgValue: '1.0',
+            headerArguments: {
+              Faces: '1 cap',
+              Name: 'A',
+              FramePosition: '[5, 0]',
+              FramePlane: 'XZ',
+              FontPointSize: '48',
+              FontScale: '',
+            },
+            highlightedHeaderArg: 'fontScale',
+          })
+          // Update font scale from 1.0 to 2.0
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('2.0')
+          await cmdBar.progressCmdBar()
+          // Review changes to font scale
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Datum',
+            headerArguments: {
+              Faces: '1 cap',
+              Name: 'A',
+              FramePosition: '[5, 0]',
+              FramePlane: 'XZ',
+              FontPointSize: '48',
+              FontScale: '2',
+            },
+          })
+        })
+      })
+
+      await test.step('Submit and verify all parameters', async () => {
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain('experimentalFeatures = allow')
+        await editor.expectEditor.toContain('gdt::datum(')
+        await editor.expectEditor.toContain('face = capEnd001')
+        await editor.expectEditor.toContain('name = "A"')
+        await editor.expectEditor.toContain('framePosition = [5, 0]')
+        await editor.expectEditor.toContain('framePlane = XZ')
+        await editor.expectEditor.toContain('fontPointSize = 48')
+        await editor.expectEditor.toContain('fontScale = 2')
+      })
+    })
+
+    await test.step('Edit GDT Datum', async () => {
+      await test.step('Open edit mode from feature tree', async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const gdtOperation = await toolbar.getFeatureTreeOperation('Datum', 0)
+        await gdtOperation.dblclick()
+        // Should open the command bar in edit mode
+      })
+
+      await test.step('Edit parameters', async () => {
+        await test.step('Edit name from A to B', async () => {
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Datum',
+            currentArgKey: 'name',
+            currentArgValue: '',
+            headerArguments: {
+              Name: 'A',
+              FramePosition: '[5, 0]',
+              FramePlane: 'XZ',
+              FontPointSize: '48',
+              FontScale: '2',
+            },
+            highlightedHeaderArg: 'name',
+          })
+          // Update name from A to B
+          await expect(cmdBar.currentArgumentInput).toBeVisible()
+          await cmdBar.currentArgumentInput.fill('B')
+          await cmdBar.progressCmdBar()
+          // Review changes to name
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Datum',
+            headerArguments: {
+              Name: 'B',
+              FramePosition: '[5, 0]',
+              FramePlane: 'XZ',
+              FontPointSize: '48',
+              FontScale: '2',
+            },
+          })
+        })
+
+        await test.step('Edit frame position', async () => {
+          await page.getByRole('button', { name: 'FramePosition' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Datum',
+            currentArgKey: 'framePosition',
+            currentArgValue: '[5, 0]',
+            headerArguments: {
+              Name: 'B',
+              FramePosition: '[5, 0]',
+              FramePlane: 'XZ',
+              FontPointSize: '48',
+              FontScale: '2',
+            },
+            highlightedHeaderArg: 'framePosition',
+          })
+          // Update frame position from [5, 0] to [10, 5]
+          await page.getByTestId('vector2d-x-input').fill('10')
+          await page.getByTestId('vector2d-y-input').fill('5')
+          await cmdBar.progressCmdBar()
+          // Review changes to frame position
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Datum',
+            headerArguments: {
+              Name: 'B',
+              FramePosition: '[10, 5]',
+              FramePlane: 'XZ',
+              FontPointSize: '48',
+              FontScale: '2',
+            },
+          })
+        })
+
+        await test.step('Edit frame plane', async () => {
+          await page.getByRole('button', { name: 'FramePlane' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Datum',
+            currentArgKey: 'framePlane',
+            currentArgValue: '',
+            headerArguments: {
+              Name: 'B',
+              FramePosition: '[10, 5]',
+              FramePlane: 'XZ',
+              FontPointSize: '48',
+              FontScale: '2',
+            },
+            highlightedHeaderArg: 'framePlane',
+          })
+          // Update frame plane from XZ to YZ
+          await cmdBar.selectOption({ name: 'YZ' }).click()
+          // Review changes to frame plane
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Datum',
+            headerArguments: {
+              Name: 'B',
+              FramePosition: '[10, 5]',
+              FramePlane: 'YZ',
+              FontPointSize: '48',
+              FontScale: '2',
+            },
+          })
+        })
+
+        await test.step('Edit font point size', async () => {
+          await page.getByRole('button', { name: 'FontPointSize' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Datum',
+            currentArgKey: 'fontPointSize',
+            currentArgValue: '48',
+            headerArguments: {
+              Name: 'B',
+              FramePosition: '[10, 5]',
+              FramePlane: 'YZ',
+              FontPointSize: '48',
+              FontScale: '2',
+            },
+            highlightedHeaderArg: 'fontPointSize',
+          })
+          // Update font point size from 48 to 32
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('32')
+          await cmdBar.progressCmdBar()
+          // Review changes to font point size
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Datum',
+            headerArguments: {
+              Name: 'B',
+              FramePosition: '[10, 5]',
+              FramePlane: 'YZ',
+              FontPointSize: '32',
+              FontScale: '2',
+            },
+          })
+        })
+
+        await test.step('Edit font scale', async () => {
+          await page.getByRole('button', { name: 'FontScale' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Datum',
+            currentArgKey: 'fontScale',
+            currentArgValue: '2.0',
+            headerArguments: {
+              Name: 'B',
+              FramePosition: '[10, 5]',
+              FramePlane: 'YZ',
+              FontPointSize: '32',
+              FontScale: '2',
+            },
+            highlightedHeaderArg: 'fontScale',
+          })
+          // Update font scale from 2.0 to 1.5
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('1.5')
+          await cmdBar.progressCmdBar()
+          // Review changes to font scale
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Datum',
+            headerArguments: {
+              Name: 'B',
+              FramePosition: '[10, 5]',
+              FramePlane: 'YZ',
+              FontPointSize: '32',
+              FontScale: '1.5',
+            },
+          })
+        })
+      })
+
+      await test.step('Submit and verify all parameters', async () => {
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain('gdt::datum(')
+        await editor.expectEditor.toContain('face = capEnd001')
+        await editor.expectEditor.toContain('name = "B"')
+        await editor.expectEditor.toContain('framePosition = [10, 5]')
+        await editor.expectEditor.toContain('framePlane = YZ')
+        await editor.expectEditor.toContain('fontPointSize = 32')
+        await editor.expectEditor.toContain('fontScale = 1.5')
+      })
+    })
+
+    await test.step('Delete GDT Datum', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const gdtOperation = await toolbar.getFeatureTreeOperation('Datum', 0)
+      // Delete the GDT operation
+      await gdtOperation.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain('gdt::datum(')
+    })
+  })
+
   test('Hole point-and-click', async ({
     context,
     page,
@@ -4131,7 +4569,7 @@ extrude001 = extrude(profile001, length = 10)`
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'blindDepth',
-        currentArgValue: '5',
+        currentArgValue: '2',
         commandName: 'Hole',
         headerArguments: {
           Face: '1 cap',
@@ -4154,7 +4592,7 @@ extrude001 = extrude(profile001, length = 10)`
           Face: '1 cap',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '',
           HoleType: '',
           HoleBottom: '',
@@ -4171,7 +4609,7 @@ extrude001 = extrude(profile001, length = 10)`
           Face: '1 cap',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '1',
           HoleType: '',
           HoleBottom: '',
@@ -4188,7 +4626,7 @@ extrude001 = extrude(profile001, length = 10)`
           Face: '1 cap',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '1',
           HoleType: 'simple',
           HoleBottom: '',
@@ -4203,7 +4641,7 @@ extrude001 = extrude(profile001, length = 10)`
           Face: '1 cap',
           CutAt: '[0, 0]',
           HoleBody: 'blind',
-          BlindDepth: '5',
+          BlindDepth: '2',
           BlindDiameter: '1',
           HoleType: 'simple',
           HoleBottom: 'flat',
@@ -4224,13 +4662,149 @@ extrude001 = extrude(profile001, length = 10)`
   face = END,
   cutAt = [0, 0],
   holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeBody =   hole::blind(depth = 2, diameter = 1),
   holeType =   hole::simple(),
 )`,
         { shouldNormalise: true }
       )
     })
 
-    // TODO: edit flow
+    await test.step('Edit the hole from the feature-tree', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      const holeOperation = await toolbar.getFeatureTreeOperation('Hole', 0)
+      await holeOperation.dblclick()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          CutAt: '[0, 0]',
+          HoleBody: 'blind',
+          BlindDepth: '2',
+          BlindDiameter: '1',
+          HoleType: 'simple',
+          HoleBottom: 'flat',
+        },
+        commandName: 'Hole',
+      })
+      await page.getByRole('button', { name: 'CutAt' }).click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'cutAt',
+        currentArgValue: '[0, 0]',
+        commandName: 'Hole',
+        headerArguments: {
+          CutAt: '[0, 0]',
+          HoleBody: 'blind',
+          BlindDepth: '2',
+          BlindDiameter: '1',
+          HoleType: 'simple',
+          HoleBottom: 'flat',
+        },
+        highlightedHeaderArg: 'cutAt',
+      })
+      // Update cut at from [0, 0] to [2, 2]
+      await page.getByTestId('vector2d-x-input').fill('2')
+      await page.getByTestId('vector2d-y-input').fill('2')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Hole',
+        headerArguments: {
+          CutAt: '[2, 2]',
+          HoleBody: 'blind',
+          BlindDepth: '2',
+          BlindDiameter: '1',
+          HoleType: 'simple',
+          HoleBottom: 'flat',
+        },
+      })
+      await page.getByRole('button', { name: 'HoleType' }).click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'holeType',
+        currentArgValue: '',
+        commandName: 'Hole',
+        headerArguments: {
+          CutAt: '[2, 2]',
+          HoleBody: 'blind',
+          BlindDepth: '2',
+          BlindDiameter: '1',
+          HoleType: 'simple',
+          HoleBottom: 'flat',
+        },
+        highlightedHeaderArg: 'holeType',
+      })
+      await cmdBar.selectOption({ name: 'Countersink' }).click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'countersinkAngle',
+        currentArgValue: '90deg',
+        commandName: 'Hole',
+        headerArguments: {
+          CutAt: '[2, 2]',
+          HoleBody: 'blind',
+          BlindDepth: '2',
+          BlindDiameter: '1',
+          HoleType: 'countersink',
+          CountersinkDiameter: '',
+          CountersinkAngle: '',
+          HoleBottom: 'flat',
+        },
+        highlightedHeaderArg: 'countersinkAngle',
+      })
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('80deg')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'countersinkDiameter',
+        currentArgValue: '2',
+        commandName: 'Hole',
+        headerArguments: {
+          CutAt: '[2, 2]',
+          HoleBody: 'blind',
+          BlindDepth: '2',
+          BlindDiameter: '1',
+          HoleType: 'countersink',
+          CountersinkDiameter: '',
+          CountersinkAngle: '80deg',
+          HoleBottom: 'flat',
+        },
+        highlightedHeaderArg: 'countersinkDiameter',
+      })
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill('3')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Hole',
+        headerArguments: {
+          CutAt: '[2, 2]',
+          HoleBody: 'blind',
+          BlindDepth: '2',
+          BlindDiameter: '1',
+          HoleType: 'countersink',
+          CountersinkDiameter: '3',
+          CountersinkAngle: '80deg',
+          HoleBottom: 'flat',
+        },
+      })
+      await cmdBar.submit()
+    })
+
+    await test.step('Expect hole call updated in the editor', async () => {
+      await scene.settled(cmdBar)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [2, 2],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 2, diameter = 1),
+  holeType =   hole::countersink(angle = 80deg, diameter = 3),
+)`,
+        { shouldNormalise: true }
+      )
+    })
   })
 })

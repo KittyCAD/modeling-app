@@ -1,11 +1,17 @@
 import { EngineDebugger } from '@src/lib/debugger'
-import { engineCommandManager } from '@src/lib/singletons'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { EngineCommandManagerEvents } from '@src/network/utils'
 import { useEffect } from 'react'
 
+export interface IUseOnOfflineToExitSketchMode {
+  callback: () => void
+  engineCommandManager: ConnectionManager
+}
+
 export function useOnOfflineToExitSketchMode({
   callback,
-}: { callback: () => void }) {
+  engineCommandManager,
+}: IUseOnOfflineToExitSketchMode) {
   useEffect(() => {
     const onOffline = (event: CustomEvent) => {
       EngineDebugger.addLog({
@@ -26,5 +32,5 @@ export function useOnOfflineToExitSketchMode({
         onOffline as EventListener
       )
     }
-  }, [callback])
+  }, [callback, engineCommandManager])
 }

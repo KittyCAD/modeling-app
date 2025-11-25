@@ -238,6 +238,7 @@ code,
   from {
     transform: translateY(0px);
   }
+
   to {
     transform: translateY(-1000px);
   }
@@ -253,6 +254,7 @@ code,
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
@@ -370,6 +372,12 @@ code,
     @apply grid lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-x-16;
     grid-template-rows: auto 1fr;
   }
+
+  .avatar {
+    @apply grid place-content-center overflow-hidden;
+    @apply border rounded border-chalkboard-30/50 dark:border-chalkboard-80/30;
+    @apply group-hover/avatar:border-chalkboard-30 group-hover/avatar:dark:border-chalkboard-70;
+  }
 }
 
 @layer utilities {
@@ -377,18 +385,23 @@ code,
   .text-default {
     @apply text-chalkboard-100 dark:text-chalkboard-10;
   }
+
   .text-2 {
     @apply text-chalkboard-70 dark:text-chalkboard-30;
   }
+
   .text-3 {
     @apply text-chalkboard-50;
   }
+
   .text-4 {
     @apply text-chalkboard-30 dark:text-chalkboard-70;
   }
+
   .text-5 {
     @apply text-chalkboard-20 dark:text-chalkboard-90;
   }
+
   .text-6 {
     @apply text-chalkboard-10 dark:text-chalkboard-100;
   }
@@ -396,34 +409,63 @@ code,
   .b-default {
     @apply border-chalkboard-100 dark:border-chalkboard-10;
   }
+
   .b-2 {
     @apply border-chalkboard-70 dark:border-chalkboard-30;
   }
+
   .b-3 {
     @apply border-chalkboard-50;
   }
+
   .b-4 {
     @apply border-chalkboard-30 dark:border-chalkboard-80;
   }
+
   .b-5 {
     @apply border-chalkboard-20 dark:border-chalkboard-90;
+  }
+
+  .outline-default {
+    @apply outline-chalkboard-100 dark:outline-chalkboard-10;
+  }
+
+  .outline-2 {
+    @apply outline-chalkboard-70 dark:outline-chalkboard-30;
+  }
+
+  .outline-3 {
+    @apply outline-chalkboard-50;
+  }
+
+  .outline-4 {
+    @apply outline-chalkboard-30 dark:outline-chalkboard-80;
+  }
+
+  .outline-5 {
+    @apply outline-chalkboard-20 dark:outline-chalkboard-90;
   }
 
   .bg-default {
     @apply bg-chalkboard-10 dark:bg-chalkboard-100;
   }
+
   .bg-2 {
     @apply bg-chalkboard-20 dark:bg-chalkboard-90;
   }
+
   .bg-3 {
     @apply bg-chalkboard-30 dark:bg-chalkboard-70;
   }
+
   .bg-4 {
     @apply bg-chalkboard-70 dark:bg-chalkboard-30;
   }
+
   .bg-5 {
     @apply bg-chalkboard-90 dark:bg-chalkboard-20;
   }
+
   .bg-6 {
     @apply bg-chalkboard-100 dark:bg-chalkboard-10;
   }
@@ -440,6 +482,10 @@ code,
 
   .parsed-markdown ul li {
     @apply list-disc;
+  }
+
+  .parsed-markdown ol li {
+    @apply list-decimal;
   }
 
   .parsed-markdown li p {

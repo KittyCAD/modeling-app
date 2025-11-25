@@ -95,7 +95,7 @@ async fn inner_datum(
     let annotation_id = exec_state.next_uuid();
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(args, annotation_id),
+            ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
             ModelingCmd::from(mcmd::NewAnnotation {
                 options: AnnotationOptions {
                     text: None,
@@ -216,7 +216,7 @@ async fn inner_flatness(
         let annotation_id = exec_state.next_uuid();
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from_args_id(args, annotation_id),
+                ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
                 ModelingCmd::from(mcmd::NewAnnotation {
                     options: AnnotationOptions {
                         text: None,

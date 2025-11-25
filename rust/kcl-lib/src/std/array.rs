@@ -49,6 +49,7 @@ async fn call_map_closure(
         source_range,
         exec_state,
         ctxt.clone(),
+        Some("map closure".to_owned()),
     );
     let output = map_fn.call_kw(None, exec_state, ctxt, args, source_range).await?;
     let source_ranges = vec![source_range];
@@ -101,6 +102,7 @@ async fn call_reduce_closure(
         source_range,
         exec_state,
         ctxt.clone(),
+        Some("reduce closure".to_owned()),
     );
     let transform_fn_return = reduce_fn
         .call_kw(None, exec_state, ctxt, reduce_fn_args, source_range)

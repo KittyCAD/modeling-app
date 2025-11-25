@@ -59,6 +59,7 @@ export function HelpMenu() {
         </Tooltip>
       </Popover.Button>
       <Popover.Panel
+        data-testid="help-menu"
         as="ul"
         className="absolute right-0 left-auto flex flex-col w-64 gap-1 p-0 py-2 m-0 mb-1 text-sm border border-solid rounded shadow-lg bottom-full align-stretch text-chalkboard-10 dark:text-inherit bg-chalkboard-110 dark:bg-chalkboard-100 border-chalkboard-110 dark:border-chalkboard-80"
       >

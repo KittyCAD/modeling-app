@@ -257,23 +257,6 @@ description: Variables in memory after executing mounting-plate.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -3.0,
-              5.0
-            ],
-            "tag": null,
-            "to": [
-              -3.0,
-              5.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "innerPaths": [
@@ -647,23 +630,6 @@ description: Variables in memory after executing mounting-plate.kcl
             "type": "TagDeclarator",
             "value": "basePlateEdge4"
           },
-          "to": [
-            -3.0,
-            5.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -3.0,
-            5.0
-          ],
-          "tag": null,
           "to": [
             -3.0,
             5.0

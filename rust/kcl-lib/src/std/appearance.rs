@@ -10,7 +10,7 @@ use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, KclValue, SolidOrImportedGeometry,
+        ExecState, KclValue, ModelingCmdMeta, SolidOrImportedGeometry,
         types::{ArrayLen, RuntimeType},
     },
     std::Args,
@@ -19,6 +19,9 @@ use crate::{
 lazy_static::lazy_static! {
     static ref HEX_REGEX: Regex = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
 }
+
+const DEFAULT_ROUGHNESS: f64 = 1.0;
+const DEFAULT_METALNESS: f64 = 0.0;
 
 /// Construct a color from its red, blue and green components.
 pub async fn hex_string(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -108,12 +111,12 @@ async fn inner_appearance(
 
         exec_state
             .batch_modeling_cmd(
-                (&args).into(),
+                ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
                     object_id: solid_id,
                     color,
-                    metalness: metalness.unwrap_or_default() as f32 / 100.0,
-                    roughness: roughness.unwrap_or_default() as f32 / 100.0,
+                    metalness: metalness.unwrap_or(DEFAULT_METALNESS) as f32 / 100.0,
+                    roughness: roughness.unwrap_or(DEFAULT_ROUGHNESS) as f32 / 100.0,
                     ambient_occlusion: 0.0,
                 }),
             )

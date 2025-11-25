@@ -705,7 +705,7 @@ impl ExecutorContext {
         let result = self
             .exec_module_body(program, exec_state, preserve_mem, module_id, path)
             .await;
-        exec_state.global.mod_loader.leave_module(path);
+        exec_state.global.mod_loader.leave_module(path, source_range)?;
 
         // TODO: ModuleArtifactState is getting dropped here when there's an
         // error.  Should we propagate it for non-root modules?
@@ -1567,7 +1567,7 @@ impl Node<BinaryExpression> {
         // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new_no_args(self.into(), ctx.clone());
+                let args = Args::new_no_args(self.into(), ctx.clone(), Some("union".to_owned()));
                 let result = crate::std::csg::inner_union(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
@@ -1580,7 +1580,7 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::Sub {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new_no_args(self.into(), ctx.clone());
+                let args = Args::new_no_args(self.into(), ctx.clone(), Some("subtract".to_owned()));
                 let result = crate::std::csg::inner_subtract(
                     vec![*left.clone()],
                     vec![*right.clone()],
@@ -1595,7 +1595,7 @@ impl Node<BinaryExpression> {
             && let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value)
         {
             // Check if we have solids.
-            let args = Args::new_no_args(self.into(), ctx.clone());
+            let args = Args::new_no_args(self.into(), ctx.clone(), Some("intersect".to_owned()));
             let result = crate::std::csg::inner_intersect(
                 vec![*left.clone(), *right.clone()],
                 Default::default(),

@@ -19,7 +19,7 @@ use crate::{
     ExecutorContext, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, Geometries, Geometry, KclObjectFields, KclValue, Sketch, Solid,
+        ExecState, Geometries, Geometry, KclObjectFields, KclValue, ModelingCmdMeta, Sketch, Solid,
         fn_call::{Arg, Args},
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType},
@@ -153,7 +153,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
 
     let resp = exec_state
         .send_modeling_cmd(
-            args.into(),
+            ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
                 entity_id: if use_original { solid.original_id() } else { solid.id() },
                 transform: Default::default(),
@@ -209,6 +209,7 @@ async fn make_transform<T: GeometryTrait>(
         source_range,
         exec_state,
         ctxt.clone(),
+        Some("transform closure".to_owned()),
     );
     let transform_fn_return = transform
         .call_kw(None, exec_state, ctxt, transform_fn_args, source_range)
@@ -438,7 +439,9 @@ impl GeometryTrait for Solid {
     }
 
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, solid_set: &Self::Set) -> Result<(), KclError> {
-        exec_state.flush_batch_for_solids(args.into(), solid_set).await
+        exec_state
+            .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, args), solid_set)
+            .await
     }
 }
 
@@ -449,7 +452,8 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_array_to_point3d() {
-        let mut exec_state = ExecState::new(&ExecutorContext::new_mock(None).await);
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
         let input = KclValue::HomArray {
             value: vec![
                 KclValue::Number {
@@ -477,11 +481,13 @@ mod tests {
         ];
         let actual = array_to_point3d(&input, Vec::new(), &mut exec_state);
         assert_eq!(actual.unwrap(), expected);
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_tuple_to_point3d() {
-        let mut exec_state = ExecState::new(&ExecutorContext::new_mock(None).await);
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
         let input = KclValue::Tuple {
             value: vec![
                 KclValue::Number {
@@ -509,6 +515,7 @@ mod tests {
         ];
         let actual = array_to_point3d(&input, Vec::new(), &mut exec_state);
         assert_eq!(actual.unwrap(), expected);
+        ctx.close().await;
     }
 }
 
@@ -869,7 +876,9 @@ async fn inner_pattern_circular_3d(
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
     // Flush just the fillets/chamfers that apply to these solids.
-    exec_state.flush_batch_for_solids((&args).into(), &solids).await?;
+    exec_state
+        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &solids)
+        .await?;
 
     let starting_solids = solids;
 
@@ -930,7 +939,7 @@ async fn pattern_circular(
     let center = data.center_mm();
     let resp = exec_state
         .send_modeling_cmd(
-            (&args).into(),
+            ModelingCmdMeta::from_args(exec_state, &args),
             ModelingCmd::from(mcmd::EntityCircularPattern {
                 axis: kcmc::shared::Point3d::from(data.axis()),
                 entity_id: if data.use_original() {

@@ -102,7 +102,7 @@ async fn inner_rectangle(
     for (id, delta) in ids.iter().copied().zip(deltas) {
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmdMeta::from_args_id(exec_state, &args, id),
                 ModelingCmd::from(mcmd::ExtendPath {
                     label: Default::default(),
                     path: sketch.id.into(),
@@ -118,7 +118,7 @@ async fn inner_rectangle(
     }
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, sketch_id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, sketch_id),
             ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
         )
         .await?;
@@ -155,7 +155,7 @@ async fn inner_rectangle(
 pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface =
         args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
-    let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let center = args.get_kw_arg_opt("center", &RuntimeType::point2d(), exec_state)?;
     let radius: Option<TyF64> = args.get_kw_arg_opt("radius", &RuntimeType::length(), exec_state)?;
     let diameter: Option<TyF64> = args.get_kw_arg_opt("diameter", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
@@ -166,9 +166,14 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     })
 }
 
+const POINT_ZERO_ZERO: [TyF64; 2] = [
+    TyF64::new(0.0, crate::exec::NumericType::mm()),
+    TyF64::new(0.0, crate::exec::NumericType::mm()),
+];
+
 async fn inner_circle(
     sketch_or_surface: SketchOrSurface,
-    center: [TyF64; 2],
+    center: Option<[TyF64; 2]>,
     radius: Option<TyF64>,
     diameter: Option<TyF64>,
     tag: Option<TagNode>,
@@ -179,6 +184,7 @@ async fn inner_circle(
         SketchOrSurface::SketchSurface(surface) => surface,
         SketchOrSurface::Sketch(s) => s.on,
     };
+    let center = center.unwrap_or(POINT_ZERO_ZERO);
     let (center_u, ty) = untype_point(center.clone());
     let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
 
@@ -196,7 +202,7 @@ async fn inner_circle(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -237,7 +243,7 @@ async fn inner_circle(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
         )
         .await?;
@@ -298,7 +304,7 @@ async fn inner_circle_three_point(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -340,7 +346,7 @@ async fn inner_circle_three_point(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
         )
         .await?;
@@ -451,7 +457,7 @@ async fn inner_polygon(
 
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmdMeta::from_args_id(exec_state, &args, id),
                 ModelingCmd::from(mcmd::ExtendPath {
                     label: Default::default(),
                     path: sketch.id.into(),
@@ -487,7 +493,7 @@ async fn inner_polygon(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, close_id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, close_id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -518,7 +524,7 @@ async fn inner_polygon(
 
     exec_state
         .batch_modeling_cmd(
-            (&args).into(),
+            ModelingCmdMeta::from_args(exec_state, &args),
             ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
         )
         .await?;
@@ -604,7 +610,7 @@ async fn inner_ellipse(
     let axis = KPoint2d::from(untyped_point_to_mm([major_axis[0].n, major_axis[1].n], units)).map(LengthUnit);
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -646,7 +652,7 @@ async fn inner_ellipse(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
         )
         .await?;

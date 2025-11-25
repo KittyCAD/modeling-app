@@ -7,7 +7,7 @@ import { useSettings } from '@src/lib/singletons'
 
 interface SettingsSectionsListProps {
   searchParamTab: SettingsLevel
-  scrollRef: React.RefObject<HTMLDivElement>
+  scrollRef: React.RefObject<HTMLDivElement | null>
 }
 
 export function SettingsSectionsList({
