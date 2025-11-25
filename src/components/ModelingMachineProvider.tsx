@@ -642,7 +642,7 @@ export const ModelingMachineProvider = ({
               return reject(new Error(errorMessage))
             }
 
-            if (!artifact.sketchId) {
+            if (typeof artifact.sketchId !== 'number') {
               const errorMessage = 'SketchBlock does not have a sketchId'
               toast.error(errorMessage)
               return reject(new Error(errorMessage))
@@ -650,7 +650,6 @@ export const ModelingMachineProvider = ({
 
             // Get plane/face data from the sketchBlock
             const planeData = await getPlaneDataFromSketchBlock(artifact)
-            console.log('planeData', planeData)
             if (!planeData) {
               console.trace('yo!!')
 
