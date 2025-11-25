@@ -240,7 +240,7 @@ function updateSceneGraphFromDelta({
   if (sceneGraphDelta.invalidates_ids && sketchSegments instanceof Group) {
     disposeGroupChildren(sketchSegments)
   } else {
-    // This invalidation logic is kinda based on some heuristics and is not exchaustive.
+    // This invalidation logic is kinda based on some heuristics and is not exhaustive,
     // so there are bugs, it's here to let some direct editing of the code from
     // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
     // The proper way to do this is to get an invalidation signal from the rust side.
