@@ -1,8 +1,4 @@
-import type {
-  SceneGraphDelta,
-  SegmentCtor,
-  SourceDelta,
-} from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SegmentCtor } from '@rust/kcl-lib/bindings/FrontendApi'
 import { SKETCH_POINT_HANDLE } from '@src/clientSideScene/sceneUtils'
 import { type Themes } from '@src/lib/theme'
 import {
@@ -32,10 +28,6 @@ interface CreateSegmentArgs {
   theme: Themes
   id: number
   scale: number
-  onUpdateSketchOutcome?: (data: {
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }) => void
 }
 
 interface UpdateSegmentArgs {

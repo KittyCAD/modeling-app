@@ -180,16 +180,11 @@ function initSegmentGroup({
   theme,
   scale,
   id,
-  onUpdateSketchOutcome,
 }: {
   input: Parameters<SegmentUtils['init']>[0]['input']
   theme: Themes
   scale: number
   id: number
-  onUpdateSketchOutcome: (data: {
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }) => void
 }): Group | Error {
   let group
   if (input.type === 'Point') {
@@ -198,7 +193,6 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      onUpdateSketchOutcome,
     })
   } else if (input.type === 'Line') {
     group = segmentUtilsMap.LineSegment.init({
@@ -206,7 +200,6 @@ function initSegmentGroup({
       theme,
       scale,
       id,
-      onUpdateSketchOutcome,
     })
   }
   if (group instanceof Group) return group
@@ -222,16 +215,11 @@ function updateSceneGraphFromDelta({
   context,
   selectedIds,
   duringAreaSelectIds,
-  onUpdateSketchOutcome,
 }: {
   sceneGraphDelta: SceneGraphDelta
   context: SketchSolveContext
   selectedIds: Array<number>
   duringAreaSelectIds: Array<number>
-  onUpdateSketchOutcome?: (data: {
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }) => void
 }): void {
   const objects = sceneGraphDelta.new_graph.objects
   const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
@@ -294,31 +282,24 @@ function updateSceneGraphFromDelta({
       if (!ctor) {
         return
       }
-      if (!onUpdateSketchOutcome) {
-        console.warn(
-          'Cannot init segment group without onUpdateSketchOutcome callback'
-        )
-        return
-      }
-      const group = initSegmentGroup({
+      const newGroup = initSegmentGroup({
         input: ctor,
         theme: context.sceneInfra.theme,
         scale: factor,
         id: obj.id,
-        onUpdateSketchOutcome,
       })
-      if (group instanceof Error) {
-        console.error('Failed to init PointSegment for object', obj.id)
+      if (newGroup instanceof Error) {
+        console.error('Failed to init segment group for object', obj.id)
         return
       }
       const sketchSceneGroup =
         context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
       if (sketchSceneGroup) {
-        group.traverse((child) => {
+        newGroup.traverse((child) => {
           child.layers.set(SKETCH_LAYER)
         })
-        group.layers.set(SKETCH_LAYER)
-        sketchSceneGroup.add(group)
+        newGroup.layers.set(SKETCH_LAYER)
+        sketchSceneGroup.add(newGroup)
       }
       return
     }
@@ -582,16 +563,12 @@ export const sketchSolveMachine = setup({
     'initialize initial scene graph': ({ context }) => {
       if (context.initialSceneGraphDelta) {
         // Update the scene graph directly without sending an event
-        // This is for initial setup, so we use a no-op callback since we're just
-        // rendering existing state and don't want to trigger recursive updates
+        // This is for initial setup, just rendering existing state
         updateSceneGraphFromDelta({
           sceneGraphDelta: context.initialSceneGraphDelta,
           context,
           selectedIds: context.selectedIds,
           duringAreaSelectIds: context.duringAreaSelectIds,
-          onUpdateSketchOutcome: () => {
-            // No-op for initial setup - we're just rendering existing state
-          },
         })
       }
     },
@@ -1777,7 +1754,7 @@ export const sketchSolveMachine = setup({
         })
       })
     },
-    'update sketch outcome': assign(({ event, self, context }) => {
+    'update sketch outcome': assign(({ event, context }) => {
       assertEvent(event, 'update sketch outcome')
       context.codeManager.updateCodeEditor(event.data.kclSource.text)
 
@@ -1786,11 +1763,6 @@ export const sketchSolveMachine = setup({
         context,
         selectedIds: context.selectedIds,
         duringAreaSelectIds: context.duringAreaSelectIds,
-        onUpdateSketchOutcome: (data) => {},
-        // self.send({
-        //   type: 'update sketch outcome',
-        //   data,
-        // }),
       })
 
       return {
