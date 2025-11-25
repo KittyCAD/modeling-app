@@ -560,7 +560,7 @@ export const sketchSolveMachine = setup({
         )
       }
     },
-    'initialize initial scene graph': ({ context }) => {
+    'initialize initial scene graph': assign(({ context }) => {
       if (context.initialSceneGraphDelta) {
         // Update the scene graph directly without sending an event
         // This is for initial setup, just rendering existing state
@@ -570,8 +570,22 @@ export const sketchSolveMachine = setup({
           selectedIds: context.selectedIds,
           duringAreaSelectIds: context.duringAreaSelectIds,
         })
+
+        // Set sketchExecOutcome in context so drag callbacks can access it
+        // Use current code from codeManager since editSketch doesn't return kclSource
+        const kclSource: SourceDelta = {
+          text: context.codeManager.code,
+        }
+
+        return {
+          sketchExecOutcome: {
+            kclSource,
+            sceneGraphDelta: context.initialSceneGraphDelta,
+          },
+        }
       }
-    },
+      return {}
+    }),
     setUpOnDragAndSelectionClickCallbacks: ({ self, context }) => {
       // Closure-scoped mutex to prevent concurrent async editSegment operations.
       // Not in XState context since it's purely an implementation detail for race condition prevention.
