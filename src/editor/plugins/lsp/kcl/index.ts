@@ -14,8 +14,8 @@ import {
 import {
   updateOutsideEditorEvent,
   editorCodeUpdateEvent,
-} from '@src/editor/manager'
-import { editorManager, kclManager } from '@src/lib/singletons'
+} from '@src/lang/KclManager'
+import { kclManager } from '@src/lib/singletons'
 import { deferExecution } from '@src/lib/utils'
 
 import type { UpdateCanExecuteParams } from '@rust/kcl-lib/bindings/UpdateCanExecuteParams'
@@ -36,15 +36,15 @@ export class KclPlugin implements PluginValue {
   constructor(client: LanguageServerClient, view: EditorView) {
     this.client = client
 
-    // Gotcha: Code can be written into the CodeMirror editor but not propagated to editorManager.code
-    // because the update function has not run. We need to initialize the editorManager.code when lsp initializes
+    // Gotcha: Code can be written into the CodeMirror editor but not propagated to kclManager.code
+    // because the update function has not run. We need to initialize the kclManager.code when lsp initializes
     // because new code could have been written into the editor before the update callback is initialized.
     // There appears to be limited ways to safely get the current doc content. This appears to be sync and safe.
     const kclLspPlugin = this.client.plugins.find((plugin) => {
       return plugin.client.name === 'kcl'
     })
     if (kclLspPlugin) {
-      editorManager.code = view.state.doc.toString()
+      kclManager.code = view.state.doc.toString()
     }
   }
 
@@ -58,12 +58,12 @@ export class KclPlugin implements PluginValue {
       return
     }
 
-    editorManager.handleOnViewUpdate(this.viewUpdate, processCodeMirrorRanges)
+    kclManager.handleOnViewUpdate(this.viewUpdate, processCodeMirrorRanges)
   }, 50)
 
   update(viewUpdate: ViewUpdate) {
     this.viewUpdate = viewUpdate
-    editorManager.setEditorView(viewUpdate.view)
+    kclManager.setEditorView(viewUpdate.view)
 
     let isUserSelect = false
     let isRelevant = viewUpdate.docChanged
@@ -124,9 +124,9 @@ export class KclPlugin implements PluginValue {
     }
 
     const newCode = viewUpdate.state.doc.toString()
-    editorManager.code = newCode
+    kclManager.code = newCode
 
-    void editorManager.writeToFile().then(() => {
+    void kclManager.writeToFile().then(() => {
       this.scheduleUpdateDoc()
     })
   }
