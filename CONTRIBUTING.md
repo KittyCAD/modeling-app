@@ -61,7 +61,7 @@ Finally, to build the desktop app locally, pointing to our production zoo.dev in
 npm run tronb:package:prod
 ```
 
-This will use electron-builder to generate installable artifacts in the `out` directory (eg. `Zoo Design Studio.app` on macOS and `Zoo Design Studio.exe` on Windows). The regular sign-in flow should work as expected.
+This will use electron-builder to generate runnable artifacts in the `out` directory (eg. `Zoo Design Studio.app` on macOS and `Zoo Design Studio.exe` on Windows). The regular sign-in flow should work as expected.
 
 ### Development environment variables
 
