@@ -10,6 +10,7 @@ import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
@@ -77,6 +78,13 @@ export const isToolbarItemResolvedDropdown = (
   return (item as ToolbarItemResolvedDropdown).array !== undefined
 }
 
+function isSketchBlockSelected(selectionRanges: Selections): boolean {
+  const artifact = selectionRanges.graphSelections[0]?.artifact
+  return (
+    artifact?.type === 'sketchBlock' && typeof artifact.sketchId === 'number'
+  )
+}
+
 export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
   modeling: {
     check: (state) =>
@@ -90,17 +98,40 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
     items: [
       {
         id: 'sketch',
-        onClick: ({ modelingSend, sketchPathId, editorHasFocus }) =>
-          !(editorHasFocus && sketchPathId)
-            ? modelingSend({
-                type: 'Enter sketch',
-                data: { forceNewSketch: true },
-              })
-            : modelingSend({ type: 'Enter sketch' }),
+        onClick: ({
+          modelingSend,
+          modelingState,
+          sketchPathId,
+          editorHasFocus,
+        }) => {
+          const isSketchBlock = isSketchBlockSelected(
+            modelingState.context.selectionRanges
+          )
+
+          // Don't force new sketch if we're in a sketch block or have a sketchBlock selected
+          if ((editorHasFocus && sketchPathId) || isSketchBlock) {
+            modelingSend({ type: 'Enter sketch' })
+          } else {
+            // No sketch context - start new sketch
+            modelingSend({
+              type: 'Enter sketch',
+              data: { forceNewSketch: true },
+            })
+          }
+        },
         icon: 'sketch',
         status: 'available',
-        title: ({ editorHasFocus, sketchPathId }) =>
-          editorHasFocus && sketchPathId ? 'Edit Sketch' : 'Start Sketch',
+        title: ({ editorHasFocus, sketchPathId, modelingState }) => {
+          const isSketchBlock = isSketchBlockSelected(
+            modelingState.context.selectionRanges
+          )
+
+          if ((editorHasFocus && sketchPathId) || isSketchBlock) {
+            return 'Edit Sketch'
+          } else {
+            return 'Start Sketch'
+          }
+        },
         showTitle: true,
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
@@ -112,47 +143,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             ),
           },
         ],
-      },
-      {
-        // TODO probably remove, don't need an extra button
-        id: 'edit-sketch-solve',
-        onClick: ({ modelingState, modelingSend }) => {
-          const artifact =
-            modelingState.context.selectionRanges.graphSelections[0]?.artifact
-          if (!(artifact?.type === 'sketchBlock' && artifact.sketchId)) {
-            console.warn('No artifact selected for edit sketch solve')
-            return
-          }
-          modelingSend({
-            type: 'Enter existing sketch solve',
-            data: artifact.id,
-          })
-        },
-        icon: 'sketch',
-        status: 'available',
-        title: 'Edit Sketch Solve',
-        showTitle: true,
-        description: 'Edit an existing sketch in sketch solve mode',
-        links: [],
-        disabled: (state) => {
-          const artifact =
-            state.context.selectionRanges.graphSelections[0]?.artifact
-          if (artifact?.type === 'sketchBlock') {
-            return typeof artifact.sketchId !== 'number'
-          }
-          return true
-        },
-        disabledReason: (state) => {
-          const artifact =
-            state.context.selectionRanges.graphSelections[0]?.artifact
-          if (
-            artifact?.type === 'sketchBlock' &&
-            typeof artifact.sketchId !== 'number'
-          ) {
-            return
-          }
-          return 'Please select a sketch solve block to edit.'
-        },
       },
       'break',
       {

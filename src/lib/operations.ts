@@ -744,6 +744,48 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
   }
 }
 
+/**
+ * Gather up the argument values for the SketchSolve command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditSketchSolve: PrepareToEditCallback = async ({
+  operation,
+  artifact,
+}) => {
+  if (operation.type !== 'SketchSolve') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  if (!artifact) {
+    return {
+      reason:
+        'No artifact found for this sketch. Please select the sketch in the feature tree.',
+    }
+  }
+
+  if (artifact.type !== 'sketchBlock') {
+    return {
+      reason: 'Artifact is not a sketchBlock. Cannot edit this sketch.',
+    }
+  }
+
+  if (typeof artifact.sketchId !== 'number') {
+    return {
+      reason:
+        'SketchBlock does not have a valid sketchId. Cannot edit this sketch.',
+    }
+  }
+
+  const command = {
+    name: 'Enter sketch',
+    groupId: 'modeling',
+  }
+
+  // Return 'Enter sketch' command - the modeling machine will detect the sketchBlock
+  // in the selection and route to 'animating to existing sketch solve' automatically
+  return command
+}
+
 const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   operation,
 }) => {
@@ -1672,11 +1714,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   sketchSolve: {
     label: 'Solve Sketch',
     icon: 'sketch',
-    async prepareToEdit() {
-      return {
-        reason: 'Problem with editing this sketch',
-      }
-    },
+    prepareToEdit: prepareToEditSketchSolve,
   },
   startSketchOn: {
     label: 'Sketch',
