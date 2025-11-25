@@ -209,6 +209,7 @@ async fn make_transform<T: GeometryTrait>(
         source_range,
         exec_state,
         ctxt.clone(),
+        Some("transform closure".to_owned()),
     );
     let transform_fn_return = transform
         .call_kw(None, exec_state, ctxt, transform_fn_args, source_range)
@@ -451,7 +452,8 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_array_to_point3d() {
-        let mut exec_state = ExecState::new(&ExecutorContext::new_mock(None).await);
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
         let input = KclValue::HomArray {
             value: vec![
                 KclValue::Number {
@@ -479,11 +481,13 @@ mod tests {
         ];
         let actual = array_to_point3d(&input, Vec::new(), &mut exec_state);
         assert_eq!(actual.unwrap(), expected);
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_tuple_to_point3d() {
-        let mut exec_state = ExecState::new(&ExecutorContext::new_mock(None).await);
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
         let input = KclValue::Tuple {
             value: vec![
                 KclValue::Number {
@@ -511,6 +515,7 @@ mod tests {
         ];
         let actual = array_to_point3d(&input, Vec::new(), &mut exec_state);
         assert_eq!(actual.unwrap(), expected);
+        ctx.close().await;
     }
 }
 
