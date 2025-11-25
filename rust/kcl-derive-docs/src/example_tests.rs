@@ -185,6 +185,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch-close-0",
     "std-sketch-close-1",
     "std-sketch-involuteCircular-0",
+    "std-sketch-involuteCircular-1",
     "std-sketch-line-0",
     "std-sketch-subtract2d-0",
     "std-sketch-subtract2d-1",
