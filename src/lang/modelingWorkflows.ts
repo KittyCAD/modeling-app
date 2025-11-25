@@ -10,7 +10,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type RustContext from '@src/lib/rustContext'
 import { executeAstMock } from '@src/lang/langHelpers'
 import type EditorManager from '@src/editor/manager'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import type { PathToNode, Program } from '@src/lang/wasm'
 import type { ExecutionType } from '@src/lib/constants'
 import {

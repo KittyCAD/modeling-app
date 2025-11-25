@@ -26,7 +26,7 @@ import {
 } from '@src/lib/selections'
 
 import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import type EditorManager from '@src/editor/manager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'

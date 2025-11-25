@@ -1,6 +1,6 @@
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import type EditorManager from '@src/editor/manager'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { authMachine } from '@src/machines/authMachine'

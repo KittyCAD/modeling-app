@@ -1,5 +1,5 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { KclManager } from '@src/lang/KclSingleton'
+import { KclManager } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 

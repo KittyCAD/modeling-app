@@ -26,7 +26,7 @@ import type EditorManager from '@src/editor/manager'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 

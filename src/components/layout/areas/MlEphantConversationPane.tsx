@@ -1,6 +1,6 @@
 import type { User } from '@kittycad/lib'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import type EditorManager from '@src/editor/manager'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { Prompt } from '@src/lib/prompt'
