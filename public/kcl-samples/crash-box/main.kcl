@@ -1,6 +1,9 @@
 // Crash-box with beam cutout and mounting holes
 // A crash box is an energy-absorbing structural component mounted between a vehicle’s bumper beam and the main body. It is designed to deform in a controlled manner during low- to moderate-speed impacts, reducing crash forces transmitted to the chassis and lowering repair costs by localizing damage to a replaceable module.
 
+
+
+
 @settings(defaultLengthUnit = mm)
 
 // -----------------------------
@@ -22,6 +25,7 @@ crashBoxOuterWidth = 400
 // -----------------------------
 // Crash box: square tube profile and extrusion
 // -----------------------------
+
 
 sketchCrashBox = startSketchOn(XY)
 profileCrashBoxOuter = startProfile(
@@ -59,6 +63,7 @@ crashBoxShelled = shell(crashBoxSolid, faces = [END, START], thickness = 20)
 // Bumper beam surrogate: used to cut a mating pocket in the crash box
 // -----------------------------
 
+
 sketchBeam = startSketchOn(-YZ)
 profileBeam = startProfile(sketchBeam, at = [-870.13, 0])
   |> angledLine(angle = 0deg, length = 1744.11, tag = $rectangleSegmentA002)
@@ -89,6 +94,7 @@ filletBeamEnds = fillet(
 // -----------------------------
 // Subtract the beam volume from the crash box to form the mating pocket
 // -----------------------------
+
 
 crashBoxWithPocket = subtract(crashBoxSolid, tools = beamSolid)
 
@@ -124,5 +130,6 @@ crashBoxFinal = subtract(crashBoxWithPocket, tools = holeCutters)
 // -----------------------------
 // Appearance
 // -----------------------------
+
 
 appearance(crashBoxFinal, color = "#00aaff")

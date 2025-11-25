@@ -1,6 +1,9 @@
 // Hex Nut with Chamfered Ends and Through-Hole
 // This model generates a hexagonal nut with: a hex exterior defined by across-flats dimension, circular chamfers applied to both end faces, and central through-hole
 
+
+
+
 @settings(defaultLengthUnit = mm)
 
 // ──────────
@@ -11,16 +14,20 @@ nutAcrossCorners = 20 // Across-corners distance of the hex
 nutThickness = 10 // Overall thickness of the nut (extrusion length)
 hexCircumscribedRadius = nutAcrossCorners / 2 // Radius to hex vertices for a regular 6-sided polygon
 
+
 // Chamfer control
 chamferCircleRadius = hexCircumscribedRadius * 1.1 // Radius of the auxiliary circular solid used to define chamfer edges
 chamferLength = 3.5 // Chamfer setback distance along the end edges
 
+
 // Hole control
 holeRadius = 4 // Radius of the central through-hole
+
 
 // ───────────────────────
 // 2D PROFILES ON XY PLANE
 // ───────────────────────
+
 
 baseSketch = startSketchOn(XY)
 
