@@ -48,6 +48,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     })
 
     if (!theProject) {
+      console.warn('ProjectExplorerPane: Could not find project in storage')
       return
     }
 
