@@ -55,13 +55,13 @@ npm run fetch:wasm:windows
 
 That will build the WASM binary and put in the `public` dir (though gitignored).
 
-Finally, to run the app only, run:
+Finally, to package the app locally, pointing to the the production infra (accessible by everyone)
 
 ```
-npm run tron:start
+npm run tronb:package:prod
 ```
 
-If you're not a Zoo employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development.local` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to `localhost:3000` again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
+This will run electron-builder and generate installable artifacts in the `out` directory. The regular sign in flow should work as expected.
 
 ### Development environment variables
 
