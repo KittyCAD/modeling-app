@@ -1,6 +1,4 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-
-import EditorManager from '@src/editor/manager'
 import { KclManager } from '@src/lang/KclSingleton'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
@@ -51,13 +49,8 @@ declare global {
 window.engineCommandManager = engineCommandManager
 
 export const sceneInfra = new SceneInfra(engineCommandManager)
-
-// This needs to be after sceneInfra and engineCommandManager are is created.
-export const editorManager = new EditorManager(engineCommandManager)
-
 export const kclManager = new KclManager(engineCommandManager, {
   rustContext,
-  editorManager,
   sceneInfra,
 })
 
@@ -87,12 +80,6 @@ initPromise
   .catch((e) => {
     console.error(e)
   })
-
-// The most obvious of cyclic dependencies.
-// This is because the   handleOnViewUpdate(viewUpdate: ViewUpdate): void {
-// method requires it for the current ast.
-// CYCLIC REF
-editorManager.kclManager = kclManager
 
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
