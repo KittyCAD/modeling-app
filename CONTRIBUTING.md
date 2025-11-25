@@ -85,7 +85,7 @@ npm run tron:start
 
 This will start the application and hot-reload on changes.
 
-Note that it leverages a web server and by default points to our non-production dev.zoo.dev infrastructure, which isn't accessible to everyone. Refer to _Building the app_ if `tron:start` doesnt work for you.
+Note that it leverages a web server and by default points to our non-production dev.zoo.dev infrastructure, which isn't accessible to everyone. Refer to _Building the app_ if `tron:start` doesn't work for you.
 
 Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (Linux and Windows).
 
