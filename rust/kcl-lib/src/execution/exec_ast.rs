@@ -959,10 +959,10 @@ impl Node<SketchBlock> {
             let arg_on: Option<crate::execution::Plane> =
                 args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
             let on_object = arg_on.as_ref().and_then(|plane| plane.object_id);
-            
+
             // Get the plane artifact ID if the plane is an object plane
             let plane_artifact_id = arg_on.as_ref().map(|plane| plane.artifact_id);
-            
+
             let artifact_id = ArtifactId::from(exec_state.next_uuid());
             let sketch_scene_object = Object {
                 id: sketch_id,
@@ -982,7 +982,7 @@ impl Node<SketchBlock> {
                 source: range.into(),
             };
             exec_state.add_scene_object(sketch_scene_object, range);
-            
+
             // Create and add the sketch block artifact
             exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
                 id: artifact_id,
@@ -990,7 +990,7 @@ impl Node<SketchBlock> {
                 code_ref: CodeRef::placeholder(range),
                 sketch_id: sketch_id.0,
             }));
-            
+
             sketch_id
         };
 
