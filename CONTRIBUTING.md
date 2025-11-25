@@ -55,7 +55,7 @@ npm run fetch:wasm:windows
 
 That will build the WASM binary and put in the `public` dir (though gitignored).
 
-Finally, to build the desktop app locally, pointing to the the production infra (which is accessible by everyone), run:
+Finally, to build the desktop app locally, pointing to our production zoo.dev infrastructure, accessible to everyone, run:
 
 ```
 npm run tronb:package:prod
