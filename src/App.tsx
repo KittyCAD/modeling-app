@@ -62,6 +62,7 @@ import {
   MlEphantManagerReactContext,
   MlEphantManagerTransitions2,
 } from '@src/machines/mlEphantManagerMachine2'
+import { useSignalEffect } from '@preact/signals-react'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -191,8 +192,14 @@ export function App() {
     authToken,
   ])
 
-  useEffect(() => {
-    const needsWasmInitFailedToast = !isDesktop() && kclManager.wasmInitFailed
+  // This is, at time of writing, the only spot we need @preact/signals-react,
+  // because we can't use the core `effect()` function for this signal, because
+  // it is initially set to `true`, and will break the web app.
+  // TODO: get the loading pattern of KclManager in order so that it's for real available,
+  // then you might be able to uninstall this package and stick to just using signals-core.
+  useSignalEffect(() => {
+    const needsWasmInitFailedToast =
+      !isDesktop() && kclManager.wasmInitFailedSignal.value
     if (needsWasmInitFailedToast) {
       toast.success(
         () =>
@@ -209,7 +216,7 @@ export function App() {
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.wasmInitFailed])
+  })
 
   // Only create the native file menus on desktop
   useEffect(() => {
