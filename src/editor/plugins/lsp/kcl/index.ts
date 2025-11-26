@@ -171,6 +171,8 @@ export class KclPlugin implements PluginValue {
         } catch (error) {
           console.error('Error calling hackSetProgram after user edit:', error)
         }
+      } else {
+        await kclManager.executeCode()
       }
     })().catch((error) => {
       console.error(
