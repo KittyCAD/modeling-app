@@ -1,6 +1,10 @@
-# Contributor Guide
+# Contributing Guide
 
-## Installing dependencies
+## Quick start: Build the desktop app locally
+
+This section applies to all potential contributors, internal and external to the Zoo team.
+
+### Installing dependencies
 
 Install a node version manager such as [fnm](https://github.com/Schniz/fnm?tab=readme-ov-#installation).
 
@@ -31,7 +35,7 @@ npm run install:rust:windows
 npm run install:wasm-pack:cargo
 ```
 
-## Building the app
+### Building the app
 
 To build the WASM layer, run:
 
@@ -63,19 +67,21 @@ npm run tronb:package:prod
 
 This will use electron-builder to generate runnable artifacts in the `out` directory (eg. `Zoo Design Studio.app` on macOS and `Zoo Design Studio.exe` on Windows). The regular sign-in flow should work as expected.
 
+## Environment variables and hot reload
+
+This section and the following ones should only be relevant to Zoo employees, as the non-production dev.zoo.dev infrastructure which allows CORS is not publicly accessible.
+
 ### Development environment variables
 
 The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_ZOO_API_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
 
-### Developing in the browser
+### Developing live with the browser
 
 If you're not a Zoo employee, modeling commands are **billable** when running in
 the browser during local development! This is also true of non-Electron
 web-based tests that use the production API for modeling commands.
 
-To work around this, you must develop using Electron.
-
-### Developing with Electron
+### Developing live with Electron
 
 To spin up the desktop app, `npm install` and `npm run build:wasm` need to have been done before hand then:
 
