@@ -50,7 +50,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
               billingActor,
               systemIOActor,
               kclManager,
-              editorManager: editorManager,
+              editorManager,
               contextModeling,
               sendModeling,
               theProject: theProject.current,
