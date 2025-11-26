@@ -1,7 +1,6 @@
 import type { EntityType } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
-import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { KCLError } from '@src/lang/errors'
@@ -145,7 +144,7 @@ export class KclManager extends EventTarget {
   artifactGraph: ArtifactGraph = new Map()
   artifactIndex: ArtifactIndex = []
 
-  private _ast: Node<Program> = {
+  private _ast = signal<Node<Program>>({
     body: [],
     shebang: null,
     start: 0,
@@ -159,7 +158,7 @@ export class KclManager extends EventTarget {
     outerAttrs: [],
     preComments: [],
     commentStart: 0,
-  }
+  })
   _lastAst: Node<Program> = {
     body: [],
     shebang: null,
@@ -176,7 +175,7 @@ export class KclManager extends EventTarget {
     commentStart: 0,
   }
   private _execState: ExecState = emptyExecState()
-  private _variables: VariableMap = {}
+  private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: Operation[] = []
   /**
@@ -202,12 +201,6 @@ export class KclManager extends EventTarget {
 
   engineCommandManager: ConnectionManager
 
-  private _astCallBack: (arg: Node<Program>) => void = () => {}
-  private _variablesCallBack: (
-    arg: {
-      [key in string]?: KclValue | undefined
-    }
-  ) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
   private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
   private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
@@ -239,15 +232,17 @@ export class KclManager extends EventTarget {
   /** End merged items */
 
   get ast() {
-    return this._ast
+    return this._ast.value
   }
   set ast(ast) {
-    if (this._ast.body.length !== 0) {
+    if (this._ast.value.body.length !== 0) {
       // last intact ast, if the user makes a typo with a syntax error, we want to keep the one before they made that mistake
-      this._lastAst = structuredClone(this._ast)
+      this._lastAst = structuredClone(this._ast.value)
     }
-    this._ast = ast
-    this._astCallBack(ast)
+    this._ast.value = ast
+  }
+  get astSignal() {
+    return this._ast
   }
 
   set switchedFiles(switchedFiles: boolean) {
@@ -264,12 +259,15 @@ export class KclManager extends EventTarget {
   }
 
   get variables() {
+    return this._variables.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get variablesSignal() {
     return this._variables
   }
   // This is private because callers should be setting the entire execState.
   private set variables(variables) {
-    this._variables = variables
-    this._variablesCallBack(variables)
+    this._variables.value = variables
   }
 
   private set execState(execState) {
@@ -422,22 +420,16 @@ export class KclManager extends EventTarget {
   }
 
   registerCallBacks({
-    setVariables,
-    setAst,
     setLogs,
     setErrors,
     setDiagnostics,
     setWasmInitFailed,
   }: {
-    setVariables: (arg: VariableMap) => void
-    setAst: (arg: Node<Program>) => void
     setLogs: (arg: string[]) => void
     setErrors: (errors: KCLError[]) => void
     setDiagnostics: (errors: Diagnostic[]) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
-    this._variablesCallBack = setVariables
-    this._astCallBack = setAst
     this._logsCallBack = setLogs
     this._kclErrorsCallBack = setErrors
     this._diagnosticsCallback = setDiagnostics
@@ -445,7 +437,7 @@ export class KclManager extends EventTarget {
   }
 
   clearAst() {
-    this._ast = {
+    this._ast.value = {
       body: [],
       shebang: null,
       start: 0,
@@ -720,7 +712,7 @@ export class KclManager extends EventTarget {
       this.clearAst()
       return new Error('failed to re-parse')
     }
-    this._ast = { ...newAst }
+    this._ast.value = { ...newAst }
 
     const codeThatExecuted = this.code
     const { logs, errors, execState } = await executeAstMock({
@@ -730,7 +722,7 @@ export class KclManager extends EventTarget {
 
     this._logs = logs
     this._execState = execState
-    this._variables = execState.variables
+    this._variables.value = execState.variables
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
