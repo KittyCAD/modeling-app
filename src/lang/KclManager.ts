@@ -99,6 +99,7 @@ import {
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
 import toast from 'react-hot-toast'
+import { syntaxTree } from '@codemirror/language'
 
 interface ExecuteArgs {
   ast?: Node<Program>
