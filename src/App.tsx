@@ -62,12 +62,33 @@ import {
   MlEphantManagerReactContext,
   MlEphantManagerTransitions2,
 } from '@src/machines/mlEphantManagerMachine2'
+import { effect } from '@preact/signals-core'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
     .then(() => {})
     .catch(reportRejection)
 }
+
+effect(() => {
+  const needsWasmInitFailedToast =
+    !isDesktop() && kclManager.wasmInitFailedSignal.value
+  if (needsWasmInitFailedToast) {
+    toast.success(
+      () =>
+        WasmErrToast({
+          onDismiss: () => {
+            toast.dismiss(WASM_INIT_FAILED_TOAST_ID)
+          },
+        }),
+      {
+        id: WASM_INIT_FAILED_TOAST_ID,
+        duration: Number.POSITIVE_INFINITY,
+        icon: null,
+      }
+    )
+  }
+})
 
 export function App() {
   const { state: modelingState } = useModelingContext()
@@ -190,26 +211,6 @@ export function App() {
     searchParams.size,
     authToken,
   ])
-
-  useEffect(() => {
-    const needsWasmInitFailedToast = !isDesktop() && kclManager.wasmInitFailed
-    if (needsWasmInitFailedToast) {
-      toast.success(
-        () =>
-          WasmErrToast({
-            onDismiss: () => {
-              toast.dismiss(WASM_INIT_FAILED_TOAST_ID)
-            },
-          }),
-        {
-          id: WASM_INIT_FAILED_TOAST_ID,
-          duration: Number.POSITIVE_INFINITY,
-          icon: null,
-        }
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.wasmInitFailed])
 
   // Only create the native file menus on desktop
   useEffect(() => {
