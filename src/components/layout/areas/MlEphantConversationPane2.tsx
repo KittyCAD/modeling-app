@@ -1,7 +1,6 @@
 import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
 import type { settings } from '@src/lib/settings/initialSettings'
-import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclManager'
 import type { SystemIOActor } from '@src/lib/singletons'
 import { useEffect, useState } from 'react'
@@ -28,7 +27,6 @@ export const MlEphantConversationPane2 = (props: {
   billingActor: BillingActor
   systemIOActor: SystemIOActor
   kclManager: KclManager
-  editorManager: EditorManager
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
   sendModeling: ReturnType<typeof useModelingContext>['send']
@@ -89,7 +87,7 @@ export const MlEphantConversationPane2 = (props: {
     }
 
     const projectFiles = await collectProjectFiles({
-      selectedFileContents: props.editorManager.code,
+      selectedFileContents: props.kclManager.code,
       fileNames: props.kclManager.execState.filenames,
       projectContext: project,
     })
@@ -104,7 +102,7 @@ export const MlEphantConversationPane2 = (props: {
       applicationProjectDirectory: props.settings.app.projectDirectory.current,
       fileSelectedDuringPrompting: {
         entry: props.loaderFile,
-        content: props.editorManager.code,
+        content: props.kclManager.code,
       },
       projectFiles,
       selections: props.contextModeling.selectionRanges,

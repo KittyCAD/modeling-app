@@ -46,7 +46,6 @@ import {
 } from '@src/lib/layout'
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import type EditorManager from '@src/editor/manager'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -262,7 +261,6 @@ export function OnboardingButtons({
 
 export interface OnboardingUtilDeps {
   onboardingStatus: OnboardingStatus
-  editorManager: EditorManager
   kclManager: KclManager
   navigate: NavigateFunction
 }
@@ -299,7 +297,7 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     return Promise.resolve()
   }
 
-  const isCodeResettable = hasResetReadyCode(deps.editorManager)
+  const isCodeResettable = hasResetReadyCode(deps.kclManager)
   if (isCodeResettable) {
     return resetCodeAndAdvanceOnboarding(deps)
   }
@@ -313,7 +311,6 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
  */
 export async function resetCodeAndAdvanceOnboarding({
   onboardingStatus,
-  editorManager,
   kclManager,
   navigate,
 }: OnboardingUtilDeps) {
@@ -322,8 +319,8 @@ export async function resetCodeAndAdvanceOnboarding({
     ? onboardingStartPath
     : onboardingStatus
   // We do want to update both the state and editor here.
-  editorManager.updateCodeStateEditor(browserAxialFan)
-  editorManager.writeToFile().catch(reportRejection)
+  kclManager.updateCodeStateEditor(browserAxialFan)
+  kclManager.writeToFile().catch(reportRejection)
   kclManager.executeCode().catch(reportRejection)
   navigate(
     makeUrlPathRelative(
@@ -332,10 +329,10 @@ export async function resetCodeAndAdvanceOnboarding({
   )
 }
 
-function hasResetReadyCode(editorManager: EditorManager) {
+function hasResetReadyCode(kclManager: KclManager) {
   return (
-    isKclEmptyOrOnlySettings(editorManager.code) ||
-    editorManager.code === browserAxialFan
+    isKclEmptyOrOnlySettings(kclManager.code) ||
+    kclManager.code === browserAxialFan
   )
 }
 

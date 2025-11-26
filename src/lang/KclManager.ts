@@ -5,7 +5,6 @@ import {
 } from '@codemirror/lint'
 import type { EntityType } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type EditorManager from '@src/editor/manager'
 import type RustContext from '@src/lib/rustContext'
 
 import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
@@ -72,14 +71,19 @@ import {
   Annotation,
   EditorState,
   Transaction,
-  TransactionSpec,
+  type TransactionSpec,
 } from '@codemirror/state'
-import { EditorView, KeyBinding, keymap, ViewUpdate } from '@codemirror/view'
 import {
+  EditorView,
+  type KeyBinding,
+  keymap,
+  type ViewUpdate,
+} from '@codemirror/view'
+import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
-import { StateFrom } from 'xstate'
+import type { StateFrom } from 'xstate'
 import {
   defaultKeymap,
   history,
@@ -105,7 +109,6 @@ interface ExecuteArgs {
 // can easily become cyclic. Each will have its own Singletons type.
 interface Singletons {
   rustContext: RustContext
-  editorManager: EditorManager
   sceneInfra: SceneInfra
 }
 
@@ -451,7 +454,7 @@ export class KclManager extends EventTarget {
     this._isExecutingCallback = setIsExecuting
     this._wasmInitFailedCallback = setWasmInitFailed
 
-    /** Merged in from EditorManager's duplicat impl */
+    /** Merged in from EditorManager's duplicate impl */
     this.#updateState = setCode
   }
 

@@ -11,7 +11,6 @@ import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type EditorManager from '@src/editor/manager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { kclEditorMachine } from '@src/machines/kclEditorMachine'
 import type { ActorRefFrom } from 'xstate'
@@ -221,7 +220,6 @@ export interface ModelingMachineContext {
   engineCommandManager?: ConnectionManager
   sceneInfra?: SceneInfra
   sceneEntitiesManager?: SceneEntities
-  editorManager?: EditorManager
   wasmInstance?: ModuleType
   kclEditorMachine?: ActorRefFrom<typeof kclEditorMachine>
   rustContext?: RustContext

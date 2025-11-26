@@ -2,8 +2,7 @@ import { UAParser } from 'ua-parser-js'
 
 import type { OsInfo } from '@rust/kcl-lib/bindings/OsInfo'
 import type { WebrtcStats } from '@rust/kcl-lib/bindings/WebrtcStats'
-
-import type EditorManager from '@src/editor/manager'
+import type { KclManager } from '@src/lang/KclManager'
 import type { CommandLog } from '@src/lang/std/commandLog'
 import { isDesktop } from '@src/lib/isDesktop'
 import type RustContext from '@src/lib/rustContext'
@@ -36,19 +35,19 @@ import { EngineDebugger } from '@src/lib/debugger'
 // TODO: Throw more
 export class CoreDumpManager {
   engineCommandManager: ConnectionManager
-  editorManager: EditorManager
+  kclManager: KclManager
   rustContext: RustContext
   token: string | undefined
   baseUrl: string = withAPIBaseURL('')
 
   constructor(
     engineCommandManager: ConnectionManager,
-    editorManager: EditorManager,
+    kclManager: KclManager,
     rustContext: RustContext,
     token: string | undefined
   ) {
     this.engineCommandManager = engineCommandManager
-    this.editorManager = editorManager
+    this.kclManager = kclManager
     this.rustContext = rustContext
     this.token = token
   }
@@ -72,7 +71,7 @@ export class CoreDumpManager {
   }
 
   kclCode(): string {
-    return this.editorManager.code
+    return this.kclManager.code
   }
 
   // Get the backend pool we've requested.
@@ -316,6 +315,32 @@ export class CoreDumpManager {
           ;(clientState.kcl_manager as any).wasmInitFailed =
             kclManager.wasmInitFailed
         }
+
+        const kclManagerSkipKeys = ['camControls']
+        const kclManagerKeys = Object.keys(kclManager)
+          .sort()
+          .filter((entry) => {
+            return (
+              typeof kclManager[entry] !== 'function' &&
+              !isPrivateMethod(entry) &&
+              !kclManagerSkipKeys.includes(entry)
+            )
+          })
+
+        debugLog('CoreDump: KCL Manager keys', kclManagerKeys)
+        kclManagerKeys.forEach((key: string) => {
+          debugLog('CoreDump: KCL Manager', key, kclManager[key])
+          try {
+            ;(clientState.editor_manager as any)[key] = structuredClone(
+              kclManager[key]
+            )
+          } catch (error) {
+            console.error(
+              'CoreDump: unable to parse KCL Manager ' + key + ' data due to ',
+              error
+            )
+          }
+        })
       }
 
       // Scene Infra - globalThis?.window?.sceneInfra
@@ -373,40 +398,6 @@ export class CoreDumpManager {
               })
             )
         }
-      }
-
-      // Editor Manager - globalThis?.window?.editorManager
-      const editorManager = (globalThis?.window as any)?.editorManager
-      debugLog('CoreDump: editorManager', editorManager)
-
-      if (editorManager) {
-        const editorManagerSkipKeys = ['camControls']
-        const editorManagerKeys = Object.keys(editorManager)
-          .sort()
-          .filter((entry) => {
-            return (
-              typeof editorManager[entry] !== 'function' &&
-              !isPrivateMethod(entry) &&
-              !editorManagerSkipKeys.includes(entry)
-            )
-          })
-
-        debugLog('CoreDump: Editor Manager keys', editorManagerKeys)
-        editorManagerKeys.forEach((key: string) => {
-          debugLog('CoreDump: Editor Manager', key, editorManager[key])
-          try {
-            ;(clientState.editor_manager as any)[key] = structuredClone(
-              editorManager[key]
-            )
-          } catch (error) {
-            console.error(
-              'CoreDump: unable to parse Editor Manager ' +
-                key +
-                ' data due to ',
-              error
-            )
-          }
-        })
       }
 
       // enableMousePositionLogs - Not coredumped

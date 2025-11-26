@@ -22,7 +22,6 @@ import {
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { kclEditorMachine } from '@src/machines/kclEditorMachine'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type EditorManager from '@src/editor/manager'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -35,7 +34,6 @@ let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 let sceneInfraInThisFile: SceneInfra = null!
-let editorManagerInThisFile: EditorManager = null!
 let sceneEntitiesManagerInThisFile: SceneEntities = null!
 
 /**
@@ -53,7 +51,6 @@ beforeEach(async () => {
     instance,
     engineCommandManager,
     sceneInfra,
-    editorManager,
     kclManager,
     sceneEntitiesManager,
     rustContext,
@@ -63,7 +60,6 @@ beforeEach(async () => {
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
   sceneInfraInThisFile = sceneInfra
-  editorManagerInThisFile = editorManager
   sceneEntitiesManagerInThisFile = sceneEntitiesManager
 })
 
@@ -920,7 +916,7 @@ p3 = [342.51, 216.38],
           it(name, async () => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            editorManagerInThisFile.updateCodeStateEditor(code)
+            kclManagerInThisFile.updateCodeStateEditor(code)
             const ast = assertParse(code, instanceInThisFile)
             await kclManagerInThisFile.executeAst({ ast })
 
@@ -946,7 +942,6 @@ p3 = [342.51, 216.38],
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
             contextCopied.sceneInfra = sceneInfraInThisFile
             contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
-            contextCopied.editorManager = editorManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
             contextCopied.kclEditorMachine = kclEditorActor
             contextCopied.rustContext = rustContextInThisFile
@@ -993,7 +988,7 @@ p3 = [342.51, 216.38],
             }
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
-              editorManagerInThisFile.code,
+              kclManagerInThisFile.code,
               artifact.codeRef.pathToNode,
               filter
             )
@@ -1019,13 +1014,13 @@ p3 = [342.51, 216.38],
 
             const startTime = Date.now()
             while (
-              editorManagerInThisFile.code.includes(searchText) &&
+              kclManagerInThisFile.code.includes(searchText) &&
               Date.now() - startTime < GLOBAL_TIMEOUT_FOR_MODELING_MACHINE
             ) {
               await new Promise((resolve) => setTimeout(resolve, 100))
             }
 
-            expect(editorManagerInThisFile.code).not.toContain(searchText)
+            expect(kclManagerInThisFile.code).not.toContain(searchText)
           }, 10_000)
         }
       )
@@ -1047,7 +1042,7 @@ p3 = [342.51, 216.38],
           it(name, async () => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            editorManagerInThisFile.updateCodeStateEditor(code)
+            kclManagerInThisFile.updateCodeStateEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
             await kclManagerInThisFile.executeAst({ ast })
@@ -1074,7 +1069,6 @@ p3 = [342.51, 216.38],
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
             contextCopied.sceneInfra = sceneInfraInThisFile
             contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
-            contextCopied.editorManager = editorManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
             contextCopied.kclEditorMachine = kclEditorActor
             contextCopied.rustContext = rustContextInThisFile
@@ -1121,7 +1115,7 @@ p3 = [342.51, 216.38],
             }
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
-              editorManagerInThisFile.code,
+              kclManagerInThisFile.code,
               artifact.codeRef.pathToNode,
               filter
             )
@@ -1162,7 +1156,7 @@ p3 = [342.51, 216.38],
               modelingMachineActor: actor,
               stateString: { Sketch: { SketchIdle: 'scene drawn' } },
             })
-            expect(editorManagerInThisFile.code).toContain(expectedResult)
+            expect(kclManagerInThisFile.code).toContain(expectedResult)
           }, 10_000)
         }
       )
@@ -1185,7 +1179,7 @@ p3 = [342.51, 216.38],
           it(name, async () => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            editorManagerInThisFile.updateCodeStateEditor(code)
+            kclManagerInThisFile.updateCodeStateEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
             await kclManagerInThisFile.executeAst({ ast })
@@ -1212,7 +1206,6 @@ p3 = [342.51, 216.38],
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
             contextCopied.sceneInfra = sceneInfraInThisFile
             contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
-            contextCopied.editorManager = editorManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
             contextCopied.kclEditorMachine = kclEditorActor
             contextCopied.rustContext = rustContextInThisFile
@@ -1263,7 +1256,7 @@ p3 = [342.51, 216.38],
             }
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
-              editorManagerInThisFile.code,
+              kclManagerInThisFile.code,
               artifact.codeRef.pathToNode,
               filter
             )
@@ -1310,7 +1303,7 @@ p3 = [342.51, 216.38],
           it(name, async () => {
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            editorManagerInThisFile.updateCodeStateEditor(code)
+            kclManagerInThisFile.updateCodeStateEditor(code)
             const ast = assertParse(code, instanceInThisFile)
 
             await kclManagerInThisFile.executeAst({ ast })
@@ -1337,7 +1330,6 @@ p3 = [342.51, 216.38],
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
             contextCopied.sceneInfra = sceneInfraInThisFile
             contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
-            contextCopied.editorManager = editorManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
             contextCopied.kclEditorMachine = kclEditorActor
             contextCopied.rustContext = rustContextInThisFile
@@ -1416,12 +1408,12 @@ p3 = [342.51, 216.38],
             }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
             const startTime = Date.now()
             while (
-              !editorManagerInThisFile.code.includes(expectedResult) &&
+              !kclManagerInThisFile.code.includes(expectedResult) &&
               Date.now() - startTime < GLOBAL_TIMEOUT_FOR_MODELING_MACHINE
             ) {
               await new Promise((resolve) => setTimeout(resolve, 100))
             }
-            expect(editorManagerInThisFile.code).toContain(expectedResult)
+            expect(kclManagerInThisFile.code).toContain(expectedResult)
           }, 10_000)
         }
       )
