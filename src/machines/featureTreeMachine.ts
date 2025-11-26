@@ -13,7 +13,8 @@ import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import type { EnterEditFlowProps } from '@src/lib/operations'
 import { enterEditFlow } from '@src/lib/operations'
-import { kclManager } from '@src/lib/singletons'
+import { kclManager, rustContext } from '@src/lib/singletons'
+import type RustContext from '@src/lib/rustContext'
 import { commandBarActor } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 
@@ -64,9 +65,12 @@ type FeatureTreeEvent =
 type FeatureTreeContext = {
   targetSourceRange?: SourceRange
   currentOperation?: Operation
+  rustContext: RustContext
 }
 
-export const featureTreeMachineDefaultContext: FeatureTreeContext = {}
+export const featureTreeMachineDefaultContext: FeatureTreeContext = {
+  rustContext,
+}
 
 export const featureTreeMachine = setup({
   types: {
@@ -416,6 +420,7 @@ export const featureTreeMachine = setup({
                 operation: context.currentOperation!,
                 artifact,
                 commandBarSend: commandBarActor.send,
+                rustContext: context.rustContext,
               }
             },
             onDone: {
