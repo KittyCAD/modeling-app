@@ -30,6 +30,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
+  Expr,
   LabeledArg,
   PathToNode,
   Program,
@@ -39,6 +40,7 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 
 export function addExtrude({
@@ -82,10 +84,56 @@ export function addExtrude({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
-  if (err(vars)) {
-    return vars
+  // Filter to only include face selections
+  let vars:
+    | undefined
+    | {
+        exprs: Expr[]
+        pathIfPipe?: PathToNode
+      }
+  const faceSelections = sketches.graphSelections.filter((selection) =>
+    isFaceArtifact(selection.artifact)
+  )
+
+  if (faceSelections.length > 0) {
+    // Handle the face selection case (vs. regular sketches below)
+    const tagsExprs: Expr[] = []
+    for (const faceSelection of faceSelections) {
+      const tagResult = modifyAstWithTagsForSelection(
+        modifiedAst,
+        faceSelection,
+        artifactGraph
+      )
+      if (err(tagResult)) {
+        console.warn('Failed to add tag for face selection', tagResult)
+        continue
+      }
+
+      // Update the AST with the tagged version
+      modifiedAst = tagResult.modifiedAst
+
+      // Create expression from the first tag (faces have one tag)
+      tagsExprs.push(createLocalName(tagResult.tags[0]))
+    }
+
+    if (tagsExprs.length === 0) {
+      return new Error(
+        'No valid face expressions could be generated from selection'
+      )
+    }
+
+    vars = { exprs: tagsExprs }
+  } else {
+    // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+    const res = getVariableExprsFromSelection(
+      sketches,
+      modifiedAst,
+      mNodeToEdit
+    )
+    if (err(res)) {
+      return res
+    }
+    vars = res
   }
 
   // Extra labeled args expressions
