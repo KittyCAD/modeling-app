@@ -988,7 +988,7 @@ impl Node<SketchBlock> {
                 id: artifact_id,
                 plane_id: plane_artifact_id,
                 code_ref: CodeRef::placeholder(range),
-                sketch_id: sketch_id.0,
+                sketch_id,
             }));
 
             sketch_id
@@ -1140,7 +1140,7 @@ impl Node<SketchBlock> {
 
             // Push sketch solve operation
             exec_state.push_op(Operation::SketchSolve {
-                sketch_id: sketch_id.0,
+                sketch_id,
                 node_path: NodePath::placeholder(),
                 source_range: range,
             });

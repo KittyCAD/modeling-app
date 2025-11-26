@@ -13,6 +13,7 @@ use crate::{
     KclError, NodePath, SourceRange,
     errors::KclErrorDetails,
     execution::ArtifactId,
+    front::ObjectId,
     parsing::ast::types::{Node, Program},
 };
 
@@ -225,7 +226,7 @@ pub struct SketchBlock {
     pub plane_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
     /// The sketch ID (ObjectId) for the sketch scene object.
-    pub sketch_id: usize,
+    pub sketch_id: ObjectId,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]

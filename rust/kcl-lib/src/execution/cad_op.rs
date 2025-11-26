@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 use serde::Serialize;
 
 use super::{ArtifactId, KclValue, types::NumericType};
-use crate::{ModuleId, NodePath, SourceRange, parsing::ast::types::ItemVisibility};
+use crate::{ModuleId, NodePath, SourceRange, front::ObjectId, parsing::ast::types::ItemVisibility};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
@@ -57,7 +57,7 @@ pub enum Operation {
     #[serde(rename_all = "camelCase")]
     SketchSolve {
         /// The ID of the sketch being modified.
-        sketch_id: usize,
+        sketch_id: ObjectId,
         /// The node path of the operation in the source code.
         node_path: NodePath,
         /// The source range of the operation in the source code.
