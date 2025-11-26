@@ -184,7 +184,7 @@ export class KclManager extends EventTarget {
    */
   lastSuccessfulCode: string = ''
   private _logs = signal<string[]>([])
-  private _errors: KCLError[] = []
+  private _errors = signal<KCLError[]>([])
   private _diagnostics = signal<Diagnostic[]>([])
   private _isExecuting = signal(false)
   private _executeIsStale: ExecuteArgs | null = null
@@ -201,7 +201,6 @@ export class KclManager extends EventTarget {
 
   engineCommandManager: ConnectionManager
 
-  private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
@@ -253,7 +252,7 @@ export class KclManager extends EventTarget {
 
     // Without this, when leaving a project which has errors and opening another project which doesn't,
     // you'd see the errors from the previous project for a short time until the new code is executed.
-    this._errors = []
+    this.errors = []
   }
 
   get variables() {
@@ -288,11 +287,14 @@ export class KclManager extends EventTarget {
   }
 
   get errors() {
+    return this._errors.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get errorsSignal() {
     return this._errors
   }
   set errors(errors) {
-    this._errors = errors
-    this._kclErrorsCallBack(errors)
+    this._errors.value = errors
   }
   get logs() {
     return this._logs.value
@@ -325,7 +327,7 @@ export class KclManager extends EventTarget {
   }
 
   hasErrors(): boolean {
-    return this._astParseFailed || this._errors.length > 0
+    return this._astParseFailed || this.errors.length > 0
   }
 
   setDiagnosticsForCurrentErrors() {
@@ -424,13 +426,10 @@ export class KclManager extends EventTarget {
   }
 
   registerCallBacks({
-    setErrors,
     setWasmInitFailed,
   }: {
-    setErrors: (errors: KCLError[]) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
-    this._kclErrorsCallBack = setErrors
     this._wasmInitFailedCallback = setWasmInitFailed
   }
 
@@ -526,7 +525,7 @@ export class KclManager extends EventTarget {
     // When we safeParse this is tied to execution because they clicked a new file to load
     // Clear all previous errors and logs because they are old since they executed a new file
     // If we decouple safeParse from execution we need to move this application logic.
-    this._kclErrorsCallBack([])
+    this.errors = []
 
     this.addDiagnostics(compilationErrorsToDiagnostics(result.errors, code))
     this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings, code))
