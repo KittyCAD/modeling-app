@@ -953,8 +953,10 @@ impl Node<SketchBlock> {
             // scene objects created inside the sketch block so that its ID is
             // stable across sketch block edits.
 
-            use crate::engine::PlaneName;
-            use crate::execution::{Artifact, ArtifactId, CodeRef, SketchBlock};
+            use crate::{
+                engine::PlaneName,
+                execution::{Artifact, ArtifactId, CodeRef, SketchBlock},
+            };
             let sketch_id = exec_state.next_object_id();
             let arg_on: Option<crate::execution::Plane> =
                 args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
