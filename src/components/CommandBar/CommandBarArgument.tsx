@@ -12,7 +12,10 @@ import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
-function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
+function CommandBarArgument({
+  stepBack,
+  currentCode,
+}: { stepBack: () => void; currentCode: string }) {
   const commandBarState = useCommandBarState()
   const {
     context: { currentArgument },
@@ -47,6 +50,7 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
           arg={currentArgument}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          currentCode={currentCode}
         />
         <CommandBarDivider />
       </CommandBarHeaderFooter>
@@ -60,10 +64,12 @@ function ArgumentInput({
   arg,
   stepBack,
   onSubmit,
+  currentCode,
 }: {
   arg: CommandArgument<unknown> & { name: string }
   stepBack: () => void
   onSubmit: (event: any) => void
+  currentCode: string
 }) {
   // @ts-ignore
   switch (arg.inputType) {
@@ -112,7 +118,12 @@ function ArgumentInput({
       )
     case 'kcl':
       return (
-        <CommandBarKclInput arg={arg} stepBack={stepBack} onSubmit={onSubmit} />
+        <CommandBarKclInput
+          arg={arg}
+          stepBack={stepBack}
+          onSubmit={onSubmit}
+          currentCode={currentCode}
+        />
       )
     case 'text':
       return (
@@ -136,6 +147,7 @@ function ArgumentInput({
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          currentCode={currentCode}
         />
       )
     case 'vector2d':
@@ -144,6 +156,7 @@ function ArgumentInput({
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          currentCode={currentCode}
         />
       )
     case 'number':

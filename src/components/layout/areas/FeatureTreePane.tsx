@@ -221,7 +221,8 @@ export const FeatureTreePaneContents = () => {
   // We use the code that corresponds to the operations. In case this is an
   // error on the first run, fall back to whatever is currently in the code
   // editor.
-  const operationsCode = kclManager.lastSuccessfulCode || kclManager.code
+  const operationsCode =
+    kclManager.lastSuccessfulCode || kclManager.codeSignal.value
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = groupOperationTypeStreaks(

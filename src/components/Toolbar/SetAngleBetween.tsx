@@ -123,6 +123,7 @@ export async function applyConstraintAngleBetween({
     value: valueUsedInTransform,
     initialVariableName: 'angle',
     selectionRanges,
+    currentCode: kclManager.codeSignal.value,
   })
   if (
     segName === tagInfo?.tag &&

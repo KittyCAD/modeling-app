@@ -5,8 +5,8 @@ import { useKclContext } from '@src/lang/KclProvider'
 import { findAllPreviousVariables } from '@src/lang/queryAst'
 import { kclManager } from '@src/lib/singletons'
 
-export function usePreviousVariables() {
-  const { variables, code } = useKclContext()
+export function usePreviousVariables({ code }: { code: string }) {
+  const { variables } = useKclContext()
   const { context } = useModelingContext()
   const selectionRange = context.selectionRanges.graphSelections[0]?.codeRef
     ?.range || [code.length, code.length]

@@ -1,15 +1,9 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { createContext, useContext, useEffect, useState } from 'react'
-import { useRouteLoaderData } from 'react-router-dom'
-
-import { PATHS } from '@src/lib/paths'
 import { kclManager } from '@src/lib/singletons'
-import { type IndexLoaderData } from '@src/lib/types'
-
 import type { KCLError } from '@src/lang/errors'
 
 const KclContext = createContext({
-  code: kclManager?.code || '',
   variables: kclManager?.variables,
   ast: kclManager?.ast,
   isExecuting: kclManager?.isExecuting,
@@ -28,14 +22,7 @@ export function KclContextProvider({
 }: {
   children: React.ReactNode
 }) {
-  // If we try to use this component anywhere but under the paths.FILE route it will fail
-  // Because useLoaderData assumes we are on within it's context.
-  const data = useRouteLoaderData(PATHS.FILE) as IndexLoaderData | undefined
-  const loadedCode = data?.code
-
   // Both the code state and the editor state start off with the same code.
-  const [code, setCode] = useState(loadedCode || kclManager.code)
-
   const [variables, setVariables] = useState(kclManager.variables)
   const [ast, setAst] = useState(kclManager.ast)
   const [isExecuting, setIsExecuting] = useState(false)
@@ -48,7 +35,6 @@ export function KclContextProvider({
     kclManager.registerCallBacks({
       setVariables,
       setAst,
-      setCode,
       setLogs,
       setErrors,
       setDiagnostics,
@@ -60,7 +46,6 @@ export function KclContextProvider({
   return (
     <KclContext.Provider
       value={{
-        code,
         variables,
         ast,
         isExecuting,
