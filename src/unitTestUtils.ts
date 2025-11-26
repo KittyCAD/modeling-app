@@ -57,11 +57,11 @@ export function findAngleLengthPair(call: CallExpressionKw): Expr | undefined {
 // if this runs in vitest the engineCommandManager will run a lite connection mode.
 export async function buildTheWorldAndConnectToEngine() {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
-  const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+  const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
   const engineCommandManager = new ConnectionManager()
-  const rustContext = new RustContext(engineCommandManager, instance)
+  const rustContext = new RustContext(engineCommandManager, instancePromise)
   const sceneInfra = new SceneInfra(engineCommandManager)
-  const kclManager = new KclManager(engineCommandManager, {
+  const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
     sceneInfra,
   })
@@ -78,7 +78,7 @@ export async function buildTheWorldAndConnectToEngine() {
     sceneInfra,
     kclManager,
     rustContext,
-    instance
+    await instancePromise
   )
   sceneEntitiesManager.commandBarActor = commandBarActor
 
@@ -99,7 +99,7 @@ export async function buildTheWorldAndConnectToEngine() {
       .catch(reportRejection)
   })
   return {
-    instance,
+    instance: await instancePromise,
     engineCommandManager,
     rustContext,
     sceneInfra,
@@ -112,11 +112,11 @@ export async function buildTheWorldAndConnectToEngine() {
 // Initialize all the singletons and the WASM blob but do not connect to the engine
 export async function buildTheWorldAndNoEngineConnection() {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
-  const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+  const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
   const engineCommandManager = new ConnectionManager()
-  const rustContext = new RustContext(engineCommandManager, instance)
+  const rustContext = new RustContext(engineCommandManager, instancePromise)
   const sceneInfra = new SceneInfra(engineCommandManager)
-  const kclManager = new KclManager(engineCommandManager, {
+  const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
     sceneInfra,
   })
@@ -124,7 +124,7 @@ export async function buildTheWorldAndNoEngineConnection() {
   engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
   return {
-    instance,
+    instance: await instancePromise,
     engineCommandManager,
     rustContext,
     sceneInfra,
