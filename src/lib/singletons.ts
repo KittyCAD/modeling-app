@@ -33,9 +33,9 @@ import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
+import { initPromise } from '@src/lang/wasmUtils'
 
 export const engineCommandManager = new ConnectionManager()
-export const rustContext = new RustContext(engineCommandManager)
 
 declare global {
   interface Window {
@@ -48,13 +48,13 @@ declare global {
 // Accessible for tests mostly
 window.engineCommandManager = engineCommandManager
 
+export const rustContext = new RustContext(engineCommandManager, initPromise)
 export const sceneInfra = new SceneInfra(engineCommandManager)
-export const kclManager = new KclManager(engineCommandManager, {
+export const kclManager = new KclManager(engineCommandManager, initPromise, {
   rustContext,
   sceneInfra,
 })
 
-import { initPromise } from '@src/lang/wasmUtils'
 // Initialize KCL version
 import { setKclVersion } from '@src/lib/kclVersion'
 import { AppMachineEventType } from '@src/lib/types'
@@ -70,7 +70,7 @@ initPromise
   .then(() => {
     if (processEnv()?.VITEST) {
       const message =
-        'singletons is trying to call initPromise and setKclVersion. This will be blocked in VITEST runtimes.'
+        'singletons is trying to call initWasmPromise and setKclVersion. This will be blocked in VITEST runtimes.'
       console.log(message)
       return
     }

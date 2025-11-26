@@ -15,7 +15,6 @@ import type { WebSocketResponse } from '@kittycad/lib'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { ExecState } from '@src/lang/wasm'
 import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { defaultPlaneStrToKey } from '@src/lib/planes'
@@ -29,7 +28,6 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { Signal } from '@src/lib/signal'
 
 export default class RustContext {
-  private wasmInitFailed: boolean = true
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
@@ -37,31 +35,21 @@ export default class RustContext {
   private projectId = 0
   public readonly planesCreated = new Signal()
 
-  /** Initialize the WASM module */
-  private async ensureWasmInit() {
-    try {
-      await initPromise
-      if (this.wasmInitFailed) {
-        this.wasmInitFailed = false
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      this.wasmInitFailed = true
-    }
-  }
-
-  constructor(engineCommandManager: ConnectionManager, instance?: ModuleType) {
+  constructor(
+    engineCommandManager: ConnectionManager,
+    instance: Promise<ModuleType | string>
+  ) {
     this.engineCommandManager = engineCommandManager
 
-    if (instance) {
-      this.createFromInstance(instance)
-    } else {
-      this.ensureWasmInit()
-        .then(() => {
-          this.ctxInstance = this.create()
-        })
-        .catch(reportRejection)
-    }
+    instance
+      .then((wasmInstance) => {
+        if (typeof wasmInstance !== 'string') {
+          this.createFromInstance(wasmInstance)
+        } else {
+          return new Error(wasmInstance)
+        }
+      })
+      .catch(reportRejection)
   }
 
   /** Create a new context instance */

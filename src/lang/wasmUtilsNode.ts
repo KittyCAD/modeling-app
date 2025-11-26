@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { init, reloadModule } from '@src/lib/wasm_lib_wrapper'
+import { getModule, init, reloadModule } from '@src/lib/wasm_lib_wrapper'
 import fsPromises from 'fs/promises'
 import { processEnv } from '@src/env'
 
@@ -27,7 +27,7 @@ export const wasmUrlNode = () => {
 }
 
 // Initialise the wasm module.
-const initialiseNode = async () => {
+const initialiseWasmNode = async () => {
   if (processEnv()?.VITEST) {
     const message =
       'wasmUtilsNode is trying to call initialiseNode. This will be blocked in VITEST runtimes.'
@@ -39,14 +39,15 @@ const initialiseNode = async () => {
     await reloadModule()
     const fullPath = wasmUrlNode()
     const buffer = await fsPromises.readFile(fullPath)
-    return await init({ module_or_path: buffer })
+    await init({ module_or_path: buffer })
+    return getModule()
   } catch (e) {
     console.log('Error initialising WASM', e)
     return Promise.reject(e)
   }
 }
 
-export const initPromiseNode = initialiseNode()
+export const initPromiseNode = initialiseWasmNode()
 
 /**
  * Given a path to a .wasm file read it from disk and load the module
