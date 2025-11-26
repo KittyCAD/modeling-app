@@ -3,7 +3,11 @@ import type { PropsWithChildren } from 'react'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { commandBarActor, settingsActor } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  getSettings,
+  settingsActor,
+} from '@src/lib/singletons'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
@@ -51,7 +55,6 @@ import { lineHighlightField } from '@src/editor/highlightextension'
 import { modelingMachineEvent } from '@src/lang/KclManager'
 import { kclManager } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
-import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection, trap } from '@src/lib/trap'
 import { onMouseDragMakeANewNumber, onMouseDragRegex } from '@src/lib/utils'
 import {
@@ -61,8 +64,9 @@ import {
 } from '@src/machines/kclEditorMachine'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { kclSyntaxHighlightingExtension } from '@src/lib/codeEditor'
+import { editorTheme, themeCompartment } from '@src/lib/codeEditor'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { getResolvedTheme } from '@src/lib/theme'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -97,10 +101,6 @@ export const KclEditorPaneContents = () => {
   const context = useSettings()
   const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const editorIsMounted = useSelector(kclEditorActor, editorIsMountedSelector)
-  const theme =
-    context.app.theme.current === Themes.System
-      ? getSystemTheme()
-      : context.app.theme.current
   const { copilotLSP, kclLSP } = useLspContext()
 
   // When this component unmounts, we need to tell the machine that the editor
@@ -147,6 +147,9 @@ export const KclEditorPaneContents = () => {
 
   const editorExtensions = useMemo(() => {
     const extensions = [
+      themeCompartment.of(
+        editorTheme[getResolvedTheme(getSettings().app.theme.current)]
+      ),
       drawSelection({
         cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
       }),
@@ -188,7 +191,6 @@ export const KclEditorPaneContents = () => {
       closeBrackets(),
       highlightActiveLine(),
       highlightSelectionMatches(),
-      kclSyntaxHighlightingExtension,
       rectangularSelection(),
       dropCursor(),
       interact({
@@ -226,7 +228,6 @@ export const KclEditorPaneContents = () => {
         <CodeEditor
           initialDocValue={initialCode.current}
           extensions={editorExtensions}
-          theme={theme}
           onCreateEditor={(_editorView) => {
             kclManager.setEditorView(_editorView)
 
