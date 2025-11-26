@@ -5,7 +5,7 @@ import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
-import { editorManager, kclManager, rustContext } from '@src/lib/singletons'
+import { kclManager, rustContext } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { warningLevels } from '@src/lib/settings/settingsTypes'
@@ -46,7 +46,7 @@ export function ExperimentalFeaturesMenu() {
                       className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                       onClick={() => {
                         const newAst = setExperimentalFeatures(
-                          editorManager.code,
+                          kclManager.code,
                           level
                         )
                         if (err(newAst)) {
@@ -56,7 +56,6 @@ export function ExperimentalFeaturesMenu() {
                         } else {
                           updateModelingState(newAst, EXECUTION_TYPE_REAL, {
                             kclManager,
-                            editorManager,
                             rustContext,
                           })
                             .then((result) => {

@@ -28,7 +28,7 @@ import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { fileLoader, homeLoader } from '@src/lib/routeLoaders'
 import {
-  editorManager,
+  kclManager,
   engineCommandManager,
   rustContext,
 } from '@src/lib/singletons'
@@ -175,12 +175,7 @@ function CoreDump() {
   const token = useToken()
   const coreDumpManager = useMemo(
     () =>
-      new CoreDumpManager(
-        engineCommandManager,
-        editorManager,
-        rustContext,
-        token
-      ),
+      new CoreDumpManager(engineCommandManager, kclManager, rustContext, token),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     []
   )

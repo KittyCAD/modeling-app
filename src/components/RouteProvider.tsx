@@ -15,7 +15,7 @@ import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import { editorManager, kclManager, settingsActor } from '@src/lib/singletons'
+import { kclManager, settingsActor } from '@src/lib/singletons'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
@@ -66,8 +66,8 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       if (eventType !== 'change') return
 
       // Try to detect file changes and overwrite the editor
-      if (editorManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
-        editorManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+      if (kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
+        kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
         return
       }
 
@@ -100,10 +100,10 @@ export function RouteProvider({ children }: { children: ReactNode }) {
             encoding: 'utf-8',
           })
 
-          // Don't fire a re-execution if the editorManager already knows about this change,
+          // Don't fire a re-execution if the kclManager already knows about this change,
           // which would be evident if we already have matching code there.
-          if (!isCodeTheSame(code, editorManager.code)) {
-            editorManager.updateCodeStateEditor(code)
+          if (!isCodeTheSame(code, kclManager.code)) {
+            kclManager.updateCodeStateEditor(code)
             await kclManager.executeCode()
             await resetCameraPosition()
           }

@@ -97,7 +97,6 @@ import {
   getTanPreviousPoint,
   segmentUtils,
 } from '@src/clientSideScene/segments'
-import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclManager'
 import { ARG_AT, ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
@@ -197,7 +196,6 @@ type Vec3Array = [number, number, number]
 export class SceneEntities {
   readonly engineCommandManager: ConnectionManager
   readonly sceneInfra: SceneInfra
-  readonly editorManager: EditorManager
   readonly kclManager: KclManager
   readonly rustContext: RustContext
   readonly wasmInstance?: ModuleType
@@ -213,14 +211,12 @@ export class SceneEntities {
   constructor(
     engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
-    editorManager: EditorManager,
     kclManager: KclManager,
     rustContext: RustContext,
     wasmInstance?: ModuleType
   ) {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
-    this.editorManager = editorManager
     this.kclManager = kclManager
     this.rustContext = rustContext
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
@@ -1326,7 +1322,6 @@ export class SceneEntities {
           EXECUTION_TYPE_MOCK,
           {
             kclManager: this.kclManager,
-            editorManager: this.editorManager,
             rustContext: this.rustContext,
           },
           {
@@ -1564,7 +1559,6 @@ export class SceneEntities {
         // and this couldn't wouldn't run.
         await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
           kclManager: this.kclManager,
-          editorManager: this.editorManager,
           rustContext: this.rustContext,
         })
         this.sceneInfra.modelingSend({ type: 'Finish rectangle' })
@@ -1778,7 +1772,6 @@ export class SceneEntities {
           // and this couldn't wouldn't run.
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
-            editorManager: this.editorManager,
             rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish center rectangle' })
@@ -1965,7 +1958,6 @@ export class SceneEntities {
           // Update the primary AST and unequip the rectangle tool
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
-            editorManager: this.editorManager,
             rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish circle three point' })
@@ -2187,7 +2179,6 @@ export class SceneEntities {
           // Update the primary AST and unequip the arc tool
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
-            editorManager: this.editorManager,
             rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish arc' })
@@ -2430,7 +2421,6 @@ export class SceneEntities {
           // Update the primary AST and unequip the arc tool
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
-            editorManager: this.editorManager,
             rustContext: this.rustContext,
           })
           if (intersectsProfileStart) {
@@ -2630,7 +2620,6 @@ export class SceneEntities {
           // Update the primary AST and unequip the rectangle tool
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
-            editorManager: this.editorManager,
             rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish circle' })
@@ -2687,7 +2676,7 @@ export class SceneEntities {
             updateExtraSegments,
           })
         }
-        await this.editorManager.writeToFile()
+        await this.kclManager.writeToFile()
       },
       onDrag: async ({
         selected,
@@ -3263,7 +3252,7 @@ export class SceneEntities {
       if (!draftInfo)
         // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
-        this.editorManager.updateCodeEditor(code)
+        this.kclManager.updateCodeEditor(code)
 
       const { execState } = await executeAstMock({
         ast: truncatedAst,
@@ -3526,7 +3515,7 @@ export class SceneEntities {
           )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
-          this.editorManager.setHighlightRange([
+          this.kclManager.setHighlightRange([
             topLevelRange(node.start, node.end),
           ])
           colorSegment(selected, SEGMENT_YELLOW)
@@ -3602,10 +3591,10 @@ export class SceneEntities {
             })
           return
         }
-        this.editorManager.setHighlightRange([defaultSourceRange()])
+        this.kclManager.setHighlightRange([defaultSourceRange()])
       },
       onMouseLeave: ({ selected }: OnMouseEnterLeaveArgs) => {
-        this.editorManager.setHighlightRange([defaultSourceRange()])
+        this.kclManager.setHighlightRange([defaultSourceRange()])
         const parent = getParentGroup(
           selected,
           SEGMENT_BODIES_PLUS_PROFILE_START

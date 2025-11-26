@@ -48,8 +48,8 @@ import { useLspContext } from '@src/components/LspProvider'
 import CodeEditor from '@src/components/layout/areas/CodeEditor'
 import { historyCompartment } from '@src/editor/compartments'
 import { lineHighlightField } from '@src/editor/highlightextension'
-import { modelingMachineEvent } from '@src/editor/manager'
-import { editorManager, kclManager } from '@src/lib/singletons'
+import { modelingMachineEvent } from '@src/lang/KclManager'
+import { kclManager } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection, trap } from '@src/lib/trap'
@@ -113,7 +113,7 @@ export const KclEditorPaneContents = () => {
   }, [])
 
   useEffect(() => {
-    const editorView = editorManager.getEditorView()
+    const editorView = kclManager.getEditorView()
     if (!editorIsMounted || !lastSelectionEvent || !editorView) {
       return
     }
@@ -135,12 +135,12 @@ export const KclEditorPaneContents = () => {
   // It reloads the editor every time we do _anything_ in the editor
   // I have no idea why.
   // Instead, hot load hotkeys via code mirror native.
-  const codeMirrorHotkeys = editorManager.getCodemirrorHotkeys()
+  const codeMirrorHotkeys = kclManager.getCodemirrorHotkeys()
 
-  // When opening the editor, use the existing history in editorManager.
+  // When opening the editor, use the existing history in kclManager.
   // This is needed to ensure users can undo beyond when the editor has been openeed.
   // (Another solution would be to reuse the same state instead of creating a new one in CodeEditor.)
-  const existingHistory = editorManager.editorState.field(historyField)
+  const existingHistory = kclManager.editorState.field(historyField)
   const initialHistory = existingHistory
     ? historyField.init(() => existingHistory)
     : history()
@@ -167,7 +167,7 @@ export const KclEditorPaneContents = () => {
         {
           key: editorShortcutMeta.convertToVariable.codeMirror,
           run: () => {
-            return editorManager.convertToVariable()
+            return kclManager.convertToVariable()
           },
         },
       ]),
@@ -213,7 +213,7 @@ export const KclEditorPaneContents = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])
 
-  const initialCode = useRef(editorManager.code)
+  const initialCode = useRef(kclManager.code)
 
   return (
     <div className="relative">
@@ -228,14 +228,14 @@ export const KclEditorPaneContents = () => {
           extensions={editorExtensions}
           theme={theme}
           onCreateEditor={(_editorView) => {
-            editorManager.setEditorView(_editorView)
+            kclManager.setEditorView(_editorView)
 
             if (!_editorView) return
 
             // Update diagnostics as they are cleared when the editor is unmounted.
             // Without this, errors would not be shown when closing and reopening the editor.
             kclManager
-              .safeParse(editorManager.code)
+              .safeParse(kclManager.code)
               .then(() => {
                 // On first load of this component, ensure we show the current errors
                 // in the editor.
@@ -253,7 +253,7 @@ export const KclEditorPaneContents = () => {
 }
 
 function copyKclCodeToClipboard() {
-  if (!editorManager.code) {
+  if (!kclManager.code) {
     toast.error('No code available to copy')
     return
   }
@@ -264,7 +264,7 @@ function copyKclCodeToClipboard() {
   }
 
   navigator.clipboard
-    .writeText(editorManager.code)
+    .writeText(kclManager.code)
     .then(() => toast.success(`Copied current file's code to clipboard`))
     .catch((e) =>
       trap(new Error(`Failed to copy code to clipboard: ${e.message}`))

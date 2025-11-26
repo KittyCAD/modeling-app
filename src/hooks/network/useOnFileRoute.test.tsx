@@ -3,7 +3,6 @@ import { useOnFileRoute } from '@src/hooks/network/useOnFileRoute'
 import type { FileEntry } from '@src/lib/project'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import EditorManager from '@src/editor/manager'
 import { KclManager } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -27,10 +26,8 @@ describe('useOnFileRoute', () => {
       const engineCommandManager = new ConnectionManager()
       const rustContext = new RustContext(engineCommandManager)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const editorManager = new EditorManager(engineCommandManager)
       const kclManager = new KclManager(engineCommandManager, {
         rustContext,
-        editorManager,
         sceneInfra,
       })
       const { unmount } = renderHook(() => {
@@ -63,10 +60,8 @@ describe('useOnFileRoute', () => {
       })
       const rustContext = new RustContext(engineCommandManager)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const editorManager = new EditorManager(engineCommandManager)
       const kclManager = new KclManager(engineCommandManager, {
         rustContext,
-        editorManager,
         sceneInfra,
       })
       const callback = vi.fn(async () => {})
@@ -106,10 +101,8 @@ describe('useOnFileRoute', () => {
       })
       const rustContext = new RustContext(engineCommandManager)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const editorManager = new EditorManager(engineCommandManager)
       const kclManager = new KclManager(engineCommandManager, {
         rustContext,
-        editorManager,
         sceneInfra,
       })
       const spy = vi.spyOn(kclManager, 'executeCode')
@@ -161,10 +154,8 @@ describe('useOnFileRoute', () => {
       })
       const rustContext = new RustContext(engineCommandManager)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const editorManager = new EditorManager(engineCommandManager)
       const kclManager = new KclManager(engineCommandManager, {
         rustContext,
-        editorManager,
         sceneInfra,
       })
       const spy = vi.spyOn(kclManager, 'executeCode')
@@ -218,10 +209,8 @@ describe('useOnFileRoute', () => {
       })
       const rustContext = new RustContext(engineCommandManager)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const editorManager = new EditorManager(engineCommandManager)
       const kclManager = new KclManager(engineCommandManager, {
         rustContext,
-        editorManager,
         sceneInfra,
       })
       const spy = vi.spyOn(kclManager, 'executeCode')

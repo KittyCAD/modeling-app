@@ -39,7 +39,7 @@ export const rustContext = new RustContext(engineCommandManager)
 
 declare global {
   interface Window {
-    editorManager: EditorManager
+    kclManager: KclManager
     engineCommandManager: ConnectionManager
     engineDebugger: Debugger
   }
@@ -94,7 +94,6 @@ kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
 export const sceneEntitiesManager = new SceneEntities(
   engineCommandManager,
   sceneInfra,
-  editorManager,
   kclManager,
   rustContext
 )
@@ -104,7 +103,6 @@ if (typeof window !== 'undefined') {
   ;(window as any).kclManager = kclManager
   ;(window as any).sceneInfra = sceneInfra
   ;(window as any).sceneEntitiesManager = sceneEntitiesManager
-  ;(window as any).editorManager = editorManager
   ;(window as any).rustContext = rustContext
   ;(window as any).engineDebugger = EngineDebugger
   ;(window as any).enableMousePositionLogs = () =>
@@ -145,7 +143,6 @@ const appMachine = setup({
 }).createMachine({
   id: 'modeling-app',
   context: {
-    editorManager,
     kclManager: kclManager,
     engineCommandManager: engineCommandManager,
     sceneInfra: sceneInfra,

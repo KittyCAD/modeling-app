@@ -161,12 +161,12 @@ async function openKclCodePanel(page: Page) {
 
   // Code Mirror lazy loads text! Wowza! Let's force-load the text for tests.
   await page.evaluate(() => {
-    // editorManager is available on the window object.
+    // kclManager is available on the window object.
     //@ts-ignore this is in an entirely different context that tsc can't see.
-    editorManager.getEditorView().dispatch({
+    kclManager.getEditorView().dispatch({
       selection: {
         //@ts-ignore this is in an entirely different context that tsc can't see.
-        anchor: editorManager.getEditorView().docView.length,
+        anchor: kclManager.getEditorView().docView.length,
       },
       scrollIntoView: true,
     })

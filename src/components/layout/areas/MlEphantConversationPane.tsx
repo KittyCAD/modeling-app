@@ -1,7 +1,6 @@
 import type { User } from '@kittycad/lib'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import type { KclManager } from '@src/lang/KclManager'
-import type EditorManager from '@src/editor/manager'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { Prompt } from '@src/lib/prompt'
 import { type settings } from '@src/lib/settings/initialSettings'
@@ -36,7 +35,6 @@ export const MlEphantConversationPane = (props: {
   billingActor: BillingActor
   systemIOActor: SystemIOActor
   kclManager: KclManager
-  editorManager: EditorManager
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
   loaderFile: FileEntry | undefined
@@ -79,7 +77,7 @@ export const MlEphantConversationPane = (props: {
     }
 
     const projectFiles = await collectProjectFiles({
-      selectedFileContents: props.editorManager.code,
+      selectedFileContents: props.kclManager.code,
       fileNames: props.kclManager.execState.filenames,
       projectContext: props.theProject,
     })
@@ -94,7 +92,7 @@ export const MlEphantConversationPane = (props: {
       applicationProjectDirectory: props.settings.app.projectDirectory.current,
       fileSelectedDuringPrompting: {
         entry: props.loaderFile,
-        content: props.editorManager.code,
+        content: props.kclManager.code,
       },
       projectFiles,
       selections: props.contextModeling.selectionRanges,
