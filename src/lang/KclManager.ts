@@ -188,7 +188,7 @@ export class KclManager extends EventTarget {
   private _diagnostics = signal<Diagnostic[]>([])
   private _isExecuting = signal(false)
   private _executeIsStale: ExecuteArgs | null = null
-  private _wasmInitFailed = true
+  private _wasmInitFailed = signal(true)
   private _astParseFailed = false
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
@@ -201,7 +201,6 @@ export class KclManager extends EventTarget {
 
   engineCommandManager: ConnectionManager
 
-  private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
   /** Values merged in from former EditorManager and CodeManager classes */
@@ -362,11 +361,14 @@ export class KclManager extends EventTarget {
   }
 
   get wasmInitFailed() {
+    return this._wasmInitFailed.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get wasmInitFailedSignal() {
     return this._wasmInitFailed
   }
   set wasmInitFailed(wasmInitFailed) {
-    this._wasmInitFailed = wasmInitFailed
-    this._wasmInitFailedCallback(wasmInitFailed)
+    this._wasmInitFailed.value = wasmInitFailed
   }
 
   constructor(engineCommandManager: ConnectionManager, singletons: Singletons) {
@@ -423,14 +425,6 @@ export class KclManager extends EventTarget {
         }
       })
     })
-  }
-
-  registerCallBacks({
-    setWasmInitFailed,
-  }: {
-    setWasmInitFailed: (arg: boolean) => void
-  }) {
-    this._wasmInitFailedCallback = setWasmInitFailed
   }
 
   clearAst() {
