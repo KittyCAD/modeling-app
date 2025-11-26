@@ -187,7 +187,7 @@ export class KclManager extends EventTarget {
   private _logs: string[] = []
   private _errors: KCLError[] = []
   private _diagnostics: Diagnostic[] = []
-  private _isExecuting = false
+  private _isExecuting = signal(false)
   private _executeIsStale: ExecuteArgs | null = null
   private _wasmInitFailed = true
   private _astParseFailed = false
@@ -202,7 +202,6 @@ export class KclManager extends EventTarget {
 
   engineCommandManager: ConnectionManager
 
-  private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _astCallBack: (arg: Node<Program>) => void = () => {}
   private _variablesCallBack: (
     arg: {
@@ -332,11 +331,14 @@ export class KclManager extends EventTarget {
   }
 
   get isExecuting() {
+    return this._isExecuting.value
+  }
+  get isExecutingSignal() {
     return this._isExecuting
   }
 
   set isExecuting(isExecuting) {
-    this._isExecuting = isExecuting
+    this._isExecuting.value = isExecuting
     // If we have finished executing, but the execute is stale, we should
     // execute again.
     if (!isExecuting && this.executeIsStale) {
@@ -345,7 +347,6 @@ export class KclManager extends EventTarget {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.executeAst(args)
     }
-    this._isExecutingCallback(isExecuting)
   }
 
   get executeIsStale() {
@@ -426,7 +427,6 @@ export class KclManager extends EventTarget {
     setLogs,
     setErrors,
     setDiagnostics,
-    setIsExecuting,
     setWasmInitFailed,
   }: {
     setVariables: (arg: VariableMap) => void
@@ -434,7 +434,6 @@ export class KclManager extends EventTarget {
     setLogs: (arg: string[]) => void
     setErrors: (errors: KCLError[]) => void
     setDiagnostics: (errors: Diagnostic[]) => void
-    setIsExecuting: (arg: boolean) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
     this._variablesCallBack = setVariables
@@ -442,7 +441,6 @@ export class KclManager extends EventTarget {
     this._logsCallBack = setLogs
     this._kclErrorsCallBack = setErrors
     this._diagnosticsCallback = setDiagnostics
-    this._isExecutingCallback = setIsExecuting
     this._wasmInitFailedCallback = setWasmInitFailed
   }
 

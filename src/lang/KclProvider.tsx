@@ -6,7 +6,6 @@ import type { KCLError } from '@src/lang/errors'
 const KclContext = createContext({
   variables: kclManager?.variables,
   ast: kclManager?.ast,
-  isExecuting: kclManager?.isExecuting,
   diagnostics: kclManager?.diagnostics,
   logs: kclManager?.logs,
   errors: kclManager?.errors,
@@ -25,7 +24,6 @@ export function KclContextProvider({
   // Both the code state and the editor state start off with the same code.
   const [variables, setVariables] = useState(kclManager.variables)
   const [ast, setAst] = useState(kclManager.ast)
-  const [isExecuting, setIsExecuting] = useState(false)
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([])
   const [errors, setErrors] = useState<KCLError[]>([])
   const [logs, setLogs] = useState<string[]>([])
@@ -38,7 +36,6 @@ export function KclContextProvider({
       setLogs,
       setErrors,
       setDiagnostics,
-      setIsExecuting,
       setWasmInitFailed,
     })
   }, [])
@@ -48,7 +45,6 @@ export function KclContextProvider({
       value={{
         variables,
         ast,
-        isExecuting,
         diagnostics,
         logs,
         errors,
