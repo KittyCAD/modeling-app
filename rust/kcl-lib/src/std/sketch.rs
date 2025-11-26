@@ -1058,7 +1058,7 @@ pub async fn make_sketch_plane_from_orientation(
             kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
             label: Default::default(),
             comments: Default::default(),
-            artifact_id: 0, // TODO: sketch-api: implement
+            artifact_id: ArtifactId::new(plane.id),
             source: args.source_range.into(),
         };
         exec_state.add_scene_object(plane_object, args.source_range);

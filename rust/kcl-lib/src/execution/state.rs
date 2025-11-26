@@ -292,6 +292,11 @@ impl ExecState {
         self.mod_local.id_generator.next_uuid()
     }
 
+    #[cfg(feature = "artifact-graph")]
+    pub fn next_artifact_id(&mut self) -> ArtifactId {
+        self.mod_local.id_generator.next_artifact_id()
+    }
+
     pub fn id_generator(&mut self) -> &mut IdGenerator {
         &mut self.mod_local.id_generator
     }

@@ -6,7 +6,7 @@ use kcl_error::SourceRange;
 use serde::{Deserialize, Serialize};
 
 pub use crate::ExecutorSettings as Settings;
-use crate::{ExecOutcome, engine::PlaneName, pretty::NumericSuffix};
+use crate::{ExecOutcome, engine::PlaneName, execution::ArtifactId, pretty::NumericSuffix};
 
 pub trait LifecycleApi {
     async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<()>;
@@ -105,7 +105,7 @@ pub struct Object {
     pub kind: ObjectKind,
     pub label: String,
     pub comments: String,
-    pub artifact_id: usize,
+    pub artifact_id: ArtifactId,
     pub source: SourceRef,
 }
 
@@ -116,7 +116,7 @@ impl Object {
             kind: ObjectKind::Nil,
             label: Default::default(),
             comments: Default::default(),
-            artifact_id: Default::default(),
+            artifact_id: ArtifactId::placeholder(),
             source: SourceRef::Simple { range },
         }
     }

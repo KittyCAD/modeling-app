@@ -1,9 +1,5 @@
 use anyhow::Result;
 
-#[cfg(feature = "artifact-graph")]
-use crate::front::{
-    Coincident, Constraint, Horizontal, LinesEqualLength, Object, ObjectId, ObjectKind, Parallel, Vertical,
-};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -14,6 +10,11 @@ use crate::{
     },
     front::{LineCtor, Point2d, PointCtor},
     std::Args,
+};
+#[cfg(feature = "artifact-graph")]
+use crate::{
+    execution::ArtifactId,
+    front::{Coincident, Constraint, Horizontal, LinesEqualLength, Object, ObjectId, ObjectKind, Parallel, Vertical},
 };
 
 pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -409,8 +410,7 @@ fn track_constraint(constraint_id: ObjectId, constraint: Constraint, exec_state:
             kind: ObjectKind::Constraint { constraint },
             label: Default::default(),
             comments: Default::default(),
-            // TODO: sketch-api: implement artifact ID
-            artifact_id: 0,
+            artifact_id: ArtifactId::constraint(),
             source: args.source_range.into(),
         },
         args.source_range,

@@ -979,8 +979,7 @@ impl Node<SketchBlock> {
                 }),
                 label: Default::default(),
                 comments: Default::default(),
-                // TODO: sketch-api: implement - convert ArtifactId to usize when this is properly implemented
-                artifact_id: 0,
+                artifact_id,
                 source: range.into(),
             };
             exec_state.add_scene_object(sketch_scene_object, range);
@@ -1107,7 +1106,7 @@ impl Node<SketchBlock> {
         }
 
         // Create scene objects after unknowns are solved.
-        let scene_objects = create_segment_scene_objects(&solved_segments, range)?;
+        let scene_objects = create_segment_scene_objects(&solved_segments, range, exec_state)?;
 
         #[cfg(not(feature = "artifact-graph"))]
         drop(scene_objects);
@@ -1386,6 +1385,7 @@ fn substitute_sketch_var_in_unsolved_expr(
 fn create_segment_scene_objects(
     _segments: &[Segment],
     _sketch_block_range: SourceRange,
+    _exec_state: &mut ExecState,
 ) -> Result<Vec<Object>, KclError> {
     Ok(Vec::new())
 }
@@ -1394,6 +1394,7 @@ fn create_segment_scene_objects(
 fn create_segment_scene_objects(
     segments: &[Segment],
     sketch_block_range: SourceRange,
+    exec_state: &mut ExecState,
 ) -> Result<Vec<Object>, KclError> {
     let mut scene_objects = Vec::with_capacity(segments.len());
     for segment in segments {
@@ -1411,6 +1412,7 @@ fn create_segment_scene_objects(
                         vec![sketch_block_range],
                     ))
                 })?;
+                let artifact_id = exec_state.next_artifact_id();
                 let point_object = Object {
                     id: segment.object_id,
                     kind: ObjectKind::Segment {
@@ -1426,8 +1428,7 @@ fn create_segment_scene_objects(
                     },
                     label: Default::default(),
                     comments: Default::default(),
-                    // TODO: sketch-api: implement
-                    artifact_id: 0,
+                    artifact_id,
                     source: source.clone(),
                 };
                 scene_objects.push(point_object);
@@ -1447,6 +1448,7 @@ fn create_segment_scene_objects(
                         vec![sketch_block_range],
                     ))
                 })?;
+                let start_artifact_id = exec_state.next_artifact_id();
                 let start_point_object = Object {
                     id: *start_object_id,
                     kind: ObjectKind::Segment {
@@ -1460,8 +1462,7 @@ fn create_segment_scene_objects(
                     },
                     label: Default::default(),
                     comments: Default::default(),
-                    // TODO: sketch-api: implement
-                    artifact_id: 0,
+                    artifact_id: start_artifact_id,
                     source: source.clone(),
                 };
                 let start_point_object_id = start_point_object.id;
@@ -1473,6 +1474,7 @@ fn create_segment_scene_objects(
                         vec![sketch_block_range],
                     ))
                 })?;
+                let end_artifact_id = exec_state.next_artifact_id();
                 let end_point_object = Object {
                     id: *end_object_id,
                     kind: ObjectKind::Segment {
@@ -1486,13 +1488,13 @@ fn create_segment_scene_objects(
                     },
                     label: Default::default(),
                     comments: Default::default(),
-                    // TODO: sketch-api: implement
-                    artifact_id: 0,
+                    artifact_id: end_artifact_id,
                     source: source.clone(),
                 };
                 let end_point_object_id = end_point_object.id;
                 scene_objects.push(end_point_object);
 
+                let line_artifact_id = exec_state.next_artifact_id();
                 let segment_object = Object {
                     id: segment.object_id,
                     kind: ObjectKind::Segment {
@@ -1505,8 +1507,7 @@ fn create_segment_scene_objects(
                     },
                     label: Default::default(),
                     comments: Default::default(),
-                    // TODO: sketch-api: implement
-                    artifact_id: 0,
+                    artifact_id: line_artifact_id,
                     source,
                 };
                 scene_objects.push(segment_object);
@@ -2414,7 +2415,7 @@ impl Node<BinaryExpression> {
                             sketch_block_state.solver_constraints.push(solver_constraint);
                             #[cfg(feature = "artifact-graph")]
                             {
-                                use crate::front::Distance;
+                                use crate::{execution::ArtifactId, front::Distance};
 
                                 let constraint = crate::front::Constraint::Distance(Distance {
                                     points: vec![p0.object_id, p1.object_id],
@@ -2433,8 +2434,7 @@ impl Node<BinaryExpression> {
                                         kind: ObjectKind::Constraint { constraint },
                                         label: Default::default(),
                                         comments: Default::default(),
-                                        // TODO: sketch-api: implement artifact ID
-                                        artifact_id: 0,
+                                        artifact_id: ArtifactId::constraint(),
                                         source: range.into(),
                                     },
                                     range,

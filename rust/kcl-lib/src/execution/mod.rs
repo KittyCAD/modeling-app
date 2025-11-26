@@ -1392,12 +1392,23 @@ impl ExecutorContext {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
 pub struct ArtifactId(Uuid);
 
 impl ArtifactId {
     pub fn new(uuid: Uuid) -> Self {
         Self(uuid)
+    }
+
+    /// A placeholder artifact ID that will be filled in later.
+    pub fn placeholder() -> Self {
+        Self(Uuid::nil())
+    }
+
+    /// The constraint artifact ID is a special. They don't need to be
+    /// represented in the artifact graph.
+    pub fn constraint() -> Self {
+        Self(Uuid::nil())
     }
 }
 
