@@ -179,7 +179,7 @@ export function SystemIOMachineLogicListenerDesktop() {
 
   const useApplicationProjectDirectory = () => {
     useEffect(() => {
-      if (!projectDirectoryPath) {
+      if (pathname === PATHS.HOME) {
         systemIOActor.send({
           type: SystemIOMachineEvents.setProjectDirectoryPath,
           data: {
@@ -189,7 +189,7 @@ export function SystemIOMachineLogicListenerDesktop() {
         })
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [projectDirectoryPath, settings.app.projectDirectory.current])
+    }, [settings.app.projectDirectory.current, pathname])
   }
 
   const useDefaultProjectName = () => {
