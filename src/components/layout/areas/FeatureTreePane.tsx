@@ -524,18 +524,19 @@ interface OperationProps {
  * for an operation in the feature tree.
  */
 const OperationItem = (props: OperationProps) => {
-  const kclContext = useKclContext()
+  const { diagnostics } = useKclContext()
+  const ast = kclManager.astSignal.value
   const name = getOperationLabel(props.item)
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(props.item, props.code)
   }, [props.item, props.code])
 
   const variableName = useMemo(() => {
-    return getOperationVariableName(props.item, kclContext.ast)
-  }, [props.item, kclContext.ast])
+    return getOperationVariableName(props.item, ast)
+  }, [props.item, ast])
 
   const errors = useMemo(() => {
-    return kclContext.diagnostics.filter(
+    return diagnostics.filter(
       (diag) =>
         diag.severity === 'error' &&
         'sourceRange' in props.item &&
@@ -543,7 +544,7 @@ const OperationItem = (props: OperationProps) => {
         diag.to <= props.item.sourceRange[1]
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclContext.diagnostics.length])
+  }, [diagnostics.length])
 
   async function selectOperation() {
     if (props.sketchNoFace) {

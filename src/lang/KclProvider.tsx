@@ -4,8 +4,6 @@ import { kclManager } from '@src/lib/singletons'
 import type { KCLError } from '@src/lang/errors'
 
 const KclContext = createContext({
-  variables: kclManager?.variables,
-  ast: kclManager?.ast,
   diagnostics: kclManager?.diagnostics,
   logs: kclManager?.logs,
   errors: kclManager?.errors,
@@ -22,8 +20,6 @@ export function KclContextProvider({
   children: React.ReactNode
 }) {
   // Both the code state and the editor state start off with the same code.
-  const [variables, setVariables] = useState(kclManager.variables)
-  const [ast, setAst] = useState(kclManager.ast)
   const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([])
   const [errors, setErrors] = useState<KCLError[]>([])
   const [logs, setLogs] = useState<string[]>([])
@@ -31,8 +27,6 @@ export function KclContextProvider({
 
   useEffect(() => {
     kclManager.registerCallBacks({
-      setVariables,
-      setAst,
       setLogs,
       setErrors,
       setDiagnostics,
@@ -43,8 +37,6 @@ export function KclContextProvider({
   return (
     <KclContext.Provider
       value={{
-        variables,
-        ast,
         diagnostics,
         logs,
         errors,
