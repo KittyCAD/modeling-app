@@ -93,6 +93,12 @@ import { bracket } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
 import toast from 'react-hot-toast'
 import { signal } from '@preact/signals-core'
+import {
+  editorTheme,
+  themeCompartment,
+  appSettingsThemeEffect,
+  settingsUpdateAnnotation,
+} from '@src/lib/codeEditor'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -1091,6 +1097,21 @@ export class KclManager extends EventTarget {
         annotations: [
           updateOutsideEditorEvent,
           addLineHighlightEvent,
+          Transaction.addToHistory.of(false),
+        ],
+      })
+    }
+  }
+  setEditorTheme(theme: 'light' | 'dark') {
+    if (this._editorView) {
+      console.trace(`kclManager.setEditorTheme: ${theme}`)
+      this._editorView.dispatch({
+        effects: [
+          appSettingsThemeEffect.of(theme),
+          themeCompartment.reconfigure(editorTheme[theme]),
+        ],
+        annotations: [
+          settingsUpdateAnnotation.of(null),
           Transaction.addToHistory.of(false),
         ],
       })
