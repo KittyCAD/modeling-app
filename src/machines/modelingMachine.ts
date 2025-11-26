@@ -5672,31 +5672,73 @@ export const modelingMachine = setup({
     },
 
     sketchSolveMode: {
-      invoke: {
-        id: 'sketchSolveMachine',
-        src: 'sketchSolveMachine',
-        input: ({ context }) => ({
-          initialSketchSolvePlane: context.sketchSolveInit,
-          sketchId: context.sketchSolveId || 0,
-          initialSceneGraphDelta: context.initialSceneGraphDelta,
-          // Use context values if available, otherwise fall back to singletons
-          codeManager: context.codeManager ?? codeManager,
-          sceneInfra: context.sceneInfra ?? sceneInfra,
-          sceneEntitiesManager:
-            context.sceneEntitiesManager ?? sceneEntitiesManager,
-          rustContext: context.rustContext ?? rustContext,
-          kclManager: context.kclManager ?? kclManager,
-        }),
-        onDone: {
-          target: 'idle',
-          actions: ['reset sketch metadata'],
+      id: 'sketchSolveMode',
+      entry: ['clientToEngine cam sync direction'],
+      initial: 'active',
+      states: {
+        active: {
+          invoke: {
+            id: 'sketchSolveMachine',
+            src: 'sketchSolveMachine',
+            input: ({ context }) => ({
+              initialSketchSolvePlane: context.sketchSolveInit,
+              sketchId: context.sketchSolveId || 0,
+              initialSceneGraphDelta: context.initialSceneGraphDelta,
+              // Use context values if available, otherwise fall back to singletons
+              codeManager: context.codeManager ?? codeManager,
+              sceneInfra: context.sceneInfra ?? sceneInfra,
+              sceneEntitiesManager:
+                context.sceneEntitiesManager ?? sceneEntitiesManager,
+              rustContext: context.rustContext ?? rustContext,
+              kclManager: context.kclManager ?? kclManager,
+            }),
+            onDone: {
+              target: '#sketchSolveMode.exiting',
+              actions: () => {
+                console.log(
+                  'sketchSolveMachine onDone - transitioning to exiting'
+                )
+              },
+            },
+            onError: {
+              target: '#sketchSolveMode.exiting',
+              actions: () => {
+                console.log(
+                  'sketchSolveMachine onError - transitioning to exiting'
+                )
+              },
+            },
+          },
+          exit: [sendTo('sketchSolveMachine', { type: 'exit' })],
         },
-        onError: {
-          target: 'idle',
+        exiting: {
+          entry: () => {
+            console.log('sketchSolveMode.exiting state entered')
+          },
+          invoke: {
+            id: 'sketchExit',
+            src: 'sketchExit',
+            input: ({ context }) => {
+              console.log('sketchExit actor input prepared')
+              return { context }
+            },
+            onDone: {
+              target: '#Modeling.idle',
+              actions: ['reset sketch metadata'],
+            },
+            onError: {
+              target: '#Modeling.idle',
+              actions: ['reset sketch metadata'],
+            },
+          },
         },
       },
-      exit: [sendTo('sketchSolveMachine', { type: 'exit' })],
       on: {
+        Cancel: {
+          actions: [sendTo('sketchSolveMachine', { type: 'exit' })],
+          // Don't transition immediately - wait for sketchSolveMachine to finish
+          // which will trigger onDone and transition to exiting
+        },
         'equip tool': {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
