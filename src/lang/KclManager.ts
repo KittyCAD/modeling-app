@@ -183,7 +183,7 @@ export class KclManager extends EventTarget {
    * operations were executed on.
    */
   lastSuccessfulCode: string = ''
-  private _logs: string[] = []
+  private _logs = signal<string[]>([])
   private _errors: KCLError[] = []
   private _diagnostics = signal<Diagnostic[]>([])
   private _isExecuting = signal(false)
@@ -201,7 +201,6 @@ export class KclManager extends EventTarget {
 
   engineCommandManager: ConnectionManager
 
-  private _logsCallBack: (arg: string[]) => void = () => {}
   private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
@@ -296,11 +295,14 @@ export class KclManager extends EventTarget {
     this._kclErrorsCallBack(errors)
   }
   get logs() {
+    return this._logs.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get logsSignal() {
     return this._logs
   }
   set logs(logs) {
-    this._logs = logs
-    this._logsCallBack(logs)
+    this._logs.value = logs
   }
 
   get diagnostics() {
@@ -422,15 +424,12 @@ export class KclManager extends EventTarget {
   }
 
   registerCallBacks({
-    setLogs,
     setErrors,
     setWasmInitFailed,
   }: {
-    setLogs: (arg: string[]) => void
     setErrors: (errors: KCLError[]) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
-    this._logsCallBack = setLogs
     this._kclErrorsCallBack = setErrors
     this._wasmInitFailedCallback = setWasmInitFailed
   }
@@ -528,7 +527,6 @@ export class KclManager extends EventTarget {
     // Clear all previous errors and logs because they are old since they executed a new file
     // If we decouple safeParse from execution we need to move this application logic.
     this._kclErrorsCallBack([])
-    this._logsCallBack([])
 
     this.addDiagnostics(compilationErrorsToDiagnostics(result.errors, code))
     this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings, code))
@@ -719,7 +717,7 @@ export class KclManager extends EventTarget {
       rustContext: this.singletons.rustContext,
     })
 
-    this._logs = logs
+    this.logs = logs
     this._execState = execState
     this._variables.value = execState.variables
     if (!errors.length) {
