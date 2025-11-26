@@ -54,6 +54,7 @@ pub enum Operation {
         source_range: SourceRange,
     },
     GroupEnd,
+    #[allow(dead_code)]
     #[serde(rename_all = "camelCase")]
     SketchSolve {
         /// The ID of the sketch being modified.
