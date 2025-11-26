@@ -464,6 +464,7 @@ description: Variables in memory after executing v-block.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "objectId": null,
                   "origin": {
                     "x": -15.875,
                     "y": 0.0,
@@ -980,6 +981,7 @@ description: Variables in memory after executing v-block.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "objectId": null,
                   "origin": {
                     "x": -15.875,
                     "y": 0.0,
@@ -1478,6 +1480,7 @@ description: Variables in memory after executing v-block.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "objectId": null,
             "origin": {
               "x": -15.875,
               "y": 0.0,
@@ -1990,6 +1993,7 @@ description: Variables in memory after executing v-block.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "objectId": null,
                     "origin": {
                       "x": -15.875,
                       "y": 0.0,
@@ -2524,6 +2528,7 @@ description: Variables in memory after executing v-block.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "objectId": null,
                     "origin": {
                       "x": -15.875,
                       "y": 0.0,
@@ -3029,6 +3034,7 @@ description: Variables in memory after executing v-block.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": -15.875,
             "y": 0.0,
@@ -3378,6 +3384,7 @@ description: Variables in memory after executing v-block.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "objectId": null,
         "origin": {
           "x": -15.875,
           "y": 0.0,
@@ -3437,6 +3444,7 @@ description: Variables in memory after executing v-block.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": -15.875,
         "y": 0.0,
