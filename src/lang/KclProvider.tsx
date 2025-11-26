@@ -3,7 +3,6 @@ import { kclManager } from '@src/lib/singletons'
 import type { KCLError } from '@src/lang/errors'
 
 const KclContext = createContext({
-  logs: kclManager?.logs,
   errors: kclManager?.errors,
   wasmInitFailed: kclManager?.wasmInitFailed,
 })
@@ -18,12 +17,10 @@ export function KclContextProvider({
   children: React.ReactNode
 }) {
   const [errors, setErrors] = useState<KCLError[]>([])
-  const [logs, setLogs] = useState<string[]>([])
   const [wasmInitFailed, setWasmInitFailed] = useState(false)
 
   useEffect(() => {
     kclManager.registerCallBacks({
-      setLogs,
       setErrors,
       setWasmInitFailed,
     })
@@ -32,7 +29,6 @@ export function KclContextProvider({
   return (
     <KclContext.Provider
       value={{
-        logs,
         errors,
         wasmInitFailed,
       }}
