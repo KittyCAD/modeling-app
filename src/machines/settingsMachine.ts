@@ -39,6 +39,7 @@ import {
   Themes,
   darkModeMatcher,
   getOppositeTheme,
+  getResolvedTheme,
   getSystemTheme,
   setThemeClass,
 } from '@src/lib/theme'
@@ -212,13 +213,16 @@ export const settingsMachine = setup({
       const rootContext = self.system.get('root')?.getSnapshot().context
       const sceneInfra = rootContext?.sceneInfra
       const sceneEntitiesManager = rootContext?.sceneEntitiesManager
+      const kclManager = rootContext?.kclManager
 
-      if (!sceneInfra || !sceneEntitiesManager) {
+      if (!sceneInfra || !sceneEntitiesManager || !kclManager) {
         return
       }
+      const resolvedTheme = getResolvedTheme(context.app.theme.current)
       const opposingTheme = getOppositeTheme(context.app.theme.current)
       sceneInfra.theme = opposingTheme
       sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+      kclManager.setEditorTheme(resolvedTheme)
     },
     setAllowOrbitInSketchMode: ({ context, self }) => {
       const rootContext = self.system.get('root')?.getSnapshot().context

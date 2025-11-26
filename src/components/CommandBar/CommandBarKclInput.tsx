@@ -26,7 +26,7 @@ import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { kclManager } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
-import { getSystemTheme } from '@src/lib/theme'
+import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { roundOff, roundOffWithUnits } from '@src/lib/utils'
@@ -34,6 +34,7 @@ import { varMentions } from '@src/lib/varCompletionExtension'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import styles from './CommandBarKclInput.module.css'
+import { editorTheme } from '@src/lib/codeEditor'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -176,11 +177,9 @@ function CommandBarKclInput({
           ? previouslySetValue.valueText.length
           : defaultValue.length,
     },
-    theme:
-      settings.app.theme.current === 'system'
-        ? getSystemTheme()
-        : settings.app.theme.current,
     extensions: [
+      // Typically we prefer to update CodeMirror outside of React, but this "micro-editor" doesn't exist outside of React.
+      editorTheme[getResolvedTheme(settings.app.theme.current)],
       varMentionsExtension,
       EditorView.updateListener.of((vu: ViewUpdate) => {
         if (vu.docChanged) {
