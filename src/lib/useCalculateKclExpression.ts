@@ -26,12 +26,14 @@ export function useCalculateKclExpression({
   sourceRange,
   selectionRanges,
   allowArrays,
+  code,
 }: {
   value: string
   initialVariableName?: string
   sourceRange?: SourceRange
   selectionRanges: Selections
   allowArrays?: boolean
+  code: string
 }): {
   inputRef: React.RefObject<HTMLInputElement | null>
   valueNode: Expr | null
@@ -47,7 +49,7 @@ export function useCalculateKclExpression({
   // is asynchronous. Use this state variable to track if execution
   // has completed
   const [isExecuting, setIsExecuting] = useState(false)
-  const { variables, code } = useKclContext()
+  const { variables } = useKclContext()
   // If there is no selection, use the end of the code
   // so all variables are available
   const selectionRange: SourceRange | undefined =

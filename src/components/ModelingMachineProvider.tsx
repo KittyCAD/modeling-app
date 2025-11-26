@@ -769,6 +769,7 @@ export const ModelingMachineProvider = ({
                 : applyConstraintAngleLength({
                     selectionRanges,
                     angleOrLength: 'setAngle',
+                    currentCode: kclManager.code,
                   }))
             const pResult = parse(recast(modifiedAst))
             if (trap(pResult) || !resultIsOk(pResult))

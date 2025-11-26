@@ -88,9 +88,11 @@ export async function applyConstraintLength({
 export async function applyConstraintAngleLength({
   selectionRanges,
   angleOrLength = 'setLength',
+  currentCode,
 }: {
   selectionRanges: Selections
   angleOrLength?: 'setLength' | 'setAngle'
+  currentCode: string
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
@@ -160,6 +162,7 @@ export async function applyConstraintAngleLength({
       valueName: angleOrLength === 'setAngle' ? 'angle' : 'length',
       shouldCreateVariable: true,
       selectionRanges,
+      currentCode,
     })
   if (!isExprBinaryPart(valueNode))
     return Promise.reject('Invalid valueNode, is not a BinaryPart')

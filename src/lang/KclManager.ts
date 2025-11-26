@@ -93,6 +93,7 @@ import { historyCompartment } from '@src/editor/compartments'
 import { bracket } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
 import toast from 'react-hot-toast'
+import { signal } from '@preact/signals-core'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -215,8 +216,7 @@ export class KclManager extends EventTarget {
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
   /** Values merged in from former EditorManager and CodeManager classes */
-  private _code: string = bracket
-  #updateState: (arg: string) => void = () => {}
+  private _code = signal(bracket)
   private _currentFilePath: string | null = null
   private _hotkeys: { [key: string]: () => void } = {}
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
@@ -428,7 +428,6 @@ export class KclManager extends EventTarget {
     setDiagnostics,
     setIsExecuting,
     setWasmInitFailed,
-    setCode,
   }: {
     setVariables: (arg: VariableMap) => void
     setAst: (arg: Node<Program>) => void
@@ -437,7 +436,6 @@ export class KclManager extends EventTarget {
     setDiagnostics: (errors: Diagnostic[]) => void
     setIsExecuting: (arg: boolean) => void
     setWasmInitFailed: (arg: boolean) => void
-    setCode: (arg: string) => void
   }) {
     this._variablesCallBack = setVariables
     this._astCallBack = setAst
@@ -446,9 +444,6 @@ export class KclManager extends EventTarget {
     this._diagnosticsCallback = setDiagnostics
     this._isExecutingCallback = setIsExecuting
     this._wasmInitFailedCallback = setWasmInitFailed
-
-    /** Merged in from EditorManager's duplicate impl */
-    this.#updateState = setCode
   }
 
   clearAst() {
@@ -1346,9 +1341,12 @@ export class KclManager extends EventTarget {
     })
   }
   set code(code: string) {
-    this._code = code
+    this._code.value = code
   }
   get code(): string {
+    return this._code.value
+  }
+  get codeSignal() {
     return this._code
   }
   localStoragePersistCode(): string {
@@ -1398,9 +1396,8 @@ export class KclManager extends EventTarget {
    * Update the code, state, and the code the code mirror editor sees.
    */
   updateCodeStateEditor(code: string, clearHistory?: boolean): void {
-    if (this._code !== code) {
+    if (this._code.value !== code) {
       this.code = code
-      this.#updateState(code)
       this.updateCodeEditor(code, clearHistory)
     }
   }
