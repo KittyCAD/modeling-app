@@ -77,6 +77,28 @@ description: Operations executed sketch_block_points_coincident_simple.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "SketchSolve",
+      "sketchId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "std::math": [

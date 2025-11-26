@@ -180,35 +180,146 @@ function initSegmentGroup({
   theme,
   scale,
   id,
-  onUpdateSketchOutcome,
 }: {
   input: Parameters<SegmentUtils['init']>[0]['input']
   theme: Themes
   scale: number
   id: number
-  onUpdateSketchOutcome: (data: {
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }) => void
-}): Promise<Group> {
+}): Group | Error {
+  let group
   if (input.type === 'Point') {
-    return segmentUtilsMap.PointSegment.init({
+    group = segmentUtilsMap.PointSegment.init({
       input,
       theme,
       scale,
       id,
-      onUpdateSketchOutcome,
     })
   } else if (input.type === 'Line') {
-    return segmentUtilsMap.LineSegment.init({
+    group = segmentUtilsMap.LineSegment.init({
       input,
       theme,
       scale,
       id,
-      onUpdateSketchOutcome,
     })
   }
-  return Promise.reject(new Error(`Unknown input type: ${(input as any).type}`))
+  if (group instanceof Group) return group
+  return new Error(`Unknown input type: ${(input as any).type}`)
+}
+
+/**
+ * Updates the Three.js scene graph based on a SceneGraphDelta.
+ * This handles creating, updating, and invalidating segment groups.
+ */
+function updateSceneGraphFromDelta({
+  sceneGraphDelta,
+  context,
+  selectedIds,
+  duringAreaSelectIds,
+}: {
+  sceneGraphDelta: SceneGraphDelta
+  context: SketchSolveContext
+  selectedIds: Array<number>
+  duringAreaSelectIds: Array<number>
+}): void {
+  const objects = sceneGraphDelta.new_graph.objects
+  const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
+  const factor =
+    (context.sceneInfra.camControls.camera instanceof OrthographicCamera ||
+    !context.sceneEntitiesManager.axisGroup
+      ? orthoFactor
+      : perspScale(
+          context.sceneInfra.camControls.camera,
+          context.sceneEntitiesManager.axisGroup
+        )) / context.sceneInfra.baseUnitMultiplier
+  const sketchSegments = context.sceneInfra.scene.children.find(
+    ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
+  )
+
+  // If invalidates_ids is true, we need to delete everything and start fresh
+  // because the old IDs can't be trusted
+  if (sceneGraphDelta.invalidates_ids && sketchSegments instanceof Group) {
+    disposeGroupChildren(sketchSegments)
+  } else {
+    // This invalidation logic is kinda based on some heuristics and is not exhaustive,
+    // so there are bugs, it's here to let some direct editing of the code from
+    // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
+    // The proper way to do this is to get an invalidation signal from the rust side.
+    const invalidateScene = sketchSegments?.children.some((child) => {
+      const childId = Number(child.name)
+      // check if number
+      if (Number.isNaN(childId)) {
+        return
+      }
+      // check id is not greater than new_graph.objects length
+      return childId >= sceneGraphDelta.new_graph.objects.length
+    })
+    if (invalidateScene) {
+      sketchSegments?.children.forEach((child) => {
+        context.sceneInfra.scene.remove(child)
+      })
+    }
+  }
+
+  // TODO ask Jon if there's a better way to determine what objects are part of the current sketch
+  let skipBecauseBeforeCurrentSketch = true
+  let skipBecauseAfterCurrentSketch = false
+  sceneGraphDelta.new_graph.objects.forEach((obj) => {
+    if (obj.kind.type === 'Sketch' && obj.id === context.sketchId) {
+      skipBecauseBeforeCurrentSketch = false
+    }
+    if (obj.kind.type === 'Sketch' && obj.id > context.sketchId) {
+      skipBecauseAfterCurrentSketch = true
+    }
+    if (skipBecauseBeforeCurrentSketch || skipBecauseAfterCurrentSketch) {
+      return
+    }
+    if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
+      return
+    }
+    const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
+    const ctor = buildSegmentCtorFromObject(obj, objects)
+    if (!(group instanceof Group)) {
+      if (!ctor) {
+        return
+      }
+      const newGroup = initSegmentGroup({
+        input: ctor,
+        theme: context.sceneInfra.theme,
+        scale: factor,
+        id: obj.id,
+      })
+      if (newGroup instanceof Error) {
+        console.error('Failed to init segment group for object', obj.id)
+        return
+      }
+      const sketchSceneGroup =
+        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+      if (sketchSceneGroup) {
+        newGroup.traverse((child) => {
+          child.layers.set(SKETCH_LAYER)
+        })
+        newGroup.layers.set(SKETCH_LAYER)
+        sketchSceneGroup.add(newGroup)
+      }
+      return
+    }
+    if (!ctor) {
+      return
+    }
+
+    // Combine selectedIds and duringAreaSelectIds for highlighting
+    const allSelectedIds = Array.from(
+      new Set([...selectedIds, ...duringAreaSelectIds])
+    )
+
+    updateSegmentGroup({
+      group,
+      input: ctor,
+      selectedIds: allSelectedIds,
+      scale: factor,
+      theme: context.sceneInfra.theme,
+    })
+  })
 }
 
 function getLinkedPoint({
@@ -369,6 +480,7 @@ type SpawnToolActor = <K extends EquipTool>(
       sceneInfra: SceneInfra
       rustContext: RustContext
       kclManager: KclManager
+      sketchId: number
     }
   }
 ) => ActorRefFrom<(typeof equipTools)[K]>
@@ -410,8 +522,9 @@ type SketchSolveContext = {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }
-  // Plane/face data from the 'animate-to-sketch-solve' actor
   initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+  initialSceneGraphDelta?: SceneGraphDelta
+  sketchId: number
   // Dependencies passed from parent
   codeManager: CodeManager
   sceneInfra: SceneInfra
@@ -430,6 +543,8 @@ export const sketchSolveMachine = setup({
         | OffsetPlane
         | ExtrudeFacePlane
         | null
+      sketchId: number
+      initialSceneGraphDelta?: SceneGraphDelta
       codeManager: CodeManager
       sceneInfra: SceneInfra
       sceneEntitiesManager: SceneEntities
@@ -445,6 +560,32 @@ export const sketchSolveMachine = setup({
         )
       }
     },
+    'initialize initial scene graph': assign(({ context }) => {
+      if (context.initialSceneGraphDelta) {
+        // Update the scene graph directly without sending an event
+        // This is for initial setup, just rendering existing state
+        updateSceneGraphFromDelta({
+          sceneGraphDelta: context.initialSceneGraphDelta,
+          context,
+          selectedIds: context.selectedIds,
+          duringAreaSelectIds: context.duringAreaSelectIds,
+        })
+
+        // Set sketchExecOutcome in context so drag callbacks can access it
+        // Use current code from codeManager since editSketch doesn't return kclSource
+        const kclSource: SourceDelta = {
+          text: context.codeManager.code,
+        }
+
+        return {
+          sketchExecOutcome: {
+            kclSource,
+            sceneGraphDelta: context.initialSceneGraphDelta,
+          },
+        }
+      }
+      return {}
+    }),
     setUpOnDragAndSelectionClickCallbacks: ({ self, context }) => {
       // Closure-scoped mutex to prevent concurrent async editSegment operations.
       // Not in XState context since it's purely an implementation detail for race condition prevention.
@@ -1228,7 +1369,12 @@ export const sketchSolveMachine = setup({
           }
 
           const result = await context.rustContext
-            .editSegments(0, 0, segmentsToEdit, await jsAppSettings())
+            .editSegments(
+              0,
+              context.sketchId,
+              segmentsToEdit,
+              await jsAppSettings()
+            )
             .catch((err) => {
               console.error('failed to edit segment', err)
               return null
@@ -1506,7 +1652,6 @@ export const sketchSolveMachine = setup({
       }
     },
     'cleanup sketch solve group': ({ context }) => {
-      console.log('Cleaning up sketch solve group...')
       const sketchSegments =
         context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
       if (!sketchSegments || !(sketchSegments instanceof Group)) {
@@ -1623,101 +1768,15 @@ export const sketchSolveMachine = setup({
         })
       })
     },
-    'update sketch outcome': assign(({ event, self, context }) => {
+    'update sketch outcome': assign(({ event, context }) => {
       assertEvent(event, 'update sketch outcome')
       context.codeManager.updateCodeEditor(event.data.kclSource.text)
-      const sceneGraphDelta = event.data.sceneGraphDelta
-      const objects = sceneGraphDelta.new_graph.objects
-      const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
-      const factor =
-        (context.sceneInfra.camControls.camera instanceof OrthographicCamera ||
-        !context.sceneEntitiesManager.axisGroup
-          ? orthoFactor
-          : perspScale(
-              context.sceneInfra.camControls.camera,
-              context.sceneEntitiesManager.axisGroup
-            )) / context.sceneInfra.baseUnitMultiplier
-      const sketchSegments = context.sceneInfra.scene.children.find(
-        ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
-      )
 
-      // If invalidates_ids is true, we need to delete everything and start fresh
-      // because the old IDs can't be trusted
-      if (sceneGraphDelta.invalidates_ids && sketchSegments instanceof Group) {
-        disposeGroupChildren(sketchSegments)
-      } else {
-        // This invalidation logic is kinda based on some heuristics and is not exchaustive.
-        // so there are bugs, it's here to let some direct editing of the code from
-        // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
-        // The proper way to do this is to get an invalidation signal from the rust side.
-        const invalidateScene = sketchSegments?.children.some((child) => {
-          const childId = Number(child.name)
-          // check if number
-          if (Number.isNaN(childId)) {
-            return
-          }
-          // check id is not greater than new_graph.objects length
-          return childId >= sceneGraphDelta.new_graph.objects.length
-        })
-        if (invalidateScene) {
-          sketchSegments?.children.forEach((child) => {
-            context.sceneInfra.scene.remove(child)
-          })
-        }
-      }
-      sceneGraphDelta.new_graph.objects.forEach((obj) => {
-        if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
-          return
-        }
-        const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
-        const ctor = buildSegmentCtorFromObject(obj, objects)
-        if (!(group instanceof Group)) {
-          if (!ctor) {
-            return
-          }
-          initSegmentGroup({
-            input: ctor,
-            theme: context.sceneInfra.theme,
-            scale: factor,
-            id: obj.id,
-            onUpdateSketchOutcome: (data) =>
-              self.send({
-                type: 'update sketch outcome',
-                data,
-              }),
-          })
-            .then((group) => {
-              const sketchSceneGroup =
-                context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-              if (sketchSceneGroup) {
-                group.traverse((child) => {
-                  child.layers.set(SKETCH_LAYER)
-                })
-                group.layers.set(SKETCH_LAYER)
-                sketchSceneGroup.add(group)
-              }
-            })
-            .catch((e) => {
-              console.error('Failed to init PointSegment for object', obj.id, e)
-            })
-          return
-        }
-        if (!ctor) {
-          return
-        }
-
-        // Combine selectedIds and duringAreaSelectIds for highlighting
-        const allSelectedIds = Array.from(
-          new Set([...context.selectedIds, ...context.duringAreaSelectIds])
-        )
-
-        updateSegmentGroup({
-          group,
-          input: ctor,
-          selectedIds: allSelectedIds,
-          scale: factor,
-          theme: context.sceneInfra.theme,
-        })
+      updateSceneGraphFromDelta({
+        sceneGraphDelta: event.data.sceneGraphDelta,
+        context,
+        selectedIds: context.selectedIds,
+        duringAreaSelectIds: context.duringAreaSelectIds,
       })
 
       return {
@@ -1751,6 +1810,7 @@ export const sketchSolveMachine = setup({
           sceneInfra: context.sceneInfra,
           rustContext: context.rustContext,
           kclManager: context.kclManager,
+          sketchId: context.sketchId,
         },
       })
 
@@ -1767,18 +1827,22 @@ export const sketchSolveMachine = setup({
     ...equipTools,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZNXllRX1jDQM1A3lpA1lzKwQAWgNjA2U1aTVC+07jRQ0NNS8fdGx8IjIKalo6cKiYvFgx-0JQ7EIAWzA0iSzhXIz82sV241qNeW1L+X7nBsQWk2VDaXV1cp1tGxGQX3GAlNgrNQqIwABHULMPh4DCEEi7DL7HLiI6IbSKFRXAyKWRODTaDiFbQPZpGaTKIZvGzyGqlWTSbS-f7+SZBGb0LCEZiiLDMWiidjcPaCA6o0CNJpKSnGYyyGwExW6eqSRBGDjGVSaHR6QwmZkrCaBaYhOgAGR5cAAopDIsQzWBRFAMDhEfxRSiJJLpSY5QrrgH5Cr8urNeotLpSnrjAa-EagRy6AA1MAAJ2SWDtbsyHpSXsePtl8oGAYJQfMIY0Gq1Ed1Rhj3j+hsB7NNAAlCKnmAAvMQYLPCpG5w4SgsqX3FpVl4Nqqth7WR-T12MAtkmkERaKxeKJGIQPD82DZ5F5jLe8dF-1K8uqhChms6qPLxss+Ot2jKTaEIKRUT7uIJEkdAQGIYDKDypCEOgn7fmAAAq8LEMew7iretTnJSQx1IoHDaHIZiWNYaglPIlRqBi+jyFWTIvs2a7AmBX4-n+Sw7kBaapp2yh8MQ0QAGadpsMHkAhCKDu62SnqAxytO09ikZ0QZ4toOKkrU2iqJUNRqLK0guBwtQrqyxoMcJFC-v+bEYAwkLQrCiHIZJI5oXYLyyP0xhUdUcqYvIpIGO4qilMYHBDKROKVEZb7rmBoRCE69kkHMYK2TCcJiekElinkMi4cUGhdHi6iyKFQwkoRCARiUiiysYKl4Woai4VFLYxcocU8lAiXEDZUJpQ54k5k5qH5HKFKtKF2i6CYshkaS3zFDYuIaAooUltILX0RyyiwAA7qwuCdd1dCMLA-YxMoIFgsokRJFxjnZWiCByu0tzGEUuE1RwOlqKS5HFHps0VAM3SkRttFxq1pmghCfV8Ed6U9ad51gVdYG3XCqbKA9npPXY3zKAYrSXJc0hqRhoOhZUjikXKXiNqIITwBkr5QxyIrDTlCBVG5HlebcS1+RVUoXnKQYGTpQZVJtJnbUx5ksQBu4c490mICtsiE20s16U1ROqRVdjtAoE1E1WOGyDLCYhO18VdYjKu42rlX9ITpEFeo1Q6IopJVsUpyFIMmIYooVvvmBe0HTgCOIY7Um3q0Gk1WR5yDCYbx-XUyhTUGSoGES0sQ6uss20wwhOnHznHLoxHfN01yyk4Okqo0sqaR93yYnVNNh21MOpfDCUO0OnN40YmvSO9XRKO9EuksHygMjYem4p5OLg14QA */
-  context: ({ input }): SketchSolveContext => ({
-    sketchSolveToolName: null,
-    selectedIds: [],
-    duringAreaSelectIds: [],
-    initialPlane: input?.initialSketchSolvePlane ?? undefined,
-    codeManager: input.codeManager,
-    sceneInfra: input.sceneInfra,
-    sceneEntitiesManager: input.sceneEntitiesManager,
-    rustContext: input.rustContext,
-    kclManager: input.kclManager,
-  }),
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZNXllRX1jDQM1A3lpA1lzKwQAWgNjA2U1aTVC+07jRQ0NNS8fdGx8IjIKalo6cKiYvFgx-0JQ7EIAWzA0iSzhXIz82sV241qNeW1L+X7nBsQWk2VDaXV1cp1tGxGQX3GAlNgrNQqIwABHULMPh4DCEEi7DL7HLiI6IbSKFRXAyKWRODTaDiFbQPZpGaTKIZvGzyGqlWTSbS-f7+SZBGb0LCEZiiLDMWiidjcPaCA6o0CNJpKSnGYyyGwExW6eqSRBGDjGVSaHR6QwmZkrCaBaYhOgAEWYsAwkV5O2FSNFKIkkulJjlCuunvkKvy6s16i0ulKeuMBr8RqBHLoAAVIgAnSLEBLERH8R0pZ2PV2y+UDT0E73mX0aDVawO6oyh7x-Q2A9mmgAyPLgAFFIYmG2BRFAMDhU5l04cJVmVG7c0qCz61SX-dqg-pK2GAWyTbMAGpgOPJLCJ-vIjMZF2jnMepWF1UIP1lnXBxfVlkR+uzAAShDjzAAXmJrSn7Wnsgew7NNm7p5meU6XjO17ziGS6ssawJhBE0SxPEiQxBAeD8rAe6DuKlgjjKoETsqRbTqWAY3gu+r3rWK6IXQtAJIscQJEkkC4QBQ4EcBx7EfmpEXlelEwXeozhnWq5gMomyEEENqYax6GMWI0k8qQhDoDJclgAAKvCv7pP+Yp5DIrRqMoTh1Nc3RaEoiikrSyiFGozjaAYXTGBwtxVuJy4IRy2nyaIiloUkDBxnGb7KHwxDRAAZm+mxBXpBmcSZaIILUcrKO4GLegYdQcO5aiku4KiEooHBDDi2iVQMcGPlJKV4ApSxhRgDCQtCsJpX+A5cfhxx2C8sj9MY8gVLcNilKSHkaKopReUM8iFacwy0RJ9GBaEQjdr1JBzGC3UwnCCL9fu3HHMVxQaF0eLqLI1VDCSPGBiUiiysY7naF0ajFY1kmIcou08lAB3EF1UKnX1RkDRloD5HKFKtNVdWTXKlSlTx3zFDNsgaAo1V5tIgPbSEyiwAA7qwuBgxDdCMFaKHKBAqnKJESTRelTqZZjqiykUxWfRwajGNjjRqLouW4kYOJDAoHlkwFFOghC0N8PTZ2Q0z1oxKz7Oc3CcbKDzgEXnY3zKIV5STTUZXnB0RMVFUuitLIXjVqIITwBkD5AxyIqDaZCBVKN42TdUcqYvIpJSnxhRDEU5zdPIyuRhTsnBaFbEYEHCMXoTsjW20sgeS4Dg4mVhjOatXmFSWVUe5t-kZ7QIN7eD2v57ziOICYKjVOS6jVDoDlvd5JR1JoWhj4o6dPtJ1O0zgWsGT35u+t9JRtK55yDCYbyklUxfowTnoGESVQL81TDCN2G9XTIugWd83TXLKThiyqjSyqolT6G+Jib6jg04t3gm3aSasTqa32t3B0wdMoXGLtIcWXQlDiw4F0UkmJtDOTkIoaQmIxqrUIZ7DwQA */
+  context: ({ input }): SketchSolveContext => {
+    return {
+      sketchSolveToolName: null,
+      selectedIds: [],
+      duringAreaSelectIds: [],
+      initialPlane: input?.initialSketchSolvePlane ?? undefined,
+      initialSceneGraphDelta: input?.initialSceneGraphDelta,
+      sketchId: input?.sketchId || 0,
+      codeManager: input.codeManager,
+      sceneInfra: input.sceneInfra,
+      sceneEntitiesManager: input.sceneEntitiesManager,
+      rustContext: input.rustContext,
+      kclManager: input.kclManager,
+    }
+  },
   id: 'Sketch Solve Mode',
   initial: 'move and select',
   on: {
@@ -1813,7 +1877,7 @@ export const sketchSolveMachine = setup({
         // TODO this is not how coincident should operate long term, as it should be an equipable tool
         const result = await context.rustContext.addConstraint(
           0,
-          0,
+          context.sketchId,
           {
             type: 'Coincident',
             points: context.selectedIds,
@@ -1883,7 +1947,7 @@ export const sketchSolveMachine = setup({
         }
         const result = await context.rustContext.addConstraint(
           0,
-          0,
+          context.sketchId,
           {
             type: 'Distance',
             distance: { value: distance, units },
@@ -1904,7 +1968,7 @@ export const sketchSolveMachine = setup({
         // TODO this is not how coincident should operate long term, as it should be an equipable tool
         const result = await context.rustContext.addConstraint(
           0,
-          0,
+          context.sketchId,
           {
             type: 'Parallel',
             lines: context.selectedIds,
@@ -1924,7 +1988,7 @@ export const sketchSolveMachine = setup({
         // TODO this is not how LinesEqualLength should operate long term, as it should be an equipable tool
         const result = await context.rustContext.addConstraint(
           0,
-          0,
+          context.sketchId,
           {
             type: 'LinesEqualLength',
             lines: context.selectedIds,
@@ -1946,7 +2010,7 @@ export const sketchSolveMachine = setup({
           // TODO this is not how Vertical should operate long term, as it should be an equipable tool
           result = await context.rustContext.addConstraint(
             0,
-            0,
+            context.sketchId,
             {
               type: 'Vertical',
               line: id,
@@ -1969,7 +2033,7 @@ export const sketchSolveMachine = setup({
           // TODO this is not how Horizontal should operate long term, as it should be an equipable tool
           result = await context.rustContext.addConstraint(
             0,
-            0,
+            context.sketchId,
             {
               type: 'Horizontal',
               line: id,
@@ -1999,7 +2063,13 @@ export const sketchSolveMachine = setup({
 
         // Call deleteObjects with the selected segment IDs
         const result = await context.rustContext
-          .deleteObjects(0, 0, [], selectedIds, await jsAppSettings())
+          .deleteObjects(
+            0,
+            context.sketchId,
+            [],
+            selectedIds,
+            await jsAppSettings()
+          )
           .catch((err) => {
             console.error('failed to delete objects', err)
             return null
@@ -2104,6 +2174,7 @@ export const sketchSolveMachine = setup({
 
   entry: [
     'initialize intersection plane',
+    'initialize initial scene graph',
     'setUpOnDragAndSelectionClickCallbacks',
   ],
 })

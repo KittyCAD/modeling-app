@@ -1,8 +1,4 @@
-import type {
-  SceneGraphDelta,
-  SegmentCtor,
-  SourceDelta,
-} from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SegmentCtor } from '@rust/kcl-lib/bindings/FrontendApi'
 import { SKETCH_POINT_HANDLE } from '@src/clientSideScene/sceneUtils'
 import { type Themes } from '@src/lib/theme'
 import {
@@ -32,10 +28,6 @@ interface CreateSegmentArgs {
   theme: Themes
   id: number
   scale: number
-  onUpdateSketchOutcome?: (data: {
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }) => void
 }
 
 interface UpdateSegmentArgs {
@@ -55,7 +47,7 @@ export interface SegmentUtils {
    * It's **Not** responsible for doing all calculations to size and position the entities as this would be duplicated in the update function
    * Which should instead be called at the end of the init function
    */
-  init: (args: CreateSegmentArgs) => Promise<Group>
+  init: (args: CreateSegmentArgs) => Group | Error
   /**
    * The update function is responsible for updating the group with the correct size and position of the entities
    * It should be called at the end of the init function and return a callback that can be used to update the overlay
@@ -82,9 +74,9 @@ class PointSegment implements SegmentUtils {
       : '0px solid #CCCCCC'
   }
 
-  init = async (args: CreateSegmentArgs) => {
+  init = (args: CreateSegmentArgs) => {
     if (args.input.type !== 'Point') {
-      return Promise.reject(new Error('Invalid input type for PointSegment'))
+      return new Error('Invalid input type for PointSegment')
     }
     const segmentGroup = new Group()
 
@@ -150,7 +142,7 @@ class PointSegment implements SegmentUtils {
     }
     segmentGroup.add(cssObject)
 
-    await this.update({
+    this.update({
       input: args.input,
       theme: args.theme,
       id: args.id,
@@ -163,13 +155,11 @@ class PointSegment implements SegmentUtils {
 
   update(args: UpdateSegmentArgs) {
     if (args.input.type !== 'Point') {
-      return Promise.reject(new Error('Invalid input type for PointSegment'))
+      return new Error('Invalid input type for PointSegment')
     }
     const { x, y } = args.input.position
     if (!('value' in x && 'value' in y)) {
-      return Promise.reject(
-        new Error('Invalid position values for PointSegment')
-      )
+      return new Error('Invalid position values for PointSegment')
     }
     args.group.scale.set(args.scale, args.scale, args.scale)
     const handle = args.group.getObjectByName('handle')
@@ -221,9 +211,9 @@ class LineSegment implements SegmentUtils {
     }
   }
 
-  init = async (args: CreateSegmentArgs) => {
+  init = (args: CreateSegmentArgs) => {
     if (args.input.type !== 'Line') {
-      return Promise.reject(new Error('Invalid input type for PointSegment'))
+      return new Error('Invalid input type for PointSegment')
     }
     if (
       !(
@@ -233,10 +223,7 @@ class LineSegment implements SegmentUtils {
         'value' in args.input.end.y
       )
     ) {
-      console.log('args.input', args.input)
-      return Promise.reject(
-        new Error('Invalid position values for LineSegment')
-      )
+      return new Error('Invalid position values for LineSegment')
     }
     const startX = args.input.start.x.value
     const startY = args.input.start.y.value
@@ -265,7 +252,7 @@ class LineSegment implements SegmentUtils {
 
     segmentGroup.add(mesh)
 
-    await this.update({
+    this.update({
       input: args.input,
       theme: args.theme,
       id: args.id,
@@ -278,7 +265,7 @@ class LineSegment implements SegmentUtils {
   }
   update(args: UpdateSegmentArgs) {
     if (args.input.type !== 'Line') {
-      return Promise.reject(new Error('Invalid input type for PointSegment'))
+      return new Error('Invalid input type for PointSegment')
     }
     if (
       !(
@@ -288,9 +275,7 @@ class LineSegment implements SegmentUtils {
         'value' in args.input.end.y
       )
     ) {
-      return Promise.reject(
-        new Error('Invalid position values for LineSegment')
-      )
+      return new Error('Invalid position values for LineSegment')
     }
     const shape = createLineShape(args.scale)
 

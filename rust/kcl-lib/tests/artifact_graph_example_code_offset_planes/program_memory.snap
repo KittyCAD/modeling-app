@@ -8,6 +8,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -40,6 +41,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 50.0,
@@ -72,6 +74,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": 10.0,
         "y": 0.0,
@@ -126,6 +129,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,

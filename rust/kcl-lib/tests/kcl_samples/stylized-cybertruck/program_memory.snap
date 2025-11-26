@@ -91,6 +91,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -265,6 +266,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": -1925.0000000000002,
             "y": 0.0,
@@ -323,6 +325,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": -1925.0000000000002,
         "y": 0.0,
@@ -428,6 +431,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "objectId": null,
         "origin": {
           "x": -1925.0000000000002,
           "y": 0.0,
@@ -481,6 +485,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": -1925.0000000000002,
         "y": 0.0,
@@ -605,6 +610,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -719,6 +725,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -879,6 +886,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -964,6 +972,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": -900.0,
@@ -1069,6 +1078,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -1238,6 +1248,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -1000.0,
@@ -1323,6 +1334,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": -1000.0,
@@ -1428,6 +1440,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": -1000.0,
@@ -1597,6 +1610,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -1000.0,
@@ -1810,6 +1824,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2023,6 +2038,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2197,6 +2213,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": -1750.0,
             "y": 0.0,
@@ -2282,6 +2299,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": -1750.0,
         "y": 0.0,
@@ -2387,6 +2405,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "objectId": null,
         "origin": {
           "x": -1750.0,
           "y": 0.0,
@@ -2440,6 +2459,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": -1750.0,
         "y": 0.0,
@@ -2658,6 +2678,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2880,6 +2901,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3054,6 +3076,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 1750.0,
             "y": 0.0,
@@ -3148,6 +3171,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": 1750.0,
         "y": 0.0,
@@ -3253,6 +3277,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "objectId": null,
         "origin": {
           "x": 1750.0,
           "y": 0.0,
@@ -3315,6 +3340,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": 1750.0,
         "y": 0.0,
@@ -3454,6 +3480,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3553,6 +3580,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3689,6 +3717,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3788,6 +3817,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3924,6 +3954,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4023,6 +4054,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4159,6 +4191,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4258,6 +4291,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,

@@ -379,6 +379,32 @@ export default class RustContext {
     }
   }
 
+  /** Enter sketch mode for an existing sketch. */
+  async editSketch(
+    project: ApiProjectId,
+    file: ApiFileId,
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    settings: DeepPartial<Configuration>
+  ): Promise<SceneGraphDelta> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: SceneGraphDelta = await instance.edit_sketch(
+        JSON.stringify(project),
+        JSON.stringify(file),
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(settings)
+      )
+      return result
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
   /** Exit sketch mode. */
   async exitSketch(
     version: ApiVersion,

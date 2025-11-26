@@ -262,6 +262,37 @@ function moreNodePathFromSourceRange(
     return path
   }
 
+  if (_node.type === 'SketchBlock' && isInRange) {
+    const { arguments: args, body } = _node
+    // Handle arguments (similar to CallExpressionKw)
+    if (args && args.length > 0) {
+      for (let argIndex = 0; argIndex < args.length; argIndex++) {
+        const arg = args[argIndex].arg
+        if (arg.start <= start && arg.end >= end) {
+          path.push(['arguments', 'SketchBlock'])
+          path.push([argIndex, ARG_INDEX_FIELD])
+          path.push(['arg', LABELED_ARG_FIELD])
+          return moreNodePathFromSourceRange(arg, sourceRange, path)
+        }
+      }
+    }
+    // Handle body (similar to FunctionExpression)
+    if (body.start <= start && body.end >= end) {
+      path.push(['body', 'SketchBlock'])
+      const bodyItems = body.items
+      for (let i = 0; i < bodyItems.length; i++) {
+        const item = bodyItems[i]
+        if (item.start <= start && item.end >= end) {
+          path.push(['items', 'Block'])
+          path.push([i, 'index'])
+          return moreNodePathFromSourceRange(item, sourceRange, path)
+        }
+      }
+      return path
+    }
+    return path
+  }
+
   if (_node.type === 'ImportStatement' && isInRange) {
     if (_node.selector && _node.selector.type === 'List') {
       path.push(['selector', 'ImportStatement'])

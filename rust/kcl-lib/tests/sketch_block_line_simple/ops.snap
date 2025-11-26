@@ -3,6 +3,30 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed sketch_block_line_simple.kcl
 ---
 {
+  "rust/kcl-lib/tests/sketch_block_line_simple/input.kcl": [
+    {
+      "type": "SketchSolve",
+      "sketchId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
   "std::math": [
     {
       "type": "VariableDeclaration",

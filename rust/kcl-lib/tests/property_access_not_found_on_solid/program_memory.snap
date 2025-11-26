@@ -123,6 +123,7 @@ description: Variables in memory after executing property_access_not_found_on_so
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
