@@ -11,7 +11,6 @@ import {
 } from 'react'
 
 import { isArray } from '@src/lib/utils'
-import { editorTheme } from '@src/lib/codeEditor'
 
 //reference: https://github.com/sachinraja/rodemirror/blob/main/src/use-first-render.ts
 const useFirstRender = () => {
@@ -34,7 +33,6 @@ interface CodeEditorProps {
   onCreateEditor?: (view: EditorView | null) => void
   initialDocValue?: EditorStateConfig['doc']
   extensions?: Extension
-  theme: 'light' | 'dark'
   autoFocus?: boolean
   selection?: EditorStateConfig['selection']
 }
@@ -48,7 +46,6 @@ const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>((props, ref) => {
     onCreateEditor,
     extensions = [],
     initialDocValue,
-    theme,
     autoFocus = false,
     selection,
   } = props
@@ -59,7 +56,6 @@ const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>((props, ref) => {
     onCreateEditor,
     extensions,
     initialDocValue,
-    theme,
     autoFocus,
     selection,
   })
@@ -91,7 +87,6 @@ export function useCodeMirror(props: UseCodeMirror) {
     onCreateEditor,
     extensions = [],
     initialDocValue,
-    theme,
     autoFocus = false,
     selection,
   } = props
@@ -104,14 +99,8 @@ export function useCodeMirror(props: UseCodeMirror) {
 
   const targetExtensions = useMemo(() => {
     let exts = isExtensionArray(extensions) ? extensions : []
-    if (theme === 'dark') {
-      exts = [...exts, editorTheme.dark]
-    } else if (theme === 'light') {
-      exts = [...exts, editorTheme.light]
-    }
-
     return exts
-  }, [extensions, theme])
+  }, [extensions])
 
   useEffect(() => {
     if (container && !state) {
