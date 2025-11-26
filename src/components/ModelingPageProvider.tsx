@@ -152,7 +152,7 @@ export const ModelingPageProvider = ({
       project,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager, kclManager, project, file])
+  }, [kclManager, project, file])
 
   useEffect(() => {
     commandBarActor.send({

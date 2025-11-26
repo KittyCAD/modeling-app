@@ -1,16 +1,9 @@
-import {
-  forEachDiagnostic,
-  setDiagnosticsEffect,
-  type Diagnostic,
-} from '@codemirror/lint'
 import type { EntityType } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
-
 import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
-
 import type { KCLError } from '@src/lang/errors'
 import {
   compilationErrorsToDiagnostics,
@@ -67,39 +60,39 @@ import {
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
 import {
-  EditorSelection,
-  Annotation,
-  EditorState,
-  Transaction,
-  type TransactionSpec,
-} from '@codemirror/state'
-import {
-  EditorView,
-  type KeyBinding,
-  keymap,
-  type ViewUpdate,
-} from '@codemirror/view'
-import type {
-  ModelingMachineEvent,
-  modelingMachine,
-} from '@src/machines/modelingMachine'
-import type { StateFrom } from 'xstate'
-import {
   defaultKeymap,
   history,
   historyKeymap,
   redo,
   undo,
 } from '@codemirror/commands'
-import { historyCompartment } from '@src/editor/compartments'
-import { bracket } from '@src/lib/exampleKcl'
-import { isDesktop } from '@src/lib/isDesktop'
+import { syntaxTree } from '@codemirror/language'
+import type { Diagnostic } from '@codemirror/lint'
+import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
+import {
+  Annotation,
+  EditorSelection,
+  EditorState,
+  Transaction,
+  type TransactionSpec,
+} from '@codemirror/state'
+import type { KeyBinding, ViewUpdate } from '@codemirror/view'
+import { EditorView, keymap } from '@codemirror/view'
+import type { StateFrom } from 'xstate'
+
 import {
   addLineHighlight,
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
+
+import type {
+  ModelingMachineEvent,
+  modelingMachine,
+} from '@src/machines/modelingMachine'
+import { historyCompartment } from '@src/editor/compartments'
+import { bracket } from '@src/lib/exampleKcl'
+import { isDesktop } from '@src/lib/isDesktop'
 import toast from 'react-hot-toast'
-import { syntaxTree } from '@codemirror/language'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -244,7 +237,6 @@ export class KclManager extends EventTarget {
   private _highlightRange: Array<[number, number]> = [[0, 0]]
   private _editorState: EditorState
   private _editorView: EditorView | null = null
-  public kclManager?: KclManager
   /** End merged items */
 
   get ast() {
@@ -1212,7 +1204,7 @@ export class KclManager extends EventTarget {
         // needed to update the code, so sketch segments can update themselves.
         // In the editorView case this happens within the kcl plugin's update method being called during updates.
         this.code = newState.doc.toString()
-        void this.kclManager!.executeCode()
+        void this.executeCode()
       }
     }
   }
@@ -1224,7 +1216,7 @@ export class KclManager extends EventTarget {
       if (redoPerformed) {
         const newState = this._editorState
         this.code = newState.doc.toString()
-        void this.kclManager!.executeCode()
+        void this.executeCode()
       }
     }
   }
@@ -1321,16 +1313,12 @@ export class KclManager extends EventTarget {
         )
       }
     )
-    if (!this.kclManager) {
-      console.error('unreachable')
-      return
-    }
     const eventInfo = processCodeMirrorRanges({
       codeMirrorRanges: viewUpdate.state.selection.ranges,
       selectionRanges: this._selectionRanges,
       isShiftDown: this._isShiftDown,
-      ast: this.kclManager.ast,
-      artifactGraph: this.kclManager.artifactGraph,
+      ast: this.ast,
+      artifactGraph: this.artifactGraph,
     })
     if (!eventInfo) {
       return
