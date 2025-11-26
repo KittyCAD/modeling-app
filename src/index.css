@@ -484,6 +484,10 @@ code,
     @apply list-disc;
   }
 
+  .parsed-markdown ol li {
+    @apply list-decimal;
+  }
+
   .parsed-markdown li p {
     @apply inline;
   }

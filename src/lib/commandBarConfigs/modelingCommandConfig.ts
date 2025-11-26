@@ -48,6 +48,7 @@ import {
   addLoft,
   addRevolve,
   addSweep,
+  type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { addHole, addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
@@ -69,7 +70,11 @@ import {
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
-import { addFlatnessGdt } from '@src/lang/modifyAst/gdt'
+import {
+  addFlatnessGdt,
+  addDatumGdt,
+  getNextAvailableDatumName,
+} from '@src/lang/modifyAst/gdt'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -148,7 +153,7 @@ export type ModelingCommandSchema = {
     path: Selections
     sectional?: boolean
     // TODO: figure out if we should expose `tolerance` or not
-    relativeTo?: string
+    relativeTo?: SweepRelativeTo
     tagStart?: string
     tagEnd?: string
   }
@@ -295,6 +300,7 @@ export type ModelingCommandSchema = {
     x?: KclCommandValue
     y?: KclCommandValue
     z?: KclCommandValue
+    factor?: KclCommandValue
     global?: boolean
   }
   Clone: {
@@ -325,6 +331,15 @@ export type ModelingCommandSchema = {
     faces: Selections
     tolerance: KclCommandValue
     precision?: KclCommandValue
+    framePosition?: KclCommandValue
+    framePlane?: string
+    fontPointSize?: KclCommandValue
+    fontScale?: KclCommandValue
+  }
+  'GDT Datum': {
+    nodeToEdit?: PathToNode
+    faces: Selections
+    name: string
     framePosition?: KclCommandValue
     framePlane?: string
     fontPointSize?: KclCommandValue
@@ -645,7 +660,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       path: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'helix'],
+        selectionTypes: ['path', 'helix'],
+        selectionFilter: ['object'],
         required: true,
         multiple: false,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -658,8 +674,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         required: false,
         options: [
-          { name: 'sketchPlane', value: 'sketchPlane' },
-          { name: 'trajectoryCurve', value: 'trajectoryCurve' },
+          { name: 'Sketch Plane', value: 'SKETCH_PLANE' },
+          { name: 'Trajectory Curve', value: 'TRAJECTORY' },
         ],
       },
       tagStart: {
@@ -903,7 +919,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ['blind'].includes(context.argumentsToSubmit.holeBody as string),
         hidden: (context) =>
           !['blind'].includes(context.argumentsToSubmit.holeBody as string),
-        defaultValue: KCL_DEFAULT_LENGTH,
+        defaultValue: '2',
       },
       blindDiameter: {
         inputType: 'kcl',
@@ -1617,6 +1633,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: false,
       },
+      factor: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        required: false,
+      },
       global: {
         inputType: 'boolean',
         required: false,
@@ -1849,6 +1870,72 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_PRECISION,
         required: false,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: [
+          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
+          { name: 'XZ Plane', value: KCL_PLANE_XZ },
+          { name: 'YZ Plane', value: KCL_PLANE_YZ },
+        ],
+        required: false,
+      },
+      fontPointSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
+        required: false,
+      },
+      fontScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        required: false,
+      },
+    },
+  },
+  'GDT Datum': {
+    description:
+      'Add datum geometric dimensioning & tolerancing annotation to a face.',
+    icon: 'gdtDatum',
+    needsReview: true,
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addDatumGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Datum']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    status: 'experimental',
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      faces: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        multiple: false,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      name: {
+        inputType: 'string',
+        defaultValue: (_) => getNextAvailableDatumName(kclManager.ast),
+        required: true,
       },
       framePosition: {
         inputType: 'vector2d',

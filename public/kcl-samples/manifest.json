@@ -233,6 +233,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "crash-box/main.kcl",
+    "multipleFiles": false,
+    "title": "Crash-box with beam cutout and mounting holes",
+    "description": "A crash box is an energy-absorbing structural component mounted between a vehicle’s bumper beam and the main body. It is designed to deform in a controlled manner during low- to moderate-speed impacts, reducing crash forces transmitted to the chassis and lowering repair costs by localizing damage to a replaceable module.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "curtain-wall-anchor-plate/main.kcl",
     "multipleFiles": false,
     "title": "Curtain Wall Anchor Plate",
@@ -544,6 +554,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "hex-nut-with-chamfer/main.kcl",
+    "multipleFiles": false,
+    "title": "Hex Nut with Chamfered Ends and Through-Hole",
+    "description": "This model generates a hexagonal nut with: a hex exterior defined by across-flats dimension, circular chamfers applied to both end faces, and central through-hole",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "holder-rod-angle/main.kcl",
     "multipleFiles": false,
     "title": "Holder for (shower) rod at a ~45° angle",
@@ -558,6 +578,16 @@
     "multipleFiles": false,
     "title": "I-beam",
     "description": "A structural metal beam with an I shaped cross section. Often used in construction and architecture",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "inner-thread/main.kcl",
+    "multipleFiles": false,
+    "title": "Inner Thread",
+    "description": "An example of an inner thread on a cylinder.",
     "files": [
       "main.kcl"
     ]

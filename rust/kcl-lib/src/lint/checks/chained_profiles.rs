@@ -5,7 +5,7 @@ use kcl_error::SourceRange;
 
 use crate::{
     errors::Suggestion,
-    lint::rule::{Discovered, Finding, def_finding},
+    lint::rule::{Discovered, Finding, FindingFamily, def_finding},
     parsing::ast::types::{
         ArrayExpression, BinaryPart, BodyItem, CallExpressionKw, Expr, ImportSelector, ItemVisibility, Name,
         Node as AstNode, PipeExpression, Program, VariableDeclaration, VariableDeclarator, VariableKind,
@@ -22,7 +22,8 @@ Functions like startProfile, circle, ellipse, rectangle, polygon and others that
 When using multiple profile functions in a pipeline, only the last profile is returned. This can lead to unexpected results if earlier profiles are intended to contribute to the final shape.
 
 Instead, try assigning the result of each profile to a variable and when extruding, use an array of those variables.
-"
+",
+FindingFamily::Correctness
 );
 
 const NEW_VAR_PREFIX: &str = "profile";
@@ -74,8 +75,9 @@ fn check_body(block: &AstNode<Program>, whole_program: &AstNode<Program>) -> Res
             // Copy the unlabeled arg from the previous call to the problematic
             // call since it's no longer in the pipeline. Create a new pipeline
             // if there's more than one expression left.
-            let (next_expr, result) = if rest.len() == 1 {
-                let mut call = rest.pop().unwrap();
+            let (next_expr, result) = if rest.len() == 1
+                && let Some(mut call) = rest.pop()
+            {
                 let result = add_unlabeled_arg_to_call(&mut call, unlabeled_arg);
                 (call, result)
             } else {

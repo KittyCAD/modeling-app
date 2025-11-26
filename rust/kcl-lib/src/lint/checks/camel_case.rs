@@ -21,7 +21,8 @@ would be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For
 more information there's a pretty good Wikipedia page at
 
 https://en.wikipedia.org/wiki/Camel_case
-"
+",
+    crate::lint::rule::FindingFamily::Style
 );
 
 fn lint_lower_camel_case_var(decl: &VariableDeclarator, prog: &AstNode<Program>) -> Result<Vec<Discovered>> {

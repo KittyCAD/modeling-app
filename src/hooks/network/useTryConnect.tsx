@@ -14,6 +14,7 @@ import { reportRejection } from '@src/lib/trap'
 import { getDimensions } from '@src/network/utils'
 import { useRef } from 'react'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
+import toast from 'react-hot-toast'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -25,15 +26,25 @@ const attemptToConnectToEngine = async ({
   videoRef,
   setIsSceneReady,
   settingsEngine,
+  timeToConnect,
 }: {
   authToken: string
-  videoWrapperRef: React.RefObject<HTMLDivElement>
+  videoWrapperRef: React.RefObject<HTMLDivElement | null>
   setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   settingsEngine: SettingsViaQueryString
+  timeToConnect: number
 }) => {
   const connection = new Promise<boolean>((resolve, reject) => {
+    const cancelTimeout = setTimeout(() => {
+      EngineDebugger.addLog({
+        label: 'useTryConnect.tsx',
+        message: 'Took too long to connect, cancelTimeout',
+      })
+      reject('took too long to connect, cancelTimeout')
+    }, timeToConnect)
+
     void (async () => {
       try {
         if (!authToken) {
@@ -89,46 +100,50 @@ const attemptToConnectToEngine = async ({
           label: 'attemptToConnectToEngine',
           message: 'setIsSceneReady(true)',
         })
-
-        const settings = await jsAppSettings()
-        EngineDebugger.addLog({
-          label: 'onEngineConnectionReadyForRequests',
-          message: 'rustContext.clearSceneAndBustCache()',
-          metadata: {
-            jsAppSettings: settings,
-            filePath: codeManager.currentFilePath || undefined,
-          },
-        })
-        // Bust the cache always! A new connection has been made. The engine has no previous state
-        await rustContext.clearSceneAndBustCache(
-          settings,
-          codeManager.currentFilePath || undefined
-        )
-        EngineDebugger.addLog({
-          label: 'onEngineConnectionReadyForRequests',
-          message: 'kclManager.executeCode()',
-        })
-        await kclManager.executeCode()
-        // TODO: resolve the ~12 remaining dependent playwright tests on this functions isPlaywright() check
-        // Once zoom to fit and view isometric work on empty scenes (only grid planes) we can improve the functions
-        // business logic
-
-        // This means you idled, otherwise you use the reset camera position
-        if (sceneInfra.camControls.oldCameraState) {
-          await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
-        } else {
-          await resetCameraPosition()
-        }
-
-        // Since you reconnected you are not idle, clear the old camera state
-        sceneInfra.camControls.clearOldCameraState()
+        clearTimeout(cancelTimeout)
         return resolve(true)
       } catch (err) {
+        clearTimeout(cancelTimeout)
         return reject(err)
       }
     })()
   })
   return connection
+}
+
+const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async () => {
+  const settings = await jsAppSettings()
+  EngineDebugger.addLog({
+    label: 'onEngineConnectionReadyForRequests',
+    message: 'rustContext.clearSceneAndBustCache()',
+    metadata: {
+      jsAppSettings: settings,
+      filePath: codeManager.currentFilePath || undefined,
+    },
+  })
+  // Bust the cache always! A new connection has been made. The engine has no previous state
+  await rustContext.clearSceneAndBustCache(
+    settings,
+    codeManager.currentFilePath || undefined
+  )
+  EngineDebugger.addLog({
+    label: 'onEngineConnectionReadyForRequests',
+    message: 'kclManager.executeCode()',
+  })
+  await kclManager.executeCode()
+  // TODO: resolve the ~12 remaining dependent playwright tests on this functions isPlaywright() check
+  // Once zoom to fit and view isometric work on empty scenes (only grid planes) we can improve the functions
+  // business logic
+
+  // This means you idled, otherwise you use the reset camera position
+  if (sceneInfra.camControls.oldCameraState) {
+    await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
+  } else {
+    await resetCameraPosition()
+  }
+
+  // Since you reconnected you are not idle, clear the old camera state
+  sceneInfra.camControls.clearOldCameraState()
 }
 
 /**
@@ -156,12 +171,12 @@ async function tryConnecting({
   settings,
   setShowManualConnect,
 }: {
-  isConnecting: React.MutableRefObject<boolean>
-  numberOfConnectionAttempts: React.MutableRefObject<number>
+  isConnecting: React.RefObject<boolean>
+  numberOfConnectionAttempts: React.RefObject<number>
   authToken: string
-  videoWrapperRef: React.RefObject<HTMLDivElement>
+  videoWrapperRef: React.RefObject<HTMLDivElement | null>
   setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   settings: SettingsViaQueryString
@@ -173,25 +188,16 @@ async function tryConnecting({
         return resolve('connecting')
       }
 
-      isConnecting.current = true
+      let toastId: string | null = null
 
-      const cancelTimeout = setTimeout(() => {
-        isConnecting.current = false
-        setAppState({ isStreamAcceptingInput: false })
-        EngineDebugger.addLog({
-          label: 'useTryConnect.tsx',
-          message: 'Took too long to connect, calling tearDown()',
-        })
-        engineCommandManager.tearDown()
-        clearInterval(cancelTimeout)
-        reject('took too long to connect')
-      }, timeToConnect)
+      isConnecting.current = true
 
       async function attempt() {
         numberOfConnectionAttempts.current =
           numberOfConnectionAttempts.current + 1
 
         try {
+          // Has a time to connect window, if it does not connect, it will go to the next attempt
           await attemptToConnectToEngine({
             authToken: authToken,
             videoWrapperRef,
@@ -199,9 +205,11 @@ async function tryConnecting({
             videoRef,
             setIsSceneReady,
             settingsEngine: settings,
+            timeToConnect,
           })
-          // Only clear on success. Future attempts will have less time.
-          clearInterval(cancelTimeout)
+
+          // Do not count the 30 second timer to connect within the kcl execution and scene setup
+          await setupSceneAndExecuteCodeAfterOpenedEngineConnection()
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAttempts.current = 0
@@ -210,6 +218,9 @@ async function tryConnecting({
             label: 'tryConnecting',
             message: 'setAppState({ isStreamAcceptingInput: true })',
           })
+          if (toastId) {
+            toast.dismiss(toastId)
+          }
           resolve('connected')
         } catch (e) {
           isConnecting.current = false
@@ -219,14 +230,30 @@ async function tryConnecting({
             message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed, calling tearDown()`,
           })
           engineCommandManager.tearDown()
-          // Fail after NUMBER_OF_ENGINE_RETRIES
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             numberOfConnectionAttempts.current = 0
-            // Clear if we are going to exit all the attempts
-            clearInterval(cancelTimeout)
+            if (toastId) {
+              toast.dismiss(toastId)
+            }
             return reject(e)
           }
           attempt().catch(reportRejection)
+          if (toastId) {
+            toast.error(
+              `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}`,
+              {
+                duration: Number.POSITIVE_INFINITY,
+                id: toastId,
+              }
+            )
+          } else {
+            toastId = toast.error(
+              `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}`,
+              {
+                duration: Number.POSITIVE_INFINITY,
+              }
+            )
+          }
         }
       }
       await attempt()

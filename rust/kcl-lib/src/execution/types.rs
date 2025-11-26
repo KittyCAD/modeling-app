@@ -1586,6 +1586,12 @@ mod test {
     use super::*;
     use crate::execution::{ExecTestResults, parse_execute};
 
+    async fn new_exec_state() -> (crate::ExecutorContext, ExecState) {
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let exec_state = ExecState::new(&ctx);
+        (ctx, exec_state)
+    }
+
     fn values(exec_state: &mut ExecState) -> Vec<KclValue> {
         vec![
             KclValue::Bool {
@@ -1654,7 +1660,7 @@ mod test {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_idempotent() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
         let values = values(&mut exec_state);
         for v in &values {
             // Identity subtype
@@ -1709,11 +1715,12 @@ mod test {
             v.coerce(&RuntimeType::Primitive(PrimitiveType::Boolean), true, &mut exec_state)
                 .unwrap_err();
         }
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_none() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
         let none = KclValue::KclNone {
             value: crate::parsing::ast::types::KclNone::new(),
             meta: Vec::new(),
@@ -1768,11 +1775,12 @@ mod test {
             },
             &mut exec_state,
         );
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_record() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
 
         let obj0 = KclValue::Object {
             value: HashMap::new(),
@@ -1865,11 +1873,12 @@ mod test {
             false,
         );
         obj2.coerce(&ty1, true, &mut exec_state).unwrap_err();
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_array() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
 
         let hom_arr = KclValue::HomArray {
             value: vec![
@@ -2028,11 +2037,12 @@ mod test {
 
         mixed0.coerce(&tym1, true, &mut exec_state).unwrap_err();
         mixed0.coerce(&tym2, true, &mut exec_state).unwrap_err();
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_union() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
 
         // Subtyping smaller unions
         assert!(RuntimeType::Union(vec![]).subtype(&RuntimeType::Union(vec![
@@ -2081,11 +2091,12 @@ mod test {
         ]);
         count.coerce(&tyb, true, &mut exec_state).unwrap_err();
         count.coerce(&tyb2, true, &mut exec_state).unwrap_err();
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_axes() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
 
         // Subtyping
         assert!(RuntimeType::Primitive(PrimitiveType::Axis2d).subtype(&RuntimeType::Primitive(PrimitiveType::Axis2d)));
@@ -2198,11 +2209,12 @@ mod test {
         assert_coerce_results(&a3d, &ty3d, &a3d, &mut exec_state);
         assert_coerce_results(&a3d, &ty2d, &a2d, &mut exec_state);
         a2d.coerce(&ty3d, true, &mut exec_state).unwrap_err();
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_numeric() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
 
         let count = KclValue::Number {
             value: 1.0,
@@ -2327,6 +2339,7 @@ mod test {
                 .round(),
             1.0
         );
+        ctx.close().await;
     }
 
     #[track_caller]
@@ -2449,7 +2462,7 @@ d = cos(1rad)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_nested_array() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
 
         let mixed1 = KclValue::HomArray {
             value: vec![
@@ -2514,5 +2527,6 @@ d = cos(1rad)
             ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
         };
         assert_coerce_results(&mixed1, &tym1, &result, &mut exec_state);
+        ctx.close().await;
     }
 }

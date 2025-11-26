@@ -320,7 +320,14 @@ impl Expr {
                 let result = &name.inner.name.inner.name;
                 match deprecation(result, DeprecationKind::Const) {
                     Some(suggestion) => buf.push_str(suggestion),
-                    None => buf.push_str(result),
+                    None => {
+                        for prefix in &name.path {
+                            buf.push_str(&prefix.name);
+                            buf.push(':');
+                            buf.push(':');
+                        }
+                        buf.push_str(result);
+                    }
                 }
             }
             Expr::TagDeclarator(tag) => tag.recast(buf),
@@ -3201,6 +3208,15 @@ fn function001() {
   extrude002 = extrude()
 }\n";
 
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn module_prefix() {
+        let code = "x = std::sweep::SKETCH_PLANE\n";
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         let expected = code;

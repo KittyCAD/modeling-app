@@ -44,10 +44,24 @@ impl<'a> ModelingCmdMeta<'a> {
         }
     }
 
-    pub fn from_args_id(args: &'a Args, id: Uuid) -> Self {
+    pub fn from_args(exec_state: &ExecState, args: &'a Args) -> Self {
         ModelingCmdMeta {
             ctx: &args.ctx,
-            source_range: args.source_range,
+            source_range: exec_state
+                .mod_local
+                .stdlib_entry_source_range
+                .unwrap_or(args.source_range),
+            id: None,
+        }
+    }
+
+    pub fn from_args_id(exec_state: &ExecState, args: &'a Args, id: Uuid) -> Self {
+        ModelingCmdMeta {
+            ctx: &args.ctx,
+            source_range: exec_state
+                .mod_local
+                .stdlib_entry_source_range
+                .unwrap_or(args.source_range),
             id: Some(id),
         }
     }
@@ -59,12 +73,6 @@ impl<'a> ModelingCmdMeta<'a> {
         let id = id_generator.next_uuid();
         self.id = Some(id);
         id
-    }
-}
-
-impl<'a> From<&'a Args> for ModelingCmdMeta<'a> {
-    fn from(args: &'a Args) -> Self {
-        ModelingCmdMeta::new(&args.ctx, args.source_range)
     }
 }
 

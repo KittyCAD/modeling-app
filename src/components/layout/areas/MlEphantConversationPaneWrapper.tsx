@@ -17,12 +17,15 @@ import { MLEphantConversationPaneMenu2 } from '@src/components/MlEphantConversat
 import { useLoaderData } from 'react-router-dom'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   const settings = useSettings()
   const user = useUser()
-  const { context: contextModeling, theProject } = useModelingContext()
+  const {
+    context: contextModeling,
+    send: sendModeling,
+    theProject,
+  } = useModelingContext()
   const { file: loaderFile } = useLoaderData() as IndexLoaderData
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
@@ -32,7 +35,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
       id={`${props.layout.id}-pane`}
       className="border-none"
     >
-      {IS_STAGING_OR_DEBUG && settings.meta.disableCopilot.current === false ? (
+      {settings.meta.enableZookeeper.current === true ? (
         <>
           <LayoutPanelHeader
             id={props.layout.id}
@@ -49,6 +52,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
               kclManager,
               codeManager,
               contextModeling,
+              sendModeling,
               theProject: theProject.current,
               loaderFile,
               settings,

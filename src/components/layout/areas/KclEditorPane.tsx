@@ -1,5 +1,3 @@
-import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Menu } from '@headlessui/react'
 import type { PropsWithChildren } from 'react'
 import { ActionIcon } from '@src/components/ActionIcon'
@@ -24,11 +22,9 @@ import {
 import {
   bracketMatching,
   codeFolding,
-  defaultHighlightStyle,
   foldGutter,
   foldKeymap,
   indentOnInput,
-  syntaxHighlighting,
 } from '@codemirror/language'
 import { diagnosticCount, lintGutter, lintKeymap } from '@codemirror/lint'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
@@ -65,6 +61,8 @@ import {
 } from '@src/machines/kclEditorMachine'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { kclSyntaxHighlightingExtension } from '@src/lib/codeEditor'
+import { CustomIcon } from '@src/components/CustomIcon'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -190,9 +188,7 @@ export const KclEditorPaneContents = () => {
       closeBrackets(),
       highlightActiveLine(),
       highlightSelectionMatches(),
-      syntaxHighlighting(defaultHighlightStyle, {
-        fallback: true,
-      }),
+      kclSyntaxHighlightingExtension,
       rectangularSelection(),
       dropCursor(),
       interact({
@@ -342,10 +338,9 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
               <span>Read the KCL docs</span>
               <small>
                 zoo.dev
-                <FontAwesomeIcon
-                  icon={faArrowUpRightFromSquare}
-                  className="ml-1 align-text-top"
-                  width={12}
+                <CustomIcon
+                  name="link"
+                  className="inline-block ml-1 text-align-top w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
                 />
               </small>
             </a>
@@ -383,10 +378,9 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
               <span>View all samples</span>
               <small>
                 zoo.dev
-                <FontAwesomeIcon
-                  icon={faArrowUpRightFromSquare}
-                  className="ml-1 align-text-top"
-                  width={12}
+                <CustomIcon
+                  name="link"
+                  className="inline-block ml-1 text-align-top w-3 h-3 text-chalkboard-70 dark:text-chalkboard-40"
                 />
               </small>
             </a>

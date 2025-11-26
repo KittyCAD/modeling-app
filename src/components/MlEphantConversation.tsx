@@ -95,8 +95,9 @@ export const MlEphantConversationInput = (
     if (props.disabled) return
 
     const value = refDiv.current?.value
-    if (!value) return
-    setHeightConvo(refDiv.current.getBoundingClientRect().height)
+    const boundingRect = refDiv.current?.getBoundingClientRect()
+    if (!(value && boundingRect)) return
+    setHeightConvo(boundingRect.height)
 
     props.onProcess(value)
     setLettersForAnimation(
@@ -129,7 +130,7 @@ export const MlEphantConversationInput = (
   return (
     <div className="flex flex-col p-4 gap-2">
       <div className="flex flex-row justify-between">
-        <div className="text-sm text-3">Enter a prompt</div>
+        <div></div>
         <BillingStatusBarItem billingContext={props.billingContext} />
       </div>
       <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
@@ -142,6 +143,7 @@ export const MlEphantConversationInput = (
           onChange={(e) => setValue(e.target.value)}
           value={value}
           ref={refDiv}
+          placeholder="Create a gear with 10 teeth and use sensible defaults for everything else..."
           onKeyDown={(e) => {
             const isOnlyEnter =
               e.key === 'Enter' && !(e.shiftKey || e.metaKey || e.ctrlKey)
@@ -334,7 +336,7 @@ export const MLEphantConversationPaneMenu = () => (
           </p>
         </div>
         <p className="text-sm">
-          Text-to-CAD treats every prompt as separate. Full copilot mode with
+          Text-to-CAD treats every prompt as separate. Full agent with
           conversational memory is coming soon. Conversations are not currently
           shared between computers.
         </p>
