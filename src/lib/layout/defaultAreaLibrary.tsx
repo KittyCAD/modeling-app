@@ -69,8 +69,7 @@ export const defaultAreaLibrary = Object.freeze({
     shortcut: 'Shift + C',
     Component: KclEditorPane,
     useNotifications() {
-      const kclContext = useKclContext()
-      const value = kclContext.diagnostics.filter(
+      const value = kclManager.diagnosticsSignal.value.filter(
         (diagnostic) => diagnostic.severity === 'error'
       ).length
       return useMemo(() => {

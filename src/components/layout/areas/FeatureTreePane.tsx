@@ -11,7 +11,6 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useKclContext } from '@src/lang/KclProvider'
 import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
@@ -524,7 +523,7 @@ interface OperationProps {
  * for an operation in the feature tree.
  */
 const OperationItem = (props: OperationProps) => {
-  const { diagnostics } = useKclContext()
+  const diagnostics = kclManager.diagnosticsSignal.value
   const ast = kclManager.astSignal.value
   const name = getOperationLabel(props.item)
   const valueDetail = useMemo(() => {

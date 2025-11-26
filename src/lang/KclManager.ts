@@ -185,7 +185,7 @@ export class KclManager extends EventTarget {
   lastSuccessfulCode: string = ''
   private _logs: string[] = []
   private _errors: KCLError[] = []
-  private _diagnostics: Diagnostic[] = []
+  private _diagnostics = signal<Diagnostic[]>([])
   private _isExecuting = signal(false)
   private _executeIsStale: ExecuteArgs | null = null
   private _wasmInitFailed = true
@@ -203,7 +203,6 @@ export class KclManager extends EventTarget {
 
   private _logsCallBack: (arg: string[]) => void = () => {}
   private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
-  private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
@@ -305,12 +304,16 @@ export class KclManager extends EventTarget {
   }
 
   get diagnostics() {
+    return this._diagnostics.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get diagnosticsSignal() {
     return this._diagnostics
   }
 
   set diagnostics(ds) {
-    if (ds === this._diagnostics) return
-    this._diagnostics = ds
+    if (ds === this._diagnostics.value) return
+    this._diagnostics.value = ds
     this.setDiagnosticsForCurrentErrors()
   }
 
@@ -325,7 +328,6 @@ export class KclManager extends EventTarget {
 
   setDiagnosticsForCurrentErrors() {
     this.setDiagnostics(this.diagnostics)
-    this._diagnosticsCallback(this.diagnostics)
   }
 
   get isExecuting() {
@@ -422,17 +424,14 @@ export class KclManager extends EventTarget {
   registerCallBacks({
     setLogs,
     setErrors,
-    setDiagnostics,
     setWasmInitFailed,
   }: {
     setLogs: (arg: string[]) => void
     setErrors: (errors: KCLError[]) => void
-    setDiagnostics: (errors: Diagnostic[]) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
     this._logsCallBack = setLogs
     this._kclErrorsCallBack = setErrors
-    this._diagnosticsCallback = setDiagnostics
     this._wasmInitFailedCallback = setWasmInitFailed
   }
 
