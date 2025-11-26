@@ -18,6 +18,7 @@ import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedS
 import {
   findAllChildrenAndOrderByPlaceInCode,
   getEdgeCutMeta,
+  getLastVariable,
   getNodeFromPath,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
@@ -41,7 +42,6 @@ import type {
   ArtifactGraph,
   CallExpressionKw,
   Expr,
-  PathToNode,
   Program,
   SourceRange,
 } from '@src/lang/wasm'
@@ -1089,17 +1089,18 @@ export async function selectionBodyFace(
     )
   }
 
-  const lastChild =
-    findAllChildrenAndOrderByPlaceInCode(
-      { type: 'sweep', ...extrusion },
-      kclManager.artifactGraph
-    )[0] || null
-  const lastChildCodeRef: PathToNode | null =
-    lastChild?.type === 'compositeSolid' ? lastChild.codeRef.pathToNode : null
-
-  const extrudePathToNode = !err(extrusion)
-    ? lastChildCodeRef || extrusion.codeRef.pathToNode
-    : []
+  const children = findAllChildrenAndOrderByPlaceInCode(
+    { type: 'sweep', ...extrusion },
+    kclManager.artifactGraph
+  )
+  const lastChildVariable = getLastVariable(children, kclManager.ast, [
+    'sweep',
+    'compositeSolid',
+  ])
+  const extrudePathToNode =
+    lastChildVariable && !err(lastChildVariable)
+      ? lastChildVariable.pathToNode
+      : []
 
   return {
     type: 'extrudeFace',

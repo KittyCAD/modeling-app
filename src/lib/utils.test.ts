@@ -10,6 +10,7 @@ import {
   roundOff,
   roundOffWithUnits,
   simulateOnMouseDragMatch,
+  stripQuotes,
 } from '@src/lib/utils'
 
 describe('testing isOverlapping', () => {
@@ -1371,5 +1372,45 @@ describe('testing getInVariableCase', () => {
   it('properly parses prefixes 1120t74-pipe.step', () => {
     expect(getInVariableCase('1120t74-pipe')).toBe('m1120T74Pipe')
     expect(getInVariableCase('1120t74-pipe', 'p')).toBe('p1120T74Pipe')
+  })
+})
+
+describe('testing stripQuotes', () => {
+  it('strips matching quotes from both ends', () => {
+    expect(stripQuotes('"hello"')).toEqual('hello')
+    expect(stripQuotes("'world'")).toEqual('world')
+  })
+
+  it('strips mixed quote types from ends', () => {
+    expect(stripQuotes('"hello\'')).toEqual('hello')
+    expect(stripQuotes('\'hello"')).toEqual('hello')
+  })
+
+  it('strips single quotes from either end', () => {
+    expect(stripQuotes('"hello')).toEqual('hello')
+    expect(stripQuotes("'hello")).toEqual('hello')
+    expect(stripQuotes('hello"')).toEqual('hello')
+    expect(stripQuotes("hello'")).toEqual('hello')
+  })
+
+  it('preserves quotes in middle of string', () => {
+    expect(stripQuotes('hello "quoted" world')).toEqual('hello "quoted" world')
+  })
+
+  it('handles edge cases', () => {
+    expect(stripQuotes('hello')).toEqual('hello')
+    expect(stripQuotes('')).toEqual('')
+    expect(stripQuotes('""')).toEqual('')
+    expect(stripQuotes("''")).toEqual('')
+  })
+
+  it('handles null and undefined inputs', () => {
+    expect(stripQuotes(null)).toEqual('')
+    expect(stripQuotes(undefined)).toEqual('')
+  })
+
+  it('handles multiple quotes at ends', () => {
+    expect(stripQuotes('""hello""')).toEqual('"hello"')
+    expect(stripQuotes("''hello''")).toEqual("'hello'")
   })
 })

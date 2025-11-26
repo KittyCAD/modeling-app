@@ -21,6 +21,7 @@ import { useSelector } from '@xstate/react'
 import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
+import { type useModelingContext } from '@src/hooks/useModelingContext'
 
 export const MlEphantConversationPane2 = (props: {
   mlEphantManagerActor: MlEphantManagerActor2
@@ -30,15 +31,22 @@ export const MlEphantConversationPane2 = (props: {
   codeManager: CodeManager
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
+  sendModeling: ReturnType<typeof useModelingContext>['send']
   loaderFile: FileEntry | undefined
   settings: typeof settings
   user?: User
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
-  const conversation = useSelector(props.mlEphantManagerActor, (actor) => {
+
+  let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
   })
+
+  if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
+    conversation = undefined
+  }
+
   const abruptlyClosed = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.abruptlyClosed
   })
@@ -103,6 +111,12 @@ export const MlEphantConversationPane2 = (props: {
       artifactGraph: props.kclManager.artifactGraph,
       mode,
     })
+
+    // Clear selections since new model
+    props.sendModeling({
+      type: 'Set selection',
+      data: { selection: undefined, selectionType: 'singleCodeCursor' },
+    })
   }
 
   const lastExchange = conversation?.exchanges.slice(-1) ?? []
@@ -119,6 +133,24 @@ export const MlEphantConversationPane2 = (props: {
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions2.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
+    })
+  }
+
+  const onClickClearChat = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions2.ConversationClose,
+    })
+    const sub = props.mlEphantManagerActor.subscribe((next) => {
+      if (!next.matches(S.Await)) {
+        return
+      }
+
+      props.mlEphantManagerActor.send({
+        type: MlEphantManagerTransitions2.CacheSetupAndConnect,
+        refParentSend: props.mlEphantManagerActor.send,
+        conversationId: undefined,
+      })
+      sub.unsubscribe()
     })
   }
 
@@ -242,6 +274,7 @@ export const MlEphantConversationPane2 = (props: {
       onProcess={(request: string, mode: MlCopilotMode) => {
         onProcess(request, mode).catch(reportRejection)
       }}
+      onClickClearChat={onClickClearChat}
       onReconnect={onReconnect}
       disabled={isProcessing || needsReconnect}
       needsReconnect={needsReconnect}

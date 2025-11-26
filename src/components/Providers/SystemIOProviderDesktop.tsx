@@ -8,6 +8,7 @@ import {
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   PATHS,
+  getFilePathRelativeToProject,
   getProjectDirectoryFromKCLFilePath,
   joinOSPaths,
   joinRouterPaths,
@@ -298,33 +299,21 @@ export function SystemIOMachineLogicListenerDesktop() {
           }
         })
 
-        // Gotcha: below we're gonna look for the index of the project name,
-        // but what if the project name happens to be in the path earlier than the real one?
-        // Let's put separators on either side of it and offset by one, so we know
-        // it matches a whole directory name.
-        const projectNameWithSeparators =
-          window.electron?.sep + promptMeta.project.name + window.electron?.sep
-        // I know, it's confusing as hell.
-        const targetFilePathWithoutFileAndRelativeToProjectDir =
-          promptMeta.targetFile?.path.slice(
-            promptMeta.targetFile?.path.indexOf(projectNameWithSeparators) ?? 0
-          ) ?? ''
-
-        const requestedProjectNameNext =
-          targetFilePathWithoutFileAndRelativeToProjectDir.slice(
-            0,
-            targetFilePathWithoutFileAndRelativeToProjectDir.lastIndexOf(
-              window.electron?.sep ?? ''
-            )
-          )
+        const targetFilePathRelativeToProject = getFilePathRelativeToProject(
+          promptMeta.targetFile?.path || '',
+          promptMeta.project.name
+        )
 
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
           data: {
             files: requestedFiles,
             override: true,
-            requestedProjectName: requestedProjectNameNext,
-            requestedFileNameWithExtension: promptMeta.targetFile?.name ?? '',
+            // Gotcha: Both are called "project name" and "file name", but one of them
+            // has to include the project-relative file path between the two.
+            requestedProjectName: promptMeta.project.name,
+            requestedFileNameWithExtension:
+              targetFilePathRelativeToProject ?? '',
           },
         })
       }
@@ -358,27 +347,21 @@ export function SystemIOMachineLogicListenerDesktop() {
         }
       })
 
-      // I know, it's confusing as hell.
-      const targetFilePathWithoutFileAndRelativeToProjectDir =
-        fileFocusedOnInEditor?.path.slice(
-          fileFocusedOnInEditor?.path.indexOf(projectNameCurrentlyOpened) ?? 0
-        ) ?? ''
-
-      const requestedProjectNameNext =
-        targetFilePathWithoutFileAndRelativeToProjectDir.slice(
-          0,
-          targetFilePathWithoutFileAndRelativeToProjectDir.lastIndexOf(
-            window.electron?.sep ?? ''
-          )
-        )
+      const targetFilePathRelativeToProjectDir = getFilePathRelativeToProject(
+        fileFocusedOnInEditor?.path || '',
+        projectNameCurrentlyOpened
+      )
 
       systemIOActor.send({
         type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
         data: {
           files: requestedFiles,
           override: true,
-          requestedProjectName: requestedProjectNameNext,
-          requestedFileNameWithExtension: fileFocusedOnInEditor?.name ?? '',
+          // Gotcha: Both are called "project name" and "file name", but one of them
+          // has to include the project-relative file path between the two.
+          requestedProjectName: projectNameCurrentlyOpened,
+          requestedFileNameWithExtension:
+            targetFilePathRelativeToProjectDir ?? '',
         },
       })
     }

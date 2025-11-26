@@ -1,7 +1,7 @@
 #![allow(clippy::useless_conversion)]
 use anyhow::Result;
 use kcl_lib::{
-    lint::{checks, Discovered},
+    lint::{checks, Discovered, FindingFamily},
     ExecutorContext,
 };
 use kittycad_modeling_cmds::{
@@ -193,6 +193,7 @@ async fn execute(path: String) -> PyResult<()> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(())
         })
         .await
@@ -216,6 +217,7 @@ async fn execute_code(code: String) -> PyResult<()> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(())
         })
         .await
@@ -239,6 +241,7 @@ async fn mock_execute_code(code: String) -> PyResult<bool> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(true)
         })
         .await
@@ -265,6 +268,7 @@ async fn mock_execute(path: String) -> PyResult<bool> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(true)
         })
         .await
@@ -310,7 +314,9 @@ async fn import_and_snapshot_views(
         .spawn(async move {
             let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
             import(&ctx, filepaths, format).await?;
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -376,7 +382,10 @@ async fn execute_and_snapshot_views(
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -443,7 +452,10 @@ async fn execute_code_and_snapshot_views(
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -556,6 +568,9 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
                 )
                 .await?;
 
+            ctx.close().await;
+            drop(ctx);
+
             let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(
                     "Unexpected response from engine: {resp:?}"
@@ -603,6 +618,9 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
                     }),
                 )
                 .await?;
+
+            ctx.close().await;
+            drop(ctx);
 
             let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(
@@ -682,9 +700,23 @@ impl FixedLints {
 /// Returns any unfixed lints.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
-fn lint_and_fix(code: String) -> PyResult<FixedLints> {
+fn lint_and_fix_all(code: String) -> PyResult<FixedLints> {
     let (new_code, unfixed_lints) =
-        kcl_lib::lint::lint_and_fix(code).map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        kcl_lib::lint::lint_and_fix_all(code).map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+    Ok(FixedLints {
+        new_code,
+        unfixed_lints,
+    })
+}
+
+/// Lint the kcl code. Fix any lints that can be fixed with automatic suggestions,
+/// and are in the list of families to fix.
+/// Returns any unfixed lints.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+fn lint_and_fix_families(code: String, families_to_fix: Vec<FindingFamily>) -> PyResult<FixedLints> {
+    let (new_code, unfixed_lints) = kcl_lib::lint::lint_and_fix_families(code, &families_to_fix)
+        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
     Ok(FixedLints {
         new_code,
         unfixed_lints,
@@ -704,6 +736,7 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<bridge::Point3d>()?;
     m.add_class::<bridge::CameraLookAt>()?;
     m.add_class::<kcmc::format::InputFormat3d>()?;
+    m.add_class::<FindingFamily>()?;
 
     // These are fine to add top level since we rename them in pyo3 derives.
     m.add_class::<kcmc::format::step::import::Options>()?;
@@ -736,7 +769,8 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(format, m)?)?;
     m.add_function(wrap_pyfunction!(format_dir, m)?)?;
     m.add_function(wrap_pyfunction!(lint, m)?)?;
-    m.add_function(wrap_pyfunction!(lint_and_fix, m)?)?;
+    m.add_function(wrap_pyfunction!(lint_and_fix_all, m)?)?;
+    m.add_function(wrap_pyfunction!(lint_and_fix_families, m)?)?;
     m.add_function(wrap_pyfunction!(relevant_file_extensions, m)?)?;
     Ok(())
 }

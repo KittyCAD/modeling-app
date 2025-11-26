@@ -6,7 +6,13 @@ import {
   isMlCopilotUserRequest,
 } from '@src/machines/mlEphantManagerMachine2'
 import ms from 'ms'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+  type ComponentProps,
+} from 'react'
 import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
@@ -15,6 +21,8 @@ import { Marked, escape } from '@ts-stack/markdown'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
+  onClickClearChat: () => void
+  isLastResponse: boolean
 }
 
 type MlCopilotServerMessageError<T = MlCopilotServerMessage> = T extends {
@@ -23,8 +31,52 @@ type MlCopilotServerMessageError<T = MlCopilotServerMessage> = T extends {
   ? T
   : never
 
+export interface IButtonCopyProps {
+  content: string
+}
+
+export const ButtonCopy = (props: IButtonCopyProps) => (
+  <button
+    type="button"
+    onClick={() => {
+      if (!props.content) {
+        return
+      }
+      navigator.clipboard.writeText(props.content).then(
+        () => {
+          toast.success('Copied response to clipboard')
+        },
+        () => {
+          toast.error('Failed to copy response to clipboard')
+        }
+      )
+    }}
+    className="pt-1 pb-1"
+  >
+    <CustomIcon name="clipboard" className="w-4 h-4" />
+    <Tooltip
+      position="right"
+      hoverOnly={true}
+      contentClassName="text-sm max-w-none flex items-center gap-5"
+    >
+      <span>Copy to clipboard</span>
+    </Tooltip>
+  </button>
+)
+
+export const ButtonClearChat = (props: ComponentProps<'button'>) => (
+  <button {...props} className="pt-1 pb-1">
+    <span className="flex flex-row gap-1">
+      <CustomIcon name="trash" className="w-4 h-4" />
+      <span>Clear chat</span>
+    </span>
+  </button>
+)
+
 export const ResponseCardToolBar = (props: {
   responses?: MlCopilotServerMessage[]
+  onClickClearChat: () => void
+  isLastResponse: boolean
 }) => {
   const isEndOfStream =
     'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
@@ -38,35 +90,16 @@ export const ResponseCardToolBar = (props: {
       contentForClipboard = lastResponse.end_of_stream.whole_response
     }
   }
+
   return (
-    <div className={'pl-9'}>
-      {isEndOfStream && (
-        <button
-          type="button"
-          onClick={() => {
-            if (!contentForClipboard) {
-              return
-            }
-            navigator.clipboard.writeText(contentForClipboard).then(
-              () => {
-                toast.success('Copied response to clipboard')
-              },
-              () => {
-                toast.error('Failed to copy response to clipboard')
-              }
-            )
-          }}
-          className={`p-0 m-0 border-transparent dark:border-transparent focus-visible:b-default disabled:bg-transparent dark:disabled:bg-transparent disabled:border-transparent dark:disabled:border-transparent disabled:text-4`}
-        >
-          <CustomIcon name="clipboard" className="w-4 h-4" />
-          <Tooltip
-            position="right"
-            hoverOnly={true}
-            contentClassName="text-sm max-w-none flex items-center gap-5"
-          >
-            <span>Copy to clipboard</span>
-          </Tooltip>
-        </button>
+    <div className="pl-9 flex flex-row justify-between">
+      {isEndOfStream ? (
+        <ButtonCopy content={contentForClipboard ?? ''} />
+      ) : (
+        <div></div>
+      )}
+      {props.isLastResponse && (
+        <ButtonClearChat onClick={props.onClickClearChat} />
       )}
     </div>
   )
@@ -79,6 +112,7 @@ export const ExchangeCardStatus = (props: {
   updatedAt?: Date
   maybeError?: MlCopilotServerMessageError
 }) => {
+  const [triggerRender, setTriggerRender] = useState<number>(0)
   const thinker = (
     <Thinking
       thoughts={props.responses}
@@ -92,6 +126,20 @@ export const ExchangeCardStatus = (props: {
   const isEndOfStream =
     'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
     props.responses?.some((x) => 'error' in x || 'info' in x)
+
+  useEffect(() => {
+    const i = setInterval(() => {
+      setTriggerRender(triggerRender + 1)
+    }, 500)
+
+    if (isEndOfStream) {
+      clearInterval(i)
+    }
+
+    return () => {
+      clearInterval(i)
+    }
+  }, [triggerRender, isEndOfStream])
 
   let timeReasonedFor = 0
   if (isEndOfStream) {
@@ -163,9 +211,10 @@ export const ChatBubble = (props: {
   children: ReactNode
   dataTestId?: string
   placeholderTestId?: string
+  className?: string
 }) => {
   const cssRequest =
-    `${props.wfull ? 'w-full ' : ''} select-text whitespace-pre-line hyphens-auto shadow-sm ${props.side === 'left' ? 'bg-1' : 'bg-2'} text-default border b-4 rounded-t-md pl-4 pr-4 pt-2 pb-2 ` +
+    `${props.wfull ? 'w-full ' : ''} select-text whitespace-pre-line hyphens-auto shadow-sm ${props.side === 'left' ? '' : 'border b-4'} bg-2 text-default rounded-t-md pl-4 pr-4 ${props.className} ` +
     (props.side === 'left' ? 'rounded-br-md' : 'rounded-bl-md')
 
   return (
@@ -197,6 +246,7 @@ export const RequestCard = (props: RequestCardProps) => {
       side={'right'}
       userAvatar={props.userAvatar}
       dataTestId="ml-request-chat-bubble"
+      className="pt-2 pb-2"
     >
       {props.content}
     </ChatBubble>
@@ -238,6 +288,7 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
         className="w-4 h-4 inline valign"
       />
       <span
+        className="parsed-markdown"
         dangerouslySetInnerHTML={{
           __html: Marked.parse(props.maybeError?.error.detail, {
             renderer: new SafeRenderer(MarkedOptions),
@@ -271,6 +322,19 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 
   const itemsFilteredNulls = items.filter((x: ReactNode | null) => x !== null)
 
+  const deltasAggregatedMarkdown =
+    props.deltasAggregated !== '' ? (
+      <span
+        className="parsed-markdown whitespace-normal"
+        dangerouslySetInnerHTML={{
+          __html: Marked.parse(props.deltasAggregated, {
+            renderer: new SafeRenderer(MarkedOptions),
+            ...MarkedOptions,
+          }),
+        }}
+      ></span>
+    ) : null
+
   return (
     <ChatBubble
       side={'left'}
@@ -278,10 +342,11 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
       dataTestId="ml-response-chat-bubble"
       placeholderTestId="ml-response-chat-bubble-thinking"
+      className="py-4"
     >
       {[
         itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
-        props.deltasAggregated !== '' ? props.deltasAggregated : null,
+        deltasAggregatedMarkdown,
       ].filter((x: ReactNode) => x !== null)}
     </ChatBubble>
   )
@@ -367,7 +432,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           onClick={() => onSeeReasoning()}
         >
           <div>
-            <button className="flex justify-center items-center flex-none">
+            <button className="flex justify-center items-center flex-none pt-1 pb-1">
               {showFullReasoning ? (
                 <>
                   Collapse <CustomIcon name="collapse" className="w-5 h-5" />
@@ -390,7 +455,11 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         items={props.responses}
         deltasAggregated={props.deltasAggregated}
       />
-      <ResponseCardToolBar responses={props.responses} />
+      <ResponseCardToolBar
+        responses={props.responses}
+        isLastResponse={props.isLastResponse}
+        onClickClearChat={props.onClickClearChat}
+      />
     </div>
   )
 }
