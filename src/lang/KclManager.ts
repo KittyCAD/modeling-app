@@ -20,7 +20,6 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { emptyExecState, getKclVersion, parse, recast } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
@@ -50,8 +49,6 @@ import {
   type handleSelectionBatch as handleSelectionBatchFn,
   type processCodeMirrorRanges as processCodeMirrorRangesFn,
 } from '@src/lib/selections'
-
-import { processEnv } from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 import {
@@ -174,6 +171,7 @@ export class KclManager extends EventTarget {
     preComments: [],
     commentStart: 0,
   }
+  private _wasmInstance: Promise<ModuleType | string>
   private _execState: ExecState = emptyExecState()
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
@@ -371,9 +369,14 @@ export class KclManager extends EventTarget {
     this._wasmInitFailed.value = wasmInitFailed
   }
 
-  constructor(engineCommandManager: ConnectionManager, singletons: Singletons) {
+  constructor(
+    engineCommandManager: ConnectionManager,
+    wasmInstance: Promise<ModuleType | string>,
+    singletons: Singletons
+  ) {
     super()
     this.engineCommandManager = engineCommandManager
+    this._wasmInstance = wasmInstance
     this.singletons = singletons
 
     /** Merged code from EditorManager and CodeManager classes */
@@ -406,25 +409,24 @@ export class KclManager extends EventTarget {
     }
     /** End merged code from EditorManager and CodeManager */
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.ensureWasmInit().then(async () => {
-      if (this.wasmInitFailed) {
-        if (processEnv()?.VITEST) {
-          console.log(
-            'Running in vitest runtime. KclSingleton polluting global runtime.'
-          )
-          return
-        }
-      }
-
-      await this.safeParse(this.code).then((ast) => {
-        if (ast) {
-          this.ast = ast
-          // on setup, set _lastAst so it's populated.
-          this._lastAst = ast
+    this._wasmInstance
+      .then(async (wasmInstance) => {
+        if (typeof wasmInstance === 'string') {
+          this.wasmInitFailed = true
+        } else {
+          await this.safeParse(this.code, wasmInstance).then((ast) => {
+            if (ast) {
+              this.ast = ast
+              // on setup, set _lastAst so it's populated.
+              this._lastAst = ast
+            }
+          })
         }
       })
-    })
+      .catch((e) => {
+        this._wasmInitFailed.value = true
+        reportRejection(e)
+      })
   }
 
   clearAst() {
@@ -500,9 +502,13 @@ export class KclManager extends EventTarget {
 
   async safeParse(
     code: string,
-    wasmInstance?: ModuleType
+    providedWasmInstance?: ModuleType
   ): Promise<Node<Program> | null> {
-    const result = parse(code, wasmInstance)
+    const wasmInstance = providedWasmInstance || (await this._wasmInstance)
+    const result = parse(
+      code,
+      typeof wasmInstance !== 'string' ? wasmInstance : undefined
+    )
     this.diagnostics = []
     this._astParseFailed = false
 
@@ -534,26 +540,6 @@ export class KclManager extends EventTarget {
     return result.program
   }
 
-  async ensureWasmInit() {
-    if (processEnv()?.VITEST) {
-      const message =
-        'kclSingle is trying to call ensureWasmInit. This will be blocked in VITEST runtimes.'
-      console.log(message)
-      return Promise.resolve(message)
-    }
-
-    try {
-      await initPromise
-      if (this.wasmInitFailed) {
-        this.wasmInitFailed = false
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      console.error(e)
-      this.wasmInitFailed = true
-    }
-  }
-
   private _cancelTokens: Map<number, boolean> = new Map()
 
   // This NEVER updates the code, if you want to update the code DO NOT add to
@@ -579,7 +565,8 @@ export class KclManager extends EventTarget {
     this._cancelTokens.set(currentExecutionId, false)
 
     this.isExecuting = true
-    await this.ensureWasmInit()
+    // Ensure WASM is initialized
+    await this._wasmInstance
 
     const codeThatExecuted = this.code
     const { logs, errors, execState, isInterrupted } = await executeAst({
@@ -687,15 +674,19 @@ export class KclManager extends EventTarget {
   // DO NOT CALL THIS from codemirror ever.
   async executeAstMock(
     ast: Program,
-    wasmInstance?: ModuleType
+    providedWasmInstance?: ModuleType
   ): Promise<null | Error> {
-    await this.ensureWasmInit()
-    const newCode = recast(ast, wasmInstance)
+    const awaitedWasmInstance =
+      providedWasmInstance || (await this._wasmInstance)
+    const optionalWasmInstance =
+      typeof awaitedWasmInstance !== 'string' ? awaitedWasmInstance : undefined
+
+    const newCode = recast(ast, optionalWasmInstance)
     if (err(newCode)) {
       console.error(newCode)
       return newCode
     }
-    const newAst = await this.safeParse(newCode, wasmInstance)
+    const newAst = await this.safeParse(newCode, optionalWasmInstance)
 
     if (!newAst) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
