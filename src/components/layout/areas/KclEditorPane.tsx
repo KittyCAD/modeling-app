@@ -49,7 +49,7 @@ import CodeEditor from '@src/components/layout/areas/CodeEditor'
 import { historyCompartment } from '@src/editor/compartments'
 import { lineHighlightField } from '@src/editor/highlightextension'
 import { modelingMachineEvent } from '@src/editor/manager'
-import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import { editorManager, kclManager } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection, trap } from '@src/lib/trap'
@@ -135,7 +135,7 @@ export const KclEditorPaneContents = () => {
   // It reloads the editor every time we do _anything_ in the editor
   // I have no idea why.
   // Instead, hot load hotkeys via code mirror native.
-  const codeMirrorHotkeys = codeManager.getCodemirrorHotkeys()
+  const codeMirrorHotkeys = editorManager.getCodemirrorHotkeys()
 
   // When opening the editor, use the existing history in editorManager.
   // This is needed to ensure users can undo beyond when the editor has been openeed.
@@ -213,7 +213,7 @@ export const KclEditorPaneContents = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])
 
-  const initialCode = useRef(codeManager.code)
+  const initialCode = useRef(editorManager.code)
 
   return (
     <div className="relative">
@@ -235,7 +235,7 @@ export const KclEditorPaneContents = () => {
             // Update diagnostics as they are cleared when the editor is unmounted.
             // Without this, errors would not be shown when closing and reopening the editor.
             kclManager
-              .safeParse(codeManager.code)
+              .safeParse(editorManager.code)
               .then(() => {
                 // On first load of this component, ensure we show the current errors
                 // in the editor.
@@ -253,7 +253,7 @@ export const KclEditorPaneContents = () => {
 }
 
 function copyKclCodeToClipboard() {
-  if (!codeManager.code) {
+  if (!editorManager.code) {
     toast.error('No code available to copy')
     return
   }
@@ -264,7 +264,7 @@ function copyKclCodeToClipboard() {
   }
 
   navigator.clipboard
-    .writeText(codeManager.code)
+    .writeText(editorManager.code)
     .then(() => toast.success(`Copied current file's code to clipboard`))
     .catch((e) =>
       trap(new Error(`Failed to copy code to clipboard: ${e.message}`))

@@ -2,7 +2,6 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 import EditorManager from '@src/editor/manager'
 import { KclManager } from '@src/lang/KclSingleton'
-import CodeManager from '@src/lang/codeManager'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 
@@ -55,13 +54,9 @@ export const sceneInfra = new SceneInfra(engineCommandManager)
 
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager(engineCommandManager)
-export const codeManager = new CodeManager({ editorManager })
 
-// This needs to be after codeManager is created.
-// (lee: what??? why?)
 export const kclManager = new KclManager(engineCommandManager, {
   rustContext,
-  codeManager,
   editorManager,
   sceneInfra,
 })
@@ -98,12 +93,10 @@ initPromise
 // method requires it for the current ast.
 // CYCLIC REF
 editorManager.kclManager = kclManager
-editorManager.codeManager = codeManager
 
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
 engineCommandManager.kclManager = kclManager
-engineCommandManager.codeManager = codeManager
 engineCommandManager.sceneInfra = sceneInfra
 engineCommandManager.rustContext = rustContext
 
@@ -115,7 +108,6 @@ export const sceneEntitiesManager = new SceneEntities(
   engineCommandManager,
   sceneInfra,
   editorManager,
-  codeManager,
   kclManager,
   rustContext
 )
@@ -126,7 +118,6 @@ if (typeof window !== 'undefined') {
   ;(window as any).sceneInfra = sceneInfra
   ;(window as any).sceneEntitiesManager = sceneEntitiesManager
   ;(window as any).editorManager = editorManager
-  ;(window as any).codeManager = codeManager
   ;(window as any).rustContext = rustContext
   ;(window as any).engineDebugger = EngineDebugger
   ;(window as any).enableMousePositionLogs = () =>
@@ -167,7 +158,7 @@ const appMachine = setup({
 }).createMachine({
   id: 'modeling-app',
   context: {
-    codeManager: codeManager,
+    editorManager,
     kclManager: kclManager,
     engineCommandManager: engineCommandManager,
     sceneInfra: sceneInfra,

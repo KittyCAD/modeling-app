@@ -3,7 +3,7 @@ import { UAParser } from 'ua-parser-js'
 import type { OsInfo } from '@rust/kcl-lib/bindings/OsInfo'
 import type { WebrtcStats } from '@rust/kcl-lib/bindings/WebrtcStats'
 
-import type CodeManager from '@src/lang/codeManager'
+import type EditorManager from '@src/editor/manager'
 import type { CommandLog } from '@src/lang/std/commandLog'
 import { isDesktop } from '@src/lib/isDesktop'
 import type RustContext from '@src/lib/rustContext'
@@ -36,19 +36,19 @@ import { EngineDebugger } from '@src/lib/debugger'
 // TODO: Throw more
 export class CoreDumpManager {
   engineCommandManager: ConnectionManager
-  codeManager: CodeManager
+  editorManager: EditorManager
   rustContext: RustContext
   token: string | undefined
   baseUrl: string = withAPIBaseURL('')
 
   constructor(
     engineCommandManager: ConnectionManager,
-    codeManager: CodeManager,
+    editorManager: EditorManager,
     rustContext: RustContext,
     token: string | undefined
   ) {
     this.engineCommandManager = engineCommandManager
-    this.codeManager = codeManager
+    this.editorManager = editorManager
     this.rustContext = rustContext
     this.token = token
   }
@@ -72,7 +72,7 @@ export class CoreDumpManager {
   }
 
   kclCode(): string {
-    return this.codeManager.code
+    return this.editorManager.code
   }
 
   // Get the backend pool we've requested.

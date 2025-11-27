@@ -10,7 +10,7 @@ import { moveValueIntoNewVariable } from '@src/lang/modifyAst'
 import { isNodeSafeToReplace } from '@src/lang/queryAst'
 import type { PathToNode, SourceRange } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
-import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import { editorManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 
@@ -68,7 +68,7 @@ export function useConvertToVariable(range?: SourceRange) {
 
       const newCode = recast(_modifiedAst)
       if (err(newCode)) return
-      codeManager.updateCodeEditor(newCode)
+      editorManager.updateCodeEditor(newCode)
 
       return pathToReplacedNode
     } catch (e) {

@@ -45,8 +45,8 @@ export const systemIOMachineWeb = systemIOMachine.provide({
             DEFAULT_DEFAULT_LENGTH_UNIT
         )
         if (err(codeToWrite)) return Promise.reject(codeToWrite)
-        input.rootContext.codeManager.updateCodeStateEditor(codeToWrite)
-        await input.rootContext.codeManager.writeToFile()
+        input.rootContext.editorManager.updateCodeStateEditor(codeToWrite)
+        await input.rootContext.editorManager.writeToFile()
         await input.rootContext.kclManager.executeCode()
 
         // Needed for zoom_to_fit to work until #6545 is fixed:

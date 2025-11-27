@@ -4,7 +4,6 @@ import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import {
-  codeManager,
   editorManager,
   kclManager,
   rustContext,
@@ -44,7 +43,6 @@ export async function deleteSelectionPromise(
     {
       kclManager,
       editorManager,
-      codeManager,
       rustContext,
     },
     {

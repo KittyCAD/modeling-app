@@ -24,7 +24,7 @@ import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { codeManager } from '@src/lib/singletons'
+import { editorManager } from '@src/lib/singletons'
 import { useToken } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
@@ -117,13 +117,13 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   ])
 
   useMemo(() => {
-    if (!isDesktop() && isKclLspReady && kclLspClient && codeManager.code) {
+    if (!isDesktop() && isKclLspReady && kclLspClient && editorManager.code) {
       kclLspClient.textDocumentDidOpen({
         textDocument: {
           uri: `file:///${PROJECT_ENTRYPOINT}`,
           languageId: 'kcl',
           version: 1,
-          text: codeManager.code,
+          text: editorManager.code,
         },
       })
     }

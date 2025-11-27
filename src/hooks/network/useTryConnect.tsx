@@ -4,7 +4,7 @@ import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import {
-  codeManager,
+  editorManager,
   engineCommandManager,
   kclManager,
   rustContext,
@@ -118,13 +118,13 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async () => {
     message: 'rustContext.clearSceneAndBustCache()',
     metadata: {
       jsAppSettings: settings,
-      filePath: codeManager.currentFilePath || undefined,
+      filePath: editorManager.currentFilePath || undefined,
     },
   })
   // Bust the cache always! A new connection has been made. The engine has no previous state
   await rustContext.clearSceneAndBustCache(
     settings,
-    codeManager.currentFilePath || undefined
+    editorManager.currentFilePath || undefined
   )
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',

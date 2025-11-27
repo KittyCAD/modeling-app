@@ -13,7 +13,6 @@ import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
 import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
@@ -47,6 +46,7 @@ import {
 } from '@src/lib/layout'
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import type EditorManager from '@src/editor/manager'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -262,7 +262,7 @@ export function OnboardingButtons({
 
 export interface OnboardingUtilDeps {
   onboardingStatus: OnboardingStatus
-  codeManager: CodeManager
+  editorManager: EditorManager
   kclManager: KclManager
   navigate: NavigateFunction
 }
@@ -299,7 +299,7 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     return Promise.resolve()
   }
 
-  const isCodeResettable = hasResetReadyCode(deps.codeManager)
+  const isCodeResettable = hasResetReadyCode(deps.editorManager)
   if (isCodeResettable) {
     return resetCodeAndAdvanceOnboarding(deps)
   }
@@ -313,7 +313,7 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
  */
 export async function resetCodeAndAdvanceOnboarding({
   onboardingStatus,
-  codeManager,
+  editorManager,
   kclManager,
   navigate,
 }: OnboardingUtilDeps) {
@@ -322,8 +322,8 @@ export async function resetCodeAndAdvanceOnboarding({
     ? onboardingStartPath
     : onboardingStatus
   // We do want to update both the state and editor here.
-  codeManager.updateCodeStateEditor(browserAxialFan)
-  codeManager.writeToFile().catch(reportRejection)
+  editorManager.updateCodeStateEditor(browserAxialFan)
+  editorManager.writeToFile().catch(reportRejection)
   kclManager.executeCode().catch(reportRejection)
   navigate(
     makeUrlPathRelative(
@@ -332,10 +332,10 @@ export async function resetCodeAndAdvanceOnboarding({
   )
 }
 
-function hasResetReadyCode(codeManager: CodeManager) {
+function hasResetReadyCode(editorManager: EditorManager) {
   return (
-    isKclEmptyOrOnlySettings(codeManager.code) ||
-    codeManager.code === browserAxialFan
+    isKclEmptyOrOnlySettings(editorManager.code) ||
+    editorManager.code === browserAxialFan
   )
 }
 

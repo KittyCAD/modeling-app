@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import type { Options } from 'react-hotkeys-hook'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-import { codeManager } from '@src/lib/singletons'
+import { editorManager } from '@src/lib/singletons'
 import { isArray } from '@src/lib/utils'
 
 // Hotkey wrapper wraps hotkeys for the app (outside of the editor)
@@ -23,7 +23,7 @@ export default function useHotkeyWrapper(
   useEffect(() => {
     for (const key of hotkey) {
       const keybinding = mapHotkeyToCodeMirrorHotkey(key)
-      codeManager.registerHotkey(keybinding, callback)
+      editorManager.registerHotkey(keybinding, callback)
     }
   })
 }

@@ -137,7 +137,6 @@ import {
   updateSelections,
 } from '@src/lib/selections'
 import {
-  codeManager,
   editorManager,
   engineCommandManager,
   kclManager,
@@ -153,7 +152,6 @@ import {
   sketchSolveMachine,
 } from '@src/machines/sketchSolve/sketchSolveMode'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
-import type CodeManager from '@src/lang/codeManager'
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -702,7 +700,7 @@ export const modelingMachine = setup({
       ({
         context: {
           sketchDetails,
-          codeManager: providedCodeManager,
+          editorManager: providedEditorManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           kclManager: providedKclManager,
           wasmInstance,
@@ -730,10 +728,10 @@ export const modelingMachine = setup({
             'line'
           )
           .then(() => {
-            const theCodeManager = providedCodeManager
-              ? providedCodeManager
-              : codeManager
-            return theCodeManager.updateEditorWithAstAndWriteToFile(
+            const theEditorManager = providedEditorManager
+              ? providedEditorManager
+              : editorManager
+            return theEditorManager.updateEditorWithAstAndWriteToFile(
               theKclManager.ast,
               undefined,
               wasmInstance
@@ -752,7 +750,7 @@ export const modelingMachine = setup({
       ({
         context: {
           sketchDetails,
-          codeManager: providedCodeManager,
+          editorManager: providedEditorManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           kclManager: providedKclManager,
           wasmInstance,
@@ -780,10 +778,10 @@ export const modelingMachine = setup({
             'tangentialArc'
           )
           .then(() => {
-            const theCodeManager = providedCodeManager
-              ? providedCodeManager
-              : codeManager
-            return theCodeManager.updateEditorWithAstAndWriteToFile(
+            const theEditorManager = providedEditorManager
+              ? providedEditorManager
+              : editorManager
+            return theEditorManager.updateEditorWithAstAndWriteToFile(
               theKclManager.ast,
               undefined,
               wasmInstance
@@ -1169,7 +1167,7 @@ export const modelingMachine = setup({
     'add axis n grid': ({
       context: {
         sketchDetails,
-        codeManager: providedCodeManager,
+        editorManager: providedEditorManager,
         sceneEntitiesManager: providedSceneEntitiesManager,
         kclManager: providedKclManager,
         wasmInstance,
@@ -1188,11 +1186,11 @@ export const modelingMachine = setup({
         sketchDetails.origin
       )
 
-      const theCodeManager = providedCodeManager
-        ? providedCodeManager
-        : codeManager
+      const theEditorManager = providedEditorManager
+        ? providedEditorManager
+        : editorManager
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      theCodeManager.updateEditorWithAstAndWriteToFile(
+      theEditorManager.updateEditorWithAstAndWriteToFile(
         theKclManager.ast,
         undefined,
         wasmInstance
@@ -1221,7 +1219,7 @@ export const modelingMachine = setup({
     'Delete segments': ({
       context: {
         sketchDetails,
-        codeManager: providedCodeManager,
+        editorManager: providedEditorManager,
         kclManager: providedKclManager,
         wasmInstance,
         rustContext: providedRustContext,
@@ -1233,9 +1231,9 @@ export const modelingMachine = setup({
       if (event.type !== 'Delete segments') return
       if (!sketchDetails || !event.data) return
       const theKclManager = providedKclManager ? providedKclManager : kclManager
-      const theCodeManager = providedCodeManager
-        ? providedCodeManager
-        : codeManager
+      const theEditorManager = providedEditorManager
+        ? providedEditorManager
+        : editorManager
       const theRustContext = providedRustContext
         ? providedRustContext
         : rustContext
@@ -1249,7 +1247,7 @@ export const modelingMachine = setup({
         sketchDetails,
         dependencies: {
           kclManager: theKclManager,
-          codeManager: theCodeManager,
+          editorManager: theEditorManager,
           wasmInstance,
           rustContext: theRustContext,
           sceneEntitiesManager: theSceneEntitiesManager,
@@ -1257,7 +1255,7 @@ export const modelingMachine = setup({
         },
       })
         .then(() => {
-          return theCodeManager.updateEditorWithAstAndWriteToFile(
+          return theEditorManager.updateEditorWithAstAndWriteToFile(
             theKclManager.ast,
             undefined,
             wasmInstance
@@ -1730,7 +1728,7 @@ export const modelingMachine = setup({
           selectionRanges,
           sketchDetails,
           data,
-          codeManager: providedCodeManager,
+          editorManager: providedEditorManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           kclManager: providedKclManager,
           wasmInstance,
@@ -1740,7 +1738,7 @@ export const modelingMachine = setup({
           ModelingMachineContext,
           | 'selectionRanges'
           | 'sketchDetails'
-          | 'codeManager'
+          | 'editorManager'
           | 'sceneEntitiesManager'
           | 'wasmInstance'
           | 'kclManager'
@@ -1773,10 +1771,10 @@ export const modelingMachine = setup({
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
 
-        const theCodeManager = providedCodeManager
-          ? providedCodeManager
-          : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(
+        const theEditorManager = providedEditorManager
+          ? providedEditorManager
+          : editorManager
+        await theEditorManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -1797,7 +1795,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          codeManager: providedCodeManager,
+          editorManager: providedEditorManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -1806,7 +1804,7 @@ export const modelingMachine = setup({
           ModelingMachineContext,
           | 'selectionRanges'
           | 'sketchDetails'
-          | 'codeManager'
+          | 'editorManager'
           | 'sceneEntitiesManager'
           | 'wasmInstance'
         >
@@ -1838,10 +1836,10 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager
-          ? providedCodeManager
-          : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(
+        const theEditorManager = providedEditorManager
+          ? providedEditorManager
+          : editorManager
+        await theEditorManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -1861,7 +1859,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          codeManager: providedCodeManager,
+          editorManager: providedEditorManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -1870,7 +1868,7 @@ export const modelingMachine = setup({
           ModelingMachineContext,
           | 'selectionRanges'
           | 'sketchDetails'
-          | 'codeManager'
+          | 'editorManager'
           | 'sceneEntitiesManager'
           | 'wasmInstance'
         >
@@ -1902,10 +1900,10 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager
-          ? providedCodeManager
-          : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(
+        const theEditorManager = providedEditorManager
+          ? providedEditorManager
+          : editorManager
+        await theEditorManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -1925,7 +1923,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          codeManager: providedCodeManager,
+          editorManager: providedEditorManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -1934,7 +1932,7 @@ export const modelingMachine = setup({
           ModelingMachineContext,
           | 'selectionRanges'
           | 'sketchDetails'
-          | 'codeManager'
+          | 'editorManager'
           | 'sceneEntitiesManager'
           | 'wasmInstance'
         >
@@ -1964,10 +1962,10 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager
-          ? providedCodeManager
-          : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(
+        const theEditorManager = providedEditorManager
+          ? providedEditorManager
+          : editorManager
+        await theEditorManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -1988,7 +1986,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          codeManager: providedCodeManager,
+          editorManager: providedEditorManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -1997,7 +1995,7 @@ export const modelingMachine = setup({
           ModelingMachineContext,
           | 'selectionRanges'
           | 'sketchDetails'
-          | 'codeManager'
+          | 'editorManager'
           | 'sceneEntitiesManager'
           | 'wasmInstance'
         >
@@ -2027,10 +2025,10 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager
-          ? providedCodeManager
-          : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(
+        const theEditorManager = providedEditorManager
+          ? providedEditorManager
+          : editorManager
+        await theEditorManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -2051,7 +2049,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          codeManager: providedCodeManager,
+          editorManager: providedEditorManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -2060,7 +2058,7 @@ export const modelingMachine = setup({
           ModelingMachineContext,
           | 'selectionRanges'
           | 'sketchDetails'
-          | 'codeManager'
+          | 'editorManager'
           | 'sceneEntitiesManager'
           | 'wasmInstance'
         >
@@ -2090,10 +2088,10 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager
-          ? providedCodeManager
-          : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(
+        const theEditorManager = providedEditorManager
+          ? providedEditorManager
+          : editorManager
+        await theEditorManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -2114,7 +2112,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          codeManager: providedCodeManager,
+          editorManager: providedEditorManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -2123,7 +2121,7 @@ export const modelingMachine = setup({
           ModelingMachineContext,
           | 'selectionRanges'
           | 'sketchDetails'
-          | 'codeManager'
+          | 'editorManager'
           | 'sceneEntitiesManager'
           | 'wasmInstance'
         >
@@ -2153,10 +2151,10 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager
-          ? providedCodeManager
-          : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(
+        const theEditorManager = providedEditorManager
+          ? providedEditorManager
+          : editorManager
+        await theEditorManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -2177,7 +2175,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          codeManager: providedCodeManager,
+          editorManager: providedEditorManager,
           wasmInstance,
           sceneEntitiesManager: providedSceneEntitiesManager,
         },
@@ -2186,7 +2184,7 @@ export const modelingMachine = setup({
           ModelingMachineContext,
           | 'selectionRanges'
           | 'sketchDetails'
-          | 'codeManager'
+          | 'editorManager'
           | 'wasmInstance'
           | 'sceneEntitiesManager'
         >
@@ -2222,10 +2220,10 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager
-          ? providedCodeManager
-          : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(
+        const theEditorManager = providedEditorManager
+          ? providedEditorManager
+          : editorManager
+        await theEditorManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -2247,7 +2245,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          codeManager: providedCodeManager,
+          editorManager: providedEditorManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -2256,7 +2254,7 @@ export const modelingMachine = setup({
           ModelingMachineContext,
           | 'selectionRanges'
           | 'sketchDetails'
-          | 'codeManager'
+          | 'editorManager'
           | 'sceneEntitiesManager'
           | 'wasmInstance'
         >
@@ -2285,10 +2283,10 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager
-          ? providedCodeManager
-          : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(
+        const theEditorManager = providedEditorManager
+          ? providedEditorManager
+          : editorManager
+        await theEditorManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -2591,7 +2589,7 @@ export const modelingMachine = setup({
           ModelingMachineContext,
           | 'sketchDetails'
           | 'selectionRanges'
-          | 'codeManager'
+          | 'editorManager'
           | 'wasmInstance'
           | 'kclManager'
           | 'sceneEntitiesManager'
@@ -2719,10 +2717,10 @@ export const modelingMachine = setup({
           )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
+        await theEditorManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           input.wasmInstance
@@ -2819,7 +2817,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Extrude'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -2842,9 +2839,6 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -2857,7 +2851,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -2873,7 +2866,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Sweep'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -2895,9 +2887,6 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -2910,7 +2899,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -2926,7 +2914,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Loft'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -2944,10 +2931,6 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
-
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -2960,7 +2943,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -2976,7 +2958,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Revolve'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -2998,9 +2979,6 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3013,7 +2991,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3029,7 +3006,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Offset plane'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3053,9 +3029,6 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3068,7 +3041,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3084,7 +3056,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Helix'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3107,9 +3078,6 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3122,7 +3090,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3138,7 +3105,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Shell'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3161,9 +3127,6 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3176,7 +3139,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3192,7 +3154,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Hole'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3207,7 +3168,7 @@ export const modelingMachine = setup({
         // Remove once this command isn't experimental anymore
         let astWithNewSetting: Node<Program> | undefined
         if (theKclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
-          const ast = setExperimentalFeatures(codeManager.code, {
+          const ast = setExperimentalFeatures(editorManager.code, {
             type: 'Allow',
           })
           if (err(ast)) {
@@ -3227,9 +3188,6 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3242,7 +3200,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3258,7 +3215,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Fillet'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3282,9 +3238,6 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3298,7 +3251,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3314,7 +3266,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Chamfer'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3339,9 +3290,6 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3355,7 +3303,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3399,7 +3346,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Appearance'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3420,9 +3366,6 @@ export const modelingMachine = setup({
         if (err(result)) {
           return Promise.reject(result)
         }
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3435,7 +3378,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3451,7 +3393,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Translate'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3473,9 +3414,6 @@ export const modelingMachine = setup({
         if (err(result)) {
           return Promise.reject(result)
         }
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3488,7 +3426,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3504,7 +3441,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Rotate'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3529,9 +3465,6 @@ export const modelingMachine = setup({
           return Promise.reject(result)
         }
 
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3542,7 +3475,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3558,7 +3490,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Scale'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3581,9 +3512,6 @@ export const modelingMachine = setup({
           return Promise.reject(result)
         }
 
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3596,7 +3524,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3612,7 +3539,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Clone'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3633,9 +3559,6 @@ export const modelingMachine = setup({
         if (err(result)) {
           return Promise.reject(result)
         }
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3648,7 +3571,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3664,7 +3586,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Flatness'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3676,9 +3597,6 @@ export const modelingMachine = setup({
         }
 
         const theKclManager = input.kclManager ? input.kclManager : kclManager
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3689,7 +3607,7 @@ export const modelingMachine = setup({
         // Remove once this command isn't experimental anymore
         let astWithNewSetting: Node<Program> | undefined
         if (theKclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
-          const ast = setExperimentalFeatures(theCodeManager.code, {
+          const ast = setExperimentalFeatures(theEditorManager.code, {
             type: 'Allow',
           })
           if (err(ast)) {
@@ -3714,7 +3632,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3730,7 +3647,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Datum'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3742,9 +3658,6 @@ export const modelingMachine = setup({
         }
 
         const theKclManager = input.kclManager ? input.kclManager : kclManager
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3755,7 +3668,7 @@ export const modelingMachine = setup({
         // Remove once this command isn't experimental anymore
         let astWithNewSetting: Node<Program> | undefined
         if (theKclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
-          const ast = setExperimentalFeatures(theCodeManager.code, {
+          const ast = setExperimentalFeatures(theEditorManager.code, {
             type: 'Allow',
           })
           if (err(ast)) {
@@ -3780,7 +3693,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3810,7 +3722,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Boolean Subtract'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3831,10 +3742,6 @@ export const modelingMachine = setup({
         if (err(result)) {
           return Promise.reject(result)
         }
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
-
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3847,7 +3754,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3863,7 +3769,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Boolean Union'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3884,10 +3789,6 @@ export const modelingMachine = setup({
         if (err(result)) {
           return Promise.reject(result)
         }
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
-
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3900,7 +3801,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3916,7 +3816,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Boolean Intersect'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3938,9 +3837,6 @@ export const modelingMachine = setup({
         if (err(result)) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3953,7 +3849,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -3970,7 +3865,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Pattern Circular 3D'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -3991,10 +3885,6 @@ export const modelingMachine = setup({
         if (err(result)) {
           return Promise.reject(result)
         }
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
-
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -4007,7 +3897,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -4024,7 +3913,6 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Pattern Linear 3D'] | undefined
-              codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
               rustContext?: RustContext
@@ -4046,9 +3934,6 @@ export const modelingMachine = setup({
         if (err(result)) {
           return Promise.reject(result)
         }
-        const theCodeManager = input.codeManager
-          ? input.codeManager
-          : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -4061,7 +3946,6 @@ export const modelingMachine = setup({
           {
             kclManager: theKclManager,
             editorManager: theEditorManager,
-            codeManager: theCodeManager,
             rustContext: theRustContext,
           },
           {
@@ -4945,7 +4829,7 @@ export const modelingMachine = setup({
               context: {
                 selectionRanges,
                 sketchDetails,
-                codeManager: providedCodeManager,
+                editorManager: providedEditorManager,
                 wasmInstance,
                 kclManager: providedKclManager,
                 sceneEntitiesManager: providedSceneEntitiesManager,
@@ -4963,7 +4847,7 @@ export const modelingMachine = setup({
                 selectionRanges,
                 sketchDetails,
                 data: event.data,
-                codeManager: providedCodeManager,
+                editorManager: providedEditorManager,
                 wasmInstance,
                 kclManager: providedKclManager,
                 sceneEntitiesManager: providedSceneEntitiesManager,
@@ -4985,7 +4869,7 @@ export const modelingMachine = setup({
               context: {
                 selectionRanges,
                 sketchDetails,
-                codeManager: providedCodeManager,
+                editorManager: providedEditorManager,
                 sceneEntitiesManager: providedSceneEntitiesManager,
                 wasmInstance,
                 kclManager: providedKclManager,
@@ -4999,7 +4883,7 @@ export const modelingMachine = setup({
                   event.type === 'Constrain remove constraints'
                     ? event.data
                     : undefined,
-                codeManager: providedCodeManager,
+                editorManager: providedEditorManager,
                 sceneEntitiesManager: providedSceneEntitiesManager,
                 wasmInstance,
                 kclManager: providedKclManager,
@@ -5020,14 +4904,14 @@ export const modelingMachine = setup({
               context: {
                 selectionRanges,
                 sketchDetails,
-                codeManager: providedCodeManager,
+                editorManager: providedEditorManager,
                 sceneEntitiesManager: providedSceneEntitiesManager,
                 wasmInstance,
               },
             }) => ({
               selectionRanges,
               sketchDetails,
-              codeManager: providedCodeManager,
+              editorManager: providedEditorManager,
               sceneEntitiesManager: providedSceneEntitiesManager,
               wasmInstance,
             }),
@@ -5046,14 +4930,14 @@ export const modelingMachine = setup({
               context: {
                 selectionRanges,
                 sketchDetails,
-                codeManager: providedCodeManager,
+                editorManager: providedEditorManager,
                 sceneEntitiesManager: providedSceneEntitiesManager,
                 wasmInstance,
               },
             }) => ({
               selectionRanges,
               sketchDetails,
-              codeManager: providedCodeManager,
+              editorManager: providedEditorManager,
               sceneEntitiesManager: providedSceneEntitiesManager,
               wasmInstance,
             }),
@@ -5071,7 +4955,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              codeManager: context.codeManager,
+              editorManager: context.editorManager,
               sceneEntitiesManager: context.sceneEntitiesManager,
               wasmInstance: context.wasmInstance,
             }),
@@ -5089,7 +4973,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              codeManager: context.codeManager,
+              editorManager: context.editorManager,
               sceneEntitiesManager: context.sceneEntitiesManager,
               wasmInstance: context.wasmInstance,
             }),
@@ -5107,7 +4991,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              codeManager: context.codeManager,
+              editorManager: context.editorManager,
               sceneEntitiesManager: context.sceneEntitiesManager,
               wasmInstance: context.wasmInstance,
             }),
@@ -5125,7 +5009,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              codeManager: context.codeManager,
+              editorManager: context.editorManager,
               sceneEntitiesManager: context.sceneEntitiesManager,
               wasmInstance: context.wasmInstance,
             }),
@@ -5143,7 +5027,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              codeManager: context.codeManager,
+              editorManager: context.editorManager,
               sceneEntitiesManager: context.sceneEntitiesManager,
               wasmInstance: context.wasmInstance,
             }),
@@ -5161,7 +5045,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              codeManager: context.codeManager,
+              editorManager: context.editorManager,
               wasmInstance: context.wasmInstance,
               sceneEntitiesManager: context.sceneEntitiesManager,
             }),
@@ -5759,7 +5643,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Extrude') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -5780,7 +5663,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Sweep') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -5801,7 +5683,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Loft') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -5822,7 +5703,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Revolve') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -5843,7 +5723,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Offset plane') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -5864,7 +5743,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Helix') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -5885,7 +5763,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Shell') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -5906,7 +5783,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Hole') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -5927,7 +5803,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Fillet') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
             engineCommandManager: context.engineCommandManager,
@@ -5949,7 +5824,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Chamfer') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
             engineCommandManager: context.engineCommandManager,
@@ -6013,7 +5887,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Appearance') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -6034,7 +5907,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Translate') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -6055,7 +5927,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Rotate') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -6076,7 +5947,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Scale') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -6097,7 +5967,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Clone') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -6118,7 +5987,6 @@ export const modelingMachine = setup({
           if (event.type !== 'GDT Flatness') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
             rustContext: context.rustContext,
@@ -6140,7 +6008,6 @@ export const modelingMachine = setup({
           if (event.type !== 'GDT Datum') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
             rustContext: context.rustContext,
@@ -6191,7 +6058,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Boolean Subtract') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -6212,7 +6078,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Boolean Union') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -6233,7 +6098,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Boolean Intersect') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -6254,7 +6118,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Pattern Circular 3D') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
@@ -6275,7 +6138,6 @@ export const modelingMachine = setup({
           if (event.type !== 'Pattern Linear 3D') return undefined
           return {
             data: event.data,
-            codeManager: context.codeManager,
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
