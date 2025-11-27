@@ -500,7 +500,6 @@ export class SceneFixture {
     }
   }
 
-
   isNativeFileMenuCreated = async () => {
     await expect(this.appHeader).toHaveAttribute(
       'data-native-file-menu',

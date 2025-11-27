@@ -55,7 +55,9 @@ test("can edit an existing sketch and edit it's segments", async ({
       .getByText('sketch2::line(start = [var -0.88mm, var 0.54mm]')
       .click()
 
-    await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).toBeVisible()
   })
 
   await test.step('Open feature tree and enter sketch edit mode', async () => {
@@ -80,7 +82,9 @@ test("can edit an existing sketch and edit it's segments", async ({
   })
 
   await test.step('Drag point segment 13 down by 30px', async () => {
-    const segmentBox = await scene.getBoundingBoxOrThrow('[data-segment_id="13"]')
+    const segmentBox = await scene.getBoundingBoxOrThrow(
+      '[data-segment_id="13"]'
+    )
 
     const centerX = segmentBox.x + segmentBox.width / 2
     const centerY = segmentBox.y + segmentBox.height / 2
@@ -90,7 +94,7 @@ test("can edit an existing sketch and edit it's segments", async ({
 
     await page.mouse.move(centerX, centerY)
     await page.mouse.down()
-    await page.mouse.move(centerX, centerY + 50, {steps: 5})
+    await page.mouse.move(centerX, centerY + 50, { steps: 5 })
     await page.mouse.up()
 
     await page.waitForTimeout(500)
@@ -115,7 +119,7 @@ test("can edit an existing sketch and edit it's segments", async ({
 
     await page.mouse.move(midpointX, midpointY)
     await page.mouse.down()
-    await page.mouse.move(midpointX, midpointY + 50, {steps: 5})
+    await page.mouse.move(midpointX, midpointY + 50, { steps: 5 })
     await page.mouse.up()
 
     await page.waitForTimeout(500)
