@@ -117,14 +117,17 @@ export async function createNewProjectDirectory(
   projectName: string,
   initialCode?: string,
   configuration?: DeepPartial<Configuration> | Error,
-  initialFileName?: string
+  initialFileName?: string,
+  overrideApplicationProjectDirectory?: string
 ): Promise<Project> {
   if (!configuration) {
     configuration = await readAppSettingsFile(electron)
   }
 
   if (err(configuration)) return Promise.reject(configuration)
-  const mainDir = await ensureProjectDirectoryExists(electron, configuration)
+  const mainDir =
+    overrideApplicationProjectDirectory ||
+    (await ensureProjectDirectoryExists(electron, configuration))
 
   if (!projectName) {
     return Promise.reject('Project name cannot be empty.')

@@ -375,6 +375,29 @@ export fn hole(
 /// From the hole's parts (bottom, middle, top), cut the hole into the given solid,
 /// at each of the given 2D positions on the given face.
 /// Basically like function `hole` but it takes multiple 2D positions in `cutsAt`.
+/// ```
+/// @settings(experimentalFeatures = allow)
+/// 
+/// // Sketch a solid
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [-3.89, 1.95])
+///   |> line(end = [0.63, -3.25])
+///   |> xLine(length = 7.15)
+///   |> line(end = [0.59, 3.2])
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+/// mySolid = extrude(profile001, length = 3, symmetric = true)
+/// 
+/// // Add three holes to it.
+/// hole001 = hole::holes(
+///   mySolid,
+///   face = END,
+///   cutsAt = [[0, 0], [0, 3], [1, 2]],
+///   holeBottom = hole::drill(pointAngle = 110deg),
+///   holeBody = hole::blind(depth = 2, diameter = 0.4),
+///   holeType = hole::counterbore(diameter = 1, depth = 0.2),
+/// )
+/// ```
 @(experimental = true, feature_tree = true)
 export fn holes(
   /// Which solid to add a hole to.
