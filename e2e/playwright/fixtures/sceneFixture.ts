@@ -463,6 +463,44 @@ export class SceneFixture {
     await buttonToTest.click()
   }
 
+  /**
+   * Get the bounding box of an element by its locator string.
+   * Returns a bounding box with x, y, width, and height, defaulting x and y to 0 if not found.
+   */
+  getBoundingBox = async (locator: string) => {
+    const box = await this.page.locator(locator).boundingBox({ timeout: 5_000 })
+    return { ...box, x: box?.x || 0, y: box?.y || 0 }
+  }
+
+  /**
+   * Get the bounding box of an element by its locator string.
+   * Throws an error if the element is not found or if width/height are undefined.
+   * Returns a bounding box with guaranteed width and height (non-optional).
+   */
+  getBoundingBoxOrThrow = async (
+    locator: string
+  ): Promise<{
+    x: number
+    y: number
+    width: number
+    height: number
+  }> => {
+    const box = await this.getBoundingBox(locator)
+    if (!box || box.width === undefined || box.height === undefined) {
+      throw new Error(
+        `Could not find element with locator "${locator}" or element has no dimensions`
+      )
+    }
+    // TypeScript now knows width and height are defined after the check above
+    return {
+      x: box.x,
+      y: box.y,
+      width: box.width,
+      height: box.height,
+    }
+  }
+
+
   isNativeFileMenuCreated = async () => {
     await expect(this.appHeader).toHaveAttribute(
       'data-native-file-menu',
