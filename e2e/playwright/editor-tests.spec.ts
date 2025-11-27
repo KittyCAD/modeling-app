@@ -1270,53 +1270,52 @@ profile001 = startProfile(sketch001, at = [0, 0])
     })
   })
 
-  test('Can select lines on the main axis', async ({
-    page,
-    homePage,
-    toolbar,
-    scene,
-  }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
-  profile001 = startProfile(sketch001, at = [100.00, 100.0])
-    |> yLine(length = -100.0)
-    |> xLine(length = 200.0)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()`
+  for (const plane of ['XZ', '-XZ']) {
+    test(`Can select lines on the main axis (${plane})`, async ({
+      page,
+      homePage,
+      toolbar,
+      scene,
+    }) => {
+      await page.addInitScript((targetPlane) => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch002 = startSketchOn(${targetPlane})
+profile002 = startProfile(sketch002, at = [-1.0, 0])
+  |> xLine(length = 2.0)`
+        )
+      }, plane)
+
+      const width = 1200
+      const height = 800
+      const viewportSize = { width, height }
+      await page.setBodyDimensions(viewportSize)
+
+      await homePage.goToModelingScene()
+
+      const u = await getUtils(page)
+      await u.waitForPageLoad()
+
+      await toolbar.editSketch(0)
+
+      await page.waitForTimeout(1000)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+
+      // Click on the bottom segment that lies on the x axis
+      const clickCoords = await scene.convertPagePositionToStream(
+        0.6,
+        0.5,
+        'ratio'
       )
+      await page.mouse.click(clickCoords.x, clickCoords.y)
+
+      await page.waitForTimeout(1000)
+
+      // Verify segment is selected (you can check for visual indicators or state)
+      const element = page.locator('[data-overlay-index="1"]')
+      await expect(element).toHaveAttribute('data-overlay-visible', 'true')
     })
-
-    const width = 1200
-    const height = 800
-    const viewportSize = { width, height }
-    await page.setBodyDimensions(viewportSize)
-
-    await homePage.goToModelingScene()
-
-    const u = await getUtils(page)
-    await u.waitForPageLoad()
-
-    await toolbar.editSketch(0)
-
-    await page.waitForTimeout(1000)
-    await toolbar.closePane(DefaultLayoutPaneID.Code)
-
-    // Click on the bottom segment that lies on the x axis
-    const clickCoords = await scene.convertPagePositionToStream(
-      0.85,
-      0.5,
-      'ratio'
-    )
-    await page.mouse.click(clickCoords.x, clickCoords.y)
-
-    await page.waitForTimeout(1000)
-
-    // Verify segment is selected (you can check for visual indicators or state)
-    const element = page.locator('[data-overlay-index="2"]')
-    await expect(element).toHaveAttribute('data-overlay-visible', 'true')
-  })
+  }
 
   test(`Only show axis planes when there are no errors`, async ({
     page,
