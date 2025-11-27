@@ -146,10 +146,8 @@ import {
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
-import {
-  type EquipTool,
-  sketchSolveMachine,
-} from '@src/machines/sketchSolve/sketchSolveMode'
+import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveMode'
+import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveModeUtils'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
