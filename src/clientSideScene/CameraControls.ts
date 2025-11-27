@@ -306,12 +306,9 @@ export class CameraControls {
     type CallBackParam = Parameters<
       (
         | Subscription<
-            | 'default_camera_zoom'
-            | 'camera_drag_end'
-            | 'default_camera_get_settings'
-            | 'zoom_to_fit'
+            'camera_drag_end' | 'default_camera_get_settings' | 'zoom_to_fit'
           >
-        | UnreliableSubscription<'camera_drag_move'>
+        | UnreliableSubscription<'camera_drag_move' | 'default_camera_zoom'>
       )['callback']
     >[0]
 
@@ -374,7 +371,7 @@ export class CameraControls {
         event: 'camera_drag_end',
         callback: cb,
       })
-      this.engineCommandManager.subscribeTo({
+      this.engineCommandManager.subscribeToUnreliable({
         event: 'default_camera_zoom',
         callback: cb,
       })

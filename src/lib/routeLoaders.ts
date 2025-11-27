@@ -16,6 +16,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import {
   BROWSER_PATH,
   PATHS,
+  getParentAbsolutePath,
   getProjectMetaByRouteId,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
@@ -23,13 +24,14 @@ import {
   loadAndValidateSettings,
   readLocalStorageAppSettingsFile,
 } from '@src/lib/settings/settingsUtils'
-import { editorManager, rustContext } from '@src/lib/singletons'
+import { editorManager, rustContext, systemIOActor } from '@src/lib/singletons'
 import { settingsActor } from '@src/lib/singletons'
 import type {
   FileLoaderData,
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
 export const fileLoader: LoaderFunction = async (
   routerData
@@ -150,6 +152,17 @@ export const fileLoader: LoaderFunction = async (
     settingsActor.send({
       type: 'load.project',
       project,
+    })
+
+    const appProjectDir = settings.settings.app.projectDirectory.current
+    const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
+      ? appProjectDir
+      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir
+    systemIOActor.send({
+      type: SystemIOMachineEvents.setProjectDirectoryPath,
+      data: {
+        requestedProjectDirectoryPath,
+      },
     })
 
     const projectData: IndexLoaderData = {
