@@ -9,5 +9,5 @@ permissions:
 name: Security
 jobs:
   security:
-    uses: KittyCAD/gha-workflows/.github/workflows/security.yml@security
+    uses: KittyCAD/gha-workflows/.github/workflows/security-default-branch.yml@security
     secrets: inherit
