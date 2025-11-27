@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { FileEntry } from '@src/lib/project'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import type { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 export interface IUseOnFileRoute {

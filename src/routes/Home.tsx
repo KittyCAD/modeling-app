@@ -37,7 +37,6 @@ import type { Project } from '@src/lib/project'
 import {
   authActor,
   billingActor,
-  editorManager,
   commandBarActor,
   kclManager,
   systemIOActor,
@@ -245,7 +244,6 @@ const Home = () => {
                     acceptOnboarding({
                       onboardingStatus,
                       navigate,
-                      editorManager,
                       kclManager,
                     }).catch(reportRejection)
                   }}

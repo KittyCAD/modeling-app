@@ -19,12 +19,7 @@ import {
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
-import {
-  editorManager,
-  kclManager,
-  rustContext,
-  systemIOActor,
-} from '@src/lib/singletons'
+import { kclManager, rustContext, systemIOActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
@@ -85,12 +80,12 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'unit' in data) {
-          const newCode = changeDefaultUnits(editorManager.code, data.unit)
+          const newCode = changeDefaultUnits(kclManager.code, data.unit)
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
           } else {
-            editorManager.updateCodeStateEditor(newCode)
-            Promise.all([editorManager.writeToFile(), kclManager.executeCode()])
+            kclManager.updateCodeStateEditor(newCode)
+            Promise.all([kclManager.writeToFile(), kclManager.executeCode()])
               .then(() => {
                 toast.success(`Updated per-file units to ${data.unit}`)
               })
@@ -131,7 +126,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'level' in data) {
-          const newAst = setExperimentalFeatures(editorManager.code, {
+          const newAst = setExperimentalFeatures(kclManager.code, {
             type: data.level,
           })
           if (err(newAst)) {
@@ -142,7 +137,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           }
           updateModelingState(newAst, EXECUTION_TYPE_REAL, {
             kclManager,
-            editorManager,
             rustContext,
           })
             .then((result) => {
@@ -250,7 +244,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           EXECUTION_TYPE_REAL,
           {
             kclManager,
-            editorManager,
             rustContext,
           },
           {
@@ -281,7 +274,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       onSubmit: (input) => {
         copyFileShareLink({
           token: commandProps.authToken,
-          code: editorManager.code,
+          code: kclManager.code,
           name: commandProps.projectData.project?.name || '',
           isRestrictedToOrg: input?.event.data.isRestrictedToOrg ?? false,
           password: input?.event.data.password,
@@ -319,7 +312,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         })
         updateModelingState(newAst, EXECUTION_TYPE_REAL, {
           kclManager,
-          editorManager,
           rustContext,
         }).catch(reportRejection)
       },
@@ -375,7 +367,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
               variableName
             )
             if (!variableNode) return '5'
-            const code = editorManager.code.slice(
+            const code = kclManager.code.slice(
               variableNode.declaration.init.start,
               variableNode.declaration.init.end
             )
@@ -409,7 +401,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         variableNode.node.init = value.valueAst
 
         updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-          editorManager,
           kclManager,
           rustContext,
         }).catch(reportRejection)

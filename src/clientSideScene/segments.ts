@@ -92,7 +92,7 @@ import type {
 import toast from 'react-hot-toast'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { ActorRefFrom } from 'xstate'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px

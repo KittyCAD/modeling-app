@@ -96,7 +96,6 @@ import {
   getPlaneDataFromSketchBlock,
 } from '@src/lib/selections'
 import {
-  editorManager,
   engineCommandManager,
   kclManager,
   rustContext,
@@ -206,10 +205,10 @@ export const ModelingMachineProvider = ({
     modelingMachine.provide({
       actions: {
         'disable copilot': () => {
-          editorManager.setCopilotEnabled(false)
+          kclManager.setCopilotEnabled(false)
         },
         'enable copilot': () => {
-          editorManager.setCopilotEnabled(true)
+          kclManager.setCopilotEnabled(true)
         },
         'Set mouse state': assign(({ context, event }) => {
           if (event.type !== 'Set mouse state') return {}
@@ -515,7 +514,7 @@ export const ModelingMachineProvider = ({
               newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
               const didReParse = await kclManager.executeAstMock(newAst)
               if (err(didReParse)) return reject(didReParse)
-              await editorManager.updateEditorWithAstAndWriteToFile(newAst)
+              await kclManager.updateEditorWithAstAndWriteToFile(newAst)
             }
             sceneInfra.setCallbacks({
               onClick: () => {},
@@ -600,7 +599,7 @@ export const ModelingMachineProvider = ({
                   sketchArgs,
                   { settings: { modeling: { base_unit: defaultUnit.current } } }
                 )
-                editorManager.updateCodeEditor(newSketchResult.kclSource.text)
+                kclManager.updateCodeEditor(newSketchResult.kclSource.text)
                 sketchId = newSketchResult.sketchId
               }
             } catch (error) {
@@ -705,7 +704,7 @@ export const ModelingMachineProvider = ({
         'animate-to-face': fromPromise(async ({ input }) => {
           if (!input) return null
           if (input.type === 'extrudeFace' || input.type === 'offsetPlane') {
-            const originalCode = editorManager.code
+            const originalCode = kclManager.code
             const sketched =
               input.type === 'extrudeFace'
                 ? sketchOnExtrudedFace(
@@ -732,7 +731,7 @@ export const ModelingMachineProvider = ({
             const didReParse = await kclManager.executeAstMock(modifiedAst)
             if (err(didReParse)) {
               // there was a problem, restore the original code
-              editorManager.code = originalCode
+              kclManager.code = originalCode
               await kclManager.executeCode()
               return reject(didReParse)
             }
@@ -814,7 +813,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await editorManager.updateEditorWithAstAndWriteToFile(
+            await kclManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -872,7 +871,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await editorManager.updateEditorWithAstAndWriteToFile(
+            await kclManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -940,7 +939,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await editorManager.updateEditorWithAstAndWriteToFile(
+            await kclManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -1003,7 +1002,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await editorManager.updateEditorWithAstAndWriteToFile(
+            await kclManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -1059,7 +1058,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await editorManager.updateEditorWithAstAndWriteToFile(
+            await kclManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -1116,7 +1115,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await editorManager.updateEditorWithAstAndWriteToFile(
+            await kclManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -1173,7 +1172,7 @@ export const ModelingMachineProvider = ({
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
-            await editorManager.updateEditorWithAstAndWriteToFile(
+            await kclManager.updateEditorWithAstAndWriteToFile(
               updatedAst.newAst
             )
 
@@ -1206,9 +1205,7 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await editorManager.updateEditorWithAstAndWriteToFile(
-              kclManager.ast
-            )
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
 
             return result
           }
@@ -1229,9 +1226,7 @@ export const ModelingMachineProvider = ({
                 data.p2
               )
             if (err(result)) return reject(result)
-            await editorManager.updateEditorWithAstAndWriteToFile(
-              kclManager.ast
-            )
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
 
             return result
           }
@@ -1250,9 +1245,7 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await editorManager.updateEditorWithAstAndWriteToFile(
-              kclManager.ast
-            )
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
 
             return result
           }
@@ -1270,9 +1263,7 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await editorManager.updateEditorWithAstAndWriteToFile(
-              kclManager.ast
-            )
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
 
             return result
           }
@@ -1290,9 +1281,7 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await editorManager.updateEditorWithAstAndWriteToFile(
-              kclManager.ast
-            )
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
 
             return result
           }
@@ -1310,9 +1299,7 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await editorManager.updateEditorWithAstAndWriteToFile(
-              kclManager.ast
-            )
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
 
             return result
           }
@@ -1405,7 +1392,6 @@ export const ModelingMachineProvider = ({
             ) {
               await updateModelingState(moddedAst, EXECUTION_TYPE_MOCK, {
                 kclManager,
-                editorManager,
                 rustContext,
               })
             }
@@ -1546,17 +1532,17 @@ export const ModelingMachineProvider = ({
     }
   }, [modelingActor])
 
-  // Give the state back to the editorManager.
+  // Give the state back to the kclManager.
   useEffect(() => {
-    editorManager.modelingSend = modelingSend
+    kclManager.modelingSend = modelingSend
   }, [modelingSend])
 
   useEffect(() => {
-    editorManager.modelingState = modelingState
+    kclManager.modelingState = modelingState
   }, [modelingState])
 
   useEffect(() => {
-    editorManager.selectionRanges = modelingState.context.selectionRanges
+    kclManager.selectionRanges = modelingState.context.selectionRanges
   }, [modelingState.context.selectionRanges])
 
   // When changing camera modes reset the camera to the default orientation to correct

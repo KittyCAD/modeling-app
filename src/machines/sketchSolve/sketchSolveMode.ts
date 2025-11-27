@@ -23,7 +23,7 @@ import type {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   SEGMENT_TYPE_LINE,
   SEGMENT_TYPE_POINT,
@@ -67,7 +67,6 @@ import {
   distanceBetweenPoint2DExpr,
   type NumericSuffix,
 } from '@src/lang/wasm'
-import type EditorManager from '@src/editor/manager'
 
 const equipTools = Object.freeze({
   centerRectTool,
@@ -526,7 +525,6 @@ type SketchSolveContext = {
   initialSceneGraphDelta?: SceneGraphDelta
   sketchId: number
   // Dependencies passed from parent
-  editorManager: EditorManager
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
   rustContext: RustContext
@@ -545,7 +543,6 @@ export const sketchSolveMachine = setup({
         | null
       sketchId: number
       initialSceneGraphDelta?: SceneGraphDelta
-      editorManager: EditorManager
       sceneInfra: SceneInfra
       sceneEntitiesManager: SceneEntities
       rustContext: RustContext
@@ -574,7 +571,7 @@ export const sketchSolveMachine = setup({
         // Set sketchExecOutcome in context so drag callbacks can access it
         // Use current code from editorManager since editSketch doesn't return kclSource
         const kclSource: SourceDelta = {
-          text: context.editorManager.code,
+          text: context.kclManager.code,
         }
 
         return {
@@ -1770,7 +1767,7 @@ export const sketchSolveMachine = setup({
     },
     'update sketch outcome': assign(({ event, context }) => {
       assertEvent(event, 'update sketch outcome')
-      context.editorManager.updateCodeEditor(event.data.kclSource.text)
+      context.kclManager.updateCodeEditor(event.data.kclSource.text)
 
       updateSceneGraphFromDelta({
         sceneGraphDelta: event.data.sceneGraphDelta,
@@ -1836,7 +1833,6 @@ export const sketchSolveMachine = setup({
       initialPlane: input?.initialSketchSolvePlane ?? undefined,
       initialSceneGraphDelta: input?.initialSceneGraphDelta,
       sketchId: input?.sketchId || 0,
-      editorManager: input.editorManager,
       sceneInfra: input.sceneInfra,
       sceneEntitiesManager: input.sceneEntitiesManager,
       rustContext: input.rustContext,

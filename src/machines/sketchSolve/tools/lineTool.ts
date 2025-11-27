@@ -10,7 +10,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 
 const TOOL_ID = 'Line tool'
 const CONFIRMING_DIMENSIONS = 'Confirming dimensions'

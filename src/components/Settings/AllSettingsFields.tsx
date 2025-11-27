@@ -24,7 +24,6 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import {
   appActor,
-  editorManager,
   kclManager,
   settingsActor,
   useSettings,
@@ -73,7 +72,6 @@ export const AllSettingsFields = forwardRef(
       const props = {
         onboardingStatus: onboardingStartPath,
         navigate,
-        editorManager,
         kclManager,
       }
       // We need to navigate out of settings before accepting onboarding
