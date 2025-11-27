@@ -14,8 +14,7 @@ import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { ConnectionManager } from '@src/network/connectionManager'
 import RustContext from '@src/lib/rustContext'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import EditorManager from '@src/editor/manager'
-import { KclManager } from '@src/lang/KclSingleton'
+import { KclManager } from '@src/lang/KclManager'
 import { reportRejection } from '@src/lib/trap'
 import env from '@src/env'
 import { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -62,13 +61,10 @@ export async function buildTheWorldAndConnectToEngine() {
   const engineCommandManager = new ConnectionManager()
   const rustContext = new RustContext(engineCommandManager, instance)
   const sceneInfra = new SceneInfra(engineCommandManager)
-  const editorManager = new EditorManager(engineCommandManager)
   const kclManager = new KclManager(engineCommandManager, {
     rustContext,
-    editorManager,
     sceneInfra,
   })
-  editorManager.kclManager = kclManager
   engineCommandManager.kclManager = kclManager
   engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
@@ -80,7 +76,6 @@ export async function buildTheWorldAndConnectToEngine() {
   const sceneEntitiesManager = new SceneEntities(
     engineCommandManager,
     sceneInfra,
-    editorManager,
     kclManager,
     rustContext,
     instance
@@ -108,7 +103,6 @@ export async function buildTheWorldAndConnectToEngine() {
     engineCommandManager,
     rustContext,
     sceneInfra,
-    editorManager,
     kclManager,
     sceneEntitiesManager,
     commandBarActor,
@@ -122,13 +116,10 @@ export async function buildTheWorldAndNoEngineConnection() {
   const engineCommandManager = new ConnectionManager()
   const rustContext = new RustContext(engineCommandManager, instance)
   const sceneInfra = new SceneInfra(engineCommandManager)
-  const editorManager = new EditorManager(engineCommandManager)
   const kclManager = new KclManager(engineCommandManager, {
     rustContext,
-    editorManager,
     sceneInfra,
   })
-  editorManager.kclManager = kclManager
   engineCommandManager.kclManager = kclManager
   engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
@@ -137,7 +128,6 @@ export async function buildTheWorldAndNoEngineConnection() {
     engineCommandManager,
     rustContext,
     sceneInfra,
-    editorManager,
     kclManager,
   }
 }

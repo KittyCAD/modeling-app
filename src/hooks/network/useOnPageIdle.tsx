@@ -1,4 +1,4 @@
-import { KclManagerEvents } from '@src/lang/KclSingleton'
+import { KclManagerEvents } from '@src/lang/KclManager'
 import {
   engineCommandManager,
   kclManager,
