@@ -20,7 +20,6 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type CodeManager from '@src/lang/codeManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
@@ -68,6 +67,7 @@ import {
   distanceBetweenPoint2DExpr,
   type NumericSuffix,
 } from '@src/lang/wasm'
+import type EditorManager from '@src/editor/manager'
 
 const equipTools = Object.freeze({
   centerRectTool,
@@ -526,7 +526,7 @@ type SketchSolveContext = {
   initialSceneGraphDelta?: SceneGraphDelta
   sketchId: number
   // Dependencies passed from parent
-  codeManager: CodeManager
+  editorManager: EditorManager
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
   rustContext: RustContext
@@ -545,7 +545,7 @@ export const sketchSolveMachine = setup({
         | null
       sketchId: number
       initialSceneGraphDelta?: SceneGraphDelta
-      codeManager: CodeManager
+      editorManager: EditorManager
       sceneInfra: SceneInfra
       sceneEntitiesManager: SceneEntities
       rustContext: RustContext
@@ -572,9 +572,9 @@ export const sketchSolveMachine = setup({
         })
 
         // Set sketchExecOutcome in context so drag callbacks can access it
-        // Use current code from codeManager since editSketch doesn't return kclSource
+        // Use current code from editorManager since editSketch doesn't return kclSource
         const kclSource: SourceDelta = {
-          text: context.codeManager.code,
+          text: context.editorManager.code,
         }
 
         return {
@@ -1770,7 +1770,7 @@ export const sketchSolveMachine = setup({
     },
     'update sketch outcome': assign(({ event, context }) => {
       assertEvent(event, 'update sketch outcome')
-      context.codeManager.updateCodeEditor(event.data.kclSource.text)
+      context.editorManager.updateCodeEditor(event.data.kclSource.text)
 
       updateSceneGraphFromDelta({
         sceneGraphDelta: event.data.sceneGraphDelta,
@@ -1836,7 +1836,7 @@ export const sketchSolveMachine = setup({
       initialPlane: input?.initialSketchSolvePlane ?? undefined,
       initialSceneGraphDelta: input?.initialSceneGraphDelta,
       sketchId: input?.sketchId || 0,
-      codeManager: input.codeManager,
+      editorManager: input.editorManager,
       sceneInfra: input.sceneInfra,
       sceneEntitiesManager: input.sceneEntitiesManager,
       rustContext: input.rustContext,

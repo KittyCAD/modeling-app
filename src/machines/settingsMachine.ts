@@ -95,7 +95,7 @@ export const settingsMachine = setup({
       // create a detection loop with the file-system watcher.
       if (input.doNotPersist || !input.rootContext) return
 
-      input.rootContext.codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+      input.rootContext.editorManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       const { currentProject, ...settings } = input.context
 
       await saveSettings(settings, currentProject?.path)

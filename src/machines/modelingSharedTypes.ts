@@ -7,7 +7,6 @@ import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjecti
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveMode'
-import type CodeManager from '@src/lang/codeManager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -219,7 +218,6 @@ export interface ModelingMachineContext {
   defaultPlaneVisibility: PlaneVisibilityMap
   savedDefaultPlaneVisibility: PlaneVisibilityMap
   planesInitialized: boolean
-  codeManager?: CodeManager
   kclManager?: KclManager
   engineCommandManager?: ConnectionManager
   sceneInfra?: SceneInfra

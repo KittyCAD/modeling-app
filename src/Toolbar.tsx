@@ -15,8 +15,7 @@ import { isCursorInSketchCommandRange } from '@src/lang/util'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { editorManager, kclManager } from '@src/lib/singletons'
-import { codeManager, commandBarActor } from '@src/lib/singletons'
+import { editorManager, kclManager, commandBarActor } from '@src/lib/singletons'
 import type {
   ToolbarDropdown,
   ToolbarItem,
@@ -41,10 +40,10 @@ export function Toolbar({
     'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10'
   const buttonBorderClassName = '!border-transparent'
 
-  const isInTemporaryWorkspace = codeManager.isBufferMode
+  const isInTemporaryWorkspace = editorManager.isBufferMode
 
   const onClickSave = () => {
-    codeManager.exitFromTemporaryWorkspaceMode()
+    editorManager.exitFromTemporaryWorkspaceMode()
   }
 
   const sketchPathId = useMemo(() => {

@@ -11,7 +11,6 @@ import type RustContext from '@src/lib/rustContext'
 import { executeAstMock } from '@src/lang/langHelpers'
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
 import type { PathToNode, Program } from '@src/lang/wasm'
 import type { ExecutionType } from '@src/lib/constants'
 import {
@@ -62,7 +61,6 @@ export async function updateModelingState(
   dependencies: {
     kclManager: KclManager
     editorManager: EditorManager
-    codeManager: CodeManager
     rustContext: RustContext
   },
   options?: {
@@ -92,7 +90,7 @@ export async function updateModelingState(
   )
 
   // Step 2: Update the code editor and save file
-  await dependencies.codeManager.updateEditorWithAstAndWriteToFile(
+  await dependencies.editorManager.updateEditorWithAstAndWriteToFile(
     updatedAst.newAst,
     {
       isDeleting: options?.isDeleting,

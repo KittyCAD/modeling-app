@@ -31,7 +31,6 @@ import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
 import { parse, recast, resultIsOk } from '@src/lang/wasm'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import {
-  codeManager,
   editorManager,
   engineCommandManager,
   kclManager,
@@ -271,7 +270,7 @@ const Overlay = ({
 
   const constraints = getConstraintInfoKw(
     callExpression,
-    codeManager.code,
+    editorManager.code,
     overlay.pathToNode,
     overlay.filterValue
   )
@@ -605,7 +604,7 @@ const ConstraintSymbol = ({
               // Code editor will be updated in the modelingMachine.
               const newCode = recast(modifiedAst)
               if (err(newCode)) return
-              codeManager.updateCodeEditor(newCode)
+              editorManager.updateCodeEditor(newCode)
             } catch (e) {
               console.log('error', e)
             }

@@ -1,7 +1,7 @@
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
+import type EditorManager from '@src/editor/manager'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { authMachine } from '@src/machines/authMachine'
 import type { settingsMachine } from '@src/machines/settingsMachine'
@@ -134,7 +134,7 @@ export type AppMachineEvent =
   | { type: AppMachineEventType.ResetLayout }
 
 export type AppMachineContext = {
-  codeManager: CodeManager
+  editorManager: EditorManager
   kclManager: KclManager
   engineCommandManager: ConnectionManager
   sceneInfra: SceneInfra

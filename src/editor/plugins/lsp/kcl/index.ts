@@ -1,5 +1,5 @@
 import type { Extension } from '@codemirror/state'
-import type { PluginValue, ViewUpdate } from '@codemirror/view'
+import type { EditorView, PluginValue, ViewUpdate } from '@codemirror/view'
 import { ViewPlugin } from '@codemirror/view'
 import type {
   LanguageServerClient,
@@ -11,14 +11,11 @@ import {
   lspPlugin,
   lspRenameEvent,
 } from '@kittycad/codemirror-lsp-client'
-import { updateOutsideEditorEvent } from '@src/editor/manager'
-import { codeManagerUpdateEvent } from '@src/lang/codeManager'
 import {
-  codeManager,
-  editorManager,
-  kclManager,
-  rustContext,
-} from '@src/lib/singletons'
+  updateOutsideEditorEvent,
+  editorCodeUpdateEvent,
+} from '@src/editor/manager'
+import { editorManager, kclManager, rustContext } from '@src/lib/singletons'
 import { deferExecution } from '@src/lib/utils'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
@@ -32,24 +29,23 @@ import { processCodeMirrorRanges } from '@src/lib/selections'
 
 const changesDelay = 600
 
-// A view plugin that requests completions from the server after a delay
+/** A view plugin that requests completions from the server after a delay */
 export class KclPlugin implements PluginValue {
   private viewUpdate: ViewUpdate | null = null
   private client: LanguageServerClient
 
-  constructor(client: LanguageServerClient) {
+  constructor(client: LanguageServerClient, view: EditorView) {
     this.client = client
 
-    // Gotcha: Code can be written into the CodeMirror editor but not propagated to codeManager.code
-    // because the update function has not run. We need to initialize the codeManager.code when lsp initializes
+    // Gotcha: Code can be written into the CodeMirror editor but not propagated to editorManager.code
+    // because the update function has not run. We need to initialize the editorManager.code when lsp initializes
     // because new code could have been written into the editor before the update callback is initialized.
     // There appears to be limited ways to safely get the current doc content. This appears to be sync and safe.
     const kclLspPlugin = this.client.plugins.find((plugin) => {
       return plugin.client.name === 'kcl'
     })
     if (kclLspPlugin) {
-      // @ts-ignore Ignoring this private dereference of .view on the plugin. I do not have another helper method that can give me doc string
-      codeManager.code = kclLspPlugin.view.state.doc.toString()
+      editorManager.code = view.state.doc.toString()
     }
   }
 
@@ -98,7 +94,7 @@ export class KclPlugin implements PluginValue {
       }
 
       // Don't make this an else.
-      if (tr.annotation(codeManagerUpdateEvent.type)) {
+      if (tr.annotation(editorCodeUpdateEvent.type)) {
         // We want to ignore when we are forcing the editor to update.
         isRelevant = false
         break
@@ -129,9 +125,9 @@ export class KclPlugin implements PluginValue {
     }
 
     const newCode = viewUpdate.state.doc.toString()
-    codeManager.code = newCode
+    editorManager.code = newCode
 
-    void codeManager.writeToFile().then(() => {
+    void editorManager.writeToFile().then(() => {
       this.scheduleUpdateDoc()
     })
   }
@@ -202,6 +198,6 @@ export class KclPlugin implements PluginValue {
 export function kclPlugin(options: LanguageServerOptions): Extension {
   return [
     lspPlugin(options),
-    ViewPlugin.define(() => new KclPlugin(options.client)),
+    ViewPlugin.define((view) => new KclPlugin(options.client, view)),
   ]
 }

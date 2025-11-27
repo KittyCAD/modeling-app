@@ -16,6 +16,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import {
   BROWSER_PATH,
   PATHS,
+  getParentAbsolutePath,
   getProjectMetaByRouteId,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
@@ -23,13 +24,14 @@ import {
   loadAndValidateSettings,
   readLocalStorageAppSettingsFile,
 } from '@src/lib/settings/settingsUtils'
-import { codeManager, rustContext } from '@src/lib/singletons'
+import { editorManager, rustContext, systemIOActor } from '@src/lib/singletons'
 import { settingsActor } from '@src/lib/singletons'
 import type {
   FileLoaderData,
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
 export const fileLoader: LoaderFunction = async (
   routerData
@@ -110,16 +112,16 @@ export const fileLoader: LoaderFunction = async (
       // If persistCode in localStorage is present, it'll persist that code
       // through *anything*. INTENDED FOR TESTS.
       if (window.electron.process.env.NODE_ENV === 'test') {
-        code = codeManager.localStoragePersistCode() || code
+        code = editorManager.localStoragePersistCode() || code
       }
 
       // Update both the state and the editor's code.
       // We explicitly do not write to the file here since we are loading from
       // the file system and not the editor.
-      codeManager.updateCurrentFilePath(currentFilePath)
+      editorManager.updateCurrentFilePath(currentFilePath)
       // We pass true on the end here to clear the code editor history.
       // This way undo and redo are not super weird when opening new files.
-      codeManager.updateCodeStateEditor(code, true)
+      editorManager.updateCodeStateEditor(code, true)
     }
 
     // Set the file system manager to the project path
@@ -150,6 +152,17 @@ export const fileLoader: LoaderFunction = async (
     settingsActor.send({
       type: 'load.project',
       project,
+    })
+
+    const appProjectDir = settings.settings.app.projectDirectory.current
+    const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
+      ? appProjectDir
+      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir
+    systemIOActor.send({
+      type: SystemIOMachineEvents.setProjectDirectoryPath,
+      data: {
+        requestedProjectDirectoryPath,
+      },
     })
 
     const projectData: IndexLoaderData = {
