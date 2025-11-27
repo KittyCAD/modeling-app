@@ -19,7 +19,7 @@ import {
 } from '@src/unitTestUtils'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   addExtrude,
   addLoft,

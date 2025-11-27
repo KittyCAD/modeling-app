@@ -1,6 +1,5 @@
 import {
   billingActor,
-  codeManager,
   kclManager,
   mlEphantManagerActor,
   systemIOActor,
@@ -50,7 +49,6 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
               billingActor,
               systemIOActor,
               kclManager,
-              codeManager,
               contextModeling,
               sendModeling,
               theProject: theProject.current,
@@ -75,7 +73,6 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
               billingActor,
               systemIOActor,
               kclManager,
-              codeManager,
               contextModeling,
               theProject: theProject.current,
               loaderFile,

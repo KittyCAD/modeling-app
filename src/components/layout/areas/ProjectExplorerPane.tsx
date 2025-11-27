@@ -13,12 +13,11 @@ import {
   isExtensionARelevantExtension,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
+import { systemIOActor, commandBarActor } from '@src/lib/singletons'
 import {
-  useSettings,
-  systemIOActor,
-  commandBarActor,
-} from '@src/lib/singletons'
-import { useFolders } from '@src/machines/systemIO/hooks'
+  useFolders,
+  useProjectDirectoryPath,
+} from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useRef, useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -28,11 +27,11 @@ import type { AreaTypeComponentProps } from '@src/lib/layout'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const projects = useFolders()
+  const projectDirectoryPath = useProjectDirectoryPath()
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const projectRef = useRef(loaderData.project)
   const [theProject, setTheProject] = useState<Project | null>(null)
   const { project, file } = loaderData
-  const settings = useSettings()
   useEffect(() => {
     projectRef.current = loaderData?.project
 
@@ -64,10 +63,9 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const [collapsePressed, setCollapsedPressed] = useState<number>(0)
 
   const onRowClicked = (entry: FileExplorerEntry) => {
-    const applicationProjectDirectory = settings.app.projectDirectory.current
     const requestedFileName = parentPathRelativeToProject(
       entry.path,
-      applicationProjectDirectory
+      projectDirectoryPath
     )
 
     const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
@@ -164,6 +162,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onRowEnter={onRowClicked}
             canNavigate={true}
             readOnly={false}
+            overrideApplicationProjectDirectory={projectDirectoryPath}
           />
         </div>
       ) : (
