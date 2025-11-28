@@ -127,6 +127,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -294,6 +295,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -347,6 +349,7 @@ description: Variables in memory after executing split-washer-spring-version.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,

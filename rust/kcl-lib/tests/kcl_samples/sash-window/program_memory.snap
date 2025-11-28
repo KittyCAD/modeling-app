@@ -115,6 +115,7 @@ description: Variables in memory after executing sash-window.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -1.0,
@@ -280,6 +281,7 @@ description: Variables in memory after executing sash-window.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 25.0,
@@ -475,6 +477,7 @@ description: Variables in memory after executing sash-window.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -542,6 +545,7 @@ description: Variables in memory after executing sash-window.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -659,6 +663,7 @@ description: Variables in memory after executing sash-window.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -712,6 +717,7 @@ description: Variables in memory after executing sash-window.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -851,6 +857,7 @@ description: Variables in memory after executing sash-window.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -982,6 +989,7 @@ description: Variables in memory after executing sash-window.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1142,6 +1150,7 @@ description: Variables in memory after executing sash-window.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1209,6 +1218,7 @@ description: Variables in memory after executing sash-window.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1314,6 +1324,7 @@ description: Variables in memory after executing sash-window.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1550,6 +1561,7 @@ description: Variables in memory after executing sash-window.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 24.0,

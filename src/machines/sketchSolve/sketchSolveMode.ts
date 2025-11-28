@@ -6,53 +6,64 @@ import {
   sendTo,
   setup,
 } from 'xstate'
-import type { ActorRefFrom } from 'xstate'
-import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type RustContext from '@src/lib/rustContext'
+import type { KclManager } from '@src/lang/KclManager'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { roundOff } from '@src/lib/utils'
 import type {
-  ModelingMachineContext,
-  SetSelections,
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
-import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/centerRectTool'
-import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
-import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
-
-const equipTools = Object.freeze({
-  centerRectTool,
-  dimensionTool,
-  pointTool,
-})
-
-const CHILD_TOOL_ID = 'child tool'
-const CHILD_TOOL_DONE_EVENT = `xstate.done.actor.${CHILD_TOOL_ID}`
-
-export type EquipTool = keyof typeof equipTools
-
-// Type for the spawn function used in XState setup actions
-// This provides better type safety by constraining the actor parameter to valid tool names
-// and ensuring the return type matches the specific tool actor
-type SpawnToolActor = <K extends EquipTool>(
-  src: K,
-  options?: { id?: string }
-) => ActorRefFrom<(typeof equipTools)[K]>
-
-export type SketchSolveMachineEvent =
-  | { type: 'exit' }
-  | { type: 'update selection'; data?: SetSelections }
-  | { type: 'unequip tool' }
-  | { type: 'equip tool'; data: { tool: EquipTool } }
-  | { type: typeof CHILD_TOOL_DONE_EVENT }
-
-type SketchSolveContext = ModelingMachineContext & {
-  sketchSolveToolName: EquipTool | null
-  pendingToolName?: EquipTool
-}
+import {
+  baseUnitToNumericSuffix,
+  distanceBetweenPoint2DExpr,
+} from '@src/lang/wasm'
+import {
+  type SketchSolveMachineEvent,
+  type SketchSolveContext,
+  type SpawnToolActor,
+  CHILD_TOOL_ID,
+  CHILD_TOOL_DONE_EVENT,
+  equipTools,
+  setUpOnDragAndSelectionClickCallbacks,
+  initializeIntersectionPlane,
+  initializeInitialSceneGraph,
+  clearHoverCallbacks,
+  cleanupSketchSolveGroup,
+  updateSelectedIds,
+  refreshSelectionStyling,
+  updateSketchOutcome,
+  spawnTool,
+} from '@src/machines/sketchSolve/sketchSolveModeUtils'
 
 export const sketchSolveMachine = setup({
   types: {
     context: {} as SketchSolveContext,
     events: {} as SketchSolveMachineEvent,
+    input: {} as {
+      initialSketchSolvePlane?:
+        | DefaultPlane
+        | OffsetPlane
+        | ExtrudeFacePlane
+        | null
+      sketchId: number
+      initialSceneGraphDelta?: SceneGraphDelta
+      sceneInfra: SceneInfra
+      sceneEntitiesManager: SceneEntities
+      rustContext: RustContext
+      kclManager: KclManager
+    },
   },
   actions: {
+    'initialize intersection plane': initializeIntersectionPlane,
+    'initialize initial scene graph': assign(initializeInitialSceneGraph),
+    setUpOnDragAndSelectionClickCallbacks,
+    'clear hover callbacks': clearHoverCallbacks,
+    'cleanup sketch solve group': cleanupSketchSolveGroup,
     'send unequip to tool': sendTo(CHILD_TOOL_ID, { type: 'unequip' }),
     'send update selection to equipped tool': sendTo(CHILD_TOOL_ID, {
       type: 'update selection',
@@ -72,30 +83,12 @@ export const sketchSolveMachine = setup({
       type: 'sketch solve tool changed',
       data: { tool: null },
     }),
-    'spawn tool': assign(({ event, spawn, context }) => {
-      // Determine which tool to spawn based on event type
-      let nameOfToolToSpawn: EquipTool
-
-      if (event.type === 'equip tool') {
-        nameOfToolToSpawn = event.data.tool
-      } else if (
-        event.type === CHILD_TOOL_DONE_EVENT &&
-        context.pendingToolName
-      ) {
-        nameOfToolToSpawn = context.pendingToolName
-      } else {
-        console.error('Cannot determine tool to spawn')
-        return {}
-      }
-      // this type-annotation informs spawn tool of the association between the EquipTools type and the machines in equipTools
-      // It's not an type assertion. TS still checks that _spawn is assignable to SpawnToolActor.
-      const typedSpawn: SpawnToolActor = spawn
-      typedSpawn(nameOfToolToSpawn, { id: CHILD_TOOL_ID })
-
-      return {
-        sketchSolveToolName: nameOfToolToSpawn,
-        pendingToolName: undefined, // Clear the pending tool after spawning
-      }
+    'update selected ids': assign(updateSelectedIds),
+    'refresh selection styling': refreshSelectionStyling,
+    'update sketch outcome': assign(updateSketchOutcome),
+    'spawn tool': assign((args) => {
+      const typedSpawn: SpawnToolActor = args.spawn
+      return spawnTool(args, typedSpawn)
     }),
   },
   actors: {
@@ -105,17 +98,31 @@ export const sketchSolveMachine = setup({
     ...equipTools,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6UNEwAEdQ5j48DEISNIks4VyM-O1FFRqB2Sd6jlk1BstEVo1pZQ1e+Rt5eWlB0u0vH3RxgEpsFaMoALaEIKRUQQPBxBJJOgQMRgZTMUSkQjocGQsAAFU2xG2GV2OXEBxkBmMTw0L06ig42jkZjuBTUykGBjUN0G3Q0jL+owB-kmQRmqIhUJhcPiiQwDAATgrCArlHxiNEAGYqsE48gErbcHaCPbk0D5aRUgzKexVV6yc7aAaNSnaVRcz7lakuDiWwVjEWBaYhPUUaGw+FyhjLVbrQnE-gmsl5GR2G2FRTGeQaapFY7yF0IAzuVSDYx1SptRRc-3CiZBkGo0JCURQOMkOYLGNrDaG9KJ7IpFMIOzcm19NTFqnSYwaT6FjTnZS6XqyAxXLpz5y1vz14Hi5TN9Ft3vEaMrHvxo0kpNDikIWfFTo1IpGF-OQsMt05xwcTTdQpZGGf5dyBMUQ1gAB3VhcGPdsz0YWAMGiVFkQWZRIiSFVlFPBNMlvfZzRkR4OUfRRrgZQZ1ELbQumUZxtEY7QTHXZjgKFUDRWDUF5iWC84NPOhEOQmJlDQ1FMI2VVcOvAdTWHOwmRtQYmX5IwgKAws5Dda5LV0P9pB6LQvBGUQQngDIAz3cDaGNQdCMkRBJ3TYxM2zXMbEGQtmktZ5jCKB0uRcAYqR3QEuMbUM8HDGUEQwOz5PvRcn2MTpix9NpnVZOxrQUKkHH5BlZDCwN9xDI9W3ghLk3vWoOGeNQ1w4HQ7EURdFAXGcOXURdaRMMoc3YqywO41EoJgnABMJaq7yIotjDdTMuXKdxaWpAtWUnYpGLeep6nXa4DBK6zRuUJhhFbGaHItFdl2uc4TAW7kikLfz3UqRlPIWxx5GOkbIt47sppIK6zUch8BmUQpqkeaQnRUjamk6J56Q+c4QocEyPCAA */
-  context: ({ input }): SketchSolveContext => ({
-    ...modelingMachineDefaultContext,
-    sketchSolveToolName: null,
-  }),
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZNXllRX1jDQM1A3lpA1lzKwQAWgNjA2U1aTVC+07jRQ0NNS8fdGx8IjIKalo6cKiYvFgx-0JQ7EIAWzA0iSzhXIz82sV241qNeW1L+X7nBsQWk2VDaXV1cp1tGxGQX3GAlNgrNQqIwABHULMPh4DCEEi7DL7HLiI6IbSKFRXAyKWRODTaDiFbQPZpGaTKIZvGzyGqlWTSbS-f7+SZBGb0LCEZiiLDMWiidjcPaCA6o0CNJpKSnGYyyGwExW6eqSRBGDjGVSaHR6QwmZkrCaBaYhOgAEWYsAwkV5O2FSNFKIkkulJjlCuunvkKvy6s16i0ulKeuMBr8RqBHLoAAVIgAnSLEBLERH8R0pZ2PV2y+UDT0E73mX0aDVawO6oyh7x-Q2A9mmgAyPLgAFFIYmG2BRFAMDhU5l04cJVmVG7c0qCz61SX-dqg-pK2GAWyTbMAGpgOPJLCJ-vIjMZF2jnMepWF1UIP1lnXBxfVlkR+uzAAShDjzAAXmJrSn7Wnsgew7NNm7p5meU6XjO17ziGS6ssawJhBE0SxPEiQxBAeD8rAe6DuKlgjjKoETsqRbTqWAY3gu+r3rWK6IXQtAJIscQJEkkC4QBQ4EcBx7EfmpEXlelEwXeozhnWq5gMomyEEENqYax6GMWI0k8qQhDoDJclgAAKvCv7pP+Yp5DIrRqMoTh1Nc3RaEoiikrSyiFGozjaAYXTGBwtxVuJy4IRy2nyaIiloUkDBxnGb7KHwxDRAAZm+mxBXpBmcSZaIILUcrKO4GLegYdQcO5aiku4KiEooHBDDi2iVQMcGPlJKV4ApSxhRgDCQtCsJpX+A5cfhxx2C8sj9MY8gVLcNilKSHkaKopReUM8iFacwy0RJ9GBaEQjdr1JBzGC3UwnCCL9fu3HHMVxQaF0eLqLI1VDCSPGBiUiiysY7naF0ajFY1kmIcou08lAB3EF1UKnX1RkDRloD5HKFKtNVdWTXKlSlTx3zFDNsgaAo1V5tIgPbSEyiwAA7qwuBgxDdCMFaKHKBAqnKJESTRelTqZZjqiykUxWfRwajGNjjRqLouW4kYOJDAoHlkwFFOghC0N8PTZ2Q0z1oxKz7Oc3CcbKDzgEXnY3zKIV5STTUZXnB0RMVFUuitLIXjVqIITwBkD5AxyIqDaZCBVKN42TdUcqYvIpJSnxhRDEU5zdPIyuRhTsnBaFbEYEHCMXoTsjW20sgeS4Dg4mVhjOatXmFSWVUe5t-kZ7QIN7eD2v57ziOICYKjVOS6jVDoDlvd5JR1JoWhj4o6dPtJ1O0zgWsGT35u+t9JRtK55yDCYbyklUxfowTnoGESVQL81TDCN2G9XTIugWd83TXLKThiyqjSyqolT6G+Jib6jg04t3gm3aSasTqa32t3B0wdMoXGLtIcWXQlDiw4F0UkmJtDOTkIoaQmIxqrUIZ7DwQA */
+  context: ({ input }): SketchSolveContext => {
+    return {
+      sketchSolveToolName: null,
+      selectedIds: [],
+      duringAreaSelectIds: [],
+      initialPlane: input?.initialSketchSolvePlane ?? undefined,
+      initialSceneGraphDelta: input?.initialSceneGraphDelta,
+      sketchId: input?.sketchId || 0,
+      sceneInfra: input.sceneInfra,
+      sceneEntitiesManager: input.sceneEntitiesManager,
+      rustContext: input.rustContext,
+      kclManager: input.kclManager,
+    }
+  },
   id: 'Sketch Solve Mode',
   initial: 'move and select',
   on: {
     exit: {
       target: '#Sketch Solve Mode.exiting',
-      actions: ['send unequip to tool', 'send tool unequipped to parent'],
+      actions: [
+        'send unequip to tool',
+        'send tool unequipped to parent',
+        'cleanup sketch solve group',
+      ],
       description:
         'the outside world can request that sketch mode exit, but it needs to handle its own teardown first.',
     },
@@ -127,13 +134,236 @@ export const sketchSolveMachine = setup({
       description:
         'sketch mode consumes the current selection from its source of truth (currently modelingMachine). Whenever it receives',
     },
+    'update sketch outcome': {
+      actions: 'update sketch outcome',
+      description:
+        'Updates the sketch execution outcome in the context when tools complete operations',
+    },
     'unequip tool': {
       actions: 'send unequip to tool',
+    },
+    coincident: {
+      actions: async ({ self, context }) => {
+        // TODO this is not how coincident should operate long term, as it should be an equipable tool
+        const result = await context.rustContext.addConstraint(
+          0,
+          context.sketchId,
+          {
+            type: 'Coincident',
+            points: context.selectedIds,
+          },
+          await jsAppSettings()
+        )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    Distance: {
+      actions: async ({ self, context }) => {
+        // TODO this is not how coincident should operate long term, as it should be an equipable tool
+        let segmentsToConstrain = context.selectedIds
+        if (segmentsToConstrain.length === 1) {
+          const first =
+            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+              segmentsToConstrain[0]
+            ]
+          if (
+            first?.kind?.type === 'Segment' &&
+            first?.kind?.segment?.type === 'Line'
+          ) {
+            segmentsToConstrain = [
+              first.kind.segment.start,
+              first.kind.segment.end,
+            ]
+          }
+        }
+        const currentSelections = segmentsToConstrain
+          .map(
+            (id) =>
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
+          )
+          .filter(Boolean)
+        let distance = 5
+        const units = baseUnitToNumericSuffix(
+          context.kclManager.fileSettings.defaultLengthUnit
+        )
+        // Calculate distance between two points if both are point segments
+        if (currentSelections.length === 2) {
+          const first = currentSelections[0]
+          const second = currentSelections[1]
+          if (
+            first?.kind?.type === 'Segment' &&
+            first?.kind.segment?.type === 'Point' &&
+            second?.kind?.type === 'Segment' &&
+            second?.kind.segment?.type === 'Point'
+          ) {
+            const point1 = {
+              x: first.kind.segment.position.x,
+              y: first.kind.segment.position.y,
+            }
+            const point2 = {
+              x: second.kind.segment.position.x,
+              y: second.kind.segment.position.y,
+            }
+            const distanceResult = distanceBetweenPoint2DExpr(point1, point2)
+            if (!(distanceResult instanceof Error)) {
+              distance = roundOff(distanceResult.distance)
+            }
+          }
+        }
+        const result = await context.rustContext.addConstraint(
+          0,
+          context.sketchId,
+          {
+            type: 'Distance',
+            distance: { value: distance, units },
+            points: segmentsToConstrain,
+          },
+          await jsAppSettings()
+        )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    Parallel: {
+      actions: async ({ self, context }) => {
+        // TODO this is not how coincident should operate long term, as it should be an equipable tool
+        const result = await context.rustContext.addConstraint(
+          0,
+          context.sketchId,
+          {
+            type: 'Parallel',
+            lines: context.selectedIds,
+          },
+          await jsAppSettings()
+        )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    LinesEqualLength: {
+      actions: async ({ self, context }) => {
+        // TODO this is not how LinesEqualLength should operate long term, as it should be an equipable tool
+        const result = await context.rustContext.addConstraint(
+          0,
+          context.sketchId,
+          {
+            type: 'LinesEqualLength',
+            lines: context.selectedIds,
+          },
+          await jsAppSettings()
+        )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    Vertical: {
+      actions: async ({ self, context }) => {
+        let result
+        for (const id of context.selectedIds) {
+          // TODO this is not how Vertical should operate long term, as it should be an equipable tool
+          result = await context.rustContext.addConstraint(
+            0,
+            context.sketchId,
+            {
+              type: 'Vertical',
+              line: id,
+            },
+            await jsAppSettings()
+          )
+        }
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    Horizontal: {
+      actions: async ({ self, context }) => {
+        let result
+        for (const id of context.selectedIds) {
+          // TODO this is not how Horizontal should operate long term, as it should be an equipable tool
+          result = await context.rustContext.addConstraint(
+            0,
+            context.sketchId,
+            {
+              type: 'Horizontal',
+              line: id,
+            },
+            await jsAppSettings()
+          )
+        }
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    'update selected ids': {
+      actions: ['update selected ids', 'refresh selection styling'],
+    },
+    'delete selected': {
+      actions: async ({ self, context }) => {
+        const selectedIds = context.selectedIds
+
+        // Only proceed if there are selected IDs
+        if (selectedIds.length === 0) {
+          return
+        }
+
+        // Call deleteObjects with the selected segment IDs
+        const result = await context.rustContext
+          .deleteObjects(
+            0,
+            context.sketchId,
+            [],
+            selectedIds,
+            await jsAppSettings()
+          )
+          .catch((err) => {
+            console.error('failed to delete objects', err)
+            return null
+          })
+
+        if (result) {
+          // Clear selection after deletion
+          self.send({
+            type: 'update selected ids',
+            data: { selectedIds: [], duringAreaSelectIds: [] },
+          })
+
+          // Send the update sketch outcome event
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
     },
   },
   states: {
     'move and select': {
-      entry: [() => console.log('entered sketch mode')],
+      entry: ['setUpOnDragAndSelectionClickCallbacks'],
       on: {
         'equip tool': {
           target: 'using tool',
@@ -172,16 +402,18 @@ export const sketchSolveMachine = setup({
       description:
         'Tools are workflows that create or modify geometry in the sketch scene after conditions are met. Some, like the Dimension, Center Rectangle, and Tangent tools, are finite, which they signal by reaching a final state. Some, like the Spline tool, appear to be infinite. In these cases, it is up to the tool Actor to receive whatever signal (such as the Esc key for Spline) necessary to reach a final state and unequip itself.\n\nTools can request to be unequipped from the outside by a "unequip tool" event sent to the sketch machine. This will sendTo the toolInvoker actor.',
 
-      entry: ['spawn tool', 'send tool equipped to parent'],
+      entry: [
+        'spawn tool',
+        'send tool equipped to parent',
+        'clear hover callbacks',
+      ],
     },
 
     'switching tool': {
       on: {
         [CHILD_TOOL_DONE_EVENT]: {
           target: 'using tool',
-          actions: [
-            () => console.log('switched tools with xstate.done.actor.tool'),
-          ],
+          actions: [],
         },
       },
 
@@ -207,4 +439,10 @@ export const sketchSolveMachine = setup({
       description: `Intermediate state, same as the "switching tool" state, but for unequip`,
     },
   },
+
+  entry: [
+    'initialize intersection plane',
+    'initialize initial scene graph',
+    'setUpOnDragAndSelectionClickCallbacks',
+  ],
 })

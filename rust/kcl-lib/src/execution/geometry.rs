@@ -9,6 +9,7 @@ use kittycad_modeling_cmds::{
 };
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::{
     engine::{DEFAULT_PLANE_INFO, PlaneName},
@@ -17,6 +18,7 @@ use crate::{
         ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier,
         types::{NumericType, adjust_length},
     },
+    front::{Freedom, LineCtor, ObjectId, PointCtor},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::{args::TyF64, sketch::PlaneData},
 };
@@ -294,6 +296,10 @@ pub struct Plane {
     pub id: uuid::Uuid,
     /// The artifact ID.
     pub artifact_id: ArtifactId,
+    /// The scene object ID.
+    // TODO: This shouldn't be an Option. It should be part of the [`PlaneType`]
+    // enum since it's only none when `Uninit`.
+    pub object_id: Option<ObjectId>,
     // The code for the plane either a string or custom.
     pub value: PlaneType,
     /// The information for the plane.
@@ -564,6 +570,7 @@ impl Plane {
         let id = exec_state.next_uuid();
         Ok(Plane {
             id,
+            object_id: None,
             artifact_id: id.into(),
             info: PlaneInfo::try_from(value.clone())?,
             value: value.into(),
@@ -1680,4 +1687,121 @@ pub struct SketchVar {
     pub ty: NumericType,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(tag = "type")]
+pub enum UnsolvedExpr {
+    Known(TyF64),
+    Unknown(SketchVarId),
+}
+
+impl UnsolvedExpr {
+    pub fn var(&self) -> Option<SketchVarId> {
+        match self {
+            UnsolvedExpr::Known(_) => None,
+            UnsolvedExpr::Unknown(id) => Some(*id),
+        }
+    }
+}
+
+pub type UnsolvedPoint2dExpr = [UnsolvedExpr; 2];
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct ConstrainablePoint2d {
+    pub vars: crate::front::Point2d<SketchVarId>,
+    pub object_id: ObjectId,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct UnsolvedSegment {
+    pub object_id: ObjectId,
+    pub kind: UnsolvedSegmentKind,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum UnsolvedSegmentKind {
+    Point {
+        position: UnsolvedPoint2dExpr,
+        ctor: Box<PointCtor>,
+    },
+    Line {
+        start: UnsolvedPoint2dExpr,
+        end: UnsolvedPoint2dExpr,
+        ctor: Box<LineCtor>,
+        start_object_id: ObjectId,
+        end_object_id: ObjectId,
+    },
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct Segment {
+    pub object_id: ObjectId,
+    pub kind: SegmentKind,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+#[expect(clippy::large_enum_variant)]
+pub enum SegmentKind {
+    Point {
+        position: [TyF64; 2],
+        ctor: Box<PointCtor>,
+        freedom: Freedom,
+    },
+    Line {
+        start: [TyF64; 2],
+        end: [TyF64; 2],
+        ctor: Box<LineCtor>,
+        start_object_id: ObjectId,
+        end_object_id: ObjectId,
+        start_freedom: Freedom,
+        end_freedom: Freedom,
+    },
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct AbstractSegment {
+    pub repr: SegmentRepr,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+pub enum SegmentRepr {
+    Unsolved { segment: UnsolvedSegment },
+    Solved { segment: Segment },
+    InEngine { id: Uuid, segment: Segment },
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SketchConstraint {
+    pub kind: SketchConstraintKind,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum SketchConstraintKind {
+    Distance { points: [ConstrainablePoint2d; 2] },
 }

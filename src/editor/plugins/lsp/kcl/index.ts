@@ -15,8 +15,9 @@ import {
   updateOutsideEditorEvent,
   editorCodeUpdateEvent,
 } from '@src/lang/KclManager'
-import { kclManager } from '@src/lib/singletons'
+import { kclManager, rustContext } from '@src/lib/singletons'
 import { deferExecution } from '@src/lib/utils'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import type { UpdateCanExecuteParams } from '@rust/kcl-lib/bindings/UpdateCanExecuteParams'
 import type { UpdateCanExecuteResponse } from '@rust/kcl-lib/bindings/UpdateCanExecuteResponse'
@@ -146,9 +147,35 @@ export class KclPlugin implements PluginValue {
       this.sendScheduledInput = null
     }
 
-    if (!this.client.ready) return
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    kclManager.executeCode()
+    if (!this.client.ready)
+      return // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      // If we're in sketchSolveMode, update Rust state with the latest AST
+      // This handles the case where the user directly edits in the CodeMirror editor
+      // these are short term hacks while in rapid development for sketch revamp
+      // should be clean up.
+    ;(async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const modelingState = (kclManager as any)._modelingState
+      if (modelingState?.matches('sketchSolveMode')) {
+        try {
+          await kclManager.executeCode()
+          await rustContext.hackSetProgram(
+            kclManager.ast,
+            await jsAppSettings()
+          )
+          console.log('rustContext', rustContext)
+        } catch (error) {
+          console.error('Error calling hackSetProgram after user edit:', error)
+        }
+      } else {
+        await kclManager.executeCode()
+      }
+    })().catch((error) => {
+      console.error(
+        'Unexpected error when updating Rust state after user edit:',
+        error
+      )
+    })
   }
 
   ensureDocUpdated() {

@@ -1,4 +1,6 @@
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
+import { err } from '@src/lib/trap'
 
 // KCL string representation of default planes
 export type DefaultPlaneStr = 'XY' | 'XZ' | 'YZ' | '-XY' | '-XZ' | '-YZ'
@@ -20,10 +22,19 @@ export function defaultPlaneStrToKey(
     case '-YZ':
       return 'negYz'
     default:
+      const _exhaustiveCheck: never = plane
       return new Error(`Invalid plane string: ${plane}`)
   }
 }
 
 export function isDefaultPlaneStr(plane: string): plane is DefaultPlaneStr {
   return ['XY', 'XZ', 'YZ', '-XY', '-XZ', '-YZ'].includes(plane)
+}
+
+export function toPlaneName(plane: DefaultPlaneStr): PlaneName {
+  const result = defaultPlaneStrToKey(plane)
+  if (err(result)) {
+    return 'xy'
+  }
+  return result
 }

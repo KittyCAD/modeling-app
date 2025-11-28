@@ -86,6 +86,7 @@ import {
   RAYCASTABLE_PLANE,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
+  SKETCH_SOLVE_GROUP,
   X_AXIS,
   Y_AXIS,
 } from '@src/clientSideScene/sceneUtils'
@@ -158,6 +159,11 @@ import {
 } from '@src/lib/rectangleTool'
 import type RustContext from '@src/lib/rustContext'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { Themes, getResolvedTheme } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
@@ -202,6 +208,7 @@ export class SceneEntities {
   commandBarActor?: ActorRefFrom<typeof commandBarMachine>
   activeSegments: { [key: string]: Group } = {}
   readonly intersectionPlane: Mesh
+  readonly sketchSolveGroup: Group
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
@@ -222,9 +229,38 @@ export class SceneEntities {
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
     )
+    this.sketchSolveGroup = SceneEntities.createSketchSolveGroup(
+      this.sceneInfra
+    )
     this.wasmInstance = wasmInstance
     this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
     this.sceneInfra.baseUnitChange.add(this.onCamChange)
+  }
+
+  /**
+   * Initialize the intersection plane orientation and position from a modeling plane result
+   * produced by the 'animate-to-sketch-solve' step
+   */
+  initSketchSolveEntityOrientation(
+    plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+  ) {
+    const yAxis = plane.yAxis
+    const zAxis = plane.zAxis
+    const origin =
+      plane.type === 'defaultPlane'
+        ? ([0, 0, 0] as [number, number, number])
+        : plane.position
+
+    const quaternion = quaternionFromUpNForward(
+      new Vector3(...yAxis),
+      new Vector3(...zAxis)
+    )
+    this.currentSketchQuaternion = quaternion
+    this.intersectionPlane.setRotationFromQuaternion(quaternion)
+    this.intersectionPlane.position.copy(new Vector3(...origin))
+
+    this.sketchSolveGroup.setRotationFromQuaternion(quaternion)
+    this.sketchSolveGroup.position.copy(new Vector3(...origin))
   }
 
   onCamChange = () => {
@@ -382,6 +418,14 @@ export class SceneEntities {
     intersectionPlane.layers.set(INTERSECTION_PLANE_LAYER)
     sceneInfra.scene.add(intersectionPlane)
     return intersectionPlane
+  }
+  private static createSketchSolveGroup(sceneInfra: SceneInfra) {
+    const group = new Group()
+    group.userData = { type: SKETCH_SOLVE_GROUP }
+    group.name = SKETCH_SOLVE_GROUP
+    group.layers.set(SKETCH_LAYER)
+    sceneInfra.scene.add(group)
+    return group
   }
 
   createSketchAxis(

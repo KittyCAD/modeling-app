@@ -2,7 +2,7 @@
 
 #![allow(async_fn_in_trait)]
 
-use kcl_error::SourceRange;
+use kcl_error::{CompilationError, SourceRange};
 use serde::{Deserialize, Serialize};
 
 pub mod sketch;
@@ -105,6 +105,7 @@ pub struct Object {
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub enum ObjectKind {
+    Plane(Plane),
     Sketch(crate::sketch::Sketch),
     Segment(crate::sketch::Segment),
     Constraint(crate::sketch::Constraint),
@@ -116,7 +117,40 @@ pub enum ObjectKind {
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub enum Plane {
     Object(ObjectId),
-    Default,
+    Default(StandardPlane),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS)]
+pub enum StandardPlane {
+    #[serde(rename = "XY")]
+    XY,
+    #[serde(rename = "YZ")]
+    YZ,
+    #[serde(rename = "XZ")]
+    XZ,
+}
+
+impl std::fmt::Display for StandardPlane {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            StandardPlane::XY => write!(f, "XY"),
+            StandardPlane::YZ => write!(f, "YZ"),
+            StandardPlane::XZ => write!(f, "XZ"),
+        }
+    }
+}
+
+impl std::str::FromStr for StandardPlane {
+    type Err = CompilationError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "XY" => Ok(StandardPlane::XY),
+            "YZ" => Ok(StandardPlane::YZ),
+            "XZ" => Ok(StandardPlane::XZ),
+            _ => Err(CompilationError::err(SourceRange::default(), "invalid standard plane")),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
@@ -125,14 +159,20 @@ pub enum SourceRef {
     BackTrace(Vec<SourceRange>),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
-pub struct Number {
-    value: f64,
-    units: NumericSuffix,
+impl From<SourceRange> for SourceRef {
+    fn from(value: SourceRange) -> Self {
+        Self::Simple(value)
+    }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct Number {
+    pub value: f64,
+    pub units: NumericSuffix,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub enum Expr {
     Number(Number),

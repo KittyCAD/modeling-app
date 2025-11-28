@@ -1,15 +1,20 @@
 //! The executor for the AST.
 
+#[cfg(feature = "artifact-graph")]
+use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, CodeRef, StartSketchOnFace, StartSketchOnPlane};
+pub use artifact::{
+    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, SketchBlock, StartSketchOnFace, StartSketchOnPlane,
+};
 use cache::GlobalState;
 pub use cache::{bust_cache, clear_mem_cache};
 #[cfg(feature = "artifact-graph")]
 pub use cad_op::Group;
 pub use cad_op::Operation;
+pub(crate) use exec_ast::normalize_to_solver_unit;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
@@ -28,6 +33,8 @@ pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
+#[cfg(feature = "artifact-graph")]
+use crate::front::{Number, Object, ObjectId};
 use crate::{
     CompilationError, ExecError, KclErrorWithOutputs, SourceRange,
     engine::{EngineManager, GridScaleBehavior},
@@ -79,6 +86,18 @@ pub struct ExecOutcome {
     /// Output artifact graph.
     #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
+    /// Objects in the scene, created from execution.
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub scene_objects: Vec<Object>,
+    /// Map from source range to object ID for lookup of objects by their source
+    /// range.
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub var_solutions: Vec<(SourceRange, Number)>,
     /// Non-fatal errors and warnings.
     pub errors: Vec<CompilationError>,
     /// File Names in module Id array index order
@@ -241,6 +260,20 @@ impl From<&Expr> for Metadata {
     fn from(expr: &Expr) -> Self {
         Self {
             source_range: SourceRange::from(expr),
+        }
+    }
+}
+
+impl Metadata {
+    pub fn to_source_ref(meta: &[Metadata]) -> crate::front::SourceRef {
+        if meta.len() == 1 {
+            let meta = &meta[0];
+            return crate::front::SourceRef::Simple {
+                range: meta.source_range,
+            };
+        }
+        crate::front::SourceRef::BackTrace {
+            ranges: meta.iter().map(|m| m.source_range).collect(),
         }
     }
 }
@@ -1359,12 +1392,23 @@ impl ExecutorContext {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
 pub struct ArtifactId(Uuid);
 
 impl ArtifactId {
     pub fn new(uuid: Uuid) -> Self {
         Self(uuid)
+    }
+
+    /// A placeholder artifact ID that will be filled in later.
+    pub fn placeholder() -> Self {
+        Self(Uuid::nil())
+    }
+
+    /// The constraint artifact ID is a special. They don't need to be
+    /// represented in the artifact graph.
+    pub fn constraint() -> Self {
+        Self(Uuid::nil())
     }
 }
 

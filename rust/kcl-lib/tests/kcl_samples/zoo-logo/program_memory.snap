@@ -430,6 +430,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -635,6 +636,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -850,6 +852,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1065,6 +1068,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1280,6 +1284,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1358,6 +1363,7 @@ description: Variables in memory after executing zoo-logo.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,

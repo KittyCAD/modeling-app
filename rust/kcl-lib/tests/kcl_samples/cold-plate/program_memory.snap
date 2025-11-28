@@ -151,6 +151,7 @@ description: Variables in memory after executing cold-plate.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -340,6 +341,7 @@ description: Variables in memory after executing cold-plate.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -529,6 +531,7 @@ description: Variables in memory after executing cold-plate.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -718,6 +721,7 @@ description: Variables in memory after executing cold-plate.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1213,6 +1217,7 @@ description: Variables in memory after executing cold-plate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1463,6 +1468,7 @@ description: Variables in memory after executing cold-plate.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1659,6 +1665,7 @@ description: Variables in memory after executing cold-plate.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "objectId": null,
           "origin": {
             "x": -186.68999999999997,
             "y": 0.0,
