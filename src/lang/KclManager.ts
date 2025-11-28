@@ -1298,7 +1298,6 @@ export class KclManager extends EventTarget {
     viewUpdate: ViewUpdate,
     processCodeMirrorRanges: typeof processCodeMirrorRangesFn
   ): void {
-    console.log('KclManager handling view update', viewUpdate)
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
     }
