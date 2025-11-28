@@ -6,19 +6,11 @@ import {
   sendTo,
   setup,
 } from 'xstate'
-import type {
-  SceneGraphDelta,
-  SourceDelta,
-} from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
-import { updateLineSegmentHover } from '@src/machines/sketchSolve/segments'
-import { Group, Mesh, OrthographicCamera } from 'three'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
-import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
 import type {
@@ -26,8 +18,6 @@ import type {
   ExtrudeFacePlane,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
-import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
-import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 import {
   baseUnitToNumericSuffix,
   distanceBetweenPoint2DExpr,
@@ -36,14 +26,18 @@ import {
   type SketchSolveMachineEvent,
   type SketchSolveContext,
   type SpawnToolActor,
-  type EquipTool,
   CHILD_TOOL_ID,
-  updateSceneGraphFromDelta,
-  buildSegmentCtorFromObject,
-  updateSegmentGroup,
   CHILD_TOOL_DONE_EVENT,
   equipTools,
   setUpOnDragAndSelectionClickCallbacks,
+  initializeIntersectionPlane,
+  initializeInitialSceneGraph,
+  clearHoverCallbacks,
+  cleanupSketchSolveGroup,
+  updateSelectedIds,
+  refreshSelectionStyling,
+  updateSketchOutcome,
+  spawnTool,
 } from '@src/machines/sketchSolve/sketchSolveModeUtils'
 
 export const sketchSolveMachine = setup({
@@ -65,98 +59,11 @@ export const sketchSolveMachine = setup({
     },
   },
   actions: {
-    'initialize intersection plane': ({ context }) => {
-      if (context.initialPlane) {
-        context.sceneEntitiesManager.initSketchSolveEntityOrientation(
-          context.initialPlane
-        )
-      }
-    },
-    'initialize initial scene graph': assign(({ context }) => {
-      if (context.initialSceneGraphDelta) {
-        // Update the scene graph directly without sending an event
-        // This is for initial setup, just rendering existing state
-        updateSceneGraphFromDelta({
-          sceneGraphDelta: context.initialSceneGraphDelta,
-          context,
-          selectedIds: context.selectedIds,
-          duringAreaSelectIds: context.duringAreaSelectIds,
-        })
-
-        // Set sketchExecOutcome in context so drag callbacks can access it
-        // Use current code from editorManager since editSketch doesn't return kclSource
-        const kclSource: SourceDelta = {
-          text: context.kclManager.code,
-        }
-
-        return {
-          sketchExecOutcome: {
-            kclSource,
-            sceneGraphDelta: context.initialSceneGraphDelta,
-          },
-        }
-      }
-      return {}
-    }),
+    'initialize intersection plane': initializeIntersectionPlane,
+    'initialize initial scene graph': assign(initializeInitialSceneGraph),
     setUpOnDragAndSelectionClickCallbacks,
-    'clear hover callbacks': ({ self, context }) => {
-      // Clear hover callbacks to prevent interference with tool operations
-      context.sceneInfra.setCallbacks({
-        onMouseEnter: () => {},
-        onMouseLeave: () => {},
-        onAreaSelectStart: () => {},
-        onAreaSelect: () => {},
-        onAreaSelectEnd: () => {},
-      })
-
-      // Clear any currently hovered line segment meshes
-      const snapshot = self.getSnapshot()
-      const selectedIds = snapshot.context.selectedIds
-      const sketchSegments =
-        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-      if (sketchSegments) {
-        sketchSegments.traverse((child) => {
-          if (
-            child instanceof Mesh &&
-            child.userData?.type === STRAIGHT_SEGMENT_BODY &&
-            child.userData.isHovered === true
-          ) {
-            updateLineSegmentHover(child, false, selectedIds)
-          }
-        })
-      }
-
-      // Clean up selection box if it exists
-      const selectionBoxGroup = sketchSegments?.getObjectByName('selectionBox')
-      if (selectionBoxGroup) {
-        selectionBoxGroup.traverse((child) => {
-          if (
-            child instanceof CSS2DObject &&
-            child.element instanceof HTMLElement
-          ) {
-            child.element.remove()
-          }
-        })
-        selectionBoxGroup.removeFromParent()
-      }
-    },
-    'cleanup sketch solve group': ({ context }) => {
-      const sketchSegments =
-        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-      if (!sketchSegments || !(sketchSegments instanceof Group)) {
-        console.log('yo no sketch segments to clean up')
-        return
-      }
-      // We have to manually remove the CSS2DObjects
-      // as they don't get removed when the group is removed
-      sketchSegments.traverse((object) => {
-        if (object instanceof CSS2DObject) {
-          object.element.remove()
-          object.remove()
-        }
-      })
-      disposeGroupChildren(sketchSegments)
-    },
+    'clear hover callbacks': clearHoverCallbacks,
+    'cleanup sketch solve group': cleanupSketchSolveGroup,
     'send unequip to tool': sendTo(CHILD_TOOL_ID, { type: 'unequip' }),
     'send update selection to equipped tool': sendTo(CHILD_TOOL_ID, {
       type: 'update selection',
@@ -176,137 +83,12 @@ export const sketchSolveMachine = setup({
       type: 'sketch solve tool changed',
       data: { tool: null },
     }),
-    'update selected ids': assign(({ event, context }) => {
-      assertEvent(event, 'update selected ids')
-
-      const updates: Partial<SketchSolveContext> = {}
-
-      // Handle duringAreaSelectIds update (for area select during drag)
-      if (event.data.duringAreaSelectIds !== undefined) {
-        updates.duringAreaSelectIds = event.data.duringAreaSelectIds
-      }
-
-      // Handle regular selectedIds update (for click selection, etc.)
-      if (event.data.selectedIds !== undefined) {
-        // If empty array is provided, clear the selection
-        if (event.data.selectedIds.length === 0) {
-          updates.selectedIds = []
-        } else {
-          const first = event.data.selectedIds[0]
-          if (
-            event.data.selectedIds.length === 1 &&
-            first &&
-            context.selectedIds.includes(first)
-          ) {
-            // If only one ID is selected and it's already in the selection, remove only it from the selection
-            updates.selectedIds = context.selectedIds.filter(
-              (id) => id !== first
-            )
-          } else {
-            // Merge new IDs with existing selection
-            const result = Array.from(
-              new Set([...context.selectedIds, ...event.data.selectedIds])
-            )
-            updates.selectedIds = result
-          }
-        }
-      }
-
-      return updates
-    }),
-    'refresh selection styling': ({ context }) => {
-      // Update selection styling for all existing sketch-solve segments
-      if (!context.sketchExecOutcome?.sceneGraphDelta) {
-        return
-      }
-      const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
-      const objects = sceneGraphDelta.new_graph.objects
-      const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
-      const factor =
-        (context.sceneInfra.camControls.camera instanceof OrthographicCamera ||
-        !context.sceneEntitiesManager.axisGroup
-          ? orthoFactor
-          : perspScale(
-              context.sceneInfra.camControls.camera,
-              context.sceneEntitiesManager.axisGroup
-            )) / context.sceneInfra.baseUnitMultiplier
-
-      // Combine selectedIds and duringAreaSelectIds for highlighting
-      const allSelectedIds = Array.from(
-        new Set([...context.selectedIds, ...context.duringAreaSelectIds])
-      )
-
-      sceneGraphDelta.new_graph.objects.forEach((obj) => {
-        if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
-          return
-        }
-        const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
-        if (!(group instanceof Group)) {
-          return
-        }
-        const ctor = buildSegmentCtorFromObject(obj, objects)
-        if (!ctor) {
-          return
-        }
-        updateSegmentGroup({
-          group,
-          input: ctor,
-          selectedIds: allSelectedIds,
-          scale: factor,
-          theme: context.sceneInfra.theme,
-        })
-      })
-    },
-    'update sketch outcome': assign(({ event, context }) => {
-      assertEvent(event, 'update sketch outcome')
-      context.kclManager.updateCodeEditor(event.data.kclSource.text)
-
-      updateSceneGraphFromDelta({
-        sceneGraphDelta: event.data.sceneGraphDelta,
-        context,
-        selectedIds: context.selectedIds,
-        duringAreaSelectIds: context.duringAreaSelectIds,
-      })
-
-      return {
-        sketchExecOutcome: {
-          kclSource: event.data.kclSource,
-          sceneGraphDelta: event.data.sceneGraphDelta,
-        },
-      }
-    }),
-    'spawn tool': assign(({ event, spawn, context }) => {
-      // Determine which tool to spawn based on event type
-      let nameOfToolToSpawn: EquipTool
-
-      if (event.type === 'equip tool') {
-        nameOfToolToSpawn = event.data.tool
-      } else if (
-        event.type === CHILD_TOOL_DONE_EVENT &&
-        context.pendingToolName
-      ) {
-        nameOfToolToSpawn = context.pendingToolName
-      } else {
-        console.error('Cannot determine tool to spawn')
-        return {}
-      }
-      // this type-annotation informs spawn tool of the association between the EquipTools type and the machines in equipTools
-      // It's not an type assertion. TS still checks that _spawn is assignable to SpawnToolActor.
-      const typedSpawn: SpawnToolActor = spawn
-      typedSpawn(nameOfToolToSpawn, {
-        id: CHILD_TOOL_ID,
-        input: {
-          sceneInfra: context.sceneInfra,
-          rustContext: context.rustContext,
-          kclManager: context.kclManager,
-          sketchId: context.sketchId,
-        },
-      })
-
-      return {
-        sketchSolveToolName: nameOfToolToSpawn,
-        pendingToolName: undefined, // Clear the pending tool after spawning
-      }
+    'update selected ids': assign(updateSelectedIds),
+    'refresh selection styling': refreshSelectionStyling,
+    'update sketch outcome': assign(updateSketchOutcome),
+    'spawn tool': assign((args) => {
+      const typedSpawn: SpawnToolActor = args.spawn
+      return spawnTool(args, typedSpawn)
     }),
   },
   actors: {
