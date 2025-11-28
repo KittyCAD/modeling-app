@@ -413,9 +413,7 @@ export const sketchSolveMachine = setup({
       on: {
         [CHILD_TOOL_DONE_EVENT]: {
           target: 'using tool',
-          actions: [
-            () => console.log('switched tools with xstate.done.actor.tool'),
-          ],
+          actions: [],
         },
       },
 
