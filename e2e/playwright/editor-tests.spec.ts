@@ -1314,29 +1314,33 @@ profile001 = startProfile(sketch001, at = [0, 0])
     })
   })
 
-  test(
-    'Can select lines on the main axis (XZ)',
-    async ({ page, homePage, toolbar, scene }) => {
-      await runMainAxisSelectionTest('XZ', {
-        page,
-        homePage,
-        toolbar,
-        scene,
-      })
-    }
-  )
+  test('Can select lines on the main axis (XZ)', async ({
+    page,
+    homePage,
+    toolbar,
+    scene,
+  }) => {
+    await runMainAxisSelectionTest('XZ', {
+      page,
+      homePage,
+      toolbar,
+      scene,
+    })
+  })
 
-  test(
-    'Can select lines on the main axis (-XZ)',
-    async ({ page, homePage, toolbar, scene }) => {
-      await runMainAxisSelectionTest('-XZ', {
-        page,
-        homePage,
-        toolbar,
-        scene,
-      })
-    }
-  )
+  test('Can select lines on the main axis (-XZ)', async ({
+    page,
+    homePage,
+    toolbar,
+    scene,
+  }) => {
+    await runMainAxisSelectionTest('-XZ', {
+      page,
+      homePage,
+      toolbar,
+      scene,
+    })
+  })
 
   test(`Only show axis planes when there are no errors`, async ({
     page,
