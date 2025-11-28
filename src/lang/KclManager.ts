@@ -751,7 +751,7 @@ export class KclManager extends EventTarget {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(): Promise<void> {
+  async executeCode(clearSelections = false): Promise<void> {
     const ast = await this.safeParse(this.code)
 
     if (!ast) {
@@ -771,6 +771,13 @@ export class KclManager extends EventTarget {
 
       this.dispatchEvent(new CustomEvent(KclManagerEvents.LongExecution, {}))
     }, this.longExecutionTimeMs)
+
+    if (clearSelections) {
+      this._modelingSend({
+        type: 'Set selection',
+        data: { selection: undefined, selectionType: 'singleCodeCursor' },
+      })
+    }
 
     return this.executeAst({ ast })
   }
@@ -1291,6 +1298,7 @@ export class KclManager extends EventTarget {
     viewUpdate: ViewUpdate,
     processCodeMirrorRanges: typeof processCodeMirrorRangesFn
   ): void {
+    console.log('KclManager handling view update', viewUpdate)
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
     }
