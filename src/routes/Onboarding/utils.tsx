@@ -331,8 +331,8 @@ export async function resetCodeAndAdvanceOnboarding({
 
 function hasResetReadyCode(kclManager: KclManager) {
   return (
-    isKclEmptyOrOnlySettings(kclManager.code) ||
-    kclManager.code === browserAxialFan
+    isKclEmptyOrOnlySettings(kclManager.codeSignal.value) ||
+    kclManager.codeSignal.value === browserAxialFan
   )
 }
 

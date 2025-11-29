@@ -29,6 +29,7 @@ type GetInfoModalProps = InstanceProps<ModalResolve, ModalReject> & {
   value?: string
   initialVariableName: string
   selectionRanges: Selections
+  currentCode: string
 }
 
 export const createInfoModal = create<
@@ -46,6 +47,7 @@ export const GetInfoModal = ({
   value: initialValue,
   initialVariableName,
   selectionRanges,
+  currentCode,
 }: GetInfoModalProps) => {
   const [sign, setSign] = useState(initialValue?.startsWith('-') ? -1 : 1)
   const [segName, setSegName] = useState(initialSegName)
@@ -69,6 +71,7 @@ export const GetInfoModal = ({
     value: value,
     initialVariableName,
     selectionRanges,
+    code: currentCode,
   })
 
   return (

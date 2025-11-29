@@ -102,7 +102,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
 
           // Don't fire a re-execution if the kclManager already knows about this change,
           // which would be evident if we already have matching code there.
-          if (!isCodeTheSame(code, kclManager.code)) {
+          if (!isCodeTheSame(code, kclManager.codeSignal.value)) {
             kclManager.updateCodeStateEditor(code)
             await kclManager.executeCode()
             await resetCameraPosition()

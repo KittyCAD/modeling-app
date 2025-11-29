@@ -114,6 +114,7 @@ export async function applyConstraintAbsDistance({
       value: forceVal,
       valueName: constraint === 'yAbs' ? 'yDis' : 'xDis',
       selectionRanges,
+      currentCode: kclManager.codeSignal.value,
     })
   if (!isExprBinaryPart(valueNode))
     return Promise.reject('Invalid valueNode, is not a BinaryPart')

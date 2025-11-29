@@ -6,7 +6,6 @@ import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler
 import { SystemIOMachineLogicListenerDesktop } from '@src/components/Providers/SystemIOProviderDesktop'
 import { SystemIOMachineLogicListenerWeb } from '@src/components/Providers/SystemIOProviderWeb'
 import { RouteProvider } from '@src/components/RouteProvider'
-import { KclContextProvider } from '@src/lang/KclProvider'
 import { isDesktop } from '@src/lib/isDesktop'
 import { Outlet } from 'react-router-dom'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
@@ -35,18 +34,16 @@ function RootLayout() {
             }}
           >
             <LspProvider>
-              <KclContextProvider>
-                <AppStateProvider>
-                  <MachineManagerProvider>
-                    {isDesktop() ? (
-                      <SystemIOMachineLogicListenerDesktop />
-                    ) : (
-                      <SystemIOMachineLogicListenerWeb />
-                    )}
-                    <Outlet />
-                  </MachineManagerProvider>
-                </AppStateProvider>
-              </KclContextProvider>
+              <AppStateProvider>
+                <MachineManagerProvider>
+                  {isDesktop() ? (
+                    <SystemIOMachineLogicListenerDesktop />
+                  ) : (
+                    <SystemIOMachineLogicListenerWeb />
+                  )}
+                  <Outlet />
+                </MachineManagerProvider>
+              </AppStateProvider>
             </LspProvider>
           </MlEphantManagerReactContext.Provider>
         </Auth>

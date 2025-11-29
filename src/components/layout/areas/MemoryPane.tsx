@@ -1,5 +1,4 @@
 import ReactJsonView from '@microlink/react-json-view'
-import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 
 import type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
@@ -9,16 +8,16 @@ import { ActionButton } from '@src/components/ActionButton'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
-import { useKclContext } from '@src/lang/KclProvider'
 import type { VariableMap } from '@src/lang/wasm'
 import { humanDisplayNumber, sketchFromKclValueOptional } from '@src/lang/wasm'
 import { Reason, trap } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { kclManager } from '@src/lib/singletons'
 
 export const MemoryPaneMenu = () => {
-  const { variables } = useKclContext()
+  const variables = kclManager.variablesSignal.value
 
   function copyProgramMemoryToClipboard() {
     if (globalThis && 'navigator' in globalThis) {
@@ -70,9 +69,10 @@ export function MemoryPane(props: AreaTypeComponentProps) {
 
 export const MemoryPaneContents = () => {
   const theme = useResolvedTheme()
-  const { variables } = useKclContext()
+  const variables = kclManager.variablesSignal.value
   const { state } = useModelingContext()
-  const ProcessedMemory = useMemo(() => processMemory(variables), [variables])
+  const ProcessedMemory = processMemory(variables)
+
   return (
     <div className="h-full relative">
       <div className="absolute inset-0 p-2 flex flex-col items-start">

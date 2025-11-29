@@ -43,6 +43,7 @@ function CommandBarKclInput({
   arg,
   stepBack,
   onSubmit,
+  currentCode,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'kcl'
@@ -50,6 +51,7 @@ function CommandBarKclInput({
   }
   stepBack: () => void
   onSubmit: (event: unknown) => void
+  currentCode: string
 }) {
   const commandBarState = useCommandBarState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
@@ -141,6 +143,7 @@ function CommandBarKclInput({
     sourceRange: sourceRangeForPrevVariables,
     selectionRanges,
     allowArrays,
+    code: currentCode,
   })
 
   const varMentionData: Completion[] = prevVariables.map((v) => {

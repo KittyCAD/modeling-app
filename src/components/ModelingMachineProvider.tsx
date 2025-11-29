@@ -26,7 +26,6 @@ import {
   useSketchModeMenuEnableDisable,
 } from '@src/hooks/useMenu'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
-import { useKclContext } from '@src/lang/KclProvider'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   sketchOnExtrudedFace,
@@ -769,6 +768,7 @@ export const ModelingMachineProvider = ({
                 : applyConstraintAngleLength({
                     selectionRanges,
                     angleOrLength: 'setAngle',
+                    currentCode: kclManager.code,
                   }))
             const pResult = parse(recast(modifiedAst))
             if (trap(pResult) || !resultIsOk(pResult))
@@ -1318,14 +1318,13 @@ export const ModelingMachineProvider = ({
   useMenuListener(cb)
 
   const { overallState } = useNetworkContext()
-  const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
 
   // Assumes all commands are network commands
   useSketchModeMenuEnableDisable(
     modelingState.context.currentMode,
     overallState,
-    isExecuting,
+    kclManager.isExecutingSignal.value,
     isStreamReady,
     [
       { menuLabel: 'Edit.Modify with Zoo Text-To-CAD' },
