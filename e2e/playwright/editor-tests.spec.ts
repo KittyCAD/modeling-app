@@ -8,7 +8,51 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+
+type MainAxisTestFixtures = Pick<Fixtures, 'homePage' | 'toolbar' | 'scene'> & {
+  page: Page
+}
+
+async function runMainAxisSelectionTest(
+  plane: 'XZ' | '-XZ',
+  { page, homePage, toolbar, scene }: MainAxisTestFixtures
+) {
+  const persistCode = `sketch002 = startSketchOn(${plane})
+profile002 = startProfile(sketch002, at = [-1.0, 0])
+  |> xLine(length = 2.0)`
+
+  await page.addInitScript(async (code) => {
+    localStorage.setItem('persistCode', code)
+  }, persistCode)
+
+  const width = 1200
+  const height = 800
+  const viewportSize = { width, height }
+  await page.setBodyDimensions(viewportSize)
+
+  await homePage.goToModelingScene()
+
+  const u = await getUtils(page)
+  await u.waitForPageLoad()
+
+  await toolbar.editSketch(0)
+
+  await page.waitForTimeout(1000)
+  await toolbar.closePane(DefaultLayoutPaneID.Code)
+
+  await page.waitForTimeout(1000)
+
+  const clickCoords = await scene.convertPagePositionToStream(0.6, 0.5, 'ratio')
+  await page.mouse.click(clickCoords.x, clickCoords.y)
+
+  await page.waitForTimeout(1000)
+
+  const element = page.locator('[data-overlay-index="1"]')
+  await expect(element).toHaveAttribute('data-overlay-visible', 'true')
+}
 
 test.describe('Editor tests', () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {
@@ -1270,52 +1314,32 @@ profile001 = startProfile(sketch001, at = [0, 0])
     })
   })
 
-  test('Can select lines on the main axis', async ({
+  test('Can select lines on the main axis (XZ)', async ({
     page,
     homePage,
     toolbar,
     scene,
   }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
-  profile001 = startProfile(sketch001, at = [100.00, 100.0])
-    |> yLine(length = -100.0)
-    |> xLine(length = 200.0)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()`
-      )
+    await runMainAxisSelectionTest('XZ', {
+      page,
+      homePage,
+      toolbar,
+      scene,
     })
+  })
 
-    const width = 1200
-    const height = 800
-    const viewportSize = { width, height }
-    await page.setBodyDimensions(viewportSize)
-
-    await homePage.goToModelingScene()
-
-    const u = await getUtils(page)
-    await u.waitForPageLoad()
-
-    await toolbar.editSketch(0)
-
-    await page.waitForTimeout(1000)
-    await toolbar.closePane(DefaultLayoutPaneID.Code)
-
-    // Click on the bottom segment that lies on the x axis
-    const clickCoords = await scene.convertPagePositionToStream(
-      0.85,
-      0.5,
-      'ratio'
-    )
-    await page.mouse.click(clickCoords.x, clickCoords.y)
-
-    await page.waitForTimeout(1000)
-
-    // Verify segment is selected (you can check for visual indicators or state)
-    const element = page.locator('[data-overlay-index="2"]')
-    await expect(element).toHaveAttribute('data-overlay-visible', 'true')
+  test('Can select lines on the main axis (-XZ)', async ({
+    page,
+    homePage,
+    toolbar,
+    scene,
+  }) => {
+    await runMainAxisSelectionTest('-XZ', {
+      page,
+      homePage,
+      toolbar,
+      scene,
+    })
   })
 
   test(`Only show axis planes when there are no errors`, async ({
