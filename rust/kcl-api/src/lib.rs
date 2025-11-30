@@ -64,6 +64,13 @@ impl SceneGraphDelta {
 #[ts(export)]
 pub struct SourceDelta {}
 
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+// TODO not sure if this needs to be file name and content?
+pub struct KclSource {
+    pub text: String,
+}
+
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, rename = "ApiObjectId")]
 pub struct ObjectId(pub usize);

@@ -7,6 +7,9 @@ import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
+import type { SegmentCtor } from '@rust/kcl-lib/bindings/SegmentCtor'
+import type { SketchExecOutcome } from '@rust/kcl-api/bindings/SketchExecOutcome'
+import type { KclSource } from '@rust/kcl-api/bindings/KclSource'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { encode as msgpackEncode } from '@msgpack/msgpack'
 
@@ -262,6 +265,32 @@ export default class RustContext {
     try {
       const serialized = msgpackEncode(response)
       await instance.sendResponse(serialized)
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
+  /** Add a segment to a sketch. */
+  async addSegment(
+    version: number,
+    sketch: number,
+    segment: SegmentCtor,
+    label?: string
+  ): Promise<{
+    kclSource: KclSource
+    sketchExecOutcome: SketchExecOutcome
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result = await instance.add_segment(
+        version,
+        sketch,
+        JSON.stringify(segment),
+        label
+      )
+      return JSON.parse(result)
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
