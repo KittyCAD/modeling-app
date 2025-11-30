@@ -10,6 +10,7 @@ use uuid::Uuid;
 
 use crate::{
     CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, SourceRange,
+    collections::AhashIndexSet,
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
     execution::{
@@ -55,6 +56,9 @@ pub(super) struct GlobalState {
     pub artifacts: ArtifactState,
     /// Artifacts for only the root module.
     pub root_module_artifacts: ModuleArtifactState,
+    /// The segments that were edited that triggered this execution.
+    #[cfg(feature = "artifact-graph")]
+    pub segment_ids_edited: AhashIndexSet<ObjectId>,
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -139,19 +143,27 @@ pub(crate) struct SketchBlockState {
     #[cfg(feature = "artifact-graph")]
     pub sketch_constraints: Vec<ObjectId>,
     pub solver_constraints: Vec<kcl_ezpz::Constraint>,
+    pub solver_optional_constraints: Vec<kcl_ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
 }
 
 impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
-            global: GlobalState::new(&exec_context.settings),
+            global: GlobalState::new(&exec_context.settings, Default::default()),
+            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), 0),
+        }
+    }
+
+    pub fn new_sketch_mode(exec_context: &super::ExecutorContext, segment_ids_edited: AhashIndexSet<ObjectId>) -> Self {
+        ExecState {
+            global: GlobalState::new(&exec_context.settings, segment_ids_edited),
             mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), 0),
         }
     }
 
     pub(super) fn reset(&mut self, exec_context: &super::ExecutorContext) {
-        let global = GlobalState::new(&exec_context.settings);
+        let global = GlobalState::new(&exec_context.settings, Default::default());
 
         *self = ExecState {
             global,
@@ -282,6 +294,11 @@ impl ExecState {
     pub fn set_scene_object(&mut self, object: Object) {
         let id = object.id;
         self.mod_local.artifacts.scene_objects[id.0] = object;
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn segment_ids_edited_contains(&self, object_id: &ObjectId) -> bool {
+        self.global.segment_ids_edited.contains(object_id)
     }
 
     pub(crate) fn sketch_block_mut(&mut self) -> Option<&mut SketchBlockState> {
@@ -516,7 +533,9 @@ impl ExecState {
 }
 
 impl GlobalState {
-    fn new(settings: &ExecutorSettings) -> Self {
+    fn new(settings: &ExecutorSettings, segment_ids_edited: AhashIndexSet<ObjectId>) -> Self {
+        #[cfg(not(feature = "artifact-graph"))]
+        drop(segment_ids_edited);
         let mut global = GlobalState {
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
@@ -525,6 +544,8 @@ impl GlobalState {
             mod_loader: Default::default(),
             errors: Default::default(),
             id_to_source: Default::default(),
+            #[cfg(feature = "artifact-graph")]
+            segment_ids_edited,
         };
 
         let root_id = ModuleId::default();
