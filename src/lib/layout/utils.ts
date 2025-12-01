@@ -643,6 +643,12 @@ export function setOpenPanes(rootLayout: Layout, paneIDs: string[]): Layout {
   return rootLayout
 }
 
+/**
+ * Given a versioned layout, apply migrations defined for the version or successive output versions
+ * until no more migrations are found.
+ *
+ * If an error occurs while migrating, bail out to returning our default layout.
+ */
 export function applyLayoutMigrationMap(
   layout: LayoutWithMetadata,
   migrations: LayoutMigrationMap
@@ -657,6 +663,11 @@ export function applyLayoutMigrationMap(
   return newLayout
 }
 
+/**
+ * Apply a single migration, taking a versioned layout to a targeted output version
+ * by applying a set of migrations, which match on layout nodes and apply a defined
+ * set of transformation functions on any matches.
+ */
 function applyLayoutMigration(
   layout: LayoutWithMetadata,
   migration: LayoutMigration
@@ -673,6 +684,10 @@ function applyLayoutMigration(
   return newLayout
 }
 
+/**
+ * A recursive search through a Layout's node using a matcher function. If a match is found,
+ * iterates through the provided transformations and replaces the matched node with the result.
+ */
 function applyTransformationsToMatchedLayoutChildren(
   layout: Layout,
   matcher: LayoutMatcher,
