@@ -55,17 +55,17 @@
 ///
 /// ```kcl,inline,norun
 /// sketch1 = startSketchOn(XY)
-/// square1 = startProfile(sketch1, at = [0, 0])
+/// squareProfile1 = startProfile(sketch1, at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
 ///   |> close()
-/// square2 = startProfile(sketch1, at = [20, 0])
+/// squareProfile2 = startProfile(sketch1, at = [20, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
 ///   |> close()
-/// twoCubes = extrude([square1, square2], length = 10)
+/// twoCubes = extrude([squareProfile1, squareProfile2], length = 10)
 /// ```
 ///
 /// ```kcl
