@@ -165,7 +165,7 @@
     "@iarna/toml": "^2.2.5",
     "@lezer/generator": "^1.7.3",
     "@nabla/vite-plugin-eslint": "^2.0.6",
-    "@playwright/test": "^1.52.0",
+    "@playwright/test": "^1.57.0",
     "@preact/signals-react-transform": "^0.6.0",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^15.0.7",
