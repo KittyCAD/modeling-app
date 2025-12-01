@@ -154,15 +154,7 @@ export function useCalculateKclExpression({
       setIsExecuting(false)
       setValueNode(null)
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [
-    value,
-    availableVarInfo,
-    code,
-    kclManager.variables,
-    rustContext,
-    options,
-  ])
+  }, [value, availableVarInfo, code, kclManager.variables])
 
   return {
     valueNode,
