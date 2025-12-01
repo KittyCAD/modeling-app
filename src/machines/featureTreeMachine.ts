@@ -68,10 +68,6 @@ type FeatureTreeContext = {
   rustContext: RustContext
 }
 
-export const featureTreeMachineDefaultContext: FeatureTreeContext = {
-  rustContext,
-}
-
 export const featureTreeMachine = setup({
   types: {
     input: {} as FeatureTreeContext,
