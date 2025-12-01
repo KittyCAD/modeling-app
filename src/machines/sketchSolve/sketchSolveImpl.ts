@@ -770,42 +770,118 @@ export function spawnTool(
   }
 }
 
+/**
+ * Default implementation of findPointSegmentElement that queries the DOM.
+ * This can be overridden in tests for better testability.
+ */
+function defaultFindPointSegmentElement(segmentId: number): HTMLElement | null {
+  // Find the element with the matching segment_id
+  const allElements = document.querySelectorAll('[data-segment_id]')
+  for (const el of allElements) {
+    if (
+      el instanceof HTMLElement &&
+      el.dataset.segment_id === String(segmentId)
+    ) {
+      return el
+    }
+  }
+  return null
+}
+
+/**
+ * Creates the onDragStart callback for sketch solve drag operations.
+ * Handles initialization of drag state and point segment visual feedback.
+ *
+ * @param setLastSuccessfulDragFromPoint - Setter for the last successful drag start point
+ * @param setDraggingPointElement - Setter for the currently dragging point element
+ * @param getDraggingPointElement - Getter for the currently dragging point element
+ * @param findPointSegmentElement - Function to find a point segment element by ID (defaults to DOM query)
+ */
+export function createOnDragStartCallback({
+  setLastSuccessfulDragFromPoint,
+  setDraggingPointElement,
+  getDraggingPointElement,
+  findPointSegmentElement = defaultFindPointSegmentElement,
+}: {
+  setLastSuccessfulDragFromPoint: (point: Vector2) => void
+  setDraggingPointElement: (element: HTMLElement | null) => void
+  getDraggingPointElement: () => HTMLElement | null
+  findPointSegmentElement?: (segmentId: number) => HTMLElement | null
+}): (arg: {
+  intersectionPoint: { twoD: Vector2; threeD: Vector3 }
+  selected?: Object3D
+  mouseEvent: MouseEvent
+  intersects: Array<any>
+}) => void | Promise<void> {
+  return ({ intersectionPoint, selected }) => {
+    // reset on drag start
+    setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
+
+    // Check if we're starting a drag on a point segment (CSS2DObject)
+    // sceneInfra now sets selected to the parent Group for CSS2DObjects
+    if (selected instanceof Group) {
+      const segmentId = Number(selected.name)
+      if (!Number.isNaN(segmentId)) {
+        // Check if this is a point segment by looking for the CSS2DObject
+        const hasCSS2DObject = selected.children.some(
+          (child) => child.userData?.type === 'handle'
+        )
+        if (hasCSS2DObject) {
+          setDraggingPointElement(findPointSegmentElement(segmentId))
+          // Set opacity to indicate dragging
+          const element = getDraggingPointElement()
+          if (element) {
+            const innerCircle = element.querySelector('div')
+            if (innerCircle) {
+              innerCircle.style.opacity = '0.7'
+            }
+          }
+          return
+        }
+      }
+    }
+    setDraggingPointElement(null)
+  }
+}
+
 export function setUpOnDragAndSelectionClickCallbacks({
   self,
   context,
 }: SolveActionArgs): void {
+  const createGetSet = <T>(initial: T): [() => T, (a: T) => void] => {
+    let value: T = initial
+    return [
+      () => value,
+      (newValue: T) => {
+        value = newValue
+      },
+    ]
+  }
   // Closure-scoped mutex to prevent concurrent async editSegment operations.
   // Not in XState context since it's purely an implementation detail for race condition prevention.
-  let isSolveInProgress = false
-  let lastHoveredMesh: Mesh | null = null
-  let lastSuccessfulDragFromPoint = new Vector2()
-  let draggingPointElement: HTMLElement | null = null
-
-  /**
-   * Helper function to find the CSS2DObject element for visual feedback
-   * Used to update opacity during drag
-   */
-  function findPointSegmentElement(segmentId: number): HTMLElement | null {
-    // Find the element with the matching segment_id
-    const allElements = document.querySelectorAll('[data-segment_id]')
-    for (const el of allElements) {
-      if (
-        el instanceof HTMLElement &&
-        el.dataset.segment_id === String(segmentId)
-      ) {
-        return el
-      }
-    }
-    return null
-  }
+  const [getIsSolveInProgress, setIsSolveInProgress] = createGetSet(false)
+  const [getLastHoveredMesh, setLastHoveredMesh] = createGetSet<Mesh | null>(
+    null
+  )
+  const [getLastSuccessfulDragFromPoint, setLastSuccessfulDragFromPoint] =
+    createGetSet<Vector2>(new Vector2())
+  const [getDraggingPointElement, setDraggingPointElement] =
+    createGetSet<HTMLElement | null>(null)
 
   // Selection box visual element
-  let selectionBoxObject: CSS2DObject | null = null
-  let selectionBoxGroup: Group | null = null
-  let labelsWrapper: HTMLElement | null = null
-  let boxDiv: HTMLElement | null = null
-  let verticalLine: HTMLElement | null = null
-  let horizontalLine: HTMLElement | null = null
+  const [getSelectionBoxObject, setSelectionBoxObject] =
+    createGetSet<CSS2DObject | null>(null)
+  const [getSelectionBoxGroup, setSelectionBoxGroup] =
+    createGetSet<Group | null>(null)
+  const [getLabelsWrapper, setLabelsWrapper] = createGetSet<HTMLElement | null>(
+    null
+  )
+  const [getBoxDiv, setBoxDiv] = createGetSet<HTMLElement | null>(null)
+  const [getVerticalLine, setVerticalLine] = createGetSet<HTMLElement | null>(
+    null
+  )
+  const [getHorizontalLine, setHorizontalLine] =
+    createGetSet<HTMLElement | null>(null)
 
   /**
    * Helper function to create or update the selection box visual
@@ -866,14 +942,16 @@ export function setUpOnDragAndSelectionClickCallbacks({
     const sketchSceneGroup =
       context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
 
-    if (!selectionBoxGroup) {
+    if (!getSelectionBoxGroup()) {
       // Create the selection box group and CSS2DObject
-      selectionBoxGroup = new Group()
-      selectionBoxGroup.name = 'selectionBox'
-      selectionBoxGroup.userData.type = 'selectionBox'
+      const newSelectionBoxGroup = new Group()
+      newSelectionBoxGroup.name = 'selectionBox'
+      newSelectionBoxGroup.userData.type = 'selectionBox'
+      setSelectionBoxGroup(newSelectionBoxGroup)
 
       // TODO configure to work with light mode too
-      ;[boxDiv, verticalLine, horizontalLine, labelsWrapper] = htmlHelper`
+      const [newBoxDiv, newVerticalLine, newHorizontalLine, newLabelsWrapper] =
+        htmlHelper`
               <div
                 ${{ key: 'id', value: 'selection-box' }}
                 style="
@@ -941,23 +1019,28 @@ export function setUpOnDragAndSelectionClickCallbacks({
               </div>
             `
 
-      labelsWrapper
+      setBoxDiv(newBoxDiv)
+      setVerticalLine(newVerticalLine)
+      setHorizontalLine(newHorizontalLine)
+      setLabelsWrapper(newLabelsWrapper)
 
-      selectionBoxObject = new CSS2DObject(boxDiv)
-      selectionBoxObject.userData.type = 'selectionBox'
-      selectionBoxGroup.add(selectionBoxObject)
+      const newSelectionBoxObject = new CSS2DObject(newBoxDiv)
+      newSelectionBoxObject.userData.type = 'selectionBox'
+      setSelectionBoxObject(newSelectionBoxObject)
+      getSelectionBoxGroup()?.add(newSelectionBoxObject)
 
       // Add to sketch solve group (will inherit its rotation)
       if (sketchSceneGroup) {
-        sketchSceneGroup.add(selectionBoxGroup)
-        selectionBoxGroup.layers.set(SKETCH_LAYER)
-        selectionBoxObject.layers.set(SKETCH_LAYER)
+        sketchSceneGroup.add(getSelectionBoxGroup()!)
+        getSelectionBoxGroup()!.layers.set(SKETCH_LAYER)
+        newSelectionBoxObject.layers.set(SKETCH_LAYER)
       }
     }
 
+    const currentSelectionBoxObject = getSelectionBoxObject()
     if (
-      selectionBoxObject &&
-      selectionBoxObject.element instanceof HTMLElement
+      currentSelectionBoxObject &&
+      currentSelectionBoxObject.element instanceof HTMLElement
     ) {
       // Transform center position to sketch solve group's local space
       // Since the selection box group is a child of the rotated sketch solve group,
@@ -969,20 +1052,23 @@ export function setUpOnDragAndSelectionClickCallbacks({
       } else {
         localCenter.copy(center3D)
       }
-      selectionBoxObject.position.copy(localCenter)
+      currentSelectionBoxObject.position.copy(localCenter)
 
       // Size in CSS pixels (already calculated from screen projection)
-      const boxDiv = selectionBoxObject.element
-      boxDiv.style.width = `${widthPx}px`
-      boxDiv.style.height = `${heightPx}px`
+      const boxDivElement = getBoxDiv()
+      if (boxDivElement) {
+        boxDivElement.style.width = `${widthPx}px`
+        boxDivElement.style.height = `${heightPx}px`
 
-      // Update border style based on selection direction
-      boxDiv.style.border = `2px ${borderStyle} rgba(255, 255, 255, 0.5)`
+        // Update border style based on selection direction
+        boxDivElement.style.border = `2px ${borderStyle} rgba(255, 255, 255, 0.5)`
+      }
 
       // Update label opacity based on active selection mode
-      if (labelsWrapper) {
-        const intersectsLabel = labelsWrapper.children[0] as HTMLElement
-        const containsLabel = labelsWrapper.children[1] as HTMLElement
+      const currentLabelsWrapper = getLabelsWrapper()
+      if (currentLabelsWrapper) {
+        const intersectsLabel = currentLabelsWrapper.children[0] as HTMLElement
+        const containsLabel = currentLabelsWrapper.children[1] as HTMLElement
 
         if (intersectsLabel && containsLabel) {
           if (isIntersectionBox) {
@@ -1033,40 +1119,45 @@ export function setUpOnDragAndSelectionClickCallbacks({
       const lineExtensionSize = '12px'
 
       // Position vertical line (extends from start point to nearest vertical edge)
-      if (verticalLine && verticalLine instanceof HTMLElement) {
-        verticalLine.style.left = `calc(50% + ${startX}px)`
-        verticalLine.style.top = `calc(50% + ${startY}px)`
-        verticalLine.style.height = lineExtensionSize
+      const currentVerticalLine = getVerticalLine()
+      if (currentVerticalLine && currentVerticalLine instanceof HTMLElement) {
+        currentVerticalLine.style.left = `calc(50% + ${startX}px)`
+        currentVerticalLine.style.top = `calc(50% + ${startY}px)`
+        currentVerticalLine.style.height = lineExtensionSize
         if (startY > 0) {
           // Start point is above center, line extends upward to top edge
-          verticalLine.style.transform = 'translateX(-50%)'
+          currentVerticalLine.style.transform = 'translateX(-50%)'
         } else {
           // Start point is below center, line extends downward to bottom edge
-          verticalLine.style.transform = 'translate(-50%, -100%)'
+          currentVerticalLine.style.transform = 'translate(-50%, -100%)'
         }
       }
 
       // Position horizontal line (extends from start point to nearest horizontal edge)
-      if (horizontalLine && horizontalLine instanceof HTMLElement) {
-        horizontalLine.style.top = `calc(50% + ${startY}px)`
-        horizontalLine.style.width = lineExtensionSize
-        horizontalLine.style.left = `calc(50% + ${startX}px)`
+      const currentHorizontalLine = getHorizontalLine()
+      if (
+        currentHorizontalLine &&
+        currentHorizontalLine instanceof HTMLElement
+      ) {
+        currentHorizontalLine.style.top = `calc(50% + ${startY}px)`
+        currentHorizontalLine.style.width = lineExtensionSize
+        currentHorizontalLine.style.left = `calc(50% + ${startX}px)`
         if (startX < 0) {
           // Start point is left of center, line extends leftward to left edge
-          horizontalLine.style.transform = 'translate(-100%, -50%)'
+          currentHorizontalLine.style.transform = 'translate(-100%, -50%)'
         } else {
           // Start point is right of center, line extends rightward to right edge
-          horizontalLine.style.transform = 'translateY(-50%)'
+          currentHorizontalLine.style.transform = 'translateY(-50%)'
         }
       }
 
-      if (labelsWrapper) {
+      if (currentLabelsWrapper) {
         // Position relative to boxDiv center (which is at 50%, 50% in boxDiv's coordinate system)
         // Then add the offset to move to the start point
-        labelsWrapper.style.left = `calc(50% + ${startX}px)`
-        labelsWrapper.style.top = `calc(50% + ${finalOffsetY}px)`
+        currentLabelsWrapper.style.left = `calc(50% + ${startX}px)`
+        currentLabelsWrapper.style.top = `calc(50% + ${finalOffsetY}px)`
         // Center the labels wrapper at this point so the middle of the two labels aligns with the corner
-        labelsWrapper.style.transform = 'translate(-50%, -50%)'
+        currentLabelsWrapper.style.transform = 'translate(-50%, -50%)'
       }
     }
   }
@@ -1075,14 +1166,16 @@ export function setUpOnDragAndSelectionClickCallbacks({
    * Helper function to remove the selection box visual
    */
   function removeSelectionBox(): void {
-    if (selectionBoxGroup) {
-      selectionBoxGroup.removeFromParent()
-      if (selectionBoxObject?.element instanceof HTMLElement) {
-        selectionBoxObject.element.remove()
+    const currentSelectionBoxGroup = getSelectionBoxGroup()
+    if (currentSelectionBoxGroup) {
+      currentSelectionBoxGroup.removeFromParent()
+      const currentSelectionBoxObject = getSelectionBoxObject()
+      if (currentSelectionBoxObject?.element instanceof HTMLElement) {
+        currentSelectionBoxObject.element.remove()
       }
-      selectionBoxGroup = null
-      selectionBoxObject = null
-      labelsWrapper = null
+      setSelectionBoxGroup(null)
+      setSelectionBoxObject(null)
+      setLabelsWrapper(null)
     }
   }
 
@@ -1396,46 +1489,24 @@ export function setUpOnDragAndSelectionClickCallbacks({
   }
 
   context.sceneInfra.setCallbacks({
-    onDragStart: ({ intersectionPoint, selected }) => {
-      // reset on drag start
-      lastSuccessfulDragFromPoint = intersectionPoint.twoD.clone()
-
-      // Check if we're starting a drag on a point segment (CSS2DObject)
-      // sceneInfra now sets selected to the parent Group for CSS2DObjects
-      if (selected instanceof Group) {
-        const segmentId = Number(selected.name)
-        if (!Number.isNaN(segmentId)) {
-          // Check if this is a point segment by looking for the CSS2DObject
-          const hasCSS2DObject = selected.children.some(
-            (child) => child.userData?.type === 'handle'
-          )
-          if (hasCSS2DObject) {
-            draggingPointElement = findPointSegmentElement(segmentId)
-            // Set opacity to indicate dragging
-            if (draggingPointElement) {
-              const innerCircle = draggingPointElement.querySelector('div')
-              if (innerCircle) {
-                innerCircle.style.opacity = '0.7'
-              }
-            }
-            return
-          }
-        }
-      }
-      draggingPointElement = null
-    },
+    onDragStart: createOnDragStartCallback({
+      setLastSuccessfulDragFromPoint,
+      setDraggingPointElement,
+      getDraggingPointElement,
+    }),
     onDragEnd: () => {
       // Restore opacity for point segment if we were dragging one
-      if (draggingPointElement) {
-        const innerCircle = draggingPointElement.querySelector('div')
+      const element = getDraggingPointElement()
+      if (element) {
+        const innerCircle = element.querySelector('div')
         if (innerCircle) {
           innerCircle.style.opacity = '1'
         }
-        draggingPointElement = null
+        setDraggingPointElement(null)
       }
     },
     onDrag: async ({ selected, intersectionPoint }) => {
-      if (isSolveInProgress) {
+      if (getIsSolveInProgress()) {
         return
       }
 
@@ -1490,9 +1561,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      isSolveInProgress = true
+      setIsSolveInProgress(true)
       const twoD = intersectionPoint.twoD
-      const dragVec = twoD.clone().sub(lastSuccessfulDragFromPoint)
+      const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
 
       const objects = sceneGraphDelta.new_graph.objects
       const segmentsToEdit: ExistingSegmentCtor[] = []
@@ -1539,7 +1610,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       }
 
       if (segmentsToEdit.length === 0) {
-        isSolveInProgress = false
+        setIsSolveInProgress(false)
         return
       }
 
@@ -1555,9 +1626,9 @@ export function setUpOnDragAndSelectionClickCallbacks({
           return null
         })
 
-      isSolveInProgress = false
+      setIsSolveInProgress(false)
       // after successful drag, update the lastSuccessfulDragFromPoint
-      lastSuccessfulDragFromPoint = twoD.clone()
+      setLastSuccessfulDragFromPoint(twoD.clone())
 
       // send event
       if (result) {
@@ -1636,7 +1707,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           ])
         )
         updateLineSegmentHover(mesh, true, allSelectedIds)
-        lastHoveredMesh = mesh
+        setLastHoveredMesh(mesh)
       }
     },
     onMouseLeave: ({ selected, isAreaSelectActive }) => {
@@ -1645,7 +1716,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
       // Clear hover state for the previously hovered mesh
-      if (lastHoveredMesh) {
+      const hoveredMesh = getLastHoveredMesh()
+      if (hoveredMesh) {
         const snapshot = self.getSnapshot()
         // Combine selectedIds and duringAreaSelectIds for highlighting
         const allSelectedIds = Array.from(
@@ -1654,8 +1726,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
             ...snapshot.context.duringAreaSelectIds,
           ])
         )
-        updateLineSegmentHover(lastHoveredMesh, false, allSelectedIds)
-        lastHoveredMesh = null
+        updateLineSegmentHover(hoveredMesh, false, allSelectedIds)
+        setLastHoveredMesh(null)
       }
       // Also handle if selected is provided (for safety)
       if (selected) {
