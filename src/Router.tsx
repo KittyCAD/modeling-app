@@ -28,7 +28,7 @@ import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { fileLoader, homeLoader } from '@src/lib/routeLoaders'
 import {
-  codeManager,
+  kclManager,
   engineCommandManager,
   rustContext,
 } from '@src/lib/singletons'
@@ -162,7 +162,7 @@ const router = createRouter([
  * @returns RouterProvider
  */
 export const Router = () => {
-  const networkStatus = useNetworkStatus()
+  const networkStatus = useNetworkStatus(engineCommandManager)
 
   return (
     <NetworkContext.Provider value={networkStatus}>
@@ -175,12 +175,7 @@ function CoreDump() {
   const token = useToken()
   const coreDumpManager = useMemo(
     () =>
-      new CoreDumpManager(
-        engineCommandManager,
-        codeManager,
-        rustContext,
-        token
-      ),
+      new CoreDumpManager(engineCommandManager, kclManager, rustContext, token),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     []
   )
