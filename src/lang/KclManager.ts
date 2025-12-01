@@ -520,6 +520,7 @@ export class KclManager extends EventTarget {
     // Clear all previous errors and logs because they are old since they executed a new file
     // If we decouple safeParse from execution we need to move this application logic.
     this.errors = []
+    this.logs = []
 
     this.addDiagnostics(compilationErrorsToDiagnostics(result.errors, code))
     this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings, code))
