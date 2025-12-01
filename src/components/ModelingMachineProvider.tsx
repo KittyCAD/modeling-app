@@ -1328,7 +1328,6 @@ export const ModelingMachineProvider = ({
     isExecuting,
     isStreamReady,
     [
-      { menuLabel: 'Edit.Modify with Zoo Text-To-CAD' },
       { menuLabel: 'View.Standard views' },
       { menuLabel: 'View.Named views' },
       { menuLabel: 'Design.Start sketch' },

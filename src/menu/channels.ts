@@ -12,7 +12,6 @@ export type MenuLabels =
   | 'Edit.Rename project'
   | 'Edit.Delete project'
   | 'Edit.Change project directory'
-  | 'Edit.Modify with Zoo Text-To-CAD'
   | 'Edit.Edit parameter'
   | 'Edit.Format code'
   | 'File.Create project'

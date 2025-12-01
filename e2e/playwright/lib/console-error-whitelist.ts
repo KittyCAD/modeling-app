@@ -260,7 +260,7 @@ export const isErrorWhitelisted = (exception: Error) => {
     at async sendTelemetry (http://localhost:3000/src/lib/textToCad.ts:179:3)`,
       message: `Unexpected end of JSON input`,
       project: 'Google Chrome',
-      foundInSpec: 'e2e/playwright/text-to-cad-tests.spec.ts',
+      foundInSpec: 'e2e/playwright/zookeeper-tests.spec.ts',
     },
     {
       name: '{"kind"',

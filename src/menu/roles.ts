@@ -36,7 +36,6 @@ type EditRoleLabel =
   | 'Redo'
   | 'Speech'
   | 'Edit Parameter'
-  | 'Modify with Zoo Text-To-CAD'
   | 'Format Code'
 
 type HelpRoleLabel =
@@ -50,7 +49,6 @@ type HelpRoleLabel =
   | 'Show Release Notes'
   | 'Check for Updates'
   | 'Manage Account'
-  | 'Get Started with Text-to-CAD'
   | 'Show All Commands'
 
 type ViewRoleLabel =

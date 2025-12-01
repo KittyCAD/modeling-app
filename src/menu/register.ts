@@ -105,11 +105,6 @@ export function modelingMenuCallbackMostActions(
       })
     } else if (data.menuLabel === 'File.Create new file') {
       // NO OP. A safe command bar create new file is not implemented yet.
-    } else if (data.menuLabel === 'Edit.Modify with Zoo Text-To-CAD') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: { name: 'Prompt-to-edit', groupId: 'modeling' },
-      })
     } else if (data.menuLabel === 'Edit.Edit parameter') {
       commandBarActor.send({
         type: 'Find and select command',
