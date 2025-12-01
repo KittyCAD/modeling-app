@@ -1,4 +1,4 @@
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import { isToolTip } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getTransformInfos } from '@src/lang/std/sketchcombos'

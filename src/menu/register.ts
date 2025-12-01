@@ -6,7 +6,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import {
   authActor,
   commandBarActor,
-  editorManager,
+  kclManager,
   settingsActor,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -126,13 +126,13 @@ export function modelingMenuCallbackMostActions(
         // Cleaner, but can't import 'electron' to this file:
         // webContents.getFocusedWebContents()?.undo()
       } else {
-        editorManager.undo()
+        kclManager.undo()
       }
     } else if (data.menuLabel === 'Edit.Redo') {
       if (activeFocusIsInput()) {
         document.execCommand('redo')
       } else {
-        editorManager.redo()
+        kclManager.redo()
       }
     } else if (data.menuLabel === 'View.Orthographic view') {
       settingsActor.send({

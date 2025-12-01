@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router-dom'
 import {
-  editorManager,
+  kclManager,
   getLayout,
   getSettings,
   setLayout,
@@ -38,7 +38,7 @@ const onCodeNotificationClick: MouseEventHandler = (e) => {
       shouldExpand: true,
     })
   )
-  editorManager.scrollToFirstErrorDiagnosticIfExists()
+  kclManager.scrollToFirstErrorDiagnosticIfExists()
 }
 
 /**
@@ -95,7 +95,7 @@ export const defaultAreaLibrary = Object.freeze({
         // Open the first error in the array of errors
         // Then scroll to error
         // Do you automatically open the project files
-        // editorManager.scrollToFirstErrorDiagnosticIfExists()
+        // kclManager.scrollToFirstErrorDiagnosticIfExists()
       }
       return useMemo(() => ({ value, onClick, title }), [value, title])
     },
