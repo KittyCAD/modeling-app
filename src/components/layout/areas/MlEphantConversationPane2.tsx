@@ -134,6 +134,12 @@ export const MlEphantConversationPane2 = (props: {
     })
   }
 
+  const onInterrupt = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions2.Interrupt,
+    })
+  }
+
   const onClickClearChat = () => {
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions2.ConversationClose,
@@ -274,9 +280,10 @@ export const MlEphantConversationPane2 = (props: {
       }}
       onClickClearChat={onClickClearChat}
       onReconnect={onReconnect}
-      disabled={isProcessing || needsReconnect}
+      onInterrupt={onInterrupt}
+      disabled={needsReconnect}
       needsReconnect={needsReconnect}
-      hasPromptCompleted={isProcessing}
+      hasPromptCompleted={isProcessing === false}
       userAvatarSrc={props.user?.image}
       defaultPrompt={defaultPrompt}
     />

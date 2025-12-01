@@ -30,6 +30,7 @@ export interface MlEphantConversationProps {
   contexts: MlEphantManagerPromptContext[]
   billingContext: BillingContext
   onProcess: (request: string, mode: MlCopilotMode) => void
+  onInterrupt: () => void
   onClickClearChat: () => void
   onReconnect: () => void
   disabled?: boolean
@@ -164,6 +165,8 @@ interface MlEphantConversationInputProps {
   billingContext: BillingContext
   onProcess: MlEphantConversationProps['onProcess']
   onReconnect: MlEphantConversationProps['onReconnect']
+  onInterrupt: MlEphantConversationProps['onInterrupt']
+  hasPromptCompleted: MlEphantConversationProps['hasPromptCompleted']
   disabled?: boolean
   needsReconnect: boolean
   defaultPrompt?: string
@@ -279,7 +282,8 @@ export const MlEphantConversationInput = (
                 <button onClick={props.onReconnect}>Reconnect</button>
               </div>
             )}
-            <button
+            { props.hasPromptCompleted
+             ? <button
               data-testid="ml-ephant-conversation-input-button"
               disabled={props.disabled}
               onClick={onClick}
@@ -287,6 +291,14 @@ export const MlEphantConversationInput = (
             >
               <CustomIcon name="caretUp" className="w-5 h-5 animate-bounce" />
             </button>
+            : <button
+              data-testid="ml-ephant-conversation-input-button"
+              onClick={props.onInterrupt}
+              className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
+            >
+              <CustomIcon name="close" className="w-5 h-5 animate-pulse" />
+            </button>
+            }
           </div>
         </div>
       </div>
@@ -404,9 +416,11 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
             <MlEphantConversationInput
               contexts={props.contexts}
               disabled={props.disabled || props.isLoading}
+              hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
               onProcess={onProcess}
               onReconnect={props.onReconnect}
+              onInterrupt={props.onInterrupt}
               billingContext={props.billingContext}
               defaultPrompt={props.defaultPrompt}
               hasAlreadySentPrompts={
