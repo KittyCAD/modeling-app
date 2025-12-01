@@ -7,10 +7,9 @@ import type {
   LayoutTransformation,
   LayoutWithMetadata,
   Orientation,
-  PaneChild,
   Side,
 } from '@src/lib/layout/types'
-import { AreaType, LayoutType } from '@src/lib/layout/types'
+import { LayoutType } from '@src/lib/layout/types'
 import type React from 'react'
 import { capitaliseFC, throttle } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
