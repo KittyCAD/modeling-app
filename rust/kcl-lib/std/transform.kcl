@@ -604,6 +604,21 @@ export fn rotate(
 /// // Scale the sweep.
 /// scale(parts, z = 0.5)
 /// ```
+/// ```kcl
+/// // Make one button (i.e. just a cylinder)
+/// button1 = startSketchOn(XY)
+///   |> circle(center = [0, 0], radius = 1.53)
+///   |> extrude(length = 1)
+/// 
+/// // Duplicate it, but use `scale` to make it smaller.
+/// button2 = startSketchOn(XY)
+///   |> circle(center = [0, 0], radius = 1.53)
+///   |> extrude(length = 1)
+///   |> translate(x = 4)
+///   // Make it 50% smaller and gold
+///   |> scale(factor = 0.5)
+///   |> appearance(color = "#ff9922")
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn scale(
   /// The solid, sketch, or set of solids or sketches to scale.
@@ -619,4 +634,8 @@ export fn scale(
   z?: number(Count) = 1,
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
   global?: bool = false,  
+  /// If given, scale the solid by this much.
+  /// Equivalent to setting `x`, `y` and `z` all to this number.
+  /// Incompatible with `x`, `y` or `z`.
+  factor?: number(Count),
 ): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}

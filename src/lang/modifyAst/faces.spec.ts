@@ -26,7 +26,7 @@ import type { StdLibCallOp } from '@src/lang/queryAst'
 import { getEdgeCutMeta } from '@src/lang/queryAst'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
@@ -484,9 +484,7 @@ ${simpleHole}
       )
     })
 
-    // TODO: enable this test once https://github.com/KittyCAD/modeling-app/issues/8616 is closed
-    // Currently it resolves to hole(extrude001... instead of hole(hole001
-    it.skip('should add a simple hole call on cylinder end cap that has a hole already', async () => {
+    it('should add a simple hole call on cylinder end cap that has a hole already', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         `${cylinder}
 ${simpleHole}`,
@@ -540,7 +538,12 @@ hole002 = hole::hole(
   holeType =   hole::simple(),
 )`
       )
-      // TODO: add mock exec once hole::hole is supported
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add a counterbore hole call on cylinder end cap', async () => {
@@ -609,17 +612,22 @@ hole002 = hole::hole(
   holeType =   hole::counterbore(depth = 1, diameter = 2),
 )`
       )
-      // TODO: add mock exec once hole::hole is supported
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should edit a simple hole call into a countersink hole call on cylinder end cap with drill end', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
-        `${cylinder}
+        `${cylinderWithFlag}
 ${simpleHole}`,
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const nodeToEdit = createPathToNodeForLastVariable(ast)
+      const nodeToEdit = createPathToNodeForLastVariable(ast, false)
       const face = getCapFromCylinder(artifactGraph)
       const cutAt = (await stringToKclExpression(
         '[1, 1]',
@@ -677,9 +685,8 @@ ${simpleHole}`,
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(cylinder)
       expect(newCode).toContain(
-        `${cylinder}
+        `${cylinderWithFlag}
 hole001 = hole::hole(
   extrude001,
   face = END,
@@ -689,7 +696,12 @@ hole001 = hole::hole(
   holeType =   hole::countersink(angle = 120, diameter = 2),
 )`
       )
-      // TODO: add mock exec once hole::hole is supported
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
   })
 

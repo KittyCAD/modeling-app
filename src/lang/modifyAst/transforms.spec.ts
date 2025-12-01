@@ -1,18 +1,19 @@
-import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
-import type { Artifact, CodeRef, PathToNode } from '@src/lang/wasm'
-import { assertParse, recast, type Program } from '@src/lang/wasm'
+import type { PathToNode } from '@src/lang/wasm'
+import { recast } from '@src/lang/wasm'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   addTranslate,
   addRotate,
   addClone,
   addAppearance,
 } from '@src/lang/modifyAst/transforms'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { err } from '@src/lib/trap'
-import { enginelessExecutor } from '@src/lib/testHelpers'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
+import {
+  getAstAndSketchSelections,
+  getKclCommandValue,
+  runNewAstAndCheckForSweep,
+} from '@src/lib/testHelpers'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type RustContext from '@src/lib/rustContext'
 import { addScale } from '@src/lang/modifyAst/transforms'
@@ -45,88 +46,6 @@ beforeEach(async () => {
 afterAll(() => {
   engineCommandManagerInThisFile.tearDown()
 })
-
-async function getKclCommandValue(
-  value: string,
-  instance: ModuleType,
-  rustContext: RustContext
-) {
-  const result = await stringToKclExpression(
-    value,
-    undefined,
-    instance,
-    rustContext
-  )
-  if (err(result) || 'errors' in result) {
-    throw new Error(`Couldn't create kcl expression`)
-  }
-
-  return result
-}
-
-async function runNewAstAndCheckForSweep(
-  ast: Node<Program>,
-  rustContext: RustContext
-) {
-  const { artifactGraph } = await enginelessExecutor(
-    ast,
-    undefined,
-    undefined,
-    rustContext
-  )
-  const sweepArtifact = artifactGraph.values().find((a) => a.type === 'sweep')
-  expect(sweepArtifact).toBeDefined()
-}
-
-function createSelectionFromPathArtifact(
-  artifacts: (Artifact & { codeRef: CodeRef })[]
-): Selections {
-  const graphSelections = artifacts.map(
-    (artifact) =>
-      ({
-        codeRef: artifact.codeRef,
-        artifact,
-      }) as Selection
-  )
-  return {
-    graphSelections,
-    otherSelections: [],
-  }
-}
-
-async function getAstAndArtifactGraph(
-  code: string,
-  instance: ModuleType,
-  kclManager: KclManager
-) {
-  const ast = assertParse(code, instance)
-  await kclManager.executeAst({ ast })
-  const {
-    artifactGraph,
-    execState: { operations },
-    variables,
-  } = kclManager
-  await new Promise((resolve) => setTimeout(resolve, 100))
-  return { ast, artifactGraph, operations, variables }
-}
-
-async function getAstAndSketchSelections(
-  code: string,
-  instance: ModuleType,
-  kclManager: KclManager
-) {
-  const { ast, artifactGraph } = await getAstAndArtifactGraph(
-    code,
-    instance,
-    kclManager
-  )
-  const artifacts = [...artifactGraph.values()].filter((a) => a.type === 'path')
-  if (artifacts.length === 0) {
-    throw new Error('Artifact not found in the graph')
-  }
-  const sketches = createSelectionFromPathArtifact(artifacts)
-  return { artifactGraph, ast, sketches }
-}
 
 describe('transforms.test.ts', () => {
   describe('Testing addTranslate', () => {
@@ -352,6 +271,73 @@ extrude001 = extrude(profile001, length = 1)`
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
+    })
+
+    const cylinderCode = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)`
+    const scaledCylinderCode = `${cylinderCode}
+scale(extrude001, factor = 2)`
+
+    it('should add a scale call with factor', async () => {
+      const {
+        artifactGraph,
+        ast,
+        sketches: objects,
+      } = await getAstAndSketchSelections(
+        cylinderCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addScale({
+        ast,
+        artifactGraph,
+        objects,
+        factor: await getKclCommandValue(
+          '2',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(scaledCylinderCode)
+    })
+
+    it('should edit a scale call with factor', async () => {
+      const {
+        artifactGraph,
+        ast,
+        sketches: objects,
+      } = await getAstAndSketchSelections(
+        scaledCylinderCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const nodeToEdit: PathToNode = [
+        ['body', ''],
+        [3, 'index'],
+        ['expression', 'ExpressionStatement'],
+      ]
+      const factor = await getKclCommandValue(
+        '3',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addScale({
+        ast,
+        artifactGraph,
+        objects,
+        factor,
+        nodeToEdit,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        scaledCylinderCode.replace('factor = 2', 'factor = 3')
+      )
     })
 
     async function runEditScaleTest(

@@ -1,4 +1,4 @@
-import { assertParse, recast, type Program, type Name } from '@src/lang/wasm'
+import { assertParse, recast, type Name } from '@src/lang/wasm'
 import {
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
@@ -7,6 +7,8 @@ import {
   getAstAndSketchSelections,
   getCapFromCylinder,
   getFacesFromBox,
+  getKclCommandValue,
+  runNewAstAndCheckForSweep,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
@@ -17,8 +19,7 @@ import {
 } from '@src/unitTestUtils'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclSingleton'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   addExtrude,
   addLoft,
@@ -58,37 +59,6 @@ beforeEach(async () => {
 afterAll(() => {
   engineCommandManagerInThisFile.tearDown()
 })
-
-async function runNewAstAndCheckForSweep(
-  ast: Node<Program>,
-  rustContext: RustContext
-) {
-  const { artifactGraph } = await enginelessExecutor(
-    ast,
-    undefined,
-    undefined,
-    rustContext
-  )
-  const sweepArtifact = artifactGraph.values().find((a) => a.type === 'sweep')
-  expect(sweepArtifact).toBeDefined()
-}
-
-async function getKclCommandValue(
-  value: string,
-  instance: ModuleType,
-  rustContext: RustContext
-) {
-  const result = await stringToKclExpression(
-    value,
-    undefined,
-    instance,
-    rustContext
-  )
-  if (err(result) || 'errors' in result) {
-    throw new Error('Failed to create KCL expression')
-  }
-  return result
-}
 
 // TODO: two different methods for the same thing. Why?
 async function getAstAndArtifactGraphEngineless(

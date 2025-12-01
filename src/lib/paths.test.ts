@@ -1,7 +1,7 @@
 import * as path from 'path'
 
-import { parseProjectRoute } from '@src/lib/paths'
 import { expect, describe, it } from 'vitest'
+import { getFilePathRelativeToProject, parseProjectRoute } from '@src/lib/paths'
 
 describe('testing parseProjectRoute', () => {
   it('should parse a project as a subpath of project dir', async () => {
@@ -77,5 +77,17 @@ describe('testing parseProjectRoute', () => {
       currentFileName: 'main.kcl',
       currentFilePath: route,
     })
+  })
+})
+
+describe('testing getFilePathRelativeToProject', () => {
+  it('should work even if the project name occurs early in the file path', () => {
+    const filePath =
+      '/oops/early-e-characters/hi/im/franknoirot/e/some/nested/file.kcl'
+    const projectName = 'e'
+    const expectedProjectRelativeFilePath = '/some/nested/file.kcl'
+    expect(getFilePathRelativeToProject(filePath, projectName, '/')).toEqual(
+      expectedProjectRelativeFilePath
+    )
   })
 })

@@ -646,6 +646,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
+        let plane_opacity = 0.1;
         let plane_settings: Vec<(PlaneName, Uuid, Option<Color>)> = vec![
             (
                 PlaneName::Xy,
@@ -654,7 +655,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     r: 0.7,
                     g: 0.28,
                     b: 0.28,
-                    a: 0.4,
+                    a: plane_opacity,
                 }),
             ),
             (
@@ -664,7 +665,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     r: 0.28,
                     g: 0.7,
                     b: 0.28,
-                    a: 0.4,
+                    a: plane_opacity,
                 }),
             ),
             (
@@ -674,7 +675,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     r: 0.28,
                     g: 0.28,
                     b: 0.7,
-                    a: 0.4,
+                    a: plane_opacity,
                 }),
             ),
             (PlaneName::NegXy, id_generator.next_uuid(), None),
@@ -905,7 +906,7 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
         token
     } else {
         return Err(anyhow::anyhow!(
-            "No API token found in environment variables. Use KITTYCAD_API_TOKEN or ZOO_API_TOKEN"
+            "No API token found in environment variables. Use ZOO_API_TOKEN"
         ));
     };
 

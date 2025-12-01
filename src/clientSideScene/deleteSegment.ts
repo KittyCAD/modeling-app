@@ -26,8 +26,7 @@ import {
 } from '@src/lib/selections'
 
 import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
+import type { KclManager } from '@src/lang/KclManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -42,7 +41,6 @@ export async function deleteSegmentsOrProfiles({
   sketchDetails: SketchDetails | null
   dependencies: {
     kclManager: KclManager
-    codeManager: CodeManager
     wasmInstance?: ModuleType
     rustContext: RustContext
     sceneEntitiesManager: SceneEntities
@@ -69,7 +67,7 @@ export async function deleteSegmentsOrProfiles({
     dependentRanges,
     modifiedAst,
     dependencies.kclManager.variables,
-    dependencies.codeManager.code,
+    dependencies.kclManager.code,
     pathToNodes,
     getConstraintInfoKw,
     removeSingleConstraint,

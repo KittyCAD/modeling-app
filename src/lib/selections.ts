@@ -18,6 +18,7 @@ import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedS
 import {
   findAllChildrenAndOrderByPlaceInCode,
   getEdgeCutMeta,
+  getLastVariable,
   getNodeFromPath,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
@@ -41,7 +42,6 @@ import type {
   ArtifactGraph,
   CallExpressionKw,
   Expr,
-  PathToNode,
   Program,
   SourceRange,
 } from '@src/lang/wasm'
@@ -49,7 +49,6 @@ import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import {
-  codeManager,
   engineCommandManager,
   kclManager,
   rustContext,
@@ -247,7 +246,7 @@ export function handleSelectionBatch({
     resetAndSetEngineEntitySelectionCmds(selectionToEngine)
   selections.graphSelections.forEach(({ codeRef }) => {
     if (codeRef.range?.[1]) {
-      const safeEnd = Math.min(codeRef.range[1], codeManager.code.length)
+      const safeEnd = Math.min(codeRef.range[1], kclManager.code.length)
       ranges.push(EditorSelection.cursor(safeEnd))
     }
   })
@@ -264,7 +263,7 @@ export function handleSelectionBatch({
 
   return {
     codeMirrorSelection: EditorSelection.create(
-      [EditorSelection.cursor(codeManager.code.length)],
+      [EditorSelection.cursor(kclManager.code.length)],
       0
     ),
     engineEvents,
@@ -1089,17 +1088,18 @@ export async function selectionBodyFace(
     )
   }
 
-  const lastChild =
-    findAllChildrenAndOrderByPlaceInCode(
-      { type: 'sweep', ...extrusion },
-      kclManager.artifactGraph
-    )[0] || null
-  const lastChildCodeRef: PathToNode | null =
-    lastChild?.type === 'compositeSolid' ? lastChild.codeRef.pathToNode : null
-
-  const extrudePathToNode = !err(extrusion)
-    ? lastChildCodeRef || extrusion.codeRef.pathToNode
-    : []
+  const children = findAllChildrenAndOrderByPlaceInCode(
+    { type: 'sweep', ...extrusion },
+    kclManager.artifactGraph
+  )
+  const lastChildVariable = getLastVariable(children, kclManager.ast, [
+    'sweep',
+    'compositeSolid',
+  ])
+  const extrudePathToNode =
+    lastChildVariable && !err(lastChildVariable)
+      ? lastChildVariable.pathToNode
+      : []
 
   return {
     type: 'extrudeFace',

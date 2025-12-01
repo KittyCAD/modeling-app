@@ -4,7 +4,6 @@ import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import {
-  codeManager,
   engineCommandManager,
   kclManager,
   rustContext,
@@ -29,9 +28,9 @@ const attemptToConnectToEngine = async ({
   timeToConnect,
 }: {
   authToken: string
-  videoWrapperRef: React.RefObject<HTMLDivElement>
+  videoWrapperRef: React.RefObject<HTMLDivElement | null>
   setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   settingsEngine: SettingsViaQueryString
   timeToConnect: number
@@ -118,13 +117,13 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async () => {
     message: 'rustContext.clearSceneAndBustCache()',
     metadata: {
       jsAppSettings: settings,
-      filePath: codeManager.currentFilePath || undefined,
+      filePath: kclManager.currentFilePath || undefined,
     },
   })
   // Bust the cache always! A new connection has been made. The engine has no previous state
   await rustContext.clearSceneAndBustCache(
     settings,
-    codeManager.currentFilePath || undefined
+    kclManager.currentFilePath || undefined
   )
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',
@@ -171,12 +170,12 @@ async function tryConnecting({
   settings,
   setShowManualConnect,
 }: {
-  isConnecting: React.MutableRefObject<boolean>
-  numberOfConnectionAttempts: React.MutableRefObject<number>
+  isConnecting: React.RefObject<boolean>
+  numberOfConnectionAttempts: React.RefObject<number>
   authToken: string
-  videoWrapperRef: React.RefObject<HTMLDivElement>
+  videoWrapperRef: React.RefObject<HTMLDivElement | null>
   setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   settings: SettingsViaQueryString

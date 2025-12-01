@@ -40,8 +40,9 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
+import { stripQuotes } from '@src/lib/utils'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
+import { kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 import { retrieveEdgeSelectionsFromOpArgs } from '@src/lang/modifyAst/edges'
@@ -84,7 +85,7 @@ async function extractKclArgument(
   }
 
   const result = await stringToKclExpression(
-    codeManager.code.slice(arg.sourceRange[0], arg.sourceRange[1]),
+    kclManager.code.slice(arg.sourceRange[0], arg.sourceRange[1]),
     isArray
   )
 
@@ -176,7 +177,7 @@ function extractStringArgument(
 ): string | undefined {
   const arg = operation.labeledArgs?.[argName]
   return arg?.sourceRange
-    ? codeManager.code.slice(arg.sourceRange[0], arg.sourceRange[1])
+    ? kclManager.code.slice(arg.sourceRange[0], arg.sourceRange[1])
     : undefined
 }
 
@@ -196,7 +197,7 @@ const prepareToEditParameter: PrepareToEditCallback = async ({ operation }) => {
 
   // 1. Convert from the parameter's Operation to a KCL-type arg value
   const value = await stringToKclExpression(
-    codeManager.code.slice(operation.sourceRange[0], operation.sourceRange[1])
+    kclManager.code.slice(operation.sourceRange[0], operation.sourceRange[1])
   )
   if (err(value) || 'errors' in value) {
     return { reason: "Couldn't retrieve length argument" }
@@ -249,7 +250,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   let length: KclCommandValue | undefined
   if ('length' in operation.labeledArgs && operation.labeledArgs.length) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs?.['length']?.sourceRange[0],
         operation.labeledArgs?.['length']?.sourceRange[1]
       )
@@ -272,7 +273,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   let symmetric: boolean | undefined
   if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
     symmetric =
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.symmetric.sourceRange[0],
         operation.labeledArgs.symmetric.sourceRange[1]
       ) === 'true'
@@ -285,7 +286,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     operation.labeledArgs.bidirectionalLength
   ) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.bidirectionalLength.sourceRange[0],
         operation.labeledArgs.bidirectionalLength.sourceRange[1]
       )
@@ -303,13 +304,13 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
     tagStart = retrieveTagDeclaratorFromOpArg(
       operation.labeledArgs.tagStart,
-      codeManager.code
+      kclManager.code
     )
   }
   if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
     tagEnd = retrieveTagDeclaratorFromOpArg(
       operation.labeledArgs.tagEnd,
-      codeManager.code
+      kclManager.code
     )
   }
 
@@ -320,7 +321,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     operation.labeledArgs.twistAngle
   ) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.twistAngle.sourceRange[0],
         operation.labeledArgs.twistAngle.sourceRange[1]
       )
@@ -339,7 +340,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     operation.labeledArgs.twistAngleStep
   ) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.twistAngleStep.sourceRange[0],
         operation.labeledArgs.twistAngleStep.sourceRange[1]
       )
@@ -359,7 +360,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   ) {
     const allowArrays = true
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.twistCenter.sourceRange[0],
         operation.labeledArgs.twistCenter.sourceRange[1]
       ),
@@ -375,7 +376,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   // method argument from a string to boolean
   let method: string | undefined
   if ('method' in operation.labeledArgs && operation.labeledArgs.method) {
-    method = codeManager.code.slice(
+    method = kclManager.code.slice(
       operation.labeledArgs.method.sourceRange[0],
       operation.labeledArgs.method.sourceRange[1]
     )
@@ -435,7 +436,7 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
   let vDegree: KclCommandValue | undefined
   if ('vDegree' in operation.labeledArgs && operation.labeledArgs.vDegree) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.vDegree.sourceRange[0],
         operation.labeledArgs.vDegree.sourceRange[1]
       )
@@ -454,7 +455,7 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
     operation.labeledArgs.bezApproximateRational
   ) {
     bezApproximateRational =
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.bezApproximateRational.sourceRange[0],
         operation.labeledArgs.bezApproximateRational.sourceRange[1]
       ) === 'true'
@@ -467,7 +468,7 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
     operation.labeledArgs.baseCurveIndex
   ) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.baseCurveIndex.sourceRange[0],
         operation.labeledArgs.baseCurveIndex.sourceRange[1]
       )
@@ -485,13 +486,13 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
   if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
     tagStart = retrieveTagDeclaratorFromOpArg(
       operation.labeledArgs.tagStart,
-      codeManager.code
+      kclManager.code
     )
   }
   if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
     tagEnd = retrieveTagDeclaratorFromOpArg(
       operation.labeledArgs.tagEnd,
-      codeManager.code
+      kclManager.code
     )
   }
 
@@ -645,7 +646,7 @@ const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
 
   // 2. Convert the thickness argument from a string to a KCL expression
   const thickness = await stringToKclExpression(
-    codeManager.code.slice(
+    kclManager.code.slice(
       operation.labeledArgs?.thickness?.sourceRange[0],
       operation.labeledArgs?.thickness?.sourceRange[1]
     )
@@ -762,7 +763,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
 
   let plane: Selections | undefined
   const maybeDefaultPlaneName = getStringValue(
-    codeManager.code,
+    kclManager.code,
     operation.unlabeledArg.sourceRange
   )
   if (isDefaultPlaneStr(maybeDefaultPlaneName)) {
@@ -788,7 +789,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
 
   // 2. Convert the offset argument from a string to a KCL expression
   const offset = await stringToKclExpression(
-    codeManager.code.slice(
+    kclManager.code.slice(
       operation.labeledArgs?.offset?.sourceRange[0],
       operation.labeledArgs?.offset?.sourceRange[1]
     )
@@ -896,7 +897,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
   let sectional: boolean | undefined
   if ('sectional' in operation.labeledArgs && operation.labeledArgs.sectional) {
     sectional =
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.sectional.sourceRange[0],
         operation.labeledArgs.sectional.sourceRange[1]
       ) === 'true'
@@ -907,7 +908,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
     'relativeTo' in operation.labeledArgs &&
     operation.labeledArgs.relativeTo
   ) {
-    const result = codeManager.code.slice(
+    const result = kclManager.code.slice(
       operation.labeledArgs.relativeTo.sourceRange[0],
       operation.labeledArgs.relativeTo.sourceRange[1]
     )
@@ -926,13 +927,13 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
   if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
     tagStart = retrieveTagDeclaratorFromOpArg(
       operation.labeledArgs.tagStart,
-      codeManager.code
+      kclManager.code
     )
   }
   if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
     tagEnd = retrieveTagDeclaratorFromOpArg(
       operation.labeledArgs.tagEnd,
-      codeManager.code
+      kclManager.code
     )
   }
 
@@ -1004,7 +1005,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
 
   // revolutions kcl arg (required for all)
   const revolutions = await stringToKclExpression(
-    codeManager.code.slice(
+    kclManager.code.slice(
       operation.labeledArgs?.revolutions?.sourceRange[0],
       operation.labeledArgs?.revolutions?.sourceRange[1]
     )
@@ -1015,7 +1016,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
 
   // angleStart kcl arg (required for all)
   const angleStart = await stringToKclExpression(
-    codeManager.code.slice(
+    kclManager.code.slice(
       operation.labeledArgs?.angleStart?.sourceRange[0],
       operation.labeledArgs?.angleStart?.sourceRange[1]
     )
@@ -1028,7 +1029,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   let radius: KclExpression | undefined // axis or edge modes only
   if ('radius' in operation.labeledArgs && operation.labeledArgs.radius) {
     const r = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.radius.sourceRange[0],
         operation.labeledArgs.radius.sourceRange[1]
       )
@@ -1044,7 +1045,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   let length: KclExpression | undefined
   if ('length' in operation.labeledArgs && operation.labeledArgs.length) {
     const r = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.length.sourceRange[0],
         operation.labeledArgs.length.sourceRange[1]
       )
@@ -1060,7 +1061,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   let ccw: boolean | undefined
   if ('ccw' in operation.labeledArgs && operation.labeledArgs.ccw) {
     ccw =
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.ccw.sourceRange[0],
         operation.labeledArgs.ccw.sourceRange[1]
       ) === 'true'
@@ -1136,7 +1137,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   // Default to '360' if not present
   const angle = await stringToKclExpression(
     'angle' in operation.labeledArgs && operation.labeledArgs.angle
-      ? codeManager.code.slice(
+      ? kclManager.code.slice(
           operation.labeledArgs.angle.sourceRange[0],
           operation.labeledArgs.angle.sourceRange[1]
         )
@@ -1150,7 +1151,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   let symmetric: boolean | undefined
   if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
     symmetric =
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.symmetric.sourceRange[0],
         operation.labeledArgs.symmetric.sourceRange[1]
       ) === 'true'
@@ -1163,7 +1164,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     operation.labeledArgs.bidirectionalAngle
   ) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.bidirectionalAngle.sourceRange[0],
         operation.labeledArgs.bidirectionalAngle.sourceRange[1]
       )
@@ -1181,13 +1182,13 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   if ('tagStart' in operation.labeledArgs && operation.labeledArgs.tagStart) {
     tagStart = retrieveTagDeclaratorFromOpArg(
       operation.labeledArgs.tagStart,
-      codeManager.code
+      kclManager.code
     )
   }
   if ('tagEnd' in operation.labeledArgs && operation.labeledArgs.tagEnd) {
     tagEnd = retrieveTagDeclaratorFromOpArg(
       operation.labeledArgs.tagEnd,
-      codeManager.code
+      kclManager.code
     )
   }
 
@@ -1247,7 +1248,7 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
   }
 
   const instances = await stringToKclExpression(
-    codeManager.code.slice(
+    kclManager.code.slice(
       instancesArg.sourceRange[0],
       instancesArg.sourceRange[1]
     )
@@ -1263,7 +1264,7 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
     return { reason: 'Missing or invalid axis argument' }
   }
 
-  const axisString = codeManager.code.slice(
+  const axisString = kclManager.code.slice(
     axisArg.sourceRange[0],
     axisArg.sourceRange[1]
   )
@@ -1278,7 +1279,7 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
   }
 
   const center = await stringToKclExpression(
-    codeManager.code.slice(centerArg.sourceRange[0], centerArg.sourceRange[1]),
+    kclManager.code.slice(centerArg.sourceRange[0], centerArg.sourceRange[1]),
     true
   )
   if (err(center) || 'errors' in center) {
@@ -1292,7 +1293,7 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
     operation.labeledArgs.arcDegrees
   ) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.arcDegrees.sourceRange[0],
         operation.labeledArgs.arcDegrees.sourceRange[1]
       )
@@ -1309,7 +1310,7 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
     operation.labeledArgs.rotateDuplicates
   ) {
     rotateDuplicates =
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.rotateDuplicates.sourceRange[0],
         operation.labeledArgs.rotateDuplicates.sourceRange[1]
       ) === 'true'
@@ -1321,7 +1322,7 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
     operation.labeledArgs.useOriginal
   ) {
     useOriginal =
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.useOriginal.sourceRange[0],
         operation.labeledArgs.useOriginal.sourceRange[1]
       ) === 'true'
@@ -1381,7 +1382,7 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
   }
 
   const instances = await stringToKclExpression(
-    codeManager.code.slice(
+    kclManager.code.slice(
       instancesArg.sourceRange[0],
       instancesArg.sourceRange[1]
     )
@@ -1397,7 +1398,7 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
   }
 
   const distance = await stringToKclExpression(
-    codeManager.code.slice(
+    kclManager.code.slice(
       distanceArg.sourceRange[0],
       distanceArg.sourceRange[1]
     )
@@ -1413,7 +1414,7 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
     return { reason: 'Missing or invalid axis argument' }
   }
 
-  const axisString = codeManager.code.slice(
+  const axisString = kclManager.code.slice(
     axisArg.sourceRange[0],
     axisArg.sourceRange[1]
   )
@@ -1425,7 +1426,7 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
   const useOriginalArg = operation.labeledArgs?.['useOriginal']
   let useOriginal: boolean | undefined
   if (useOriginalArg && useOriginalArg.sourceRange) {
-    const useOriginalString = codeManager.code.slice(
+    const useOriginalString = kclManager.code.slice(
       useOriginalArg.sourceRange[0],
       useOriginalArg.sourceRange[1]
     )
@@ -1515,6 +1516,61 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtDatum: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'GDT Datum',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const faceArg = operation.labeledArgs?.['face']
+  if (!faceArg || !faceArg.sourceRange) {
+    return { reason: 'Missing or invalid face argument' }
+  }
+
+  // Extract face selections (datum uses single face)
+  const graphSelections = extractFaceSelections(faceArg)
+  if ('error' in graphSelections) {
+    return { reason: graphSelections.error }
+  }
+
+  const faces = { graphSelections, otherSelections: [] }
+
+  // Extract name argument as a plain string (strip quotes if present)
+  const nameRaw = extractStringArgument(operation, 'name')
+  const name = stripQuotes(nameRaw)
+
+  // Extract optional parameters
+  const optionalArgs = await Promise.all([
+    extractKclArgument(operation, 'framePosition', true),
+    extractKclArgument(operation, 'fontPointSize'),
+    extractKclArgument(operation, 'fontScale'),
+  ])
+
+  const [framePosition, fontPointSize, fontScale] = optionalArgs.map((arg) =>
+    'error' in arg ? undefined : arg
+  )
+
+  const framePlane = extractStringArgument(operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Datum'] = {
+    faces,
+    name,
+    framePosition,
+    framePlane,
+    fontPointSize,
+    fontScale,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 /**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
@@ -1557,6 +1613,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   'gdt::datum': {
     label: 'Datum',
     icon: 'gdtDatum',
+    prepareToEdit: prepareToEditGdtDatum,
   },
   'gdt::flatness': {
     label: 'Flatness',
@@ -2137,7 +2194,7 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
   let global: boolean | undefined
   if (operation.labeledArgs.x) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.x.sourceRange[0],
         operation.labeledArgs.x.sourceRange[1]
       )
@@ -2150,7 +2207,7 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
 
   if (operation.labeledArgs.y) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.y.sourceRange[0],
         operation.labeledArgs.y.sourceRange[1]
       )
@@ -2163,7 +2220,7 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
 
   if (operation.labeledArgs.z) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.z.sourceRange[0],
         operation.labeledArgs.z.sourceRange[1]
       )
@@ -2176,7 +2233,7 @@ async function prepareToEditTranslate({ operation }: EnterEditFlowProps) {
 
   if (operation.labeledArgs.global) {
     global =
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.global.sourceRange[0],
         operation.labeledArgs.global.sourceRange[1]
       ) === 'true'
@@ -2230,49 +2287,31 @@ async function prepareToEditScale({ operation }: EnterEditFlowProps) {
   let x: KclCommandValue | undefined = undefined
   let y: KclCommandValue | undefined = undefined
   let z: KclCommandValue | undefined = undefined
+  let factor: KclCommandValue | undefined = undefined
   let global: boolean | undefined
   if (operation.labeledArgs.x) {
-    const result = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.x.sourceRange[0],
-        operation.labeledArgs.x.sourceRange[1]
-      )
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve x argument" }
-    }
-    x = result
+    const res = await extractKclArgument(operation, 'x')
+    if ('error' in res) return { reason: res.error }
+    x = res
   }
-
   if (operation.labeledArgs.y) {
-    const result = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.y.sourceRange[0],
-        operation.labeledArgs.y.sourceRange[1]
-      )
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve y argument" }
-    }
-    y = result
+    const res = await extractKclArgument(operation, 'y')
+    if ('error' in res) return { reason: res.error }
+    y = res
   }
-
   if (operation.labeledArgs.z) {
-    const result = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.z.sourceRange[0],
-        operation.labeledArgs.z.sourceRange[1]
-      )
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve z argument" }
-    }
-    z = result
+    const res = await extractKclArgument(operation, 'z')
+    if ('error' in res) return { reason: res.error }
+    z = res
   }
-
+  if (operation.labeledArgs.factor) {
+    const res = await extractKclArgument(operation, 'factor')
+    if ('error' in res) return { reason: res.error }
+    factor = res
+  }
   if (operation.labeledArgs.global) {
     global =
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.global.sourceRange[0],
         operation.labeledArgs.global.sourceRange[1]
       ) === 'true'
@@ -2286,6 +2325,7 @@ async function prepareToEditScale({ operation }: EnterEditFlowProps) {
     x,
     y,
     z,
+    factor,
     global,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
@@ -2329,7 +2369,7 @@ async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
   let global: boolean | undefined
   if (operation.labeledArgs.roll) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.roll.sourceRange[0],
         operation.labeledArgs.roll.sourceRange[1]
       )
@@ -2342,7 +2382,7 @@ async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
 
   if (operation.labeledArgs.pitch) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.pitch.sourceRange[0],
         operation.labeledArgs.pitch.sourceRange[1]
       )
@@ -2355,7 +2395,7 @@ async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
 
   if (operation.labeledArgs.yaw) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.yaw.sourceRange[0],
         operation.labeledArgs.yaw.sourceRange[1]
       )
@@ -2368,7 +2408,7 @@ async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
 
   if (operation.labeledArgs.global) {
     global =
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.global.sourceRange[0],
         operation.labeledArgs.global.sourceRange[1]
       ) === 'true'
@@ -2421,14 +2461,14 @@ async function prepareToEditAppearance({ operation }: EnterEditFlowProps) {
   }
 
   const color = getStringValue(
-    codeManager.code,
+    kclManager.code,
     operation.labeledArgs.color.sourceRange
   )
 
   let metalness: KclCommandValue | undefined
   if (operation.labeledArgs.metalness) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.metalness.sourceRange[0],
         operation.labeledArgs.metalness.sourceRange[1]
       )
@@ -2442,7 +2482,7 @@ async function prepareToEditAppearance({ operation }: EnterEditFlowProps) {
   let roughness: KclCommandValue | undefined
   if (operation.labeledArgs.roughness) {
     const result = await stringToKclExpression(
-      codeManager.code.slice(
+      kclManager.code.slice(
         operation.labeledArgs.roughness.sourceRange[0],
         operation.labeledArgs.roughness.sourceRange[1]
       )

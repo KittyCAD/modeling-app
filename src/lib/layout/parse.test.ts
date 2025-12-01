@@ -33,8 +33,8 @@ const validSplitLayout = {
 const validAction = {
   id: crypto.randomUUID(),
   label: 'Test action',
-  icon: 'refresh',
-  actionType: ActionType.Refresh,
+  icon: 'filePlus',
+  actionType: ActionType.AddFile,
 } satisfies Action
 
 const validPaneLayout = {

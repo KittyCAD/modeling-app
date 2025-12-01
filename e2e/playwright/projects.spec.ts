@@ -1726,7 +1726,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       // go to sketch mode
       await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
 
-      // Without this, "add axis n grid" action runs after editing the sketch and invokes codeManager.writeToFile()
+      // Without this, "add axis n grid" action runs after editing the sketch and invokes kclManager.writeToFile()
       // so we wait for that action to run first before we start editing the sketch and making sure it's saving
       // because of those edits.
       await page.waitForTimeout(2000)

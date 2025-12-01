@@ -12,8 +12,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
+import type { KclManager } from '@src/lang/KclManager'
 import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
@@ -262,7 +261,6 @@ export function OnboardingButtons({
 
 export interface OnboardingUtilDeps {
   onboardingStatus: OnboardingStatus
-  codeManager: CodeManager
   kclManager: KclManager
   navigate: NavigateFunction
 }
@@ -299,7 +297,7 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     return Promise.resolve()
   }
 
-  const isCodeResettable = hasResetReadyCode(deps.codeManager)
+  const isCodeResettable = hasResetReadyCode(deps.kclManager)
   if (isCodeResettable) {
     return resetCodeAndAdvanceOnboarding(deps)
   }
@@ -313,7 +311,6 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
  */
 export async function resetCodeAndAdvanceOnboarding({
   onboardingStatus,
-  codeManager,
   kclManager,
   navigate,
 }: OnboardingUtilDeps) {
@@ -322,8 +319,8 @@ export async function resetCodeAndAdvanceOnboarding({
     ? onboardingStartPath
     : onboardingStatus
   // We do want to update both the state and editor here.
-  codeManager.updateCodeStateEditor(browserAxialFan)
-  codeManager.writeToFile().catch(reportRejection)
+  kclManager.updateCodeStateEditor(browserAxialFan)
+  kclManager.writeToFile().catch(reportRejection)
   kclManager.executeCode().catch(reportRejection)
   navigate(
     makeUrlPathRelative(
@@ -332,10 +329,10 @@ export async function resetCodeAndAdvanceOnboarding({
   )
 }
 
-function hasResetReadyCode(codeManager: CodeManager) {
+function hasResetReadyCode(kclManager: KclManager) {
   return (
-    isKclEmptyOrOnlySettings(codeManager.code) ||
-    codeManager.code === browserAxialFan
+    isKclEmptyOrOnlySettings(kclManager.code) ||
+    kclManager.code === browserAxialFan
   )
 }
 

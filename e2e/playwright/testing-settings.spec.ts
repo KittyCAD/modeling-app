@@ -703,8 +703,8 @@ test.describe(
       // Selectors and constants
       const darkBackgroundCss = 'oklch(0.3012 0 264.48)'
       const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
-      const darkBackgroundColor: [number, number, number] = [87, 67, 107] // planes are on
-      const lightBackgroundColor: [number, number, number] = [166, 149, 184] // planes are on
+      const darkBackgroundColor: [number, number, number] = [50, 40, 51] // planes are on
+      const lightBackgroundColor: [number, number, number] = [227, 222, 230] // planes are on
       const streamBackgroundPixelIsColor = async (
         color: [number, number, number]
       ) => {

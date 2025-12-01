@@ -237,7 +237,7 @@ export const DATACHANNEL_NAME_UMC = 'unreliable_modeling_cmds'
 
 export type UnreliableResponses = Extract<
   OkModelingCmdResponse,
-  { type: 'highlight_set_entity' | 'camera_drag_move' }
+  { type: 'highlight_set_entity' | 'camera_drag_move' | 'default_camera_zoom' }
 >
 
 export enum EngineCommandManagerEvents {

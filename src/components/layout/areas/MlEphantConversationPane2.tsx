@@ -1,8 +1,7 @@
 import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
 import type { settings } from '@src/lib/settings/initialSettings'
-import type CodeManager from '@src/lang/codeManager'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import type { SystemIOActor } from '@src/lib/singletons'
 import { useEffect, useState } from 'react'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -21,24 +20,31 @@ import { useSelector } from '@xstate/react'
 import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
+import { type useModelingContext } from '@src/hooks/useModelingContext'
 
 export const MlEphantConversationPane2 = (props: {
   mlEphantManagerActor: MlEphantManagerActor2
   billingActor: BillingActor
   systemIOActor: SystemIOActor
   kclManager: KclManager
-  codeManager: CodeManager
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
+  sendModeling: ReturnType<typeof useModelingContext>['send']
   loaderFile: FileEntry | undefined
   settings: typeof settings
   user?: User
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
-  const conversation = useSelector(props.mlEphantManagerActor, (actor) => {
+
+  let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
   })
+
+  if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
+    conversation = undefined
+  }
+
   const abruptlyClosed = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.abruptlyClosed
   })
@@ -81,7 +87,7 @@ export const MlEphantConversationPane2 = (props: {
     }
 
     const projectFiles = await collectProjectFiles({
-      selectedFileContents: props.codeManager.code,
+      selectedFileContents: props.kclManager.code,
       fileNames: props.kclManager.execState.filenames,
       projectContext: project,
     })
@@ -96,12 +102,18 @@ export const MlEphantConversationPane2 = (props: {
       applicationProjectDirectory: props.settings.app.projectDirectory.current,
       fileSelectedDuringPrompting: {
         entry: props.loaderFile,
-        content: props.codeManager.code,
+        content: props.kclManager.code,
       },
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
       mode,
+    })
+
+    // Clear selections since new model
+    props.sendModeling({
+      type: 'Set selection',
+      data: { selection: undefined, selectionType: 'singleCodeCursor' },
     })
   }
 
@@ -119,6 +131,24 @@ export const MlEphantConversationPane2 = (props: {
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions2.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
+    })
+  }
+
+  const onClickClearChat = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions2.ConversationClose,
+    })
+    const sub = props.mlEphantManagerActor.subscribe((next) => {
+      if (!next.matches(S.Await)) {
+        return
+      }
+
+      props.mlEphantManagerActor.send({
+        type: MlEphantManagerTransitions2.CacheSetupAndConnect,
+        refParentSend: props.mlEphantManagerActor.send,
+        conversationId: undefined,
+      })
+      sub.unsubscribe()
     })
   }
 
@@ -242,6 +272,7 @@ export const MlEphantConversationPane2 = (props: {
       onProcess={(request: string, mode: MlCopilotMode) => {
         onProcess(request, mode).catch(reportRejection)
       }}
+      onClickClearChat={onClickClearChat}
       onReconnect={onReconnect}
       disabled={isProcessing || needsReconnect}
       needsReconnect={needsReconnect}

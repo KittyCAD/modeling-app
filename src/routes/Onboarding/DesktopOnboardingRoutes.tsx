@@ -38,7 +38,7 @@ type DesktopOnboardingRoute = RouteObject & {
  *
  * Desktop onboarding content is completely separate from browser onboarding content.
  */
-const onboardingComponents: Record<DesktopOnboardingPath, JSX.Element> = {
+const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
   '/desktop': <Welcome />,
   '/desktop/scene': <Scene />,
   '/desktop/toolbar': <Toolbar />,

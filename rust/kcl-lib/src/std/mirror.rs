@@ -10,7 +10,7 @@ use kittycad_modeling_cmds::{
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, KclValue, Sketch,
+        ExecState, KclValue, ModelingCmdMeta, Sketch,
         types::{PrimitiveType, RuntimeType},
     },
     std::{Args, axis_or_reference::Axis2dOrEdgeReference},
@@ -49,7 +49,7 @@ async fn inner_mirror_2d(
         Axis2dOrEdgeReference::Axis { direction, origin } => {
             let resp = exec_state
                 .send_modeling_cmd(
-                    (&args).into(),
+                    ModelingCmdMeta::from_args(exec_state, &args),
                     ModelingCmd::from(mcmd::EntityMirror {
                         ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
                         axis: Point3d {
@@ -101,7 +101,7 @@ async fn inner_mirror_2d(
 
             let resp = exec_state
                 .send_modeling_cmd(
-                    (&args).into(),
+                    ModelingCmdMeta::from_args(exec_state, &args),
                     ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
                         ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
                         edge_id,
