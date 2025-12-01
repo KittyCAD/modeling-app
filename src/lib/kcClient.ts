@@ -27,7 +27,7 @@ export async function kcCall<T>(fn: () => Promise<T>): Promise<T | Error> {
   try {
     return await fn()
   } catch (e: unknown) {
-    const ae = e as Partial<ApiError> & { message?: string }
+    const ae = e as Partial<ApiError>
     const msg =
       (ae && (ae as any).body && (ae as any).body.message) ||
       ae?.message ||

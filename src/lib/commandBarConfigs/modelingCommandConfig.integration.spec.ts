@@ -1,3 +1,5 @@
+import { expect, describe, it } from 'vitest'
+
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { assertParse } from '@src/lang/wasm'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'

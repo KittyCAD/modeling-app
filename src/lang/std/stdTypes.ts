@@ -272,12 +272,7 @@ export type TransformInfo = {
 
 export interface ConstrainInfo {
   stdLibFnName: ToolTip
-  type:
-    | LineInputsType
-    | 'vertical'
-    | 'horizontal'
-    | 'tangentialWithPrevious'
-    | 'radius'
+  type: LineInputsType | 'vertical' | 'horizontal' | 'tangentialWithPrevious'
   isConstrained: boolean
   sourceRange: SourceRange
   pathToNode: PathToNode

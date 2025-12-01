@@ -1,4 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { expect } from 'vitest'
 
 import {
   assertParse,

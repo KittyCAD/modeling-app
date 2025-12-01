@@ -2317,6 +2317,6 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
   }
 }
 
-function getInputOfType(a: InputArgs, b: LineInputsType | 'radius'): InputArg {
+function getInputOfType(a: InputArgs, b: LineInputsType): InputArg {
   return a.find(({ argType }) => argType === b) || a[0]
 }

@@ -135,7 +135,7 @@ function isOrientation(o: unknown): o is Orientation {
  * Fatal: `areaType`
  */
 export function parseSplitLayout(
-  layout: BaseLayout & Partial<Omit<SplitLayout, 'type'>>
+  layout: Partial<Omit<SplitLayout, 'type'>> & Pick<BaseLayout, 'id' | 'label'>
 ): SplitLayout | Error {
   // No children is fatal
   if (!isArray(layout.children)) {
