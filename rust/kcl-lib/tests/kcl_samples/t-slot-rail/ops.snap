@@ -5,6 +5,53 @@ description: Operations executed t-slot-rail.kcl
 {
   "public/kcl-samples/t-slot-rail/main.kcl": [
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "railTslot",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "length": {
+            "value": {
+              "type": "Number",
+              "value": 2.0,
+              "ty": {
+                "ft": null,
+                "type": "Known",
+                "type": "Length"
+              }
+            },
+            "sourceRange": []
+          },
+          "railHeight": {
+            "value": {
+              "type": "Number",
+              "value": 1.5,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "interiorRadius",
       "value": {
@@ -12,12 +59,8 @@ description: Operations executed t-slot-rail.kcl
         "value": 0.01,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -25,6 +68,19 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
             "index": 0
           },
           {
@@ -45,12 +101,8 @@ description: Operations executed t-slot-rail.kcl
         "value": 0.018,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -58,6 +110,19 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
             "index": 1
           },
           {
@@ -78,12 +143,8 @@ description: Operations executed t-slot-rail.kcl
         "value": 0.0275,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -91,6 +152,19 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
             "index": 2
           },
           {
@@ -111,12 +185,8 @@ description: Operations executed t-slot-rail.kcl
         "value": 0.262,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -124,6 +194,19 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
             "index": 3
           },
           {
@@ -131,57 +214,6 @@ description: Operations executed t-slot-rail.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "railTslot",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "railHeight": {
-            "value": {
-              "type": "Number",
-              "value": 1.5,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          },
-          "railLength": {
-            "value": {
-              "type": "Number",
-              "value": 2.0,
-              "ty": {
-                "type": "Known",
-                "type": "Length",
-                "type": "Feet"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -202,7 +234,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 0
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -215,7 +247,7 @@ description: Operations executed t-slot-rail.kcl
           },
           {
             "type": "FunctionExpressionBodyItem",
-            "index": 0
+            "index": 4
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -256,12 +288,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -269,12 +297,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -287,12 +311,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -300,12 +320,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -319,7 +335,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 0
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -332,7 +348,7 @@ description: Operations executed t-slot-rail.kcl
           },
           {
             "type": "FunctionExpressionBodyItem",
-            "index": 0
+            "index": 4
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -373,12 +389,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -386,12 +398,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -404,12 +412,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -417,12 +421,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.5,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -436,7 +436,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 0
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -449,7 +449,7 @@ description: Operations executed t-slot-rail.kcl
           },
           {
             "type": "FunctionExpressionBodyItem",
-            "index": 0
+            "index": 4
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -490,12 +490,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -503,12 +499,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -521,12 +513,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.5,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -534,12 +522,8 @@ description: Operations executed t-slot-rail.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Inches"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "in",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -553,7 +537,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 0
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -566,7 +550,7 @@ description: Operations executed t-slot-rail.kcl
           },
           {
             "type": "FunctionExpressionBodyItem",
-            "index": 0
+            "index": 4
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -609,7 +593,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 0
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -622,7 +606,7 @@ description: Operations executed t-slot-rail.kcl
           },
           {
             "type": "FunctionExpressionBodyItem",
-            "index": 0
+            "index": 4
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -662,6 +646,17 @@ description: Operations executed t-slot-rail.kcl
           },
           "sourceRange": []
         },
+        "y": {
+          "value": {
+            "type": "Number",
+            "value": 1.5,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        },
         "z": {
           "value": {
             "type": "Number",
@@ -678,7 +673,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 0
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -691,7 +686,7 @@ description: Operations executed t-slot-rail.kcl
           },
           {
             "type": "FunctionExpressionBodyItem",
-            "index": 0
+            "index": 4
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -723,11 +718,11 @@ description: Operations executed t-slot-rail.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": -2.0,
+            "value": 2.0,
             "ty": {
+              "ft": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Feet"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -737,7 +732,7 @@ description: Operations executed t-slot-rail.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 4
+            "index": 0
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -750,7 +745,7 @@ description: Operations executed t-slot-rail.kcl
           },
           {
             "type": "FunctionExpressionBodyItem",
-            "index": 0
+            "index": 4
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -770,8 +765,6 @@ description: Operations executed t-slot-rail.kcl
       "type": "GroupEnd"
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -785,7 +778,18 @@ description: Operations executed t-slot-rail.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -802,7 +806,18 @@ description: Operations executed t-slot-rail.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -819,7 +834,18 @@ description: Operations executed t-slot-rail.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -834,7 +860,18 @@ description: Operations executed t-slot-rail.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -847,7 +884,18 @@ description: Operations executed t-slot-rail.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -860,7 +908,18 @@ description: Operations executed t-slot-rail.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 22
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -873,17 +932,20 @@ description: Operations executed t-slot-rail.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 23
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

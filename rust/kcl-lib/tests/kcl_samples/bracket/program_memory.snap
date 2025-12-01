@@ -8,12 +8,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "bracketBody": {
@@ -134,9 +130,7 @@ description: Variables in memory after executing bracket.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -160,9 +154,7 @@ description: Variables in memory after executing bracket.kcl
               0.3848561883538911
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -186,9 +178,7 @@ description: Variables in memory after executing bracket.kcl
               0.3848561883538911
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -212,9 +202,7 @@ description: Variables in memory after executing bracket.kcl
               -1.8651438116461088
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -238,9 +226,7 @@ description: Variables in memory after executing bracket.kcl
               -1.8651438116461088
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -264,28 +250,7 @@ description: Variables in memory after executing bracket.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -295,9 +260,7 @@ description: Variables in memory after executing bracket.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -305,25 +268,19 @@ description: Variables in memory after executing bracket.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -335,9 +292,7 @@ description: Variables in memory after executing bracket.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -372,16 +327,11 @@ description: Variables in memory after executing bracket.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -390,12 +340,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.6348561883538911,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "filletRadius": {
@@ -403,12 +349,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "fos": {
@@ -416,12 +358,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 1.2,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "moment": {
@@ -429,12 +367,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 3600.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "p": {
@@ -442,12 +376,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 300.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "seg01": {
@@ -485,12 +415,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "shelfMountLength": {
@@ -498,12 +424,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "shelfMountingHoleDiameter": {
@@ -511,12 +433,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "shelfMountingHolePlacementOffset": {
@@ -524,12 +442,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "shelfMountingHoles": {
@@ -575,9 +489,7 @@ description: Variables in memory after executing bracket.kcl
                   0.75
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -589,17 +501,13 @@ description: Variables in memory after executing bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -717,9 +625,7 @@ description: Variables in memory after executing bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -743,9 +649,7 @@ description: Variables in memory after executing bracket.kcl
                         0.3848561883538911
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -769,9 +673,7 @@ description: Variables in memory after executing bracket.kcl
                         0.3848561883538911
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -795,9 +697,7 @@ description: Variables in memory after executing bracket.kcl
                         -1.8651438116461088
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -821,9 +721,7 @@ description: Variables in memory after executing bracket.kcl
                         -1.8651438116461088
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -847,28 +745,7 @@ description: Variables in memory after executing bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -878,9 +755,7 @@ description: Variables in memory after executing bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -888,25 +763,19 @@ description: Variables in memory after executing bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -918,9 +787,7 @@ description: Variables in memory after executing bracket.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -955,21 +822,14 @@ description: Variables in memory after executing bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
-                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -980,9 +840,7 @@ description: Variables in memory after executing bracket.kcl
                 -0.75,
                 0.75
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -991,16 +849,11 @@ description: Variables in memory after executing bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": -0.39485618835389114,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -1044,9 +897,7 @@ description: Variables in memory after executing bracket.kcl
                   0.75
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1058,17 +909,13 @@ description: Variables in memory after executing bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -1186,9 +1033,7 @@ description: Variables in memory after executing bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1212,9 +1057,7 @@ description: Variables in memory after executing bracket.kcl
                         0.3848561883538911
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1238,9 +1081,7 @@ description: Variables in memory after executing bracket.kcl
                         0.3848561883538911
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1264,9 +1105,7 @@ description: Variables in memory after executing bracket.kcl
                         -1.8651438116461088
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1290,9 +1129,7 @@ description: Variables in memory after executing bracket.kcl
                         -1.8651438116461088
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1316,28 +1153,7 @@ description: Variables in memory after executing bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -1347,9 +1163,7 @@ description: Variables in memory after executing bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -1357,25 +1171,19 @@ description: Variables in memory after executing bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -1387,9 +1195,7 @@ description: Variables in memory after executing bracket.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -1424,21 +1230,14 @@ description: Variables in memory after executing bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
-                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -1449,9 +1248,7 @@ description: Variables in memory after executing bracket.kcl
                 -0.75,
                 0.75
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1460,16 +1257,11 @@ description: Variables in memory after executing bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": -0.39485618835389114,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -1513,9 +1305,7 @@ description: Variables in memory after executing bracket.kcl
                   0.75
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1527,17 +1317,13 @@ description: Variables in memory after executing bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -1655,9 +1441,7 @@ description: Variables in memory after executing bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1681,9 +1465,7 @@ description: Variables in memory after executing bracket.kcl
                         0.3848561883538911
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1707,9 +1489,7 @@ description: Variables in memory after executing bracket.kcl
                         0.3848561883538911
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1733,9 +1513,7 @@ description: Variables in memory after executing bracket.kcl
                         -1.8651438116461088
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1759,9 +1537,7 @@ description: Variables in memory after executing bracket.kcl
                         -1.8651438116461088
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -1785,28 +1561,7 @@ description: Variables in memory after executing bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -1816,9 +1571,7 @@ description: Variables in memory after executing bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -1826,25 +1579,19 @@ description: Variables in memory after executing bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -1856,9 +1603,7 @@ description: Variables in memory after executing bracket.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -1893,21 +1638,14 @@ description: Variables in memory after executing bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
-                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -1918,9 +1656,7 @@ description: Variables in memory after executing bracket.kcl
                 -0.75,
                 0.75
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1929,16 +1665,11 @@ description: Variables in memory after executing bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": -0.39485618835389114,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -1982,9 +1713,7 @@ description: Variables in memory after executing bracket.kcl
                   0.75
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1996,17 +1725,13 @@ description: Variables in memory after executing bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -2124,9 +1849,7 @@ description: Variables in memory after executing bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2150,9 +1873,7 @@ description: Variables in memory after executing bracket.kcl
                         0.3848561883538911
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2176,9 +1897,7 @@ description: Variables in memory after executing bracket.kcl
                         0.3848561883538911
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2202,9 +1921,7 @@ description: Variables in memory after executing bracket.kcl
                         -1.8651438116461088
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2228,9 +1945,7 @@ description: Variables in memory after executing bracket.kcl
                         -1.8651438116461088
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2254,28 +1969,7 @@ description: Variables in memory after executing bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -2285,9 +1979,7 @@ description: Variables in memory after executing bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -2295,25 +1987,19 @@ description: Variables in memory after executing bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -2325,9 +2011,7 @@ description: Variables in memory after executing bracket.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -2362,21 +2046,14 @@ description: Variables in memory after executing bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
-                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -2387,9 +2064,7 @@ description: Variables in memory after executing bracket.kcl
                 -0.75,
                 0.75
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2398,16 +2073,11 @@ description: Variables in memory after executing bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": -0.39485618835389114,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       }
@@ -2418,12 +2088,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 35000.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "thickness": {
@@ -2431,12 +2097,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.3848561883538911,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "wallMountLength": {
@@ -2444,12 +2106,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 2.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "wallMountingHoleDiameter": {
@@ -2457,12 +2115,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "wallMountingHolePlacementOffset": {
@@ -2470,12 +2124,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 0.9375,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "wallMountingHoles": {
@@ -2521,9 +2171,7 @@ description: Variables in memory after executing bracket.kcl
                   0.9375
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -2535,17 +2183,13 @@ description: Variables in memory after executing bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -2663,9 +2307,7 @@ description: Variables in memory after executing bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2689,9 +2331,7 @@ description: Variables in memory after executing bracket.kcl
                         0.3848561883538911
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2715,9 +2355,7 @@ description: Variables in memory after executing bracket.kcl
                         0.3848561883538911
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2741,9 +2379,7 @@ description: Variables in memory after executing bracket.kcl
                         -1.8651438116461088
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2767,9 +2403,7 @@ description: Variables in memory after executing bracket.kcl
                         -1.8651438116461088
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -2793,28 +2427,7 @@ description: Variables in memory after executing bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -2824,9 +2437,7 @@ description: Variables in memory after executing bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -2834,25 +2445,19 @@ description: Variables in memory after executing bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -2864,9 +2469,7 @@ description: Variables in memory after executing bracket.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -2901,21 +2504,14 @@ description: Variables in memory after executing bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
-                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -2926,9 +2522,7 @@ description: Variables in memory after executing bracket.kcl
                 1.375,
                 0.9375
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2937,16 +2531,11 @@ description: Variables in memory after executing bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": -0.4848561883538911,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -2990,9 +2579,7 @@ description: Variables in memory after executing bracket.kcl
                   0.9375
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -3004,17 +2591,13 @@ description: Variables in memory after executing bracket.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -3132,9 +2715,7 @@ description: Variables in memory after executing bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3158,9 +2739,7 @@ description: Variables in memory after executing bracket.kcl
                         0.3848561883538911
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3184,9 +2763,7 @@ description: Variables in memory after executing bracket.kcl
                         0.3848561883538911
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3210,9 +2787,7 @@ description: Variables in memory after executing bracket.kcl
                         -1.8651438116461088
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3236,9 +2811,7 @@ description: Variables in memory after executing bracket.kcl
                         -1.8651438116461088
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     },
                     {
                       "__geoMeta": {
@@ -3262,28 +2835,7 @@ description: Variables in memory after executing bracket.kcl
                         0.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
+                      "units": "in"
                     }
                   ],
                   "on": {
@@ -3293,9 +2845,7 @@ description: Variables in memory after executing bracket.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "XZ",
@@ -3303,25 +2853,19 @@ description: Variables in memory after executing bracket.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": -1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -3333,9 +2877,7 @@ description: Variables in memory after executing bracket.kcl
                       0.0,
                       0.0
                     ],
-                    "units": {
-                      "type": "Inches"
-                    },
+                    "units": "in",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -3370,21 +2912,14 @@ description: Variables in memory after executing bracket.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
+                  "units": "in"
                 },
-                "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                },
+                "units": "in",
                 "sectional": false
               },
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             "start": {
               "from": [
@@ -3395,9 +2930,7 @@ description: Variables in memory after executing bracket.kcl
                 1.375,
                 0.9375
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3406,16 +2939,11 @@ description: Variables in memory after executing bracket.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": -0.4848561883538911,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       }
@@ -3426,12 +2954,8 @@ description: Variables in memory after executing bracket.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

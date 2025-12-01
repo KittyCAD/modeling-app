@@ -1,8 +1,8 @@
+import { Popover } from '@headlessui/react'
 import { ActionButton } from '@src/components/ActionButton'
+import { ActionIcon } from '@src/components/ActionIcon'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import Tooltip, { type TooltipProps } from '@src/components/Tooltip'
-import { ActionIcon } from '@src/components/ActionIcon'
-import { Popover } from '@headlessui/react'
 
 export function StatusBar({
   globalItems,
@@ -30,11 +30,12 @@ export function StatusBar({
   )
 }
 
+export const defaultStatusBarItemClassNames =
+  'flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50'
+
 function StatusBarItem(
   props: StatusBarItemType & { position: 'left' | 'middle' | 'right' }
 ) {
-  const defaultClassNames =
-    'flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50'
   const tooltipPosition: TooltipProps['position'] =
     props.position === 'middle' ? 'top' : `top-${props.position}`
 
@@ -57,7 +58,7 @@ function StatusBarItem(
                 }
               : undefined
           }
-          className={`${defaultClassNames} ${props.className}`}
+          className={`${defaultStatusBarItemClassNames} ${props.className}`}
           data-testid={props['data-testid']}
         >
           {'label' in props && props.label && !props.hideLabel && (
@@ -87,7 +88,7 @@ function StatusBarItem(
                   }
                 : undefined
             }
-            className={`${defaultClassNames} ${props.className}`}
+            className={`${defaultStatusBarItemClassNames} ${props.className}`}
             data-testid={props['data-testid']}
           >
             {'label' in props && props.label && !props.hideLabel && (
@@ -110,7 +111,7 @@ function StatusBarItem(
       return (
         <div
           role="tooltip"
-          className={`${defaultClassNames} ${props.className}`}
+          className={`${defaultStatusBarItemClassNames} ${props.className}`}
           data-testid={props['data-testid']}
         >
           {'icon' in props && props.icon && (
@@ -144,7 +145,7 @@ function StatusBarItem(
                 }
               : undefined
           }
-          className={`${defaultClassNames} ${props.className}`}
+          className={`${defaultStatusBarItemClassNames} ${props.className}`}
           data-testid={props['data-testid']}
         >
           {'label' in props && props.label && !props.hideLabel && (

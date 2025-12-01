@@ -21,7 +21,7 @@ reduce(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[any]`](/docs/kcl-std/types/std-types-any) | Each element of this array gets run through the function `f`, combined with the previous output from `f`, and then used for the next run. | Yes |
+| `array` | [[`any`](/docs/kcl-std/types/std-types-any)] | Each element of this array gets run through the function `f`, combined with the previous output from `f`, and then used for the next run. | Yes |
 | `initial` | [`any`](/docs/kcl-std/types/std-types-any) | The first time `f` is run, it will be called with the first item of `array` and this initial starting value. | Yes |
 | `f` | [`fn(any, accum: any): any`](/docs/kcl-std/types/std-types-fn) | Run once per item in the input `array`. This function takes an item from the array, and the previous output from `f` (or `initial` on the very first run). The final time `f` is run, its output is returned as the final output from `reduce`. | Yes |
 
@@ -66,7 +66,7 @@ assert(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the reduce function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-array-reduce0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -104,7 +104,7 @@ assert(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the reduce function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-array-reduce1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -166,7 +166,7 @@ decagon(5.0)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the reduce function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-array-reduce2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

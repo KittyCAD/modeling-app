@@ -2,11 +2,15 @@
 flowchart LR
   subgraph path2 [Path]
     2["Path<br>[43, 81, 2]"]
+      %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
     3["Segment<br>[43, 81, 2]"]
+      %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
     4[Solid2d]
   end
   1["Plane<br>[18, 35, 2]"]
+    %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   5["Sweep Revolve<br>[89, 142, 2]"]
+    %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
   6[Wall]
     %% face_code_ref=Missing NodePath
   7["SweepEdge Adjacent"]

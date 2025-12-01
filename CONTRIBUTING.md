@@ -65,7 +65,7 @@ If you're not a Zoo employee you won't be able to access the dev environment, yo
 
 ### Development environment variables
 
-The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_KITTYCAD_API_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
+The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_ZOO_API_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
 
 ### Developing in Chrome
 
@@ -96,17 +96,7 @@ To package the app for your platform with electron-builder, run `npm run tronb:p
 
 Prepare these system dependencies:
 
-- Set `$VITE_KITTYCAD_API_TOKEN` from https://zoo.dev/account/api-tokens
-
-#### Snapshot tests (Google Chrome on Ubuntu only)
-
-Only Ubuntu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
-If you don't run Ubuntu locally or in a VM, you may use a GitHub Codespace.
-```
-npm run playwright -- install chrome
-npm run test:snapshots
-```
-You may use `-- --update-snapshots` as needed.
+- Set `$VITE_ZOO_API_TOKEN` from https://zoo.dev/account/api-tokens
 
 #### Desktop tests (Electron on all platforms)
 
@@ -122,6 +112,19 @@ You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file
 ```
 npm run test:e2e:web
 ```
+
+#### Snapshot tests (Google Chrome on Ubuntu only)
+
+If you are running Ubuntu locally, in a VM, or using GitHub Codespaces:
+
+```
+npm run playwright -- install chrome
+npm run test:snapshots
+```
+
+Append `-- --update-snapshots` if you made significant UI changes.
+
+Alternatively, you can simply delete `e2e/playwright/snapshot-tests.spec.ts-snapshots/` to let the GitHub Actions job create a fresh snapshots commit automatically.
 
 #### Debugger
 
@@ -171,7 +174,7 @@ Where `./store` should look like this
 
 However because much of our tests involve clicking in the stream at specific locations, it's code-gen looks `await page.locator('video').click();` when really we need to use a pixel coord, so I think it's of limited use.
 
-### Unit and component tests
+### Unit and integration tests
 
 If you already haven't, run the following:
 
@@ -184,7 +187,7 @@ npm start
 and finally:
 
 ```
-npm run test:unit
+npm run test
 ```
 
 For individual testing:
@@ -199,13 +202,13 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 
 Prepare these system dependencies:
 
-- Set `$KITTYCAD_API_TOKEN` from https://zoo.dev/account/api-tokens
+- Set `$ZOO_API_TOKEN` from https://zoo.dev/account/api-tokens
 - Install `just` following [these instructions](https://just.systems/man/en/packages.html)
 
 then run tests that target the KCL language:
 
 ```
-npm run test:rust
+npm run test:e2e:kcl
 ```
 
 ### Fuzzing the parser

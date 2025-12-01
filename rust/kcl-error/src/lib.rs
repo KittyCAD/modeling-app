@@ -100,3 +100,15 @@ pub struct Suggestion {
     pub insert: String,
     pub source_range: SourceRange,
 }
+
+impl Suggestion {
+    /// Apply the suggestion to the source code.
+    pub fn apply(&self, src: &str) -> String {
+        format!(
+            "{}{}{}",
+            &src[0..self.source_range.start()],
+            self.insert,
+            &src[self.source_range.end()..]
+        )
+    }
+}

@@ -45,14 +45,15 @@ exampleSketch = startSketchOn(XY)
 clonedSketch = clone(exampleSketch)
   |> scale(x = 1.0, y = 1.0, z = 2.5)
   |> translate(x = 15.0, y = 0, z = 0)
-  |> extrude(length = 5)
+
+extrude(clonedSketch, length = 5)
 
 ```
 
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -83,7 +84,7 @@ clonedPart = clone(myPart)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -116,7 +117,7 @@ loft([sketch001, sketch002])
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -135,20 +136,30 @@ sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> xLine(length = 20)
   |> yLine(length = -20)
-  |> xLine(length = -20, tag = $filletTag)
-  |> close()
-  |> extrude(length = 5)
+  |> xLine(length = -20, tag = $face0)
+  |> line(endAbsolute = [profileStart()], tag = $face1)
+  |> extrude(length = 5, tagEnd = $end1)
 
 sketch002 = clone(sketch001)
   |> translate(x = 0, y = 0, z = 20)
-  |> fillet(radius = 2, tags = [getNextAdjacentEdge(filletTag)])
+
+fillet(
+  sketch002,
+  radius = 2,
+  tags = [
+    getCommonEdge(faces = [
+  sketch002.sketch.tags.face0,
+  sketch002.sketch.tags.face1
+])
+  ],
+)
 
 ```
 
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -171,23 +182,23 @@ sketch001 = startSketchOn(XY)
   |> close()
 
 sketch002 = clone(sketch001)
-  |> translate(x = 10, y = 20, z = 0)
+  |> translate(x = 15, y = 0, z = 5)
   |> extrude(length = 5)
 
-startSketchOn(sketch002, face = sketchingFace)
-  |> startProfile(at = [1, 1])
-  |> line(end = [8, 0])
-  |> line(end = [0, 8])
-  |> line(end = [-8, 0])
-  |> close(tag = $sketchingFace002)
-  |> extrude(length = 10)
+startSketchOn(sketch002, face = sketch002.sketch.tags.sketchingFace)
+  |> startProfile(at = [4, 6])
+  |> line(end = [3, 0])
+  |> line(end = [0, 3])
+  |> line(end = [-3, 0])
+  |> close()
+  |> extrude(length = 5)
 
 ```
 
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -217,13 +228,15 @@ mountingPlateSketch = startSketchOn(XY)
 mountingPlate = extrude(mountingPlateSketch, length = thickness)
 
 clonedMountingPlate = clone(mountingPlate)
-  |> fillet(
+
+fillet(
+       clonedMountingPlate,
        radius = filletRadius,
        tags = [
-         getNextAdjacentEdge(edge1),
-         getNextAdjacentEdge(edge2),
-         getNextAdjacentEdge(edge3),
-         getNextAdjacentEdge(edge4)
+         getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge1),
+         getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge2),
+         getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge3),
+         getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge4)
        ],
      )
   |> translate(x = 0, y = 50, z = 0)
@@ -233,7 +246,7 @@ clonedMountingPlate = clone(mountingPlate)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone5_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -270,7 +283,7 @@ sweepedSpring = clone(springSketch)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone6_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -295,7 +308,7 @@ sketch002 = clone(sketch001)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone7_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -334,7 +347,7 @@ example001 = revolve(
 
 
 // Sketch on the cloned face.
-// exampleSketch002 = startSketchOn(example002, face = end01)
+// exampleSketch002 = startSketchOn(example002, face = example002.sketch.tags.end01)
 // |> startProfile(at = [4.5, -5])
 // |> line(end = [0, 5])
 // |> line(end = [5, 0])
@@ -349,7 +362,7 @@ example001 = revolve(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone8_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -377,7 +390,7 @@ clonedCube = clone(myCube)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the clone function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-clone9_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

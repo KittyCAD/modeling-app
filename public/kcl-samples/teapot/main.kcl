@@ -15,9 +15,9 @@ spoutDiameter = 12
 spoutPath = startSketchOn(XZ)
   |> startProfile(at = [-beltlineDiameter / 2.5, outletHeight])
   |> xLine(length = -15.05)
-  |> tangentialArc(angle = -110, radius = 30, tag = $seg01)
+  |> tangentialArc(angle = -110deg, radius = 30, tag = $seg01)
   |> angledLine(angle = tangentToEnd(seg01), length = 16.84)
-  |> tangentialArc(angle = 100, radius = 30)
+  |> tangentialArc(angle = 100deg, radius = 30)
 
 // Sweep a hollow spout
 spout = startSketchOn(offsetPlane(YZ, offset = -beltlineDiameter / 2.5))
@@ -82,7 +82,7 @@ body = startSketchOn(YZ)
        teapotHeight / 1.1
      ])
   |> tangentialArc(endAbsolute = [beltlineDiameter / 4, teapotHeight])
-  |> tangentialArc(angle = 190, diameter = wallThickness)
+  |> tangentialArc(angle = 190deg, diameter = wallThickness)
   |> tangentialArc(endAbsolute = [
        beltlineDiameter / 3 - wallThickness,
        teapotHeight / 1.1

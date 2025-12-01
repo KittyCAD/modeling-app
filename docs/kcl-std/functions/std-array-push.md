@@ -20,12 +20,12 @@ Returns a new array with the element appended.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[any]`](/docs/kcl-std/types/std-types-any) | The array which you're adding a new item to. | Yes |
+| `array` | [[`any`](/docs/kcl-std/types/std-types-any)] | The array which you're adding a new item to. | Yes |
 | `item` | [`any`](/docs/kcl-std/types/std-types-any) | The new item to add to the array | Yes |
 
 ### Returns
 
-[`[any; 1+]`](/docs/kcl-std/types/std-types-any)
+[[`any`](/docs/kcl-std/types/std-types-any); 1+]
 
 
 ### Examples
@@ -45,7 +45,7 @@ assert(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the push function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-array-push0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

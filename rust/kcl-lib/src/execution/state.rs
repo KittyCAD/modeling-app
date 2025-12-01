@@ -2,21 +2,22 @@ use std::{str::FromStr, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[cfg(feature = "artifact-graph")]
-use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
+use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ProgramLookup};
 use crate::{
     CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, SourceRange,
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
     execution::{
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitAngle, UnitLen, annotations,
+        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, SketchVarId, annotations,
         cad_op::Operation,
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
-        types::{self, NumericType},
+        types::NumericType,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
@@ -95,8 +96,14 @@ pub(super) struct ModuleState {
     /// The closest variable declaration being executed in any parent node in the AST.
     /// This is used to provide better error messages, e.g. noticing when the user is trying
     /// to use the variable `length` inside the RHS of its own definition, like `length = tan(length)`.
-    /// TODO: Make this a reference.
     pub being_declared: Option<String>,
+    /// Present if we're currently executing inside a sketch block.
+    pub sketch_block: Option<SketchBlockState>,
+    /// Tracks if KCL being executed is currently inside a stdlib function or not.
+    /// This matters because e.g. we shouldn't emit artifacts from declarations declared inside a stdlib function.
+    pub inside_stdlib: bool,
+    /// The source range where we entered the standard library.
+    pub stdlib_entry_source_range: Option<SourceRange>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
@@ -108,6 +115,12 @@ pub(super) struct ModuleState {
 
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub(super) struct SketchBlockState {
+    pub sketch_vars: Vec<KclValue>,
+    pub constraints: Vec<kcl_ezpz::Constraint>,
 }
 
 impl ExecState {
@@ -221,7 +234,7 @@ impl ExecState {
 
     pub(crate) fn push_op(&mut self, op: Operation) {
         #[cfg(feature = "artifact-graph")]
-        self.mod_local.artifacts.operations.push(op.clone());
+        self.mod_local.artifacts.operations.push(op);
         #[cfg(not(feature = "artifact-graph"))]
         drop(op);
     }
@@ -243,7 +256,7 @@ impl ExecState {
 
     pub(super) fn add_path_to_source_id(&mut self, path: ModulePath, id: ModuleId) {
         debug_assert!(!self.global.path_to_source_id.contains_key(&path));
-        self.global.path_to_source_id.insert(path.clone(), id);
+        self.global.path_to_source_id.insert(path, id);
     }
 
     pub(crate) fn add_root_module_contents(&mut self, program: &crate::Program) {
@@ -267,7 +280,7 @@ impl ExecState {
     }
 
     pub(super) fn add_id_to_source(&mut self, id: ModuleId, source: ModuleSource) {
-        self.global.id_to_source.insert(id, source.clone());
+        self.global.id_to_source.insert(id, source);
     }
 
     pub(super) fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
@@ -297,7 +310,7 @@ impl ExecState {
         }
     }
 
-    pub fn length_unit(&self) -> UnitLen {
+    pub fn length_unit(&self) -> UnitLength {
         self.mod_local.settings.default_length_units
     }
 
@@ -358,6 +371,14 @@ impl ExecState {
     }
 
     #[cfg(feature = "artifact-graph")]
+    pub(crate) fn build_program_lookup(
+        &self,
+        current: crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
+    ) -> ProgramLookup {
+        ProgramLookup::new(current, self.global.module_infos.clone())
+    }
+
+    #[cfg(feature = "artifact-graph")]
     pub(crate) async fn build_artifact_graph(
         &mut self,
         engine: &Arc<Box<dyn EngineManager>>,
@@ -367,8 +388,11 @@ impl ExecState {
         let mut new_exec_artifacts = IndexMap::new();
         for module in self.global.module_infos.values_mut() {
             match &mut module.repr {
-                ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts)))
-                | ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
+                ModuleRepr::Kcl(_, Some(outcome)) => {
+                    new_commands.extend(outcome.artifacts.process_commands());
+                    new_exec_artifacts.extend(outcome.artifacts.artifacts.clone());
+                }
+                ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
                     new_commands.extend(module_artifacts.process_commands());
                     new_exec_artifacts.extend(module_artifacts.artifacts.clone());
                 }
@@ -390,12 +414,14 @@ impl ExecState {
         let initial_graph = self.global.artifacts.graph.clone();
 
         // Build the artifact graph.
+        let programs = self.build_program_lookup(program.clone());
         let graph_result = crate::execution::artifact::build_artifact_graph(
             &new_commands,
             &new_responses,
             program,
             &mut self.global.artifacts.artifacts,
             initial_graph,
+            &programs,
         );
 
         let artifact_graph = graph_result?;
@@ -434,13 +460,18 @@ impl GlobalState {
                 id: root_id,
                 path: ModulePath::Local {
                     value: root_path.clone(),
+                    original_import_path: None,
                 },
                 repr: ModuleRepr::Root,
             },
         );
-        global
-            .path_to_source_id
-            .insert(ModulePath::Local { value: root_path }, root_id);
+        global.path_to_source_id.insert(
+            ModulePath::Local {
+                value: root_path,
+                original_import_path: None,
+            },
+            root_id,
+        );
         global
     }
 
@@ -510,6 +541,8 @@ impl ModuleState {
             stack: memory.new_stack(),
             pipe_value: Default::default(),
             being_declared: Default::default(),
+            sketch_block: Default::default(),
+            stdlib_entry_source_range: Default::default(),
             module_exports: Default::default(),
             explicit_length_units: false,
             path,
@@ -517,6 +550,7 @@ impl ModuleState {
             artifacts: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
+            inside_stdlib: false,
         }
     }
 
@@ -528,12 +562,18 @@ impl ModuleState {
     }
 }
 
+impl SketchBlockState {
+    pub(crate) fn next_sketch_var_id(&self) -> SketchVarId {
+        SketchVarId(self.sketch_vars.len())
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MetaSettings {
-    pub default_length_units: types::UnitLen,
-    pub default_angle_units: types::UnitAngle,
+    pub default_length_units: UnitLength,
+    pub default_angle_units: UnitAngle,
     pub experimental_features: annotations::WarningLevel,
     pub kcl_version: String,
 }
@@ -541,8 +581,8 @@ pub struct MetaSettings {
 impl Default for MetaSettings {
     fn default() -> Self {
         MetaSettings {
-            default_length_units: Default::default(),
-            default_angle_units: Default::default(),
+            default_length_units: UnitLength::Millimeters,
+            default_angle_units: UnitAngle::Degrees,
             experimental_features: annotations::WarningLevel::Deny,
             kcl_version: "1.0".to_owned(),
         }
@@ -553,22 +593,24 @@ impl MetaSettings {
     pub(crate) fn update_from_annotation(
         &mut self,
         annotation: &crate::parsing::ast::types::Node<Annotation>,
-    ) -> Result<bool, KclError> {
+    ) -> Result<(bool, bool), KclError> {
         let properties = annotations::expect_properties(annotations::SETTINGS, annotation)?;
 
         let mut updated_len = false;
+        let mut updated_angle = false;
         for p in properties {
             match &*p.inner.key.name {
                 annotations::SETTINGS_UNIT_LENGTH => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = types::UnitLen::from_str(value, annotation.as_source_range())?;
+                    let value = super::types::length_from_str(value, annotation.as_source_range())?;
                     self.default_length_units = value;
                     updated_len = true;
                 }
                 annotations::SETTINGS_UNIT_ANGLE => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = types::UnitAngle::from_str(value, annotation.as_source_range())?;
+                    let value = super::types::angle_from_str(value, annotation.as_source_range())?;
                     self.default_angle_units = value;
+                    updated_angle = true;
                 }
                 annotations::SETTINGS_VERSION => {
                     let value = annotations::expect_number(&p.inner.value)?;
@@ -601,6 +643,6 @@ impl MetaSettings {
             }
         }
 
-        Ok(updated_len)
+        Ok((updated_len, updated_angle))
     }
 }

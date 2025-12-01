@@ -1,19 +1,22 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use indexmap::IndexMap;
+use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
 use crate::{
     CompilationError, KclError, ModuleId, SourceRange,
     errors::KclErrorDetails,
     execution::{
-        EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, MetaSettings,
-        Metadata, Plane, Sketch, Solid, TagIdentifier,
-        annotations::{self, SETTINGS, SETTINGS_UNIT_LENGTH},
-        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
+        EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry, GeometryWithImportedGeometry, Helix,
+        ImportedGeometry, Metadata, Plane, Sketch, SketchVar, SketchVarId, Solid, TagIdentifier,
+        annotations::{self, FnAttrs, SETTINGS, SETTINGS_UNIT_LENGTH},
+        types::{NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::{
-        DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
+        DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, NumericLiteral, TagDeclarator,
+        TagNode, Type,
     },
     std::{StdFnProps, args::TyF64},
 };
@@ -46,6 +49,9 @@ pub enum KclValue {
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
+    SketchVar {
+        value: Box<SketchVar>,
+    },
     Tuple {
         value: Vec<KclValue>,
         #[serde(skip)]
@@ -60,11 +66,15 @@ pub enum KclValue {
     },
     Object {
         value: KclObjectFields,
+        constrainable: bool,
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
     TagIdentifier(Box<TagIdentifier>),
     TagDeclarator(crate::parsing::ast::types::BoxNode<TagDeclarator>),
+    GdtAnnotation {
+        value: Box<GdtAnnotation>,
+    },
     Plane {
         value: Box<Plane>,
     },
@@ -84,7 +94,7 @@ pub enum KclValue {
     Function {
         #[serde(serialize_with = "function_value_stub")]
         #[ts(type = "null")]
-        value: FunctionSource,
+        value: Box<FunctionSource>,
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
@@ -97,6 +107,7 @@ pub enum KclValue {
     Type {
         #[serde(skip)]
         value: TypeDef,
+        experimental: bool,
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
@@ -114,25 +125,102 @@ where
     serializer.serialize_unit()
 }
 
-#[derive(Debug, Clone, PartialEq, Default)]
+#[derive(Debug, Clone, PartialEq)]
+pub struct FunctionSource {
+    pub input_arg: Option<(String, Option<Type>)>,
+    pub named_args: IndexMap<String, (Option<DefaultParamVal>, Option<Type>)>,
+    pub return_type: Option<Node<Type>>,
+    pub deprecated: bool,
+    pub experimental: bool,
+    pub include_in_feature_tree: bool,
+    pub is_std: bool,
+    pub body: FunctionBody,
+    pub ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
+}
+
+pub struct KclFunctionSourceParams {
+    pub is_std: bool,
+    pub experimental: bool,
+    pub include_in_feature_tree: bool,
+}
+
+impl FunctionSource {
+    pub fn rust(
+        func: crate::std::StdFn,
+        ast: Box<Node<FunctionExpression>>,
+        _props: StdFnProps,
+        attrs: FnAttrs,
+    ) -> Self {
+        let (input_arg, named_args) = Self::args_from_ast(&ast);
+
+        FunctionSource {
+            input_arg,
+            named_args,
+            return_type: ast.return_type.clone(),
+            deprecated: attrs.deprecated,
+            experimental: attrs.experimental,
+            include_in_feature_tree: attrs.include_in_feature_tree,
+            is_std: true,
+            body: FunctionBody::Rust(func),
+            ast,
+        }
+    }
+
+    pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, params: KclFunctionSourceParams) -> Self {
+        let KclFunctionSourceParams {
+            is_std,
+            experimental,
+            include_in_feature_tree,
+        } = params;
+        let (input_arg, named_args) = Self::args_from_ast(&ast);
+        FunctionSource {
+            input_arg,
+            named_args,
+            return_type: ast.return_type.clone(),
+            deprecated: false,
+            experimental,
+            include_in_feature_tree,
+            is_std,
+            body: FunctionBody::Kcl(memory),
+            ast,
+        }
+    }
+
+    #[allow(clippy::type_complexity)]
+    fn args_from_ast(
+        ast: &FunctionExpression,
+    ) -> (
+        Option<(String, Option<Type>)>,
+        IndexMap<String, (Option<DefaultParamVal>, Option<Type>)>,
+    ) {
+        let mut input_arg = None;
+        let mut named_args = IndexMap::new();
+        for p in &ast.params {
+            if !p.labeled {
+                input_arg = Some((
+                    p.identifier.name.clone(),
+                    p.param_type.as_ref().map(|t| t.inner.clone()),
+                ));
+                continue;
+            }
+
+            named_args.insert(
+                p.identifier.name.clone(),
+                (p.default_value.clone(), p.param_type.as_ref().map(|t| t.inner.clone())),
+            );
+        }
+
+        (input_arg, named_args)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
 // If you try to compare two `crate::std::StdFn` the results will be meaningless and arbitrary,
 // because they're just function pointers.
-// TODO: Add a newtype around crate::std::StdFn which manually impls PartialEq and sets it to false.
 #[allow(unpredictable_function_pointer_comparisons)]
-pub enum FunctionSource {
-    #[default]
-    None,
-    Std {
-        func: crate::std::StdFn,
-        ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-        props: StdFnProps,
-        attrs: crate::execution::annotations::FnAttrs,
-    },
-    User {
-        ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-        settings: MetaSettings,
-        memory: EnvironmentRef,
-    },
+pub enum FunctionBody {
+    Rust(crate::std::StdFn),
+    Kcl(EnvironmentRef),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -141,12 +229,29 @@ pub enum TypeDef {
     Alias(RuntimeType),
 }
 
+impl From<Vec<GdtAnnotation>> for KclValue {
+    fn from(mut values: Vec<GdtAnnotation>) -> Self {
+        if values.len() == 1 {
+            let value = values.pop().expect("Just checked len == 1");
+            KclValue::GdtAnnotation { value: Box::new(value) }
+        } else {
+            KclValue::HomArray {
+                value: values
+                    .into_iter()
+                    .map(|s| KclValue::GdtAnnotation { value: Box::new(s) })
+                    .collect(),
+                ty: RuntimeType::Primitive(PrimitiveType::GdtAnnotation),
+            }
+        }
+    }
+}
+
 impl From<Vec<Sketch>> for KclValue {
     fn from(mut eg: Vec<Sketch>) -> Self {
-        if eg.len() == 1 {
-            KclValue::Sketch {
-                value: Box::new(eg.pop().unwrap()),
-            }
+        if eg.len() == 1
+            && let Some(s) = eg.pop()
+        {
+            KclValue::Sketch { value: Box::new(s) }
         } else {
             KclValue::HomArray {
                 value: eg
@@ -161,10 +266,10 @@ impl From<Vec<Sketch>> for KclValue {
 
 impl From<Vec<Solid>> for KclValue {
     fn from(mut eg: Vec<Solid>) -> Self {
-        if eg.len() == 1 {
-            KclValue::Solid {
-                value: Box::new(eg.pop().unwrap()),
-            }
+        if eg.len() == 1
+            && let Some(s) = eg.pop()
+        {
+            KclValue::Solid { value: Box::new(s) }
         } else {
             KclValue::HomArray {
                 value: eg.into_iter().map(|s| KclValue::Solid { value: Box::new(s) }).collect(),
@@ -179,6 +284,7 @@ impl From<KclValue> for Vec<SourceRange> {
         match item {
             KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
+            KclValue::GdtAnnotation { value } => to_vec_sr(&value.meta),
             KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Helix { value } => to_vec_sr(&value.meta),
@@ -189,6 +295,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Bool { meta, .. } => to_vec_sr(&meta),
             KclValue::Number { meta, .. } => to_vec_sr(&meta),
             KclValue::String { meta, .. } => to_vec_sr(&meta),
+            KclValue::SketchVar { value, .. } => to_vec_sr(&value.meta),
             KclValue::Tuple { meta, .. } => to_vec_sr(&meta),
             KclValue::HomArray { value, .. } => value.iter().flat_map(Into::<Vec<SourceRange>>::into).collect(),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
@@ -209,6 +316,7 @@ impl From<&KclValue> for Vec<SourceRange> {
         match item {
             KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
+            KclValue::GdtAnnotation { value } => to_vec_sr(&value.meta),
             KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Helix { value } => to_vec_sr(&value.meta),
@@ -219,6 +327,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Bool { meta, .. } => to_vec_sr(meta),
             KclValue::Number { meta, .. } => to_vec_sr(meta),
             KclValue::String { meta, .. } => to_vec_sr(meta),
+            KclValue::SketchVar { value, .. } => to_vec_sr(&value.meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
             KclValue::Tuple { meta, .. } => to_vec_sr(meta),
             KclValue::HomArray { value, .. } => value.iter().flat_map(Into::<Vec<SourceRange>>::into).collect(),
@@ -244,11 +353,13 @@ impl KclValue {
             KclValue::Bool { value: _, meta } => meta.clone(),
             KclValue::Number { meta, .. } => meta.clone(),
             KclValue::String { value: _, meta } => meta.clone(),
+            KclValue::SketchVar { value, .. } => value.meta.clone(),
             KclValue::Tuple { value: _, meta } => meta.clone(),
             KclValue::HomArray { value, .. } => value.iter().flat_map(|v| v.metadata()).collect(),
-            KclValue::Object { value: _, meta } => meta.clone(),
+            KclValue::Object { meta, .. } => meta.clone(),
             KclValue::TagIdentifier(x) => x.meta.clone(),
             KclValue::TagDeclarator(x) => vec![x.metadata()],
+            KclValue::GdtAnnotation { value } => value.meta.clone(),
             KclValue::Plane { value } => value.meta.clone(),
             KclValue::Face { value } => value.meta.clone(),
             KclValue::Sketch { value } => value.meta.clone(),
@@ -277,11 +388,13 @@ impl KclValue {
         match self {
             KclValue::Uuid { .. } => false,
             KclValue::Bool { .. } | KclValue::Number { .. } | KclValue::String { .. } => true,
-            KclValue::Tuple { .. }
+            KclValue::SketchVar { .. }
+            | KclValue::Tuple { .. }
             | KclValue::HomArray { .. }
             | KclValue::Object { .. }
             | KclValue::TagIdentifier(_)
             | KclValue::TagDeclarator(_)
+            | KclValue::GdtAnnotation { .. }
             | KclValue::Plane { .. }
             | KclValue::Face { .. }
             | KclValue::Sketch { .. }
@@ -302,6 +415,7 @@ impl KclValue {
             KclValue::Uuid { .. } => "a unique ID (uuid)".to_owned(),
             KclValue::TagDeclarator(_) => "a tag declarator".to_owned(),
             KclValue::TagIdentifier(_) => "a tag identifier".to_owned(),
+            KclValue::GdtAnnotation { .. } => "an annotation".to_owned(),
             KclValue::Solid { .. } => "a solid".to_owned(),
             KclValue::Sketch { .. } => "a sketch".to_owned(),
             KclValue::Helix { .. } => "a helix".to_owned(),
@@ -320,6 +434,7 @@ impl KclValue {
             } => format!("a number ({units})"),
             KclValue::Number { .. } => "a number".to_owned(),
             KclValue::String { .. } => "a string".to_owned(),
+            KclValue::SketchVar { .. } => "a sketch variable".to_owned(),
             KclValue::Object { .. } => "an object".to_owned(),
             KclValue::Module { .. } => "a module".to_owned(),
             KclValue::Type { .. } => "a type".to_owned(),
@@ -351,6 +466,23 @@ impl KclValue {
         }
     }
 
+    pub(crate) fn from_sketch_var_literal(
+        literal: &Node<NumericLiteral>,
+        id: SketchVarId,
+        exec_state: &ExecState,
+    ) -> Self {
+        let meta = vec![literal.metadata()];
+        let ty = NumericType::from_parsed(literal.suffix, &exec_state.mod_local.settings);
+        KclValue::SketchVar {
+            value: Box::new(SketchVar {
+                id,
+                initial_value: literal.value,
+                meta,
+                ty,
+            }),
+        }
+    }
+
     pub(crate) fn from_literal(literal: Node<Literal>, exec_state: &mut ExecState) -> Self {
         let meta = vec![literal.metadata()];
         match literal.inner.value {
@@ -358,7 +490,7 @@ impl KclValue {
                 let ty = NumericType::from_parsed(suffix, &exec_state.mod_local.settings);
                 if let NumericType::Default { len, .. } = &ty
                     && !exec_state.mod_local.explicit_length_units
-                    && *len != UnitLen::Mm
+                    && *len != UnitLength::Millimeters
                 {
                     exec_state.warn(
                         CompilationError::err(
@@ -394,13 +526,15 @@ impl KclValue {
 
     pub(crate) fn map_env_ref(&self, old_env: usize, new_env: usize) -> Self {
         let mut result = self.clone();
-        if let KclValue::Function {
-            value: FunctionSource::User { ref mut memory, .. },
-            ..
-        } = result
+        if let KclValue::Function { ref mut value, .. } = result
+            && let FunctionSource {
+                body: FunctionBody::Kcl(memory),
+                ..
+            } = &mut **value
         {
             memory.replace_env(old_env, new_env);
         }
+
         result
     }
 
@@ -468,11 +602,7 @@ impl KclValue {
                     meta: meta.clone(),
                     ty,
                 },
-                Self::Number {
-                    value: z,
-                    meta: meta.clone(),
-                    ty,
-                },
+                Self::Number { value: z, meta, ty },
             ],
             ty: ty.into(),
         }
@@ -591,6 +721,13 @@ impl KclValue {
         }
     }
 
+    pub fn as_sketch_var(&self) -> Option<&SketchVar> {
+        match self {
+            KclValue::SketchVar { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
     pub fn as_mut_tag(&mut self) -> Option<&mut TagIdentifier> {
         match self {
             KclValue::TagIdentifier(value) => Some(value),
@@ -670,8 +807,11 @@ impl KclValue {
     pub fn value_str(&self) -> Option<String> {
         match self {
             KclValue::Bool { value, .. } => Some(format!("{value}")),
+            // TODO: Show units.
             KclValue::Number { value, .. } => Some(format!("{value}")),
             KclValue::String { value, .. } => Some(format!("'{value}'")),
+            // TODO: Show units.
+            KclValue::SketchVar { value, .. } => Some(format!("var {}", value.initial_value)),
             KclValue::Uuid { value, .. } => Some(format!("{value}")),
             KclValue::TagDeclarator(tag) => Some(format!("${}", tag.name)),
             KclValue::TagIdentifier(tag) => Some(format!("${}", tag.value)),
@@ -680,6 +820,7 @@ impl KclValue {
             KclValue::HomArray { .. } => Some("[...]".to_owned()),
             KclValue::Object { .. } => Some("{ ... }".to_owned()),
             KclValue::Module { .. }
+            | KclValue::GdtAnnotation { .. }
             | KclValue::Solid { .. }
             | KclValue::Sketch { .. }
             | KclValue::Helix { .. }
@@ -721,7 +862,7 @@ mod tests {
     fn test_human_friendly_type() {
         let len = KclValue::Number {
             value: 1.0,
-            ty: NumericType::Known(UnitType::Length(UnitLen::Unknown)),
+            ty: NumericType::Known(UnitType::GenericLength),
             meta: vec![],
         };
         assert_eq!(len.human_friendly_type(), "a number (Length)".to_string());
@@ -735,7 +876,7 @@ mod tests {
 
         let mm = KclValue::Number {
             value: 1.0,
-            ty: NumericType::Known(UnitType::Length(UnitLen::Mm)),
+            ty: NumericType::Known(UnitType::Length(UnitLength::Millimeters)),
             meta: vec![],
         };
         assert_eq!(mm.human_friendly_type(), "a number (mm)".to_string());
@@ -769,11 +910,11 @@ mod tests {
 
         let inches = KclValue::Number {
             value: 1.0,
-            ty: NumericType::Known(UnitType::Length(UnitLen::Inches)),
+            ty: NumericType::Known(UnitType::Length(UnitLength::Inches)),
             meta: vec![],
         };
         let array4 = KclValue::HomArray {
-            value: vec![mm.clone(), mm.clone(), inches.clone(), mm.clone()],
+            value: vec![mm.clone(), mm.clone(), inches, mm],
             ty: RuntimeType::any(),
         };
         assert_eq!(
@@ -788,7 +929,7 @@ mod tests {
         assert_eq!(empty_array.human_friendly_type(), "an empty array".to_string());
 
         let array_nested = KclValue::HomArray {
-            value: vec![array2_mm.clone()],
+            value: vec![array2_mm],
             ty: RuntimeType::any(),
         };
         assert_eq!(

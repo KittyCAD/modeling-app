@@ -32,7 +32,7 @@ swept along the same path.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) | The sketch or set of sketches that should be swept in space. | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The sketch or set of sketches that should be swept in space. | Yes |
 | `path` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Helix`](/docs/kcl-std/types/std-types-Helix) | The path to sweep the sketch along. | Yes |
 | `sectional` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
@@ -42,7 +42,7 @@ swept along the same path.
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
 
 
 ### Examples
@@ -73,7 +73,7 @@ sweepSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the sweep function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -107,7 +107,7 @@ springSketch = startSketchOn(XZ)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the sweep function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -145,7 +145,7 @@ sweep([rectangleSketch, circleSketch], path = sweepPath)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the sweep function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -176,7 +176,7 @@ sweep(circleSketch, path = sweepPath, sectional = true)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the sweep function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

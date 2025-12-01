@@ -2,7 +2,7 @@ use proc_macro2::Span;
 use quote::{quote, ToTokens};
 
 pub fn do_for_each_example_test(item: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
-    let item: syn::ItemFn = syn::parse2(item.clone()).unwrap();
+    let item: syn::ItemFn = syn::parse2(item).unwrap();
     let mut result = proc_macro2::TokenStream::new();
     for name in TEST_NAMES {
         let mut item = item.clone();
@@ -67,6 +67,10 @@ pub const TEST_NAMES: &[&str] = &[
     "std-clone-7",
     "std-clone-8",
     "std-clone-9",
+    "std-gdt-datum-0",
+    "std-gdt-flatness-0",
+    "std-gdt-flatness-1",
+    "std-gdt-flatness-2",
     "std-helix-0",
     "std-helix-1",
     "std-helix-2",
@@ -129,6 +133,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch-extrude-3",
     "std-sketch-extrude-4",
     "std-sketch-extrude-5",
+    "std-sketch-extrude-6",
     "std-sketch-polygon-0",
     "std-sketch-polygon-1",
     "std-sketch-sweep-0",
@@ -208,6 +213,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-appearance-9",
     "std-solid-chamfer-0",
     "std-solid-chamfer-1",
+    "std-solid-chamfer-2",
     "std-solid-fillet-0",
     "std-solid-fillet-1",
     "std-solid-hollow-0",
@@ -219,6 +225,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-patternTransform-3",
     "std-solid-patternTransform-4",
     "std-solid-patternTransform-5",
+    "std-solid-patternTransform-6",
     "std-solid-shell-0",
     "std-solid-shell-1",
     "std-solid-shell-2",
@@ -239,6 +246,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-union-2",
     "std-solid-subtract-0",
     "std-solid-subtract-1",
+    "std-solid-subtract-2",
     "std-transform-mirror2d-0",
     "std-transform-mirror2d-1",
     "std-transform-mirror2d-2",
@@ -260,6 +268,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-transform-scale-0",
     "std-transform-scale-1",
     "std-transform-scale-2",
+    "std-transform-scale-3",
     "std-units-toDegrees-0",
     "std-units-toRadians-0",
     "std-vector-add-0",
@@ -270,4 +279,10 @@ pub const TEST_NAMES: &[&str] = &[
     "std-vector-dot-0",
     "std-vector-magnitude-0",
     "std-vector-normalize-0",
+    "std-hole-countersink-0",
+    "std-hole-counterbore-0",
+    "std-hole-hole-0",
+    "std-hole-hole-1",
+    "std-hole-drill-0",
+    "std-hole-flat-0",
 ];

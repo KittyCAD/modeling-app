@@ -63,6 +63,7 @@ export interface IElectronAPI {
   mkdir: typeof fs.mkdir
   join: typeof path.join
   sep: typeof path.sep
+  copy: typeof fs.cp
   rename: (prev: string, next: string) => ReturnType<typeof fs.rename>
   packageJson: {
     name: string
@@ -75,9 +76,11 @@ export interface IElectronAPI {
   process: {
     env: {
       NODE_ENV: string
-      VITE_KITTYCAD_BASE_DOMAIN: string
-      VITE_KITTYCAD_API_WEBSOCKET_URL: string
-      VITE_KITTYCAD_API_TOKEN: string
+      VITE_ZOO_BASE_DOMAIN: string
+      VITE_KITTYCAD_WEBSOCKET_URL: string
+      VITE_MLEPHANT_WEBSOCKET_URL: string
+      VITE_KITTYCAD_API_TOKEN: string // legacy token name
+      VITE_ZOO_API_TOKEN: string
     }
   }
   kittycad: (access: string, args: any) => any

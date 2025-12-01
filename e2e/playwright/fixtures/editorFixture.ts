@@ -10,7 +10,7 @@ import {
 
 interface EditorState {
   activeLines: Array<string>
-  highlightedCode: string
+  highlightedCode?: string
   diagnostics: Array<string>
 }
 
@@ -55,8 +55,8 @@ export class EditorFixture {
       await this.scrollToBottom()
       if (!shouldNormalise) {
         const result = not
-          ? await expect(this.codeContent).not.toContainText(code)
-          : await expect(this.codeContent).toContainText(code)
+          ? await expect(this.codeContent).not.toContainText(code, { timeout })
+          : await expect(this.codeContent).toContainText(code, { timeout })
 
         await resetPane()
         return result
@@ -168,9 +168,11 @@ export class EditorFixture {
         }
         return state
       })
-      .toEqual({
+      .toMatchObject({
         activeLines: expectedState.activeLines.map(sansWhitespace),
-        highlightedCode: sansWhitespace(expectedState.highlightedCode),
+        ...(typeof expectedState.highlightedCode !== 'undefined'
+          ? { highlightedCode: sansWhitespace(expectedState.highlightedCode) }
+          : {}),
         diagnostics: expectedState.diagnostics.map(sansWhitespace),
       })
   }

@@ -1,0 +1,111 @@
+// Dining Table
+// Simple dining table with rectangular tabletop, aprons and four legs with square section
+
+
+// ──────────────
+// PARAMETERS
+// ──────────────
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+tableHeight = 750
+apronTopElevation = tableHeight
+tableLength = 2100
+tableWidth = 800
+tableTopThickness = 20
+legThickness = 40
+legOffset = 60
+apronHeight = 120
+apronThickness = legThickness / 2
+
+// ──────────────
+// TABLETOP
+// ──────────────
+
+
+tableTopPlane = offsetPlane(XY, offset = tableHeight)
+tableTopSketch = startSketchOn(tableTopPlane)
+tableTopProfile = startProfile(tableTopSketch, at = [0, 0])
+  |> yLine(length = tableLength)
+  |> xLine(length = tableWidth)
+  |> yLine(length = -tableLength)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+tableTopExtrude = extrude(tableTopProfile, length = -tableTopThickness)
+
+// ──────────────
+// LEGS
+// ──────────────
+
+
+legHeight = tableHeight - tableTopThickness
+distanceBetweenLegAxisWidth = tableWidth - legThickness - (legOffset * 2)
+distanceBetweenLegAxisLength = tableLength - legThickness - (legOffset * 2)
+
+legSketch = startSketchOn(XY)
+legProfile = startProfile(legSketch, at = [0, 0])
+  |> yLine(length = legThickness)
+  |> xLine(length = legThickness)
+  |> yLine(length = -legThickness)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+legExtrude = extrude(legProfile, length = legHeight)
+  |> translate(x = legOffset, y = legOffset, z = 0)
+
+leg2 = clone(legExtrude)
+  |> translate(x = distanceBetweenLegAxisWidth, y = 0, z = 0)
+leg3 = clone(legExtrude)
+  |> translate(x = 0, y = distanceBetweenLegAxisLength, z = 0)
+leg4 = clone(legExtrude)
+  |> translate(x = distanceBetweenLegAxisWidth, y = tableLength - legThickness - (legOffset * 2), z = 0)
+
+  // ──────────────
+  // APRONS
+// ──────────────
+
+longApronLength = tableLength - (legThickness * 2) - (legOffset * 2)
+shortApronLength = tableWidth - (legThickness * 2) - (legOffset * 2)
+
+distanceFromTableTopCornerToLegBackSide = legOffset + legThickness
+distanceFromTableTopCornerToLegAxis = legOffset + legThickness / 2
+distanceFromTableTopCornerToApronSide = distanceFromTableTopCornerToLegAxis - (apronThickness / 2)
+
+stretcherPlane = offsetPlane(XY, offset = apronTopElevation - tableTopThickness)
+stretcherSketch = startSketchOn(stretcherPlane)
+
+longApronProfile = startProfile(stretcherSketch, at = [0, 0])
+  |> yLine(length = longApronLength)
+  |> xLine(length = apronThickness)
+  |> yLine(length = -longApronLength)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+longApronProfileMoved = translate(
+  longApronProfile,
+  x = distanceFromTableTopCornerToApronSide,
+  y = distanceFromTableTopCornerToLegBackSide,
+  z = 0,
+)
+longApron1 = extrude(longApronProfileMoved, length = -apronHeight)
+longApron2 = clone(longApron1)
+  |> translate(x = distanceBetweenLegAxisWidth, y = 0, z = 0)
+
+shortApronProfile = startProfile(stretcherSketch, at = [0, 0])
+  |> yLine(length = apronThickness)
+  |> xLine(length = shortApronLength)
+  |> yLine(length = -apronThickness)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+shortApronProfileMoved = translate(
+  shortApronProfile,
+  x = distanceFromTableTopCornerToLegBackSide,
+  y = distanceFromTableTopCornerToApronSide,
+  z = 0,
+)
+shortApron1 = extrude(shortApronProfileMoved, length = -apronHeight)
+shortApron2 = clone(shortApron1)
+  |> translate(x = 0, y = distanceBetweenLegAxisLength, z = 0)

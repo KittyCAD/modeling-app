@@ -3,7 +3,6 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import EditorManager from '@src/editor/manager'
 import { KclManager } from '@src/lang/KclSingleton'
 import CodeManager from '@src/lang/codeManager'
-import { EngineCommandManager } from '@src/lang/std/engineConnection'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 
@@ -13,36 +12,39 @@ import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, SnapshotFrom } from 'xstate'
-import { createActor, setup, spawnChild } from 'xstate'
+import { assign, createActor, setup, spawnChild } from 'xstate'
 
+import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
+import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
 import { createSettings } from '@src/lib/settings/initialSettings'
+import type { AppMachineContext, AppMachineEvent } from '@src/lib/types'
 import { authMachine } from '@src/machines/authMachine'
 import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
 } from '@src/machines/billingMachine'
-import {
-  engineStreamContextCreate,
-  engineStreamMachine,
-} from '@src/machines/engineStreamMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
+import {
+  mlEphantDefaultContext,
+  mlEphantManagerMachine,
+} from '@src/machines/mlEphantManagerMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
-import type { AppMachineContext } from '@src/lib/types'
-import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
-import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import { ConnectionManager } from '@src/network/connectionManager'
+import type { Debugger } from '@src/lib/debugger'
+import { EngineDebugger } from '@src/lib/debugger'
 
-export const codeManager = new CodeManager()
-export const engineCommandManager = new EngineCommandManager()
+export const engineCommandManager = new ConnectionManager()
 export const rustContext = new RustContext(engineCommandManager)
 
 declare global {
   interface Window {
     editorManager: EditorManager
-    engineCommandManager: EngineCommandManager
+    engineCommandManager: ConnectionManager
+    engineDebugger: Debugger
   }
 }
 
@@ -50,10 +52,10 @@ declare global {
 window.engineCommandManager = engineCommandManager
 
 export const sceneInfra = new SceneInfra(engineCommandManager)
-engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
 
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager(engineCommandManager)
+export const codeManager = new CodeManager({ editorManager })
 
 // This needs to be after codeManager is created.
 // (lee: what??? why?)
@@ -63,6 +65,33 @@ export const kclManager = new KclManager(engineCommandManager, {
   editorManager,
   sceneInfra,
 })
+
+import { initPromise } from '@src/lang/wasmUtils'
+// Initialize KCL version
+import { setKclVersion } from '@src/lib/kclVersion'
+import { AppMachineEventType } from '@src/lib/types'
+import {
+  defaultLayout,
+  defaultLayoutConfig,
+  saveLayout,
+  type Layout,
+} from '@src/lib/layout'
+import { processEnv } from '@src/env'
+
+initPromise
+  .then(() => {
+    if (processEnv()?.VITEST) {
+      const message =
+        'singletons is trying to call initPromise and setKclVersion. This will be blocked in VITEST runtimes.'
+      console.log(message)
+      return
+    }
+
+    setKclVersion(kclManager.kclVersion)
+  })
+  .catch((e) => {
+    console.error(e)
+  })
 
 // The most obvious of cyclic dependencies.
 // This is because the   handleOnViewUpdate(viewUpdate: ViewUpdate): void {
@@ -99,6 +128,7 @@ if (typeof window !== 'undefined') {
   ;(window as any).editorManager = editorManager
   ;(window as any).codeManager = codeManager
   ;(window as any).rustContext = rustContext
+  ;(window as any).engineDebugger = EngineDebugger
   ;(window as any).enableMousePositionLogs = () =>
     document.addEventListener('mousemove', (e) =>
       console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
@@ -118,19 +148,20 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM, COMMAND_BAR, BILLING } =
+const { AUTH, SETTINGS, SYSTEM_IO, MLEPHANT_MANAGER, COMMAND_BAR, BILLING } =
   ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
   [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-  [ENGINE_STREAM]: engineStreamMachine,
+  [MLEPHANT_MANAGER]: mlEphantManagerMachine,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
 } as const
 
 const appMachine = setup({
   types: {} as {
+    events: AppMachineEvent
     context: AppMachineContext
   },
 }).createMachine({
@@ -141,6 +172,7 @@ const appMachine = setup({
     engineCommandManager: engineCommandManager,
     sceneInfra: sceneInfra,
     sceneEntitiesManager: sceneEntitiesManager,
+    layout: defaultLayout,
   },
   entry: [
     /**
@@ -154,9 +186,9 @@ const appMachine = setup({
       systemId: SETTINGS,
       input: createSettings(),
     }),
-    spawnChild(appMachineActors[ENGINE_STREAM], {
-      systemId: ENGINE_STREAM,
-      input: engineStreamContextCreate(),
+    spawnChild(appMachineActors[MLEPHANT_MANAGER], {
+      systemId: MLEPHANT_MANAGER,
+      input: mlEphantDefaultContext(),
     }),
     spawnChild(appMachineActors[SYSTEM_IO], {
       systemId: SYSTEM_IO,
@@ -175,6 +207,20 @@ const appMachine = setup({
       },
     }),
   ],
+  on: {
+    [AppMachineEventType.SetLayout]: {
+      actions: [
+        assign({ layout: ({ event }) => structuredClone(event.layout) }),
+        ({ event }) => saveLayout({ layout: event.layout }),
+      ],
+    },
+    [AppMachineEventType.ResetLayout]: {
+      actions: [
+        assign({ layout: structuredClone(defaultLayoutConfig) }),
+        ({ context }) => saveLayout({ layout: context.layout }),
+      ],
+    },
+  },
 })
 
 export const appActor = createActor(appMachine, {
@@ -211,6 +257,7 @@ export const getSettings = () => {
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
 sceneInfra.camControls.getSettings = getSettings
+sceneEntitiesManager.getSettings = getSettings
 
 export const useSettings = () =>
   useSelector(settingsActor, (state) => {
@@ -219,17 +266,22 @@ export const useSettings = () =>
     return settings
   })
 
-export const systemIOActor = appActor.system.get(SYSTEM_IO) as ActorRefFrom<
+export type SystemIOActor = ActorRefFrom<
   (typeof appMachineActors)[typeof SYSTEM_IO]
 >
 
-export const engineStreamActor = appActor.system.get(
-  ENGINE_STREAM
-) as ActorRefFrom<(typeof appMachineActors)[typeof ENGINE_STREAM]>
+export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
+
+export const mlEphantManagerActor = appActor.system.get(
+  MLEPHANT_MANAGER
+) as ActorRefFrom<(typeof appMachineActors)[typeof MLEPHANT_MANAGER]>
 
 export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
   (typeof appMachineActors)[typeof COMMAND_BAR]
 >
+
+// TODO: proper dependency management
+sceneEntitiesManager.commandBarActor = commandBarActor
 
 export const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
   (typeof appMachineActors)[typeof BILLING]
@@ -251,3 +303,10 @@ commandBarActor.send({
     ],
   },
 })
+
+const layoutSelector = (state: SnapshotFrom<typeof appActor>) =>
+  state.context.layout
+export const getLayout = () => appActor.getSnapshot().context.layout
+export const useLayout = () => useSelector(appActor, layoutSelector)
+export const setLayout = (layout: Layout) =>
+  appActor.send({ type: AppMachineEventType.SetLayout, layout })

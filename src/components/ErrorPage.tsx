@@ -1,13 +1,9 @@
-import {
-  faBug,
-  faHome,
-  faRefresh,
-  faTrash,
-} from '@fortawesome/free-solid-svg-icons'
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { isDesktop } from '@src/lib/isDesktop'
+import { refreshPage } from '@src/lib/utils'
+import { reportRejection } from '@src/lib/trap'
 
 /** Type narrowing function of unknown error to a string */
 function errorMessage(error: unknown): string {
@@ -32,8 +28,10 @@ function stackTraceMessage(error: unknown): string {
 }
 
 /** Generate a GitHub issue URL from the error */
-function generateToUrl(error: unknown) {
-  const title: string = 'An unexpected error occurred'
+export function generateToUrl(
+  error: unknown,
+  title: string = 'An unexpected error occurred'
+) {
   const newLine = '%0A'
   const body = `${errorMessage(error)} ${newLine} >${stackTraceMessage(error)} ${newLine}`
   const result = `https://github.com/KittyCAD/modeling-app/issues/new?title=${title}&body=${body}`
@@ -62,7 +60,7 @@ export const ErrorPage = () => {
             <ActionButton
               Element="link"
               to={'/'}
-              iconStart={{ icon: faHome }}
+              iconStart={{ icon: 'arrowLeft' }}
               data-testid="unexpected-error-home"
             >
               Go Home
@@ -70,14 +68,16 @@ export const ErrorPage = () => {
           )}
           <ActionButton
             Element="button"
-            iconStart={{ icon: faRefresh }}
-            onClick={() => window.location.reload()}
+            iconStart={{ icon: 'arrowRotateFullRight' }}
+            onClick={() => {
+              refreshPage('Crash page').catch(reportRejection)
+            }}
           >
             Reload
           </ActionButton>
           <ActionButton
             Element="button"
-            iconStart={{ icon: faTrash }}
+            iconStart={{ icon: 'trash' }}
             onClick={() => {
               window.localStorage.clear()
             }}
@@ -86,7 +86,7 @@ export const ErrorPage = () => {
           </ActionButton>
           <ActionButton
             Element="externalLink"
-            iconStart={{ icon: faBug }}
+            iconStart={{ icon: 'bug' }}
             to={generateToUrl(error)}
           >
             Report Bug

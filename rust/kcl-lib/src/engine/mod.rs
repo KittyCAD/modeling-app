@@ -29,7 +29,7 @@ use kcmc::{
         WebSocketResponse,
     },
 };
-use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::{self as kcmc, units::UnitLength};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
@@ -39,7 +39,7 @@ use web_time::Instant;
 use crate::{
     SourceRange,
     errors::{KclError, KclErrorDetails},
-    execution::{DefaultPlanes, IdGenerator, PlaneInfo, Point3d, types::UnitLen},
+    execution::{DefaultPlanes, IdGenerator, PlaneInfo, Point3d},
 };
 
 lazy_static::lazy_static! {
@@ -51,55 +51,55 @@ lazy_static::lazy_static! {
             (
                 PlaneName::Xy,
                 PlaneInfo {
-                    origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
+                    origin: Point3d::new(0.0, 0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(1.0, 0.0, 0.0, None),
+                    y_axis: Point3d::new(0.0, 1.0, 0.0, None),
+                    z_axis: Point3d::new(0.0, 0.0, 1.0, None),
                 },
             ),
             (
                 PlaneName::NegXy,
                 PlaneInfo {
-                    origin: Point3d::new( 0.0, 0.0,  0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(-1.0, 0.0,  0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new( 0.0, 1.0,  0.0, UnitLen::Unknown),
-                    z_axis: Point3d::new( 0.0, 0.0, -1.0, UnitLen::Unknown),
+                    origin: Point3d::new( 0.0, 0.0,  0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(-1.0, 0.0,  0.0, None),
+                    y_axis: Point3d::new( 0.0, 1.0,  0.0, None),
+                    z_axis: Point3d::new( 0.0, 0.0, -1.0, None),
                 },
             ),
             (
                 PlaneName::Xz,
                 PlaneInfo {
-                    origin: Point3d::new(0.0,  0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(1.0,  0.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new(0.0,  0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new(0.0,  0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(1.0,  0.0, 0.0, None),
+                    y_axis: Point3d::new(0.0,  0.0, 1.0, None),
+                    z_axis: Point3d::new(0.0, -1.0, 0.0, None),
                 },
             ),
             (
                 PlaneName::NegXz,
                 PlaneInfo {
-                    origin: Point3d::new( 0.0, 0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new( 0.0, 0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new( 0.0, 1.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new( 0.0, 0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(-1.0, 0.0, 0.0, None),
+                    y_axis: Point3d::new( 0.0, 0.0, 1.0, None),
+                    z_axis: Point3d::new( 0.0, 1.0, 0.0, None),
                 },
             ),
             (
                 PlaneName::Yz,
                 PlaneInfo {
-                    origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new(0.0, 0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new(0.0, 1.0, 0.0, None),
+                    y_axis: Point3d::new(0.0, 0.0, 1.0, None),
+                    z_axis: Point3d::new(1.0, 0.0, 0.0, None),
                 },
             ),
             (
                 PlaneName::NegYz,
                 PlaneInfo {
-                    origin: Point3d::new( 0.0,  0.0, 0.0, UnitLen::Mm),
-                    x_axis: Point3d::new( 0.0, -1.0, 0.0, UnitLen::Unknown),
-                    y_axis: Point3d::new( 0.0,  0.0, 1.0, UnitLen::Unknown),
-                    z_axis: Point3d::new(-1.0,  0.0, 0.0, UnitLen::Unknown),
+                    origin: Point3d::new( 0.0,  0.0, 0.0, Some(UnitLength::Millimeters)),
+                    x_axis: Point3d::new( 0.0, -1.0, 0.0, None),
+                    y_axis: Point3d::new( 0.0,  0.0, 1.0, None),
+                    z_axis: Point3d::new(-1.0,  0.0, 0.0, None),
                 },
             ),
         ]);
@@ -597,7 +597,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             requests.extend(self.take_batch_end().await.values().cloned());
             requests
         } else {
-            self.take_batch().await.clone()
+            self.take_batch().await
         };
 
         self.run_batch(all_requests, source_range).await
@@ -646,6 +646,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
+        let plane_opacity = 0.1;
         let plane_settings: Vec<(PlaneName, Uuid, Option<Color>)> = vec![
             (
                 PlaneName::Xy,
@@ -654,7 +655,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     r: 0.7,
                     g: 0.28,
                     b: 0.28,
-                    a: 0.4,
+                    a: plane_opacity,
                 }),
             ),
             (
@@ -664,7 +665,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     r: 0.28,
                     g: 0.7,
                     b: 0.28,
-                    a: 0.4,
+                    a: plane_opacity,
                 }),
             ),
             (
@@ -674,7 +675,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     r: 0.28,
                     g: 0.28,
                     b: 0.7,
-                    a: 0.4,
+                    a: plane_opacity,
                 }),
             ),
             (PlaneName::NegXy, id_generator.next_uuid(), None),
@@ -905,7 +906,7 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
         token
     } else {
         return Err(anyhow::anyhow!(
-            "No API token found in environment variables. Use KITTYCAD_API_TOKEN or ZOO_API_TOKEN"
+            "No API token found in environment variables. Use ZOO_API_TOKEN"
         ));
     };
 

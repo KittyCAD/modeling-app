@@ -1,10 +1,10 @@
 import { join } from 'path'
-import { bracket } from '@e2e/playwright/fixtures/bracket'
 import fsp from 'fs/promises'
 
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from '@e2e/playwright/storageStates'
 import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Code pane and errors', () => {
   test('Typing KCL errors induces a badge on the code pane button', async ({
@@ -47,73 +47,6 @@ extrude001 = extrude(sketch001, length = 5)`
 
     // Ensure that a badge appears on the button
     await expect(codePaneButtonHolder).toContainText('notification')
-  })
-
-  test('Opening and closing the code pane will consistently show error diagnostics', async ({
-    page,
-    homePage,
-    editor,
-  }) => {
-    const u = await getUtils(page)
-
-    // Load the app with the working starter code
-    await page.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, bracket)
-
-    await page.setBodyDimensions({ width: 1200, height: 900 })
-    await homePage.goToModelingScene()
-
-    // wait for execution done
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    // Ensure we have no errors in the gutter.
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-
-    // Ensure no badge is present
-    const codePaneButton = page.getByRole('button', { name: 'KCL Code pane' })
-    const codePaneButtonHolder = page.locator('#code-button-holder')
-    await expect(codePaneButtonHolder).not.toContainText('notification')
-
-    // Delete a character to break the KCL
-    await editor.openPane()
-    await editor.scrollToText('extrude(%, length = width)')
-    await page.getByText('extrude(%, length = width)').click()
-
-    await page.keyboard.press(')')
-
-    // Ensure that a badge appears on the button
-    await expect(codePaneButtonHolder).toContainText('notification')
-
-    // Ensure we have an error diagnostic.
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-
-    // error text on hover
-    await page.hover('.cm-lint-marker-error')
-    await expect(page.locator('.cm-tooltip').first()).toBeVisible()
-
-    // Close the code pane
-    await codePaneButton.click()
-
-    await page.waitForTimeout(500)
-
-    // Open the code pane
-    await editor.openPane()
-
-    // Go to our problematic code again
-    await editor.scrollToText('extrude(%, length = w')
-
-    // Ensure that a badge appears on the button
-    await expect(codePaneButtonHolder).toContainText('notification')
-
-    // Ensure we have an error diagnostic.
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-
-    // error text on hover
-    await page.hover('.cm-lint-marker-error')
-    await expect(page.locator('.cm-tooltip').first()).toBeVisible()
   })
 
   test('When error is not in view you can click the badge to scroll to it', async ({
@@ -254,7 +187,7 @@ middle(1)
 middle(0)
 `
     await test.step('Set the code with a KCL error', async () => {
-      await toolbar.openPane('code')
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.replaceCode('', code)
     })
     // This shows all the diagnostics in a way that doesn't require the mouse

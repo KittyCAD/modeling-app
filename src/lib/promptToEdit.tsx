@@ -1,39 +1,20 @@
-import type { SelectionRange } from '@codemirror/state'
-import { EditorSelection, Transaction } from '@codemirror/state'
-import type { Models } from '@kittycad/lib'
-import { diffLines } from 'diff'
-import toast from 'react-hot-toast'
-import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
-import { getCookie, TOKEN_PERSIST_KEY } from '@src/machines/authMachine'
-import { COOKIE_NAME } from '@src/lib/constants'
-import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
-import { isDesktop } from '@src/lib/isDesktop'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { ActionButton } from '@src/components/ActionButton'
-import { CustomIcon } from '@src/components/CustomIcon'
-
-import {
-  ToastPromptToEditCadSuccess,
-  writeOverFilesAndExecute,
-} from '@src/components/ToastTextToCad'
-import { modelingMachineEvent } from '@src/editor/manager'
+import type {
+  SourceRange as ApiSourceRange,
+  SourceRangePrompt,
+  TextToCadMultiFileIteration,
+} from '@kittycad/lib'
+import { ml } from '@kittycad/lib'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
-import { topLevelRange } from '@src/lang/util'
-import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
-import crossPlatformFetch from '@src/lib/crossPlatformFetch'
-import type { Selections } from '@src/lib/selections'
-import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
-import { err, reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
-import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
-import type { FileMeta } from '@src/lib/types'
-import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
-import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
-import { connectReasoningStream } from '@src/lib/reasoningWs'
-
-type KclFileMetaMap = {
-  [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
-}
+import type { SourceRange } from '@src/lang/wasm'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
+import { parentPathRelativeToProject } from '@src/lib/paths'
+import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
+import type {
+  ConstructRequestArgs,
+  KclFileMetaMap,
+  PromptToEditRequest,
+} from '@src/lib/promptToEditTypes'
+import { err } from '@src/lib/trap'
 
 function sourceIndexToLineColumn(
   code: string,
@@ -49,83 +30,45 @@ function sourceIndexToLineColumn(
 function convertAppRangeToApiRange(
   range: SourceRange,
   code: string
-): Models['SourceRange_type'] {
+): ApiSourceRange {
   return {
     start: sourceIndexToLineColumn(code, range[0]),
     end: sourceIndexToLineColumn(code, range[1]),
   }
 }
 
-type TextToCadErrorResponse = {
-  error_code: string
-  message: string
-}
-
-async function submitTextToCadRequest(
-  body: {
-    prompt: string
-    source_ranges: Models['SourceRangePrompt_type'][]
-    project_name?: string
-    kcl_version: string
-  },
-  files: KittyCadLibFile[],
+export async function submitTextToCadMultiFileIterationRequest(
+  request: PromptToEditRequest,
   token: string
-): Promise<TextToCadMultiFileIteration_type | Error> {
-  const formData = new FormData()
-  formData.append('body', JSON.stringify(body))
-
-  files.forEach((file) => {
-    formData.append('files', file.data, file.name)
-  })
-
-  const response = await fetch(
-    withAPIBaseURL('/ml/text-to-cad/multi-file/iteration'),
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    }
+): Promise<TextToCadMultiFileIteration | Error> {
+  const client = createKCClient(token)
+  const data = await kcCall(() =>
+    ml.create_text_to_cad_multi_file_iteration({
+      client,
+      files: request.files,
+      body: request.body,
+    })
   )
-
-  if (!response.ok) {
-    return new Error(`HTTP error! status: ${response.status}`)
-  }
-
-  const data = await response.json()
-  if ('error_code' in data) {
-    const errorData = data as TextToCadErrorResponse
-    return new Error(errorData.message || 'Unknown error')
-  }
-
-  connectReasoningStream(token, data.id)
-
-  return data as TextToCadMultiFileIteration_type
+  return data
 }
 
-export async function submitPromptToEditToQueue({
+// The ML service should know enough about caps, edges, faces, etc when doing
+// ML operations, but that's currently not the case.
+// This helper function should become deprecated with time.
+export function constructMultiFileIterationRequestWithPromptHelpers({
+  conversationId,
   prompt,
   selections,
   projectFiles,
-  token,
+  applicationProjectDirectory,
   artifactGraph,
   projectName,
-}: {
-  prompt: string
-  selections: Selections | null
-  projectFiles: FileMeta[]
-  projectName: string
-  token?: string
-  artifactGraph: ArtifactGraph
-}) {
-  const _token =
-    token && token !== ''
-      ? token
-      : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
-
+  currentFile,
+  kclVersion,
+}: ConstructRequestArgs): PromptToEditRequest {
   const kclFilesMap: KclFileMetaMap = {}
-  const endPointFiles: KittyCadLibFile[] = []
+  const files: KittyCadLibFile[] = []
+
   projectFiles.forEach((file) => {
     let data: Blob
     if (file.type === 'other') {
@@ -135,32 +78,51 @@ export async function submitPromptToEditToQueue({
       kclFilesMap[file.execStateFileNamesIndex] = file
       data = new Blob([file.fileContents], { type: 'text/kcl' })
     }
-    endPointFiles.push({
+    files.push({
       name: file.relPath,
       data,
     })
   })
 
+  // Way to patch in supplying the currently-opened file without updating the API.
+  // TODO: update the API to support currently-opened files as other parts of the payload
+  const currentFilePrompt: SourceRangePrompt | null = currentFile.entry
+    ? {
+        prompt: 'This is the active file',
+        range: convertAppRangeToApiRange(
+          [0, currentFile.content.length, 0],
+          currentFile.content
+        ),
+        file: parentPathRelativeToProject(
+          currentFile.entry?.path,
+          applicationProjectDirectory
+        ),
+      }
+    : null
+
   // If no selection, use whole file
   if (selections === null) {
-    return submitTextToCadRequest(
-      {
+    const rangePrompts: SourceRangePrompt[] = []
+    if (currentFilePrompt !== null) {
+      rangePrompts.push(currentFilePrompt)
+    }
+    return {
+      body: {
         prompt,
-        source_ranges: [],
+        source_ranges: rangePrompts,
         project_name:
           projectName !== '' && projectName !== 'browser'
             ? projectName
             : undefined,
-        kcl_version: kclManager.kclVersion,
+        kcl_version: kclVersion,
       },
-      endPointFiles,
-      _token
-    )
+      files,
+    }
   }
 
   // Handle manual code selections and artifact selections differently
-  const ranges: Models['SourceRangePrompt_type'][] =
-    selections.graphSelections.flatMap((selection) => {
+  const ranges: SourceRangePrompt[] = selections.graphSelections.flatMap(
+    (selection) => {
       const artifact = selection.artifact
       const execStateFileNamesIndex = selection?.codeRef?.range?.[2]
       const file = kclFilesMap?.[execStateFileNamesIndex]
@@ -168,7 +130,7 @@ export async function submitPromptToEditToQueue({
       const filePath = file?.relPath || ''
 
       // For artifact selections, add context
-      const prompts: Models['SourceRangePrompt_type'][] = []
+      const prompts: SourceRangePrompt[] = []
 
       if (artifact?.type === 'cap') {
         prompts.push({
@@ -288,275 +250,40 @@ See later source ranges for more context. about the sweep`,
         })
       }
       return prompts
-    })
-  return submitTextToCadRequest(
-    {
+    }
+  )
+  // Push the current file prompt alongside the selection-based prompts
+  if (currentFilePrompt !== null) {
+    ranges.push(currentFilePrompt)
+  }
+  let payload = {
+    body: {
       prompt,
+      conversation_id: conversationId,
       source_ranges: ranges,
       project_name:
         projectName !== '' && projectName !== 'browser'
           ? projectName
           : undefined,
-      kcl_version: kclManager.kclVersion,
+      kcl_version: kclVersion,
     },
-    endPointFiles,
-    _token
-  )
+    files,
+  }
+
+  if (!conversationId) {
+    delete payload.body.conversation_id
+  }
+
+  return payload
 }
 
 export async function getPromptToEditResult(
   id: string,
   token?: string
-): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
-  const url = withAPIBaseURL(`/async/operations/${id}`)
-  const data: Models['TextToCadMultiFileIteration_type'] | Error =
-    await crossPlatformFetch(
-      url,
-      {
-        method: 'GET',
-      },
-      token
-    )
-
-  return data
-}
-
-export async function doPromptEdit({
-  prompt,
-  selections,
-  projectFiles,
-  token,
-  artifactGraph,
-  projectName,
-}: {
-  prompt: string
-  selections: Selections
-  projectFiles: FileMeta[]
-  token?: string
-  projectName: string
-  artifactGraph: ArtifactGraph
-}): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
-  const toastId = toast.loading('Submitting to Text-to-CAD API...')
-
-  let submitResult
-
-  try {
-    submitResult = await submitPromptToEditToQueue({
-      prompt,
-      selections,
-      projectFiles,
-      token,
-      artifactGraph,
-      projectName,
-    })
-  } catch (e: any) {
-    toast.dismiss(toastId)
-    return new Error(e.message)
-  }
-  if (submitResult instanceof Error) {
-    toast.dismiss(toastId)
-    return submitResult
-  }
-
-  const textToCadComplete = new Promise<
-    Models['TextToCadMultiFileIteration_type']
-  >((resolve, reject) => {
-    ;(async () => {
-      const MAX_CHECK_TIMEOUT = 3 * 60_000
-      const CHECK_DELAY = 200
-
-      let timeElapsed = 0
-
-      while (timeElapsed < MAX_CHECK_TIMEOUT) {
-        const check = await getPromptToEditResult(submitResult.id, token)
-        if (
-          check instanceof Error ||
-          check.status === 'failed' ||
-          check.error
-        ) {
-          reject(check)
-          return
-        } else if (check.status === 'completed') {
-          resolve(check)
-          return
-        }
-
-        await new Promise((r) => setTimeout(r, CHECK_DELAY))
-        timeElapsed += CHECK_DELAY
-      }
-
-      reject(new Error('Text-to-CAD API timed out'))
-    })().catch(reportRejection)
-  })
-
-  try {
-    const result = await textToCadComplete
-    toast.dismiss(toastId)
-    return result
-  } catch (e) {
-    toast.dismiss(toastId)
-    toast.error(
-      'Failed to edit your KCL code, please try again with a different prompt or selection'
-    )
-    console.error('textToCadComplete', e)
-  }
-
-  return textToCadComplete
-}
-
-/** takes care of the whole submit prompt to endpoint flow including the accept-reject toast once the result is back */
-export async function promptToEditFlow({
-  prompt,
-  selections,
-  projectFiles,
-  token,
-  artifactGraph,
-  projectName,
-  filePath,
-}: {
-  prompt: string
-  selections: Selections
-  projectFiles: FileMeta[]
-  token?: string
-  artifactGraph: ArtifactGraph
-  projectName: string
-  filePath: string | undefined
-}) {
-  const result = await doPromptEdit({
-    prompt,
-    selections,
-    projectFiles,
-    token,
-    artifactGraph,
-    projectName,
-  })
-  if (err(result)) {
-    toast.error('Failed to modify.')
-    return Promise.reject(result)
-  }
-  const oldCodeWebAppOnly = codeManager.code
-  const downloadLink = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
-
-  if (!isDesktop() && Object.values(result.outputs).length > 1) {
-    const toastId = uuidv4()
-    toast.error(
-      (t) => (
-        <div className="flex flex-col gap-2">
-          <p>Multiple files were returned from Text-to-CAD.</p>
-          <p>You need to use the desktop app to support this.</p>
-          <div className="flex justify-between items-center mt-2">
-            <>
-              <a
-                href={downloadLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-300 underline flex align-middle"
-                onClick={openExternalBrowserIfDesktop(downloadLink)}
-              >
-                <CustomIcon
-                  name="link"
-                  className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40"
-                />
-                Download Desktop App
-              </a>
-            </>
-            <ActionButton
-              Element="button"
-              iconStart={{
-                icon: 'close',
-              }}
-              name="Dismiss"
-              onClick={() => {
-                toast.dismiss(toastId)
-              }}
-            >
-              Dismiss
-            </ActionButton>
-          </div>
-        </div>
-      ),
-      {
-        id: toastId,
-        duration: Infinity,
-        icon: null,
-      }
-    )
-    return
-  }
-  if (isDesktop()) {
-    const requestedFiles: RequestedKCLFile[] = []
-
-    for (const [relativePath, fileContents] of Object.entries(result.outputs)) {
-      requestedFiles.push({
-        requestedCode: fileContents,
-        requestedFileName: relativePath,
-        requestedProjectName: projectName,
-      })
-    }
-
-    await writeOverFilesAndExecute({
-      requestedFiles,
-      projectName,
-      filePath,
-    })
-  } else {
-    const newCode = result.outputs['main.kcl']
-    codeManager.updateCodeEditor(newCode)
-    const diff = reBuildNewCodeWithRanges(oldCodeWebAppOnly, newCode)
-    const ranges: SelectionRange[] = diff.insertRanges.map((range) =>
-      EditorSelection.range(range[0], range[1])
-    )
-    editorManager?.getEditorView()?.dispatch({
-      selection: EditorSelection.create(
-        ranges,
-        selections.graphSelections.length - 1
-      ),
-      annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
-    })
-    await kclManager.executeCode()
-  }
-  const toastId = uuidv4()
-
-  toast.success(
-    () =>
-      ToastPromptToEditCadSuccess({
-        toastId,
-        data: result,
-        token,
-        oldCodeWebAppOnly,
-        oldFiles: projectFiles,
-      }),
-    {
-      id: toastId,
-      duration: Infinity,
-      icon: null,
-    }
+): Promise<TextToCadMultiFileIteration | Error> {
+  const client = createKCClient(token)
+  const data = await kcCall(() =>
+    ml.get_text_to_cad_part_for_user({ client, id })
   )
-}
-
-const reBuildNewCodeWithRanges = (
-  oldCode: string,
-  newCode: string
-): {
-  newCode: string
-  insertRanges: SourceRange[]
-} => {
-  let insertRanges: SourceRange[] = []
-  const changes = diffLines(oldCode, newCode)
-  let newCodeWithRanges = ''
-  for (const change of changes) {
-    if (!change.added && !change.removed) {
-      // no change add it to newCodeWithRanges
-      newCodeWithRanges += change.value
-    } else if (change.added && !change.removed) {
-      const start = newCodeWithRanges.length
-      const end = start + change.value.length
-      insertRanges.push(topLevelRange(start, end))
-      newCodeWithRanges += change.value
-    }
-  }
-  return {
-    newCode: newCodeWithRanges,
-    insertRanges,
-  }
+  return data as TextToCadMultiFileIteration | Error
 }

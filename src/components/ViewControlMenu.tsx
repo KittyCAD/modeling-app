@@ -5,25 +5,27 @@ import {
   ContextMenu,
   ContextMenuDivider,
   ContextMenuItem,
-  ContextMenuItemRefresh,
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { getSelectedSketchTarget } from '@src/lang/queryAst'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
-import { kclManager, sceneInfra } from '@src/lib/singletons'
-import { err, reportRejection } from '@src/lib/trap'
-import { useSettings } from '@src/lib/singletons'
+import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import {
-  selectDefaultSketchPlane,
-  selectOffsetSketchPlane,
-} from '@src/lib/selections'
-import { getSelectedPlaneId } from '@src/lang/queryAst'
+import { getLayout, sceneInfra, settingsActor } from '@src/lib/singletons'
+import { useSettings } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
+import {
+  DefaultLayoutPaneID,
+  getOpenPanes,
+  setOpenPanes,
+} from '@src/lib/layout'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  const selectedPlaneId = getSelectedPlaneId(
+  const planeOrFaceId = getSelectedSketchTarget(
     modelingState.context.selectionRanges
   )
 
@@ -31,6 +33,10 @@ export function useViewControlMenuItems() {
   const shouldLockView =
     modelingState.matches('Sketch') &&
     !settings.app.allowOrbitInSketchMode.current
+
+  const sketching = modelingState.matches('Sketch')
+  const snapToGrid = settings.modeling.snapToGrid.current
+  const gizmoType = settings.modeling.gizmoType.current
 
   // Check if there's a valid selection with source range for "View KCL source code"
   const firstValidSelection = useMemo(() => {
@@ -80,17 +86,15 @@ export function useViewControlMenuItems() {
         Center view on selection
       </ContextMenuItem>,
       <ContextMenuItem
+        key="go-to-selection"
         onClick={() => {
           if (firstValidSelection?.codeRef?.range) {
             // First, open the code pane if it's not already open
-            if (!modelingState.context.store.openPanes.includes('code')) {
-              modelingSend({
-                type: 'Set context',
-                data: {
-                  openPanes: [...modelingState.context.store.openPanes, 'code'],
-                },
-              })
-            }
+            const rootLayout = getLayout()
+            setOpenPanes(rootLayout, [
+              ...getOpenPanes({ rootLayout }),
+              DefaultLayoutPaneID.Code,
+            ])
 
             // Navigate to the source code location
             modelingSend({
@@ -117,38 +121,66 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
-          if (selectedPlaneId) {
+          settingsActor.send({
+            type: 'set.modeling.gizmoType',
+            data: {
+              level: 'user',
+              value: gizmoType === 'axis' ? 'cube' : 'axis',
+            },
+          })
+        }}
+      >
+        {gizmoType === 'axis' ? 'Use cube gizmo' : 'Use axis gizmo'}
+      </ContextMenuItem>,
+      <ContextMenuDivider />,
+      <ContextMenuItem
+        onClick={() => {
+          if (planeOrFaceId) {
             sceneInfra.modelingSend({
               type: 'Enter sketch',
-              data: { forceNewSketch: true },
+              data: { forceNewSketch: true, keepDefaultPlaneVisibility: true },
             })
 
-            const defaultSketchPlaneSelected =
-              selectDefaultSketchPlane(selectedPlaneId)
-            if (
-              !err(defaultSketchPlaneSelected) &&
-              defaultSketchPlaneSelected
-            ) {
-              return
-            }
-
-            const artifact = kclManager.artifactGraph.get(selectedPlaneId)
-            void selectOffsetSketchPlane(artifact)
+            void selectSketchPlane(
+              planeOrFaceId,
+              modelingState.context.store.useNewSketchMode?.current
+            )
           }
         }}
-        disabled={!selectedPlaneId}
+        disabled={!planeOrFaceId}
       >
         Start sketch on selection
       </ContextMenuItem>,
-      <ContextMenuDivider />,
-      <ContextMenuItemRefresh />,
+      ...(sketching
+        ? [
+            <ContextMenuDivider />,
+            <ContextMenuItem
+              icon={snapToGrid ? 'checkmark' : undefined}
+              hotkey={SNAP_TO_GRID_HOTKEY}
+              onClick={() => {
+                settingsActor.send({
+                  type: 'set.modeling.snapToGrid',
+                  data: {
+                    level: 'project',
+                    value: !snapToGrid,
+                  },
+                })
+              }}
+            >
+              Snap to Grid
+            </ContextMenuItem>,
+          ]
+        : []),
     ],
     [
       shouldLockView,
-      selectedPlaneId,
+      planeOrFaceId,
       firstValidSelection,
       modelingSend,
-      modelingState.context.store.openPanes,
+      modelingState.context.store.useNewSketchMode,
+      sketching,
+      snapToGrid,
+      gizmoType,
     ]
   )
   return menuItems

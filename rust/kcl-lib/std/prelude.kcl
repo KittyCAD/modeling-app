@@ -14,16 +14,20 @@
 // Note that everything in the prelude is treated as exported.
 
 export import * from "std::types"
+export import "std::gdt"
 export import "std::units"
 export import * from "std::array"
 export import * from "std::math"
 export import * from "std::sketch"
+@(experimental = true)
+export import "std::sketch2"
 export import * from "std::solid"
 export import * from "std::transform"
 export import "std::turns"
 export import "std::sweep"
 export import "std::appearance"
 export import "std::vector"
+export import "std::hole"
 
 /// An abstract 3d plane aligned with the X and Y axes. Its normal is the positive Z axis.
 export XY = {
@@ -151,7 +155,7 @@ export MERGE = "merge": string
 ///     cylinder = part001,
 ///  )
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn helix(
   /// Number of revolutions.
   revolutions: number(_),
@@ -163,6 +167,7 @@ export fn helix(
   @(includeInSnippet = true)
   radius?: number(Length),
   /// Axis to use for the helix.
+  /// The center of the helix's base will be at this axis's origin point.
   @(includeInSnippet = true)
   axis?: Axis3d | Edge,
   /// Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.
@@ -254,7 +259,7 @@ export fn helix(
 ///   |> line(end = [0, 10])
 ///   |> close()
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn offsetPlane(
   /// The plane (e.g. `XY`) which this new plane is created from.
   @plane: Plane,
@@ -293,7 +298,8 @@ export fn offsetPlane(
 ///         y = 0,
 ///         z = 0,
 ///     )
-///     |> extrude(length = 5)
+///
+/// extrude(clonedSketch, length = 5)
 /// ```
 ///
 /// ```kcl
@@ -334,20 +340,21 @@ export fn offsetPlane(
 /// // Translate a cloned solid. Fillet only the clone.
 ///
 /// sketch001 = startSketchOn(XY)
-///         |> startProfile(at = [-10, 10])
-///         |> xLine(length = 20)
-///         |> yLine(length = -20)
-///         |> xLine(length = -20, tag = $filletTag)
-///         |> close()
-///         |> extrude(length = 5)
-///
+/// |> startProfile(at = [-10, 10])
+/// |> xLine(length = 20)
+/// |> yLine(length = -20)
+/// |> xLine(length = -20, tag = $face0)
+/// |> line(endAbsolute = [profileStart()], tag=$face1)
+/// |> extrude(length = 5, tagEnd=$end1)
 ///
 /// sketch002 = clone(sketch001)
-///     |> translate(x = 0, y = 0, z = 20)
-///     |> fillet(
-///     radius = 2,
-///     tags = [getNextAdjacentEdge(filletTag)],
-///     )
+/// |> translate(x = 0, y = 0, z = 20)
+/// 
+/// fillet(
+/// sketch002,
+/// radius = 2,
+/// tags = [getCommonEdge(faces = [sketch002.sketch.tags.face0, sketch002.sketch.tags.face1])],
+/// )
 /// ```
 ///
 /// ```kcl
@@ -361,16 +368,16 @@ export fn offsetPlane(
 ///   |> close()
 ///
 /// sketch002 = clone(sketch001)
-///     |> translate(x = 10, y = 20, z = 0)
-///     |> extrude(length = 5)
+///   |> translate(x = 15, y = 0, z = 5)
+///   |> extrude(length = 5)
 ///
-/// startSketchOn(sketch002, face = sketchingFace)
-///   |> startProfile(at = [1, 1])
-///   |> line(end = [8, 0])
-///   |> line(end = [0, 8])
-///   |> line(end = [-8, 0])
-///   |> close(tag = $sketchingFace002)
-///   |> extrude(length = 10)
+/// startSketchOn(sketch002, face = sketch002.sketch.tags.sketchingFace)
+///   |> startProfile(at = [4, 6])
+///   |> line(end = [3, 0])
+///   |> line(end = [0, 3])
+///   |> line(end = [-3, 0])
+///   |> close()
+///   |> extrude(length = 5)
 /// ```
 ///
 /// ```kcl
@@ -391,15 +398,17 @@ export fn offsetPlane(
 /// mountingPlate = extrude(mountingPlateSketch, length = thickness)
 ///
 /// clonedMountingPlate = clone(mountingPlate)
-///   |> fillet(
-///     radius = filletRadius,
-///     tags = [
-///       getNextAdjacentEdge(edge1),
-///       getNextAdjacentEdge(edge2),
-///       getNextAdjacentEdge(edge3),
-///       getNextAdjacentEdge(edge4)
-///     ],
-///   )
+///
+/// fillet(
+///       clonedMountingPlate,
+///        radius = filletRadius,
+///        tags = [
+///          getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge1),
+///          getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge2),
+///          getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge3),
+///          getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge4)
+///        ],
+///      )
 ///   |> translate(x = 0, y = 50, z = 0)
 /// ```
 ///
@@ -460,7 +469,7 @@ export fn offsetPlane(
 /// // |> translate(x = 0, y = 20, z = 0)
 ///
 /// // Sketch on the cloned face.
-/// // exampleSketch002 = startSketchOn(example002, face = end01)
+/// // exampleSketch002 = startSketchOn(example002, face = example002.sketch.tags.end01)
 /// //  |> startProfile(at = [4.5, -5])
 /// //  |> line(end = [0, 5])
 /// //  |> line(end = [5, 0])
@@ -487,7 +496,7 @@ export fn offsetPlane(
 ///        roughness = 50
 ///    )
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn clone(
   /// The sketch, solid, or imported geometry to be cloned.
   @geometry: Sketch | Solid | ImportedGeometry,
@@ -499,7 +508,7 @@ export fn clone(
 /// kclIsFun = true
 /// assertIs(kclIsFun)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn assertIs(
   /// Value to check. If this is the boolean value true, assert passes. Otherwise it fails..
   @actual: bool,
@@ -516,7 +525,7 @@ export fn assertIs(
 /// assert(n, isGreaterThanOrEqual = 0, isLessThan = 100, error = "number should be between 0 and 100")
 /// assert(1.0000000000012, isEqualTo = 1, tolerance = 0.0001, error = "number should be almost exactly 1")
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn assert(
   /// Value to check. If this is the boolean value true, assert passes. Otherwise it fails..
   @actual: number,

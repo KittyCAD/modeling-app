@@ -1,16 +1,16 @@
-import type { FileEntry, Project } from '@src/lib/project'
-import type CodeManager from '@src/lang/codeManager'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { engineStreamMachine } from '@src/machines/engineStreamMachine'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type CodeManager from '@src/lang/codeManager'
+import type { FileEntry, Project } from '@src/lib/project'
 import type { authMachine } from '@src/machines/authMachine'
 import type { settingsMachine } from '@src/machines/settingsMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { billingMachine } from '@src/machines/billingMachine'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { Layout } from '@src/lib/layout'
 
 export type IndexLoaderData = {
   code: string | null
@@ -96,10 +96,7 @@ export type Leaves<T, D extends number = 10> = [D] extends [never]
 // https://stackoverflow.com/a/57390160/22753272
 export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>
 
-export function isEnumMember<T extends Record<string, unknown>>(
-  v: unknown,
-  e: T
-) {
+export function isEnumMember(v: unknown, e: Record<string, unknown>): boolean {
   return Object.values(e).includes(v)
 }
 
@@ -124,18 +121,30 @@ export type AsyncFn<F extends (...args: any[]) => any> = WithReturnType<
   Promise<unknown>
 >
 
+export enum AppMachineEventType {
+  SetLayout = 'setLayout',
+  ResetLayout = 'resetLayout',
+}
+
+export type AppMachineEvent =
+  | {
+      type: AppMachineEventType.SetLayout
+      layout: Layout
+    }
+  | { type: AppMachineEventType.ResetLayout }
+
 export type AppMachineContext = {
   codeManager: CodeManager
   kclManager: KclManager
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
   authActor?: ActorRefFrom<typeof authMachine>
   settingsActor?: ActorRefFrom<typeof settingsMachine>
   systemIOActor?: ActorRefFrom<typeof systemIOMachine>
-  engineStreamActor?: ActorRefFrom<typeof engineStreamMachine>
   commandBarActor?: ActorRefFrom<typeof commandBarMachine>
   billingActor?: ActorRefFrom<typeof billingMachine>
+  layout: Layout
 }
 
 export type FileMeta =

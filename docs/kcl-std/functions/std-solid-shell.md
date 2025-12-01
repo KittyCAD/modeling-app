@@ -21,13 +21,13 @@ shell(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) | Which solid (or solids) to shell out | Yes |
+| `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] | Which solid (or solids) to shell out | Yes |
 | `thickness` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The thickness of the shell | Yes |
-| `faces` | [`[TaggedFace; 1+]`](/docs/kcl-std/types/std-types-TaggedFace) | The faces you want removed | Yes |
+| `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | The faces you want removed | Yes |
 
 ### Returns
 
-[`[Solid]`](/docs/kcl-std/types/std-types-Solid)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid)]
 
 
 ### Examples
@@ -50,7 +50,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the shell function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -79,7 +79,7 @@ shell(firstSketch, faces = [START], thickness = 0.25)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the shell function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -108,7 +108,7 @@ shell(firstSketch, faces = [myTag], thickness = 0.25)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the shell function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -137,7 +137,7 @@ shell(firstSketch, faces = [myTag, END], thickness = 0.25)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the shell function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -175,7 +175,7 @@ shell(case, faces = [START], thickness = 5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the shell function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -213,7 +213,7 @@ shell(thing1, faces = [END], thickness = 5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the shell function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell5_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -254,7 +254,7 @@ shell([thing1, thing2], faces = [END], thickness = 5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the shell function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-shell6_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

@@ -2,10 +2,10 @@ import type { Page } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
 
+import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -27,8 +27,8 @@ test.describe('Can create sketches on all planes and their back sides', () => {
 
     await homePage.goToModelingScene()
     // await scene.settled(cmdBar)
-    const XYPlanRed: [number, number, number] = [98, 50, 51]
-    await scene.expectPixelColor(XYPlanRed, { x: 700, y: 300 }, 15)
+    const XYPlaneRed: [number, number, number] = [46, 36, 34]
+    await scene.expectPixelColor(XYPlaneRed, { x: 700, y: 300 }, 15)
 
     await u.openDebugPanel()
 
@@ -153,12 +153,7 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
       )
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
-
     await homePage.goToModelingScene()
-    // await scene.settled(cmdbar)
-    const XYPlanRed: [number, number, number] = [74, 74, 74]
-    await scene.expectPixelColor(XYPlanRed, { x: 700, y: 300 }, 15)
-
     await u.openDebugPanel()
 
     const coord =

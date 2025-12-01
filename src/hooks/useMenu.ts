@@ -1,7 +1,7 @@
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { useCommandBarState } from '@src/lib/singletons'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { reportRejection } from '@src/lib/trap'
-import { useCommandBarState } from '@src/lib/singletons'
 import type { MenuLabels, WebContentSendPayload } from '@src/menu/channels'
 import { useEffect } from 'react'
 

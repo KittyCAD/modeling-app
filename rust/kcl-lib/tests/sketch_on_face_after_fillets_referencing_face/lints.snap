@@ -1,0 +1,81 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints sketch_on_face_after_fillets_referencing_face.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'L'",
+    "pos": [
+      635,
+      636,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'L' to 'l'",
+      "insert": "// Shelf Bracket\n// This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.\n\n// Define our bracket feet lengths\nshelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches\nwallMountL = 6 // the length of the bracket\n\n\n// Define constants required to calculate the thickness needed to support 300 lbs\nsigmaAllow = 35000 // psi\nwidth = 6 // inch\np = 300 // Force on shelf - lbs\nl = 12 // inches\nM = l * p / 2 // Moment experienced at fixed end of bracket\nFOS = 2 // Factor of safety of 2 to be conservative\n\n\n// Calculate the thickness off the bending stress and factor of safety\nthickness = sqrt(6 * M * FOS / (width * sigmaAllow))\n\n// 0.25 inch fillet radius\nfilletR = 0.25\n\n// Sketch the bracket and extrude with fillets\nbracket = startSketchOn(XY)\n  |> startProfile(at = [0, 0])\n  |> line(end = [0, wallMountL], tag = $outerEdge)\n  |> line(end = [-shelfMountL, 0], tag = $seg01)\n  |> line(end = [0, -thickness])\n  |> line(end = [shelfMountL - thickness, 0], tag = $innerEdge)\n  |> line(end = [0, -wallMountL + thickness])\n  |> close(%)\n  |> extrude(length = width)\n  |> fillet(radius = filletR, tags = [getNextAdjacentEdge(innerEdge)])\n  |> fillet(radius = filletR + thickness, tags = [getNextAdjacentEdge(outerEdge)])\n\nsketch001 = startSketchOn(bracket, face = seg01)\n  |> startProfile(at = [4.28, 3.83])\n  |> line(end = [2.17, -0.03])\n  |> line(end = [-0.07, -1.8])\n  |> line(end = [-2.07, 0.05])\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close(%)\n  |> extrude(length = 10)\n",
+      "source_range": [
+        0,
+        1762,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'M'",
+    "pos": [
+      652,
+      653,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'M' to 'm'",
+      "insert": "// Shelf Bracket\n// This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.\n\n// Define our bracket feet lengths\nshelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches\nwallMountL = 6 // the length of the bracket\n\n\n// Define constants required to calculate the thickness needed to support 300 lbs\nsigmaAllow = 35000 // psi\nwidth = 6 // inch\np = 300 // Force on shelf - lbs\nL = 12 // inches\nm = L * p / 2 // Moment experienced at fixed end of bracket\nFOS = 2 // Factor of safety of 2 to be conservative\n\n\n// Calculate the thickness off the bending stress and factor of safety\nthickness = sqrt(6 * m * FOS / (width * sigmaAllow))\n\n// 0.25 inch fillet radius\nfilletR = 0.25\n\n// Sketch the bracket and extrude with fillets\nbracket = startSketchOn(XY)\n  |> startProfile(at = [0, 0])\n  |> line(end = [0, wallMountL], tag = $outerEdge)\n  |> line(end = [-shelfMountL, 0], tag = $seg01)\n  |> line(end = [0, -thickness])\n  |> line(end = [shelfMountL - thickness, 0], tag = $innerEdge)\n  |> line(end = [0, -wallMountL + thickness])\n  |> close(%)\n  |> extrude(length = width)\n  |> fillet(radius = filletR, tags = [getNextAdjacentEdge(innerEdge)])\n  |> fillet(radius = filletR + thickness, tags = [getNextAdjacentEdge(outerEdge)])\n\nsketch001 = startSketchOn(bracket, face = seg01)\n  |> startProfile(at = [4.28, 3.83])\n  |> line(end = [2.17, -0.03])\n  |> line(end = [-0.07, -1.8])\n  |> line(end = [-2.07, 0.05])\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close(%)\n  |> extrude(length = 10)\n",
+      "source_range": [
+        0,
+        1762,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'FOS'",
+    "pos": [
+      712,
+      715,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'FOS' to 'fos'",
+      "insert": "// Shelf Bracket\n// This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.\n\n// Define our bracket feet lengths\nshelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches\nwallMountL = 6 // the length of the bracket\n\n\n// Define constants required to calculate the thickness needed to support 300 lbs\nsigmaAllow = 35000 // psi\nwidth = 6 // inch\np = 300 // Force on shelf - lbs\nL = 12 // inches\nM = L * p / 2 // Moment experienced at fixed end of bracket\nfos = 2 // Factor of safety of 2 to be conservative\n\n\n// Calculate the thickness off the bending stress and factor of safety\nthickness = sqrt(6 * M * fos / (width * sigmaAllow))\n\n// 0.25 inch fillet radius\nfilletR = 0.25\n\n// Sketch the bracket and extrude with fillets\nbracket = startSketchOn(XY)\n  |> startProfile(at = [0, 0])\n  |> line(end = [0, wallMountL], tag = $outerEdge)\n  |> line(end = [-shelfMountL, 0], tag = $seg01)\n  |> line(end = [0, -thickness])\n  |> line(end = [shelfMountL - thickness, 0], tag = $innerEdge)\n  |> line(end = [0, -wallMountL + thickness])\n  |> close(%)\n  |> extrude(length = width)\n  |> fillet(radius = filletR, tags = [getNextAdjacentEdge(innerEdge)])\n  |> fillet(radius = filletR + thickness, tags = [getNextAdjacentEdge(outerEdge)])\n\nsketch001 = startSketchOn(bracket, face = seg01)\n  |> startProfile(at = [4.28, 3.83])\n  |> line(end = [2.17, -0.03])\n  |> line(end = [-0.07, -1.8])\n  |> line(end = [-2.07, 0.05])\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close(%)\n  |> extrude(length = 10)\n",
+      "source_range": [
+        0,
+        1762,
+        0
+      ]
+    }
+  }
+]

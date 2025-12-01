@@ -44,24 +44,45 @@ impl ModuleLoader {
     }
 
     pub(crate) fn enter_module(&mut self, path: &ModulePath) {
-        if let ModulePath::Local { value: path } = path {
+        if let ModulePath::Local { value: path, .. } = path {
             self.import_stack.push(path.clone());
         }
     }
 
-    pub(crate) fn leave_module(&mut self, path: &ModulePath) {
-        if let ModulePath::Local { value: path } = path {
-            let popped = self.import_stack.pop().unwrap();
-            assert_eq!(path, &popped);
+    pub(crate) fn leave_module(&mut self, path: &ModulePath, source_range: SourceRange) -> Result<(), KclError> {
+        if let ModulePath::Local { value: path, .. } = path {
+            if let Some(popped) = self.import_stack.pop() {
+                debug_assert_eq!(path, &popped);
+                if path != &popped {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        format!(
+                            "Import stack mismatch when leaving module: expected to leave {}, but leaving {}",
+                            path.to_string_lossy(),
+                            popped.to_string_lossy(),
+                        ),
+                        vec![source_range],
+                    )));
+                }
+            } else {
+                let message = format!("Import stack underflow when leaving module: {path}");
+                debug_assert!(false, "{}", &message);
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    message,
+                    vec![source_range],
+                )));
+            }
         }
+        Ok(())
     }
 }
 
 pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
     match mod_name {
         "prelude" => Some(include_str!("../std/prelude.kcl")),
+        "gdt" => Some(include_str!("../std/gdt.kcl")),
         "math" => Some(include_str!("../std/math.kcl")),
         "sketch" => Some(include_str!("../std/sketch.kcl")),
+        "sketch2" => Some(include_str!("../std/sketch2.kcl")),
         "turns" => Some(include_str!("../std/turns.kcl")),
         "types" => Some(include_str!("../std/types.kcl")),
         "solid" => Some(include_str!("../std/solid.kcl")),
@@ -71,6 +92,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "appearance" => Some(include_str!("../std/appearance.kcl")),
         "transform" => Some(include_str!("../std/transform.kcl")),
         "vector" => Some(include_str!("../std/vector.kcl")),
+        "hole" => Some(include_str!("../std/hole.kcl")),
         _ => None,
     }
 }
@@ -105,10 +127,19 @@ pub enum ModuleRepr {
     // AST, memory, exported names
     Kcl(
         Node<Program>,
-        Option<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState)>,
+        /// Cached execution outcome.
+        Option<ModuleExecutionOutcome>,
     ),
     Foreign(PreImportedGeometry, Option<(Option<KclValue>, ModuleArtifactState)>),
     Dummy,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct ModuleExecutionOutcome {
+    pub last_expr: Option<KclValue>,
+    pub environment: EnvironmentRef,
+    pub exports: Vec<String>,
+    pub artifacts: ModuleArtifactState,
 }
 
 #[allow(clippy::large_enum_variant)]
@@ -117,21 +148,26 @@ pub enum ModuleRepr {
 pub enum ModulePath {
     // The main file of the project.
     Main,
-    Local { value: TypedPath },
-    Std { value: String },
+    Local {
+        value: TypedPath,
+        original_import_path: Option<TypedPath>,
+    },
+    Std {
+        value: String,
+    },
 }
 
 impl ModulePath {
     pub(crate) fn expect_path(&self) -> &TypedPath {
         match self {
-            ModulePath::Local { value: p } => p,
+            ModulePath::Local { value: p, .. } => p,
             _ => unreachable!(),
         }
     }
 
     pub(crate) async fn source(&self, fs: &FileManager, source_range: SourceRange) -> Result<ModuleSource, KclError> {
         match self {
-            ModulePath::Local { value: p } => Ok(ModuleSource {
+            ModulePath::Local { value: p, .. } => Ok(ModuleSource {
                 source: fs.read_to_string(p, source_range).await?,
                 path: self.clone(),
             }),
@@ -165,7 +201,7 @@ impl ModulePath {
                             path.clone()
                         }
                     }
-                    ModulePath::Local { value } => {
+                    ModulePath::Local { value, .. } => {
                         let import_from_dir = value.parent();
                         let base = import_from_dir.as_ref().or(project_directory.as_ref());
                         if let Some(dir) = base {
@@ -181,7 +217,10 @@ impl ModulePath {
                     }
                 };
 
-                Ok(ModulePath::Local { value: resolved_path })
+                Ok(ModulePath::Local {
+                    value: resolved_path,
+                    original_import_path: Some(path.clone()),
+                })
             }
             ImportPath::Std { path } => Self::from_std_import_path(path),
         }
@@ -209,7 +248,7 @@ impl fmt::Display for ModulePath {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             ModulePath::Main => write!(f, "main"),
-            ModulePath::Local { value: path } => path.fmt(f),
+            ModulePath::Local { value: path, .. } => path.fmt(f),
             ModulePath::Std { value: s } => write!(f, "std::{s}"),
         }
     }

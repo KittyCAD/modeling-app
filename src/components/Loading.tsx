@@ -1,37 +1,24 @@
-import type { MarkedOptions } from '@ts-stack/markdown'
-import { Marked, escape, unescape } from '@ts-stack/markdown'
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
-import type { ErrorType } from '@src/lang/std/engineConnection'
-import {
-  CONNECTION_ERROR_TEXT,
-  ConnectionError,
-  DisconnectingType,
-  EngineCommandManagerEvents,
-  EngineConnectionEvents,
-  EngineConnectionStateType,
-} from '@src/lang/std/engineConnection'
-import { SafeRenderer } from '@src/lib/markdown'
-import { engineCommandManager } from '@src/lib/singletons'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+
+import { CONNECTION_ERROR_TEXT, ConnectionError } from '@src/network/utils'
+import type { IErrorType } from '@src/network/utils'
+
+import { ActionButton } from '@src/components/ActionButton'
 
 interface LoadingProps extends React.PropsWithChildren {
   isDummy?: boolean
+  isCompact?: boolean
   className?: string
   dataTestId?: string
   retryAttemptCountdown?: number
   isRetrying?: boolean
-}
-
-const markedOptions: MarkedOptions = {
-  gfm: true,
-  breaks: true,
-  sanitize: true,
-  unescape,
-  escape,
+  showManualConnect?: boolean
+  callback?: () => void
 }
 
 const statusUrl = 'https://status.zoo.dev'
@@ -46,7 +33,7 @@ export const CONNECTION_ERROR_CALL_TO_ACTION_TEXT: Record<
 > = {
   [ConnectionError.Unset]: '',
   [ConnectionError.LongLoadingTime]:
-    'Loading is taking longer than expected, check your network connection.',
+    'Connecting is taking longer than expected, check your network connection.',
   [ConnectionError.VeryLongLoadingTime]:
     'Check the connection is being blocked by a firewall, or if your internet is disconnected.',
   [ConnectionError.ICENegotiate]:
@@ -80,13 +67,16 @@ export const CONNECTION_ERROR_CALL_TO_ACTION_TEXT: Record<
 
 const Loading = ({
   isDummy,
+  isCompact,
   children,
   className,
   dataTestId,
   retryAttemptCountdown,
   isRetrying,
+  showManualConnect,
+  callback,
 }: LoadingProps) => {
-  const [error, setError] = useState<ErrorType>({
+  const [error, setError] = useState<IErrorType>({
     error: ConnectionError.Unset,
   })
   const [countdown, setCountdown] = useState<undefined | number>(
@@ -128,59 +118,6 @@ const Loading = ({
   }, [countdown])
 
   useEffect(() => {
-    const onConnectionStateChange = ({ detail: state }: CustomEvent) => {
-      if (
-        (state.type !== EngineConnectionStateType.Disconnected ||
-          state.type !== EngineConnectionStateType.Disconnecting) &&
-        state.value?.type !== DisconnectingType.Error
-      )
-        return
-      setError(state.value.value)
-    }
-
-    const onEngineAvailable = ({ detail: engineConnection }: CustomEvent) => {
-      engineConnection.addEventListener(
-        EngineConnectionEvents.ConnectionStateChanged,
-        onConnectionStateChange as EventListener
-      )
-    }
-
-    if (engineCommandManager.engineConnection) {
-      // Do an initial state check in case there is an immediate issue
-      onConnectionStateChange(
-        new CustomEvent(EngineConnectionEvents.ConnectionStateChanged, {
-          detail: engineCommandManager.engineConnection.state,
-        })
-      )
-      // Set up a listener on the state for future updates
-      onEngineAvailable(
-        new CustomEvent(EngineCommandManagerEvents.EngineAvailable, {
-          detail: engineCommandManager.engineConnection,
-        })
-      )
-    } else {
-      // If there is no engine connection yet, listen for it to be there *then*
-      // attach the listener
-      engineCommandManager.addEventListener(
-        EngineCommandManagerEvents.EngineAvailable,
-        onEngineAvailable as EventListener
-      )
-    }
-
-    return () => {
-      engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.EngineAvailable,
-        onEngineAvailable as EventListener
-      )
-      engineCommandManager.engineConnection?.removeEventListener(
-        EngineConnectionEvents.ConnectionStateChanged,
-        onConnectionStateChange as EventListener
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager, engineCommandManager.engineConnection])
-
-  useEffect(() => {
     // Don't set long loading time if there's a more severe error
     if (isUnrecoverableError) return
 
@@ -202,11 +139,11 @@ const Loading = ({
   if (isDummy) {
     return (
       <div
-        className={`body-bg flex flex-col items-center justify-center ${colorClass} ${className}`}
+        className={`flex ${isCompact ? 'flex-row gap-2' : 'flex-col'} items-center justify-center ${colorClass} ${className}`}
         data-testid={dataTestId ? dataTestId : 'loading'}
       >
-        <Spinner />
-        <p className={`text-base mt-4`}>{children}</p>
+        <Spinner className={isCompact ? 'w-4 h-4' : 'w-8 w-8'} />
+        <p className={`text-base ${isCompact ? '' : 'mt-4'}`}>{children}</p>
       </div>
     )
   }
@@ -216,17 +153,57 @@ const Loading = ({
       className={`body-bg flex flex-col items-center justify-center ${colorClass} ${className}`}
       data-testid={dataTestId ? dataTestId : 'loading'}
     >
-      {isUnrecoverableError ? (
+      {isUnrecoverableError || showManualConnect ? (
         <CustomIcon
-          name="exclamationMark"
+          name="close"
           className="w-8 h-8 !text-chalkboard-10 bg-destroy-60 rounded-full"
         />
       ) : (
         <Spinner />
       )}
+
       <p className={`text-base mt-4`}>
-        {isUnrecoverableError ? '' : children || 'Loading'}
+        {isUnrecoverableError || showManualConnect ? '' : children || 'Loading'}
       </p>
+
+      {showManualConnect && (
+        <>
+          <p className="text-destroy-60">Failed to connect.</p>
+          <div>
+            <div className="inline-block max-w-3xl text-base gap-2 px-32 pt-2 mt-2 pb-6 mb-2 text-chalkboard-80 dark:text-chalkboard-20">
+              Click below to try again. If it persists, please visit the
+              community support thread on{' '}
+              <a
+                className="contents text-chalkboard-80 dark:text-chalkboard-10"
+                href={diagnosingNetworkIssuesUrl}
+                onClick={openExternalBrowserIfDesktop(
+                  diagnosingNetworkIssuesUrl
+                )}
+              >
+                <span className="underline underline-offset-1">
+                  diagnosing network connection issues
+                </span>
+              </a>
+              .
+            </div>
+          </div>
+          <ActionButton
+            className="h-5"
+            Element="button"
+            iconStart={{
+              icon: 'refresh',
+            }}
+            onClick={() => {
+              if (callback) {
+                callback()
+              }
+            }}
+          >
+            reconnect
+          </ActionButton>
+        </>
+      )}
+
       <div
         className={
           `text-base h-[1em] ` +
@@ -239,47 +216,23 @@ const Loading = ({
           <span>Connecting in {countdown}s</span>
         )}
       </div>
-      {CONNECTION_ERROR_TEXT[error.error] && (
+
+      {CONNECTION_ERROR_TEXT[error.error] && !showManualConnect && (
         <div>
-          <div className="max-w-3xl text-base flex flex-col gap-2 px-2 pt-2 mt-2 pb-6 mb-6 border-b border-chalkboard-30">
-            {CONNECTION_ERROR_CALL_TO_ACTION_TEXT[error.error]}
-            <div className="text-sm">
-              If the issue persists, please visit the community support thread
-              on{' '}
-              <a
-                href={diagnosingNetworkIssuesUrl}
-                onClick={openExternalBrowserIfDesktop(
-                  diagnosingNetworkIssuesUrl
-                )}
-              >
+          <div className="inline-block max-w-3xl text-base gap-2 px-32 pt-2 mt-2 pb-6 mb-6 text-chalkboard-80 dark:text-chalkboard-20">
+            {CONNECTION_ERROR_CALL_TO_ACTION_TEXT[error.error]} If it persists,
+            please visit the community support thread on{' '}
+            <a
+              className="contents text-chalkboard-80 dark:text-chalkboard-10"
+              href={diagnosingNetworkIssuesUrl}
+              onClick={openExternalBrowserIfDesktop(diagnosingNetworkIssuesUrl)}
+            >
+              <span className="underline underline-offset-1">
                 diagnosing network connection issues
-              </a>
-              .
-            </div>
+              </span>
+            </a>
+            .
           </div>
-          <div
-            className={
-              'font-mono text-xs px-2 text-opacity-70 transition-opacity duration-500' +
-              (error.error !== ConnectionError.Unset
-                ? ' opacity-100'
-                : ' opacity-0')
-            }
-            dangerouslySetInnerHTML={{
-              __html: Marked.parse(
-                CONNECTION_ERROR_TEXT[error.error] +
-                  (error.context
-                    ? '\n\nThe error details are: ' +
-                      (error.context instanceof Object
-                        ? JSON.stringify(error.context)
-                        : error.context)
-                    : ''),
-                {
-                  renderer: new SafeRenderer(markedOptions),
-                  ...markedOptions,
-                }
-              ),
-            }}
-          ></div>
         </div>
       )}
     </div>

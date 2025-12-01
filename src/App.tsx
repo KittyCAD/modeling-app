@@ -8,69 +8,62 @@ import {
   useNavigate,
   useSearchParams,
 } from 'react-router-dom'
-
 import { AppHeader } from '@src/components/AppHeader'
-import { EngineStream } from '@src/components/EngineStream'
-import Gizmo from '@src/components/Gizmo'
+import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { useLspContext } from '@src/components/LspProvider'
-import { ModelingSidebar } from '@src/components/ModelingSidebar/ModelingSidebar'
-import { UnitsMenu } from '@src/components/UnitsMenu'
+import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
+import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
+import { ShareButton } from '@src/components/ShareButton'
+import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import {
+  defaultGlobalStatusBarItems,
+  defaultLocalStatusBarItems,
+} from '@src/components/StatusBar/defaultStatusBarItems'
+import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
+import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
+import { WasmErrToast } from '@src/components/WasmErrToast'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
-  billingActor,
-  sceneInfra,
-  codeManager,
-  kclManager,
-  settingsActor,
-  editorManager,
-  getSettings,
-} from '@src/lib/singletons'
-import { maybeWriteToDisk } from '@src/lib/telemetry'
-import type { IndexLoaderData } from '@src/lib/types'
-import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
-import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
-import { BillingTransition } from '@src/machines/billingMachine'
-import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
-import { ShareButton } from '@src/components/ShareButton'
-import {
-  needsToOnboard,
-  TutorialRequestToast,
-} from '@src/routes/Onboarding/utils'
-import { reportRejection } from '@src/lib/trap'
-import { DownloadAppToast } from '@src/components/DownloadAppToast'
-import { WasmErrToast } from '@src/components/WasmErrToast'
-import openWindow from '@src/lib/openWindow'
-import {
-  DOWNLOAD_APP_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
-import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
-import { isPlaywright } from '@src/lib/isPlaywright'
-import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
-import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import {
-  defaultLocalStatusBarItems,
-  defaultGlobalStatusBarItems,
-} from '@src/components/StatusBar/defaultStatusBarItems'
-import { StatusBar } from '@src/components/StatusBar/StatusBar'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import { xStateValueToString } from '@src/lib/xStateValueToString'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
-import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
-import { Toolbar } from '@src/Toolbar'
+import {
+  billingActor,
+  codeManager,
+  editorManager,
+  getSettings,
+  kclManager,
+  useLayout,
+  setLayout,
+  getLayout,
+} from '@src/lib/singletons'
+import { useSettings, useToken } from '@src/lib/singletons'
+import { maybeWriteToDisk } from '@src/lib/telemetry'
+import { reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import env from '@src/env'
-
-// CYCLIC REF
-sceneInfra.camControls.engineStreamActor = engineStreamActor
+import { xStateValueToString } from '@src/lib/xStateValueToString'
+import { BillingTransition } from '@src/machines/billingMachine'
+import {
+  TutorialRequestToast,
+  needsToOnboard,
+} from '@src/routes/Onboarding/utils'
+import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
+import { defaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
+import { defaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
+import { getResolvedTheme } from '@src/lib/theme'
+import {
+  MlEphantManagerReactContext,
+  MlEphantManagerTransitions2,
+} from '@src/machines/mlEphantManagerMachine2'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -83,6 +76,7 @@ export function App() {
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
+  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -95,7 +89,6 @@ export function App() {
 
   // Stream related refs and data
   const [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool') || env().POOL || null
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
@@ -105,10 +98,19 @@ export function App() {
     onProjectOpen({ name: projectName, path: projectPath }, file || null)
   }, [onProjectOpen, projectName, projectPath, file])
 
+  useEffect(() => {
+    // Clear conversation
+    mlEphantManagerActor2.send({
+      type: MlEphantManagerTransitions2.ConversationClose,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [projectName, projectPath])
+
   useHotKeyListener()
 
   const settings = useSettings()
   const authToken = useToken()
+  const layout = useLayout()
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -144,13 +146,10 @@ export function App() {
     billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
 
     // Tell engineStream to wait for dependencies to start streaming.
-    engineStreamActor.send({ type: EngineStreamTransition.WaitForDependencies })
-
     // When leaving the modeling scene, cut the engine stream.
+
     return () => {
-      // When leaving the modeling scene, cut the engine stream.
-      // Stop is more serious than Pause
-      engineStreamActor.send({ type: EngineStreamTransition.Stop })
+      // Add any logic to be called when the page gets unmounted.
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
@@ -162,9 +161,10 @@ export function App() {
       settings.app.onboardingStatus.current ||
       settings.app.onboardingStatus.default
     const needsOnboarded =
-      !isDesktop() &&
-      searchParams.size === 0 &&
-      needsToOnboard(location, onboardingStatus)
+      !isDesktop() && // Only show if we're in the browser,
+      authToken && // we're logged in,
+      searchParams.size === 0 && // we haven't come via a website "try in browser" link,
+      needsToOnboard(location, onboardingStatus) // and we have an uninitialized onboarding status.
 
     if (needsOnboarded) {
       toast.success(
@@ -174,52 +174,25 @@ export function App() {
             navigate,
             codeManager,
             kclManager,
+            theme: getResolvedTheme(settings.app.theme.current),
+            accountUrl: withSiteBaseURL('/account'),
           }),
         {
           id: ONBOARDING_TOAST_ID,
           duration: Number.POSITIVE_INFINITY,
           icon: null,
+          style: { maxInlineSize: 'min(900px, 100%)' },
         }
       )
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [settings.app.onboardingStatus])
-
-  useEffect(() => {
-    const needsDownloadAppToast =
-      !isDesktop() &&
-      !isPlaywright() &&
-      searchParams.size === 0 &&
-      !settings.app.dismissWebBanner.current
-    if (needsDownloadAppToast) {
-      toast.success(
-        () =>
-          DownloadAppToast({
-            onAccept: () => {
-              const url = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
-              openWindow(url)
-                .then(() => {
-                  toast.dismiss(DOWNLOAD_APP_TOAST_ID)
-                })
-                .catch(reportRejection)
-            },
-            onDismiss: () => {
-              toast.dismiss(DOWNLOAD_APP_TOAST_ID)
-              settingsActor.send({
-                type: 'set.app.dismissWebBanner',
-                data: { level: 'user', value: true },
-              })
-            },
-          }),
-        {
-          id: DOWNLOAD_APP_TOAST_ID,
-          duration: Number.POSITIVE_INFINITY,
-          icon: null,
-        }
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
+  }, [
+    settings.app.onboardingStatus,
+    settings.app.theme,
+    location,
+    navigate,
+    searchParams.size,
+    authToken,
+  ])
 
   useEffect(() => {
     const needsWasmInitFailedToast = !isDesktop() && kclManager.wasmInitFailed
@@ -263,6 +236,7 @@ export function App() {
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={
               <UndoRedoButtons
+                data-testid="app-header-undo-redo"
                 editorManager={editorManager}
                 className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
               />
@@ -273,18 +247,15 @@ export function App() {
           </AppHeader>
         </div>
         <ModalContainer />
-        <section className="flex flex-1">
-          <ModelingSidebar />
-          <div className="relative z-0 flex flex-col flex-1 items-center overflow-hidden">
-            <Toolbar />
-            <EngineStream pool={pool} authToken={authToken} />
-            <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
-              <UnitsMenu />
-              <Gizmo />
-            </div>
-          </div>
+        <section className="pointer-events-auto flex-1">
+          <LayoutRootNode
+            layout={layout || defaultLayout}
+            getLayout={getLayout}
+            setLayout={setLayout}
+            areaLibrary={defaultAreaLibrary}
+            actionLibrary={defaultActionLibrary}
+          />
         </section>
-        {/* <CamToggle /> */}
         <StatusBar
           globalItems={[
             networkHealthStatus,

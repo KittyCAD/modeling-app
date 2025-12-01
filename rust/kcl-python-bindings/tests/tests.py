@@ -218,7 +218,7 @@ async def test_import_and_snapshots():
         kcl.SnapshotOptions(camera=None, padding=0),
     ]
     # Read from a file.
-    step_options = kcl.step_import.Options()
+    step_options = kcl.StepImportOptions()
     input_format = kcl.InputFormat3d.Step(step_options)
     print(cube_step_file)
     images = await kcl.import_and_snapshot_views(
@@ -234,7 +234,7 @@ async def test_import_and_snapshots():
 @pytest.mark.asyncio
 async def test_import_and_snapshots_single():
     # Read from a file.
-    step_options = kcl.step_import.Options()
+    step_options = kcl.StepImportOptions()
     input_format = kcl.InputFormat3d.Step(step_options)
     print(cube_step_file)
     image_bytes = await kcl.import_and_snapshot(
@@ -302,6 +302,50 @@ def test_kcl_lint():
         assert len(finding_title) > 0
 
 
+def test_kcl_lint_fix():
+    # Read from a file.
+    # This file has several lint errors.
+    with open(os.path.join(files_dir, "box_with_linter_errors.kcl"), "r") as f:
+        code = str(f.read())
+        assert code is not None
+        assert len(code) > 0
+
+        # There should be several lints.
+        expected_lints = 4
+        lints = kcl.lint(code)
+        assert lints is not None
+        assert len(lints) >= expected_lints
+
+        # These lints are fixable, though.
+        # So if we lint and fix, some should go away.
+        after_fixing = kcl.lint_and_fix_all(code)
+        assert after_fixing.unfixed_lints is not None
+        assert len(after_fixing.unfixed_lints) < expected_lints
+        assert after_fixing.new_code != code
+
+
+def test_kcl_lint_fix_no_style():
+    # Read from a file.
+    # This file has several lint errors.
+    with open(os.path.join(files_dir, "box_with_linter_errors.kcl"), "r") as f:
+        code = str(f.read())
+        assert code is not None
+        assert len(code) > 0
+
+        # There should be several lints.
+        expected_lints = 4
+        lints = kcl.lint(code)
+        assert lints is not None
+        assert len(lints) >= expected_lints
+
+        # These lints are fixable, though.
+        # So if we lint and fix, some should go away.
+        after_fixing = kcl.lint_and_fix_families(
+            code, [kcl.FindingFamily.Correctness, kcl.FindingFamily.Simplify]
+        )
+        assert after_fixing.new_code == code
+
+
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_export_with_bad_units():
     bad_units_file = os.path.join(tests_dir, "bad_units_in_annotation", "input.kcl")
@@ -317,3 +361,13 @@ async def test_kcl_execute_code_and_export_with_bad_units():
             assert len(str(e)) > 0
             print(e)
             assert "[1:1]" in str(e)
+
+
+def test_relevant_file_extensions():
+    exts = kcl.relevant_file_extensions()
+    assert isinstance(exts, list)
+    assert len(exts) > 0
+    assert len(exts) > 5
+    assert all(isinstance(x, str) and len(x) > 0 for x in exts)
+    # kcl should always be included in the set
+    assert "kcl" in exts

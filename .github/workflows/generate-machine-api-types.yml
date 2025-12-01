@@ -18,32 +18,17 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - run: npm install
       - run: npm run generate:machine-api
       - run: npm run fmt || true
-      - name: check for changes
-        id: git-check
-        run: |
-            git add .
-            if git status | grep -q "Changes to be committed"
-            then echo "modified=true" >> $GITHUB_OUTPUT
-            else echo "modified=false" >> $GITHUB_OUTPUT
-            fi
-      - name: Commit changes, if any
-        if: steps.git-check.outputs.modified == 'true'
-        run: |
-          git add .
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          git fetch origin
-          echo ${{ github.head_ref }}
-          git checkout ${{ github.head_ref }}
-          git commit -am "New machine-api types" || true
-          git push
-          git push origin ${{ github.head_ref }}
+      - name: Commit generated files
+        uses: KittyCAD/gha-actions-public/pr-commit@main
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          commit-message: "New machine-api types"
 

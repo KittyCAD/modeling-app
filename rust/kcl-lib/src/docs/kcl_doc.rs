@@ -85,13 +85,29 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
     }
     result.description = description;
 
-    for n in &parsed.body {
+    'items: for n in &parsed.body {
         if n.visibility() != ItemVisibility::Export {
             continue;
         }
         match n {
             crate::parsing::ast::types::BodyItem::ImportStatement(import) => match &import.path {
                 crate::parsing::ast::types::ImportPath::Std { path } => {
+                    // Just hide modules where the import is marked as experimental.
+                    for attr in &import.outer_attrs {
+                        if let Annotation {
+                            name: None,
+                            properties: Some(props),
+                            ..
+                        } = &attr.inner
+                        {
+                            for p in props {
+                                if p.key.name == annotations::EXPERIMENTAL {
+                                    continue 'items;
+                                }
+                            }
+                        }
+                    }
+
                     let m = match &import.selector {
                         ImportSelector::Glob(..) => Some(visit_module(&path[1], "", names.clone())?),
                         ImportSelector::None { .. } => {
@@ -631,12 +647,16 @@ impl FnData {
             return "union([${0:extrude001}, ${1:extrude002}])".to_owned();
         } else if self.name == "subtract" {
             return "subtract([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
+        } else if self.name == "subtract2d" {
+            return "subtract2d(tool = ${0:profileToSubtract})".to_owned();
         } else if self.name == "intersect" {
             return "intersect([${0:extrude001}, ${1:extrude002}])".to_owned();
         } else if self.name == "clone" {
             return "clone(${0:part001})".to_owned();
         } else if self.name == "hole" {
             return "hole(${0:holeSketch}, ${1:%})".to_owned();
+        } else if self.name == "extrude" {
+            return "extrude(length = ${0:10})".to_owned();
         }
         let mut args = Vec::new();
         let mut index = 0;
@@ -733,7 +753,7 @@ impl ArgData {
         let mut result = ArgData {
             snippet_array: Default::default(),
             name: arg.identifier.name.clone(),
-            ty: arg.type_.as_ref().map(|t| t.to_string()),
+            ty: arg.param_type.as_ref().map(|t| t.to_string()),
             docs: None,
             override_in_snippet: None,
             kind: if arg.labeled {
@@ -804,7 +824,7 @@ impl ArgData {
             format!("{} = ", self.name)
         };
         if let Some(vals) = &self.snippet_array {
-            let mut snippet = label.to_owned();
+            let mut snippet = label;
             snippet.push('[');
             let n = vals.len();
             for (i, val) in vals.iter().enumerate() {
@@ -870,6 +890,12 @@ impl ArgData {
                 })
             }),
         }
+    }
+
+    /// Is this a normal, labelled arg,
+    /// or the special unlabelled first arg?
+    pub fn is_labelled(&self) -> bool {
+        matches!(self.kind, ArgKind::Labelled(_))
     }
 }
 

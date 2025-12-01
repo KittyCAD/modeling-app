@@ -24,18 +24,20 @@ import {
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
 import type { KclManager } from '@src/lang/KclSingleton'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+
 import { isTopLevelModule } from '@src/lang/util'
 import { markOnce } from '@src/lib/performance'
-import type { Selection, Selections } from '@src/lib/selections'
-import { processCodeMirrorRanges } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
+import { type processCodeMirrorRanges as processCodeMirrorRangesFn } from '@src/lib/selections'
+
 import { historyCompartment } from '@src/editor/compartments'
 import type CodeManager from '@src/lang/codeManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 declare global {
   interface Window {
@@ -60,7 +62,7 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 export default class EditorManager {
   private _copilotEnabled: boolean = true
-  private engineCommandManager: EngineCommandManager
+  private engineCommandManager: ConnectionManager
 
   private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
@@ -84,7 +86,7 @@ export default class EditorManager {
   public kclManager?: KclManager
   public codeManager?: CodeManager
 
-  constructor(engineCommandManager: EngineCommandManager) {
+  constructor(engineCommandManager: ConnectionManager) {
     this.engineCommandManager = engineCommandManager
 
     this._editorState = EditorState.create({
@@ -195,7 +197,7 @@ export default class EditorManager {
 
     return selection.filter(isTopLevelModule).map((s): [number, number] => {
       const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
-      return [s[0], safeEnd]
+      return [Math.min(s[0], safeEnd), safeEnd]
     })
   }
 
@@ -216,7 +218,13 @@ export default class EditorManager {
   }
 
   setHighlightRange(range: Array<Selection['codeRef']['range']>): void {
-    const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range)
+    const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range).filter(
+      (selection) => {
+        // Only keep valid selections.
+        // Note: the selection might still be outdated for the new AST which is not calculated yet after a code mod /undo
+        return selection[0] < selection[1]
+      }
+    )
 
     this._highlightRange = selectionsWithSafeEnds
 
@@ -431,7 +439,10 @@ export default class EditorManager {
   // This is handled by the code mirror kcl plugin.
   // If you call this function from somewhere else, you best know wtf you are
   // doing. (jess)
-  handleOnViewUpdate(viewUpdate: ViewUpdate): void {
+  handleOnViewUpdate(
+    viewUpdate: ViewUpdate,
+    processCodeMirrorRanges: typeof processCodeMirrorRangesFn
+  ): void {
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
     }

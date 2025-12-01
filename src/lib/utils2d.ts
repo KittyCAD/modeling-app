@@ -1,4 +1,4 @@
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import { getAngle } from '@src/lib/utils'
 
 export function deg2Rad(deg: number): number {
@@ -42,12 +42,6 @@ export function distance2d(a: Coords2d, b: Coords2d): number {
 
 export function isValidNumber(value: number): boolean {
   return typeof value === 'number' && !Number.isNaN(value) && isFinite(value)
-}
-
-export function rotateVec(v: Coords2d, rad: number): Coords2d {
-  const cos = Math.cos(rad)
-  const sin = Math.sin(rad)
-  return [v[0] * cos - v[1] * sin, v[0] * sin + v[1] * cos]
 }
 
 export function closestPointOnRay(

@@ -4,6 +4,7 @@ import * as fsp from 'fs/promises'
 
 import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Command bar tests', () => {
   test('Extrude from command bar selects extrude line after', async ({
@@ -48,11 +49,11 @@ test.describe('Command bar tests', () => {
       currentArgValue: '',
       headerArguments: {
         Profiles: '',
-        Length: '',
       },
       highlightedHeaderArg: 'Profiles',
     })
     await cmdBar.progressCmdBar()
+    await cmdBar.clickOptionalArgument('length')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -68,51 +69,16 @@ test.describe('Command bar tests', () => {
     )
   })
 
-  test('Fillet from command bar', async ({ page, homePage }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XY)
-    |> startProfile(at = [-5, -5])
-    |> line(end = [0, 10])
-    |> line(end = [10, 0])
-    |> line(end = [0, -10])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  extrude001 = extrude(sketch001, length = -10)`
-      )
-    })
-
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    const selectSegment = () => page.getByText(`line(end = [0, -10])`).click()
-
-    await selectSegment()
-    await page.waitForTimeout(100)
-    await page.getByRole('button', { name: 'Fillet' }).click()
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Enter') // skip selection
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Enter') // accept default radius
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Enter') // submit
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-activeLine')).toContainText(
-      `fillet(radius = ${KCL_DEFAULT_LENGTH}, tags = [getCommonEdge(faces=[seg01,capEnd001])])`
-    )
-  })
-
   test('Command bar can change a setting, and switch back and forth between arguments', async ({
     page,
     homePage,
+    toolbar,
+    scene,
+    cmdBar,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
     const cmdSearchBar = page.getByPlaceholder('Search commands')
@@ -127,9 +93,7 @@ test.describe('Command bar tests', () => {
     // This selector changes after we set the setting
     let commandOptionInput = page.getByPlaceholder('On')
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     // First try opening the command bar and closing it
     await page
@@ -197,16 +161,18 @@ test.describe('Command bar tests', () => {
   test('Command bar keybinding works from code editor and can change a setting', async ({
     page,
     homePage,
+    toolbar,
+    scene,
+    cmdBar,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     // FIXME: No KCL code, unable to wait for engine execution
     await page.waitForTimeout(10000)
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     // Put the cursor in the code editor
     await page.locator('.cm-content').click()
@@ -286,13 +252,13 @@ test.describe('Command bar tests', () => {
       currentArgValue: '',
       headerArguments: {
         Profiles: '',
-        Length: '',
       },
       highlightedHeaderArg: 'Profiles',
     })
     // Select a face
     await editor.selectText('startProfile(at = [-6.95, 10.98])')
     await cmdBar.progressCmdBar()
+    await cmdBar.clickOptionalArgument('length')
 
     // Assert that we're on the distance step
     await cmdBar.expectState({
@@ -409,7 +375,7 @@ test.describe('Command bar tests', () => {
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    const sketchButton = page.getByRole('button', { name: 'Start Sketch' })
+    const sketchButton = toolbar.startSketchBtn
     const cmdBarButton = page.getByRole('button', { name: 'Commands' })
     const rectangleToolCommand = page.getByRole('option', {
       name: 'rectangle',
@@ -418,7 +384,7 @@ test.describe('Command bar tests', () => {
       name: 'rectangle Corner rectangle',
     })
     const lineToolCommand = page.getByRole('option', {
-      name: 'Line',
+      name: 'line Line Start drawing',
     })
     const lineToolButton = page.getByRole('button', {
       name: 'line Line',
@@ -577,7 +543,7 @@ test.describe('Command bar tests', () => {
 
     await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
       await editor.expectEditor.toContain('extrusionDistance = 12')
-      await toolbar.openPane('files')
+      await toolbar.openPane(DefaultLayoutPaneID.Files)
       await toolbar.expectFileTreeState(['main-1.kcl', 'main.kcl'])
     })
   })
@@ -595,6 +561,7 @@ test.describe('Command bar tests', () => {
 b = a * a
 c = 3 + a
 theta = 45deg
+export exported = 1
 `
     await context.folderSetupFn(async (dir) => {
       const testProject = join(dir, projectName)
@@ -721,13 +688,52 @@ theta = 45deg
         stage: 'commandBarClosed',
       })
     })
+    await test.step(`Edit an exported parameter via command bar`, async () => {
+      await cmdBar.cmdBarOpenBtn.click()
+      await cmdBar.chooseCommand('edit parameter')
+      await cmdBar
+        .selectOption({
+          name: 'exported',
+        })
+        .click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Edit parameter',
+        currentArgKey: 'value',
+        currentArgValue: '1',
+        headerArguments: {
+          Name: 'exported',
+          Value: '',
+        },
+        highlightedHeaderArg: 'value',
+      })
+      await cmdBar.argumentInput.locator('[contenteditable]').fill('2')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Edit parameter',
+        headerArguments: {
+          Name: 'exported',
+          Value: '2',
+        },
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'commandBarClosed',
+      })
+    })
 
     await editor.expectEditor.toContain(
-      `a = 5b = a * amyParameter001 = ${newValue}c = 3 + atheta = 45deg + 1deg`
+      `a = 5b = a * a
+myParameter001 = ${newValue}
+c = 3 + a
+theta = 45deg + 1deg
+export exported = 2`,
+      { shouldNormalise: true }
     )
   })
 
-  test('Command palette can be opened via query parameter', async ({
+  test('Command palette can be opened via query parameter - desktop', async ({
     page,
     homePage,
     cmdBar,
@@ -750,6 +756,26 @@ theta = 45deg
     })
   })
 
+  test(
+    'Command palette can be opened via query parameter - web',
+    { tag: '@web' },
+    async ({ page, cmdBar }) => {
+      await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
+      await cmdBar.expectCommandName('Settings · app · theme')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Settings · app · theme',
+        currentArgKey: 'value',
+        currentArgValue: '',
+        headerArguments: {
+          Level: 'user',
+          Value: '',
+        },
+        highlightedHeaderArg: 'value',
+      })
+    }
+  )
+
   test('Text-to-CAD command can be closed with escape while in prompt', async ({
     page,
     homePage,
@@ -762,7 +788,7 @@ theta = 45deg
     await homePage.textToCadBtn.click()
     await cmdBar.expectState({
       stage: 'arguments',
-      commandName: 'Text-to-CAD Create',
+      commandName: 'Create Project using Text-to-CAD',
       currentArgKey: 'prompt',
       currentArgValue: '',
       headerArguments: {

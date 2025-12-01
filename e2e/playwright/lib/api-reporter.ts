@@ -1,8 +1,8 @@
 import type {
+  FullResult,
   Reporter,
   TestCase,
   TestResult,
-  FullResult,
 } from '@playwright/test/reporter'
 
 class APIReporter implements Reporter {
@@ -58,9 +58,24 @@ class APIReporter implements Reporter {
       return
     }
 
+    const logs = result.attachments.find((a) => {
+      return a.name === 'logs'
+    })
+    let logsAsString = ''
+    /**
+     * gotcha: this is not actually a string for some unknown reason
+     * testInfo.attachments.logs will have body be body: <Buffer 5b 0a 20 20 ...
+     * even if I set the contentType to text/plain which is the default
+     */
+    if (logs && Buffer.isBuffer(logs.body)) {
+      const byteBuffer = Buffer.from(logs.body)
+      const stringContent = JSON.parse(byteBuffer.toString())
+      logsAsString = stringContent
+    }
+
     const payload = {
       // Required information
-      project: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`,
+      project: `${process.env.GITHUB_SERVER_URL}/KittyCAD/modeling-app`,
       suite: process.env.CI_SUITE || 'e2e',
       branch: process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || '',
       commit: process.env.CI_COMMIT_SHA || process.env.GITHUB_SHA || '',
@@ -74,6 +89,7 @@ class APIReporter implements Reporter {
       // Extra test and result data
       annotations: test.annotations.map((a) => a.type), // e.g. 'fail' or 'fixme'
       id: test.id, // computed file/test/project ID used for reruns
+      logs: logsAsString,
       retry: result.retry,
       tags: test.tags, // e.g. '@snapshot' or '@skipLocalEngine'
       // Extra environment variables

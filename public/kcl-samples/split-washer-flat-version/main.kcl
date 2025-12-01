@@ -1,0 +1,81 @@
+// Split Washer (Flat Version)
+// A flat split washer — also known as a spring lock washer — is a small metal ring with a gap in it. It's usually placed under a nut or bolt head to stop it from loosening when things vibrate. Normally, this washer is springy and twisted, but for simplicity, we’re making a flat version.
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+// ───────────
+// PARAMETERS
+// ───────────
+
+// The diameter of the hole in the center — it matches the bolt shaft
+washerHoleDiameter = 4
+
+// The full outer diameter of the washer — it must be bigger than the hole
+washerOuterDiameter = 8
+
+// The washer's thickness — this defines the height of the solid body
+washerThickness = 1
+
+// The width of the split — how wide the cutout gap will be
+washerSplitWidth = 1
+
+// ───────────────────────────
+// STEP 1: MAKE A SOLID WASHER
+// ───────────────────────────
+
+
+// First, we’ll draw two circles on the XY plane. The outer circle defines the outer boundary. The inner circle defines the hole in the middle. By subtracting the hole from the outer ring, we get a 2D washer shape.
+
+
+washerSketch = startSketchOn(XY)
+washerRingProfile = circle(washerSketch, center = [0, 0], diameter = washerOuterDiameter)
+  |> subtract2d(tool = [
+       circle(center = [0, 0], diameter = washerHoleDiameter)
+     ])
+
+// Now we turn that flat ring into a 3D washer by extruding it upward
+solidWasherBody = extrude(washerRingProfile, length = washerThickness)
+
+// ───────────────────────────────────
+// STEP 2: MAKE A WEDGE TO CUT THE GAP
+// ───────────────────────────────────
+
+
+// Now we’ll cut a small gap into the ring to form a “C” shape.
+
+
+clearance = washerThickness * 0.5 // A small buffer zone to make subtraction safe
+
+
+// Compute how long the wedge needs to be
+washerOuterRadius = washerOuterDiameter / 2
+wedgeLength = washerOuterRadius + clearance
+
+// The wedge also needs to be taller than the washer
+wedgeHeight = washerThickness + clearance * 2
+
+// We draw the wedge as a thin rectangle, centered vertically on the Y-axis
+wedgePlane = offsetPlane(XY, offset = -clearance)
+wedgeSketch = startSketchOn(wedgePlane)
+wedgeProfile = startProfile(wedgeSketch, at = [0, -washerSplitWidth / 2])
+  |> yLine(length = washerSplitWidth)
+  |> xLine(length = wedgeLength)
+  |> yLine(length = -washerSplitWidth)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Turn this sketch into a 3D wedge that slices through the ring
+wedgeBody = extrude(wedgeProfile, length = wedgeHeight)
+
+// ────────────────────────────────
+// STEP 3: SUBTRACT TO MAKE THE GAP
+// ────────────────────────────────
+
+
+// Now we subtract the wedge from the washer body. The result is a simple C-shape: a washer with a narrow gap on one side. This simulates a flat split washer — no twist, just the shape.
+
+
+splitWasherBody = subtract([solidWasherBody], tools = [wedgeBody])

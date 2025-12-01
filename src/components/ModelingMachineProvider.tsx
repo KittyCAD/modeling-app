@@ -1,11 +1,7 @@
 import { useMachine, useSelector } from '@xstate/react'
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react'
+import type React from 'react'
+import { createContext, useContext, useEffect, useRef } from 'react'
+import type { MutableRefObject } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLoaderData } from 'react-router-dom'
@@ -18,13 +14,13 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import {
-  applyConstraintAngleLength,
-  applyConstraintLength,
-} from '@src/components/Toolbar/setAngleLength'
-import {
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
+import {
+  applyConstraintAngleLength,
+  applyConstraintLength,
+} from '@src/components/Toolbar/setAngleLength'
 import {
   useMenuListener,
   useSketchModeMenuEnableDisable,
@@ -43,33 +39,60 @@ import {
   getNodeFromPath,
   traverse,
 } from '@src/lang/queryAst'
-import {
-  EngineConnectionStateType,
-  EngineConnectionEvents,
-} from '@src/lang/std/engineConnection'
+
 import { err, reportRejection, trap, reject } from '@src/lib/trap'
-import { isNonNullable, platform, uuidv4 } from '@src/lib/utils'
-import { promptToEditFlow } from '@src/lib/promptToEdit'
-import type { FileMeta } from '@src/lib/types'
-import { commandBarActor } from '@src/lib/singletons'
-import { useToken, useSettings } from '@src/lib/singletons'
-import type { IndexLoaderData } from '@src/lib/types'
+
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
+
 import {
+  commandBarActor,
+  getLayout,
+  setLayout,
+  settingsActor,
+} from '@src/lib/singletons'
+import { useSettings } from '@src/lib/singletons'
+import { platform, uuidv4 } from '@src/lib/utils'
+
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
+import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
+import {
+  angleBetweenInfo,
+  applyConstraintAngleBetween,
+} from '@src/components/Toolbar/SetAngleBetween'
+import { applyConstraintHorzVertDistance } from '@src/components/Toolbar/SetHorzVertDistance'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { updateSketchDetailsNodePaths } from '@src/lang/util'
+import type {
+  PipeExpression,
+  Program,
+  VariableDeclaration,
+} from '@src/lang/wasm'
+import { parse, recast, resultIsOk } from '@src/lang/wasm'
+import {
+  type ModelingCommandSchema,
+  modelingMachineCommandConfig,
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import {
+  EXECUTION_TYPE_MOCK,
   EXPORT_TOAST_MESSAGES,
   MAKE_TOAST_MESSAGES,
-  EXECUTION_TYPE_MOCK,
-  FILE_EXT,
-  PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
-import type { FileEntry, Project } from '@src/lib/project'
-import type { WebContentSendPayload } from '@src/menu/channels'
+import type { Project } from '@src/lib/project'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import {
-  getPersistedContext,
-  modelingMachine,
-  modelingMachineDefaultContext,
-} from '@src/machines/modelingMachine'
+  getDefaultSketchPlaneData,
+  selectionBodyFace,
+  getOffsetSketchPlaneData,
+  selectAllInCurrentSketch,
+  updateSelections,
+  getEventForSegmentSelection,
+  updateExtraSegments,
+} from '@src/lib/selections'
 import {
   codeManager,
   editorManager,
@@ -79,31 +102,25 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import type { MachineManager } from '@src/components/MachineManagerProvider'
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
-import { updateSelections } from '@src/lib/selections'
-import { updateSketchDetailsNodePaths } from '@src/lang/util'
-import {
-  modelingMachineCommandConfig,
-  type ModelingCommandSchema,
-} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { IndexLoaderData } from '@src/lib/types'
 import type {
-  PipeExpression,
-  Program,
-  VariableDeclaration,
-} from '@src/lang/wasm'
-import { parse, recast, resultIsOk } from '@src/lang/wasm'
-import { applyConstraintHorzVertDistance } from '@src/components/Toolbar/SetHorzVertDistance'
-import {
-  angleBetweenInfo,
-  applyConstraintAngleBetween,
-} from '@src/components/Toolbar/SetAngleBetween'
-import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
-import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
+import { modelingMachine } from '@src/machines/modelingMachine'
+import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { useFolders } from '@src/machines/systemIO/hooks'
+
+import {
+  EngineConnectionEvents,
+  EngineConnectionStateType,
+} from '@src/network/utils'
+import type { WebContentSendPayload } from '@src/menu/channels'
+import { addTagForSketchOnFace } from '@src/lang/std/sketch'
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
+import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -112,6 +129,7 @@ export const ModelingMachineContext = createContext(
     state: StateFrom<typeof modelingMachine>
     context: ContextFrom<typeof modelingMachine>
     send: Prop<Actor<typeof modelingMachine>, 'send'>
+    theProject: MutableRefObject<Project | undefined>
   }
 )
 
@@ -126,8 +144,15 @@ export const ModelingMachineProvider = ({
 }) => {
   const {
     app: { allowOrbitInSketchMode },
-    modeling: { defaultUnit, cameraProjection, cameraOrbit, useNewSketchMode },
+    modeling: {
+      defaultUnit,
+      cameraProjection,
+      cameraOrbit,
+      useNewSketchMode,
+      snapToGrid,
+    },
   } = useSettings()
+  const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
   const loaderData = useLoaderData() as IndexLoaderData
   const projects = useFolders()
   const { project, file } = loaderData
@@ -151,9 +176,7 @@ export const ModelingMachineProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [projects, loaderData, file])
 
-  const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)
-  const persistedContext = useMemo(() => getPersistedContext(), [])
 
   const isCommandBarClosed = useSelector(
     commandBarActor,
@@ -274,14 +297,16 @@ export const ModelingMachineProvider = ({
             .catch(reportRejection)
         },
         'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {
-          if (event.type !== 'Delete segment') return {}
           if (!sketchDetails) return {}
-          return {
-            sketchDetails: {
-              ...sketchDetails,
-              sketchEntryNodePath: event.data,
-            },
+          if (event.type === 'Update sketch details') {
+            return {
+              sketchDetails: {
+                ...sketchDetails,
+                ...event.data,
+              },
+            }
           }
+          return {}
         }),
       },
       guards: {
@@ -397,13 +422,13 @@ export const ModelingMachineProvider = ({
             // Due to our use of singeton pattern, we need to do this to reliably
             // update this object across React and non-React boundary.
             // We need to do this eagerly because of the exportToEngine call below.
-            if (engineCommandManager.machineManager === null) {
+            if (machineManager === null) {
               console.warn(
-                "engineCommandManager.machineManager is null. It shouldn't be at this point. Aborting operation."
+                "machineManager is null. It shouldn't be at this point. Aborting operation."
               )
               return new Error('Machine manager is not set')
             } else {
-              engineCommandManager.machineManager.currentMachine = input.machine
+              machineManager.currentMachine = input.machine
             }
 
             // Update the rest of the UI that needs to know the current machine
@@ -445,7 +470,7 @@ export const ModelingMachineProvider = ({
               files,
               toastId,
               name,
-              machineManager: engineCommandManager.machineManager,
+              machineManager: machineManager,
             })
           }
         ),
@@ -495,6 +520,54 @@ export const ModelingMachineProvider = ({
             return undefined
           }
         ),
+        'animate-to-sketch-solve': fromPromise(
+          async ({
+            input: artifactOrPlaneId,
+          }): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane> => {
+            if (!artifactOrPlaneId) {
+              const errorMessage = 'No artifact or plane ID provided'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+            let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null =
+              null
+
+            const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId)
+            if (!err(defaultResult) && defaultResult) {
+              result = defaultResult
+            }
+            console.log('result', result)
+
+            // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
+            if (!result) {
+              const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
+              const offsetResult = await getOffsetSketchPlaneData(artifact)
+              if (!err(offsetResult) && offsetResult) {
+                result = offsetResult
+              }
+            }
+            console.log('result', result)
+            if (!result) {
+              const sweepFaceSelected =
+                await selectionBodyFace(artifactOrPlaneId)
+              if (sweepFaceSelected) {
+                result = sweepFaceSelected
+              }
+            }
+            if (!result) {
+              const errorMessage = 'Please select a valid sketch plane'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            const id =
+              result.type === 'extrudeFace' ? result.faceId : result.planeId
+            await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+            console.log('result', result)
+            return result
+          }
+        ),
         'animate-to-face': fromPromise(async ({ input }) => {
           if (!input) return null
           if (input.type === 'extrudeFace' || input.type === 'offsetPlane') {
@@ -505,6 +578,7 @@ export const ModelingMachineProvider = ({
                     kclManager.ast,
                     input.sketchPathToNode,
                     input.extrudePathToNode,
+                    addTagForSketchOnFace,
                     input.faceInfo
                   )
                 : sketchOnOffsetPlane(
@@ -600,7 +674,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -656,7 +732,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -722,7 +800,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -783,7 +863,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -837,7 +919,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -892,7 +976,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -947,7 +1033,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -1173,6 +1261,7 @@ export const ModelingMachineProvider = ({
                 kclManager,
                 editorManager,
                 codeManager,
+                rustContext,
               })
             }
             return {
@@ -1183,112 +1272,7 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
-        'submit-prompt-edit': fromPromise(async ({ input }) => {
-          let projectFiles: FileMeta[] = [
-            {
-              type: 'kcl',
-              relPath: 'main.kcl',
-              absPath: 'main.kcl',
-              fileContents: codeManager.code,
-              execStateFileNamesIndex: 0,
-            },
-          ]
-          const execStateNameToIndexMap: { [fileName: string]: number } = {}
-          Object.entries(kclManager.execState.filenames).forEach(
-            ([index, val]) => {
-              if (val?.type === 'Local') {
-                execStateNameToIndexMap[val.value] = Number(index)
-              }
-            }
-          )
-          let basePath = ''
-          if (window.electron && theProject?.current?.children) {
-            const electron = window.electron
-            // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
-            basePath = theProject?.current?.path
-            const filePromises: Promise<FileMeta | null>[] = []
-            let uploadSize = 0
-            const recursivelyPushFilePromises = (files: FileEntry[]) => {
-              // mutates filePromises declared above, so this function definition should stay here
-              // if pulled out, it would need to be refactored.
-              for (const file of files) {
-                if (file.children !== null) {
-                  // is directory
-                  recursivelyPushFilePromises(file.children)
-                  continue
-                }
-
-                const absolutePathToFileNameWithExtension = file.path
-                const fileNameWithExtension = electron.path.relative(
-                  basePath,
-                  absolutePathToFileNameWithExtension
-                )
-
-                const filePromise = electron
-                  .readFile(absolutePathToFileNameWithExtension)
-                  .then((file): FileMeta => {
-                    uploadSize += file.byteLength
-                    const decoder = new TextDecoder('utf-8')
-                    const fileType = electron.path.extname(
-                      absolutePathToFileNameWithExtension
-                    )
-                    if (fileType === FILE_EXT) {
-                      return {
-                        type: 'kcl',
-                        absPath: absolutePathToFileNameWithExtension,
-                        relPath: fileNameWithExtension,
-                        fileContents: decoder.decode(file),
-                        execStateFileNamesIndex:
-                          execStateNameToIndexMap[
-                            absolutePathToFileNameWithExtension
-                          ],
-                      }
-                    }
-                    const blob = new Blob([file], {
-                      type: 'application/octet-stream',
-                    })
-                    return {
-                      type: 'other',
-                      relPath: fileNameWithExtension,
-                      data: blob,
-                    }
-                  })
-                  .catch((e) => {
-                    console.error('error reading file', e)
-                    return null
-                  })
-
-                filePromises.push(filePromise)
-              }
-            }
-            recursivelyPushFilePromises(theProject?.current?.children)
-            projectFiles = (await Promise.all(filePromises)).filter(
-              isNonNullable
-            )
-            const MB20 = 2 ** 20 * 20
-            if (uploadSize > MB20) {
-              toast.error(
-                'Your project exceeds 20Mb, this will slow down Text-to-CAD\nPlease remove any unnecessary files'
-              )
-            }
-          }
-          // route to main.kcl by default for web and desktop
-          let filePath: string = PROJECT_ENTRYPOINT
-          const possibleFileName = file?.path
-          if (possibleFileName && window.electron) {
-            // When prompt to edit finishes, try to route to the file they were in otherwise go to main.kcl
-            filePath = window.electron.path.relative(basePath, possibleFileName)
-          }
-          return await promptToEditFlow({
-            projectFiles,
-            prompt: input.prompt,
-            selections: input.selection,
-            token,
-            artifactGraph: kclManager.artifactGraph,
-            projectName: theProject?.current?.name || '',
-            filePath,
-          })
-        }),
+        'submit-prompt-edit': fromPromise(async ({ input }) => {}),
       },
     }),
     {
@@ -1296,11 +1280,11 @@ export const ModelingMachineProvider = ({
         ...modelingMachineDefaultContext,
         store: {
           ...modelingMachineDefaultContext.store,
-          ...persistedContext,
           cameraProjection,
           useNewSketchMode,
         },
         machineManager,
+        sketchSolveToolName: null,
       },
       // devTools: true,
     }
@@ -1308,58 +1292,26 @@ export const ModelingMachineProvider = ({
 
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
-    const openPanes = modelingActor.getSnapshot().context.store.openPanes
+    const rootLayout = structuredClone(getLayout())
+    const toggle = (id: DefaultLayoutPaneID) =>
+      setLayout(
+        togglePaneLayoutNode({
+          rootLayout,
+          targetNodeId: id,
+          shouldExpand: true,
+        })
+      )
+
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      const featureTree: SidebarType = 'feature-tree'
-      const alwaysAddFeatureTree: SidebarType[] = [
-        ...new Set([...openPanes, featureTree]),
-      ]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddFeatureTree,
-        },
-      })
+      toggle(DefaultLayoutPaneID.FeatureTree)
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      const code: SidebarType = 'code'
-      const alwaysAddCode: SidebarType[] = [...new Set([...openPanes, code])]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddCode,
-        },
-      })
+      toggle(DefaultLayoutPaneID.Code)
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      const projectFiles: SidebarType = 'files'
-      const alwaysAddProjectFiles: SidebarType[] = [
-        ...new Set([...openPanes, projectFiles]),
-      ]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddProjectFiles,
-        },
-      })
+      toggle(DefaultLayoutPaneID.Files)
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      const variables: SidebarType = 'variables'
-      const alwaysAddVariables: SidebarType[] = [
-        ...new Set([...openPanes, variables]),
-      ]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddVariables,
-        },
-      })
+      toggle(DefaultLayoutPaneID.Variables)
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      const logs: SidebarType = 'logs'
-      const alwaysAddLogs: SidebarType[] = [...new Set([...openPanes, logs])]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddLogs,
-        },
-      })
+      toggle(DefaultLayoutPaneID.Logs)
     } else if (data.menuLabel === 'Design.Start sketch') {
       modelingSend({
         type: 'Enter sketch',
@@ -1466,31 +1418,43 @@ export const ModelingMachineProvider = ({
   // the up vector otherwise the conconical orientation for the camera modes will be
   // wrong
   useEffect(() => {
-    sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+    engineCommandManager.connection?.deferredPeerConnection?.promise
+      .then(() => {
+        if (
+          previousCameraOrbit.current === null ||
+          cameraOrbit.current === previousCameraOrbit.current
+        ) {
+          // Do not reset, nothing has changed.
+          // Do not trigger on first initialization either.
+          previousCameraOrbit.current = cameraOrbit.current
+          return
+        }
+        previousCameraOrbit.current = cameraOrbit.current
+        // Gotcha: This will absolutely brick E2E tests if called incorrectly.
+        sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+      })
+      .catch(reportRejection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [cameraOrbit.current])
 
   useEffect(() => {
     const onConnectionStateChanged = ({ detail }: CustomEvent) => {
-      // If we are in sketch mode we need to exit it.
-      // TODO: how do i check if we are in a sketch mode, I only want to call
-      // this then.
       if (detail.type === EngineConnectionStateType.Disconnecting) {
         modelingSend({ type: 'Cancel' })
       }
     }
-    engineCommandManager.engineConnection?.addEventListener(
+    engineCommandManager.connection?.addEventListener(
       EngineConnectionEvents.ConnectionStateChanged,
       onConnectionStateChanged as EventListener
     )
     return () => {
-      engineCommandManager.engineConnection?.removeEventListener(
+      engineCommandManager.connection?.removeEventListener(
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChanged as EventListener
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager.engineConnection, modelingSend])
+  }, [engineCommandManager.connection, modelingSend])
 
   useEffect(() => {
     const inSketchMode = modelingState.matches('Sketch')
@@ -1530,11 +1494,16 @@ export const ModelingMachineProvider = ({
       modelingState.context.selectionRanges.graphSelections.filter((sel) =>
         segmentNodePaths.includes(JSON.stringify(sel.codeRef.pathToNode))
       )
-    selections.forEach((selection) => {
-      modelingSend({
-        type: 'Delete segment',
-        data: selection.codeRef.pathToNode,
-      })
+    // Order selections by how late they are used in the codebase, as later nodes are less likely to be referenced than
+    // earlier ones. This could be further refined as this is just a simple heuristic.
+    const orderedSelections = selections.slice().sort((a, b) => {
+      const aStart = a.codeRef.range?.[0] ?? 0
+      const bStart = b.codeRef.range?.[0] ?? 0
+      return bStart - aStart
+    })
+    modelingSend({
+      type: 'Delete segments',
+      data: orderedSelections.map((selection) => selection.codeRef.pathToNode),
     })
     if (
       modelingState.context.selectionRanges.graphSelections.length >
@@ -1552,6 +1521,32 @@ export const ModelingMachineProvider = ({
   useHotkeys(['mod + alt + x'], () => {
     resetCameraPosition().catch(reportRejection)
   })
+
+  // Toggle Snap to grid
+  useHotkeyWrapper([SNAP_TO_GRID_HOTKEY], () => {
+    settingsActor.send({
+      type: 'set.modeling.snapToGrid',
+      data: { level: 'project', value: !snapToGrid.current },
+    })
+  })
+
+  useHotkeys(
+    ['mod + a'],
+    (e) => {
+      const inSketchMode = modelingState.matches('Sketch')
+      if (!inSketchMode) return
+
+      e.preventDefault()
+      const selection = selectAllInCurrentSketch()
+      modelingSend({
+        type: 'Set selection',
+        data: { selectionType: 'completeSelection', selection },
+      })
+    },
+    {
+      enableOnContentEditable: false,
+    }
+  )
 
   useModelingMachineCommands({
     machineId: 'modeling',
@@ -1572,6 +1567,7 @@ export const ModelingMachineProvider = ({
         state: modelingState,
         context: modelingState.context,
         send: modelingSend,
+        theProject,
       }}
     >
       {/* TODO #818: maybe pass reff down to children/app.ts or render app.tsx directly?

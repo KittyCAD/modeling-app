@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing union_self.kcl
+---
+fn cube(pos, scale) {
+  return startSketchOn(XY)
+    |> startProfile(at = [pos[0] - scale, pos[1] - scale])
+    |> line(endAbsolute = [pos[0] + scale, pos[1] - scale])
+    |> line(endAbsolute = [pos[0] + scale, pos[1] + scale])
+    |> line(endAbsolute = [pos[0] - scale, pos[1] + scale])
+    |> close()
+    |> extrude(length = 2 * scale)
+}
+
+part001 = cube(pos = [0, 0], scale = 10)
+
+fullPart = union([part001, part001])
+  |> rotate(angle = 45, axis = [0, 1, 0]) // we do this to ensure the id is okay after the union

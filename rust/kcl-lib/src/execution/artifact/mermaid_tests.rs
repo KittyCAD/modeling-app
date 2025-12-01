@@ -324,11 +324,6 @@ impl ArtifactGraph {
             // a child of the line above it.
             let label = label.unwrap_or("");
             if code_ref.node_path.is_empty() {
-                if !code_ref.range.module_id().is_top_level() {
-                    // This is pointing to another module. We don't care about
-                    // these. It's okay that it's missing, for now.
-                    return Ok(());
-                }
                 return writeln!(output, "{prefix}  %% {label}Missing NodePath");
             }
             writeln!(output, "{prefix}  %% {label}{:?}", code_ref.node_path.steps)
@@ -505,7 +500,7 @@ impl ArtifactGraph {
         }
 
         // Output the edges.
-        edges.par_sort_by(|ak, _, bk, _| (if ak.0 == bk.0 { ak.1.cmp(&bk.1) } else { ak.0.cmp(&bk.0) }));
+        edges.par_sort_by(|ak, _, bk, _| if ak.0 == bk.0 { ak.1.cmp(&bk.1) } else { ak.0.cmp(&bk.0) });
         for ((source_id, target_id), edge) in edges {
             let extra = match edge.kind {
                 // Extra length.  This is needed to make the graph layout more

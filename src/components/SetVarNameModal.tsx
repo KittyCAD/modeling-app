@@ -5,8 +5,8 @@ import { type InstanceProps, create } from 'react-modal-promise'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { CreateNewVariable } from '@src/components/AvailableVarsHelpers'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
-import type { Selections } from '@src/lib/selections'
 
 type ModalResolve = { variableName: string }
 type ModalReject = boolean

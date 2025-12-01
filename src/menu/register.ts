@@ -2,14 +2,14 @@ import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
-import { reportRejection } from '@src/lib/trap'
-import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import {
   authActor,
   commandBarActor,
   editorManager,
   settingsActor,
 } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 
@@ -78,8 +78,6 @@ export function modelingMenuCallbackMostActions(
           name: 'app.theme',
         },
       })
-    } else if (data.menuLabel === 'File.Preferences.Theme color') {
-      navigate(filePath + PATHS.SETTINGS_USER + '#themeColor')
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
     } else if (data.menuLabel === 'File.Add file to project') {
@@ -113,7 +111,7 @@ export function modelingMenuCallbackMostActions(
     } else if (data.menuLabel === 'Edit.Edit parameter') {
       commandBarActor.send({
         type: 'Find and select command',
-        data: { name: 'event.parameter.edit', groupId: 'modeling' },
+        data: { name: 'parameter.edit', groupId: 'code' },
       })
     } else if (data.menuLabel === 'Edit.Format code') {
       commandBarActor.send({
@@ -190,8 +188,6 @@ export function modelingMenuCallbackMostActions(
           },
         })
         .catch(reportRejection)
-    } else if (data.menuLabel === 'View.Standard views.Refresh') {
-      globalThis?.window?.location.reload()
     } else if (data.menuLabel === 'View.Named views.Create named view') {
       commandBarActor.send({
         type: 'Find and select command',
@@ -220,7 +216,7 @@ export function modelingMenuCallbackMostActions(
     } else if (data.menuLabel === 'Design.Create a parameter') {
       commandBarActor.send({
         type: 'Find and select command',
-        data: { name: 'event.parameter.create', groupId: 'modeling' },
+        data: { name: 'parameter.create', groupId: 'code' },
       })
     } else if (data.menuLabel === 'Design.Create an additive feature.Extrude') {
       commandBarActor.send({

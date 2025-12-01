@@ -1,10 +1,11 @@
 use anyhow::Result;
+use kittycad_modeling_cmds::units::UnitLength;
 
 use crate::{
     SourceRange,
     engine::{DEFAULT_PLANE_INFO, PlaneName},
     errors::Suggestion,
-    execution::{PlaneInfo, Point3d, types::UnitLen},
+    execution::{PlaneInfo, Point3d},
     lint::rule::{Discovered, Finding, def_finding},
     parsing::ast::types::{
         BinaryPart, CallExpressionKw, Expr, LiteralValue, Node as AstNode, ObjectExpression, Program, UnaryOperator,
@@ -26,7 +27,8 @@ fixed amount from an existing plane.
 This lint rule triggers when a startSketchOn's provided plane is recognized as
 being merely offset from a built-in plane. It's much more readable to
 use offsetPlane where possible.
-"
+",
+    crate::lint::rule::FindingFamily::Simplify
 );
 
 pub fn lint_should_be_offset_plane(node: Node, _prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
@@ -175,25 +177,11 @@ pub fn common(
                     x,
                     y,
                     z,
-                    units: UnitLen::Mm,
+                    units: Some(UnitLength::Millimeters),
                 })
             }
-            "xAxis" => {
-                x_vec = Some(Point3d {
-                    x,
-                    y,
-                    z,
-                    units: UnitLen::Unknown,
-                })
-            }
-            "yAxis" => {
-                y_vec = Some(Point3d {
-                    x,
-                    y,
-                    z,
-                    units: UnitLen::Unknown,
-                })
-            }
+            "xAxis" => x_vec = Some(Point3d { x, y, z, units: None }),
+            "yAxis" => y_vec = Some(Point3d { x, y, z, units: None }),
             _ => {
                 continue;
             }

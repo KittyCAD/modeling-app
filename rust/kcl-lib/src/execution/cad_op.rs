@@ -2,12 +2,11 @@ use indexmap::IndexMap;
 use serde::Serialize;
 
 use super::{ArtifactId, KclValue, types::NumericType};
-#[cfg(feature = "artifact-graph")]
-use crate::parsing::ast::types::{Node, Program};
 use crate::{ModuleId, NodePath, SourceRange, parsing::ast::types::ItemVisibility};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
@@ -21,8 +20,12 @@ pub enum Operation {
         labeled_args: IndexMap<String, OpArg>,
         /// The node path of the operation in the source code.
         node_path: NodePath,
-        /// The source range of the operation in the source code.
+        /// The true source range of the operation in the source code.
         source_range: SourceRange,
+        /// The source range that's the boundary of calling the standard
+        /// library.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        stdlib_entry_source_range: Option<SourceRange>,
         /// True if the operation resulted in an error.
         #[serde(default, skip_serializing_if = "is_false")]
         is_error: bool,
@@ -63,14 +66,22 @@ impl Operation {
     }
 
     #[cfg(feature = "artifact-graph")]
-    pub(crate) fn fill_node_paths(&mut self, program: &Node<Program>, cached_body_items: usize) {
+    pub(crate) fn fill_node_paths(&mut self, programs: &crate::execution::ProgramLookup, cached_body_items: usize) {
         match self {
             Operation::StdLibCall {
                 node_path,
                 source_range,
+                stdlib_entry_source_range,
                 ..
+            } => {
+                // If there's a stdlib entry source range, use that to fill the
+                // node path. For example, this will point to the `hole()` call
+                // instead of the `subtract()` call that's deep inside the
+                // stdlib.
+                let range = stdlib_entry_source_range.as_ref().unwrap_or(source_range);
+                node_path.fill_placeholder(programs, cached_body_items, *range);
             }
-            | Operation::VariableDeclaration {
+            Operation::VariableDeclaration {
                 node_path,
                 source_range,
                 ..
@@ -80,7 +91,7 @@ impl Operation {
                 source_range,
                 ..
             } => {
-                node_path.fill_placeholder(program, cached_body_items, *source_range);
+                node_path.fill_placeholder(programs, cached_body_items, *source_range);
             }
             Operation::GroupEnd => {}
         }
@@ -159,6 +170,10 @@ pub enum OpKclValue {
     String {
         value: String,
     },
+    SketchVar {
+        value: f64,
+        ty: NumericType,
+    },
     Array {
         value: Vec<OpKclValue>,
     },
@@ -173,6 +188,9 @@ pub enum OpKclValue {
     },
     TagDeclarator {
         name: String,
+    },
+    GdtAnnotation {
+        artifact_id: ArtifactId,
     },
     Plane {
         artifact_id: ArtifactId,
@@ -228,6 +246,10 @@ impl From<&KclValue> for OpKclValue {
             KclValue::Bool { value, .. } => Self::Bool { value: *value },
             KclValue::Number { value, ty, .. } => Self::Number { value: *value, ty: *ty },
             KclValue::String { value, .. } => Self::String { value: value.clone() },
+            KclValue::SketchVar { value, .. } => Self::SketchVar {
+                value: value.initial_value,
+                ty: value.ty,
+            },
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
                 let value = value.iter().map(Self::from).collect();
                 Self::Array { value }
@@ -242,6 +264,9 @@ impl From<&KclValue> for OpKclValue {
             },
             KclValue::TagDeclarator(node) => Self::TagDeclarator {
                 name: node.name.clone(),
+            },
+            KclValue::GdtAnnotation { value } => Self::GdtAnnotation {
+                artifact_id: ArtifactId::new(value.id),
             },
             KclValue::Plane { value } => Self::Plane {
                 artifact_id: value.artifact_id,

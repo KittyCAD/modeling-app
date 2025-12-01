@@ -62,7 +62,7 @@ example = extrude(exampleSketch, length = 10)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the arc function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-arc0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -85,7 +85,7 @@ example = extrude(exampleSketch, length = 10)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the arc function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-arc1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

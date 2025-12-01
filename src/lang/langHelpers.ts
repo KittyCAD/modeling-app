@@ -8,6 +8,8 @@ import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
 import type { EditorView } from 'codemirror'
 
 export type ToolTip =
@@ -52,6 +54,10 @@ export const toolTips: Array<ToolTip> = [
   'startProfile',
 ]
 
+export function isToolTip(value: string): value is ToolTip {
+  return toolTips.includes(value as ToolTip)
+}
+
 interface ExecutionResult {
   logs: string[]
   errors: KCLError[]
@@ -71,7 +77,6 @@ export async function executeAst({
   try {
     const settings = await jsAppSettings()
     const execState = await rustContext.execute(ast, settings, path)
-
     await rustContext.waitForAllEngineCommands()
     return {
       logs: [],
@@ -118,13 +123,24 @@ export async function executeAstMock({
 
 function handleExecuteError(e: any): ExecutionResult {
   let isInterrupted = false
+
   if (e instanceof KCLError) {
     // Detect if it is a force interrupt error which is not a KCL processing error.
-    if (e.msg.includes(EXECUTE_AST_INTERRUPT_ERROR_STRING)) {
+    if (
+      e.msg.includes(EXECUTE_AST_INTERRUPT_ERROR_STRING) ||
+      e.msg.includes('Failed to wait for promise from send modeling command') ||
+      e.msg.includes(
+        'no connection to send on, connection manager called tearDown()'
+      ) ||
+      e.msg.includes(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE)
+    ) {
       isInterrupted = true
     }
     const execState = emptyExecState()
+    // We're passing back those so the user can still fix issues in p&c
     execState.variables = e.variables
+    execState.operations = e.operations
+    execState.artifactGraph = e.artifactGraph
     return {
       errors: [e],
       logs: [],
@@ -132,6 +148,20 @@ function handleExecuteError(e: any): ExecutionResult {
       isInterrupted,
     }
   } else {
+    if (e && e.length > 0 && e[0].errors && e[0].errors.length > 0) {
+      if (
+        e[0].errors[0].message.includes(
+          'no connection to send on, connection manager called tearDown()'
+        ) ||
+        e[0].errors[0].message.includes(
+          'Failed to wait for promise from send modeling command'
+        ) ||
+        e[0].errors[0].message.includes(REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE)
+      ) {
+        isInterrupted = true
+      }
+    }
+
     console.log(e)
     return {
       logs: [e],
@@ -145,12 +175,14 @@ function handleExecuteError(e: any): ExecutionResult {
 export async function lintAst({
   ast,
   sourceCode,
+  instance,
 }: {
   ast: Program
   sourceCode: string
+  instance?: ModuleType
 }): Promise<Array<Diagnostic>> {
   try {
-    const discovered_findings = await kclLint(ast)
+    const discovered_findings = await kclLint(ast, instance)
     return discovered_findings.map((lint) => {
       let actions
       const suggestion = lint.suggestion

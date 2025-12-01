@@ -1,32 +1,35 @@
 import env from '@src/env'
-import { vi } from 'vitest'
 import {
+  generateDomainsFromBaseDomain,
+  processEnv,
   viteEnv,
   windowElectronProcessEnv,
-  processEnv,
-  generateDomainsFromBaseDomain,
 } from '@src/env'
+import { vi } from 'vitest'
 
 describe('@src/env', () => {
   describe('default export', () => {
     it('should run the process.env workflow', () => {
       // vite > node.js
       const expected = {
-        NODE_ENV: 'test',
-        VITE_KITTYCAD_BASE_DOMAIN: 'dev.zoo.dev',
-        VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
-        VITE_KITTYCAD_API_WEBSOCKET_URL:
+        NODE_ENV: 'place-holder-since-it-will-be-set',
+        VITE_ZOO_BASE_DOMAIN: 'dev.zoo.dev',
+        VITE_ZOO_API_BASE_URL: 'https://api.dev.zoo.dev',
+        VITE_KITTYCAD_WEBSOCKET_URL:
           'wss://api.dev.zoo.dev/ws/modeling/commands',
-        VITE_KITTYCAD_API_TOKEN: 'redacted',
-        VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
-        VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
+        VITE_MLEPHANT_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/ml/copilot',
+        VITE_ZOO_API_TOKEN: 'redacted',
+        VITE_ZOO_SITE_BASE_URL: 'https://dev.zoo.dev',
+        VITE_ZOO_SITE_APP_URL: 'https://app.dev.zoo.dev',
         POOL: '',
       }
       const actual = env()
-      // Gotcha: If this fails you need a token in .env.development.local
-      expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       //@ts-ignore I do not want this token in our logs for any reason.
-      actual.VITE_KITTYCAD_API_TOKEN = 'redacted'
+      actual.VITE_ZOO_API_TOKEN = 'redacted'
+      //@ts-ignore I do not want this token in our logs for any reason.
+      // I need to mock the value other wise I'd have to delete the key from both
+      // actual and expected
+      actual.NODE_ENV = 'place-holder-since-it-will-be-set'
       expect(actual).toStrictEqual(expected)
     })
   })
@@ -36,9 +39,7 @@ describe('@src/env', () => {
       // We only need to match against EnvironmentVariables
       const actual = viteEnv()
       expect(typeof actual.NODE_ENV).toBe('string')
-      // Gotcha: If this fails you need a token in .env.development.local
-      expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
-      expect(typeof actual.VITE_KITTYCAD_BASE_DOMAIN).toBe('string')
+      expect(typeof actual.VITE_ZOO_BASE_DOMAIN).toBe('string')
     })
   })
   describe('windowElectronProcessEnv', () => {
@@ -53,23 +54,26 @@ describe('@src/env', () => {
           process: {
             env: {
               NODE_ENV: 'test',
-              VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
-              VITE_KITTYCAD_API_WEBSOCKET_URL:
+              VITE_ZOO_API_BASE_URL: 'https://api.dev.zoo.dev',
+              VITE_KITTYCAD_WEBSOCKET_URL:
                 'wss://api.dev.zoo.dev/ws/modeling/commands',
-              VITE_KITTYCAD_API_TOKEN: 'redacted',
-              VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
-              VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
+              VITE_MLEPHANT_WEBSOCKET_URL:
+                'wss://api.dev.zoo.dev/ws/ml/copilot',
+              VITE_ZOO_API_TOKEN: 'redacted',
+              VITE_ZOO_SITE_BASE_URL: 'https://dev.zoo.dev',
+              VITE_ZOO_SITE_APP_URL: 'https://app.dev.zoo.dev',
             },
           },
         })
         const expected = {
           NODE_ENV: 'test',
-          VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
-          VITE_KITTYCAD_API_WEBSOCKET_URL:
+          VITE_ZOO_API_BASE_URL: 'https://api.dev.zoo.dev',
+          VITE_KITTYCAD_WEBSOCKET_URL:
             'wss://api.dev.zoo.dev/ws/modeling/commands',
-          VITE_KITTYCAD_API_TOKEN: 'redacted',
-          VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
-          VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
+          VITE_MLEPHANT_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/ml/copilot',
+          VITE_ZOO_API_TOKEN: 'redacted',
+          VITE_ZOO_SITE_BASE_URL: 'https://dev.zoo.dev',
+          VITE_ZOO_SITE_APP_URL: 'https://app.dev.zoo.dev',
         }
         const actual = windowElectronProcessEnv()
         expect(actual).toStrictEqual(expected)
@@ -91,9 +95,7 @@ describe('@src/env', () => {
       const actual = processEnv()
       expect(!!actual).toBe(true)
       expect(typeof actual?.NODE_ENV).toBe('string')
-      expect(typeof actual?.VITE_KITTYCAD_BASE_DOMAIN).toBe('string')
-      // Gotcha: If this fails you need a token in .env.development.local
-      expect(typeof actual?.VITE_KITTYCAD_API_TOKEN).toBe('string')
+      expect(typeof actual?.VITE_ZOO_BASE_DOMAIN).toBe('string')
     })
   })
   describe('generateDomainsFromBaseDomain', () => {
@@ -101,7 +103,8 @@ describe('@src/env', () => {
       const expected = {
         API_URL: 'https://api.',
         SITE_URL: 'https://',
-        WEBSOCKET_URL: 'wss://api./ws/modeling/commands',
+        KITTYCAD_WEBSOCKET_URL: 'wss://api./ws/modeling/commands',
+        MLEPHANT_WEBSOCKET_URL: 'wss://api./ws/ml/copilot',
         APP_URL: 'https://app.',
       }
       const actual = generateDomainsFromBaseDomain('')
@@ -111,7 +114,8 @@ describe('@src/env', () => {
       const expected = {
         API_URL: 'https://api.zoo.dev',
         SITE_URL: 'https://zoo.dev',
-        WEBSOCKET_URL: 'wss://api.zoo.dev/ws/modeling/commands',
+        KITTYCAD_WEBSOCKET_URL: 'wss://api.zoo.dev/ws/modeling/commands',
+        MLEPHANT_WEBSOCKET_URL: 'wss://api.zoo.dev/ws/ml/copilot',
         APP_URL: 'https://app.zoo.dev',
       }
       const actual = generateDomainsFromBaseDomain('zoo.dev')
@@ -121,7 +125,8 @@ describe('@src/env', () => {
       const expected = {
         API_URL: 'https://api.dev.zoo.dev',
         SITE_URL: 'https://dev.zoo.dev',
-        WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands',
+        KITTYCAD_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands',
+        MLEPHANT_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/ml/copilot',
         APP_URL: 'https://app.dev.zoo.dev',
       }
       const actual = generateDomainsFromBaseDomain('dev.zoo.dev')

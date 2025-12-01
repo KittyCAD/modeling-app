@@ -6,7 +6,6 @@ import {
   createArrayExpression,
   createCallExpressionStdLibKw,
   createExpressionStatement,
-  createIdentifier,
   createImportAsSelector,
   createImportStatement,
   createLabeledArg,
@@ -19,32 +18,21 @@ import {
 } from '@src/lang/create'
 import {
   findAllPreviousVariables,
-  findAllPreviousVariablesPath,
   getBodyIndex,
   getNodeFromPath,
   isCallExprWithName,
   isNodeSafeToReplace,
   isNodeSafeToReplacePath,
+  valueOrVariable,
 } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import {
-  addTagForSketchOnFace,
-  getConstraintInfoKw,
-} from '@src/lang/std/sketch'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
-import {
-  isLiteralArrayOrStatic,
-  removeSingleConstraint,
-  transformAstSketchLines,
-} from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import type {
-  ArrayExpression,
   CallExpressionKw,
   Expr,
   ExpressionStatement,
-  Literal,
   PathToNode,
   PipeExpression,
   Program,
@@ -56,15 +44,26 @@ import type {
 import { isPathToNodeNumber, parse } from '@src/lang/wasm'
 import type {
   KclCommandValue,
+  KclExpression,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
+import { ARG_AT } from '@src/lang/constants'
+import { isLiteralArrayOrStatic, type Coords2d } from '@src/lang/util'
 import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
-import type { ExtrudeFacePlane } from '@src/machines/modelingMachine'
-import { ARG_AT } from '@src/lang/constants'
+import type { ExtrudeFacePlane } from '@src/machines/modelingSharedTypes'
+import {
+  type addTagForSketchOnFace as AddTagForSketchOnFaceFn,
+  type getConstraintInfoKw as GetConstraintInfoKwFn,
+} from '@src/lang/std/sketch'
+import {
+  type removeSingleConstraint as RemoveSingleConstraintFn,
+  type transformAstSketchLines as TransformAstSketchLinesFn,
+} from '@src/lang/std/sketchcombos'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -103,7 +102,7 @@ export function insertNewStartProfileAt(
   node: Node<Program>,
   sketchNodePaths: PathToNode[],
   planeNodePath: PathToNode,
-  at: [number, number],
+  at: Coords2d,
   insertType: 'start' | 'end' = 'end'
 ):
   | {
@@ -279,65 +278,11 @@ export function removeKwArgs(labels: string[], node: CallExpressionKw) {
   }
 }
 
-export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
-  if (node.type === 'ArrayExpression') {
-    node.elements.forEach((element, i) => {
-      if (isLiteralArrayOrStatic(element)) {
-        node.elements[i] = updateWith.elements[i]
-      }
-    })
-    return true
-  }
-  return false
-}
-
-export function mutateObjExpProp(
-  node: Expr,
-  updateWith: Node<Literal> | Node<ArrayExpression>,
-  key: string
-): boolean {
-  if (node.type === 'ObjectExpression') {
-    const keyIndex = node.properties.findIndex((a) => a.key.name === key)
-    if (keyIndex !== -1) {
-      if (
-        isLiteralArrayOrStatic(updateWith) &&
-        isLiteralArrayOrStatic(node.properties[keyIndex].value)
-      ) {
-        node.properties[keyIndex].value = updateWith
-        return true
-      } else if (
-        node.properties[keyIndex].value.type === 'ArrayExpression' &&
-        updateWith.type === 'ArrayExpression'
-      ) {
-        const arrExp = node.properties[keyIndex].value as ArrayExpression
-        arrExp.elements.forEach((element, i) => {
-          if (isLiteralArrayOrStatic(element)) {
-            arrExp.elements[i] = updateWith.elements[i]
-          }
-        })
-      }
-      return true
-    } else {
-      node.properties.push({
-        type: 'ObjectProperty',
-        key: createIdentifier(key),
-        value: updateWith,
-        start: 0,
-        end: 0,
-        moduleId: 0,
-        outerAttrs: [],
-        preComments: [],
-        commentStart: 0,
-      })
-    }
-  }
-  return false
-}
-
 export function sketchOnExtrudedFace(
   node: Node<Program>,
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
+  addTagForSketchOnFace: typeof AddTagForSketchOnFaceFn,
   info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   let _node = { ...node }
@@ -533,9 +478,6 @@ export function sketchOnOffsetPlane(
   }
 }
 
-export const getLastIndex = (pathToNode: PathToNode): number =>
-  splitPathAtLastIndex(pathToNode).index
-
 export function splitPathAtLastIndex(pathToNode: PathToNode): {
   path: PathToNode
   index: number
@@ -606,35 +548,6 @@ export function replaceValueAtNodePath({
   return replacer(ast, newExpressionString)
 }
 
-export function moveValueIntoNewVariablePath(
-  ast: Node<Program>,
-  memVars: VariableMap,
-  pathToNode: PathToNode,
-  variableName: string
-): {
-  modifiedAst: Node<Program>
-  pathToReplacedNode?: PathToNode
-} {
-  const meta = isNodeSafeToReplacePath(ast, pathToNode)
-  if (trap(meta)) return { modifiedAst: ast }
-  const { isSafe, value, replacer } = meta
-
-  if (!isSafe || value.type === 'Name') return { modifiedAst: ast }
-
-  const { insertIndex } = findAllPreviousVariablesPath(ast, memVars, pathToNode)
-  let _node = structuredClone(ast)
-  const boop = replacer(_node, variableName)
-  if (trap(boop)) return { modifiedAst: ast }
-
-  _node = boop.modifiedAst
-  _node.body.splice(
-    insertIndex,
-    0,
-    createVariableDeclaration(variableName, value)
-  )
-  return { modifiedAst: _node, pathToReplacedNode: boop.pathToReplaced }
-}
-
 export function moveValueIntoNewVariable(
   ast: Node<Program>,
   memVars: VariableMap,
@@ -668,12 +581,16 @@ export function moveValueIntoNewVariable(
  * Deletes a segment from a pipe expression, if the segment has a tag that other segments use, it will remove that value and replace it with the equivalent literal
  * @param dependentRanges - The ranges of the segments that are dependent on the segment being deleted, this is usually the output of `findUsesOfTagInPipe`
  */
-export function deleteSegmentFromPipeExpression(
+export function deleteSegmentOrProfileFromPipeExpression(
   dependentRanges: SourceRange[],
   modifiedAst: Node<Program>,
   memVars: VariableMap,
   code: string,
-  pathToNode: PathToNode
+  pathToNodes: PathToNode[],
+  getConstraintInfoKw: typeof GetConstraintInfoKwFn,
+  removeSingleConstraint: typeof RemoveSingleConstraintFn,
+  transformAstSketchLines: typeof TransformAstSketchLinesFn,
+  wasmInstance?: ModuleType
 ): Node<Program> | Error {
   let _modifiedAst = structuredClone(modifiedAst)
 
@@ -684,7 +601,10 @@ export function deleteSegmentFromPipeExpression(
       _modifiedAst,
       path,
       ['CallExpressionKw'],
-      true
+      true,
+      undefined,
+      undefined,
+      wasmInstance
     )
     if (err(callExp)) return callExp
 
@@ -698,27 +618,54 @@ export function deleteSegmentFromPipeExpression(
       callExp.shallowPath,
       constraintInfo.argPosition,
       _modifiedAst,
-      memVars
+      memVars,
+      removeSingleConstraint,
+      transformAstSketchLines,
+      wasmInstance
     )
     if (!transform) return
     _modifiedAst = transform.modifiedAst
   })
 
-  const pipeExpression = getNodeFromPath<PipeExpression>(
-    _modifiedAst,
-    pathToNode,
-    'PipeExpression'
-  )
-  if (err(pipeExpression)) return pipeExpression
+  for (const pathToNode of pathToNodes) {
+    const expr = getNodeFromPath<PipeExpression | CallExpressionKw>(
+      _modifiedAst,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(expr)) {
+      return expr
+    }
 
-  const pipeInPathIndex = pathToNode.findIndex(
-    ([_, desc]) => desc === 'PipeExpression'
-  )
-  const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1]
-  pipeExpression.node.body.splice(segmentIndexInPipe[0] as number, 1)
+    if (expr.node.type === 'CallExpressionKw') {
+      const topLevelDeleteResult = deleteTopLevelStatement(
+        _modifiedAst,
+        pathToNode
+      )
+      if (topLevelDeleteResult instanceof Error) {
+        return topLevelDeleteResult
+      }
+    } else {
+      const pipeInPathIndex = pathToNode.findIndex(
+        ([_, desc]) => desc === 'PipeExpression'
+      )
+      const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1]
+      expr.node.body.splice(segmentIndexInPipe[0] as number, 1) // Note that this mutates _modifiedAst
+      if (!expr.node.body.length) {
+        // this pipe is empty now, it should be deleted
+        const topLevelDeleteResult = deleteTopLevelStatement(
+          _modifiedAst,
+          pathToNode
+        )
+        if (topLevelDeleteResult instanceof Error) {
+          return topLevelDeleteResult
+        }
+      }
 
-  // Move up to the next segment.
-  segmentIndexInPipe[0] = Math.max((segmentIndexInPipe[0] as number) - 1, 0)
+      // Move up to the next segment.
+      segmentIndexInPipe[0] = Math.max((segmentIndexInPipe[0] as number) - 1, 0)
+    }
+  }
 
   return _modifiedAst
 }
@@ -733,7 +680,7 @@ export function deleteSegmentFromPipeExpression(
 export function deleteTopLevelStatement(
   ast: Node<Program>,
   pathToNode: PathToNode
-): Error | void {
+): Error | undefined {
   const pathStep = pathToNode[1]
   if (!isArray(pathStep) || typeof pathStep[0] !== 'number') {
     return new Error(
@@ -742,13 +689,57 @@ export function deleteTopLevelStatement(
   }
   const statementIndex: number = pathStep[0]
   ast.body.splice(statementIndex, 1)
+
+  updateCommentIndicesAfterDelete(ast, statementIndex)
+}
+
+function updateCommentIndicesAfterDelete(
+  ast: Node<Program>,
+  deletedIndex: number
+) {
+  const nonCodeMeta = ast.nonCodeMeta
+  const nonCodeNodes = nonCodeMeta?.nonCodeNodes
+  if (nonCodeNodes) {
+    Object.keys(nonCodeNodes)
+      // Note: ascending order by key is assumed, which is the case currently.
+      .forEach((key) => {
+        const index = Number(key) // index points to the top level profile AFTER which to place the comment
+        const indexIsValid = index > 0 || index === 0
+        if (indexIsValid && index >= deletedIndex) {
+          const currentTarget = nonCodeNodes[index]
+          if (currentTarget) {
+            const newIndex = index - 1
+            if (newIndex >= 0) {
+              // Move index up by one, if there is already one, just add to it
+              const newTarget = nonCodeNodes[index - 1]
+              if (newTarget) {
+                nonCodeNodes[index - 1] = [...newTarget, ...currentTarget]
+              } else {
+                // Just move up, nothing is there
+                nonCodeNodes[index - 1] = currentTarget
+              }
+            } else {
+              // the first top level statement was deleted -> move comment to nonCodeMeta.startNodes
+              if (!nonCodeMeta.startNodes) {
+                nonCodeMeta.startNodes = []
+              }
+              nonCodeMeta?.startNodes.push(...currentTarget)
+            }
+            delete nonCodeNodes[index]
+          }
+        }
+      })
+  }
 }
 
 export function removeSingleConstraintInfo(
   pathToCallExp: PathToNode,
   argDetails: SimplifiedArgDetails,
   ast: Node<Program>,
-  memVars: VariableMap
+  memVars: VariableMap,
+  removeSingleConstraint: typeof RemoveSingleConstraintFn,
+  transformAstSketchLines: typeof TransformAstSketchLinesFn,
+  wasmInstance?: ModuleType
 ):
   | {
       modifiedAst: Node<Program>
@@ -767,6 +758,7 @@ export function removeSingleConstraintInfo(
     transformInfos: [transform],
     memVars,
     referenceSegName: '',
+    wasmInstance,
   })
   if (err(retval)) return false
   return retval
@@ -829,8 +821,8 @@ export function updateSketchNodePathsWithInsertIndex({
 }
 
 /**
- * 
- * Split the following pipe expression into 
+ *
+ * Split the following pipe expression into
  * ```ts
  * part001 = startSketchOn(XZ)
   |> startProfile(at = [1, 2])
@@ -850,7 +842,7 @@ extrude001 = extrude(part001, length = 5)
 ```
 Notice that the `startSketchOn` is what gets the new variable name, this is so part001 still has the same data as before
 making it safe for later code that uses part001 (the extrude in this example)
- * 
+ *
  */
 export function splitPipedProfile(
   ast: Node<Program>,
@@ -1089,4 +1081,31 @@ export function setCallInAst({
   }
 
   return pathToNode
+}
+
+export function createPoint2dExpression(
+  value: KclExpression
+): Node<Expr> | Error {
+  let expr: Node<Expr> | undefined
+  if ('value' in value && isArray(value.value)) {
+    // Direct array value [x, y]
+    const arrayElements = []
+    for (const val of value.value) {
+      if (
+        typeof val === 'number' ||
+        typeof val === 'string' ||
+        typeof val === 'boolean'
+      ) {
+        arrayElements.push(createLiteral(val))
+      } else {
+        return new Error('Invalid value type for point2d')
+      }
+    }
+    expr = createArrayExpression(arrayElements)
+  } else {
+    // Variable reference or other format
+    expr = valueOrVariable(value)
+  }
+
+  return expr
 }
