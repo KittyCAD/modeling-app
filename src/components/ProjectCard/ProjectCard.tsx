@@ -65,7 +65,7 @@ function ProjectCard({
       )
       if (await fsManager.exists(projectImagePath)) {
         const imageData = await fsManager.readFile(projectImagePath)
-        const blob = new Blob([imageData], { type: 'image/png' })
+        const blob = new Blob([new Uint8Array(imageData)], { type: 'image/png' })
         const imageUrl = URL.createObjectURL(blob)
 
         if (blob.size > 0) {
@@ -105,11 +105,10 @@ function ProjectCard({
             ? `${PATHS.FILE}/${encodeURIComponent(project.default_file)}`
             : ''
         }
-        className={`flex flex-col flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 min-h-[5em] divide-y divide-chalkboard-50 dark:divide-chalkboard-80  ${
-          project.readWriteAccess
-            ? 'group-hover:!divide-primary group-hover:!hue-rotate-0'
-            : 'cursor-not-allowed'
-        }`}
+        className={`flex flex-col flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 min-h-[5em] divide-y divide-chalkboard-50 dark:divide-chalkboard-80  ${project.readWriteAccess
+          ? 'group-hover:!divide-primary group-hover:!hue-rotate-0'
+          : 'cursor-not-allowed'
+          }`}
       >
         <div className="h-36 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm">
           {imageUrl && (
