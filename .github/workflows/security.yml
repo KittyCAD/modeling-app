@@ -2,11 +2,14 @@ on:
   push:
     branches:
       - main
-      - security
   workflow_dispatch:
-permissions:
-  contents: read
 name: Security
+permissions:
+  # Permissions for Scorecard
+  contents: read
+  issues: read
+  pull-requests: read
+  checks: read
 jobs:
   security:
     uses: KittyCAD/gha-workflows/.github/workflows/security-default-branch.yml@security
