@@ -169,6 +169,7 @@ test.describe('Sketch solve edit tests', () => {
     cmdBar,
     editor,
     toolbar,
+    tronApp,
   }) => {
     const INITIAL_CODE = `@settings(experimentalFeatures = allow)
 `
@@ -176,6 +177,14 @@ test.describe('Sketch solve edit tests', () => {
     await test.step('Set up the app with initial code and enable new sketch mode', async () => {
       // Set useNewSketchMode in user settings (it's stored at user level even though hideOnLevel is 'project')
       // This ensures it's available immediately when the app loads, regardless of IS_STAGING_OR_DEBUG
+      if (tronApp) {
+        // Electron: settings via file system using cleanProjectDir
+        await tronApp.cleanProjectDir({
+          modeling: {
+            use_new_sketch_mode: true,
+          },
+        })
+      }
       const userSettingsToml = settingsToToml({
         settings: {
           ...TEST_SETTINGS,
