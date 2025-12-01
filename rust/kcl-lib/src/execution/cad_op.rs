@@ -215,9 +215,6 @@ pub enum OpKclValue {
     Face {
         artifact_id: ArtifactId,
     },
-    Segment {
-        artifact_id: ArtifactId,
-    },
     Sketch {
         value: Box<OpSketch>,
     },
@@ -310,9 +307,6 @@ impl From<&KclValue> for OpKclValue {
                     );
                     Self::KclNone {}
                 }
-                crate::execution::geometry::SegmentRepr::InEngine { id, .. } => Self::Segment {
-                    artifact_id: ArtifactId::new(*id),
-                },
             },
             KclValue::Sketch { value } => Self::Sketch {
                 value: Box::new(OpSketch {

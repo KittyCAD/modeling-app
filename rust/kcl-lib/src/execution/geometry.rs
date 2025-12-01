@@ -9,7 +9,6 @@ use kittycad_modeling_cmds::{
 };
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 use crate::{
     engine::{DEFAULT_PLANE_INFO, PlaneName},
@@ -1787,7 +1786,6 @@ pub struct AbstractSegment {
 pub enum SegmentRepr {
     Unsolved { segment: UnsolvedSegment },
     Solved { segment: Segment },
-    InEngine { id: Uuid, segment: Segment },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
