@@ -8,21 +8,11 @@
       "@kittycad/codemirror-lang-kcl": [
         "./packages/codemirror-lang-kcl/src/index.ts"
       ],
-      "@rust/*": [
-        "./rust/*"
-      ],
-      "@e2e/*": [
-        "./e2e/*"
-      ],
-      "@src/*": [
-        "./src/*"
-      ],
-      "@public/*": [
-        "./public/*"
-      ],
-      "@root/*": [
-        "./*"
-      ]
+      "@rust/*": ["./rust/*"],
+      "@e2e/*": ["./e2e/*"],
+      "@src/*": ["./src/*"],
+      "@public/*": ["./public/*"],
+      "@root/*": ["./*"]
     },
     "types": [
       "vite/client",
@@ -31,11 +21,7 @@
       "@lezer/generator"
     ],
     "target": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -51,14 +37,7 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": [
-    "src",
-    "e2e",
-    "packages",
-    "*.ts",
-    "rust",
-    "types"
-  ],
+  "include": ["src", "e2e", "packages", "*.ts", "rust", "types"],
   "exclude": [
     "node_modules",
     "./*.grammar",
@@ -66,9 +45,5 @@
     ".vscode-test",
     "rust/kcl-wasm-lib/pkg/**"
   ],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
-  ]
+  "references": [{"path": "./tsconfig.node.json"}]
 }
