@@ -45,5 +45,5 @@
     ".vscode-test",
     "rust/kcl-wasm-lib/pkg/**"
   ],
-  "references": [{"path": "./tsconfig.node.json"}]
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
