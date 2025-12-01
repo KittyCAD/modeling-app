@@ -2,6 +2,7 @@ import type {
   Action,
   BaseLayout,
   Layout,
+  LayoutWithMetadata,
   Orientation,
   PaneLayout,
   Side,
@@ -16,7 +17,8 @@ import { isErr } from '@src/lib/trap'
 import { isCustomIconName } from '@src/components/CustomIcon'
 
 export function parseLayoutFromJsonString(
-  layoutString: string
+  layoutString: string,
+  migrationFunction: (l: LayoutWithMetadata) => LayoutWithMetadata
 ): Layout | Error {
   try {
     const layoutWithMetadata = JSON.parse(layoutString)
@@ -31,7 +33,8 @@ export function parseLayoutFromJsonString(
       return new Error('Invalid layout persistence metadata')
     }
 
-    const parseResult = parseLayoutInner(layoutWithMetadata.layout)
+    const migrationResult = migrationFunction(layoutWithMetadata)
+    const parseResult = parseLayoutInner(migrationResult.layout)
 
     return !isErr(parseResult) ? parseResult : new Error('invalid layout')
   } catch (e) {

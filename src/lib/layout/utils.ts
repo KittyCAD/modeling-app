@@ -1,11 +1,16 @@
 import type {
   Direction,
   Layout,
+  LayoutMatcher,
+  LayoutMigration,
+  LayoutMigrationMap,
+  LayoutTransformation,
   LayoutWithMetadata,
   Orientation,
+  PaneChild,
   Side,
 } from '@src/lib/layout/types'
-import { LayoutType } from '@src/lib/layout/types'
+import { AreaType, LayoutType } from '@src/lib/layout/types'
 import type React from 'react'
 import { capitaliseFC, throttle } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
@@ -20,6 +25,9 @@ import {
   parseLayoutInner,
 } from '@src/lib/layout/parse'
 import { LAYOUT_PERSIST_PREFIX, LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
+
+/** Most recent layout system version */
+export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v2'
 
 // Attempt to load a persisted layout
 const defaultLayoutLoadResult = loadLayout('default')
@@ -264,7 +272,13 @@ export function loadLayout(id: string): Layout | Error {
   if (!layoutString) {
     return new Error('No persisted layout found')
   }
-  return parseLayoutFromJsonString(layoutString)
+  const parsedLayout = parseLayoutFromJsonString(layoutString, (l) =>
+    applyLayoutMigrationMap(l, getLayoutMigrations())
+  )
+  if (!isErr(parsedLayout)) {
+    saveLayoutInner({ layout: parsedLayout })
+  }
+  return parsedLayout
 }
 
 interface ISaveLayout {
@@ -284,7 +298,7 @@ function saveLayoutInner({ layout, layoutName = 'default' }: ISaveLayout) {
   globalThis.localStorage.setItem(
     `${LAYOUT_PERSIST_PREFIX}${layoutName}`,
     globalThis.JSON?.stringify({
-      version: 'v1',
+      version: LATEST_LAYOUT_VERSION,
       layout,
     } satisfies LayoutWithMetadata)
   )
@@ -627,4 +641,96 @@ export function setOpenPanes(rootLayout: Layout, paneIDs: string[]): Layout {
     })
   }
   return rootLayout
+}
+
+export function applyLayoutMigrationMap(
+  layout: LayoutWithMetadata,
+  migrations: LayoutMigrationMap
+): LayoutWithMetadata {
+  let newLayout = layout
+  let versionMatch = migrations.get(newLayout.version)
+  while (versionMatch !== undefined) {
+    newLayout = applyLayoutMigration(newLayout, versionMatch)
+    versionMatch = migrations.get(newLayout.version)
+  }
+
+  return newLayout
+}
+
+function applyLayoutMigration(
+  layout: LayoutWithMetadata,
+  migration: LayoutMigration
+): LayoutWithMetadata {
+  let newLayout = Object.assign(layout, { version: migration.newVersion })
+  for (let transformationSet of migration.transformationSets) {
+    const result = applyTransformationsToMatchedLayoutChildren(
+      newLayout.layout,
+      transformationSet.matcher,
+      transformationSet.transformations
+    )
+    newLayout.layout = result ?? defaultLayoutConfig
+  }
+  return newLayout
+}
+
+function applyTransformationsToMatchedLayoutChildren(
+  layout: Layout,
+  matcher: LayoutMatcher,
+  transformations: LayoutTransformation[]
+): Layout | null {
+  let newLayout: Layout | null = structuredClone(layout)
+  if (matcher === true || matcher(layout) === true) {
+    newLayout = transformations.reduce<Layout | null>(
+      (prevResult, transformation) =>
+        prevResult === null ? null : transformation(prevResult),
+      newLayout
+    )
+  }
+  if (newLayout && 'children' in newLayout) {
+    newLayout.children = newLayout.children
+      .map((l) =>
+        applyTransformationsToMatchedLayoutChildren(l, matcher, transformations)
+      )
+      .filter((c) => c !== null)
+  }
+  return newLayout
+}
+
+/** Get a Map of all layout migrations authored by developers. */
+function getLayoutMigrations(): LayoutMigrationMap {
+  const migrationMap: LayoutMigrationMap = new Map([
+    // This first migration is going to do nothing: just increment the version.
+    [
+      'v1',
+      {
+        newVersion: 'v2',
+        transformationSets: [{ matcher: true, transformations: [(l) => l] }],
+      },
+    ],
+    [
+      'v2',
+      {
+        newVersion: 'v3',
+        transformationSets: [
+          {
+            matcher: (l) =>
+              l.type === LayoutType.Simple && l.areaType === AreaType.TTC,
+            transformations: [
+              (l) => {
+                if (!('icon' in l)) {
+                  return l
+                }
+                return {
+                  ...l,
+                  icon: 'questionMark',
+                } satisfies PaneChild
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  ])
+
+  return migrationMap
 }
