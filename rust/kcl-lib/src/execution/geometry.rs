@@ -799,11 +799,13 @@ impl Sketch {
     ) {
         let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
+        let mut sketch_copy = self.clone();
+        sketch_copy.tags.clear();
         tag_identifier.info.push((
             exec_state.stack().current_epoch(),
             TagEngineInfo {
                 id: base.geo_meta.id,
-                geometry: Geometry::Sketch(self.clone()),
+                geometry: Geometry::Sketch(sketch_copy),
                 path: Some(current_path.clone()),
                 surface: surface.cloned(),
             },
