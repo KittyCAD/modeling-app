@@ -35,7 +35,7 @@
 /// profiles, where one profile is piped into the next, is not currently
 /// supported.
 ///
-/// ```kcl,inline,norun
+/// ```kcl,inline
 /// // This does NOT work.
 /// twoSquares = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -53,7 +53,7 @@
 ///
 /// Instead, use separate pipelines, and extrude an array of them all.
 ///
-/// ```kcl,inline,norun
+/// ```kcl,inline
 /// sketch1 = startSketchOn(XY)
 /// squareProfile1 = startProfile(sketch1, at = [0, 0])
 ///   |> line(end = [10, 0])
