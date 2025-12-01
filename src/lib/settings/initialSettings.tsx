@@ -397,8 +397,8 @@ export function createSettings() {
       useNewSketchMode: new Setting<boolean>({
         hideOnLevel: 'project',
         // Don't show in prod, consider switching to use AdamS's endpoint https://github.com/KittyCAD/common/pull/1704
-        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
-        defaultValue: true,
+        // hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
+        defaultValue: false,
         description: 'Use the new sketch mode implementation',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
