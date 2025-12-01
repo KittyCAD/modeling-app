@@ -154,7 +154,7 @@ export function useCalculateKclExpression({
       setIsExecuting(false)
       setValueNode(null)
     })
-  }, [value, availableVarInfo, code, kclManager.variables])
+  }, [value, availableVarInfo, code, rustContext, options])
 
   return {
     valueNode,

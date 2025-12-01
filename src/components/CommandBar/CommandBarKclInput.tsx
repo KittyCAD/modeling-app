@@ -125,6 +125,7 @@ function CommandBarKclInput({
   const editorRef = useRef<HTMLDivElement>(null)
 
   const allowArrays = arg.allowArrays ?? false
+  const options = useMemo(() => ({ allowArrays }), [allowArrays])
 
   const {
     calcResult,
@@ -141,9 +142,7 @@ function CommandBarKclInput({
     sourceRange: sourceRangeForPrevVariables,
     selectionRanges,
     rustContext,
-    options: {
-      allowArrays,
-    },
+    options,
   })
 
   const varMentionData: Completion[] = prevVariables.map((v) => {

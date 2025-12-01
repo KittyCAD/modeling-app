@@ -72,6 +72,9 @@ function CoordinateInput({
   )
 }
 
+// GOTCHA: must be defined outside of React to prevent endless rerenders
+const calculateKclExpressionOptions = { allowArrays: false }
+
 function CommandBarVector3DInput({
   arg,
   stepBack,
@@ -134,21 +137,21 @@ function CommandBarVector3DInput({
     value: x,
     selectionRanges: { graphSelections: [], otherSelections: [] },
     rustContext,
-    options: { allowArrays: false },
+    options: calculateKclExpressionOptions,
   })
 
   const yCalculation = useCalculateKclExpression({
     value: y,
     selectionRanges: { graphSelections: [], otherSelections: [] },
     rustContext,
-    options: { allowArrays: false },
+    options: calculateKclExpressionOptions,
   })
 
   const zCalculation = useCalculateKclExpression({
     value: z,
     selectionRanges: { graphSelections: [], otherSelections: [] },
     rustContext,
-    options: { allowArrays: false },
+    options: calculateKclExpressionOptions,
   })
 
   // DOM access for focus and keyboard navigation
