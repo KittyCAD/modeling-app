@@ -419,7 +419,6 @@ export const mlEphantManagerMachine2 = setup({
               return
             }
 
-
             if (theRefParentSend) {
               theRefParentSend({
                 type: MlEphantManagerTransitions2.ResponseReceive,

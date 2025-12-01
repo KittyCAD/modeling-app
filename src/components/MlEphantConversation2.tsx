@@ -282,23 +282,24 @@ export const MlEphantConversationInput = (
                 <button onClick={props.onReconnect}>Reconnect</button>
               </div>
             )}
-            { props.hasPromptCompleted
-             ? <button
-              data-testid="ml-ephant-conversation-input-button"
-              disabled={props.disabled}
-              onClick={onClick}
-              className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
-            >
-              <CustomIcon name="caretUp" className="w-5 h-5 animate-bounce" />
-            </button>
-            : <button
-              data-testid="ml-ephant-conversation-input-button"
-              onClick={props.onInterrupt}
-              className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
-            >
-              <CustomIcon name="close" className="w-5 h-5 animate-pulse" />
-            </button>
-            }
+            {props.hasPromptCompleted ? (
+              <button
+                data-testid="ml-ephant-conversation-input-button"
+                disabled={props.disabled}
+                onClick={onClick}
+                className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
+              >
+                <CustomIcon name="caretUp" className="w-5 h-5 animate-bounce" />
+              </button>
+            ) : (
+              <button
+                data-testid="ml-ephant-conversation-input-button"
+                onClick={props.onInterrupt}
+                className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
+              >
+                <CustomIcon name="close" className="w-5 h-5 animate-pulse" />
+              </button>
+            )}
           </div>
         </div>
       </div>
