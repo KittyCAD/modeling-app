@@ -37,7 +37,6 @@ import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import {
   billingActor,
-  editorManager,
   getSettings,
   kclManager,
   useLayout,
@@ -118,11 +117,11 @@ export function App() {
   // with the wrapper.
   useHotkeys('mod+z', (e) => {
     e.preventDefault()
-    editorManager.undo()
+    kclManager.undo()
   })
   useHotkeys('mod+shift+z', (e) => {
     e.preventDefault()
-    editorManager.redo()
+    kclManager.redo()
   })
   useHotkeyWrapper(
     [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
@@ -171,7 +170,6 @@ export function App() {
           TutorialRequestToast({
             onboardingStatus: settings.app.onboardingStatus.current,
             navigate,
-            editorManager,
             kclManager,
             theme: getResolvedTheme(settings.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
@@ -236,7 +234,7 @@ export function App() {
             projectMenuChildren={
               <UndoRedoButtons
                 data-testid="app-header-undo-redo"
-                editorManager={editorManager}
+                kclManager={kclManager}
                 className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
               />
             }

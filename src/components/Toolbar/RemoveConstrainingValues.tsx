@@ -14,7 +14,7 @@ import type { Expr, PathToNode, Program } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function removeConstrainingValuesInfo(

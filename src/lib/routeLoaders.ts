@@ -24,7 +24,7 @@ import {
   loadAndValidateSettings,
   readLocalStorageAppSettingsFile,
 } from '@src/lib/settings/settingsUtils'
-import { editorManager, rustContext, systemIOActor } from '@src/lib/singletons'
+import { kclManager, rustContext, systemIOActor } from '@src/lib/singletons'
 import { settingsActor } from '@src/lib/singletons'
 import type {
   FileLoaderData,
@@ -112,16 +112,16 @@ export const fileLoader: LoaderFunction = async (
       // If persistCode in localStorage is present, it'll persist that code
       // through *anything*. INTENDED FOR TESTS.
       if (window.electron.process.env.NODE_ENV === 'test') {
-        code = editorManager.localStoragePersistCode() || code
+        code = kclManager.localStoragePersistCode() || code
       }
 
       // Update both the state and the editor's code.
       // We explicitly do not write to the file here since we are loading from
       // the file system and not the editor.
-      editorManager.updateCurrentFilePath(currentFilePath)
+      kclManager.updateCurrentFilePath(currentFilePath)
       // We pass true on the end here to clear the code editor history.
       // This way undo and redo are not super weird when opening new files.
-      editorManager.updateCodeStateEditor(code, true)
+      kclManager.updateCodeStateEditor(code, true)
     }
 
     // Set the file system manager to the project path
