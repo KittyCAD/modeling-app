@@ -1,6 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
-
-import { editorManager } from '@src/lib/singletons'
+import { kclManager } from '@src/lib/singletons'
 
 describe('EditorManager Class', () => {
   describe('makeUniqueDiagnostics', () => {
@@ -35,7 +34,7 @@ describe('EditorManager Class', () => {
         },
       ]
 
-      const actual = editorManager.makeUniqueDiagnostics(duplicatedDiagnostics)
+      const actual = kclManager.makeUniqueDiagnostics(duplicatedDiagnostics)
       expect(actual).toStrictEqual(expected)
     })
     it('should filter out duplicated diagnostic and keep some original ones', () => {
@@ -75,7 +74,7 @@ describe('EditorManager Class', () => {
         },
       ]
 
-      const actual = editorManager.makeUniqueDiagnostics(duplicatedDiagnostics)
+      const actual = kclManager.makeUniqueDiagnostics(duplicatedDiagnostics)
       expect(actual).toStrictEqual(expected)
     })
   })

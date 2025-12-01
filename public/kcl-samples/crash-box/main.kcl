@@ -1,0 +1,135 @@
+// Crash-box with beam cutout and mounting holes
+// A crash box is an energy-absorbing structural component mounted between a vehicle’s bumper beam and the main body. It is designed to deform in a controlled manner during low- to moderate-speed impacts, reducing crash forces transmitted to the chassis and lowering repair costs by localizing damage to a replaceable module.
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+// -----------------------------
+// Parameters
+// -----------------------------
+
+// Hole parameters (for mounting/fastening to the bumper beam)
+mountHoleRadius = 16
+mountHoleOffsetFromTop = 150
+mountHoleSpacing = 200
+
+// Beam/cutout parameters
+beamCutoutDepth = 300
+
+// Crash-box overall dimensions
+crashBoxExtrudeLength = -1200
+crashBoxOuterWidth = 400
+
+// -----------------------------
+// Crash box: square tube profile and extrusion
+// -----------------------------
+
+
+sketchCrashBox = startSketchOn(XY)
+profileCrashBoxOuter = startProfile(
+       sketchCrashBox,
+       at = [
+         -crashBoxOuterWidth / 2,
+         -crashBoxOuterWidth / 2
+       ],
+     )
+  |> angledLine(angle = 0deg, length = crashBoxOuterWidth, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = crashBoxOuterWidth, tag = $seg03)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+
+// Create a solid crash box from the square profile
+crashBoxSolid = extrude(profileCrashBoxOuter, length = crashBoxExtrudeLength)
+
+// Optional exterior edge softening
+filletCrashBoxCorners = fillet(
+  crashBoxSolid,
+  tags = [
+    getCommonEdge(faces = [seg01, seg02]),
+    getCommonEdge(faces = [rectangleSegmentA001, seg02]),
+    getCommonEdge(faces = [rectangleSegmentA001, seg03]),
+    getCommonEdge(faces = [seg03, seg01])
+  ],
+  radius = 60,
+)
+
+// Shell the crash box from both ends to create a constant wall thickness
+crashBoxShelled = shell(crashBoxSolid, faces = [END, START], thickness = 20)
+
+// -----------------------------
+// Bumper beam surrogate: used to cut a mating pocket in the crash box
+// -----------------------------
+
+
+sketchBeam = startSketchOn(-YZ)
+profileBeam = startProfile(sketchBeam, at = [-870.13, 0])
+  |> angledLine(angle = 0deg, length = 1744.11, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90deg, length = beamCutoutDepth)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002), tag = $seg04)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Extrude the beam surrogate symmetrically, tagging start/end faces for fillets
+beamSolid = extrude(
+  profileBeam,
+  length = 250,
+  symmetric = true,
+  tagStart = $capStart001,
+  tagEnd = $capEnd001,
+)
+
+// Ease the beam pocket edges for a better fit
+filletBeamEnds = fillet(
+  beamSolid,
+  tags = [
+    getCommonEdge(faces = [seg04, capStart001]),
+    getCommonEdge(faces = [seg04, capEnd001])
+  ],
+  radius = 80,
+)
+
+// -----------------------------
+// Subtract the beam volume from the crash box to form the mating pocket
+// -----------------------------
+
+
+crashBoxWithPocket = subtract(crashBoxSolid, tools = beamSolid)
+
+// -----------------------------
+// Mounting holes: through-holes from front to back of crash box
+// -----------------------------
+
+// Sketch on one side face (seg02) and pierce through to opposite face (seg03)
+sketchHoles = startSketchOn(crashBoxWithPocket, face = seg02)
+profileHoleLeft = circle(
+  sketchHoles,
+  center = [
+    -mountHoleSpacing / 2,
+    -mountHoleOffsetFromTop
+  ],
+  radius = mountHoleRadius,
+)
+profileHoleRight = circle(
+  sketchHoles,
+  center = [
+    mountHoleSpacing / 2,
+    -mountHoleOffsetFromTop
+  ],
+  radius = mountHoleRadius,
+)
+
+// Create cylindrical cutters to the opposite wall; keep as new bodies to subtract
+holeCutters = extrude([profileHoleLeft, profileHoleRight], to = seg03, method = NEW)
+
+// Apply the hole cut to the crash box with pocket
+crashBoxFinal = subtract(crashBoxWithPocket, tools = holeCutters)
+
+// -----------------------------
+// Appearance
+// -----------------------------
+
+
+appearance(crashBoxFinal, color = "#00aaff")

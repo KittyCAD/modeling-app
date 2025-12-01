@@ -233,6 +233,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "crash-box/main.kcl",
+    "multipleFiles": false,
+    "title": "Crash-box with beam cutout and mounting holes",
+    "description": "A crash box is an energy-absorbing structural component mounted between a vehicle’s bumper beam and the main body. It is designed to deform in a controlled manner during low- to moderate-speed impacts, reducing crash forces transmitted to the chassis and lowering repair costs by localizing damage to a replaceable module.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "curtain-wall-anchor-plate/main.kcl",
     "multipleFiles": false,
     "title": "Curtain Wall Anchor Plate",
@@ -538,6 +548,16 @@
     "multipleFiles": false,
     "title": "Hex Nut",
     "description": "A hex nut is a type of fastener with a threaded hole and a hexagonal outer shape, used in a wide variety of applications to secure parts together. The hexagonal shape allows for a greater torque to be applied with wrenches or tools, making it one of the most common nut types in hardware.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "hex-nut-with-chamfer/main.kcl",
+    "multipleFiles": false,
+    "title": "Hex Nut with Chamfered Ends and Through-Hole",
+    "description": "This model generates a hexagonal nut with: a hex exterior defined by across-flats dimension, circular chamfers applied to both end faces, and central through-hole",
     "files": [
       "main.kcl"
     ]

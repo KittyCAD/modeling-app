@@ -10,7 +10,6 @@ import {
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
 import {
-  editorManager,
   engineCommandManager,
   kclManager,
   sceneInfra,
@@ -36,15 +35,15 @@ export function useEngineConnectionSubscriptions() {
             kclManager.artifactGraph
           )
           if (codeRefs) {
-            editorManager.setHighlightRange(codeRefs.map(({ range }) => range))
+            kclManager.setHighlightRange(codeRefs.map(({ range }) => range))
           }
         } else if (
-          !editorManager.highlightRange ||
-          (editorManager.highlightRange[0] &&
-            editorManager.highlightRange[0][0] !== 0 &&
-            editorManager.highlightRange[0][1] !== 0)
+          !kclManager.highlightRange ||
+          (kclManager.highlightRange[0] &&
+            kclManager.highlightRange[0][0] !== 0 &&
+            kclManager.highlightRange[0][1] !== 0)
         ) {
-          editorManager.setHighlightRange([defaultSourceRange()])
+          kclManager.setHighlightRange([defaultSourceRange()])
         }
       },
     })

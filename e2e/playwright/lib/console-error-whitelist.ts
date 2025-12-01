@@ -100,7 +100,7 @@ export const isErrorWhitelisted = (exception: Error) => {
     +     at resolveTransaction (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2155:24)
     +     at _EditorState.update (http://localhost:3000/node_modules/.vite/deps/chunk-3BHLKIA4.js?v=412eae63:2281:12)
     +     at _EditorView.dispatch (http://localhost:3000/node_modules/.vite/deps/chunk-IZYF444B.js?v=412eae63:6988:148)
-    +     at EditorManager.selectRange (http://localhost:3000/src/editor/manager.ts:182:22)
+    +     at KclManager.selectRange (http://localhost:3000/src/lang/KclSingleton.ts:1255:22)
     +     at AST extrude (http://localhost:3000/src/machines/modelingMachine.ts:828:25)`,
       foundInSpec: 'e2e/playwright/editor-tests.spec.ts',
       project: 'Google Chrome',

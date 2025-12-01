@@ -95,7 +95,8 @@ const sharedBulkCreateWorkflow = async ({
       newProjectName,
       requestedCode,
       configuration,
-      fileName
+      fileName,
+      input.context.projectDirectoryPath
     )
   }
   const numberOfFiles = input.files.length
@@ -312,7 +313,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           newProjectName,
           requestedCode,
           configuration,
-          newFileName
+          newFileName,
+          input.context.projectDirectoryPath
         )
 
         return {

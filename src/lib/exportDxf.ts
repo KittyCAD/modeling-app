@@ -1,6 +1,6 @@
 import { isArray } from '@src/lib/utils'
 import { getOperationVariableName } from '@src/lib/operations'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   findOperationPlaneArtifact,
   type StdLibCallOp,
