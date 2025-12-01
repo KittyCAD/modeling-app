@@ -29,7 +29,7 @@ import {
   offsetToPos,
   posToOffset,
 } from '@kittycad/codemirror-lsp-client'
-import { editorManager } from '@src/lib/singletons'
+import { kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { deferExecution } from '@src/lib/utils'
 
@@ -214,7 +214,7 @@ export class CompletionRequester implements PluginValue {
 
   update(viewUpdate: ViewUpdate) {
     // Make sure we are in a state where we can request completions.
-    if (!editorManager.copilotEnabled) {
+    if (!kclManager.copilotEnabled) {
       return
     }
 

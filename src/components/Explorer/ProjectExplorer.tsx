@@ -484,7 +484,8 @@ export const ProjectExplorer = ({
                     const requestedFileNameWithExtension =
                       parentPathRelativeToProject(
                         file?.path?.replace(oldPath, newPath),
-                        applicationProjectDirectory
+                        overrideApplicationProjectDirectory ||
+                          applicationProjectDirectory
                       )
                     systemIOActor.send({
                       type: SystemIOMachineEvents.renameFolderAndNavigateToFile,
@@ -537,7 +538,8 @@ export const ProjectExplorer = ({
                   getParentAbsolutePath(row.path),
                   fileNameForcedWithOriginalExt
                 ),
-                applicationProjectDirectory
+                overrideApplicationProjectDirectory ||
+                  applicationProjectDirectory
               )
 
               if (row.isFake) {

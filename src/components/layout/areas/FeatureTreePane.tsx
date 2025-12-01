@@ -36,9 +36,7 @@ import {
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
 import {
-  codeManager,
   commandBarActor,
-  editorManager,
   engineCommandManager,
   getLayout,
   kclManager,
@@ -106,7 +104,7 @@ export const FeatureTreePaneContents = () => {
         codePaneIsOpen: () =>
           getOpenPanes({ rootLayout: getLayout() }).includes(
             DefaultLayoutPaneID.Code
-          ) && editorManager.getEditorView() !== null,
+          ) && kclManager.getEditorView() !== null,
       },
       actions: {
         openCodePane: () => {
@@ -120,7 +118,7 @@ export const FeatureTreePaneContents = () => {
           )
         },
         scrollToError: () => {
-          editorManager.scrollToFirstErrorDiagnosticIfExists()
+          kclManager.scrollToFirstErrorDiagnosticIfExists()
         },
         sendTranslateCommand: () => {
           commandBarActor.send({
@@ -223,7 +221,7 @@ export const FeatureTreePaneContents = () => {
   // We use the code that corresponds to the operations. In case this is an
   // error on the first run, fall back to whatever is currently in the code
   // editor.
-  const operationsCode = kclManager.lastSuccessfulCode || codeManager.code
+  const operationsCode = kclManager.lastSuccessfulCode || kclManager.code
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = groupOperationTypeStreaks(
