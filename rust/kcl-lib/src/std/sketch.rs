@@ -90,7 +90,7 @@ impl FaceTag {
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
         match self {
-            FaceTag::Tag(t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar).await,
+            FaceTag::Tag(t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar),
             _ => Err(KclError::new_type(KclErrorDetails::new(
                 "Could not find the face corresponding to this tag".to_string(),
                 vec![args.source_range],

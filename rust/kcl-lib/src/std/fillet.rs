@@ -159,7 +159,7 @@ async fn inner_fillet(
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id: None,
                 edge_ids: vec![],
-                edges_references,
+                //edges_references,
                 extra_face_ids,
                 strategy: Default::default(),
                 object_id: solid.id,

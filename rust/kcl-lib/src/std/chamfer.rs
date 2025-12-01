@@ -120,7 +120,7 @@ async fn inner_chamfer(
                 ModelingCmd::from(mcmd::Solid3dCutEdges {
                     edge_ids: vec![edge_id],
                     //TODO: same as fillet
-                    edges_references: vec![],
+                    //edges_references: vec![],
                     extra_face_ids: vec![],
                     strategy,
                     object_id: solid.id,
