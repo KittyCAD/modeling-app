@@ -4,7 +4,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { useEffect } from 'react'
 
 export interface IUseOnPageExit {
-  callback: () => void
+  callback: (engineCommandManager: ConnectionManager) => void
   engineCommandManager: ConnectionManager
   sceneInfra: SceneInfra
 }
@@ -26,7 +26,7 @@ export const useOnPageExit = ({
         message:
           'React component unmounted, router triggered unmount. Tear down!',
       })
-      callback()
+      callback(engineCommandManager)
       // When the component unmounts teardown the engineCommandManager
       EngineDebugger.addLog({
         label: 'useOnPageExit.tsx',
