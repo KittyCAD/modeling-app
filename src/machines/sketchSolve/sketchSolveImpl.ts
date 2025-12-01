@@ -944,6 +944,112 @@ export function findEntityUnderCursorId(
 }
 
 /**
+ * Creates the onMouseEnter callback for sketch solve hover operations.
+ * Handles highlighting line segments when the mouse enters them to provide visual feedback.
+ *
+ * @param updateLineSegmentHover - Function to update the hover state of a line segment
+ * @param getSelectedIds - Function to get all selected IDs (selectedIds + duringAreaSelectIds)
+ * @param setLastHoveredMesh - Function to store the currently hovered mesh
+ * @returns The onMouseEnter callback function
+ */
+export function createOnMouseEnterCallback({
+  updateLineSegmentHover,
+  getSelectedIds,
+  setLastHoveredMesh,
+}: {
+  updateLineSegmentHover: (
+    mesh: Mesh,
+    isHovering: boolean,
+    selectedIds: Array<number>
+  ) => void
+  getSelectedIds: () => Array<number>
+  setLastHoveredMesh: (mesh: Mesh | null) => void
+}): (arg: {
+  selected?: Object3D
+  isAreaSelectActive?: boolean
+  mouseEvent: MouseEvent
+  intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
+}) => void {
+  return ({ selected, isAreaSelectActive }) => {
+    // Disable hover highlighting during area select to avoid visual conflicts
+    if (isAreaSelectActive) {
+      return
+    }
+    if (!selected) return
+
+    // Only highlight line segment meshes (not point segments or other objects)
+    const mesh = selected
+    if (mesh.userData?.type === STRAIGHT_SEGMENT_BODY && mesh instanceof Mesh) {
+      const allSelectedIds = getSelectedIds()
+      // Highlight the line segment to show it's interactive
+      updateLineSegmentHover(mesh, true, allSelectedIds)
+      // Store the hovered mesh so we can clear it on mouse leave
+      setLastHoveredMesh(mesh)
+    }
+  }
+}
+
+/**
+ * Creates the onMouseLeave callback for sketch solve hover operations.
+ * Handles clearing hover highlighting when the mouse leaves line segments.
+ *
+ * @param updateLineSegmentHover - Function to update the hover state of a line segment
+ * @param getSelectedIds - Function to get all selected IDs (selectedIds + duringAreaSelectIds)
+ * @param getLastHoveredMesh - Function to get the previously hovered mesh
+ * @param setLastHoveredMesh - Function to clear the stored hovered mesh
+ * @returns The onMouseLeave callback function
+ */
+export function createOnMouseLeaveCallback({
+  updateLineSegmentHover,
+  getSelectedIds,
+  getLastHoveredMesh,
+  setLastHoveredMesh,
+}: {
+  updateLineSegmentHover: (
+    mesh: Mesh,
+    isHovering: boolean,
+    selectedIds: Array<number>
+  ) => void
+  getSelectedIds: () => Array<number>
+  getLastHoveredMesh: () => Mesh | null
+  setLastHoveredMesh: (mesh: Mesh | null) => void
+}): (arg: {
+  selected?: Object3D
+  isAreaSelectActive?: boolean
+  mouseEvent: MouseEvent
+  intersectionPoint?: Partial<{ twoD: Vector2; threeD: Vector3 }>
+}) => void {
+  return ({ selected, isAreaSelectActive }) => {
+    // Disable hover highlighting during area select to avoid visual conflicts
+    if (isAreaSelectActive) {
+      return
+    }
+
+    // Clear hover state for the previously hovered mesh
+    const hoveredMesh = getLastHoveredMesh()
+    if (hoveredMesh) {
+      const allSelectedIds = getSelectedIds()
+      // Remove hover highlighting from the previously hovered segment
+      updateLineSegmentHover(hoveredMesh, false, allSelectedIds)
+      setLastHoveredMesh(null)
+    }
+
+    // Also handle if selected is provided (for safety, in case the mesh wasn't tracked)
+    if (selected) {
+      const mesh = selected
+      if (
+        mesh.userData?.type === STRAIGHT_SEGMENT_BODY &&
+        mesh instanceof Mesh
+      ) {
+        const allSelectedIds = getSelectedIds()
+        // Ensure hover is cleared even if the mesh wasn't in our tracking
+        updateLineSegmentHover(mesh, false, allSelectedIds)
+      }
+    }
+  }
+}
+
+/**
  * Creates the onClick callback for sketch solve click operations.
  * Handles selecting segments when clicked and clearing selection when clicking on empty space.
  *
@@ -1845,68 +1951,35 @@ export function setUpOnDragAndSelectionClickCallbacks({
         duringAreaSelectIds: Array<number>
       }) => self.send({ type: 'update selected ids', data }),
     }),
-    onMouseEnter: ({ selected, isAreaSelectActive }) => {
-      // Disable hover highlighting during area select
-      if (isAreaSelectActive) {
-        return
-      }
-      if (!selected) return
-      // Check if it's a line segment mesh
-      const mesh = selected
-      if (
-        mesh.userData?.type === STRAIGHT_SEGMENT_BODY &&
-        mesh instanceof Mesh
-      ) {
+    onMouseEnter: createOnMouseEnterCallback({
+      updateLineSegmentHover,
+      getSelectedIds: () => {
         const snapshot = self.getSnapshot()
         // Combine selectedIds and duringAreaSelectIds for highlighting
-        const allSelectedIds = Array.from(
+        return Array.from(
           new Set([
             ...snapshot.context.selectedIds,
             ...snapshot.context.duringAreaSelectIds,
           ])
         )
-        updateLineSegmentHover(mesh, true, allSelectedIds)
-        setLastHoveredMesh(mesh)
-      }
-    },
-    onMouseLeave: ({ selected, isAreaSelectActive }) => {
-      // Disable hover highlighting during area select
-      if (isAreaSelectActive) {
-        return
-      }
-      // Clear hover state for the previously hovered mesh
-      const hoveredMesh = getLastHoveredMesh()
-      if (hoveredMesh) {
+      },
+      setLastHoveredMesh,
+    }),
+    onMouseLeave: createOnMouseLeaveCallback({
+      updateLineSegmentHover,
+      getSelectedIds: () => {
         const snapshot = self.getSnapshot()
         // Combine selectedIds and duringAreaSelectIds for highlighting
-        const allSelectedIds = Array.from(
+        return Array.from(
           new Set([
             ...snapshot.context.selectedIds,
             ...snapshot.context.duringAreaSelectIds,
           ])
         )
-        updateLineSegmentHover(hoveredMesh, false, allSelectedIds)
-        setLastHoveredMesh(null)
-      }
-      // Also handle if selected is provided (for safety)
-      if (selected) {
-        const mesh = selected
-        if (
-          mesh.userData?.type === STRAIGHT_SEGMENT_BODY &&
-          mesh instanceof Mesh
-        ) {
-          const snapshot = self.getSnapshot()
-          // Combine selectedIds and duringAreaSelectIds for highlighting
-          const allSelectedIds = Array.from(
-            new Set([
-              ...snapshot.context.selectedIds,
-              ...snapshot.context.duringAreaSelectIds,
-            ])
-          )
-          updateLineSegmentHover(mesh, false, allSelectedIds)
-        }
-      }
-    },
+      },
+      getLastHoveredMesh,
+      setLastHoveredMesh,
+    }),
     onAreaSelectStart: ({ startPoint }) => {
       const scaledStartPoint = startPoint.threeD
         .clone()
