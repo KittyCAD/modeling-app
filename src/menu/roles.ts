@@ -83,7 +83,6 @@ type DesignRoleLabel =
   | 'Design'
   | 'Create a Parameter'
   | 'Insert from Project File'
-  | 'Create with Zoo Text-To-CAD'
   | 'Start Sketch'
   | 'Create an Offset Plane'
   | 'Create a Helix'

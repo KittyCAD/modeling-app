@@ -263,24 +263,6 @@ export function modelingMenuCallbackMostActions(
           name: 'Insert',
         },
       })
-    } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
-      const currentProject = settingsActor.getSnapshot().context.currentProject
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          name: 'Text-to-CAD',
-          groupId: 'application',
-          argDefaultValues: {
-            method: 'existingProject',
-            projectName: currentProject?.name,
-          },
-        },
-      })
-    } else if (data.menuLabel === 'Design.Modify with Zoo Text-To-CAD') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: { name: 'Prompt-to-edit', groupId: 'modeling' },
-      })
     }
   }
   return cb

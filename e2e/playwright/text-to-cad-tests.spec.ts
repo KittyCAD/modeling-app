@@ -5,15 +5,8 @@ import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Text-to-CAD tests', () => {
-  test('basic lego happy case', async ({
-    page,
-    homePage,
-    cmdBar,
-    editor,
-    scene,
-  }) => {
+  test('basic lego happy case', async ({ page, cmdBar, editor, scene }) => {
     await page.setBodyDimensions({ width: 2000, height: 1000 })
-    await expect(homePage.textToCadBtn).toBeEnabled()
 
     const prompt = 'a 2x4 lego'
     await sendPromptFromCommandBarAndSetNewProject(page, prompt, cmdBar)
@@ -28,11 +21,9 @@ test.describe('Text-to-CAD tests', () => {
   })
   test('success model, then ignore success toast, user can create new prompt from command bar', async ({
     page,
-    homePage,
     cmdBar,
   }) => {
     await page.setBodyDimensions({ width: 2000, height: 1000 })
-    await expect(homePage.textToCadBtn).toBeEnabled()
 
     const prompt = 'a 2x6 lego'
     await sendPromptFromCommandBarAndSetNewProject(page, prompt, cmdBar)
