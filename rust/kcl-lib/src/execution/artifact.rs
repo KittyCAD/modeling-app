@@ -3,7 +3,7 @@ use indexmap::IndexMap;
 use kittycad_modeling_cmds::{
     self as kcmc, EnableSketchMode, FaceIsPlanar, ModelingCmd,
     ok_response::OkModelingCmdResponse,
-    shared::{EdgeReference, ExtrusionFaceCapType},
+    shared::ExtrusionFaceCapType,
     websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
 };
 use serde::{Serialize, ser::SerializeSeq};
@@ -1313,13 +1313,15 @@ fn artifacts_to_update(
                 //     );
                 // };
                 edge_id.into()
-            } else if let Some(face_ids) = cmd.edges_references.first() {
-                match face_ids {
-                    EdgeReference::Edge { uuid } => uuid.into(),
-                    //TODO: this is a face reference. Not an edge, just getting this working
-                    EdgeReference::Face { uuids } => uuids[0].into(),
-                }
-            } else {
+            }
+            // else if let Some(face_ids) = cmd.edges_references.first() {
+            //     match face_ids {
+            //         EdgeReference::Edge { uuid } => uuid.into(),
+            //         //TODO: this is a face reference. Not an edge, just getting this working
+            //         EdgeReference::Face { uuids } => uuids[0].into(),
+            //     }
+            // }
+            else {
                 internal_error!(
                     range,
                     "Solid3dFilletEdge command has no edge ID: id={id:?}, cmd={cmd:?}"

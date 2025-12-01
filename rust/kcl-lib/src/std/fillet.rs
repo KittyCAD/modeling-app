@@ -2,11 +2,7 @@
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
-    length_unit::LengthUnit,
-    shared::{CutType, EdgeReference as TmpName},
-};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::CutType};
 use kittycad_modeling_cmds as kcmc;
 use serde::{Deserialize, Serialize};
 
@@ -129,12 +125,6 @@ async fn inner_fillet(
         extra_face_ids.push(exec_state.next_uuid());
     }
 
-    let mut edges_references: Vec<TmpName> = edge_ids
-        .clone()
-        .into_iter()
-        .map(|edge_id| TmpName::Edge { uuid: edge_id })
-        .collect();
-
     let face_references = if let Some(faces) = faces {
         faces
             .into_iter()
@@ -148,8 +138,7 @@ async fn inner_fillet(
         vec![vec![]]
     };
 
-    for face_reference in face_references {
-        edges_references.push(TmpName::Face { uuids: face_reference });
+    for _face_reference in face_references {
         extra_face_ids.push(exec_state.next_uuid());
     }
 
@@ -159,7 +148,6 @@ async fn inner_fillet(
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id: None,
                 edge_ids: vec![],
-                edges_references,
                 extra_face_ids,
                 strategy: Default::default(),
                 object_id: solid.id,

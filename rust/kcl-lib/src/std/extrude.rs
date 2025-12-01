@@ -235,7 +235,7 @@ async fn inner_extrude(
                     })
                 }
                 Point3dAxis3dOrGeometryReference::Face(face_tag) => {
-                    let face_id = face_tag.get_face_id_from_tag(exec_state, &args, false).await?;
+                    let face_id = face_tag.get_face_id_from_tag(exec_state, &args, false)?;
                     ModelingCmd::from(mcmd::ExtrudeToReference {
                         target: sketch.id.into(),
                         reference: ExtrudeReference::EntityReference { entity_id: face_id },

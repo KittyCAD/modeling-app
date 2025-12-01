@@ -90,7 +90,7 @@ async fn inner_datum(
     } else {
         frame_plane.id
     };
-    let face_id = args.get_adjacent_face_to_tag(exec_state, &face, false).await?;
+    let face_id = args.get_adjacent_face_to_tag(exec_state, &face, false)?;
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
     exec_state
@@ -211,7 +211,7 @@ async fn inner_flatness(
     };
     let mut annotations = Vec::with_capacity(faces.len());
     for face in &faces {
-        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false)?;
         let meta = vec![Metadata::from(args.source_range)];
         let annotation_id = exec_state.next_uuid();
         exec_state
