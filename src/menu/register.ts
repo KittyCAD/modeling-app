@@ -1,7 +1,8 @@
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
+import { sceneInfra } from '@src/lib/singletons'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import {
   authActor,
   commandBarActor,
@@ -16,7 +17,8 @@ import type { NavigateFunction } from 'react-router-dom'
 export function modelingMenuCallbackMostActions(
   settings: SettingsType,
   navigate: NavigateFunction,
-  filePath: string
+  filePath: string,
+  engineCommandManager: ConnectionManager
 ) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
