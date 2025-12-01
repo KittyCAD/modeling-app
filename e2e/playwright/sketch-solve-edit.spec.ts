@@ -1,6 +1,8 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import { settingsToToml } from '@e2e/playwright/test-utils'
+import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 
 /**
  * Extract a specific line from code string (1-based line number).
@@ -171,22 +173,38 @@ test.describe('Sketch solve edit tests', () => {
     const INITIAL_CODE = `@settings(experimentalFeatures = allow)
 `
 
-    await test.step('Set up the app with initial code', async () => {
-      await context.addInitScript(async (code) => {
-        localStorage.setItem('persistCode', code)
-      }, INITIAL_CODE)
+    await test.step('Set up the app with initial code and enable new sketch mode', async () => {
+      // Set useNewSketchMode in user settings (it's stored at user level even though hideOnLevel is 'project')
+      // This ensures it's available immediately when the app loads, regardless of IS_STAGING_OR_DEBUG
+      const userSettingsToml = settingsToToml({
+        settings: {
+          ...TEST_SETTINGS,
+          modeling: {
+            ...TEST_SETTINGS.modeling,
+            use_new_sketch_mode: true,
+          },
+        },
+      })
+
+      await context.addInitScript(
+        async ({ code, settingsKey, settingsToml }) => {
+          localStorage.setItem('persistCode', code)
+          // Set useNewSketchMode in user settings
+          if (settingsToml) {
+            localStorage.setItem(settingsKey, settingsToml)
+          }
+        },
+        {
+          code: INITIAL_CODE,
+          settingsKey: TEST_SETTINGS_KEY,
+          settingsToml: userSettingsToml,
+        }
+      )
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
-    })
-
-    await test.step('Open settings and toggle Use New Sketch Mode', async () => {
-      await cmdBar.openCmdBar()
-      await cmdBar.chooseCommand('Settings · modeling · use new sketch mode')
-      await cmdBar.selectOption({ name: 'on' }).click()
-      await page.waitForTimeout(200) // Brief wait for tool to be active
     })
 
     await test.step('Start a new sketch and select a plane', async () => {
