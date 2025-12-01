@@ -49,6 +49,7 @@ import {
 import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 import { forceSuffix } from '@src/lang/util'
 import { baseUnitToNumericSuffix, type NumericSuffix } from '@src/lang/wasm'
+import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import {
   type ActionArgs,
   type AssignArgs,
@@ -62,6 +63,8 @@ import {
   STRAIGHT_SEGMENT_BODY,
 } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import type { DeepPartial } from '@src/lib/types'
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -890,6 +893,216 @@ export function createOnDragEndCallback({
   }
 }
 
+/**
+ * Finds the segment ID of the entity under the cursor.
+ * Handles both Group objects (from CSS2DObject parents) and regular three.js objects.
+ *
+ * @param selected - The selected object from the scene
+ * @param getParentGroup - Function to find parent group for non-Group objects
+ * @returns The segment ID if found, null otherwise
+ */
+export function findEntityUnderCursorId(
+  selected: Object3D | undefined,
+  getParentGroup: (object: Object3D, segmentTypes: string[]) => Group | null
+): number | null {
+  if (!selected) {
+    return null
+  }
+
+  // Check if selected is already a Group with a numeric name (segment group)
+  // This handles CSS2DObjects where sceneInfra sets selected to the parent Group
+  if (selected instanceof Group) {
+    const groupId = Number(selected.name)
+    if (!Number.isNaN(groupId)) {
+      // Check if it's a point or line segment by userData.type or by checking children
+      const isPointSegment =
+        selected.userData?.type === 'point' ||
+        selected.children.some((child) => child.userData?.type === 'handle')
+      const isLineSegment =
+        selected.userData?.type === SEGMENT_TYPE_LINE ||
+        selected.children.some(
+          (child) => child.userData?.type === STRAIGHT_SEGMENT_BODY
+        )
+
+      if (isPointSegment || isLineSegment) {
+        return groupId
+      }
+    }
+  }
+
+  // If not found above, try getParentGroup (for three.js objects that aren't already Groups)
+  const groupUnderCursor = getParentGroup(selected, [
+    SEGMENT_TYPE_POINT,
+    SEGMENT_TYPE_LINE,
+  ])
+  if (groupUnderCursor) {
+    const groupId = Number(groupUnderCursor.name)
+    return Number.isNaN(groupId) ? null : groupId
+  }
+
+  return null
+}
+
+/**
+ * Creates the onDrag callback for sketch solve drag operations.
+ * Handles dragging segments by calculating drag vectors and updating segment positions.
+ *
+ * @param getIsSolveInProgress - Getter to check if a solve is already in progress
+ * @param setIsSolveInProgress - Setter to mark solve as in progress/complete
+ * @param getLastSuccessfulDragFromPoint - Getter for the last successful drag start point
+ * @param setLastSuccessfulDragFromPoint - Setter to update the last successful drag start point
+ * @param getContextData - Function to get the current context data (selectedIds, sketchId, sketchExecOutcome)
+ * @param editSegments - Function to edit segments via Rust context
+ * @param onNewSketchOutcome - Callback function called when a new sketch outcome is available
+ * @param getDefaultLengthUnit - Function to get the default length unit for unit conversion
+ * @param getJsAppSettings - Function to get app settings (async)
+ */
+export function createOnDragCallback({
+  getIsSolveInProgress,
+  setIsSolveInProgress,
+  getLastSuccessfulDragFromPoint,
+  setLastSuccessfulDragFromPoint,
+  getContextData,
+  editSegments,
+  onNewSketchOutcome,
+  getDefaultLengthUnit,
+  getJsAppSettings,
+}: {
+  getIsSolveInProgress: () => boolean
+  setIsSolveInProgress: (value: boolean) => void
+  getLastSuccessfulDragFromPoint: () => Vector2
+  setLastSuccessfulDragFromPoint: (point: Vector2) => void
+  getContextData: () => {
+    selectedIds: Array<number>
+    sketchId: number
+    sketchExecOutcome?: {
+      sceneGraphDelta: SceneGraphDelta
+    }
+  }
+  editSegments: (
+    version: number,
+    sketchId: number,
+    segments: Array<ExistingSegmentCtor>,
+    settings: DeepPartial<Configuration>
+  ) => Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  } | null>
+  onNewSketchOutcome: (outcome: {
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }) => void
+  getDefaultLengthUnit: () => UnitLength | undefined
+  getJsAppSettings: () => Promise<DeepPartial<Configuration>>
+}): (arg: {
+  intersectionPoint: { twoD: Vector2; threeD: Vector3 }
+  selected?: Object3D
+  mouseEvent: MouseEvent
+  intersects: Array<unknown>
+}) => Promise<void> {
+  return async ({ selected, intersectionPoint }) => {
+    // Prevent concurrent drag operations
+    if (getIsSolveInProgress()) {
+      return
+    }
+
+    const contextData = getContextData()
+    const selectedIds = contextData.selectedIds
+    const sceneGraphDelta = contextData.sketchExecOutcome?.sceneGraphDelta
+
+    if (!sceneGraphDelta) {
+      return
+    }
+
+    // Find the entity under cursor to determine what's being dragged
+    const entityUnderCursorId = findEntityUnderCursorId(
+      selected,
+      getParentGroup
+    )
+
+    // If no entity under cursor and no selectedIds, nothing to do
+    if (!entityUnderCursorId && selectedIds.length === 0) {
+      return
+    }
+
+    setIsSolveInProgress(true)
+    const twoD = intersectionPoint.twoD
+    // Calculate drag vector from last successful drag point to current position
+    const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
+
+    const objects = sceneGraphDelta.new_graph.objects
+    const segmentsToEdit: ExistingSegmentCtor[] = []
+
+    // Collect all IDs to edit (entity under cursor + selectedIds)
+    const idsToEdit = new Set<number>()
+    if (entityUnderCursorId !== null && !Number.isNaN(entityUnderCursorId)) {
+      idsToEdit.add(entityUnderCursorId)
+    }
+    selectedIds.forEach((id) => {
+      if (!Number.isNaN(id)) {
+        idsToEdit.add(id)
+      }
+    })
+
+    // Build ctors for each segment with drag applied
+    const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
+    for (const id of idsToEdit) {
+      const obj = objects[id]
+      if (!obj) {
+        continue
+      }
+
+      // Skip if not a segment
+      if (obj.kind.type !== 'Segment') {
+        continue
+      }
+
+      const isEntityUnderCursor = id === entityUnderCursorId
+      const ctor = buildSegmentCtorWithDrag({
+        objUnderCursor: obj,
+        selectedObjects: objects,
+        isEntityUnderCursor,
+        currentCursorPosition: twoD,
+        dragVec: dragVec,
+        units,
+      })
+
+      if (ctor) {
+        segmentsToEdit.push({ id, ctor })
+      }
+    }
+
+    if (segmentsToEdit.length === 0) {
+      setIsSolveInProgress(false)
+      return
+    }
+
+    // Edit segments via Rust context
+    const settings = await getJsAppSettings()
+    // Get sketchId from context data (needed for editSegments)
+    const sketchId = getContextData().sketchId
+    const result = await editSegments(
+      0,
+      sketchId,
+      segmentsToEdit,
+      settings
+    ).catch((err) => {
+      console.error('failed to edit segment', err)
+      return null
+    })
+
+    setIsSolveInProgress(false)
+    // After successful drag, update the lastSuccessfulDragFromPoint
+    // This ensures the next drag calculates from the correct starting point
+    setLastSuccessfulDragFromPoint(twoD.clone())
+
+    // Notify about new sketch outcome if edit was successful
+    if (result) {
+      onNewSketchOutcome(result)
+    }
+  }
+}
+
 export function setUpOnDragAndSelectionClickCallbacks({
   self,
   context,
@@ -1544,139 +1757,38 @@ export function setUpOnDragAndSelectionClickCallbacks({
       getDraggingPointElement,
       setDraggingPointElement,
     }),
-    onDrag: async ({ selected, intersectionPoint }) => {
-      if (getIsSolveInProgress()) {
-        return
-      }
-
-      const snapshot = self.getSnapshot()
-      const selectedIds = snapshot.context.selectedIds
-      const sceneGraphDelta =
-        snapshot.context.sketchExecOutcome?.sceneGraphDelta
-
-      if (!sceneGraphDelta) {
-        return
-      }
-
-      // Get the entity under cursor
-      // sceneInfra also handles CSS2DObject detection, so selected will be set
-      // for both three.js objects and CSS2DObjects (as their parent Group)
-      let entityUnderCursorId: number | null = null
-
-      // Check if selected is already a Group with a numeric name (segment group)
-      // This handles CSS2DObjects where sceneInfra sets selected to the parent Group
-      if (selected instanceof Group) {
-        const groupId = Number(selected.name)
-        if (!Number.isNaN(groupId)) {
-          // Check if it's a point or line segment by userData.type or by checking children
-          const isPointSegment =
-            selected.userData?.type === 'point' ||
-            selected.children.some((child) => child.userData?.type === 'handle')
-          const isLineSegment =
-            selected.userData?.type === SEGMENT_TYPE_LINE ||
-            selected.children.some(
-              (child) => child.userData?.type === STRAIGHT_SEGMENT_BODY
-            )
-
-          if (isPointSegment || isLineSegment) {
-            entityUnderCursorId = groupId
-          }
+    onDrag: createOnDragCallback({
+      getIsSolveInProgress,
+      setIsSolveInProgress,
+      getLastSuccessfulDragFromPoint,
+      setLastSuccessfulDragFromPoint,
+      getContextData: () => {
+        const snapshot = self.getSnapshot()
+        return {
+          selectedIds: snapshot.context.selectedIds,
+          sketchId: snapshot.context.sketchId,
+          sketchExecOutcome: snapshot.context.sketchExecOutcome,
         }
-      }
-
-      // If not found above, try getParentGroup (for three.js objects that aren't already Groups)
-      if (!entityUnderCursorId) {
-        const groupUnderCursor = getParentGroup(selected, [
-          SEGMENT_TYPE_POINT,
-          SEGMENT_TYPE_LINE,
-        ])
-        if (groupUnderCursor) {
-          entityUnderCursorId = Number(groupUnderCursor.name)
-        }
-      }
-
-      // If no entity under cursor and no selectedIds, nothing to do
-      if (!entityUnderCursorId && selectedIds.length === 0) {
-        return
-      }
-
-      setIsSolveInProgress(true)
-      const twoD = intersectionPoint.twoD
-      const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
-
-      const objects = sceneGraphDelta.new_graph.objects
-      const segmentsToEdit: ExistingSegmentCtor[] = []
-
-      // Collect all IDs to edit (entity under cursor + selectedIds)
-      const idsToEdit = new Set<number>()
-      if (entityUnderCursorId !== null && !Number.isNaN(entityUnderCursorId)) {
-        idsToEdit.add(entityUnderCursorId)
-      }
-      selectedIds.forEach((id) => {
-        if (!Number.isNaN(id)) {
-          idsToEdit.add(id)
-        }
-      })
-
-      // Build ctors for each segment
-      for (const id of idsToEdit) {
-        const obj = objects[id]
-        if (!obj) {
-          continue
-        }
-
-        // Skip if not a segment
-        if (obj.kind.type !== 'Segment') {
-          continue
-        }
-        const units = baseUnitToNumericSuffix(
-          context.kclManager.fileSettings.defaultLengthUnit
+      },
+      editSegments: async (
+        version: number,
+        sketchId: number,
+        segments: Array<ExistingSegmentCtor>,
+        settings: DeepPartial<Configuration>
+      ) => {
+        return context.rustContext.editSegments(
+          version,
+          sketchId,
+          segments,
+          settings
         )
-
-        const isEntityUnderCursor = id === entityUnderCursorId
-        const ctor = buildSegmentCtorWithDrag({
-          objUnderCursor: obj,
-          selectedObjects: objects,
-          isEntityUnderCursor,
-          currentCursorPosition: twoD,
-          dragVec: dragVec,
-          units,
-        })
-
-        if (ctor) {
-          segmentsToEdit.push({ id, ctor })
-        }
-      }
-
-      if (segmentsToEdit.length === 0) {
-        setIsSolveInProgress(false)
-        return
-      }
-
-      const result = await context.rustContext
-        .editSegments(
-          0,
-          context.sketchId,
-          segmentsToEdit,
-          await jsAppSettings()
-        )
-        .catch((err) => {
-          console.error('failed to edit segment', err)
-          return null
-        })
-
-      setIsSolveInProgress(false)
-      // after successful drag, update the lastSuccessfulDragFromPoint
-      setLastSuccessfulDragFromPoint(twoD.clone())
-
-      // send event
-      if (result) {
-        self.send({
-          type: 'update sketch outcome',
-          data: result,
-        })
-      }
-    },
+      },
+      onNewSketchOutcome: (outcome) =>
+        self.send({ type: 'update sketch outcome', data: outcome }),
+      getDefaultLengthUnit: () =>
+        context.kclManager.fileSettings.defaultLengthUnit,
+      getJsAppSettings: async () => await jsAppSettings(),
+    }),
     onClick: async ({ selected, mouseEvent }) => {
       // Check if selected is already a Group with a numeric name (segment group)
       // This handles CSS2DObjects where sceneInfra sets selected to the parent Group
