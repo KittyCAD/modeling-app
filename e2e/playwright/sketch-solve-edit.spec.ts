@@ -186,8 +186,7 @@ test.describe('Sketch solve edit tests', () => {
       await cmdBar.openCmdBar()
       await cmdBar.chooseCommand('Settings · modeling · use new sketch mode')
       await cmdBar.selectOption({ name: 'on' }).click()
-      // TODO change back to 200 or similar
-      await page.waitForTimeout(1000) // Brief wait for tool to be active
+      await page.waitForTimeout(200) // Brief wait for tool to be active
     })
 
     await test.step('Start a new sketch and select a plane', async () => {
