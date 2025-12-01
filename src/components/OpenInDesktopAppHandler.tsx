@@ -1,21 +1,21 @@
 import { Transition } from '@headlessui/react'
-import { useSearchParams } from 'react-router-dom'
 import { base64ToString } from '@src/lib/base64'
+import { useSearchParams } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
+import { Logo } from '@src/components/Logo'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
-import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { isDesktop } from '@src/lib/isDesktop'
+import { kclManager } from '@src/lib/singletons'
 import { Themes, darkModeMatcher, setThemeClass } from '@src/lib/theme'
-import toast from 'react-hot-toast'
 import { platform } from '@src/lib/utils'
-import { codeManager } from '@src/lib/singletons'
-import { Logo } from '@src/components/Logo'
-import { useEffect } from 'react'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
+import { useEffect } from 'react'
+import toast from 'react-hot-toast'
 
 /**
  * This component is a handler that checks if a certain query parameter
@@ -48,7 +48,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
     const codeB64 = base64ToString(
       decodeURIComponent(searchParams.get('code') ?? '')
     )
-    codeManager.goIntoTemporaryWorkspaceModeWithCode(codeB64)
+    kclManager.goIntoTemporaryWorkspaceModeWithCode(codeB64)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [hasAskToOpenParam])
 

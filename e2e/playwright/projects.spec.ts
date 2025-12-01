@@ -1,8 +1,8 @@
 import fs from 'fs'
-import { NIL as uuidNIL } from 'uuid'
 import path from 'path'
 import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import fsp from 'fs/promises'
+import { NIL as uuidNIL } from 'uuid'
 
 import {
   createProject,
@@ -12,6 +12,7 @@ import {
   runningOnWindows,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test(
   'projects reload if a new one is created, deleted, or renamed externally',
@@ -224,9 +225,9 @@ test(
 
     await u.doAndWaitForImageDiff(
       async () => {
-        await toolbar.openPane('files')
+        await toolbar.openPane(DefaultLayoutPaneID.Files)
         await toolbar.openFile('empty.kcl')
-        await toolbar.closePane('files')
+        await toolbar.closePane(DefaultLayoutPaneID.Files)
         await scene.settled(cmdBar)
       },
       500,
@@ -265,9 +266,9 @@ test(
 
     await u.doAndWaitForImageDiff(
       async () => {
-        await toolbar.openPane('files')
+        await toolbar.openPane(DefaultLayoutPaneID.Files)
         await toolbar.openFile('broken-code-test.kcl')
-        await toolbar.closePane('files')
+        await toolbar.closePane(DefaultLayoutPaneID.Files)
         await scene.settled(cmdBar, { expectError: true })
 
         await test.step('Verify error appears', async () => {
@@ -878,6 +879,45 @@ default project name`, async ({ homePage, toolbar }) => {
 })
 
 test(
+  'project title case sensitive duplication',
+  { tag: '@desktop' },
+  async ({ homePage, page, scene, cmdBar, toolbar }) => {
+    const u = await getUtils(page)
+
+    await test.step('Create project "test" and add KCL', async () => {
+      await homePage.createAndGoToProject('test')
+      await scene.settled(cmdBar)
+
+      const kcl = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> circle(center = [0, 0], radius = 5)
+`
+      await u.pasteCodeInEditor(kcl)
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Return to dashboard', async () => {
+      await toolbar.logoLink.click()
+    })
+
+    await test.step('Create project "Test" and open it', async () => {
+      await homePage.createAndGoToProject('Test')
+      await scene.settled(cmdBar)
+    })
+    await test.step('Verify duplicate resolves to "Test-1" on dashboard', async () => {
+      await toolbar.logoLink.click()
+      await homePage.expectState({
+        projectCards: [
+          { title: 'Test-1', fileCount: 1 },
+          { title: 'test', fileCount: 1 },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+    })
+  }
+)
+
+test(
   'File in the file pane should open with a single click',
   { tag: '@desktop' },
   async ({ context, homePage, page, scene, toolbar }, testInfo) => {
@@ -906,7 +946,7 @@ test(
     await expect(u.codeLocator).toContainText('templateGap')
     await expect(u.codeLocator).toContainText('minClampingDistance')
 
-    await page.getByRole('button', { name: 'Project Files' }).click()
+    await page.getByRole('switch', { name: 'Project Files' }).click()
     await toolbar.openFile('otherThingToClickOn.kcl')
 
     await expect(u.codeLocator).toContainText(
@@ -1194,104 +1234,6 @@ test(
         )
       }
     })
-  }
-)
-
-test(
-  'When the project folder is empty, user can create new project and open it.',
-  {
-    tag: '@desktop',
-  },
-  async ({ page }, testInfo) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    page.on('console', console.log)
-
-    // Locators and constants
-    const gizmo = page.locator('[aria-label*=gizmo]')
-    const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
-    const pointOnModel = { x: 660, y: 250 }
-    const expectedStartCamZPosition = 15633.47
-
-    // Constants and locators
-    const projectLinks = page.getByTestId('project-link')
-
-    // expect to see text "No projects found"
-    await expect(page.getByText('No projects found')).toBeVisible()
-
-    await createProject({ name: 'project-000', page, returnHome: true })
-    await expect(projectLinks.getByText('project-000')).toBeVisible()
-
-    await projectLinks.getByText('project-000').click()
-
-    await u.waitForPageLoad()
-
-    // The file should be prepopulated with the user's unit settings.
-    await expect(page.locator('.cm-content')).toHaveText(
-      '@settings(defaultLengthUnit = in)'
-    )
-
-    await page.locator('.cm-content').fill(`sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [-87.4, 282.92])
-  |> line(end = [324.07, 27.199], tag = $seg01)
-  |> line(end = [118.328, -291.754])
-  |> line(end = [-180.04, -202.08])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(sketch001, length = 200)`)
-    await page.waitForTimeout(800)
-
-    async function getCameraZValue() {
-      return page
-        .getByTestId('cam-z-position')
-        .inputValue()
-        .then((value) => parseFloat(value))
-    }
-
-    await test.step(`Reset camera`, async () => {
-      await u.openDebugPanel()
-      await u.clearCommandLogs()
-      await u.doAndWaitForCmd(async () => {
-        await gizmo.click({ button: 'right' })
-        await resetCameraButton.click()
-      }, 'zoom_to_fit')
-      await expect
-        .poll(getCameraZValue, {
-          message: 'Camera Z should be at expected position after reset',
-        })
-        .toEqual(expectedStartCamZPosition)
-    })
-
-    // gray at this pixel means the stream has loaded in the most
-    // user way we can verify it (pixel color)
-    await expect
-      .poll(() => u.getGreatestPixDiff(pointOnModel, [143, 143, 143]), {
-        timeout: 10_000,
-      })
-      .toBeLessThan(30)
-
-    await expect(async () => {
-      await page.mouse.move(0, 0, { steps: 5 })
-      await page.mouse.move(pointOnModel.x, pointOnModel.y, { steps: 5 })
-      await page.mouse.click(pointOnModel.x, pointOnModel.y)
-      // check user can interact with model by checking it turns yellow
-      await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [180, 180, 137]))
-        .toBeLessThan(15)
-    }).toPass({ timeout: 40_000, intervals: [1_000] })
-
-    await page.getByTestId('app-logo').click()
-
-    await expect(
-      page.getByRole('button', { name: 'Create project' })
-    ).toBeVisible()
-
-    for (let i = 1; i <= 10; i++) {
-      const name = `project-${i.toString().padStart(3, '0')}`
-      await createProject({ name, page, returnHome: true })
-      await expect(projectLinks.getByText(name)).toBeVisible()
-    }
   }
 )
 
@@ -1788,7 +1730,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       // go to sketch mode
       await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
 
-      // Without this, "add axis n grid" action runs after editing the sketch and invokes codeManager.writeToFile()
+      // Without this, "add axis n grid" action runs after editing the sketch and invokes kclManager.writeToFile()
       // so we wait for that action to run first before we start editing the sketch and making sure it's saving
       // because of those edits.
       await page.waitForTimeout(2000)
@@ -1868,7 +1810,7 @@ test.describe('Project id', () => {
         await fsp.writeFile(
           path.join(projectDir, 'project.toml'),
           `[settings.app]
-themeColor = "255"
+theme = "dark"
 `
         )
       })

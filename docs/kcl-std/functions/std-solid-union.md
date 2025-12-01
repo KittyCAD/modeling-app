@@ -20,12 +20,12 @@ union(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | `[Solid; 2+]` | The solids to union. | Yes |
+| `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 2+] | The solids to union. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
 
 
 ### Examples
@@ -55,7 +55,7 @@ unionedPart = union([part001, part002])
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the union function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -94,7 +94,7 @@ unionedPart = part001 + part002
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the union function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -135,7 +135,7 @@ unionedPart = part001 | part002
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the union function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-union2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

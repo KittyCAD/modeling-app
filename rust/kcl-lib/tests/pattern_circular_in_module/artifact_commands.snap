@@ -790,17 +790,5 @@ description: Artifact commands pattern_circular_in_module.kcl
         "edge_id": "[uuid]"
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

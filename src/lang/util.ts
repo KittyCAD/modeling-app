@@ -10,11 +10,11 @@ import type {
   NumericSuffix,
   PathToNode,
 } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { isArray, isOverlap } from '@src/lib/utils'
 
-import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
 /**
  * Create a SourceRange for the top-level module.
@@ -208,3 +208,37 @@ export function crossProduct(a: Point3d, b: Point3d): Point3d {
     z: a.x * b.y - a.y * b.x,
   }
 }
+
+export type Coords2d = [number, number]
+
+export function isLiteralArrayOrStatic(
+  val: Expr | [Expr, Expr] | [Expr, Expr, Expr] | undefined
+): boolean {
+  if (!val) return false
+
+  if (isArray(val)) {
+    const a = val[0]
+    const b = val[1]
+    return isLiteralArrayOrStatic(a) && isLiteralArrayOrStatic(b)
+  }
+  return (
+    val.type === 'Literal' ||
+    (val.type === 'UnaryExpression' && val.argument.type === 'Literal')
+  )
+}
+
+export function isNotLiteralArrayOrStatic(
+  val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
+): boolean {
+  if (isArray(val)) {
+    const a = val[0]
+    const b = val[1]
+    return isNotLiteralArrayOrStatic(a) && isNotLiteralArrayOrStatic(b)
+  }
+  return (
+    (val.type !== 'Literal' && val.type !== 'UnaryExpression') ||
+    (val.type === 'UnaryExpression' && val.argument.type !== 'Literal')
+  )
+}
+
+export type PathToNodeMap = { [key: number]: PathToNode }

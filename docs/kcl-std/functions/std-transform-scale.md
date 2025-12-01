@@ -14,6 +14,7 @@ scale(
   y?: number(_),
   z?: number(_),
   global?: bool,
+  factor?: number(_),
 ): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry
 ```
 
@@ -34,15 +35,16 @@ look like the model moves and gets bigger at the same time. Say you have a squar
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to scale. | Yes |
+| `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to scale. | Yes |
 | `x` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the x axis. | No |
 | `y` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the y axis. | No |
 | `z` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the z axis. | No |
 | `global` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
+| `factor` | [`number(_)`](/docs/kcl-std/types/std-types-number) | If given, scale the solid by this much. Equivalent to setting `x`, `y` and `z` all to this number. Incompatible with `x`, `y` or `z`. | No |
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
 
 
 ### Examples
@@ -74,7 +76,7 @@ sweepSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the scale function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -99,7 +101,7 @@ cube
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the scale function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -140,11 +142,42 @@ scale(parts, z = 0.5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the scale function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale2.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Make one button (i.e. just a cylinder)
+button1 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1.53)
+  |> extrude(length = 1)
+
+// Duplicate it, but use `scale` to make it smaller.
+button2 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1.53)
+  |> extrude(length = 1)
+  |> translate(x = 4)
+  // Make it 50% smaller and gold
+  |> scale(factor = 0.5)
+  |> appearance(color = "#ff9922")
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the scale function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale3_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale3.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

@@ -18,12 +18,12 @@ concurrency:
 
 jobs:
   prepare-files:
-    runs-on: namespace-profile-ubuntu-2-cores
+    runs-on: namespace-profile-ubuntu-8-cores
     outputs:
       version: ${{ steps.export_version.outputs.version }}
       notes: ${{ steps.export_notes.outputs.notes }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/setup-node@v4
         with:
@@ -76,7 +76,7 @@ jobs:
         with:
           cache: false # Configured below.
 
-      - uses: taiki-e/install-action@c07504cae06f832dc8de08911c9a9c5cddb0d2d3
+      - uses: taiki-e/install-action@c5b1b6f479c32f356cc6f4ba672a47f63853b13b
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
@@ -93,18 +93,24 @@ jobs:
 
       - name: Set staging version, product name, release notes, and icons
         if: ${{ env.IS_STAGING == 'true' }}
+        env:
+          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
         run: |
           COMMIT=$(git rev-parse --short HEAD)
           DATE=$(date +'%-y.%-m.%-d')
           export VERSION=$DATE-main.$COMMIT
           npm run files:set-version
           npm run files:flip-to-staging
+          npm run files:set-windows-codesign-config
 
-      - name: Set release version
+      - name: Set release version and windows codesign config
         if: ${{ env.IS_RELEASE == 'true' }}
+        env:
+          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
         run: |
           export VERSION=${GITHUB_REF_NAME#v}
           npm run files:set-version
+          npm run files:set-windows-codesign-config
 
       - uses: actions/upload-artifact@v4
         with:
@@ -141,7 +147,7 @@ jobs:
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/download-artifact@v4
         name: prepared-files
@@ -169,13 +175,13 @@ jobs:
       - name: Prepare certificate and variables (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_STAGING == 'true') && matrix.platform == 'windows' }}
         run: |
-          echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /c/Certificate_pkcs12.p12
+          echo "${{secrets.SM_SERVICE_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /c/Certificate_pkcs12.p12
           cat /c/Certificate_pkcs12.p12
           echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
           echo "SM_HOST=${{ secrets.SM_HOST }}" >> "$GITHUB_ENV"
-          echo "SM_API_KEY=${{ secrets.SM_API_KEY }}" >> "$GITHUB_ENV"
+          echo "SM_API_KEY=${{ secrets.SM_SERVICE_API_KEY }}" >> "$GITHUB_ENV"
           echo "SM_CLIENT_CERT_FILE=C:\\Certificate_pkcs12.p12" >> "$GITHUB_ENV"
-          echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.SM_CLIENT_CERT_PASSWORD }}" >> "$GITHUB_ENV"
+          echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.SM_SERVICE_CLIENT_CERT_PASSWORD }}" >> "$GITHUB_ENV"
           echo "C:\Program Files (x86)\Windows Kits\10\App Certification Kit" >> $GITHUB_PATH
           echo "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools" >> $GITHUB_PATH
           echo "C:\Program Files\DigiCert\DigiCert One Signing Manager Tools" >> $GITHUB_PATH
@@ -190,7 +196,7 @@ jobs:
           smctl.exe keypair ls
           C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
           smksp_cert_sync.exe
-          smctl windows certsync
+          smctl windows certsync --keypair-alias=${{ secrets.WINDOWS_CERTIFICATE_ZOO_KEYPAIR_ALIAS }}
         # This last line `smctl windows certsync` was added after windows codesign failures started happening
         # with staging-v25.4.10. It looks like `smksp_cert_sync.exe` used to do the sync to the local cert store,
         # but stopped doing it overnight. This extra call that I randomly got from this azure-related doc page
@@ -215,7 +221,7 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
+          # Windows codesign config is part of electron-builder.yml and handled in prepare-files
         run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 
       - name: List artifacts in out/
@@ -260,7 +266,7 @@ jobs:
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
     needs: [prepare-files, build-apps]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/download-artifact@v4
         with:
@@ -311,7 +317,7 @@ jobs:
         env:
           NOTES: ${{ needs.prepare-files.outputs.notes }}
           PUB_DATE: ${{ github.event.repository.updated_at }}
-          WEBSITE_DIR: ${{ env.IS_STAGING == 'true' && 'dl.zoo.dev/releases/modeling-app/staging' || 'dl.zoo.dev/releases/modeling-app' }}
+          WEBSITE_DIR: ${{ env.IS_STAGING == 'true' && 'dl.zoo.dev/releases/design-studio/staging' || 'dl.zoo.dev/releases/design-studio' }}
           URL_CODED_NAME: ${{ env.IS_STAGING == 'true' && 'Zoo%20Design%20Studio%20%28Staging%29' || 'Zoo%20Design%20Studio' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
@@ -374,12 +380,12 @@ jobs:
 
       - name: Upload staging files to public bucket
         if: ${{ env.IS_STAGING == 'true' }}
-        uses: google-github-actions/upload-cloud-storage@v2.2.2
+        uses: google-github-actions/upload-cloud-storage@v3.0.0
         with:
           path: out
           glob: '*'
           parent: false
-          destination: 'dl.kittycad.io/releases/modeling-app/staging'
+          destination: 'dl.kittycad.io/releases/design-studio/staging'
 
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
         if: ${{ env.IS_STAGING == 'true' }}

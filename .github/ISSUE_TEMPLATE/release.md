@@ -108,7 +108,7 @@ Workflow run: ???
 
 <details><summary>Instructions</summary><br>
 
-Follow the instructions [here](./rust/README.md) to publish new crates.
+Follow the instructions [here](https://github.com/KittyCAD/modeling-app/blob/main/rust/README.md) to publish new crates.
 This ensures that the KCL accepted by the app is also accepted by the CLI.
 
 Paste a link to the PR below.

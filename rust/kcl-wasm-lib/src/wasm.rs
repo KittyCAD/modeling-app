@@ -2,10 +2,11 @@
 
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    exec::{NumericType, UnitAngle, UnitLen, UnitType},
+    exec::{NumericType, UnitType, WarningLevel},
     pretty::NumericSuffix,
     CoreDump, Program, SourceRange,
 };
+use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use wasm_bindgen::prelude::*;
 
 // wasm_bindgen wrapper for lint
@@ -77,7 +78,7 @@ pub fn format_number_value(value: f64, numeric_type_json: &str) -> Result<String
             return Ok(formatted);
         }
     }
-    if let Ok(unit_len) = serde_json::from_str::<UnitLen>(numeric_type_json) {
+    if let Ok(unit_len) = serde_json::from_str::<UnitLength>(numeric_type_json) {
         let ty = NumericType::Known(UnitType::Length(unit_len));
         if let Ok(formatted) = kcl_lib::pretty::format_number_value(value, ty) {
             return Ok(formatted);
@@ -104,7 +105,7 @@ pub fn human_display_number(value: f64, ty_json: &str) -> Result<String, String>
         let ty = NumericType::Known(unit_type);
         return Ok(kcl_lib::pretty::human_display_number(value, ty));
     }
-    if let Ok(unit_len) = serde_json::from_str::<UnitLen>(ty_json) {
+    if let Ok(unit_len) = serde_json::from_str::<UnitLength>(ty_json) {
         let ty = NumericType::Known(UnitType::Length(unit_len));
         return Ok(kcl_lib::pretty::human_display_number(value, ty));
     }
@@ -323,10 +324,25 @@ pub fn kcl_settings(program_json: &str) -> Result<JsValue, String> {
 pub fn change_default_units(code: &str, len_str: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
-    let len: Option<kcl_lib::UnitLen> = serde_json::from_str(len_str).map_err(|e| e.to_string())?;
+    let len: Option<UnitLength> = serde_json::from_str(len_str).map_err(|e| e.to_string())?;
     let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
     let new_program = program.change_default_units(len).map_err(|e| e.to_string())?;
+
+    let formatted = new_program.recast();
+
+    Ok(formatted)
+}
+
+/// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.
+#[wasm_bindgen]
+pub fn change_experimental_features(code: &str, level_str: &str) -> Result<String, String> {
+    console_error_panic_hook::set_once();
+
+    let level: Option<WarningLevel> = serde_json::from_str(level_str).map_err(|e| e.to_string())?;
+    let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
+
+    let new_program = program.change_experimental_features(level).map_err(|e| e.to_string())?;
 
     let formatted = new_program.recast();
 

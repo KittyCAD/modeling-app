@@ -36,10 +36,9 @@ use crate::{
         cache::{CacheInformation, CacheResult},
         import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
-        types::{UnitAngle, UnitLen},
     },
     fs::FileManager,
-    modules::{ModuleId, ModulePath, ModuleRepr},
+    modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
 };
 
@@ -61,7 +60,7 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
-enum StatementKind<'a> {
+pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
 }
@@ -325,7 +324,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             replay: None,
             project_directory: None,
             current_file: None,
-            fixed_size_grid: settings.app.fixed_size_grid,
+            fixed_size_grid: settings.modeling.fixed_size_grid,
         }
     }
 }
@@ -377,7 +376,7 @@ impl ExecutorSettings {
                 self.project_directory = Some(TypedPath::from(""));
             }
         } else {
-            self.project_directory = Some(current_file.clone());
+            self.project_directory = Some(current_file);
         }
     }
 }
@@ -431,9 +430,7 @@ impl ExecutorContext {
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
-            engine: Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
-            )),
+            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
@@ -600,19 +597,14 @@ impl ExecutorContext {
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
         let grid_scale = if self.settings.fixed_size_grid {
-            GridScaleBehavior::Fixed(
-                program
-                    .meta_settings()
-                    .ok()
-                    .flatten()
-                    .map(|s| s.default_length_units)
-                    .map(kcmc::units::UnitLength::from),
-            )
+            GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
             GridScaleBehavior::ScaleWithZoom
         };
 
-        let (program, exec_state, result) = match cache::read_old_ast().await {
+        let original_program = program.clone();
+
+        let (_program, exec_state, result) = match cache::read_old_ast().await {
             Some(mut cached_state) => {
                 let old = CacheInformation {
                     ast: &cached_state.main.ast,
@@ -658,8 +650,9 @@ impl ExecutorContext {
                         reapply_settings,
                         ast: changed_program,
                     } => {
-                        if reapply_settings
-                            && self
+                        let mut reapply_failed = false;
+                        if reapply_settings {
+                            if self
                                 .engine
                                 .reapply_settings(
                                     &self.settings,
@@ -668,8 +661,19 @@ impl ExecutorContext {
                                     grid_scale,
                                 )
                                 .await
-                                .is_err()
-                        {
+                                .is_ok()
+                            {
+                                cache::write_old_ast(GlobalState::with_settings(
+                                    cached_state.clone(),
+                                    self.settings.clone(),
+                                ))
+                                .await;
+                            } else {
+                                reapply_failed = true;
+                            }
+                        }
+
+                        if reapply_failed {
                             (true, program, None)
                         } else {
                             // We need to check our imports to see if they changed.
@@ -794,10 +798,12 @@ impl ExecutorContext {
         let result = result?;
 
         // Save this as the last successful execution to the cache.
+        // Gotcha: `CacheResult::ReExecute.program` may be diff-based, do not save that AST
+        // the last-successful AST. Instead, save in the full AST passed in.
         cache::write_old_ast(GlobalState::new(
             exec_state.clone(),
             self.settings.clone(),
-            program.ast,
+            original_program.ast,
             result.0,
         ))
         .await;
@@ -870,7 +876,7 @@ impl ExecutorContext {
 
                 self.add_import_module_ops(
                     exec_state,
-                    program,
+                    &program.ast,
                     module_id,
                     &module_path,
                     source_range,
@@ -1031,7 +1037,7 @@ impl ExecutorContext {
     fn add_import_module_ops(
         &self,
         _exec_state: &mut ExecState,
-        _program: &crate::Program,
+        _program: &crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
         _module_id: ModuleId,
         _module_path: &ModulePath,
         _source_range: SourceRange,
@@ -1043,7 +1049,7 @@ impl ExecutorContext {
     fn add_import_module_ops(
         &self,
         exec_state: &mut ExecState,
-        program: &crate::Program,
+        program: &crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
         module_id: ModuleId,
         module_path: &ModulePath,
         source_range: SourceRange,
@@ -1053,7 +1059,10 @@ impl ExecutorContext {
             ModulePath::Main => {
                 // This should never happen.
             }
-            ModulePath::Local { value, .. } => {
+            ModulePath::Local {
+                value,
+                original_import_path,
+            } => {
                 // We only want to display the top-level module imports in
                 // the Feature Tree, not transitive imports.
                 if universe_map.contains_key(value) {
@@ -1061,18 +1070,24 @@ impl ExecutorContext {
 
                     let node_path = if source_range.is_top_level_module() {
                         let cached_body_items = exec_state.global.artifacts.cached_body_items();
-                        NodePath::from_range(&program.ast, cached_body_items, source_range).unwrap_or_default()
+                        NodePath::from_range(
+                            &exec_state.build_program_lookup(program.clone()),
+                            cached_body_items,
+                            source_range,
+                        )
+                        .unwrap_or_default()
                     } else {
                         // The frontend doesn't care about paths in
                         // files other than the top-level module.
                         NodePath::placeholder()
                     };
 
+                    let name = match original_import_path {
+                        Some(value) => value.to_string_lossy(),
+                        None => value.file_name().unwrap_or_default(),
+                    };
                     exec_state.push_op(Operation::GroupBegin {
-                        group: Group::ModuleInstance {
-                            name: value.file_name().unwrap_or_default(),
-                            module_id,
-                        },
+                        group: Group::ModuleInstance { name, module_id },
                         node_path,
                         source_range,
                     });
@@ -1100,14 +1115,7 @@ impl ExecutorContext {
 
         // Re-apply the settings, in case the cache was busted.
         let grid_scale = if self.settings.fixed_size_grid {
-            GridScaleBehavior::Fixed(
-                program
-                    .meta_settings()
-                    .ok()
-                    .flatten()
-                    .map(|s| s.default_length_units)
-                    .map(kcmc::units::UnitLength::from),
-            )
+            GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
             GridScaleBehavior::ScaleWithZoom
         };
@@ -1173,12 +1181,18 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await
-            .map(|(_, env_ref, _, module_artifacts)| {
-                // We need to extend because it may already have operations from
-                // imports.
-                exec_state.global.root_module_artifacts.extend(module_artifacts);
-                env_ref
-            })
+            .map(
+                |ModuleExecutionOutcome {
+                     environment: env_ref,
+                     artifacts: module_artifacts,
+                     ..
+                 }| {
+                    // We need to extend because it may already have operations from
+                    // imports.
+                    exec_state.global.root_module_artifacts.extend(module_artifacts);
+                    env_ref
+                },
+            )
             .map_err(|(err, env_ref, module_artifacts)| {
                 if let Some(module_artifacts) = module_artifacts {
                     // We need to extend because it may already have operations
@@ -1191,6 +1205,7 @@ impl ExecutorContext {
         #[cfg(feature = "artifact-graph")]
         {
             // Fill in NodePath for operations.
+            let programs = &exec_state.build_program_lookup(program.clone());
             let cached_body_items = exec_state.global.artifacts.cached_body_items();
             for op in exec_state
                 .global
@@ -1199,12 +1214,12 @@ impl ExecutorContext {
                 .iter_mut()
                 .skip(start_op)
             {
-                op.fill_node_paths(program, cached_body_items);
+                op.fill_node_paths(programs, cached_body_items);
             }
             for module in exec_state.global.module_infos.values_mut() {
-                if let ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts))) = &mut module.repr {
-                    for op in &mut module_artifacts.operations {
-                        op.fill_node_paths(program, cached_body_items);
+                if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
+                    for op in &mut outcome.artifacts.operations {
+                        op.fill_node_paths(programs, cached_body_items);
                     }
                 }
             }
@@ -1414,14 +1429,14 @@ pub(crate) async fn parse_execute_with_project_dir(
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = ExecutorContext {
-        engine: Arc::new(Box::new(
-            crate::engine::conn_mock::EngineConnection::new().await.map_err(|err| {
+        engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().map_err(
+            |err| {
                 KclError::new_internal(crate::errors::KclErrorDetails::new(
                     format!("Failed to create mock engine connection: {err}"),
                     vec![SourceRange::default()],
                 ))
-            })?,
-        )),
+            },
+        )?)),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
             project_directory,
@@ -1447,6 +1462,40 @@ pub(crate) struct ExecTestResults {
     mem_env: EnvironmentRef,
     exec_ctxt: ExecutorContext,
     exec_state: ExecState,
+}
+
+/// There are several places where we want to traverse a KCL program or find a symbol in it,
+/// but because KCL modules can import each other, we need to traverse multiple programs.
+/// This stores multiple programs, keyed by their module ID for quick access.
+#[cfg(feature = "artifact-graph")]
+pub struct ProgramLookup {
+    programs: IndexMap<ModuleId, crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>>,
+}
+
+#[cfg(feature = "artifact-graph")]
+impl ProgramLookup {
+    // TODO: Could this store a reference to KCL programs instead of owning them?
+    // i.e. take &state::ModuleInfoMap instead?
+    pub fn new(
+        current: crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
+        module_infos: state::ModuleInfoMap,
+    ) -> Self {
+        let mut programs = IndexMap::with_capacity(module_infos.len());
+        for (id, info) in module_infos {
+            if let ModuleRepr::Kcl(program, _) = info.repr {
+                programs.insert(id, program);
+            }
+        }
+        programs.insert(ModuleId::default(), current);
+        Self { programs }
+    }
+
+    pub fn program_for_module(
+        &self,
+        module_id: ModuleId,
+    ) -> Option<&crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>> {
+        self.programs.get(&module_id)
+    }
 }
 
 #[cfg(test)]
@@ -2445,6 +2494,8 @@ w = f() + f()
         let ids2 = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
 
         assert_eq!(ids, ids2, "Generated IDs should match");
+        ctx.close().await;
+        ctx2.close().await;
     }
 
     #[cfg(feature = "artifact-graph")]

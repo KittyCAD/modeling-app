@@ -35,7 +35,7 @@ revolved around the same axis.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) | The sketch or set of sketches that should be revolved | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The sketch or set of sketches that should be revolved | Yes |
 | `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) | Axis of revolution. | Yes |
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Angle to revolve (in degrees). Default is 360. | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
@@ -46,7 +46,7 @@ revolved around the same axis.
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
 
 
 ### Examples
@@ -69,7 +69,7 @@ part001 = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the revolve function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -91,7 +91,7 @@ sketch001 = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the revolve function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -120,7 +120,7 @@ part001 = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the revolve function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -157,7 +157,7 @@ part002 = startSketchOn(part001, face = END)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the revolve function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -186,7 +186,7 @@ sketch001 = startSketchOn(box, face = END)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the revolve function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -215,7 +215,7 @@ sketch001 = startSketchOn(box, face = END)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the revolve function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve5_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -244,7 +244,7 @@ sketch001 = startSketchOn(box, face = END)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the revolve function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve6_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -276,7 +276,7 @@ part001 = revolve(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the revolve function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve7_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -313,7 +313,7 @@ revolve([profile001, profile002], axis = X)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the revolve function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve8_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -344,7 +344,7 @@ sketch001 = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the revolve function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve9_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -373,7 +373,7 @@ sketch001 = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the revolve function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve10_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -402,7 +402,7 @@ sketch001 = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the revolve function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve11_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -431,7 +431,7 @@ sketch001 = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the revolve function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-revolve12_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

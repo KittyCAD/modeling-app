@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 COMMIT=$(git rev-parse --short HEAD)
 TITLE=$(git show -s --format=%s $COMMIT)
@@ -8,7 +8,7 @@ PACKAGE=$(jq '.productName="Zoo Design Studio (Staging)" | .name="zoo-modeling-a
 echo "$PACKAGE" > package.json
 
 # electron-builder.yml
-yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/staging"' electron-builder.yml
+yq -i '.publish[0].url = "https://dl.zoo.dev/releases/design-studio/staging"' electron-builder.yml
 yq -i '.appId = "dev.zoo.modeling-app-staging"' electron-builder.yml
 yq -i '.nsis.include = "./scripts/installer-staging.nsh"' electron-builder.yml
 

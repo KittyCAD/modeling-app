@@ -126,11 +126,11 @@ async fn inner_helix(
     if let Some(cylinder) = cylinder {
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmdMeta::from_args_id(exec_state, &args, id),
                 ModelingCmd::from(mcmd::EntityMakeHelix {
                     cylinder_id: cylinder.id,
                     is_clockwise: !helix_result.ccw,
-                    length: LengthUnit(length.as_ref().map(|t| t.to_mm()).unwrap_or(cylinder.height_in_mm())),
+                    length: length.map(|t| LengthUnit(t.to_mm())),
                     revolutions,
                     start_angle: Angle::from_degrees(angle_start),
                 }),
@@ -149,7 +149,7 @@ async fn inner_helix(
 
                 exec_state
                     .batch_modeling_cmd(
-                        ModelingCmdMeta::from_args_id(&args, id),
+                        ModelingCmdMeta::from_args_id(exec_state, &args, id),
                         ModelingCmd::from(mcmd::EntityMakeHelixFromParams {
                             radius: LengthUnit(radius.to_mm()),
                             is_clockwise: !helix_result.ccw,
@@ -175,7 +175,7 @@ async fn inner_helix(
 
                 exec_state
                     .batch_modeling_cmd(
-                        ModelingCmdMeta::from_args_id(&args, id),
+                        ModelingCmdMeta::from_args_id(exec_state, &args, id),
                         ModelingCmd::from(mcmd::EntityMakeHelixFromEdge {
                             radius: LengthUnit(radius.to_mm()),
                             is_clockwise: !helix_result.ccw,

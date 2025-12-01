@@ -36,6 +36,8 @@ macro_rules! internal_error {
 pub struct ArtifactCommand {
     /// Identifier of the command that can be matched with its response.
     pub cmd_id: Uuid,
+    /// The source range that's the boundary of calling the standard
+    /// library, not necessarily the true source range of the command.
     pub range: SourceRange,
     /// The engine command.  Each artifact command is backed by an engine
     /// command.  In the future, we may need to send information to the TS side
@@ -163,6 +165,7 @@ pub struct Sweep {
     pub surface_ids: Vec<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
+    pub method: kittycad_modeling_cmds::shared::ExtrudeMethod,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -294,6 +297,7 @@ pub struct EdgeCut {
 pub enum EdgeCutSubType {
     Fillet,
     Chamfer,
+    Custom,
 }
 
 impl From<kcmc::shared::CutType> for EdgeCutSubType {
@@ -301,6 +305,16 @@ impl From<kcmc::shared::CutType> for EdgeCutSubType {
         match cut_type {
             kcmc::shared::CutType::Fillet => EdgeCutSubType::Fillet,
             kcmc::shared::CutType::Chamfer => EdgeCutSubType::Chamfer,
+        }
+    }
+}
+
+impl From<kcmc::shared::CutTypeV2> for EdgeCutSubType {
+    fn from(cut_type: kcmc::shared::CutTypeV2) -> Self {
+        match cut_type {
+            kcmc::shared::CutTypeV2::Fillet { .. } => EdgeCutSubType::Fillet,
+            kcmc::shared::CutTypeV2::Chamfer { .. } => EdgeCutSubType::Chamfer,
+            kcmc::shared::CutTypeV2::Custom { .. } => EdgeCutSubType::Custom,
         }
     }
 }
@@ -579,6 +593,7 @@ pub(super) fn build_artifact_graph(
     ast: &Node<Program>,
     exec_artifacts: &mut IndexMap<ArtifactId, Artifact>,
     initial_graph: ArtifactGraph,
+    programs: &crate::execution::ProgramLookup,
 ) -> Result<ArtifactGraph, KclError> {
     let item_count = initial_graph.item_count;
     let mut map = initial_graph.into_map();
@@ -591,7 +606,7 @@ pub(super) fn build_artifact_graph(
     for exec_artifact in exec_artifacts.values_mut() {
         // Note: We only have access to the new AST. So if these artifacts
         // somehow came from cached AST, this won't fill in anything.
-        fill_in_node_paths(exec_artifact, ast, item_count);
+        fill_in_node_paths(exec_artifact, programs, item_count);
     }
 
     for artifact_command in artifact_commands {
@@ -617,7 +632,7 @@ pub(super) fn build_artifact_graph(
             artifact_command,
             &flattened_responses,
             &path_to_plane_id_map,
-            ast,
+            programs,
             item_count,
             exec_artifacts,
         )?;
@@ -639,18 +654,18 @@ pub(super) fn build_artifact_graph(
 
 /// These may have been created with placeholder `CodeRef`s because we didn't
 /// have the entire AST available. Now we fill them in.
-fn fill_in_node_paths(artifact: &mut Artifact, program: &Node<Program>, cached_body_items: usize) {
+fn fill_in_node_paths(artifact: &mut Artifact, programs: &crate::execution::ProgramLookup, cached_body_items: usize) {
     match artifact {
         Artifact::StartSketchOnFace(face) => {
             if face.code_ref.node_path.is_empty() {
                 face.code_ref.node_path =
-                    NodePath::from_range(program, cached_body_items, face.code_ref.range).unwrap_or_default();
+                    NodePath::from_range(programs, cached_body_items, face.code_ref.range).unwrap_or_default();
             }
         }
         Artifact::StartSketchOnPlane(plane) => {
             if plane.code_ref.node_path.is_empty() {
                 plane.code_ref.node_path =
-                    NodePath::from_range(program, cached_body_items, plane.code_ref.range).unwrap_or_default();
+                    NodePath::from_range(programs, cached_body_items, plane.code_ref.range).unwrap_or_default();
             }
         }
         _ => {}
@@ -738,7 +753,7 @@ fn artifacts_to_update(
     artifact_command: &ArtifactCommand,
     responses: &FnvHashMap<Uuid, OkModelingCmdResponse>,
     path_to_plane_id_map: &FnvHashMap<Uuid, Uuid>,
-    ast: &Node<Program>,
+    programs: &crate::execution::ProgramLookup,
     cached_body_items: usize,
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
 ) -> Result<Vec<Artifact>, KclError> {
@@ -750,7 +765,7 @@ fn artifacts_to_update(
     // correct value based on NodePath.
     let path_to_node = Vec::new();
     let range = artifact_command.range;
-    let node_path = NodePath::from_range(ast, cached_body_items, range).unwrap_or_default();
+    let node_path = NodePath::from_range(programs, cached_body_items, range).unwrap_or_default();
     let code_ref = CodeRef {
         range,
         node_path,
@@ -984,9 +999,25 @@ fn artifacts_to_update(
         | ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
         | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
         | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
+        | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. })
         | ModelingCmd::Sweep(kcmc::Sweep { target, .. }) => {
+            // Determine the resulting method from the specific command, if provided
+            let method = match cmd {
+                ModelingCmd::Extrude(kcmc::Extrude { extrude_method, .. }) => *extrude_method,
+                ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { extrude_method, .. }) => *extrude_method,
+                // TwistExtrude and Sweep don't carry method in the command; treat as Merge
+                ModelingCmd::TwistExtrude(_) | ModelingCmd::Sweep(_) => {
+                    kittycad_modeling_cmds::shared::ExtrudeMethod::Merge
+                }
+                // Revolve variants behave like New bodies in std layer
+                ModelingCmd::Revolve(_) | ModelingCmd::RevolveAboutEdge(_) => {
+                    kittycad_modeling_cmds::shared::ExtrudeMethod::New
+                }
+                _ => kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            };
             let sub_type = match cmd {
                 ModelingCmd::Extrude(_) => SweepSubType::Extrusion,
+                ModelingCmd::ExtrudeToReference(_) => SweepSubType::Extrusion,
                 ModelingCmd::TwistExtrude(_) => SweepSubType::ExtrusionTwist,
                 ModelingCmd::Revolve(_) => SweepSubType::Revolve,
                 ModelingCmd::RevolveAboutEdge(_) => SweepSubType::RevolveAboutEdge,
@@ -1002,6 +1033,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                method,
             }));
             let path = artifacts.get(&target);
             if let Some(Artifact::Path(path)) = path {
@@ -1037,6 +1069,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
             }));
             for section_id in &loft_cmd.section_ids {
                 let path = artifacts.get(&ArtifactId::new(*section_id));
@@ -1293,6 +1326,31 @@ fn artifacts_to_update(
                 );
             };
 
+            return_arr.push(Artifact::EdgeCut(EdgeCut {
+                id,
+                sub_type: cmd.cut_type.into(),
+                consumed_edge_id: edge_id,
+                edge_ids: Vec::new(),
+                surface_id: None,
+                code_ref,
+            }));
+            let consumed_edge = artifacts.get(&edge_id);
+            if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {
+                let mut new_segment = consumed_edge.clone();
+                new_segment.edge_cut_id = Some(id);
+                return_arr.push(Artifact::Segment(new_segment));
+            } else {
+                // TODO: Handle other types like SweepEdge.
+            }
+            return Ok(return_arr);
+        }
+        ModelingCmd::Solid3dCutEdges(cmd) => {
+            let mut return_arr = Vec::new();
+            let edge_id = if let Some(edge_id) = cmd.edge_ids.first() {
+                edge_id.into()
+            } else {
+                internal_error!(range, "Solid3dCutEdges command has no edge ID: id={id:?}, cmd={cmd:?}");
+            };
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 sub_type: cmd.cut_type.into(),

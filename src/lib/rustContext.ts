@@ -1,17 +1,17 @@
 import toast from 'react-hot-toast'
 
+import type { ApiFile } from '@rust/kcl-lib/bindings/ApiFile'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
-import type { ApiFile } from '@rust/kcl-lib/bindings/ApiFile'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-import { BSON } from 'bson'
+import { encode as msgpackEncode } from '@msgpack/msgpack'
 
-import type { Models } from '@kittycad/lib/dist/types/src'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type { WebSocketResponse } from '@kittycad/lib'
+
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { ExecState } from '@src/lang/wasm'
 import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
@@ -19,22 +19,26 @@ import { initPromise } from '@src/lang/wasmUtils'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { defaultPlaneStrToKey } from '@src/lib/planes'
+import type { FileEntry, Project } from '@src/lib/project'
 import { err, reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule } from '@src/lib/wasm_lib_wrapper'
-import type { FileEntry, Project } from '@src/lib/project'
+
+import type { ConnectionManager } from '@src/network/connectionManager'
+import { Signal } from '@src/lib/signal'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
-  private engineCommandManager: EngineCommandManager
+  private engineCommandManager: ConnectionManager
   private projectId = 0
+  public readonly planesCreated = new Signal()
 
   /** Initialize the WASM module */
-  async ensureWasmInit() {
+  private async ensureWasmInit() {
     try {
       await initPromise
       if (this.wasmInitFailed) {
@@ -46,29 +50,45 @@ export default class RustContext {
     }
   }
 
-  constructor(engineCommandManager: EngineCommandManager) {
+  constructor(engineCommandManager: ConnectionManager, instance?: ModuleType) {
     this.engineCommandManager = engineCommandManager
 
-    this.ensureWasmInit()
-      .then(async () => {
-        this.ctxInstance = await this.create()
-      })
-      .catch(reportRejection)
+    if (instance) {
+      this.createFromInstance(instance)
+    } else {
+      this.ensureWasmInit()
+        .then(() => {
+          this.ctxInstance = this.create()
+        })
+        .catch(reportRejection)
+    }
   }
 
   /** Create a new context instance */
-  async create(): Promise<Context> {
+  private create(): Context {
     this.rustInstance = getModule()
 
-    // We need this await here, DO NOT REMOVE it even if your editor says it's
-    // unnecessary. The constructor of the module is async and it will not
-    // resolve if you don't await it.
-    const ctxInstance = await new this.rustInstance.Context(
+    const ctxInstance = new this.rustInstance.Context(
       this.engineCommandManager,
       projectFsManager
     )
 
     return ctxInstance
+  }
+
+  getRustInstance() {
+    return this.rustInstance || undefined
+  }
+
+  private createFromInstance(instance: ModuleType) {
+    this.rustInstance = instance
+
+    const ctxInstance = new this.rustInstance.Context(
+      this.engineCommandManager,
+      projectFsManager
+    )
+
+    this.ctxInstance = ctxInstance
   }
 
   async sendOpenProject(
@@ -99,7 +119,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    const instance = await this._checkInstance()
+    const instance = this._checkInstance()
 
     try {
       const result = await instance.execute(
@@ -110,13 +130,13 @@ export default class RustContext {
       // Set the default planes, safe to call after execute.
       const outcome = execStateFromRust(result)
 
-      this._defaultPlanes = outcome.defaultPlanes
+      this.setDefaultPlanes(outcome.defaultPlanes)
 
       // Return the result.
       return outcome
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
-      this._defaultPlanes = err.defaultPlanes
+      this.setDefaultPlanes(err.defaultPlanes)
       return Promise.reject(err)
     }
   }
@@ -128,7 +148,7 @@ export default class RustContext {
     path?: string,
     usePrevMemory?: boolean
   ): Promise<ExecState> {
-    const instance = await this._checkInstance()
+    const instance = this._checkInstance()
 
     if (usePrevMemory === undefined) {
       usePrevMemory = true
@@ -153,7 +173,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     toastId: string
   ): Promise<ModelingAppFile[] | undefined> {
-    const instance = await this._checkInstance()
+    const instance = this._checkInstance()
 
     try {
       return await instance.export(
@@ -173,6 +193,14 @@ export default class RustContext {
 
   get defaultPlanes() {
     return this._defaultPlanes
+  }
+
+  /** Internal setter for default planes that emits a planesCreated signal when planes are available */
+  private setDefaultPlanes(planes: DefaultPlanes | null) {
+    this._defaultPlanes = planes
+    if (planes) {
+      this.planesCreated.dispatch()
+    }
   }
 
   /**
@@ -195,23 +223,24 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    const instance = await this._checkInstance()
+    const instance = this._checkInstance()
 
     try {
       const result = await instance.bustCacheAndResetScene(
         JSON.stringify(settings),
         path
       )
+
       /* Set the default planes, safe to call after execute. */
       const outcome = execStateFromRust(result)
 
-      this._defaultPlanes = outcome.defaultPlanes
+      this.setDefaultPlanes(outcome.defaultPlanes)
 
       // Return the result.
       return outcome
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
-      this._defaultPlanes = err.defaultPlanes
+      this.setDefaultPlanes(err.defaultPlanes)
       return Promise.reject(err)
     }
   }
@@ -227,13 +256,11 @@ export default class RustContext {
   }
 
   /** Send a response back to the rust side, that we got back from the engine. */
-  async sendResponse(
-    response: Models['WebSocketResponse_type']
-  ): Promise<void> {
-    const instance = await this._checkInstance()
+  async sendResponse(response: WebSocketResponse): Promise<void> {
+    const instance = this._checkInstance()
 
     try {
-      const serialized = BSON.serialize(response)
+      const serialized = msgpackEncode(response)
       await instance.sendResponse(serialized)
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
@@ -242,10 +269,10 @@ export default class RustContext {
   }
 
   /** Helper to check if context instance exists */
-  private async _checkInstance(): Promise<Context> {
+  private _checkInstance(): Context {
     if (!this.ctxInstance) {
       // Create the context instance.
-      this.ctxInstance = await this.create()
+      this.ctxInstance = this.create()
     }
 
     return this.ctxInstance

@@ -4,7 +4,8 @@ description: Error from executing multi_target_csg.kcl
 ---
 KCL Engine error
 
-  × engine: Currently the engine does not support multiple targets on subtract
+  × engine: The Zoo engine cannot handle this 3D subtraction yet.  Please
+  │ report this as an issue
     ╭─[69:10]
  68 │ 
  69 │ cut000 = subtract(extrude001, tools = cut000Extrude)
@@ -15,8 +16,8 @@ KCL Engine error
     ╰────
   ╰─▶ KCL Engine error
       
-        × engine: Currently the engine does not support multiple targets on
-        │ subtract
+        × engine: The Zoo engine cannot handle this 3D subtraction yet.
+        │ Please report this as an issue
           ╭─[69:10]
        68 │
        69 │ cut000 = subtract(extrude001, tools = cut000Extrude)

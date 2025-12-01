@@ -11,14 +11,25 @@ description: Operations executed multi-axis-robot.kcl
         "type": "Number",
         "value": 25.0,
         "ty": {
+          "degrees": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Degrees"
+          "type": "Angle"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -29,14 +40,25 @@ description: Operations executed multi-axis-robot.kcl
         "type": "Number",
         "value": 60.0,
         "ty": {
+          "degrees": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Degrees"
+          "type": "Angle"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -47,14 +69,25 @@ description: Operations executed multi-axis-robot.kcl
         "type": "Number",
         "value": 110.0,
         "ty": {
+          "degrees": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Degrees"
+          "type": "Angle"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -65,14 +98,25 @@ description: Operations executed multi-axis-robot.kcl
         "type": "Number",
         "value": 80.0,
         "ty": {
+          "degrees": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Degrees"
+          "type": "Angle"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -81,20 +125,27 @@ description: Operations executed multi-axis-robot.kcl
       "name": "basePlateRadius",
       "value": {
         "type": "Number",
-        "value": 5.0,
+        "value": 5.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -106,17 +157,24 @@ description: Operations executed multi-axis-robot.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -128,17 +186,24 @@ description: Operations executed multi-axis-robot.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -150,17 +215,24 @@ description: Operations executed multi-axis-robot.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -172,17 +244,24 @@ description: Operations executed multi-axis-robot.kcl
         "value": 31.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -194,17 +273,24 @@ description: Operations executed multi-axis-robot.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -216,17 +302,24 @@ description: Operations executed multi-axis-robot.kcl
         "value": 2.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -237,14 +330,25 @@ description: Operations executed multi-axis-robot.kcl
         "type": "Number",
         "value": -10.0,
         "ty": {
+          "degrees": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Degrees"
+          "type": "Angle"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -256,17 +360,24 @@ description: Operations executed multi-axis-robot.kcl
         "value": 20.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 12
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -278,17 +389,24 @@ description: Operations executed multi-axis-robot.kcl
         "value": 3.75,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -300,17 +418,24 @@ description: Operations executed multi-axis-robot.kcl
         "value": 2.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -410,7 +535,174 @@ description: Operations executed multi-axis-robot.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {},
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "subtract2d",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tool": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Sketch",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Sketch",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Sketch",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Sketch",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Sketch",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Sketch",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Sketch",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Sketch",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 7
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -433,19 +725,30 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 8
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -468,12 +771,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -504,7 +803,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 9
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -530,7 +844,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -553,19 +882,30 @@ description: Operations executed multi-axis-robot.kcl
             "value": 3.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -588,12 +928,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -612,7 +948,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -638,7 +989,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -661,187 +1027,30 @@ description: Operations executed multi-axis-robot.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
           }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "String",
-            "value": "end"
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": -0.5,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "String",
-            "value": "end"
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Sketch",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": -0.5,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": []
+        ]
       },
       "sourceRange": []
     },
@@ -850,33 +1059,10 @@ description: Operations executed multi-axis-robot.kcl
       "name": "appearance",
       "unlabeledArg": {
         "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
         },
         "sourceRange": []
       },
@@ -912,7 +1098,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -930,7 +1131,22 @@ description: Operations executed multi-axis-robot.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -953,19 +1169,26 @@ description: Operations executed multi-axis-robot.kcl
             "value": -2.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -991,7 +1214,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1014,19 +1252,30 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.15,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1049,12 +1298,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1073,7 +1318,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1099,7 +1359,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1122,19 +1397,30 @@ description: Operations executed multi-axis-robot.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1157,12 +1443,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1181,7 +1463,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1207,7 +1504,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1277,19 +1589,26 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.15,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1315,7 +1634,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1361,19 +1695,26 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.15,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1399,7 +1740,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1422,19 +1778,27 @@ description: Operations executed multi-axis-robot.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 12
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1482,7 +1846,19 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 12
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -1500,7 +1876,22 @@ description: Operations executed multi-axis-robot.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1523,19 +1914,26 @@ description: Operations executed multi-axis-robot.kcl
             "value": 2.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1561,7 +1959,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1584,19 +1997,30 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.15,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1619,12 +2043,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1643,7 +2063,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1669,7 +2104,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1739,19 +2189,26 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.15,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1777,7 +2234,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1800,19 +2272,33 @@ description: Operations executed multi-axis-robot.kcl
             "value": -0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
+          },
+          "sourceRange": []
+        },
+        "method": {
+          "value": {
+            "type": "String",
+            "value": "new"
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1838,7 +2324,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1861,19 +2362,33 @@ description: Operations executed multi-axis-robot.kcl
             "value": -0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
+          },
+          "sourceRange": []
+        },
+        "method": {
+          "value": {
+            "type": "String",
+            "value": "new"
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1885,17 +2400,24 @@ description: Operations executed multi-axis-robot.kcl
         "value": 7.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1921,7 +2443,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 12
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1944,19 +2481,26 @@ description: Operations executed multi-axis-robot.kcl
             "value": -0.01,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1982,7 +2526,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2005,19 +2564,33 @@ description: Operations executed multi-axis-robot.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
+          },
+          "sourceRange": []
+        },
+        "method": {
+          "value": {
+            "type": "String",
+            "value": "new"
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 15
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2043,7 +2616,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 16
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2066,19 +2654,33 @@ description: Operations executed multi-axis-robot.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
+          },
+          "sourceRange": []
+        },
+        "method": {
+          "value": {
+            "type": "String",
+            "value": "new"
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 17
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2087,10 +2689,33 @@ description: Operations executed multi-axis-robot.kcl
       "name": "appearance",
       "unlabeledArg": {
         "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
         },
         "sourceRange": []
       },
@@ -2126,7 +2751,15 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 18
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -2144,7 +2777,22 @@ description: Operations executed multi-axis-robot.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2167,19 +2815,30 @@ description: Operations executed multi-axis-robot.kcl
             "value": 1.4,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2202,12 +2861,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2226,7 +2881,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2274,7 +2944,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2290,7 +2975,22 @@ description: Operations executed multi-axis-robot.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2313,19 +3013,26 @@ description: Operations executed multi-axis-robot.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2351,7 +3058,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2374,19 +3096,30 @@ description: Operations executed multi-axis-robot.kcl
             "value": 1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2409,12 +3142,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2433,7 +3162,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2459,7 +3203,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2505,19 +3264,26 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.2,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2543,7 +3309,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2566,19 +3347,30 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.15,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2601,12 +3393,8 @@ description: Operations executed multi-axis-robot.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2625,7 +3413,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2673,7 +3476,22 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2689,7 +3507,22 @@ description: Operations executed multi-axis-robot.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2712,25 +3545,27 @@ description: Operations executed multi-axis-robot.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 12
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
       },
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -2744,7 +3579,18 @@ description: Operations executed multi-axis-robot.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2761,7 +3607,18 @@ description: Operations executed multi-axis-robot.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2778,7 +3635,18 @@ description: Operations executed multi-axis-robot.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -2793,7 +3661,18 @@ description: Operations executed multi-axis-robot.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2806,7 +3685,18 @@ description: Operations executed multi-axis-robot.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2819,7 +3709,18 @@ description: Operations executed multi-axis-robot.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 22
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2832,17 +3733,20 @@ description: Operations executed multi-axis-robot.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 23
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

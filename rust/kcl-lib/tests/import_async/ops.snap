@@ -3,13 +3,12 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_async.kcl
 ---
 {
-  "rust/kcl-lib/e2e/executor/inputs/2-5-long-m8-chc-screw.stl": [],
   "rust/kcl-lib/tests/import_async/input.kcl": [
     {
       "type": "GroupBegin",
       "group": {
         "type": "ModuleInstance",
-        "name": "2-5-long-m8-chc-screw.stl",
+        "name": "../../e2e/executor/inputs/2-5-long-m8-chc-screw.stl",
         "moduleId": 0
       },
       "nodePath": {
@@ -39,12 +38,8 @@ description: Operations executed import_async.kcl
               "value": 7.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -54,9 +49,9 @@ description: Operations executed import_async.kcl
               "type": "Number",
               "value": 35.0,
               "ty": {
+                "degrees": null,
                 "type": "Known",
-                "type": "Angle",
-                "type": "Degrees"
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -67,12 +62,8 @@ description: Operations executed import_async.kcl
               "value": 2.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -83,12 +74,8 @@ description: Operations executed import_async.kcl
               "value": 21.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -98,9 +85,9 @@ description: Operations executed import_async.kcl
               "type": "Number",
               "value": 20.0,
               "ty": {
+                "degrees": null,
                 "type": "Known",
-                "type": "Angle",
-                "type": "Degrees"
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -128,12 +115,8 @@ description: Operations executed import_async.kcl
         "value": 42.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -174,12 +157,8 @@ description: Operations executed import_async.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -220,12 +199,8 @@ description: Operations executed import_async.kcl
         "value": 2.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -266,12 +241,8 @@ description: Operations executed import_async.kcl
         "value": 39.46709007300815,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -312,12 +283,8 @@ description: Operations executed import_async.kcl
         "value": 46.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -358,12 +325,8 @@ description: Operations executed import_async.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -404,12 +367,8 @@ description: Operations executed import_async.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -450,12 +409,8 @@ description: Operations executed import_async.kcl
         "value": 7.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -496,12 +451,8 @@ description: Operations executed import_async.kcl
         "value": 3.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -541,9 +492,9 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 0.28975170143604745,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -634,12 +585,8 @@ description: Operations executed import_async.kcl
               "value": 0.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -682,9 +629,9 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 1.5707963267948966,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -747,12 +694,8 @@ description: Operations executed import_async.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -863,411 +806,6 @@ description: Operations executed import_async.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.5707963267948966,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 19.733545036504076,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 0.0000000000000012083311382392428,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 19.733545036504076,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.7037737936135122,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 23.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -3.0494758442486236,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 22.796944906617295,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.8699956271367817,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 19.733545036504076,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 5
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -5.816564508980192,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 18.856838998639372,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1355,12 +893,8 @@ description: Operations executed import_async.kcl
               "value": 3.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1403,9 +937,9 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 1.4640403411278755,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -1468,12 +1002,8 @@ description: Operations executed import_async.kcl
             "value": 3.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1584,411 +1114,6 @@ description: Operations executed import_async.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.4640403411278755,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 19.733545036504076,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 2.1026747593723187,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 19.62120176146286,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.5970178079464912,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 23.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -0.603024957692658,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 22.992093443190416,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.7632396414697604,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 19.733545036504076,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 5
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -3.7741919278824176,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 19.369261085525228,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -2076,12 +1201,8 @@ description: Operations executed import_async.kcl
               "value": 7.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2124,9 +1245,9 @@ description: Operations executed import_async.kcl
         "type": "Number",
         "value": 1.3560427808151838,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -2189,12 +1310,8 @@ description: Operations executed import_async.kcl
             "value": 7.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2305,411 +1422,6 @@ description: Operations executed import_async.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.3560427808151838,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 19.733545036504076,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 4.20534951874464,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 19.280244685504613,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.4890202476337995,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 23.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 1.8787542118590292,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 22.923138585530168,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.6552420811570692,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 19.733545036504076,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 5
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -1.664434246022614,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 19.66322604122736,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -2862,12 +1574,8 @@ description: Operations executed import_async.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2891,8 +1599,6 @@ description: Operations executed import_async.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -2906,7 +1612,18 @@ description: Operations executed import_async.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2923,7 +1640,18 @@ description: Operations executed import_async.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2940,7 +1668,18 @@ description: Operations executed import_async.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -2955,7 +1694,18 @@ description: Operations executed import_async.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2968,7 +1718,18 @@ description: Operations executed import_async.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2981,7 +1742,18 @@ description: Operations executed import_async.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 22
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2994,17 +1766,20 @@ description: Operations executed import_async.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 23
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

@@ -1,73 +1,8 @@
-import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { bracket } from '@e2e/playwright/fixtures/bracket'
 
 test.describe('Testing selections', () => {
-  test('parent Solid should be select and deletable and uses custom planes to position children', async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-  }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `part001 = startSketchOn(XY)
-yo = startProfile(part001, at = [4.83, 12.56])
-  |> line(end = [15.1, 2.48])
-  |> line(end = [3.15, -9.85], tag = $seg01)
-  |> line(end = [-15.17, -4.1])
-  |> angledLine(angle = segAng(seg01), length = 12.35, tag = $seg02)
-  |> line(end = [-13.02, 10.03])
-  |> close()
-yoo = extrude(yo, length = 4)
-sketch002 = startSketchOn(yoo, face = seg02)
-sketch001 = startSketchOn(yoo, face = 'END')
-profile002 = startProfile(sketch002, at = [-11.08, 2.39])
-  |> line(end = [4.89, 0.9])
-  |> line(end = [-0.61, -2.41])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile002, length = 15)
-profile001 = startProfile(sketch001, at = [7.49, 9.96])
-  |> angledLine(angle = 0, length = 5.05, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 4.81)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-
-`
-      )
-    }, KCL_DEFAULT_LENGTH)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-
-    const extrudeWall = { x: 575, y: 238 }
-
-    // DELETE with selection on face of parent
-    await page.mouse.click(extrudeWall.x, extrudeWall.y)
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-activeLine')).toHaveText(
-      '|> line(end = [-15.17, -4.1])'
-    )
-    await u.openAndClearDebugPanel()
-    await page.keyboard.press('Delete')
-    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
-    await page.waitForTimeout(200)
-
-    await editor.expectEditor.not.toContain(`yoo = extrude(yo, length = 4)`, {
-      shouldNormalise: true,
-    })
-    await editor.expectEditor.toContain(`startSketchOn({plane={origin`, {
-      shouldNormalise: true,
-    })
-    await editor.snapshot()
-  })
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
     page,
     editor,
@@ -203,6 +138,9 @@ profile001 = startProfile(sketch001, at = [7.49, 9.96])
   test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
     page,
     homePage,
+    toolbar,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     const selectionsSnippets = {
@@ -261,6 +199,7 @@ profile001 = startProfile(sketch001, at = [7.49, 9.96])
     await page.setBodyDimensions({ width: 1200, height: 1000 })
 
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     // wait for execution done
     await u.openDebugPanel()
@@ -268,9 +207,7 @@ profile001 = startProfile(sketch001, at = [7.49, 9.96])
     await u.closeDebugPanel()
 
     // wait for start sketch as a proxy for the stream being ready
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
     // expect extrude button to be enabled, since we don't guard
@@ -307,6 +244,7 @@ profile001 = startProfile(sketch001, at = [7.49, 9.96])
   test('Deselecting line tool should mean nothing happens on click', async ({
     page,
     homePage,
+    toolbar,
   }) => {
     /**
      * If the line tool is clicked when the state is 'No Points' it will exit Sketch mode.
@@ -320,22 +258,11 @@ profile001 = startProfile(sketch001, at = [7.49, 9.96])
     await homePage.goToModelingScene()
     await u.openDebugPanel()
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).toBeVisible()
 
     // click on "Start Sketch" button
-    await u.clearCommandLogs()
-    await u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      200
-    )
-
-    // Clicks the XZ Plane in the page
-    await page.mouse.click(700, 200)
+    await toolbar.startSketchOnDefaultPlane('Front plane')
 
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`

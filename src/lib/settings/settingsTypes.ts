@@ -1,11 +1,8 @@
-import { type Models } from '@kittycad/lib'
-import type {
-  UnitAngle_type,
-  UnitLength_type,
-} from '@kittycad/lib/dist/types/src/models'
+import type { UnitAngle, UnitLength } from '@kittycad/lib'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
 import type { Setting, settings } from '@src/lib/settings/initialSettings'
@@ -22,17 +19,12 @@ export interface SettingsViaQueryString {
   cameraOrbit: CameraOrbitType
 }
 
-export enum UnitSystem {
-  Imperial = 'imperial',
-  Metric = 'metric',
-}
-
 export const baseUnits = {
   imperial: ['in', 'ft', 'yd'],
   metric: ['mm', 'cm', 'm'],
 } as const
 
-export type BaseUnit = Models['UnitLength_type']
+export type BaseUnit = UnitLength
 
 export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
 export const baseUnitLabels = {
@@ -44,8 +36,13 @@ export const baseUnitLabels = {
   m: 'Meters',
 } as const
 
+export const warningLevels: WarningLevel[] = [
+  { type: 'Allow' },
+  { type: 'Warn' },
+  { type: 'Deny' },
+]
+
 export type Toggle = 'On' | 'Off'
-export const toggleAsArray = ['On', 'Off'] as const
 
 export type SettingsPaths = Exclude<
   Paths<typeof settings, 1>,
@@ -98,6 +95,8 @@ export interface SettingProps<T = unknown> {
    * ```
    */
   validate: (v: T) => boolean
+
+  isEnabled?: (settings: any) => boolean // TODO any not too nice
   /**
    * A command argument configuration for the setting.
    * If this is provided, the setting will appear in the command bar.
@@ -150,6 +149,7 @@ export type SaveSettingsPayload = RecursiveSettingsPayloads<typeof settings>
  * rust/kcl-lib/src/execution/annotations.rs
  */
 export interface KclSettingsAnnotation {
-  defaultLengthUnit?: UnitLength_type
-  defaultAngleUnit?: UnitAngle_type
+  defaultLengthUnit?: UnitLength
+  defaultAngleUnit?: UnitAngle
+  experimentalFeatures?: WarningLevel
 }

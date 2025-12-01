@@ -2,15 +2,18 @@ import { UAParser } from 'ua-parser-js'
 
 import type { OsInfo } from '@rust/kcl-lib/bindings/OsInfo'
 import type { WebrtcStats } from '@rust/kcl-lib/bindings/WebrtcStats'
-
-import type CodeManager from '@src/lang/codeManager'
+import type { KclManager } from '@src/lang/KclManager'
 import type { CommandLog } from '@src/lang/std/commandLog'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { isDesktop } from '@src/lib/isDesktop'
 import type RustContext from '@src/lib/rustContext'
 import screenshot from '@src/lib/screenshot'
-import { APP_VERSION } from '@src/routes/utils'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
+
+import type { ConnectionManager } from '@src/network/connectionManager'
+
+import { APP_VERSION } from '@src/routes/utils'
+import type { ILog } from '@src/lib/debugger'
+import { EngineDebugger } from '@src/lib/debugger'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
  * All the throws in CoreDumpManager are intentional and should be caught and handled properly
@@ -31,20 +34,20 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 // them to so the toast handler in ModelingMachineProvider can show the user an error message toast
 // TODO: Throw more
 export class CoreDumpManager {
-  engineCommandManager: EngineCommandManager
-  codeManager: CodeManager
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
   rustContext: RustContext
   token: string | undefined
   baseUrl: string = withAPIBaseURL('')
 
   constructor(
-    engineCommandManager: EngineCommandManager,
-    codeManager: CodeManager,
+    engineCommandManager: ConnectionManager,
+    kclManager: KclManager,
     rustContext: RustContext,
     token: string | undefined
   ) {
     this.engineCommandManager = engineCommandManager
-    this.codeManager = codeManager
+    this.kclManager = kclManager
     this.rustContext = rustContext
     this.token = token
   }
@@ -68,7 +71,7 @@ export class CoreDumpManager {
   }
 
   kclCode(): string {
-    return this.codeManager.code
+    return this.kclManager.code
   }
 
   // Get the backend pool we've requested.
@@ -115,17 +118,17 @@ export class CoreDumpManager {
   }
 
   getWebrtcStats(): Promise<string> {
-    if (!this.engineCommandManager.engineConnection) {
+    if (!this.engineCommandManager.connection) {
       // when the engine connection is not available, return an empty object.
       return Promise.resolve(JSON.stringify({}))
     }
 
-    if (!this.engineCommandManager.engineConnection.webrtcStatsCollector) {
+    if (!this.engineCommandManager.connection.webrtcStatsCollector) {
       // when the engine connection is not available, return an empty object.
       return Promise.resolve(JSON.stringify({}))
     }
 
-    return this.engineCommandManager.engineConnection
+    return this.engineCommandManager.connection
       .webrtcStatsCollector()
       .catch((error: any) => {
         throw new Error(`Error getting webrtc stats: ${error}`)
@@ -169,6 +172,8 @@ export class CoreDumpManager {
 
     console.warn('CoreDump: Gathering client state')
 
+    const connection_logs: ILog[] = []
+
     // Initialize the clientState object
     let clientState = {
       // singletons
@@ -178,6 +183,7 @@ export class CoreDumpManager {
         engine_connection: { state: { type: '' } },
         default_planes: {},
         scene_command_artifacts: {},
+        connection_logs: connection_logs,
       },
       kcl_manager: {
         ast: {},
@@ -225,15 +231,7 @@ export class CoreDumpManager {
         )
       }
 
-      // engine connection state
-      if (this.engineCommandManager?.engineConnection?.state) {
-        debugLog(
-          'CoreDump: Engine Command Manager engine connection state',
-          this.engineCommandManager.engineConnection.state
-        )
-        clientState.engine_command_manager.engine_connection.state =
-          this.engineCommandManager.engineConnection.state
-      }
+      clientState.engine_command_manager.connection_logs = EngineDebugger.logs
 
       // in sequence - this.engineCommandManager.inSequence
       if (this.engineCommandManager?.inSequence) {
@@ -317,6 +315,32 @@ export class CoreDumpManager {
           ;(clientState.kcl_manager as any).wasmInitFailed =
             kclManager.wasmInitFailed
         }
+
+        const kclManagerSkipKeys = ['camControls']
+        const kclManagerKeys = Object.keys(kclManager)
+          .sort()
+          .filter((entry) => {
+            return (
+              typeof kclManager[entry] !== 'function' &&
+              !isPrivateMethod(entry) &&
+              !kclManagerSkipKeys.includes(entry)
+            )
+          })
+
+        debugLog('CoreDump: KCL Manager keys', kclManagerKeys)
+        kclManagerKeys.forEach((key: string) => {
+          debugLog('CoreDump: KCL Manager', key, kclManager[key])
+          try {
+            ;(clientState.editor_manager as any)[key] = structuredClone(
+              kclManager[key]
+            )
+          } catch (error) {
+            console.error(
+              'CoreDump: unable to parse KCL Manager ' + key + ' data due to ',
+              error
+            )
+          }
+        })
       }
 
       // Scene Infra - globalThis?.window?.sceneInfra
@@ -374,40 +398,6 @@ export class CoreDumpManager {
               })
             )
         }
-      }
-
-      // Editor Manager - globalThis?.window?.editorManager
-      const editorManager = (globalThis?.window as any)?.editorManager
-      debugLog('CoreDump: editorManager', editorManager)
-
-      if (editorManager) {
-        const editorManagerSkipKeys = ['camControls']
-        const editorManagerKeys = Object.keys(editorManager)
-          .sort()
-          .filter((entry) => {
-            return (
-              typeof editorManager[entry] !== 'function' &&
-              !isPrivateMethod(entry) &&
-              !editorManagerSkipKeys.includes(entry)
-            )
-          })
-
-        debugLog('CoreDump: Editor Manager keys', editorManagerKeys)
-        editorManagerKeys.forEach((key: string) => {
-          debugLog('CoreDump: Editor Manager', key, editorManager[key])
-          try {
-            ;(clientState.editor_manager as any)[key] = structuredClone(
-              editorManager[key]
-            )
-          } catch (error) {
-            console.error(
-              'CoreDump: unable to parse Editor Manager ' +
-                key +
-                ' data due to ',
-              error
-            )
-          }
-        })
       }
 
       // enableMousePositionLogs - Not coredumped

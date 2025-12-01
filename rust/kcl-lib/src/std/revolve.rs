@@ -13,7 +13,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::{NumericType, PrimitiveType, RuntimeType},
+        types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
     std::{Args, axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude},
@@ -134,7 +134,7 @@ async fn inner_revolve(
             Axis2dOrEdgeReference::Axis { direction, origin } => {
                 exec_state
                     .batch_modeling_cmd(
-                        ModelingCmdMeta::from_args_id(&args, new_solid_id),
+                        ModelingCmdMeta::from_args_id(exec_state, &args, new_solid_id),
                         ModelingCmd::from(mcmd::Revolve {
                             angle,
                             target: sketch.id.into(),
@@ -160,7 +160,7 @@ async fn inner_revolve(
                 let edge_id = edge.get_engine_id(exec_state, &args)?;
                 exec_state
                     .batch_modeling_cmd(
-                        ModelingCmdMeta::from_args_id(&args, new_solid_id),
+                        ModelingCmdMeta::from_args_id(exec_state, &args, new_solid_id),
                         ModelingCmd::from(mcmd::RevolveAboutEdge {
                             angle,
                             target: sketch.id.into(),
@@ -199,7 +199,6 @@ async fn inner_revolve(
             do_post_extrude(
                 sketch,
                 new_solid_id.into(),
-                TyF64::new(0.0, NumericType::mm()),
                 false,
                 &super::extrude::NamedCapTags {
                     start: tag_start.as_ref(),
@@ -209,6 +208,7 @@ async fn inner_revolve(
                 exec_state,
                 &args,
                 edge_id,
+                None,
             )
             .await?,
         );

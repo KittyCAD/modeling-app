@@ -2,18 +2,4 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands object_prop_not_found.kcl
 ---
-{
-  "rust/kcl-lib/tests/object_prop_not_found/input.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
-}
+{}

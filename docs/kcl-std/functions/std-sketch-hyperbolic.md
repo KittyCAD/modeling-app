@@ -18,7 +18,7 @@ hyperbolic(
   endAbsolute?: Point2d,
   interior?: Point2d,
   end?: Point2d,
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -35,7 +35,7 @@ hyperbolic(
 | `endAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Where should this segment end? Requires `interiorAbsolute`. Incompatible with `interior` or `end`. | No |
 | `interior` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Any point between the segment's start and end. This point is relative to the start point. Requires `end`. Incompatible with `interiorAbsolute` or `endAbsolute`. | No |
 | `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Where should this segment end? This point is relative to the start point. Requires `interior`. Incompatible with `interiorAbsolute` or `endAbsolute`. | No |
-| `tag` | `tag` | Create a new tag which refers to this arc. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this arc. | No |
 
 ### Returns
 
@@ -62,7 +62,7 @@ exampleSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the hyperbolic function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-hyperbolic0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

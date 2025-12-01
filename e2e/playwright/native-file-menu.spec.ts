@@ -70,16 +70,6 @@ test.describe(
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Settings · app · theme')
       })
-      await test.step('Home.File.Preferences.Theme color', async () => {
-        await page.reload()
-        await homePage.projectsLoaded()
-        await homePage.isNativeFileMenuCreated()
-        await clickElectronNativeMenuById(
-          tronApp,
-          'File.Preferences.Theme color'
-        )
-        await openSettingsExpectLocator(page, '#themeColor')
-      })
       await test.step('Home.Edit.Rename project', async () => {
         await page.reload()
         await homePage.projectsLoaded()
@@ -205,7 +195,7 @@ test.describe(
         )
         await openSettingsExpectText(
           page,
-          'The hue of the primary theme color for the app'
+          'Set the default length unit setting value to give any new files.'
         )
       })
       await test.step('Modeling.File.Preferences.User settings', async () => {
@@ -237,22 +227,6 @@ test.describe(
         await clickElectronNativeMenuById(tronApp, 'File.Preferences.Theme')
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Settings · app · theme')
-      })
-      await test.step('Modeling.File.Preferences.Theme color', async () => {
-        await page.waitForTimeout(250)
-        await clickElectronNativeMenuById(
-          tronApp,
-          'File.Preferences.Theme color'
-        )
-        await openSettingsExpectLocator(page, '#themeColor')
-      })
-      await test.step('Modeling.Edit.Modify with Zoo Text-To-CAD', async () => {
-        await page.waitForTimeout(250)
-        await clickElectronNativeMenuById(
-          tronApp,
-          'Edit.Modify with Zoo Text-To-CAD'
-        )
-        await cmdBar.expectCommandName('Text-to-CAD Edit')
       })
       await test.step('Modeling.Edit.Edit parameter', async () => {
         await page.waitForTimeout(250)
@@ -357,10 +331,6 @@ test.describe(
           tronApp,
           'View.Standard views.Center view on selection'
         )
-      })
-      await test.step('Modeling.View.Standard views.Refresh', async () => {
-        await page.waitForTimeout(250)
-        await findElectronNativeMenuById(tronApp, 'View.Standard views.Refresh')
       })
       await test.step('Modeling.View.Named views.Create named view', async () => {
         await page.waitForTimeout(250)
@@ -509,26 +479,6 @@ test.describe(
         )
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Shell')
-      })
-
-      await test.step('Modeling.Design.Create with Zoo Text-To-CAD', async () => {
-        await page.waitForTimeout(250)
-        await clickElectronNativeMenuById(
-          tronApp,
-          'Design.Create with Zoo Text-To-CAD'
-        )
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Text-to-CAD Create')
-      })
-
-      await test.step('Modeling.Design.Modify with Zoo Text-To-CAD', async () => {
-        await page.waitForTimeout(250)
-        await clickElectronNativeMenuById(
-          tronApp,
-          'Design.Modify with Zoo Text-To-CAD'
-        )
-        await cmdBar.toBeOpened()
-        await cmdBar.expectCommandName('Text-to-CAD Edit')
       })
 
       await test.step('Modeling.Help.KCL code samples', async () => {

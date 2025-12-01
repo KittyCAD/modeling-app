@@ -28,16 +28,16 @@ and then rotate it using the `rotate` function to create a loft.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to move. | Yes |
+| `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to move. | Yes |
 | `x` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The amount to move the solid or sketch along the x axis. | No |
 | `y` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The amount to move the solid or sketch along the y axis. | No |
 | `z` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The amount to move the solid or sketch along the z axis. | No |
 | `global` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
-| `xyz` | [`[number(Length); 3]`](/docs/kcl-std/types/std-types-number) | If given, interpret this point as 3 distances, along each of [X, Y, Z] and translate by each of them. | No |
+| `xyz` | [[`number(Length)`](/docs/kcl-std/types/std-types-number); 3] | If given, interpret this point as 3 distances, along each of [X, Y, Z] and translate by each of them. | No |
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
 
 
 ### Examples
@@ -69,7 +69,7 @@ sweepSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the translate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -99,7 +99,7 @@ cube
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the translate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -129,7 +129,7 @@ cube
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the translate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -175,7 +175,7 @@ translate(
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the translate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -214,7 +214,7 @@ square(10)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the translate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -251,7 +251,7 @@ loft([profile001, profile002])
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the translate function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-translate5_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

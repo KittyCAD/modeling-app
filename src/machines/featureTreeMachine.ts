@@ -14,8 +14,8 @@ import type { SourceRange } from '@src/lang/wasm'
 import type { EnterEditFlowProps } from '@src/lib/operations'
 import { enterEditFlow } from '@src/lib/operations'
 import { kclManager } from '@src/lib/singletons'
-import { err } from '@src/lib/trap'
 import { commandBarActor } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 
 type FeatureTreeEvent =
   | {

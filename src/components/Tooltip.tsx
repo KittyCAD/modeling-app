@@ -8,7 +8,7 @@ type LeftOrRight = 'left' | 'right'
 type Corner = `${TopOrBottom}-${LeftOrRight}`
 type TooltipPosition = TopOrBottom | LeftOrRight | Corner
 
-export interface TooltipProps extends React.PropsWithChildren {
+export interface TooltipProps extends React.HTMLProps<HTMLDivElement> {
   position?: TooltipPosition
   wrapperClassName?: string
   contentClassName?: string
@@ -27,11 +27,11 @@ export default function Tooltip({
   delay = 0,
   hoverOnly = false,
   inert = true,
+  ...rest
 }: TooltipProps) {
   return (
     <div
-      // @ts-ignore while awaiting merge of this PR for support of "inert" https://github.com/DefinitelyTyped/DefinitelyTyped/pull/60822
-      {...{ inert: inert ? '' : undefined }}
+      inert={inert}
       role="tooltip"
       className={`p-3 ${
         position !== 'left' && position !== 'right' ? 'px-0' : ''
@@ -42,6 +42,7 @@ export default function Tooltip({
         { '--_delay': delay + 'ms' } as React.CSSProperties,
         wrapperStyle
       )}
+      {...rest}
     >
       <div className={`rounded ${styles.tooltip} ${contentClassName || ''}`}>
         {children}

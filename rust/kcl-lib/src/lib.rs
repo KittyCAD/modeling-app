@@ -92,17 +92,17 @@ pub use errors::{
 pub use execution::{
     ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d, bust_cache, clear_mem_cache,
     typed_path::TypedPath,
-    types::{UnitAngle, UnitLen},
 };
 pub use kcl_error::SourceRange;
 pub use lsp::{
+    ToLspRange,
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
 pub use modules::ModuleId;
 pub use parsing::ast::types::{FormatOptions, NodePath, Step as NodePathStep};
 pub use project::ProjectManager;
-pub use settings::types::{Configuration, UnitLength, project::ProjectConfiguration};
+pub use settings::types::{Configuration, project::ProjectConfiguration};
 #[cfg(not(target_arch = "wasm32"))]
 pub use unparser::{recast_dir, walk_dir};
 
@@ -113,7 +113,8 @@ pub mod exec {
     pub use crate::execution::{ArtifactCommand, Operation};
     pub use crate::execution::{
         DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
-        types::{NumericType, UnitAngle, UnitLen, UnitType},
+        annotations::WarningLevel,
+        types::{NumericType, UnitType},
     };
 }
 
@@ -150,6 +151,7 @@ pub mod pretty {
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
+use crate::exec::WarningLevel;
 #[allow(unused_imports)]
 use crate::log::{log, logln};
 
@@ -226,9 +228,19 @@ impl Program {
     }
 
     /// Change the meta settings for the kcl file.
-    pub fn change_default_units(&self, length_units: Option<execution::types::UnitLen>) -> Result<Self, KclError> {
+    pub fn change_default_units(
+        &self,
+        length_units: Option<kittycad_modeling_cmds::units::UnitLength>,
+    ) -> Result<Self, KclError> {
         Ok(Self {
             ast: self.ast.change_default_units(length_units)?,
+            original_file_contents: self.original_file_contents.clone(),
+        })
+    }
+
+    pub fn change_experimental_features(&self, warning_level: Option<WarningLevel>) -> Result<Self, KclError> {
+        Ok(Self {
+            ast: self.ast.change_experimental_features(warning_level)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }
@@ -245,8 +257,11 @@ impl Program {
         self.ast.lint(rule)
     }
 
+    #[cfg(feature = "artifact-graph")]
     pub fn node_path_from_range(&self, cached_body_items: usize, range: SourceRange) -> Option<NodePath> {
-        NodePath::from_range(&self.ast, cached_body_items, range)
+        let module_infos = indexmap::IndexMap::new();
+        let programs = crate::execution::ProgramLookup::new(self.ast.clone(), module_infos);
+        NodePath::from_range(&programs, cached_body_items, range)
     }
 
     pub fn recast(&self) -> String {

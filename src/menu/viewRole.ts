@@ -1,10 +1,8 @@
-import os from 'node:os'
 import type { BrowserWindow } from 'electron'
 
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
-
-const isMac = os.platform() === 'darwin'
+import { isMac } from '@src/menu/utils'
 
 export const projectViewRole = (
   mainWindow: BrowserWindow
@@ -43,6 +41,7 @@ export const projectViewRole = (
       { type: 'separator' },
       { role: 'minimize' },
       { role: 'zoom' },
+      { role: 'toggleDevTools' },
       ...extraBits,
     ],
   }
@@ -169,15 +168,6 @@ export const modelingViewRole = (
               })
             },
           },
-          {
-            label: 'Refresh',
-            id: 'View.Standard views.Refresh',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.Standard views.Refresh',
-              })
-            },
-          },
         ],
       },
       {
@@ -277,6 +267,7 @@ export const modelingViewRole = (
       { type: 'separator' },
       { role: 'minimize' },
       { role: 'zoom' },
+      { role: 'toggleDevTools' },
       ...extraBits,
     ],
   }

@@ -1,16 +1,10 @@
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   engineCommandManager,
-  kclManager,
   sceneInfra,
   settingsActor,
 } from '@src/lib/singletons'
-import {
-  engineStreamZoomToFit,
-  engineViewIsometricWithoutGeometryPresent,
-  engineViewIsometricWithGeometryPresent,
-} from '@src/lib/utils'
+import { engineStreamZoomToFit, engineViewIsometric } from '@src/lib/utils'
 
 /**
  * Reset the camera position to a baseline, which is isometric for
@@ -36,20 +30,9 @@ export async function resetCameraPosition() {
       await sceneInfra.camControls.usePerspectiveCamera()
     }
 
-    // If the scene is empty you cannot use view_isometric, it will not move the camera
-    if (kclManager.isAstBodyEmpty(kclManager.ast)) {
-      await engineViewIsometricWithoutGeometryPresent({
-        engineCommandManager,
-        unit:
-          kclManager.fileSettings.defaultLengthUnit ||
-          DEFAULT_DEFAULT_LENGTH_UNIT,
-        cameraProjection,
-      })
-    } else {
-      await engineViewIsometricWithGeometryPresent({
-        engineCommandManager,
-        padding,
-      })
-    }
+    await engineViewIsometric({
+      engineCommandManager,
+      padding,
+    })
   }
 }

@@ -21,7 +21,7 @@ subtract2d(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
-| `tool` | [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) | The shape(s) which should be cut out of the sketch. | Yes |
+| `tool` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The shape(s) which should be cut out of the sketch. | Yes |
 
 ### Returns
 
@@ -47,7 +47,7 @@ example = extrude(exampleSketch, length = 1)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the subtract2d function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-subtract2d0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -79,7 +79,7 @@ example = extrude(exampleSketch, length = 1)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the subtract2d function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-subtract2d1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

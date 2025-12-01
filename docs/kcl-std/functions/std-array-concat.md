@@ -20,12 +20,12 @@ Returns a new array with the all the elements of the first array followed by all
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[any]`](/docs/kcl-std/types/std-types-any) | The array of starting elements. | Yes |
-| `items` | [`[any]`](/docs/kcl-std/types/std-types-any) | The array of ending elements. | Yes |
+| `array` | [[`any`](/docs/kcl-std/types/std-types-any)] | The array of starting elements. | Yes |
+| `items` | [[`any`](/docs/kcl-std/types/std-types-any)] | The array of ending elements. | Yes |
 
 ### Returns
 
-[`[any]`](/docs/kcl-std/types/std-types-any)
+[[`any`](/docs/kcl-std/types/std-types-any)]
 
 
 ### Examples
@@ -47,7 +47,7 @@ assert(count(newArr), isEqualTo = 6, tolerance = 0.00001)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the concat function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-array-concat0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -71,7 +71,7 @@ assert(count(newArr), isEqualTo = 3, tolerance = 0.00001)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the concat function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-array-concat1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

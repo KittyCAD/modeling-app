@@ -1,6 +1,10 @@
-# Contributor Guide
+# Contributing Guide
 
-## Installing dependencies
+## Quick start: Build the desktop app locally
+
+This section applies to all potential contributors, internal and external to the Zoo team.
+
+### Installing dependencies
 
 Install a node version manager such as [fnm](https://github.com/Schniz/fnm?tab=readme-ov-#installation).
 
@@ -9,7 +13,7 @@ On Windows, it's also recommended to [upgrade your PowerShell version](https://l
 Then in the repo run the following to install and use the node version specified in `.nvmrc`. You might need to specify your processor architecture with `--arch arm64` or `--arch x64` if it's not autodetected.
 
 ```
-fnm install --corepack-enabled
+fnm install
 fnm use
 ```
 
@@ -31,7 +35,7 @@ npm run install:rust:windows
 npm run install:wasm-pack:cargo
 ```
 
-## Building the app
+### Building the app
 
 To build the WASM layer, run:
 
@@ -55,28 +59,29 @@ npm run fetch:wasm:windows
 
 That will build the WASM binary and put in the `public` dir (though gitignored).
 
-Finally, to run the web app only, run:
+Finally, to build the desktop app locally, pointing to our production zoo.dev infrastructure, accessible to everyone, run:
 
 ```
-npm start
+npm run tronb:package:prod
 ```
 
-If you're not a Zoo employee you won't be able to access the dev environment, you should copy everything from `.env.production` to `.env.development.local` to make it point to production instead, then when you navigate to `localhost:3000` the easiest way to sign in is to paste `localStorage.setItem('TOKEN_PERSIST_KEY', "your-token-from-https://zoo.dev/account/api-tokens")` replacing the with a real token from https://zoo.dev/account/api-tokens of course, then navigate to `localhost:3000` again. Note that navigating to `localhost:3000/signin` removes your token so you will need to set the token again.
+This will use electron-builder to generate runnable artifacts in the `out` directory (eg. `Zoo Design Studio.app` on macOS and `Zoo Design Studio.exe` on Windows). The regular sign-in flow should work as expected.
+
+## Environment variables and hot reload
+
+This section and the following ones should only be relevant to Zoo employees, as the non-production dev.zoo.dev infrastructure which allows CORS is not publicly accessible.
 
 ### Development environment variables
 
-The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_KITTYCAD_API_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
+The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_ZOO_API_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
 
-### Developing in Chrome
+### Developing live with the browser
 
-Chrome is in the process of rolling out a new default which
-[blocks Third-Party Cookies](https://developer.chrome.com/en/docs/privacy-sandbox/third-party-cookie-phase-out/).
-If you're having trouble logging into the `modeling-app`, you may need to
-enable third-party cookies. You can enable third-party cookies by clicking on
-the eye with a slash through it in the URL bar, and clicking on "Enable
-Third-Party Cookies".
+If you're not a Zoo employee, modeling commands are **billable** when running in
+the browser during local development! This is also true of non-Electron
+web-based tests that use the production API for modeling commands.
 
-### Developing with Electron
+### Developing live with Electron
 
 To spin up the desktop app, `npm install` and `npm run build:wasm` need to have been done before hand then:
 
@@ -86,9 +91,9 @@ npm run tron:start
 
 This will start the application and hot-reload on changes.
 
-Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (Linux and Windows).
+Note that it leverages a web server and by default points to our non-production dev.zoo.dev infrastructure, which isn't accessible to everyone. Refer to _Building the app_ if `tron:start` doesn't work for you.
 
-To package the app for your platform with electron-builder, run `npm run tronb:package:dev` (or `npm run tronb:package:prod` to point to the .env.production variables).
+Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (Linux and Windows).
 
 ## Running tests
 
@@ -96,17 +101,7 @@ To package the app for your platform with electron-builder, run `npm run tronb:p
 
 Prepare these system dependencies:
 
-- Set `$VITE_KITTYCAD_API_TOKEN` from https://zoo.dev/account/api-tokens
-
-#### Snapshot tests (Google Chrome on Ubuntu only)
-
-Only Ubuntu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
-If you don't run Ubuntu locally or in a VM, you may use a GitHub Codespace.
-```
-npm run playwright -- install chrome
-npm run test:snapshots
-```
-You may use `-- --update-snapshots` as needed.
+- Set `$VITE_ZOO_API_TOKEN` from https://zoo.dev/account/api-tokens
 
 #### Desktop tests (Electron on all platforms)
 
@@ -122,6 +117,19 @@ You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file
 ```
 npm run test:e2e:web
 ```
+
+#### Snapshot tests (Google Chrome on Ubuntu only)
+
+If you are running Ubuntu locally, in a VM, or using GitHub Codespaces:
+
+```
+npm run playwright -- install chrome
+npm run test:snapshots
+```
+
+Append `-- --update-snapshots` if you made significant UI changes.
+
+Alternatively, you can simply delete `e2e/playwright/snapshot-tests.spec.ts-snapshots/` to let the GitHub Actions job create a fresh snapshots commit automatically.
 
 #### Debugger
 
@@ -171,7 +179,7 @@ Where `./store` should look like this
 
 However because much of our tests involve clicking in the stream at specific locations, it's code-gen looks `await page.locator('video').click();` when really we need to use a pixel coord, so I think it's of limited use.
 
-### Unit and component tests
+### Unit and integration tests
 
 If you already haven't, run the following:
 
@@ -184,7 +192,7 @@ npm start
 and finally:
 
 ```
-npm run test:unit
+npm run test
 ```
 
 For individual testing:
@@ -199,13 +207,13 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 
 Prepare these system dependencies:
 
-- Set `$KITTYCAD_API_TOKEN` from https://zoo.dev/account/api-tokens
+- Set `$ZOO_API_TOKEN` from https://zoo.dev/account/api-tokens
 - Install `just` following [these instructions](https://just.systems/man/en/packages.html)
 
 then run tests that target the KCL language:
 
 ```
-npm run test:rust
+npm run test:e2e:kcl
 ```
 
 ### Fuzzing the parser

@@ -1,0 +1,31 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints parametric_with_tan_arc.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false,
+      "family": "style"
+    },
+    "description": "found 'FOS'",
+    "pos": [
+      101,
+      104,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'FOS' to 'fos'",
+      "insert": "sigmaAllow = 15000 // psi\nwidth = 11 // inch\np = 150 // Force on shelf - lbs\ndistance = 12 // inches\nfos = 2\nthickness = sqrt(distance * p * fos * 6 / (sigmaAllow * width))\nfilletR = thickness * 2\nshelfMountL = 9\nwallMountL = 8\n\nbracket = startSketchOn(XY)\n  |> startProfile(at = [0, 0])\n  |> line(end = [0, wallMountL])\n  |> tangentialArc(radius = filletR, angle = 90deg)\n  |> line(end = [-shelfMountL, 0])\n  |> line(end = [0, -thickness])\n  |> line(end = [shelfMountL, 0])\n  |> tangentialArc(radius = filletR - thickness, angle = -90deg)\n  |> line(end = [0, -wallMountL])\n  |> close(%)\n  |> extrude(length = width)\n",
+      "source_range": [
+        0,
+        617,
+        0
+      ]
+    }
+  }
+]

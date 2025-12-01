@@ -16,7 +16,7 @@ import * from "parameters.kcl"
 
 // Place the car rotor
 carRotor
-  |> translate(x = 0, y = 0.5, z = 0)
+  |> translate(y = 0.055)
 
 // Place the car wheel
 carWheel
@@ -33,7 +33,7 @@ lugNut
 
 // Place the brake caliper
 brakeCaliper
-  |> translate(x = 0, y = 0.5, z = 0)
+  |> translate(y = 0.055)
 
 // Place the car tire
 carTire

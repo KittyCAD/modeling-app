@@ -262,6 +262,11 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
 /// [get_changed_program]. This is purely to contain the logic on
 /// how we construct a new [CacheResult].
 ///
+/// A CacheResult's program may be a *diff* of only the parts that need
+/// to be executed (only in the case of "pure additions" at time of writing.).
+/// This diff-based AST should not be persisted or used anywhere beyond the execution flow,
+/// as it will be incomplete.
+///
 /// Digests *must* be computed before calling this.
 fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, reapply_settings: bool) -> CacheResult {
     if !old_ast.body.iter().zip(new_ast.body.iter()).all(|(old, new)| {
@@ -367,6 +372,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(false));
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -412,6 +418,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(false));
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -457,6 +464,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(false));
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -506,6 +514,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(false));
+        exec_ctxt.close().await;
     }
 
     // Changing the grid settings with the exact same file should NOT bust the cache.
@@ -543,6 +552,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(true));
+        exec_ctxt.close().await;
     }
 
     // Changing the edge visibility settings with the exact same file should NOT bust the cache.
@@ -616,6 +626,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         .await;
 
         assert_eq!(result, CacheResult::NoAction(true));
+        exec_ctxt.close().await;
     }
 
     // Changing the units settings using an annotation with the exact same file
@@ -654,6 +665,7 @@ startSketchOn(XY)
                 program: new_program.ast,
             }
         );
+        exec_ctxt.close().await;
     }
 
     // Removing the units settings using an annotation, when it was non-default
@@ -692,6 +704,7 @@ startSketchOn(XY)
                 program: new_program.ast,
             }
         );
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -758,6 +771,7 @@ extrude(profile001, length = 100)"#
         };
 
         assert_eq!(reapply_settings, false);
+        exec_ctxt.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -842,5 +856,6 @@ extrude(profile001, length = 100)
         };
 
         assert_eq!(reapply_settings, false);
+        exec_ctxt.close().await;
     }
 }

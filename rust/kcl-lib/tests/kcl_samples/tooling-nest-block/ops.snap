@@ -12,12 +12,8 @@ description: Operations executed tooling-nest-block.kcl
         "value": 50.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed tooling-nest-block.kcl
         "value": 15.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed tooling-nest-block.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed tooling-nest-block.kcl
         "value": 6.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -143,9 +127,9 @@ description: Operations executed tooling-nest-block.kcl
         "type": "Number",
         "value": 0.375,
         "ty": {
+          "in": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Inches"
+          "type": "Length"
         }
       },
       "visibility": "default",
@@ -172,9 +156,9 @@ description: Operations executed tooling-nest-block.kcl
         "type": "Number",
         "value": 0.25,
         "ty": {
+          "in": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Inches"
+          "type": "Length"
         }
       },
       "visibility": "default",
@@ -201,9 +185,9 @@ description: Operations executed tooling-nest-block.kcl
         "type": "Number",
         "value": 0.5,
         "ty": {
+          "in": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Inches"
+          "type": "Length"
         }
       },
       "visibility": "default",
@@ -230,9 +214,9 @@ description: Operations executed tooling-nest-block.kcl
         "type": "Number",
         "value": 0.75,
         "ty": {
+          "in": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Inches"
+          "type": "Length"
         }
       },
       "visibility": "default",
@@ -260,12 +244,8 @@ description: Operations executed tooling-nest-block.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -293,12 +273,8 @@ description: Operations executed tooling-nest-block.kcl
         "value": 4.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -326,12 +302,8 @@ description: Operations executed tooling-nest-block.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -359,12 +331,8 @@ description: Operations executed tooling-nest-block.kcl
         "value": 3.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -392,12 +360,8 @@ description: Operations executed tooling-nest-block.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -425,12 +389,8 @@ description: Operations executed tooling-nest-block.kcl
         "value": 2.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -458,12 +418,8 @@ description: Operations executed tooling-nest-block.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -491,12 +447,8 @@ description: Operations executed tooling-nest-block.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -566,12 +518,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -614,12 +562,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 15.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -630,12 +574,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -646,12 +586,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -744,12 +680,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": -15.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -814,12 +746,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": 14.85,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -895,12 +823,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 10.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -911,12 +835,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.65,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -927,12 +847,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1026,12 +942,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": -10.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1096,12 +1008,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": 9.9,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1177,12 +1085,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 6.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1193,12 +1097,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.25,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1209,12 +1109,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.25,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1308,12 +1204,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": -6.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1378,12 +1270,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": 5.9399999999999995,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1459,12 +1347,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 6.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1475,12 +1359,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.25,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1491,12 +1371,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.75,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1590,12 +1466,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": -6.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1660,12 +1532,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": 5.9399999999999995,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1740,9 +1608,9 @@ description: Operations executed tooling-nest-block.kcl
               "type": "Number",
               "value": 0.375,
               "ty": {
+                "in": null,
                 "type": "Known",
-                "type": "Length",
-                "type": "Inches"
+                "type": "Length"
               }
             },
             "sourceRange": []
@@ -1753,12 +1621,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.7,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1769,12 +1633,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.3,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1867,9 +1727,9 @@ description: Operations executed tooling-nest-block.kcl
             "type": "Number",
             "value": -0.375,
             "ty": {
+              "in": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Inches"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -1933,9 +1793,9 @@ description: Operations executed tooling-nest-block.kcl
             "type": "Number",
             "value": 0.37124999999999997,
             "ty": {
+              "in": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Inches"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -2010,9 +1870,9 @@ description: Operations executed tooling-nest-block.kcl
               "type": "Number",
               "value": 0.25,
               "ty": {
+                "in": null,
                 "type": "Known",
-                "type": "Length",
-                "type": "Inches"
+                "type": "Length"
               }
             },
             "sourceRange": []
@@ -2023,12 +1883,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.25,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2039,12 +1895,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.3,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2137,9 +1989,9 @@ description: Operations executed tooling-nest-block.kcl
             "type": "Number",
             "value": -0.25,
             "ty": {
+              "in": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Inches"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -2203,9 +2055,9 @@ description: Operations executed tooling-nest-block.kcl
             "type": "Number",
             "value": 0.2475,
             "ty": {
+              "in": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Inches"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -2280,9 +2132,9 @@ description: Operations executed tooling-nest-block.kcl
               "type": "Number",
               "value": 0.25,
               "ty": {
+                "in": null,
                 "type": "Known",
-                "type": "Length",
-                "type": "Inches"
+                "type": "Length"
               }
             },
             "sourceRange": []
@@ -2293,12 +2145,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.25,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2309,12 +2157,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.7,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2407,9 +2251,9 @@ description: Operations executed tooling-nest-block.kcl
             "type": "Number",
             "value": -0.25,
             "ty": {
+              "in": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Inches"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -2473,9 +2317,9 @@ description: Operations executed tooling-nest-block.kcl
             "type": "Number",
             "value": 0.2475,
             "ty": {
+              "in": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Inches"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -2550,9 +2394,9 @@ description: Operations executed tooling-nest-block.kcl
               "type": "Number",
               "value": 0.25,
               "ty": {
+                "in": null,
                 "type": "Known",
-                "type": "Length",
-                "type": "Inches"
+                "type": "Length"
               }
             },
             "sourceRange": []
@@ -2563,12 +2407,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.7,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2579,12 +2419,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.7,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2677,9 +2513,9 @@ description: Operations executed tooling-nest-block.kcl
             "type": "Number",
             "value": -0.25,
             "ty": {
+              "in": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Inches"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -2743,9 +2579,9 @@ description: Operations executed tooling-nest-block.kcl
             "type": "Number",
             "value": 0.2475,
             "ty": {
+              "in": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Inches"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -2820,9 +2656,9 @@ description: Operations executed tooling-nest-block.kcl
               "type": "Number",
               "value": 0.5,
               "ty": {
+                "in": null,
                 "type": "Known",
-                "type": "Length",
-                "type": "Inches"
+                "type": "Length"
               }
             },
             "sourceRange": []
@@ -2833,12 +2669,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": -0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2849,12 +2681,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2947,9 +2775,9 @@ description: Operations executed tooling-nest-block.kcl
             "type": "Number",
             "value": -0.5,
             "ty": {
+              "in": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Inches"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -3013,9 +2841,9 @@ description: Operations executed tooling-nest-block.kcl
             "type": "Number",
             "value": 0.495,
             "ty": {
+              "in": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Inches"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -3091,12 +2919,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 1.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3107,12 +2931,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": -0.2,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3123,12 +2943,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.2,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3222,12 +3038,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": -1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3292,12 +3104,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": 0.99,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3373,12 +3181,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 2.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3389,12 +3193,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": -0.2,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3405,12 +3205,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3504,12 +3300,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": -2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3574,12 +3366,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": 1.98,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3655,12 +3443,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 2.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3671,12 +3455,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": -0.2,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3687,12 +3467,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.8,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3786,12 +3562,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": -2.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3856,12 +3628,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": 2.475,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3937,12 +3705,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 3.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3953,12 +3717,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": -0.8,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3969,12 +3729,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.2,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -4068,12 +3824,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": -3.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4138,12 +3890,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": 2.9699999999999998,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4219,12 +3967,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 4.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -4235,12 +3979,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": -0.8,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -4251,12 +3991,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -4350,12 +4086,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": -4.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4420,12 +4152,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": 3.96,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4501,12 +4229,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -4517,12 +4241,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": -0.8,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -4533,12 +4253,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.8,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -4632,12 +4348,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": -5.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4702,12 +4414,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": 4.95,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4783,12 +4491,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 4.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -4799,12 +4503,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": -0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -4815,12 +4515,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.33,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -4914,12 +4610,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": -4.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4984,12 +4676,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": 4.455,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5065,12 +4753,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 3.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -5081,12 +4765,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": -0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -5097,12 +4777,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.67,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -5196,12 +4872,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": -3.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5266,12 +4938,8 @@ description: Operations executed tooling-nest-block.kcl
             "value": 3.465,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5345,9 +5013,9 @@ description: Operations executed tooling-nest-block.kcl
               "type": "Number",
               "value": 0.75,
               "ty": {
+                "in": null,
                 "type": "Known",
-                "type": "Length",
-                "type": "Inches"
+                "type": "Length"
               }
             },
             "sourceRange": []
@@ -5358,12 +5026,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": -0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -5374,12 +5038,8 @@ description: Operations executed tooling-nest-block.kcl
               "value": 0.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -5471,9 +5131,9 @@ description: Operations executed tooling-nest-block.kcl
             "type": "Number",
             "value": -0.75,
             "ty": {
+              "in": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Inches"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -5537,9 +5197,9 @@ description: Operations executed tooling-nest-block.kcl
             "type": "Number",
             "value": 0.7424999999999999,
             "ty": {
+              "in": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Inches"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -5594,8 +5254,6 @@ description: Operations executed tooling-nest-block.kcl
       "type": "GroupEnd"
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -5609,7 +5267,18 @@ description: Operations executed tooling-nest-block.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5626,7 +5295,18 @@ description: Operations executed tooling-nest-block.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5643,7 +5323,18 @@ description: Operations executed tooling-nest-block.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -5658,7 +5349,18 @@ description: Operations executed tooling-nest-block.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5671,7 +5373,18 @@ description: Operations executed tooling-nest-block.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5684,7 +5397,18 @@ description: Operations executed tooling-nest-block.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 22
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5697,17 +5421,20 @@ description: Operations executed tooling-nest-block.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 23
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

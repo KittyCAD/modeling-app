@@ -1,17 +1,9 @@
+import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
+import type { AsyncFn } from '@src/lib/types'
 import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
-import type { AsyncFn } from '@src/lib/types'
-
-import * as THREE from 'three'
-
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import type {
-  CameraViewState_type,
-  UnitLength_type,
-} from '@kittycad/lib/dist/types/src/models'
-import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const uuidv4 = v4
 
@@ -211,9 +203,7 @@ export function deferExecution<T>(func: (args: T) => any, wait: number) {
  */
 export function toSync<F extends AsyncFn<F>>(
   fn: F,
-  onReject: (
-    reason: any
-  ) => void | PromiseLike<void | null | undefined> | null | undefined
+  onReject: (reason: any) => PromiseLike<null | undefined> | null | undefined
 ): (...args: Parameters<F>) => void {
   return (...args: Parameters<F>) => {
     void fn(...args).catch((...args) => {
@@ -569,20 +559,6 @@ export function getModuleId(sourceRange: SourceRange) {
   return sourceRange[2]
 }
 
-export function getModuleIdByFileName(
-  fileName: string,
-  fileNames: ExecState['filenames']
-) {
-  const module = Object.entries(fileNames).find(
-    ([, moduleInfo]) =>
-      moduleInfo?.type === 'Local' && moduleInfo.value === fileName
-  )
-  if (module) {
-    return Number(module[0]) // Return the module ID
-  }
-  return -1
-}
-
 export function getInVariableCase(name: string, prefixIfDigit = 'm') {
   // As of 2025-04-08, standard case for KCL variables is camelCase
   const startsWithANumber = !Number.isNaN(Number(name.charAt(0)))
@@ -605,30 +581,11 @@ export function getInVariableCase(name: string, prefixIfDigit = 'm') {
   return likelyPascalCase.slice(0, 1).toLowerCase() + likelyPascalCase.slice(1)
 }
 
-export function computeIsometricQuaternionForEmptyScene() {
-  // Create the direction vector you want to look from
-  const isoDir = new THREE.Vector3(1, 1, 1).normalize() // isometric look direction
-
-  // Target is the point you want to look at (e.g., origin)
-  const target = new THREE.Vector3(0, 0, 0)
-
-  // Compute quaternion for isometric view
-  const up = new THREE.Vector3(0, 0, 1) // default up direction
-  const quaternion = new THREE.Quaternion()
-  quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), isoDir) // align -Z with isoDir
-
-  // Align up vector using a lookAt matrix
-  const m = new THREE.Matrix4()
-  m.lookAt(new THREE.Vector3().addVectors(target, isoDir), target, up)
-  quaternion.setFromRotationMatrix(m)
-  return quaternion
-}
-
 export async function engineStreamZoomToFit({
   engineCommandManager,
   padding,
 }: {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   padding: number
 }) {
   // It makes sense to also call zoom to fit here, when a new file is
@@ -646,11 +603,11 @@ export async function engineStreamZoomToFit({
   })
 }
 
-export async function engineViewIsometricWithGeometryPresent({
+export async function engineViewIsometric({
   engineCommandManager,
   padding,
 }: {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   padding: number
 }) {
   /**
@@ -681,91 +638,6 @@ export async function engineViewIsometricWithGeometryPresent({
   })
 }
 
-export async function engineViewIsometricWithoutGeometryPresent({
-  engineCommandManager,
-  unit,
-  cameraProjection,
-}: {
-  engineCommandManager: EngineCommandManager
-  unit: UnitLength_type
-  cameraProjection: CameraProjectionType
-}) {
-  // When the video first loads, if the scene is empty (has no sketches/solids/etc defined)
-  // then the grid has a fixed size of 10 mm/cm/inches/whatever unit the user chose, and it
-  // will be at some fixed distance. This means the grid could be way too zoomed in or out.
-  // So, adjust the zoom depending on the chosen unit.
-  const scaleFactor = (() => {
-    const mmScale = 300
-    const cmScale = mmScale / 10
-    const mScale = cmScale / 100
-    const inScale = mmScale / 25.4
-    const ftScale = mmScale / 304.8
-    const ydScale = mmScale / 914.4
-    switch (unit) {
-      case 'mm':
-        return mmScale
-      case 'cm':
-        return cmScale
-      case 'm':
-        return mScale
-      case 'in':
-        return inScale
-      case 'yd':
-        return ydScale
-      case 'ft':
-        return ftScale
-      default:
-        const _exhaustiveCheck: never = unit
-        return 0 // unreachable
-    }
-  })()
-  // If you load an empty scene with any file unit it will have an eye offset of this
-  const magicEngineEyeOffset = 1378.0057 / scaleFactor
-  const quat = computeIsometricQuaternionForEmptyScene()
-  const isometricView: CameraViewState_type = {
-    pivot_rotation: {
-      x: quat.x,
-      y: quat.y,
-      z: quat.z,
-      w: quat.w,
-    },
-    pivot_position: {
-      x: 0,
-      y: 0,
-      z: 0,
-    },
-    eye_offset: magicEngineEyeOffset,
-    fov_y: 45,
-    ortho_scale_factor: 1.4063792,
-    is_ortho: cameraProjection !== 'perspective',
-    // always keep this enabled
-    ortho_scale_enabled: true,
-    world_coord_system: 'right_handed_up_z',
-  }
-  await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_set_view',
-      view: {
-        ...isometricView,
-      },
-    },
-  })
-
-  /**
-   * HACK: We need to update the gizmo, the command above doesn't trigger gizmo
-   * to render which makes the axis point in an old direction.
-   */
-  await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
-  })
-}
-
 export function returnSelfOrGetHostNameFromURL(requestedEnvironment: string) {
   let environment = requestedEnvironment.trim()
   try {
@@ -776,4 +648,34 @@ export function returnSelfOrGetHostNameFromURL(requestedEnvironment: string) {
     console.log('string is not a url, is that your intention?', e)
   }
   return environment
+}
+
+export function promiseFactory<T = void>() {
+  let resolve: (value: T | PromiseLike<T>) => void = () => {}
+  let reject: (value: T | PromiseLike<T>) => void = () => {}
+  const promise = new Promise<T>((_resolve, _reject) => {
+    resolve = _resolve
+    reject = _reject
+  })
+  return { promise, resolve, reject }
+}
+
+/**
+ * Strips leading and trailing quotes (both single and double) from a string.
+ * Removes any quote character from the beginning AND any quote character from the end,
+ * regardless of whether they match. If the input is null/undefined, returns an empty string.
+ *
+ * @param str - The string to strip quotes from
+ * @returns The string with quotes removed, or empty string if input is null/undefined
+ *
+ * @example
+ * stripQuotes('"hello"') // returns 'hello'
+ * stripQuotes("'world'") // returns 'world'
+ * stripQuotes('"mixed\'') // returns 'mixed' (mismatched quotes)
+ * stripQuotes('"only-leading') // returns 'only-leading'
+ * stripQuotes('no-quotes') // returns 'no-quotes'
+ * stripQuotes(null) // returns ''
+ */
+export function stripQuotes(str: string | null | undefined): string {
+  return str?.replace(/^["']|["']$/g, '') || ''
 }

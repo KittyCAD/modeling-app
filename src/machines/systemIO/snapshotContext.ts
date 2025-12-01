@@ -1,37 +1,14 @@
+import { getEXTNoPeriod, isExtensionAnImportExtension } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { systemIOActor } from '@src/lib/singletons'
 import { isArray } from '@src/lib/utils'
+import type { SystemIOContext } from '@src/machines/systemIO/utils'
 
-export const folderSnapshot = () => {
-  const { folders } = systemIOActor.getSnapshot().context
-  return folders
-}
-
-export const defaultProjectFolderNameSnapshot = () => {
-  const { defaultProjectFolderName } = systemIOActor.getSnapshot().context
-  return defaultProjectFolderName
-}
-
-/**
- * From the application project directory go down to a project folder and list all the folders at that directory level
- * application project directory: /home/documents/zoo-modeling-app-projects/
- *
- * /home/documents/zoo-modeling-app-projects/car-door/
- * ├── handle
- * ├── main.kcl
- * └── window
- *
- * The two folders are handle and window
- *
- * @param {Object} params
- * @param {string} params.projectFolderName - The name with no path information.
- * @returns {FileEntry[]} An array of subdirectory names found at the root level of the specified project folder.
- */
-export const getAllSubDirectoriesAtProjectRoot = ({
-  projectFolderName,
-}: { projectFolderName: string }): FileEntry[] => {
+export function getAllSubDirectoriesAtProjectRoot(
+  context: SystemIOContext,
+  { projectFolderName }: { projectFolderName: string }
+): FileEntry[] {
   const subDirectories: FileEntry[] = []
-  const { folders } = systemIOActor.getSnapshot().context
+  const { folders } = context
 
   const projectFolder = folders.find((folder) => {
     return folder.name === projectFolderName
@@ -55,4 +32,47 @@ export const getAllSubDirectoriesAtProjectRoot = ({
   }
 
   return subDirectories
+}
+
+export function listAllImportFilesWithinProject(
+  context: SystemIOContext,
+  {
+    projectFolderName,
+    importExtensions,
+  }: { projectFolderName: string; importExtensions: string[] }
+) {
+  const relativeFilePaths = []
+  // copy the folders
+  let projectFolder = context.folders.find((folder) => {
+    return folder.name === projectFolderName
+  })
+  const clonedProjectFolder = structuredClone(projectFolder)
+  if (window.electron && clonedProjectFolder?.children) {
+    const projectPath = clonedProjectFolder.path
+    let children = clonedProjectFolder.children
+    while (children.length > 0) {
+      const v = children.pop()
+      if (!v) {
+        continue
+      }
+
+      if (v.children) {
+        children.push(...v.children)
+        continue
+      }
+
+      const relativeFilePath = v.path.replace(
+        projectPath + window.electron.sep,
+        ''
+      )
+      const extension = getEXTNoPeriod(relativeFilePath)
+      if (
+        extension &&
+        isExtensionAnImportExtension(extension, importExtensions)
+      ) {
+        relativeFilePaths.push(relativeFilePath)
+      }
+    }
+  }
+  return relativeFilePaths
 }

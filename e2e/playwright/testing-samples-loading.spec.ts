@@ -12,6 +12,7 @@ import {
   testsInputPath,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Testing loading external models', () => {
   /**
@@ -252,7 +253,7 @@ test.describe('Testing loading external models', () => {
         await test.step('Load the external model from local drive', async () => {
           await loadExternalFileThroughCommandBar(tronApp)
           // TODO: I think the files pane should auto open?
-          await toolbar.openPane('files')
+          await toolbar.openPane(DefaultLayoutPaneID.Files)
           await toolbar.expectFileTreeState([modelName, 'main.kcl'])
           if (modelName.endsWith('.kcl')) {
             await editorTextMatches(modelFileContent)
@@ -261,7 +262,7 @@ test.describe('Testing loading external models', () => {
 
         await test.step('Load the same external model, except deconflicted name', async () => {
           await loadExternalFileThroughCommandBar(tronApp)
-          await toolbar.openPane('files')
+          await toolbar.openPane(DefaultLayoutPaneID.Files)
           await toolbar.expectFileTreeState([
             deconflictedModelName,
             modelName,

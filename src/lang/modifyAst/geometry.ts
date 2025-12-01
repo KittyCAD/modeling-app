@@ -9,6 +9,7 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { getAxisExpressionAndIndex } from '@src/lang/modifyAst/sweeps'
 import {
   getVariableExprsFromSelection,
   valueOrVariable,
@@ -21,10 +22,9 @@ import type {
   Program,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { Selections } from '@src/lib/selections'
-import { err } from '@src/lib/trap'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import { getAxisExpressionAndIndex } from '@src/lang/modifyAst/sweeps'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import { err } from '@src/lib/trap'
 
 export function addHelix({
   ast,
@@ -56,8 +56,9 @@ export function addHelix({
       pathToNode: PathToNode
     }
   | Error {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
@@ -69,7 +70,7 @@ export function addHelix({
     const vars = getVariableExprsFromSelection(
       cylinder,
       modifiedAst,
-      nodeToEdit,
+      mNodeToEdit,
       lastChildLookup,
       artifactGraph
     )
@@ -110,19 +111,19 @@ export function addHelix({
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in angleStart && angleStart.variableName) {
-    insertVariableAndOffsetPathToNode(angleStart, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(angleStart, modifiedAst, mNodeToEdit)
   }
 
   if ('variableName' in revolutions && revolutions.variableName) {
-    insertVariableAndOffsetPathToNode(revolutions, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(revolutions, modifiedAst, mNodeToEdit)
   }
 
   if (radius && 'variableName' in radius && radius.variableName) {
-    insertVariableAndOffsetPathToNode(radius, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(radius, modifiedAst, mNodeToEdit)
   }
 
   if (length && 'variableName' in length && length.variableName) {
-    insertVariableAndOffsetPathToNode(length, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(length, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -130,7 +131,7 @@ export function addHelix({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HELIX,
   })

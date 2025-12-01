@@ -18,12 +18,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -33,9 +29,9 @@ description: Operations executed helical-planetary-gearset.kcl
               "type": "Number",
               "value": -25.0,
               "ty": {
+                "degrees": null,
                 "type": "Known",
-                "type": "Angle",
-                "type": "Degrees"
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -46,12 +42,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 1.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -62,12 +54,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 42.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -77,9 +65,9 @@ description: Operations executed helical-planetary-gearset.kcl
               "type": "Number",
               "value": 14.0,
               "ty": {
+                "degrees": null,
                 "type": "Known",
-                "type": "Angle",
-                "type": "Degrees"
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -107,12 +95,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 63.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -153,12 +137,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 1.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -199,12 +179,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 1.875,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -245,12 +221,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 61.128630755387775,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -291,12 +263,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 66.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -343,12 +311,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 0.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -391,9 +355,9 @@ description: Operations executed helical-planetary-gearset.kcl
         "type": "Number",
         "value": 1.5707963267948966,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -456,12 +420,8 @@ description: Operations executed helical-planetary-gearset.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -574,411 +534,6 @@ description: Operations executed helical-planetary-gearset.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.5707963267948966,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 30.564315377693887,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 0.0000000000000018715245497711523,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 30.564315377693887,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.6539072435565312,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 33.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -2.7395038903503175,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 32.88609308560011,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.720395976965839,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 30.564315377693887,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 5
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -4.55537482801479,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 30.222937227930448,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "offsetPlane",
       "unlabeledArg": {
@@ -995,12 +550,8 @@ description: Operations executed helical-planetary-gearset.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1198,12 +749,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 2.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1246,9 +793,9 @@ description: Operations executed helical-planetary-gearset.kcl
         "type": "Number",
         "value": 1.6061300162478944,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -1311,12 +858,8 @@ description: Operations executed helical-planetary-gearset.kcl
             "value": 2.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1429,411 +972,6 @@ description: Operations executed helical-planetary-gearset.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.6061300162478944,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 30.564315377693887,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -1.0797253277941856,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 30.54523805315085,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.689240933009529,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 33.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -3.899539205840894,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 32.768789937715276,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.7557296664188369,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 30.564315377693887,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 5
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -5.620197188311242,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 30.043148271638135,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "offsetPlane",
       "unlabeledArg": {
@@ -1850,12 +988,8 @@ description: Operations executed helical-planetary-gearset.kcl
             "value": 2.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2053,12 +1187,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2101,9 +1231,9 @@ description: Operations executed helical-planetary-gearset.kcl
         "type": "Number",
         "value": 1.6415079153836443,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -2166,12 +1296,8 @@ description: Operations executed helical-planetary-gearset.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2284,411 +1410,6 @@ description: Operations executed helical-planetary-gearset.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.6415079153836443,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 30.564315377693887,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -2.159450655588373,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 30.487934455669738,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.724618832145279,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 33.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -5.056148270092621,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 32.61035670873349,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.7911075655545867,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 30.564315377693887,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 5
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -6.679322218261533,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 29.825559998292956,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "offsetPlane",
       "unlabeledArg": {
@@ -2705,12 +1426,8 @@ description: Operations executed helical-planetary-gearset.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2970,12 +1687,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2985,9 +1698,9 @@ description: Operations executed helical-planetary-gearset.kcl
               "type": "Number",
               "value": 25.0,
               "ty": {
+                "degrees": null,
                 "type": "Known",
-                "type": "Angle",
-                "type": "Degrees"
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -2998,12 +1711,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 1.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3014,12 +1723,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 12.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3029,9 +1734,9 @@ description: Operations executed helical-planetary-gearset.kcl
               "type": "Number",
               "value": 14.0,
               "ty": {
+                "degrees": null,
                 "type": "Known",
-                "type": "Angle",
-                "type": "Degrees"
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -3059,12 +1764,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 18.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3105,12 +1806,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 1.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3151,12 +1848,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 1.875,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3197,12 +1890,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 17.465323072967937,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3243,12 +1932,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 21.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3289,12 +1974,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3335,12 +2016,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3381,12 +2058,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 7.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3427,12 +2100,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 3.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3472,9 +2141,9 @@ description: Operations executed helical-planetary-gearset.kcl
         "type": "Number",
         "value": 0.14334756890536535,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -3565,12 +2234,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 0.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -3613,9 +2278,9 @@ description: Operations executed helical-planetary-gearset.kcl
         "type": "Number",
         "value": 1.5707963267948966,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -3678,12 +2343,8 @@ description: Operations executed helical-planetary-gearset.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3794,411 +2455,6 @@ description: Operations executed helical-planetary-gearset.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.5707963267948966,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 8.732661536483969,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 0.000000000000000534721299934615,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 8.732661536483969,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.8035068937274739,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 10.5,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -2.4214666427956213,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 10.21697114108815,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 2.0943951023931953,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 8.732661536483969,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 5
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -4.3663307682419825,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 7.562706733246366,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -4286,12 +2542,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 2.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -4334,9 +2586,9 @@ description: Operations executed helical-planetary-gearset.kcl
         "type": "Number",
         "value": 1.4595413228372676,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -4399,12 +2651,8 @@ description: Operations executed helical-planetary-gearset.kcl
             "value": 2.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4515,411 +2763,6 @@ description: Operations executed helical-planetary-gearset.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.4595413228372676,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 8.732661536483969,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 0.969549273937636,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 8.678672232328719,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.6922518897698446,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 10.5,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -1.2721503422803806,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 10.422650023225183,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.9831400984355665,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 8.732661536483969,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 5
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -3.4996818147136093,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 8.000725261284092,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -5007,12 +2850,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -5055,9 +2894,9 @@ description: Operations executed helical-planetary-gearset.kcl
         "type": "Number",
         "value": 1.3468785716349654,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -5120,12 +2959,8 @@ description: Operations executed helical-planetary-gearset.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5236,411 +3071,6 @@ description: Operations executed helical-planetary-gearset.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.3468785716349654,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 8.732661536483969,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 1.9390985478752714,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 8.514650570188689,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.579589138567543,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 10.5,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -0.09232333396144399,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 10.499594106536035,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.8704773472332643,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 8.732661536483969,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 5
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -2.5780166821928443,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 8.343452972068695,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -5784,12 +3214,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -5823,12 +3249,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -5838,9 +3260,9 @@ description: Operations executed helical-planetary-gearset.kcl
               "type": "Number",
               "value": -25.0,
               "ty": {
+                "degrees": null,
                 "type": "Known",
-                "type": "Angle",
-                "type": "Degrees"
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -5851,12 +3273,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 1.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -5867,12 +3285,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 12.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -5882,9 +3296,9 @@ description: Operations executed helical-planetary-gearset.kcl
               "type": "Number",
               "value": 14.0,
               "ty": {
+                "degrees": null,
                 "type": "Known",
-                "type": "Angle",
-                "type": "Degrees"
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -5916,12 +3330,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 18.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -5962,12 +3372,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 1.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6008,12 +3414,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 1.875,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6054,12 +3456,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 17.465323072967937,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6100,12 +3498,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 21.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6146,12 +3540,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6192,12 +3582,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6238,12 +3624,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 7.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6284,12 +3666,8 @@ description: Operations executed helical-planetary-gearset.kcl
         "value": 3.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6329,9 +3707,9 @@ description: Operations executed helical-planetary-gearset.kcl
         "type": "Number",
         "value": 0.14334756890536535,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -6422,12 +3800,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 0.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -6470,9 +3844,9 @@ description: Operations executed helical-planetary-gearset.kcl
         "type": "Number",
         "value": 1.5707963267948966,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -6535,12 +3909,8 @@ description: Operations executed helical-planetary-gearset.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -6651,411 +4021,6 @@ description: Operations executed helical-planetary-gearset.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.5707963267948966,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 8.732661536483969,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 0.000000000000000534721299934615,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 8.732661536483969,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.8035068937274739,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 10.5,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -2.4214666427956213,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 10.21697114108815,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 2.0943951023931953,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 8.732661536483969,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 5
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -4.3663307682419825,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 7.562706733246366,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -7143,12 +4108,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 2.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -7191,9 +4152,9 @@ description: Operations executed helical-planetary-gearset.kcl
         "type": "Number",
         "value": 1.6820513307525258,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -7256,12 +4217,8 @@ description: Operations executed helical-planetary-gearset.kcl
             "value": 2.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -7372,411 +4329,6 @@ description: Operations executed helical-planetary-gearset.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.6820513307525258,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 8.732661536483969,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -0.9695492739376368,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 8.678672232328719,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.9147618976851029,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 10.5,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -3.540841716679438,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 9.884960290128769,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 2.205650106350825,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 8.732661536483969,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 5
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -5.178990417615113,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 7.0311759873464545,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -7864,12 +4416,8 @@ description: Operations executed helical-planetary-gearset.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -7912,9 +4460,9 @@ description: Operations executed helical-planetary-gearset.kcl
         "type": "Number",
         "value": 1.794714081954828,
         "ty": {
+          "radians": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Radians"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -7977,12 +4525,8 @@ description: Operations executed helical-planetary-gearset.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -8093,411 +4637,6 @@ description: Operations executed helical-planetary-gearset.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 1.794714081954828,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 8.732661536483969,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -1.9390985478752725,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 8.514650570188689,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 2.027424648887405,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 10.5,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -4.629706082759553,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 9.424214640343205,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "polar",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "angle": {
-            "value": {
-              "type": "Number",
-              "value": 2.318312857553127,
-              "ty": {
-                "type": "Known",
-                "type": "Angle",
-                "type": "Radians"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 8.732661536483969,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 5
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -5.936633887995845,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 6.404354424193422,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -8652,12 +4791,8 @@ description: Operations executed helical-planetary-gearset.kcl
             "value": 20.7,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -8698,9 +4833,9 @@ description: Operations executed helical-planetary-gearset.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -8714,12 +4849,8 @@ description: Operations executed helical-planetary-gearset.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -8727,12 +4858,8 @@ description: Operations executed helical-planetary-gearset.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -8740,12 +4867,8 @@ description: Operations executed helical-planetary-gearset.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -8761,12 +4884,8 @@ description: Operations executed helical-planetary-gearset.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -8774,12 +4893,8 @@ description: Operations executed helical-planetary-gearset.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -8787,12 +4902,8 @@ description: Operations executed helical-planetary-gearset.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -8836,8 +4947,6 @@ description: Operations executed helical-planetary-gearset.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -8851,7 +4960,18 @@ description: Operations executed helical-planetary-gearset.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -8868,7 +4988,18 @@ description: Operations executed helical-planetary-gearset.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -8885,7 +5016,18 @@ description: Operations executed helical-planetary-gearset.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -8900,7 +5042,18 @@ description: Operations executed helical-planetary-gearset.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -8913,7 +5066,18 @@ description: Operations executed helical-planetary-gearset.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -8926,7 +5090,18 @@ description: Operations executed helical-planetary-gearset.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 22
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -8939,17 +5114,20 @@ description: Operations executed helical-planetary-gearset.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 23
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

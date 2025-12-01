@@ -1,5 +1,4 @@
-import { useRef, useEffect } from 'react'
-
+import { useRef } from 'react'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
@@ -44,6 +43,7 @@ export class Setting<T = unknown> {
   public Component: SettingProps<T>['Component']
   public description?: string
   private validate: (v: T) => boolean
+  public readonly isEnabled: (c: SettingsType) => boolean
   private _default: T
   private _user?: T
   private _project?: T
@@ -52,6 +52,7 @@ export class Setting<T = unknown> {
     this._default = props.defaultValue
     this.current = props.defaultValue
     this.validate = props.validate
+    this.isEnabled = props.isEnabled || (() => true)
     this.description = props.description
     this.hideOnLevel = props.hideOnLevel
     this.hideOnPlatform = props.hideOnPlatform
@@ -156,69 +157,6 @@ export function createSettings() {
             })),
         },
       }),
-      themeColor: new Setting<string>({
-        defaultValue: '264.5',
-        description: 'The hue of the primary theme color for the app',
-        validate: (v) => Number(v) >= 0 && Number(v) < 360,
-
-        // The same component instance is used across settings panes / tabs.
-        Component: ({ value, updateValue }) => {
-          const refInput = useRef<HTMLInputElement>(null)
-
-          const updateColorDot = (value: string) => {
-            document.documentElement.style.setProperty(
-              `--primary-hue`,
-              String(value)
-            )
-          }
-
-          useEffect(() => {
-            if (refInput.current === null) return
-            refInput.current.value = value
-            updateColorDot(value)
-          }, [value])
-
-          const preview = (e: React.SyntheticEvent) =>
-            e.isTrusted &&
-            'value' in e.currentTarget &&
-            updateColorDot(String(e.currentTarget.value))
-
-          const save = (e: React.SyntheticEvent) => {
-            if (
-              e.isTrusted &&
-              'value' in e.currentTarget &&
-              e.currentTarget.value
-            ) {
-              const valueNext = String(e.currentTarget.value)
-              updateValue(valueNext)
-              updateColorDot(valueNext)
-            }
-          }
-
-          return (
-            <div className="flex item-center gap-4 px-2 m-0 py-0">
-              <div
-                className="w-4 h-4 rounded-full bg-primary border border-solid border-chalkboard-100 dark:border-chalkboard-30"
-                style={{
-                  backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) var(--primary-hue))`,
-                }}
-              />
-              <input
-                type="range"
-                ref={refInput}
-                onInput={preview}
-                onMouseUp={save}
-                onKeyUp={save}
-                onPointerUp={save}
-                min={0}
-                max={259}
-                step={1}
-                className="block flex-1"
-              />
-            </div>
-          )
-        },
-      }),
       /**
        * Whether to show the debug panel, which lets you see
        * various states of the app to aid in development
@@ -226,16 +164,6 @@ export function createSettings() {
       showDebugPanel: new Setting<boolean>({
         defaultValue: false,
         description: 'Whether to show the debug panel, a development tool',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
-      fixedSizeGrid: new Setting<boolean>({
-        defaultValue: true,
-        hideOnLevel: 'project',
-        description:
-          'When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -296,14 +224,6 @@ export function createSettings() {
         // for this yet
         validate: (v) => typeof v === 'string',
         hideOnPlatform: 'both',
-      }),
-      /** Permanently dismiss the banner warning to download the desktop app. */
-      dismissWebBanner: new Setting<boolean>({
-        defaultValue: false,
-        description:
-          'Permanently dismiss the banner warning to download the desktop app.',
-        validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'desktop',
       }),
       projectDirectory: new Setting<string>({
         defaultValue: '', // gets set async in settingsUtils.ts
@@ -479,7 +399,7 @@ export function createSettings() {
         // Don't show in prod, consider switching to use AdamS's endpoint https://github.com/KittyCAD/common/pull/1704
         hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
         defaultValue: false,
-        description: 'Use the new sketch mode implementation (Dev only)',
+        description: 'Use the new sketch mode implementation',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
@@ -540,6 +460,30 @@ export function createSettings() {
         },
       }),
       /**
+       * Which type of orientation gizmo to use
+       */
+      gizmoType: new Setting<'cube' | 'axis'>({
+        defaultValue: 'cube',
+        hideOnLevel: 'project',
+        description: 'Which type of orientation gizmo to use',
+        validate: (v) => v === 'cube' || v === 'axis',
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.modeling.gizmoType.current,
+          options: (cmdContext, settingsContext) =>
+            (['cube', 'axis'] as const).map((v) => ({
+              name: capitaliseFC(v),
+              value: v,
+              isCurrent:
+                settingsContext.modeling.gizmoType.shouldShowCurrentLabel(
+                  cmdContext.argumentsToSubmit.level as SettingsLevel,
+                  v
+                ),
+            })),
+        },
+      }),
+      /**
        * Whether to highlight edges of 3D objects
        */
       highlightEdges: new Setting<boolean>({
@@ -563,6 +507,56 @@ export function createSettings() {
         },
         hideOnLevel: 'project',
       }),
+      fixedSizeGrid: new Setting<boolean>({
+        defaultValue: true,
+        description:
+          'When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      majorGridSpacing: new Setting<number>({
+        defaultValue: 1,
+        description:
+          'The space between major grid lines, specified in the current unit',
+        validate: (v) => typeof v === 'number',
+        commandConfig: {
+          inputType: 'number',
+          min: 0,
+        },
+      }),
+      minorGridsPerMajor: new Setting<number>({
+        defaultValue: 4,
+        description: 'Number of minor grid lines per major grid line',
+        validate: (v) => typeof v === 'number',
+        commandConfig: {
+          inputType: 'number',
+          min: 1,
+          integer: true,
+        },
+      }),
+      snapToGrid: new Setting<boolean>({
+        defaultValue: false,
+        description:
+          'Snap the cursor to the unit grid when drawing lines, arcs, and other segment-based tools',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      snapsPerMinor: new Setting<number>({
+        defaultValue: 1,
+        description:
+          'Number of snaps between minor grid lines. 1 means snapping to every minor grid line',
+        validate: (v) => typeof v === 'number',
+        isEnabled: (context) => context.modeling.snapToGrid.current,
+        commandConfig: {
+          inputType: 'number',
+          min: 0.001,
+        },
+      }),
+
       /**
        * TODO: This setting is not yet implemented.
        * Whether to turn off animations and other motion effects
@@ -695,6 +689,16 @@ export function createSettings() {
               />
             </div>
           )
+        },
+      }),
+      enableZookeeper: new Setting<boolean>({
+        hideOnLevel: 'user',
+        defaultValue: IS_STAGING_OR_DEBUG ? true : false,
+        description:
+          'Enable the conversational agent in Text-to-CAD for this project. Make sure to refresh the app after changing this setting.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
         },
       }),
     },

@@ -42,9 +42,9 @@ use tower_lsp::{
 
 use crate::{
     ModuleId, Program, SourceRange,
-    docs::kcl_doc::ModData,
+    docs::kcl_doc::{ArgData, ModData},
     exec::KclValue,
-    execution::{cache, kcl_value::FunctionSource},
+    execution::cache,
     lsp::{
         LspSuggestion, ToLspRange,
         backend::Backend as _,
@@ -53,7 +53,7 @@ use crate::{
     },
     parsing::{
         PIPE_OPERATOR,
-        ast::types::{Expr, VariableKind},
+        ast::types::{Expr, Node, VariableKind},
         token::TokenStream,
     },
 };
@@ -109,7 +109,7 @@ pub struct Backend {
     /// The stdlib signatures for the language.
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
     /// For all KwArg functions in std, a map from their arg names to arg help snippets (markdown format).
-    pub stdlib_args: HashMap<String, HashMap<String, String>>,
+    pub stdlib_args: HashMap<String, HashMap<String, LspArgData>>,
     /// Token maps.
     pub(super) token_map: DashMap<String, TokenStream>,
     /// AST maps.
@@ -204,6 +204,68 @@ impl Backend {
     fn remove_from_ast_maps(&self, filename: &str) {
         self.ast_map.remove(filename);
         self.symbols_map.remove(filename);
+    }
+
+    fn try_arg_completions(
+        &self,
+        ast: &Node<crate::parsing::ast::types::Program>,
+        position: usize,
+        current_code: &str,
+    ) -> Option<impl Iterator<Item = CompletionItem>> {
+        let curr_expr = ast.get_expr_for_position(position)?;
+        let hover =
+            curr_expr.get_hover_value_for_position(position, current_code, &HoverOpts::default_for_signature_help())?;
+
+        // Now we can tell if the user's cursor is inside a callable function.
+        // If so, get its name (the function name being called.)
+        let maybe_callee = match hover {
+            Hover::Function { name, range: _ } => Some(name),
+            Hover::Signature {
+                name,
+                parameter_index: _,
+                range: _,
+            } => Some(name),
+            Hover::Comment { .. } => None,
+            Hover::Variable { .. } => None,
+            Hover::KwArg {
+                callee_name,
+                name: _,
+                range: _,
+            } => Some(callee_name),
+            Hover::Type { .. } => None,
+        };
+        let callee_args = maybe_callee.and_then(|fn_name| self.stdlib_args.get(&fn_name))?;
+
+        let arg_label_completions = callee_args
+            .iter()
+            // Don't suggest labels for unlabelled args!
+            .filter(|(_arg_name, arg_data)| arg_data.props.is_labelled())
+            .map(|(arg_name, arg_data)| CompletionItem {
+                label: arg_name.to_owned(),
+                label_details: None,
+                kind: Some(CompletionItemKind::PROPERTY),
+                detail: arg_data.props.ty.clone(),
+                documentation: arg_data.props.docs.clone().map(|docs| {
+                    Documentation::MarkupContent(MarkupContent {
+                        kind: MarkupKind::Markdown,
+                        value: docs,
+                    })
+                }),
+                deprecated: None,
+                preselect: None,
+                sort_text: None,
+                filter_text: None,
+                insert_text: None,
+                insert_text_format: None,
+                insert_text_mode: None,
+                text_edit: None,
+                additional_text_edits: None,
+                command: None,
+                commit_characters: None,
+                data: None,
+                tags: None,
+            });
+        Some(arg_label_completions)
     }
 }
 
@@ -1043,13 +1105,10 @@ impl LanguageServer for Backend {
             Hover::Function { name, range } => {
                 let (sig, docs) = if let Some(Some(result)) = with_cached_var(&name, |value| {
                     match value {
-                        // User-defined or KCL std function
-                        KclValue::Function {
-                            value: FunctionSource::User { ast, .. },
-                            ..
-                        } => {
+                        // User-defined function
+                        KclValue::Function { value, .. } if !value.is_std => {
                             // TODO get docs from comments
-                            Some((ast.signature(), ""))
+                            Some((value.ast.signature(), ""))
                         }
                         _ => None,
                     }
@@ -1138,14 +1197,14 @@ impl LanguageServer for Backend {
                     return Ok(None);
                 };
 
-                let Some(tip) = arg_map.get(&name) else {
+                let Some(arg_entry) = arg_map.get(&name) else {
                     return Ok(None);
                 };
 
                 Ok(Some(LspHover {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
-                        value: tip.clone(),
+                        value: arg_entry.tip.clone(),
                     }),
                     range: Some(range),
                 }))
@@ -1258,20 +1317,17 @@ impl LanguageServer for Backend {
             return Ok(Some(CompletionResponse::Array(completions)));
         };
 
-        let Some(current_code) = self
-            .code_map
-            .get(params.text_document_position.text_document.uri.as_ref())
-        else {
-            return Ok(Some(CompletionResponse::Array(completions)));
-        };
-        let Ok(current_code) = std::str::from_utf8(&current_code) else {
-            return Ok(Some(CompletionResponse::Array(completions)));
-        };
-
         let position = position_to_char_index(params.text_document_position.position, current_code);
         if ast.ast.in_comment(position) {
             // If we are in a code comment we don't want to show completions.
             return Ok(None);
+        }
+
+        // If we're inside a CallExpression or something where a function parameter label could be completed,
+        // then complete it.
+        // Let's find the AST node that the user's cursor is in.
+        if let Some(arg_label_completions) = self.try_arg_completions(&ast.ast, position, current_code) {
+            completions.extend(arg_label_completions);
         }
 
         // Get the completion items for the ast.
@@ -1667,15 +1723,21 @@ pub fn get_signatures_from_stdlib(kcl_std: &ModData) -> HashMap<String, Signatur
     signatures
 }
 
+#[derive(Clone, Debug)]
+pub struct LspArgData {
+    pub tip: String,
+    pub props: ArgData,
+}
+
 /// Get signatures from our stdlib.
-pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<String, String>> {
+pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<String, LspArgData>> {
     let mut result = HashMap::new();
 
     for d in kcl_std.all_docs() {
         let crate::docs::kcl_doc::DocData::Fn(f) = d else {
             continue;
         };
-        let arg_map: HashMap<String, String> = f
+        let arg_map: HashMap<String, _> = f
             .args
             .iter()
             .map(|data| {
@@ -1686,7 +1748,11 @@ pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<St
                     tip.push_str("\n\n");
                     tip.push_str(docs);
                 }
-                (data.name.clone(), tip)
+                let arg_data = LspArgData {
+                    tip,
+                    props: data.clone(),
+                };
+                (data.name.clone(), arg_data)
             })
             .collect();
         if !arg_map.is_empty() {

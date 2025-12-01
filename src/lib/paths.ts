@@ -2,6 +2,8 @@ import type { PlatformPath } from 'path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
+import type { IElectronAPI } from '@root/interface'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
@@ -9,8 +11,6 @@ import {
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import type { IElectronAPI } from '@root/interface'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 
 const SETTINGS = '/settings'
 
@@ -278,4 +278,43 @@ export const getParentAbsolutePath = (absolutePath: string) => {
   split.pop()
   const joined = desktopSafePathJoin(split)
   return joined
+}
+
+/**
+ * Helper function to detect if an extension is an import extension
+ */
+export const isExtensionAnImportExtension = (
+  extension: string,
+  importExtensions: string[]
+) => {
+  return importExtensions.includes(extension.toLowerCase())
+}
+
+export const isExtensionARelevantExtension = (
+  extension: string,
+  relevantExtensions: string[]
+) => {
+  return relevantExtensions.includes(extension.toLowerCase())
+}
+
+/**
+ * Given an absolute file path, remove everything
+ * up to and including the project name to get
+ * the path to the file relative to the project root.
+ */
+export function getFilePathRelativeToProject(
+  absoluteFilePath: string,
+  projectName: string,
+  sep = window.electron?.sep
+) {
+  // Gotcha: below we're gonna look for the index of the project name,
+  // but what if the project name happens to be in the path earlier than the real one?
+  // Let's put separators on either side of it and offset by one, so we know
+  // it matches a whole directory name.
+  const projectNameWithSeparators = sep + projectName + sep
+  const projectIndexInPath = absoluteFilePath.indexOf(projectNameWithSeparators)
+  // Let's leave the leading separator
+  const sliceOffset = projectNameWithSeparators.length - 1
+
+  return absoluteFilePath.slice(projectIndexInPath + sliceOffset) ?? ''
 }

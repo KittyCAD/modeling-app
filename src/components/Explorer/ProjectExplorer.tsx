@@ -1,37 +1,39 @@
-import type { FileEntry, Project } from '@src/lib/project'
 import type { CustomIconName } from '@src/components/CustomIcon'
-import { FILE_EXT } from '@src/lib/constants'
 import { FileExplorer, StatusDot } from '@src/components/Explorer/FileExplorer'
 import {
-  constructPath,
-  flattenProject,
-  NOTHING_IS_SELECTED,
   CONTAINER_IS_SELECTED,
-  STARTING_INDEX_TO_SELECT,
   FILE_PLACEHOLDER_NAME,
   FOLDER_PLACEHOLDER_NAME,
+  NOTHING_IS_SELECTED,
+  STARTING_INDEX_TO_SELECT,
+  constructPath,
+  copyPasteSourceAndTarget,
+  flattenProject,
 } from '@src/components/Explorer/utils'
 import type {
   FileExplorerEntry,
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
-import { useState, useRef, useEffect } from 'react'
-import { systemIOActor, useSettings } from '@src/lib/singletons'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { useKclContext } from '@src/lang/KclProvider'
+import { kclErrorsByFilename } from '@src/lang/errors'
+import { FILE_EXT } from '@src/lib/constants'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import {
-  enforceFileEXT,
   desktopSafePathJoin,
   desktopSafePathSplit,
+  enforceFileEXT,
   getEXTWithPeriod,
   getParentAbsolutePath,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import { kclErrorsByFilename } from '@src/lang/errors'
-import { useKclContext } from '@src/lang/KclProvider'
+import type { FileEntry, Project } from '@src/lib/project'
+import { systemIOActor, useSettings } from '@src/lib/singletons'
 import type { MaybePressOrBlur } from '@src/lib/types'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
@@ -107,7 +109,11 @@ export const ProjectExplorer = ({
   const [contextMenuRow, setContextMenuRow] =
     useState<FileExplorerEntry | null>(null)
   const [isRenaming, setIsRenaming] = useState<boolean>(false)
+  const [isCopying, setIsCopying] = useState<boolean>(false)
   const lastIndexBeforeNothing = useRef<number>(-2)
+
+  // Store a path to copy and paste! Works for folders and files
+  const copyToClipBoard = useRef<FileEntry | null>(null)
 
   const fileExplorerContainer = useRef<HTMLDivElement | null>(null)
   const projectExplorerRef = useRef<HTMLDivElement | null>(null)
@@ -328,6 +334,91 @@ export const ProjectExplorer = ({
           onOpenInNewWindow: () => {
             window.electron?.openInNewWindow(row.path)
           },
+          onCopy: () => {
+            copyToClipBoard.current = {
+              path: row.path,
+              name: row.name,
+              children: row.children,
+            }
+            setIsCopying(true)
+          },
+          onPaste: () => {
+            if (copyToClipBoard.current) {
+              const absoluteParentPath = getParentAbsolutePath(row.path)
+              const parentIndex = flattenedData.findIndex((entry) => {
+                return entry.path === absoluteParentPath
+              })
+              const parent =
+                parentIndex >= 0 ? flattenedData[parentIndex] : project
+              const result = copyPasteSourceAndTarget(
+                row.children?.map((child) => child.path) || [],
+                parent.children?.map((child) => child.path) || [],
+                copyToClipBoard.current,
+                {
+                  path: row.path,
+                  name: row.name,
+                  children: row.children,
+                },
+                '-copy-'
+              )
+              if (result && result.src && result.target) {
+                systemIOActor.send({
+                  type: SystemIOMachineEvents.copyRecursive,
+                  data: {
+                    src: result.src,
+                    target: result.target,
+                  },
+                })
+              } else {
+                toast.error('Failed to copy and paste the result is null')
+              }
+            }
+
+            // clear the path
+            copyToClipBoard.current = null
+            setIsCopying(false)
+          },
+          /**
+           * For now this mimics {onPaste} and does not destroy the previous location.
+           * Once we have absolute confidence in the system and rolling back, we will make this
+           * a true move behavior.
+           */
+          onDrop: ({ src }) => {
+            if (src) {
+              const absoluteParentPath = getParentAbsolutePath(row.path)
+              const parentIndex = flattenedData.findIndex((entry) => {
+                return entry.path === absoluteParentPath
+              })
+              const parent =
+                parentIndex >= 0 ? flattenedData[parentIndex] : project
+              const result = copyPasteSourceAndTarget(
+                row.children?.map((child) => child.path) || [],
+                parent.children?.map((child) => child.path) || [],
+                {
+                  path: src.path,
+                  name: src.name,
+                  children: src.children,
+                },
+                {
+                  path: row.path,
+                  name: row.name,
+                  children: row.children,
+                },
+                '-copy-'
+              )
+              if (result && result.src && result.target) {
+                systemIOActor.send({
+                  type: SystemIOMachineEvents.copyRecursive,
+                  data: {
+                    src: result.src,
+                    target: result.target,
+                  },
+                })
+              } else {
+                toast.error('Failed to copy and paste the result is null')
+              }
+            }
+          },
           onRenameStart: () => {
             if (readOnly) {
               return
@@ -393,7 +484,8 @@ export const ProjectExplorer = ({
                     const requestedFileNameWithExtension =
                       parentPathRelativeToProject(
                         file?.path?.replace(oldPath, newPath),
-                        applicationProjectDirectory
+                        overrideApplicationProjectDirectory ||
+                          applicationProjectDirectory
                       )
                     systemIOActor.send({
                       type: SystemIOMachineEvents.renameFolderAndNavigateToFile,
@@ -446,7 +538,8 @@ export const ProjectExplorer = ({
                   getParentAbsolutePath(row.path),
                   fileNameForcedWithOriginalExt
                 ),
-                applicationProjectDirectory
+                overrideApplicationProjectDirectory ||
+                  applicationProjectDirectory
               )
 
               if (row.isFake) {
@@ -714,6 +807,7 @@ export const ProjectExplorer = ({
             selectedRow={selectedRow}
             contextMenuRow={contextMenuRow}
             isRenaming={isRenaming}
+            isCopying={isCopying}
           ></FileExplorer>
         )}
       </div>

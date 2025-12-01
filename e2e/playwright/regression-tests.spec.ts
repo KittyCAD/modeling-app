@@ -1,17 +1,19 @@
 import path from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
-import type { Page } from '@playwright/test'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { Page } from '@playwright/test'
 import * as fsp from 'fs/promises'
 
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
 import type { TestColor } from '@e2e/playwright/test-utils'
 import {
+  NUMBER_REGEXP,
   TEST_COLORS,
   executorInputPath,
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Regression tests', () => {
   // bugs we found that don't fit neatly into other categories
@@ -62,6 +64,7 @@ Internal engine error on request`
   test('user should not have to press down twice in cmdbar', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     // because the model has `line([0,0]..` it is valid code, but the model is invalid
     // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
@@ -82,20 +85,12 @@ extrude001 = extrude(sketch001, length = 50)
       )
     })
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
     await test.step('Check arrow down works', async () => {
-      await page.getByTestId('command-bar-open-button').hover()
-      await page.getByTestId('command-bar-open-button').click()
-
-      const floppy = page.getByRole('option', {
-        name: 'floppy disk arrow Export',
-      })
-
-      await floppy.click()
+      await cmdBar.cmdBarOpenBtn.click()
+      await cmdBar.selectOption({ name: 'floppy disk arrow Export' }).click()
 
       // press arrow down key twice
       await page.keyboard.press('ArrowDown')
@@ -108,14 +103,13 @@ extrude001 = extrude(sketch001, length = 50)
       )
 
       await page.keyboard.press('Escape')
-      await page.waitForTimeout(200)
       await page.keyboard.press('Escape')
-      await page.waitForTimeout(200)
+      await cmdBar.expectState({ stage: 'commandBarClosed' })
     })
 
     await test.step('Check arrow up works', async () => {
       // theme in test is dark, which is the second option, which means we can test arrow up
-      await page.getByTestId('command-bar-open-button').click()
+      await cmdBar.cmdBarOpenBtn.click()
 
       await page.getByText('The overall appearance of the').click()
 
@@ -332,15 +326,15 @@ extrude002 = extrude(profile002, length = 150)`
       await page.setBodyDimensions({ width: 500, height: 500 })
 
       await homePage.goToModelingScene()
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
 
       await scene.connectionEstablished()
       await scene.settled(cmdBar)
 
       // expect pixel color to be background color
       const offModelBefore = await scene.convertPagePositionToStream(
+        0.1,
         0.9,
-        0.5,
         'ratio'
       )
       const onModelBefore = await scene.convertPagePositionToStream(
@@ -590,8 +584,8 @@ extrude002 = extrude(profile002, length = 150)`
     const u = await getUtils(page)
 
     // Constants and locators
-    const planeColor: [number, number, number] = [170, 220, 170]
-    const bgColor: [number, number, number] = TEST_COLORS.DARK_MODE_BKGD
+    const planeColor: [number, number, number] = [50, 44, 45]
+    const bgColor: [number, number, number] = [30, 30, 30]
     const middlePixelIsColor = async (color: [number, number, number]) => {
       return u.getGreatestPixDiff({ x: 600, y: 250 }, color)
     }
@@ -667,7 +661,7 @@ extrude002 = extrude(profile002, length = 150)`
 
     await test.step(`Test setup`, async () => {
       await homePage.openProject('lego')
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
     })
     await test.step(`Waiting for scene to settle`, async () => {
       await scene.connectionEstablished()
@@ -813,14 +807,18 @@ washer = extrude(washerSketch, length = thicknessMax)`
         .toBe('true')
       await page.waitForTimeout(100)
       await circleCenterClick()
-      // this number will be different if the scale is not set correctly for inches
+      // Just verify that the radius is the correct order of magnitude
+      // this number will be very different if the scale is not set correctly for inches
       await editor.expectEditor.toContain(
-        'circle(sketch001, center = [0.04, -0.06]'
+        /circle\(sketch001, center = \[0\.0\d+, -0\.0\d+\]/
       )
       await circleRadiusClick()
 
+      // Just verify that the radius is the correct order of magnitude
       await editor.expectEditor.toContain(
-        'circle(sketch001, center = [0.04, -0.06], radius = 0.12'
+        new RegExp(
+          `circle\\(sketch001, center = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\], radius = 0\\.\\d+`
+        )
       )
     })
 

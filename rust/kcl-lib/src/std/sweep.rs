@@ -8,10 +8,7 @@ use serde::Serialize;
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
     errors::KclError,
-    execution::{
-        ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid,
-        types::{NumericType, RuntimeType},
-    },
+    execution::{ExecState, Helix, KclValue, ModelingCmdMeta, Sketch, Solid, types::RuntimeType},
     parsing::ast::types::TagNode,
     std::{Args, extrude::do_post_extrude},
 };
@@ -87,7 +84,7 @@ async fn inner_sweep(
         let id = exec_state.next_uuid();
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmdMeta::from_args_id(exec_state, &args, id),
                 ModelingCmd::from(mcmd::Sweep {
                     target: sketch.id.into(),
                     trajectory,
@@ -102,7 +99,6 @@ async fn inner_sweep(
             do_post_extrude(
                 sketch,
                 id.into(),
-                TyF64::new(0.0, NumericType::mm()),
                 sectional.unwrap_or(false),
                 &super::extrude::NamedCapTags {
                     start: tag_start.as_ref(),
@@ -112,6 +108,7 @@ async fn inner_sweep(
                 exec_state,
                 &args,
                 None,
+                None,
             )
             .await?,
         );
@@ -120,7 +117,7 @@ async fn inner_sweep(
     // Hide the artifact from the sketch or helix.
     exec_state
         .batch_modeling_cmd(
-            (&args).into(),
+            ModelingCmdMeta::from_args(exec_state, &args),
             ModelingCmd::from(mcmd::ObjectVisible {
                 object_id: trajectory.into(),
                 hidden: true,

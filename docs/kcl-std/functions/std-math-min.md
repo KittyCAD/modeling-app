@@ -17,7 +17,7 @@ min(@input: [number; 1+]): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [`[number; 1+]`](/docs/kcl-std/types/std-types-number) | An array of numbers to compute the minimum of. | Yes |
+| `input` | [[`number`](/docs/kcl-std/types/std-types-number); 1+] | An array of numbers to compute the minimum of. | Yes |
 
 ### Returns
 
@@ -40,7 +40,7 @@ example = extrude(exampleSketch, length = 5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the min function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-math-min0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

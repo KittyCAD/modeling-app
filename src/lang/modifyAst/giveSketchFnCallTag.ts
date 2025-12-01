@@ -1,17 +1,17 @@
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { CallExpressionKw, PathToNode } from '@src/lang/wasm'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import { err } from '@src/lib/trap'
 import { ARG_TAG } from '@src/lang/constants'
 import {
+  createLabeledArg,
   createTagDeclarator,
   findUniqueName,
-  createLabeledArg,
 } from '@src/lang/create'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { findKwArg } from '@src/lang/util'
+import type { CallExpressionKw, PathToNode } from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
 
 export function giveSketchFnCallTag(
   ast: Node<Program>,

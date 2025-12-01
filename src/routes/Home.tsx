@@ -11,35 +11,45 @@ import {
 
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
+import { BillingDialog } from '@kittycad/react-shared'
+import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
+import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
 import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
-import { BillingDialog } from '@kittycad/react-shared'
-import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import {
+  defaultGlobalStatusBarItems,
+  defaultLocalStatusBarItems,
+} from '@src/components/StatusBar/defaultStatusBarItems'
+import Tooltip from '@src/components/Tooltip'
 import { useMenuListener } from '@src/hooks/useMenu'
+import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
+import {
+  authActor,
+  billingActor,
+  commandBarActor,
+  kclManager,
+  systemIOActor,
+  useSettings,
+  useToken,
+} from '@src/lib/singletons'
 import {
   getNextSearchParams,
   getSortFunction,
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
-import {
-  useToken,
-  commandBarActor,
-  codeManager,
-  kclManager,
-  authActor,
-  billingActor,
-  systemIOActor,
-  useSettings,
-} from '@src/lib/singletons'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   useCanReadWriteProjectDirectory,
@@ -51,23 +61,12 @@ import {
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import {
   acceptOnboarding,
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import { CustomIcon } from '@src/components/CustomIcon'
-import Tooltip from '@src/components/Tooltip'
-import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
-import { StatusBar } from '@src/components/StatusBar/StatusBar'
-import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import {
-  defaultLocalStatusBarItems,
-  defaultGlobalStatusBarItems,
-} from '@src/components/StatusBar/defaultStatusBarItems'
 import { useSelector } from '@xstate/react'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -172,8 +171,6 @@ const Home = () => {
           name: 'app.theme',
         },
       })
-    } else if (data.menuLabel === 'File.Preferences.Theme color') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#themeColor`)
     } else if (data.menuLabel === 'File.Add file to project') {
       commandBarActor.send({
         type: 'Find and select command',
@@ -226,6 +223,7 @@ const Home = () => {
       <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
+          data-testid="home-header"
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
@@ -233,7 +231,10 @@ const Home = () => {
           readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />
-        <aside className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between">
+        <aside
+          data-testid="home-sidebar"
+          className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between"
+        >
           <ul className="flex flex-col">
             {needsToOnboard(location, onboardingStatus) && (
               <li className="flex group">
@@ -243,7 +244,6 @@ const Home = () => {
                     acceptOnboarding({
                       onboardingStatus,
                       navigate,
-                      codeManager,
                       kclManager,
                     }).catch(reportRejection)
                   }}

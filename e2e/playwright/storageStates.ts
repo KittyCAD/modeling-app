@@ -12,13 +12,17 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
     },
     onboarding_status: 'dismissed',
     show_debug_panel: true,
-    fixed_size_grid: false,
   },
   modeling: {
     enable_ssao: false,
     base_unit: 'in',
     mouse_controls: 'zoo',
     camera_projection: 'perspective',
+    // Tests were written before this setting existed.
+    // It's true by default because it's a good user experience, but
+    // these tests require it to be false.
+    fixed_size_grid: false,
+    gizmo_type: 'axis', // view-controls.spec.ts tests use axis gizmo
   },
   project: {
     default_project_name: 'untitled',

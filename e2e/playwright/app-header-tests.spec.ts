@@ -1,5 +1,5 @@
-import { expect, test } from '@e2e/playwright/zoo-test'
 import { join } from 'path'
+import { expect, test } from '@e2e/playwright/zoo-test'
 import * as fsp from 'fs/promises'
 
 test.describe('Electron app header tests', () => {

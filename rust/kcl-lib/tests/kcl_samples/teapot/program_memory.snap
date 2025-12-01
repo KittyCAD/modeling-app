@@ -8,12 +8,8 @@ description: Variables in memory after executing teapot.kcl
     "value": 160.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "body": {
@@ -106,9 +102,7 @@ description: Variables in memory after executing teapot.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -130,9 +124,7 @@ description: Variables in memory after executing teapot.kcl
               52.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -154,9 +146,7 @@ description: Variables in memory after executing teapot.kcl
               118.18181818181817
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -178,9 +168,7 @@ description: Variables in memory after executing teapot.kcl
               130.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -202,9 +190,7 @@ description: Variables in memory after executing teapot.kcl
               124.28183708950951
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -226,9 +212,7 @@ description: Variables in memory after executing teapot.kcl
               118.18181818181817
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -250,9 +234,7 @@ description: Variables in memory after executing teapot.kcl
               52.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -274,9 +256,7 @@ description: Variables in memory after executing teapot.kcl
               6.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -293,9 +273,7 @@ description: Variables in memory after executing teapot.kcl
               6.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -312,28 +290,7 @@ description: Variables in memory after executing teapot.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -343,9 +300,7 @@ description: Variables in memory after executing teapot.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -353,25 +308,19 @@ description: Variables in memory after executing teapot.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -383,9 +332,7 @@ description: Variables in memory after executing teapot.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -394,16 +341,11 @@ description: Variables in memory after executing teapot.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -474,9 +416,7 @@ description: Variables in memory after executing teapot.kcl
               29.5
             ],
             "type": "ArcThreePoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -498,9 +438,7 @@ description: Variables in memory after executing teapot.kcl
               22.5
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -522,9 +460,7 @@ description: Variables in memory after executing teapot.kcl
               22.5
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -546,28 +482,7 @@ description: Variables in memory after executing teapot.kcl
               29.5
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -10.0,
-              29.5
-            ],
-            "tag": null,
-            "to": [
-              -10.0,
-              29.5
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -577,9 +492,7 @@ description: Variables in memory after executing teapot.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -587,25 +500,19 @@ description: Variables in memory after executing teapot.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -617,9 +524,7 @@ description: Variables in memory after executing teapot.kcl
             -10.0,
             29.5
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -628,16 +533,11 @@ description: Variables in memory after executing teapot.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": null,
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -662,9 +562,7 @@ description: Variables in memory after executing teapot.kcl
             26.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -686,9 +584,7 @@ description: Variables in memory after executing teapot.kcl
             32.64
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -710,9 +606,7 @@ description: Variables in memory after executing teapot.kcl
             95.75
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -734,9 +628,7 @@ description: Variables in memory after executing teapot.kcl
             110.55
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -753,10 +645,10 @@ description: Variables in memory after executing teapot.kcl
             110.55
           ],
           "tag": {
-            "commentStart": 1780,
-            "end": 1786,
+            "commentStart": 1786,
+            "end": 1792,
             "moduleId": 0,
-            "start": 1780,
+            "start": 1786,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -765,9 +657,7 @@ description: Variables in memory after executing teapot.kcl
             112.36
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -784,9 +674,7 @@ description: Variables in memory after executing teapot.kcl
             108.70333020657074
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -796,9 +684,7 @@ description: Variables in memory after executing teapot.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -806,25 +692,19 @@ description: Variables in memory after executing teapot.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -836,9 +716,7 @@ description: Variables in memory after executing teapot.kcl
           0.0,
           26.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -853,9 +731,7 @@ description: Variables in memory after executing teapot.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "isClosed": false
     }
   },
@@ -864,12 +740,8 @@ description: Variables in memory after executing teapot.kcl
     "value": 26.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "seg01": {
@@ -922,9 +794,7 @@ description: Variables in memory after executing teapot.kcl
               26.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "innerPaths": [
@@ -949,9 +819,7 @@ description: Variables in memory after executing teapot.kcl
               26.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -961,9 +829,7 @@ description: Variables in memory after executing teapot.kcl
             "x": -64.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -971,25 +837,19 @@ description: Variables in memory after executing teapot.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1001,9 +861,7 @@ description: Variables in memory after executing teapot.kcl
             6.0,
             26.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1012,16 +870,11 @@ description: Variables in memory after executing teapot.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1030,12 +883,8 @@ description: Variables in memory after executing teapot.kcl
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "spoutHole": {
@@ -1078,9 +927,7 @@ description: Variables in memory after executing teapot.kcl
               26.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1090,9 +937,7 @@ description: Variables in memory after executing teapot.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -1100,25 +945,19 @@ description: Variables in memory after executing teapot.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1130,9 +969,7 @@ description: Variables in memory after executing teapot.kcl
             6.0,
             26.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1141,16 +978,11 @@ description: Variables in memory after executing teapot.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": -80.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1175,9 +1007,7 @@ description: Variables in memory after executing teapot.kcl
             26.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1194,10 +1024,10 @@ description: Variables in memory after executing teapot.kcl
             26.0
           ],
           "tag": {
-            "commentStart": 482,
-            "end": 488,
+            "commentStart": 485,
+            "end": 491,
             "moduleId": 0,
-            "start": 482,
+            "start": 485,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1206,9 +1036,7 @@ description: Variables in memory after executing teapot.kcl
             66.26060429977007
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1225,9 +1053,7 @@ description: Variables in memory after executing teapot.kcl
             82.08502803380476
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1249,9 +1075,7 @@ description: Variables in memory after executing teapot.kcl
             121.88986492394105
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1261,9 +1085,7 @@ description: Variables in memory after executing teapot.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -1271,25 +1093,19 @@ description: Variables in memory after executing teapot.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1301,9 +1117,7 @@ description: Variables in memory after executing teapot.kcl
           -64.0,
           26.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1318,9 +1132,7 @@ description: Variables in memory after executing teapot.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "isClosed": false
     }
   },
@@ -1329,12 +1141,8 @@ description: Variables in memory after executing teapot.kcl
     "value": 130.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tools": {
@@ -1399,9 +1207,7 @@ description: Variables in memory after executing teapot.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1423,9 +1229,7 @@ description: Variables in memory after executing teapot.kcl
               52.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1447,9 +1251,7 @@ description: Variables in memory after executing teapot.kcl
               118.18181818181817
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1471,9 +1273,7 @@ description: Variables in memory after executing teapot.kcl
               130.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1490,9 +1290,7 @@ description: Variables in memory after executing teapot.kcl
               130.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1509,28 +1307,7 @@ description: Variables in memory after executing teapot.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1540,9 +1317,7 @@ description: Variables in memory after executing teapot.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -1550,25 +1325,19 @@ description: Variables in memory after executing teapot.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1580,9 +1349,7 @@ description: Variables in memory after executing teapot.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1591,16 +1358,11 @@ description: Variables in memory after executing teapot.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": null,
       "endCapId": null,
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1609,12 +1371,8 @@ description: Variables in memory after executing teapot.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

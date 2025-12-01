@@ -3,9 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands pipe-flange-assembly.kcl
 ---
 {
-  "public/kcl-samples/pipe-flange-assembly/1120t74-pipe.kcl": [],
-  "public/kcl-samples/pipe-flange-assembly/68095k348-flange.kcl": [],
-  "public/kcl-samples/pipe-flange-assembly/91251a404-bolt.kcl": [],
   "public/kcl-samples/pipe-flange-assembly/9472k188-gasket.kcl": [
     {
       "cmdId": "[uuid]",
@@ -311,13 +308,11 @@ description: Artifact commands pipe-flange-assembly.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     }
   ],
-  "public/kcl-samples/pipe-flange-assembly/95479a127-hex-nut.kcl": [],
-  "public/kcl-samples/pipe-flange-assembly/98017a257-washer.kcl": [],
   "public/kcl-samples/pipe-flange-assembly/main.kcl": [
     {
       "cmdId": "[uuid]",
@@ -1075,7 +1070,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1835,7 +1830,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -2225,7 +2220,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3403,7 +3398,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3759,7 +3754,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -4121,7 +4116,7 @@ description: Artifact commands pipe-flange-assembly.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -4179,18 +4174,5 @@ description: Artifact commands pipe-flange-assembly.kcl
         ]
       }
     }
-  ],
-  "public/kcl-samples/pipe-flange-assembly/parameters.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

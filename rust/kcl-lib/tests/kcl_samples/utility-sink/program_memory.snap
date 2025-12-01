@@ -8,12 +8,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "blockDepth": {
@@ -21,12 +17,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 587.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "blockHeight": {
@@ -34,12 +26,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 847.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "blockSubdivisionCount": {
@@ -47,12 +35,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "blockSubdivisionWidth": {
@@ -60,12 +44,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 593.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "blockWidth": {
@@ -73,12 +53,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 1187.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "doorBody": {
@@ -139,9 +115,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -158,9 +132,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -177,9 +149,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -196,28 +166,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -227,9 +176,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -237,25 +184,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -267,9 +208,7 @@ description: Variables in memory after executing utility-sink.kcl
                 15.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -278,16 +217,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 667.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -346,9 +280,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -365,9 +297,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -384,9 +314,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -403,28 +331,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -434,9 +341,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -444,25 +349,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -474,9 +373,7 @@ description: Variables in memory after executing utility-sink.kcl
                 15.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -485,16 +382,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 667.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -524,9 +416,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -543,9 +433,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -562,9 +450,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -581,28 +467,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -612,9 +477,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -622,25 +485,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -652,9 +509,7 @@ description: Variables in memory after executing utility-sink.kcl
                 15.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -663,16 +518,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 667.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -702,9 +552,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -721,9 +569,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -740,9 +586,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -759,28 +603,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -790,9 +613,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -800,25 +621,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -830,9 +645,7 @@ description: Variables in memory after executing utility-sink.kcl
                 15.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -841,16 +654,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 667.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -861,12 +669,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "doorGap": {
@@ -874,12 +678,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "doorHeight": {
@@ -887,12 +687,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 667.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "doorHeightAboveTheFloor": {
@@ -900,12 +696,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 165.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "doorPlane": {
@@ -917,34 +709,26 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 165.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -953,12 +737,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 15.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "doorWidth": {
@@ -966,12 +746,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 576.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "floorPlane": {
@@ -983,34 +759,26 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1057,9 +825,7 @@ description: Variables in memory after executing utility-sink.kcl
                   780.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1069,9 +835,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -1079,25 +843,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1109,9 +867,7 @@ description: Variables in memory after executing utility-sink.kcl
                 245.25,
                 780.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1120,16 +876,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": null,
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -1173,9 +924,7 @@ description: Variables in memory after executing utility-sink.kcl
                   780.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1185,9 +934,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -1195,25 +942,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1225,9 +966,7 @@ description: Variables in memory after executing utility-sink.kcl
                 245.25,
                 780.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1236,16 +975,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": null,
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -1256,12 +990,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "handleFillet": {
@@ -1269,12 +999,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "handleHeightAboveTheFloor": {
@@ -1282,12 +1008,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 780.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "handleLengthSegmentA": {
@@ -1295,12 +1017,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "handleLengthSegmentB": {
@@ -1308,12 +1026,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "handleOffset": {
@@ -1321,12 +1035,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 243.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "handlePlane": {
@@ -1338,34 +1048,26 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 780.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1390,9 +1092,7 @@ description: Variables in memory after executing utility-sink.kcl
             -20.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1414,9 +1114,7 @@ description: Variables in memory after executing utility-sink.kcl
             -40.0
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1433,9 +1131,7 @@ description: Variables in memory after executing utility-sink.kcl
             -40.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1457,9 +1153,7 @@ description: Variables in memory after executing utility-sink.kcl
             -20.0
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1476,9 +1170,7 @@ description: Variables in memory after executing utility-sink.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1488,9 +1180,7 @@ description: Variables in memory after executing utility-sink.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 780.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -1498,25 +1188,19 @@ description: Variables in memory after executing utility-sink.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1528,9 +1212,7 @@ description: Variables in memory after executing utility-sink.kcl
           243.25,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1539,9 +1221,7 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "isClosed": false
     }
   },
@@ -1572,9 +1252,7 @@ description: Variables in memory after executing utility-sink.kcl
             780.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1584,9 +1262,7 @@ description: Variables in memory after executing utility-sink.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -1594,25 +1270,19 @@ description: Variables in memory after executing utility-sink.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1624,9 +1294,7 @@ description: Variables in memory after executing utility-sink.kcl
           245.25,
           780.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1635,9 +1303,7 @@ description: Variables in memory after executing utility-sink.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "handleSectionPlane": {
@@ -1649,34 +1315,26 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -1685,12 +1343,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 120.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "legBody": {
@@ -1751,9 +1405,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1770,9 +1422,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1789,9 +1439,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1808,28 +1456,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1839,9 +1466,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -1849,25 +1474,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1879,9 +1498,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1890,16 +1507,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 834.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -1929,9 +1541,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1948,9 +1558,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1967,9 +1575,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1986,28 +1592,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2017,9 +1602,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -2027,25 +1610,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2057,9 +1634,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2068,16 +1643,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 834.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -2107,9 +1677,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2126,9 +1694,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2145,9 +1711,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2164,28 +1728,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2195,9 +1738,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -2205,25 +1746,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2235,9 +1770,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2246,16 +1779,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 834.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -2285,9 +1813,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2304,9 +1830,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2323,9 +1847,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2342,28 +1864,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2373,9 +1874,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -2383,25 +1882,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2413,9 +1906,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2424,16 +1915,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 834.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -2444,12 +1930,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "legHeight": {
@@ -2457,12 +1939,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 834.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "lowerBeltBodyX": {
@@ -2523,9 +2001,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2542,9 +2018,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2561,9 +2035,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2580,28 +2052,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2611,9 +2062,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 150.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -2621,25 +2070,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2651,9 +2094,7 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2662,16 +2103,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -2701,9 +2137,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2720,9 +2154,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2739,9 +2171,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2758,28 +2188,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2789,9 +2198,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 150.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -2799,25 +2206,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2829,9 +2230,7 @@ description: Variables in memory after executing utility-sink.kcl
                 13.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2840,16 +2239,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -2913,9 +2307,7 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2932,9 +2324,7 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2951,9 +2341,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2970,28 +2358,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -3001,9 +2368,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 150.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -3011,25 +2376,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -3041,9 +2400,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0,
                 13.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3052,16 +2409,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -3091,9 +2443,7 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3110,9 +2460,7 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3129,9 +2477,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3148,28 +2494,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -3179,9 +2504,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 150.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -3189,25 +2512,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -3219,9 +2536,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0,
                 13.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3230,16 +2545,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -3250,12 +2560,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 150.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "lowerBeltLengthX": {
@@ -3263,12 +2569,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 1174.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "lowerBeltLengthY": {
@@ -3276,12 +2578,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 574.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "lowerBeltPlane": {
@@ -3293,34 +2591,26 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 150.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -3329,12 +2619,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "panelBody": {
@@ -3395,9 +2681,7 @@ description: Variables in memory after executing utility-sink.kcl
                   585.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3414,9 +2698,7 @@ description: Variables in memory after executing utility-sink.kcl
                   585.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3433,9 +2715,7 @@ description: Variables in memory after executing utility-sink.kcl
                   15.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3452,28 +2732,7 @@ description: Variables in memory after executing utility-sink.kcl
                   15.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  15.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  15.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -3483,9 +2742,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -3493,25 +2750,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -3523,9 +2774,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0,
                 15.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3534,16 +2783,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 667.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -3573,9 +2817,7 @@ description: Variables in memory after executing utility-sink.kcl
                   585.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3592,9 +2834,7 @@ description: Variables in memory after executing utility-sink.kcl
                   585.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3611,9 +2851,7 @@ description: Variables in memory after executing utility-sink.kcl
                   15.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3630,28 +2868,7 @@ description: Variables in memory after executing utility-sink.kcl
                   15.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  15.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  15.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -3661,9 +2878,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 165.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -3671,25 +2886,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -3701,9 +2910,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0,
                 15.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3712,16 +2919,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 667.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -3732,12 +2934,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "panelSpacing": {
@@ -3745,12 +2943,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 1187.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "panelWidth": {
@@ -3758,12 +2952,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 570.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "pillarBody": {
@@ -3824,9 +3014,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3843,9 +3031,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3862,9 +3048,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3881,28 +3065,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  593.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  593.5,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -3912,9 +3075,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 163.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -3922,25 +3083,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -3952,9 +3107,7 @@ description: Variables in memory after executing utility-sink.kcl
                 593.5,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3963,16 +3116,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 671.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -4002,9 +3150,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4021,9 +3167,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4040,9 +3184,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4059,28 +3201,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  593.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  593.5,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -4090,9 +3211,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 163.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -4100,25 +3219,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -4130,9 +3243,7 @@ description: Variables in memory after executing utility-sink.kcl
                 593.5,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4141,16 +3252,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 671.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -4161,12 +3267,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 163.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "pillarPlane": {
@@ -4178,34 +3280,26 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 163.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -4214,12 +3308,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 671.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "profileThickness": {
@@ -4227,12 +3317,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 13.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "sinkBodyInside": {
@@ -4290,9 +3376,7 @@ description: Variables in memory after executing utility-sink.kcl
               488.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4309,9 +3393,7 @@ description: Variables in memory after executing utility-sink.kcl
               488.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4328,9 +3410,7 @@ description: Variables in memory after executing utility-sink.kcl
               42.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4347,28 +3427,7 @@ description: Variables in memory after executing utility-sink.kcl
               42.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              298.75,
-              42.0
-            ],
-            "tag": null,
-            "to": [
-              298.75,
-              42.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -4380,17 +3439,13 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -4445,9 +3500,7 @@ description: Variables in memory after executing utility-sink.kcl
                     600.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -4464,9 +3517,7 @@ description: Variables in memory after executing utility-sink.kcl
                     600.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -4483,9 +3534,7 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -4502,28 +3551,7 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.0,
-                    0.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -4533,9 +3561,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 850.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "Custom",
@@ -4543,25 +3569,19 @@ description: Variables in memory after executing utility-sink.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -4573,9 +3593,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -4584,21 +3602,14 @@ description: Variables in memory after executing utility-sink.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -4609,9 +3620,7 @@ description: Variables in memory after executing utility-sink.kcl
             298.75,
             42.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4620,16 +3629,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": -200.0,
       "startCapId": "[uuid]",
       "endCapId": null,
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -4688,9 +3692,7 @@ description: Variables in memory after executing utility-sink.kcl
               490.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4707,9 +3709,7 @@ description: Variables in memory after executing utility-sink.kcl
               490.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4726,9 +3726,7 @@ description: Variables in memory after executing utility-sink.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4745,28 +3743,7 @@ description: Variables in memory after executing utility-sink.kcl
               40.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -296.75,
-              40.0
-            ],
-            "tag": null,
-            "to": [
-              -296.75,
-              40.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -4778,17 +3755,13 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -4843,9 +3816,7 @@ description: Variables in memory after executing utility-sink.kcl
                     600.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -4862,9 +3833,7 @@ description: Variables in memory after executing utility-sink.kcl
                     600.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -4881,9 +3850,7 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -4900,28 +3867,7 @@ description: Variables in memory after executing utility-sink.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.0,
-                    0.0
-                  ],
-                  "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -4931,9 +3877,7 @@ description: Variables in memory after executing utility-sink.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 850.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "Custom",
@@ -4941,25 +3885,19 @@ description: Variables in memory after executing utility-sink.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -4971,9 +3909,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -4982,21 +3918,14 @@ description: Variables in memory after executing utility-sink.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -5007,9 +3936,7 @@ description: Variables in memory after executing utility-sink.kcl
             -296.75,
             40.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -5018,16 +3945,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 200.0,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -5036,12 +3958,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "sinkDepth": {
@@ -5049,12 +3967,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 200.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "sinkLength": {
@@ -5062,12 +3976,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 450.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "sinkOffsetFront": {
@@ -5075,12 +3985,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "sinkOffsetLeft": {
@@ -5088,12 +3994,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 296.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "sinkPlaneInside": {
@@ -5106,17 +4008,13 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -5171,9 +4069,7 @@ description: Variables in memory after executing utility-sink.kcl
                 600.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5190,9 +4086,7 @@ description: Variables in memory after executing utility-sink.kcl
                 600.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5209,9 +4103,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5228,28 +4120,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                0.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             }
           ],
           "on": {
@@ -5259,9 +4130,7 @@ description: Variables in memory after executing utility-sink.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 850.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "Custom",
@@ -5269,25 +4138,19 @@ description: Variables in memory after executing utility-sink.kcl
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -5299,9 +4162,7 @@ description: Variables in memory after executing utility-sink.kcl
               0.0,
               0.0
             ],
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -5310,21 +4171,14 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
-        "height": -2.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "sectional": false
       },
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sinkPlaneOutside": {
@@ -5337,17 +4191,13 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -5402,9 +4252,7 @@ description: Variables in memory after executing utility-sink.kcl
                 600.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5421,9 +4269,7 @@ description: Variables in memory after executing utility-sink.kcl
                 600.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5440,9 +4286,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -5459,28 +4303,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                0.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             }
           ],
           "on": {
@@ -5490,9 +4313,7 @@ description: Variables in memory after executing utility-sink.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 850.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "Custom",
@@ -5500,25 +4321,19 @@ description: Variables in memory after executing utility-sink.kcl
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -5530,9 +4345,7 @@ description: Variables in memory after executing utility-sink.kcl
               0.0,
               0.0
             ],
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -5541,21 +4354,14 @@ description: Variables in memory after executing utility-sink.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
-        "height": -2.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "sectional": false
       },
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sinkSpacing": {
@@ -5563,12 +4369,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 13.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "sinkWidth": {
@@ -5576,12 +4378,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 593.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tableDepth": {
@@ -5589,12 +4387,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 600.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tableHeight": {
@@ -5602,12 +4396,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 850.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tableTopBody": {
@@ -5665,9 +4455,7 @@ description: Variables in memory after executing utility-sink.kcl
               600.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5684,9 +4472,7 @@ description: Variables in memory after executing utility-sink.kcl
               600.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5703,9 +4489,7 @@ description: Variables in memory after executing utility-sink.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5722,28 +4506,7 @@ description: Variables in memory after executing utility-sink.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -5753,9 +4516,7 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 850.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -5763,25 +4524,19 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -5793,9 +4548,7 @@ description: Variables in memory after executing utility-sink.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -5804,16 +4557,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -5826,34 +4574,26 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 850.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -5862,12 +4602,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 1200.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "tapHandle": {
@@ -5910,9 +4646,7 @@ description: Variables in memory after executing utility-sink.kcl
               1000.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -5922,9 +4656,7 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 0.0,
             "y": 545.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -5932,25 +4664,19 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -5962,9 +4688,7 @@ description: Variables in memory after executing utility-sink.kcl
             597.5,
             1000.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -5973,16 +4697,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 70.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -6026,9 +4745,7 @@ description: Variables in memory after executing utility-sink.kcl
               950.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -6038,9 +4755,7 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 0.0,
             "y": 545.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -6048,25 +4763,19 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -6078,9 +4787,7 @@ description: Variables in memory after executing utility-sink.kcl
             603.5,
             950.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -6089,16 +4796,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 237.4,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -6142,9 +4844,7 @@ description: Variables in memory after executing utility-sink.kcl
               545.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -6154,9 +4854,7 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 850.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -6164,25 +4862,19 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -6194,9 +4886,7 @@ description: Variables in memory after executing utility-sink.kcl
             608.5,
             545.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -6205,16 +4895,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 170.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -6258,9 +4943,7 @@ description: Variables in memory after executing utility-sink.kcl
               545.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -6270,9 +4953,7 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 850.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -6280,25 +4961,19 @@ description: Variables in memory after executing utility-sink.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -6310,9 +4985,7 @@ description: Variables in memory after executing utility-sink.kcl
             633.5,
             545.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -6321,16 +4994,11 @@ description: Variables in memory after executing utility-sink.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -6392,9 +5060,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6411,9 +5077,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6430,9 +5094,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6449,28 +5111,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -6480,9 +5121,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 847.5,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -6490,25 +5129,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -6520,9 +5153,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -6531,16 +5162,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": -13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -6570,9 +5196,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6589,9 +5213,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6608,9 +5230,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6627,28 +5247,7 @@ description: Variables in memory after executing utility-sink.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -6658,9 +5257,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 847.5,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -6668,25 +5265,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -6698,9 +5289,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -6709,16 +5298,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": -13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -6782,9 +5366,7 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6801,9 +5383,7 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6820,9 +5400,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6839,28 +5417,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -6870,9 +5427,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 847.5,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -6880,25 +5435,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -6910,9 +5459,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0,
                 13.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -6921,16 +5468,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": -13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -6960,9 +5502,7 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6979,9 +5519,7 @@ description: Variables in memory after executing utility-sink.kcl
                   587.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6998,9 +5536,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7017,28 +5553,7 @@ description: Variables in memory after executing utility-sink.kcl
                   13.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -7048,9 +5563,7 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 847.5,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -7058,25 +5571,19 @@ description: Variables in memory after executing utility-sink.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -7088,9 +5595,7 @@ description: Variables in memory after executing utility-sink.kcl
                 0.0,
                 13.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -7099,16 +5604,11 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": -13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -7119,12 +5619,8 @@ description: Variables in memory after executing utility-sink.kcl
     "value": 574.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "upperBeltPlane": {
@@ -7136,34 +5632,26 @@ description: Variables in memory after executing utility-sink.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 847.5,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   }

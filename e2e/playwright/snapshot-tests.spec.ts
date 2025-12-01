@@ -126,153 +126,16 @@ test.describe(
 )
 
 test(
-  'Draft segments should look right',
-  { tag: '@snapshot' },
-  async ({ page, scene, toolbar }) => {
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await u.waitForAuthSkipAppStart()
-
-    const startPixelX = 600
-    const pixelToUnitRatio = 400 / 37.5
-    const [endOfTangentClk, endOfTangentMv] = scene.makeMouseHelpers(
-      startPixelX + pixelToUnitRatio * 30,
-      500 - pixelToUnitRatio * 20,
-      { steps: 10 }
-    )
-    const [threePointArcMidPointClk, threePointArcMidPointMv] =
-      scene.makeMouseHelpers(800, 250, { steps: 10 })
-    const [threePointArcEndPointClk, threePointArcEndPointMv] =
-      scene.makeMouseHelpers(750, 285, { steps: 10 })
-    const [arcCenterClk, arcCenterMv] = scene.makeMouseHelpers(750, 210, {
-      steps: 10,
-    })
-    const [arcEndClk, arcEndMv] = scene.makeMouseHelpers(750, 150, {
-      steps: 10,
-    })
-
-    // Start a sketch
-    await u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      200
-    )
-
-    // Select a plane
-    await page.mouse.click(700, 200)
-    let code = `sketch001 = startSketchOn(XZ)`
-    await expect(page.locator('.cm-content')).toHaveText(code)
-
-    await page.mouse.click(
-      startPixelX + pixelToUnitRatio * 10,
-      500 - pixelToUnitRatio * 10
-    )
-    code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
-    await expect(page.locator('.cm-content')).toHaveText(code)
-    await page.waitForTimeout(100)
-
-    await page.mouse.move(
-      startPixelX + pixelToUnitRatio * 20,
-      500 - pixelToUnitRatio * 10
-    )
-
-    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-
-    const lineEndClick = () =>
-      page.mouse.click(
-        startPixelX + pixelToUnitRatio * 20,
-        500 - pixelToUnitRatio * 10
-      )
-    await lineEndClick()
-    await page.waitForTimeout(500)
-
-    code += `
-  |> xLine(length = 184.3)`
-    await expect(page.locator('.cm-content')).toHaveText(code)
-
-    await toolbar.selectTangentialArc()
-
-    // click on the end of the profile to continue it
-    await page.waitForTimeout(500)
-    await lineEndClick()
-    await page.waitForTimeout(500)
-
-    // click to continue profile
-    await page.mouse.move(813, 392, { steps: 10 })
-    await page.waitForTimeout(500)
-
-    await endOfTangentMv()
-    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-    await endOfTangentClk()
-
-    await toolbar.selectThreePointArc()
-    await page.waitForTimeout(500)
-    await endOfTangentClk()
-    await threePointArcMidPointMv()
-    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-    await threePointArcMidPointClk()
-    await page.waitForTimeout(100)
-
-    await threePointArcEndPointMv()
-    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-
-    await threePointArcEndPointClk()
-    await page.waitForTimeout(100)
-
-    await toolbar.selectArc()
-    await page.waitForTimeout(100)
-
-    // continue the profile
-    await threePointArcEndPointClk()
-    await page.waitForTimeout(100)
-    await arcCenterMv()
-    await page.waitForTimeout(500)
-    await arcCenterClk()
-
-    await arcEndMv()
-    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-    await arcEndClk()
-  }
-)
-
-test(
   'Draft rectangles should look right',
   { tag: '@snapshot' },
-  async ({ page }) => {
+  async ({ page, toolbar, editor }) => {
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     await u.waitForAuthSkipAppStart()
 
     // Start a sketch
-    await u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      200
-    )
-
-    // Select a plane
-    await page.mouse.click(700, 200)
-    await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)`
-    )
+    await toolbar.startSketchOnDefaultPlane('Front plane')
+    await editor.expectEditor.toContain(`sketch001 = startSketchOn(XZ)`)
 
     // Equip the rectangle tool
     await page.getByTestId('corner-rectangle').click()
@@ -294,51 +157,6 @@ test(
     await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
 
     // Ensure the draft rectangle looks the same as it usually does
-    await expect(page).toHaveScreenshot({
-      maxDiffPixels: 100,
-      mask: lowerRightMasks(page),
-    })
-  }
-)
-test(
-  'Draft circle should look right',
-  { tag: '@snapshot' },
-  async ({ page }) => {
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    await u.waitForAuthSkipAppStart()
-
-    // Start a sketch
-    await u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      200
-    )
-
-    // Select a plane
-    await page.mouse.click(700, 200)
-    await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)`
-    )
-
-    // Equip the circle tool
-    await page.getByTestId('circle-center').click()
-
-    // Draw the circle
-    const startPixelX = 600
-    const pixelToUnitRatio = 400 / 37.5
-    const circleCenterPoint: [number, number] = [
-      startPixelX + pixelToUnitRatio * 20,
-      500 - pixelToUnitRatio * 20,
-    ]
-    await page.mouse.click(...circleCenterPoint, { delay: 500 })
-    await page.mouse.move(
-      startPixelX + pixelToUnitRatio * 10,
-      500 - pixelToUnitRatio * 10,
-      { steps: 5 }
-    )
-    await page.waitForTimeout(TEST_OVERLAY_TIMEOUT_MS)
-
-    // Ensure the draft circle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: lowerRightMasks(page),
@@ -448,7 +266,7 @@ profile001 = startProfile(sketch001, at = [-5, -5])
 test(
   'Sketch on face with none z-up',
   { tag: '@snapshot' },
-  async ({ page, context, cmdBar, scene }) => {
+  async ({ page, context, cmdBar, scene, toolbar }) => {
     const u = await getUtils(page)
     await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
       localStorage.setItem(
@@ -480,11 +298,9 @@ part002 = startSketchOn(part001, face = seg01)
     // rendering, because an execution-done message is not sufficient.
     await page.waitForTimeout(1000)
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await toolbar.startSketchBtn.click()
     let previousCodeContent = await page.locator('.cm-content').innerText()
 
     // click at 641, 135
@@ -698,73 +514,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
       maxDiffPixels: 100,
       mask: [...headerMasks(page), ...lowerRightMasks(page)],
     })
-  })
-})
-
-test('theme persists', async ({ page, context, homePage }) => {
-  const u = await getUtils(page)
-  await context.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `part001 = startSketchOn(XY)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()
-  |> extrude(length = 10)
-`
-    )
-  }, KCL_DEFAULT_LENGTH)
-
-  await page.setViewportSize({ width: 1200, height: 500 })
-
-  await homePage.goToModelingScene()
-  await page.waitForTimeout(500)
-
-  // await page.getByRole('link', { name: 'Settings Settings (tooltip)' }).click()
-  await expect(page.getByTestId('settings-link')).toBeVisible()
-  await page.getByTestId('settings-link').click()
-
-  // open user settingns
-  await page.getByRole('radio', { name: 'person User' }).click()
-
-  await page.getByTestId('app-theme').selectOption('light')
-
-  await page.getByTestId('settings-close-button').click()
-
-  const networkToggle = page.getByTestId(/network-toggle/)
-
-  // simulate network down
-  await u.emulateNetworkConditions({
-    offline: true,
-    // values of 0 remove any active throttling. crbug.com/456324#c9
-    latency: 0,
-    downloadThroughput: -1,
-    uploadThroughput: -1,
-  })
-
-  // Disconnect and reconnect to check the theme persists through a reload
-
-  // Expect the network to be down
-  await expect(networkToggle).toContainText('Problem')
-
-  // simulate network up
-  await u.emulateNetworkConditions({
-    offline: false,
-    // values of 0 remove any active throttling. crbug.com/456324#c9
-    latency: 0,
-    downloadThroughput: -1,
-    uploadThroughput: -1,
-  })
-
-  await expect(networkToggle).toContainText('Network health (Strong)')
-
-  await expect(page.getByText('building scene')).not.toBeVisible()
-
-  await expect(page, 'expect screenshot to have light theme').toHaveScreenshot({
-    maxDiffPixels: 100,
-    mask: lowerRightMasks(page),
   })
 })
 

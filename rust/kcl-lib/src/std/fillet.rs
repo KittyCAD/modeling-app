@@ -155,7 +155,7 @@ async fn inner_fillet(
 
     exec_state
         .batch_end_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id: None,
                 edge_ids: vec![],

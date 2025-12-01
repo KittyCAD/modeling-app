@@ -720,6 +720,56 @@ async fn test_kcl_lsp_completions_empty_in_comment() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_arg_label_completions() {
+    // Test that argument labels are being suggested as completion items.
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                // The user is partway through typing an optional argument,
+                // maybe "twistAngle" or something similar.
+                text: r#"extrude(length = 4, twi)"#.to_string(),
+            },
+        })
+        .await;
+
+    // Send completion request.
+    let completions = server
+        .completion(tower_lsp::lsp_types::CompletionParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 13 },
+            },
+            context: None,
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+    let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions else {
+        panic!("Unexpected response from LSP");
+    };
+
+    let twist_completions: std::collections::HashSet<_> = completions
+        .into_iter()
+        .filter(|completion| completion.label.contains("twist"))
+        .map(|cmp| cmp.label)
+        .collect();
+
+    assert!(twist_completions.contains("twistAngle"));
+    assert!(twist_completions.contains("twistAngleStep"));
+    assert!(twist_completions.contains("twistCenter"));
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_completions_tags() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -3876,9 +3926,12 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("startSketchOn"));
-            assert!(value.contains(": Plane | Face"));
-            assert!(value.contains("Start a new 2-dimensional sketch on a specific"));
+            assert!(value.contains("startSketchOn"), "found `{value}`");
+            assert!(value.contains(": Plane | Face"), "found `{value}`");
+            assert!(
+                value.contains("Start a new 2-dimensional sketch on a specific"),
+                "found `{value}`"
+            );
         }
         _ => unreachable!(),
     }

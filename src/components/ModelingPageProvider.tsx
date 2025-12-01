@@ -9,10 +9,10 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import { codeManager, kclManager } from '@src/lib/singletons'
-import { type IndexLoaderData } from '@src/lib/types'
+import { kclManager } from '@src/lib/singletons'
 import { useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
+import { type IndexLoaderData } from '@src/lib/types'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
 /**
@@ -88,7 +88,9 @@ export const ModelingPageProvider = ({
     if (location.pathname === PATHS.HOME) {
       commandBarActor.send({
         type: 'Add commands',
-        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+        data: {
+          commands: [RouteTelemetryCommand, RouteSettingsCommand],
+        },
       })
     } else if (location.pathname.includes(PATHS.FILE)) {
       commandBarActor.send({
@@ -147,9 +149,10 @@ export const ModelingPageProvider = ({
           settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
       },
       specialPropsForInsertCommand: { providedOptions },
+      project,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [codeManager, kclManager, project, file])
+  }, [kclManager, project, file])
 
   useEffect(() => {
     commandBarActor.send({

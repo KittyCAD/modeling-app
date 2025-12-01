@@ -1,31 +1,41 @@
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import type { ActorRefFrom } from 'xstate'
+import env from '@src/env'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
-import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
+import {
+  writeEnvironmentConfigurationPool,
+  writeEnvironmentFile,
+} from '@src/lib/desktop'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   everyKclSample,
   findKclSample,
   kclSamplesManifestWithNoMultipleFiles,
 } from '@src/lib/kclSamples'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
-import toast from 'react-hot-toast'
-import { reportRejection } from '@src/lib/trap'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   getStringAfterLastSeparator,
   joinOSPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
-import {
-  writeEnvironmentConfigurationPool,
-  writeEnvironmentFile,
-} from '@src/lib/desktop'
-import env from '@src/env'
+import { reportRejection } from '@src/lib/trap'
 import { returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
+import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
+import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
+import { waitForIdleState } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  determineProjectFilePathFromPrompt,
+} from '@src/machines/systemIO/utils'
+import toast from 'react-hot-toast'
+import type { ActorRefFrom } from 'xstate'
+import { appActor, setLayout } from '@src/lib/singletons'
+import { AppMachineEventType } from '@src/lib/types'
+import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -85,9 +95,10 @@ function onSubmitKCLSampleCreation({
       if (!isProjectNew) {
         requestedFiles.forEach((requestedFile) => {
           const subDirectoryName = projectPathPart
-          const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot({
-            projectFolderName: requestedFile.requestedProjectName,
-          })
+          const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(
+            systemIOActor.getSnapshot().context,
+            { projectFolderName: requestedFile.requestedProjectName }
+          )
           const uniqueSubDirectoryName = getUniqueProjectName(
             subDirectoryName,
             firstLevelDirectories
@@ -126,26 +137,77 @@ function onSubmitKCLSampleCreation({
 
 export function createApplicationCommands({
   systemIOActor,
+  mlEphantManagerActor,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  mlEphantManagerActor: MlEphantManagerActor
 }) {
   const textToCADCommand: Command = {
     name: 'Text-to-CAD',
     description: 'Generate parts from text prompts.',
-    displayName: 'Text-to-CAD Create',
+    displayName: 'Create Project using Text-to-CAD',
     groupId: 'application',
     needsReview: false,
     status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
+    mlBranding: true,
     icon: 'sparkles',
     onSubmit: (record) => {
       if (record) {
         const requestedProjectName = record.newProjectName || record.projectName
         const requestedPrompt = record.prompt
-        const isProjectNew = !!record.newProjectName
+
+        const { folders } = systemIOActor.getSnapshot().context
+
+        const uniqueProjectPath = getUniqueProjectName(
+          requestedProjectName,
+          folders
+        )
+        const uniquePromptFilePath = determineProjectFilePathFromPrompt(
+          systemIOActor.getSnapshot().context,
+          {
+            existingProjectName: uniqueProjectPath,
+            requestedPrompt,
+          }
+        )
+
         systemIOActor.send({
-          type: SystemIOMachineEvents.generateTextToCAD,
-          data: { requestedPrompt, requestedProjectName, isProjectNew },
+          type: SystemIOMachineEvents.importFileFromURL,
+          data: {
+            requestedProjectName: uniqueProjectPath,
+            requestedCode: '',
+            requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
+          },
         })
+
+        // TODO: Remove this await and instead add a call back or something
+        // to the event above
+        waitForIdleState({ systemIOActor })
+          .then(() => {
+            mlEphantManagerActor.send({
+              type: MlEphantManagerTransitions.PromptCreateModel,
+              // It's always going to be a fresh directory since it's a new
+              // project.
+              projectForPromptOutput: {
+                name: '',
+                path: uniquePromptFilePath,
+                children: [],
+                readWriteAccess: true,
+                metadata: {
+                  accessed: '',
+                  created: '',
+                  modified: '',
+                  permission: null,
+                  type: null,
+                  size: 0,
+                },
+                kcl_file_count: 0,
+                directory_count: 0,
+                default_file: '',
+              },
+              prompt: requestedPrompt,
+            })
+          })
+          .catch(reportRejection)
       }
     },
     args: {
@@ -156,7 +218,8 @@ export function createApplicationCommands({
         options: isDesktop()
           ? [
               { name: 'New project', value: 'newProject' },
-              { name: 'Existing project', value: 'existingProject' },
+              // TODO: figure out what to do with this step
+              // { name: 'Existing project', value: 'existingProject' },
             ]
           : [{ name: 'Overwrite', value: 'existingProject' }],
         valueSummary(value) {
@@ -300,7 +363,7 @@ export function createApplicationCommands({
           }
           return value
         },
-        options: ({ argumentsToSubmit }) => {
+        options: () => {
           const samples = isDesktop()
             ? everyKclSample
             : kclSamplesManifestWithNoMultipleFiles
@@ -500,7 +563,7 @@ export function createApplicationCommands({
         return
       }
       if (data) {
-        const environmentName = env().VITE_KITTYCAD_BASE_DOMAIN
+        const environmentName = env().VITE_ZOO_BASE_DOMAIN
         if (environmentName)
           writeEnvironmentConfigurationPool(
             window.electron,
@@ -522,13 +585,71 @@ export function createApplicationCommands({
     },
   }
 
+  const resetLayoutCommand: Command = {
+    name: 'reset-layout',
+    displayName: 'Reset layout',
+    description: 'Reset layout to the default configuration',
+    needsReview: false,
+    icon: 'layout',
+    groupId: 'application',
+    onSubmit: () => {
+      appActor.send({ type: AppMachineEventType.ResetLayout })
+    },
+  }
+
+  const setLayoutCommand: Command = {
+    name: 'set-layout',
+    hideFromSearch: true,
+    displayName: 'Set layout',
+    description: 'Set layout to be a certain predefined configuration',
+    needsReview: false,
+    icon: 'layout',
+    groupId: 'application',
+    onSubmit: (data) => {
+      if (isUserLoadableLayoutKey(data?.layoutId)) {
+        setLayout(userLoadableLayouts[data.layoutId])
+        // This command is silent, we don't toast success, because
+        // it is often used in conjunction with other commands and actions
+        // that occur on app load, and we don't want to spam the user.
+      } else {
+        toast.error(`No layout found with ID "${data?.layoutId}"`)
+      }
+    },
+    args: {
+      layoutId: {
+        inputType: 'options',
+        defaultValue: 'default',
+        skip: true,
+        required: true,
+        /** These options must correspond to configs within `@src/lib/layout/configs/` */
+        options: [
+          {
+            name: 'Default',
+            value: 'default',
+          },
+          {
+            name: 'Text-to-CAD focus',
+            value: 'ttc',
+          },
+        ] satisfies { name: string; value: keyof typeof userLoadableLayouts }[],
+      },
+    },
+  }
+
   return isDesktop()
     ? [
         textToCADCommand,
         addKCLFileToProject,
+        resetLayoutCommand,
+        setLayoutCommand,
         createASampleDesktopOnly,
         switchEnvironmentsCommand,
         choosePoolCommand,
       ]
-    : [textToCADCommand, addKCLFileToProject]
+    : [
+        textToCADCommand,
+        addKCLFileToProject,
+        resetLayoutCommand,
+        setLayoutCommand,
+      ]
 }

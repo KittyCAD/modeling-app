@@ -16,7 +16,7 @@ function CommandBarBasicInput({
   onSubmit,
 }: {
   arg: CommandArgument<unknown> & {
-    inputType: 'string' | 'color'
+    inputType: 'string' | 'color' | 'tagDeclarator'
     name: string
   }
   stepBack: () => void
@@ -70,6 +70,11 @@ function CommandBarBasicInput({
         <span className="capitalize px-2 py-1 rounded-l bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80">
           {arg.displayName || arg.name}
         </span>
+        {arg.inputType === 'tagDeclarator' && (
+          <span className="pl-2 py-1 -mr-2 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80">
+            $
+          </span>
+        )}
         <input
           data-testid="cmd-bar-arg-value"
           id="arg-form"
@@ -80,6 +85,10 @@ function CommandBarBasicInput({
           className={`flex-grow ${arg.inputType === 'color' ? 'h-[41px]' : 'px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80'} !bg-transparent focus:outline-none`}
           placeholder="Enter a value"
           defaultValue={defaultValue}
+          data-1p-ignore
+          data-lpignore="true"
+          data-form-type="other"
+          data-bwignore
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && event.metaKey) {
               stepBack()

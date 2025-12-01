@@ -8,12 +8,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "value": 6.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "blockWidth": {
@@ -21,12 +17,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "value": 4.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltDiameter": {
@@ -34,12 +26,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltSpacingX": {
@@ -47,12 +35,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltSpacingY": {
@@ -60,12 +44,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "centralTube": {
@@ -115,9 +95,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "innerPaths": [
@@ -142,9 +120,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -154,9 +130,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 12.7,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -164,25 +138,19 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -194,9 +162,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             0.74,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -205,16 +171,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -227,12 +188,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "value": 0.1875,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "counterdrillDiameter": {
@@ -240,12 +197,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "value": 0.4375,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "fin": {
@@ -263,12 +216,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": -2.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -276,12 +225,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -294,12 +239,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": -2.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -307,12 +248,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": 1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -325,12 +262,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": 2.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -338,12 +271,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": -1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -356,12 +285,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": 2.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -369,12 +294,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "value": 1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -421,9 +342,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.2
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -433,9 +352,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -443,25 +360,19 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -473,9 +384,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             0.125,
             2.2
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -484,16 +393,11 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": -10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -594,9 +498,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -620,9 +522,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -646,9 +546,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -672,28 +570,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -3.25,
-              -2.25
-            ],
-            "tag": null,
-            "to": [
-              -3.25,
-              -2.25
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "innerPaths": [
@@ -718,9 +595,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -730,9 +605,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -740,25 +613,19 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -770,9 +637,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             -3.25,
             -2.25
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -799,11 +664,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -814,12 +676,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -832,12 +690,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -850,12 +704,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -868,21 +718,15 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "n": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -914,9 +758,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             -2.25
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -940,9 +782,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             2.25
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -966,9 +806,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             2.25
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -992,28 +830,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             -2.25
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -3.25,
-            -2.25
-          ],
-          "tag": null,
-          "to": [
-            -3.25,
-            -2.25
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "innerPaths": [
@@ -1038,9 +855,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1050,9 +865,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -1060,25 +873,19 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1090,9 +897,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           -3.25,
           -2.25
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1119,9 +924,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "rectangleSegmentA001": {
@@ -1149,12 +952,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tubeHeight": {
@@ -1162,12 +961,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tubeInnerDiameter": {
@@ -1175,12 +970,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "value": 1.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tubeThickness": {
@@ -1188,12 +979,8 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
     "value": 0.115,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

@@ -16,7 +16,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -44,7 +59,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 7
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -72,7 +102,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 8
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -100,7 +145,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 9
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -128,7 +188,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 10
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -156,7 +231,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -179,19 +269,30 @@ description: Operations executed cpu-cooler.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 12
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -217,7 +318,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -263,19 +379,30 @@ description: Operations executed cpu-cooler.kcl
             "value": -4.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 12
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -287,17 +414,24 @@ description: Operations executed cpu-cooler.kcl
         "value": 40.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -309,17 +443,24 @@ description: Operations executed cpu-cooler.kcl
         "value": 39.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -345,7 +486,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -368,19 +524,30 @@ description: Operations executed cpu-cooler.kcl
             "value": 17.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 10
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -406,7 +573,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -429,19 +611,30 @@ description: Operations executed cpu-cooler.kcl
             "value": -17.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -467,7 +660,18 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -495,7 +699,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 6
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -523,7 +742,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 7
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -551,7 +785,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 8
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -579,7 +828,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 9
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -607,7 +871,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 10
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -630,19 +909,30 @@ description: Operations executed cpu-cooler.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -668,7 +958,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -691,19 +996,30 @@ description: Operations executed cpu-cooler.kcl
             "value": 16.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -729,7 +1045,19 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -752,19 +1080,27 @@ description: Operations executed cpu-cooler.kcl
             "value": -16.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -790,7 +1126,19 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -813,12 +1161,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 7.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -865,7 +1209,19 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -883,7 +1239,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -906,19 +1277,30 @@ description: Operations executed cpu-cooler.kcl
             "value": 25.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -941,12 +1323,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -965,7 +1343,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -983,12 +1376,8 @@ description: Operations executed cpu-cooler.kcl
               "value": 4.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -998,9 +1387,9 @@ description: Operations executed cpu-cooler.kcl
               "type": "Number",
               "value": 50.0,
               "ty": {
+                "degrees": null,
                 "type": "Known",
-                "type": "Angle",
-                "type": "Degrees"
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -1008,7 +1397,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "ArrayElement",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1029,19 +1433,46 @@ description: Operations executed cpu-cooler.kcl
             "value": 4.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1057,7 +1488,35 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1078,12 +1537,8 @@ description: Operations executed cpu-cooler.kcl
               "value": 9.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1093,9 +1548,9 @@ description: Operations executed cpu-cooler.kcl
               "type": "Number",
               "value": 30.0,
               "ty": {
+                "degrees": null,
                 "type": "Known",
-                "type": "Angle",
-                "type": "Degrees"
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -1103,7 +1558,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "ArrayElement",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1124,19 +1594,46 @@ description: Operations executed cpu-cooler.kcl
             "value": 9.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1152,7 +1649,35 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1173,12 +1698,8 @@ description: Operations executed cpu-cooler.kcl
               "value": 23.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1189,12 +1710,8 @@ description: Operations executed cpu-cooler.kcl
               "value": 0.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "mm",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1202,7 +1719,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "ArrayElement",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1223,19 +1755,46 @@ description: Operations executed cpu-cooler.kcl
             "value": 23.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1251,7 +1810,35 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1289,7 +1876,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1311,9 +1913,9 @@ description: Operations executed cpu-cooler.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -1327,12 +1929,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1340,12 +1938,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1353,12 +1947,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1374,12 +1964,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1387,12 +1973,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1400,12 +1982,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1432,7 +2010,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1522,7 +2115,19 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -1545,19 +2150,33 @@ description: Operations executed cpu-cooler.kcl
             "value": -20.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1573,7 +2192,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1594,19 +2228,33 @@ description: Operations executed cpu-cooler.kcl
             "value": 158.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1622,7 +2270,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1650,7 +2313,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1678,7 +2356,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1700,9 +2393,9 @@ description: Operations executed cpu-cooler.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -1716,12 +2409,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1729,12 +2418,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1742,12 +2427,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1763,12 +2444,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1776,12 +2453,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1789,12 +2462,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1821,7 +2490,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1842,19 +2526,33 @@ description: Operations executed cpu-cooler.kcl
             "value": -4.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1870,7 +2568,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1891,19 +2604,33 @@ description: Operations executed cpu-cooler.kcl
             "value": 158.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1919,7 +2646,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1947,7 +2689,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1975,7 +2732,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1997,9 +2769,9 @@ description: Operations executed cpu-cooler.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -2013,12 +2785,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2026,12 +2794,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2039,12 +2803,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -2060,12 +2820,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": -8.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2073,12 +2829,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2086,12 +2838,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -2118,7 +2866,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2155,12 +2918,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2168,12 +2927,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2181,12 +2936,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -2199,12 +2950,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 16.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2222,7 +2969,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 5
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2243,19 +3005,33 @@ description: Operations executed cpu-cooler.kcl
             "value": 45.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2271,7 +3047,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2300,12 +3091,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -2313,12 +3100,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -2331,12 +3114,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -2344,12 +3123,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -2360,7 +3135,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2389,12 +3179,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -2402,12 +3188,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -2420,12 +3202,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -2433,12 +3211,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -2449,7 +3223,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 12
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2472,19 +3261,30 @@ description: Operations executed cpu-cooler.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 14
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2510,12 +3310,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2523,12 +3319,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -2536,12 +3328,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -2554,12 +3342,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 3.6666666666666665,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2577,7 +3361,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 15
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2593,7 +3392,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2622,12 +3432,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -2635,12 +3441,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -2653,12 +3455,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -2666,12 +3464,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -2682,7 +3476,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2704,9 +3513,9 @@ description: Operations executed cpu-cooler.kcl
             "type": "Number",
             "value": 30.000000000000004,
             "ty": {
+              "mm": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Mm"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -2720,7 +3529,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 12
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2749,12 +3573,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -2762,12 +3582,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -2780,12 +3596,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -2793,12 +3605,8 @@ description: Operations executed cpu-cooler.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -2809,7 +3617,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 12
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2831,9 +3654,9 @@ description: Operations executed cpu-cooler.kcl
             "type": "Number",
             "value": 22.500000000000004,
             "ty": {
+              "mm": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Mm"
+              "type": "Length"
             }
           },
           "sourceRange": []
@@ -2847,7 +3670,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 13
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2863,7 +3701,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2886,12 +3739,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 16.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2919,7 +3768,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 15
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2942,12 +3806,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2978,7 +3838,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 16
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -3005,7 +3880,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -3028,19 +3918,30 @@ description: Operations executed cpu-cooler.kcl
             "value": -2.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -3063,12 +3964,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 1.59375,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3087,7 +3984,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -3109,9 +4021,9 @@ description: Operations executed cpu-cooler.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -3125,12 +4037,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -3138,12 +4046,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -3151,12 +4055,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -3172,12 +4072,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -3185,12 +4081,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -3198,12 +4090,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -3230,7 +4118,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -3427,12 +4330,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 27.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3443,12 +4342,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 100.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3506,12 +4401,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": -1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -3519,12 +4410,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -3532,12 +4419,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -3550,12 +4433,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 80.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3678,12 +4557,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 27.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3694,12 +4569,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 100.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3768,12 +4639,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": -1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -3781,12 +4648,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -3794,12 +4657,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -3812,12 +4671,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 80.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4036,12 +4891,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 27.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4052,12 +4903,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 100.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4174,12 +5021,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": -1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -4187,12 +5030,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -4200,12 +5039,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -4218,12 +5053,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 80.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4314,9 +5145,9 @@ description: Operations executed cpu-cooler.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -4330,12 +5161,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -4343,12 +5170,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -4356,12 +5179,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -4377,12 +5196,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -4390,12 +5205,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -4403,12 +5214,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 100.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -4516,9 +5323,9 @@ description: Operations executed cpu-cooler.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -4532,12 +5339,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -4545,12 +5348,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -4558,12 +5357,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -4579,12 +5374,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -4592,12 +5383,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -4605,12 +5392,8 @@ description: Operations executed cpu-cooler.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -4672,19 +5455,26 @@ description: Operations executed cpu-cooler.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4700,7 +5490,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4723,19 +5528,30 @@ description: Operations executed cpu-cooler.kcl
             "value": 17.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4758,12 +5574,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4787,7 +5599,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4813,7 +5640,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4834,19 +5676,33 @@ description: Operations executed cpu-cooler.kcl
             "value": 21.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4862,7 +5718,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4885,19 +5756,30 @@ description: Operations executed cpu-cooler.kcl
             "value": 3.8,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4923,7 +5805,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -4946,19 +5843,33 @@ description: Operations executed cpu-cooler.kcl
             "value": 62.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4974,7 +5885,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4995,19 +5921,33 @@ description: Operations executed cpu-cooler.kcl
             "value": 62.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5023,7 +5963,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5044,19 +5999,29 @@ description: Operations executed cpu-cooler.kcl
             "value": 100.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5072,7 +6037,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5100,7 +6076,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5128,7 +6119,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5148,16 +6154,34 @@ description: Operations executed cpu-cooler.kcl
             "type": "Number",
             "value": 152.65270364466613,
             "ty": {
+              "mm": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Mm"
+              "type": "Length"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5173,7 +6197,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5193,16 +6232,34 @@ description: Operations executed cpu-cooler.kcl
             "type": "Number",
             "value": 47.34729635533386,
             "ty": {
+              "mm": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Mm"
+              "type": "Length"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5218,7 +6275,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5238,16 +6310,30 @@ description: Operations executed cpu-cooler.kcl
             "type": "Number",
             "value": -43.87966230538214,
             "ty": {
+              "mm": null,
               "type": "Known",
-              "type": "Length",
-              "type": "Mm"
+              "type": "Length"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5263,7 +6349,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5291,7 +6388,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5319,7 +6431,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5368,7 +6495,19 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -5382,17 +6521,24 @@ description: Operations executed cpu-cooler.kcl
         "value": 120.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5404,17 +6550,24 @@ description: Operations executed cpu-cooler.kcl
         "value": 25.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5426,17 +6579,24 @@ description: Operations executed cpu-cooler.kcl
         "value": 105.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5448,17 +6608,24 @@ description: Operations executed cpu-cooler.kcl
         "value": 4.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5470,17 +6637,24 @@ description: Operations executed cpu-cooler.kcl
         "value": 15.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5492,17 +6666,24 @@ description: Operations executed cpu-cooler.kcl
         "value": 2.125,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5514,17 +6695,24 @@ description: Operations executed cpu-cooler.kcl
         "value": 55.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -5542,7 +6730,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5565,19 +6768,30 @@ description: Operations executed cpu-cooler.kcl
             "value": 0.3,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 7
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5603,7 +6817,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 8
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5626,12 +6855,8 @@ description: Operations executed cpu-cooler.kcl
             "value": 3.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5662,13 +6887,26 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 9
+          }
+        ]
       },
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -5682,7 +6920,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5699,7 +6948,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5716,7 +6976,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -5731,7 +7002,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5744,7 +7026,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5757,7 +7050,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 22
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5770,17 +7074,20 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 23
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

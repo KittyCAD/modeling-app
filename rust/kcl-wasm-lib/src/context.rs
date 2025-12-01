@@ -22,24 +22,28 @@ pub struct Context {
 #[wasm_bindgen]
 impl Context {
     #[wasm_bindgen(constructor)]
-    pub async fn new(
+    pub fn new(
         engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
         fs_manager: kcl_lib::wasm_engine::FileSystemManager,
     ) -> Result<Self, JsValue> {
         console_error_panic_hook::set_once();
+        // Initialize the thread pool for rayon. For some reason, this wasn't
+        // happening automatically. It may return an error if it was already
+        // initialized, so ignore the result.
+        let _ = rayon::ThreadPoolBuilder::new()
+            .num_threads(1)
+            .use_current_thread()
+            .build_global();
 
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         Ok(Self {
             engine: Arc::new(Box::new(
                 kcl_lib::wasm_engine::EngineConnection::new(engine_manager, response_context.clone())
-                    .await
                     .map_err(|e| format!("{:?}", e))?,
             )),
             fs: Arc::new(FileManager::new(fs_manager)),
             mock_engine: Arc::new(Box::new(
-                kcl_lib::mock_engine::EngineConnection::new()
-                    .await
-                    .map_err(|e| format!("{:?}", e))?,
+                kcl_lib::mock_engine::EngineConnection::new().map_err(|e| format!("{:?}", e))?,
             )),
             response_context,
             project_manager: ProjectManager,

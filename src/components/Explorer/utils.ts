@@ -1,9 +1,15 @@
-import type { ReactNode } from 'react'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
+import {
+  desktopSafePathJoin,
+  getEXTWithPeriod,
+  getParentAbsolutePath,
+  getStringAfterLastSeparator,
+  joinOSPaths,
+} from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { desktopSafePathJoin, joinOSPaths } from '@src/lib/paths'
 import type { SubmitByPressOrBlur } from '@src/lib/types'
+import type { ReactNode } from 'react'
 
 /**
  * Remap FileEntry data into another data structure for the Project Explorer
@@ -16,6 +22,13 @@ export interface FileExplorerEntry extends FileEntry {
   key: string
   setSize: number
   positionInSet?: number
+}
+
+/**
+ * A limited version of a file entry for drag-and-drop purposes
+ */
+export type FileExplorerDropData = FileEntry & {
+  parentPath: string
 }
 
 /**
@@ -42,6 +55,9 @@ export interface FileExplorerRow extends FileExplorerEntry {
   onContextMenuOpen: (domIndex: number) => void
   onOpenInNewWindow: () => void
   onDelete: () => void
+  onCopy: () => void
+  onPaste: () => void
+  onDrop: (props: { src: FileExplorerDropData }) => void
   onRenameStart: () => void
   onRenameEnd: SubmitByPressOrBlur
 }
@@ -55,11 +71,14 @@ export interface FileExplorerRender extends FileExplorerRow {
 }
 
 export interface FileExplorerRowContextMenuProps {
-  itemRef: React.RefObject<HTMLElement>
+  itemRef: React.RefObject<HTMLElement | null>
   onRename: () => void
   onDelete: () => void
   onOpenInNewWindow: () => void
   callback: () => void
+  onCopy: () => void
+  onPaste: () => void
+  isCopying: boolean
 }
 
 /**
@@ -194,6 +213,195 @@ export const isRowFake = (
   return (
     row.name === FOLDER_PLACEHOLDER_NAME || row.name === FILE_PLACEHOLDER_NAME
   )
+}
+
+/**
+ * Assumes possibleCollisions is sorted
+ */
+export const getUniqueCopyPath = (
+  possibleCollisions: string[],
+  possibleCopyPath: string,
+  identifier: string,
+  isFile: boolean
+) => {
+  const formattedPossibleCollisions = possibleCollisions.map((path) => {
+    const hasPeriodIndex = path.lastIndexOf('.')
+    const formattedPath =
+      hasPeriodIndex !== -1 ? path.slice(0, hasPeriodIndex) : path
+    return formattedPath
+  })
+
+  const hasPeriodIndex = possibleCopyPath.lastIndexOf('.')
+  const formattedPossibleCopyPath =
+    hasPeriodIndex !== -1
+      ? possibleCopyPath.slice(0, hasPeriodIndex)
+      : possibleCopyPath
+
+  const matches = formattedPossibleCollisions.filter((path) => {
+    return path.startsWith(formattedPossibleCopyPath)
+  })
+
+  if (matches.length === 0) {
+    if (isFile) {
+      const fileNameAndExtension = getStringAfterLastSeparator(possibleCopyPath)
+      const fileName = fileNameAndExtension.slice(
+        0,
+        fileNameAndExtension.lastIndexOf('.')
+      )
+      const extWithPeriod = getEXTWithPeriod(possibleCopyPath) || ''
+      return joinOSPaths(
+        getParentAbsolutePath(possibleCopyPath),
+        fileName + extWithPeriod
+      )
+    }
+    return possibleCopyPath
+  }
+
+  const takenNumberHash = new Map()
+  const fileNameAndExtension = getStringAfterLastSeparator(possibleCopyPath)
+  const indexOfFileExt = fileNameAndExtension.lastIndexOf('.')
+  const endingSliceIndex =
+    indexOfFileExt === -1 ? fileNameAndExtension.length : indexOfFileExt
+  const fileName = fileNameAndExtension.slice(0, endingSliceIndex)
+  const takenNumbers = matches
+    .map((matchedPath) => {
+      const folderOrFileName = getStringAfterLastSeparator(matchedPath)
+      matchedPath = matchedPath.replace(fileName, '')
+      // need to do regex matching... this is gonna be bricked otherwise
+      const split = matchedPath.split(identifier)
+      if (split.length === 1) {
+        if (folderOrFileName === fileName) {
+          return '0'
+        }
+        return ''
+      }
+      return split[split.length - 1]
+    })
+    .filter((last) => {
+      if (!last) {
+        return false
+      }
+      const number = parseInt(last, 10)
+      return last.length === number.toString().length
+    })
+    .map((takenNumberString) => {
+      return parseInt(takenNumberString, 10)
+    })
+
+  takenNumbers.forEach((takenNumber) => {
+    takenNumberHash.set(takenNumber, true)
+  })
+
+  let possibleNumber = 1
+  for (; possibleNumber <= takenNumbers.length; possibleNumber++) {
+    if (!takenNumberHash.has(possibleNumber)) {
+      break
+    }
+  }
+
+  if (isFile) {
+    const fileNameAndExtension = getStringAfterLastSeparator(possibleCopyPath)
+    const fileName = fileNameAndExtension.slice(
+      0,
+      fileNameAndExtension.lastIndexOf('.')
+    )
+    const extWithPeriod = getEXTWithPeriod(possibleCopyPath) || ''
+    /**
+     * Just because a name will start with the same name like
+     * rigg.kcl and you are trying to copy rig.kcl into that folder it should not become
+     * rig<identifier>1.kcl
+     */
+    const uniqueBits =
+      takenNumbers.length === 0 && possibleNumber === 1
+        ? ''
+        : identifier + possibleNumber
+    return joinOSPaths(
+      getParentAbsolutePath(possibleCopyPath),
+      fileName + uniqueBits + extWithPeriod
+    )
+  }
+
+  return takenNumbers.length === 0
+    ? possibleCopyPath
+    : possibleCopyPath + identifier + possibleNumber
+}
+
+/**
+ * Give two file entries of a src and a target and the children within those locations
+ * this will generate a new src and target for the SystemIO otherwise it will be null
+ * Handles the logic for determining folder into folder etc... and the unique make collision
+ * detection based on the array of possible collisions
+ */
+export const copyPasteSourceAndTarget = (
+  possibleCollisions: string[],
+  possibleParentCollisions: string[],
+  src: FileEntry,
+  target: FileEntry,
+  identifier: string
+): { src: string; target: string } | null => {
+  let possibleCopyPath = ''
+  let collisionsToCheck = possibleCollisions
+  // Copy a folder to the same folder
+  if (src.children && target.children && src.path === target.path) {
+    // Make them siblings, copy itself to the same level
+    possibleCopyPath = joinOSPaths(getParentAbsolutePath(target.path), src.name)
+    collisionsToCheck = possibleParentCollisions
+  } else if (src.children && target.children) {
+    // Copy a folder into another folder
+    possibleCopyPath = joinOSPaths(target.path, src.name)
+  } else if (src.children && target.children === null) {
+    // Copying a folder to a file would make them siblings
+    possibleCopyPath = joinOSPaths(getParentAbsolutePath(target.path), src.name)
+    collisionsToCheck = possibleParentCollisions
+  } else if (src.children === null && target.children) {
+    // Copying a file into a folder
+    possibleCopyPath = joinOSPaths(target.path, src.name)
+  } else if (src.children === null && target.children === null) {
+    // Copying a file into a file would make them siblings
+    possibleCopyPath = joinOSPaths(getParentAbsolutePath(target.path), src.name)
+    collisionsToCheck = possibleParentCollisions
+  }
+
+  if (possibleCopyPath === '') {
+    return null
+  }
+
+  const isFile = src.children === null
+  let uniquePath = getUniqueCopyPath(
+    collisionsToCheck,
+    possibleCopyPath,
+    identifier,
+    isFile
+  )
+
+  return {
+    src: src.path,
+    target: uniquePath,
+  }
+}
+
+/**
+ * When dropping one file explorer item onto another, should we fire events?
+ * - not if the dragged item is an ancestor of the target
+ * - not if it would result in no movement: the target is a sibling file or the parent directory
+ */
+export function shouldDroppedEntryBeMoved(
+  src: FileExplorerDropData,
+  target: FileExplorerEntry,
+  sep = '/'
+) {
+  const targetIsFolder = target.children !== null
+  const targetIsFileInDifferentFolder =
+    !targetIsFolder && target.parentPath !== src.parentPath
+  const targetIsDroppedEntryParent = target.path.endsWith(src.parentPath)
+  const droppedEntryIsTargetParent =
+    target.path !== src.path && target.path.startsWith(src.path + sep)
+  const shouldDroppedEntryBeMoved =
+    !droppedEntryIsTargetParent &&
+    ((!targetIsDroppedEntryParent && targetIsFolder) ||
+      targetIsFileInDifferentFolder)
+
+  return shouldDroppedEntryBeMoved
 }
 
 // Used for focused which is different from the selection when you mouse click.

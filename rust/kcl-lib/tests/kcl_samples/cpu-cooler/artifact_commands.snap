@@ -2358,7 +2358,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3311,7 +3311,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3328,7 +3328,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3345,7 +3345,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3362,7 +3362,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3379,7 +3379,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3396,7 +3396,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3413,7 +3413,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3430,7 +3430,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3447,7 +3447,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3464,7 +3464,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     }
@@ -7040,15 +7040,20 @@ description: Artifact commands cpu-cooler.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 1.59375,
+        "cut_type": {
+          "chamfer": {
+            "distance": 1.59375,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -8429,7 +8434,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -8631,7 +8636,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     }
@@ -10116,7 +10121,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -10133,7 +10138,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -10150,7 +10155,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -10167,12 +10172,11 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     }
   ],
-  "public/kcl-samples/cpu-cooler/parameters.kcl": [],
   "public/kcl-samples/cpu-cooler/removable-sticker.kcl": [
     {
       "cmdId": "[uuid]",
@@ -10392,7 +10396,7 @@ description: Artifact commands cpu-cooler.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -10440,15 +10444,20 @@ description: Artifact commands cpu-cooler.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 3.0,
+        "cut_type": {
+          "chamfer": {
+            "distance": 3.0,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -10457,15 +10466,20 @@ description: Artifact commands cpu-cooler.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 3.0,
+        "cut_type": {
+          "chamfer": {
+            "distance": 3.0,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -10474,15 +10488,20 @@ description: Artifact commands cpu-cooler.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 3.0,
+        "cut_type": {
+          "chamfer": {
+            "distance": 3.0,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -10491,30 +10510,23 @@ description: Artifact commands cpu-cooler.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 3.0,
+        "cut_type": {
+          "chamfer": {
+            "distance": 3.0,
+            "second_distance": null,
+            "angle": null,
+            "swap": false
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "chamfer",
         "strategy": "automatic",
         "extra_face_ids": []
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

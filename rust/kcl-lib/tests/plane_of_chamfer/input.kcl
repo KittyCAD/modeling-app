@@ -1,0 +1,22 @@
+// From issue https://github.com/KittyCAD/modeling-app/issues/7832
+
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = 1.14)
+  |> line(endAbsolute = [1.33, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(profile001, length = 2, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 1,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+       tag = $seg02,
+     )
+
+p0 = planeOf(extrude001, face = seg02)
+
+// Extra bit to show it working on the rendered model
+sketch002 = startSketchOn(p0)
+  |> circle(center = [-0.5, -0.5], radius = 0.1)

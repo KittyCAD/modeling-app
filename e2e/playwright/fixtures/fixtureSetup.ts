@@ -18,12 +18,14 @@ import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
-import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
 import { getUtils, settingsToToml, setup } from '@e2e/playwright/test-utils'
+import type { ILog } from '@src/lib/debugger'
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -40,8 +42,7 @@ export class AuthenticatedApp {
   }
 
   async initialise(code = '') {
-    const testDir = this.testInfo.outputPath('electron-test-projects-dir')
-    await setup(this.context, this.page, testDir, this.testInfo)
+    await setup(this.context, this.page, this.testInfo)
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
@@ -68,6 +69,7 @@ export interface Fixtures {
   scene: SceneFixture
   homePage: HomePageFixture
   signInPage: SignInPageFixture
+  copilot: CopilotFixture
 }
 
 export class ElectronZoo {
@@ -87,7 +89,12 @@ export class ElectronZoo {
   async makeAvailableAgain() {
     await this.page.evaluate(async () => {
       return new Promise((resolve) => {
-        if (!window.engineCommandManager.engineConnection?.state?.type) {
+        if (
+          window.engineCommandManager.connection &&
+          window.engineCommandManager.started &&
+          window.engineCommandManager.connection.websocket?.readyState ===
+            WebSocket.OPEN
+        ) {
           return resolve(undefined)
         }
 
@@ -99,8 +106,10 @@ export class ElectronZoo {
           // It's possible we never even created an engineConnection
           // e.g. never left Projects view.
           if (
-            window.engineCommandManager?.engineConnection?.state.type ===
-            'disconnected'
+            !window.engineCommandManager.connection ||
+            !window.engineCommandManager.started ||
+            window.engineCommandManager.connection.websocket?.readyState ===
+              WebSocket.CLOSED
           ) {
             return resolve(undefined)
           }
@@ -208,7 +217,7 @@ export class ElectronZoo {
       app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
     }, this.projectDirName)
 
-    await setup(this.context, this.page, this.projectDirName, testInfo)
+    await setup(this.context, this.page, testInfo)
 
     await this.cleanProjectDir()
 
@@ -376,6 +385,14 @@ const fixturesForWeb = {
   },
 }
 
+interface IFormattedLog {
+  time: number
+  message: string
+  stack?: string
+  label: string
+  metadata: any
+}
+
 const fixturesBasedOnProcessEnvPlatform = {
   cmdBar: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new CmdBarFixture(page))
@@ -395,6 +412,43 @@ const fixturesBasedOnProcessEnvPlatform = {
   signInPage: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new SignInPageFixture(page))
   },
+  copilot: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(new CopilotFixture(page))
+  },
+  _globalAfterEach: [
+    async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
+      await use() // <-- runs the actual test
+
+      // <-- this runs *after every test* in the entire suite
+      if (testInfo.status === 'skipped' || testInfo.status === 'passed') {
+        // NO OP
+        return
+      }
+
+      const engineLogs: ILog[] = await page.evaluate(
+        () => window.engineDebugger.logs || []
+      )
+      const formattedLogs: IFormattedLog[] = engineLogs.map((log: ILog) => {
+        const newLog: IFormattedLog = {
+          ...log,
+        }
+        delete newLog['stack']
+        newLog.metadata = JSON.stringify(newLog.metadata, null, 1)
+        return newLog
+      })
+
+      await testInfo.attach('logs', {
+        /**
+         * gotcha: this is not actually a string for some unknown reason
+         * testInfo.attachments.logs will have body be body: <Buffer 5b 0a 20 20 ...
+         * even if I set the contentType to text/plain which is the default
+         */
+        body: JSON.stringify(formattedLogs, null, 2),
+        contentType: 'application/json',
+      })
+    },
+    { auto: true }, // ensures it always runs, no need to opt-in
+  ],
 }
 
 if (process.env.TARGET === 'web') {

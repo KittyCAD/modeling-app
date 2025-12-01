@@ -1,11 +1,12 @@
 #![allow(clippy::useless_conversion)]
 use anyhow::Result;
 use kcl_lib::{
-    lint::{checks, Discovered},
-    ExecutorContext, UnitLength,
+    lint::{checks, Discovered, FindingFamily},
+    ExecutorContext,
 };
 use kittycad_modeling_cmds::{
-    self as kcmc, format::InputFormat3d, shared::FileExportFormat, websocket::RawFile, ImageFormat, ImportFile,
+    self as kcmc, format::InputFormat3d, shared::FileExportFormat, units::UnitLength, websocket::RawFile, ImageFormat,
+    ImportFile,
 };
 use pyo3::{
     exceptions::PyException, prelude::PyModuleMethods, pyclass, pyfunction, pymethods, pymodule, types::PyModule,
@@ -24,7 +25,7 @@ fn tokio() -> &'static tokio::runtime::Runtime {
 }
 
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
-    let report = error.clone().into_miette_report_with_outputs(code).unwrap();
+    let report = error.into_miette_report_with_outputs(code).unwrap();
     let report = miette::Report::new(report);
     pyo3::exceptions::PyException::new_err(format!("{report:?}"))
 }
@@ -32,7 +33,7 @@ fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
 fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) -> PyErr {
     let report = kcl_lib::Report {
         kcl_source: input.to_string(),
-        error: error.clone(),
+        error,
         filename: filename.to_string(),
     };
     let report = miette::Report::new(report);
@@ -41,7 +42,7 @@ fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) 
 
 fn get_output_format(
     format: &FileExportFormat,
-    src_unit: kittycad_modeling_cmds::units::UnitLength,
+    src_unit: UnitLength,
 ) -> kittycad_modeling_cmds::format::OutputFormat3d {
     // Zoo co-ordinate system.
     //
@@ -192,6 +193,7 @@ async fn execute(path: String) -> PyResult<()> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(())
         })
         .await
@@ -215,6 +217,7 @@ async fn execute_code(code: String) -> PyResult<()> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(())
         })
         .await
@@ -238,6 +241,7 @@ async fn mock_execute_code(code: String) -> PyResult<bool> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(true)
         })
         .await
@@ -264,6 +268,7 @@ async fn mock_execute(path: String) -> PyResult<bool> {
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
+            ctx.close().await;
             Ok(true)
         })
         .await
@@ -287,6 +292,16 @@ fn to_py_exception(err: impl std::fmt::Display) -> PyErr {
     PyException::new_err(err.to_string())
 }
 
+/// Get the allowed relevant file extensions (imports + kcl).
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+fn relevant_file_extensions() -> PyResult<Vec<String>> {
+    Ok(kcl_lib::RELEVANT_FILE_EXTENSIONS
+        .iter()
+        .map(|s| s.to_string())
+        .collect::<Vec<String>>())
+}
+
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 async fn import_and_snapshot_views(
@@ -299,7 +314,9 @@ async fn import_and_snapshot_views(
         .spawn(async move {
             let (ctx, _state) = new_context_state(None, false).await.map_err(to_py_exception)?;
             import(&ctx, filepaths, format).await?;
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -365,7 +382,10 @@ async fn execute_and_snapshot_views(
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -432,7 +452,10 @@ async fn execute_code_and_snapshot_views(
                 .await
                 .map_err(|err| into_miette(err, &code))?;
 
-            take_snaps(&ctx, image_format, snapshot_options).await
+            let result = take_snaps(&ctx, image_format, snapshot_options).await;
+
+            ctx.close().await;
+            result
         })
         .await
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
@@ -545,6 +568,9 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
                 )
                 .await?;
 
+            ctx.close().await;
+            drop(ctx);
+
             let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(
                     "Unexpected response from engine: {resp:?}"
@@ -592,6 +618,9 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
                     }),
                 )
                 .await?;
+
+            ctx.close().await;
+            drop(ctx);
 
             let kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Export { files } = resp else {
                 return Err(pyo3::exceptions::PyException::new_err(format!(
@@ -641,9 +670,62 @@ fn lint(code: String) -> PyResult<Vec<Discovered>> {
     Ok(lints)
 }
 
+/// Result from linting and fixing automatically.
+/// Shows the new code after applying fixes,
+/// and any lints that couldn't be automatically applied.
+#[derive(Serialize, Debug, Clone)]
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
+#[pyclass]
+pub struct FixedLints {
+    /// Code after suggestions have been applied.
+    pub new_code: String,
+    /// Any lints that didn't have suggestions or couldn't be applied.
+    pub unfixed_lints: Vec<Discovered>,
+}
+
+#[pymethods]
+impl FixedLints {
+    #[getter]
+    fn unfixed_lints(&self) -> PyResult<Vec<Discovered>> {
+        Ok(self.unfixed_lints.clone())
+    }
+
+    #[getter]
+    fn new_code(&self) -> PyResult<String> {
+        Ok(self.new_code.clone())
+    }
+}
+
+/// Lint the kcl code. Fix any lints that can be fixed with automatic suggestions.
+/// Returns any unfixed lints.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+fn lint_and_fix_all(code: String) -> PyResult<FixedLints> {
+    let (new_code, unfixed_lints) =
+        kcl_lib::lint::lint_and_fix_all(code).map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+    Ok(FixedLints {
+        new_code,
+        unfixed_lints,
+    })
+}
+
+/// Lint the kcl code. Fix any lints that can be fixed with automatic suggestions,
+/// and are in the list of families to fix.
+/// Returns any unfixed lints.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+fn lint_and_fix_families(code: String, families_to_fix: Vec<FindingFamily>) -> PyResult<FixedLints> {
+    let (new_code, unfixed_lints) = kcl_lib::lint::lint_and_fix_families(code, &families_to_fix)
+        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+    Ok(FixedLints {
+        new_code,
+        unfixed_lints,
+    })
+}
+
 /// The kcl python module.
 #[pymodule]
-fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Add our types to the module.
     m.add_class::<ImageFormat>()?;
     m.add_class::<RawFile>()?;
@@ -654,45 +736,20 @@ fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<bridge::Point3d>()?;
     m.add_class::<bridge::CameraLookAt>()?;
     m.add_class::<kcmc::format::InputFormat3d>()?;
+    m.add_class::<FindingFamily>()?;
 
-    let step_import = PyModule::new(py, "step_import")?;
-    step_import.add_class::<kcmc::format::step::import::Options>()?;
-    m.add_submodule(&step_import)?;
-    let step_export = PyModule::new(py, "step_export")?;
-    step_export.add_class::<kcmc::format::step::export::Options>()?;
-    m.add_submodule(&step_export)?;
-
-    let gltf_import = PyModule::new(py, "gltf_import")?;
-    gltf_import.add_class::<kcmc::format::gltf::import::Options>()?;
-    m.add_submodule(&gltf_import)?;
-    let gltf_export = PyModule::new(py, "gltf_export")?;
-    gltf_export.add_class::<kcmc::format::gltf::export::Options>()?;
-    m.add_submodule(&gltf_export)?;
-
-    let obj_import = PyModule::new(py, "obj_import")?;
-    obj_import.add_class::<kcmc::format::obj::import::Options>()?;
-    m.add_submodule(&obj_import)?;
-    let obj_export = PyModule::new(py, "obj_export")?;
-    obj_export.add_class::<kcmc::format::obj::export::Options>()?;
-    m.add_submodule(&obj_export)?;
-
-    let ply_import = PyModule::new(py, "ply_import")?;
-    ply_import.add_class::<kcmc::format::ply::import::Options>()?;
-    m.add_submodule(&ply_import)?;
-    let ply_export = PyModule::new(py, "ply_export")?;
-    ply_export.add_class::<kcmc::format::ply::export::Options>()?;
-    m.add_submodule(&ply_export)?;
-
-    let stl_import = PyModule::new(py, "stl_import")?;
-    stl_import.add_class::<kcmc::format::stl::import::Options>()?;
-    m.add_submodule(&stl_import)?;
-    let stl_export = PyModule::new(py, "stl_export")?;
-    stl_export.add_class::<kcmc::format::stl::export::Options>()?;
-    m.add_submodule(&stl_export)?;
-
-    let sldprt_import = PyModule::new(py, "sldprt_import")?;
-    sldprt_import.add_class::<kcmc::format::sldprt::import::Options>()?;
-    m.add_submodule(&sldprt_import)?;
+    // These are fine to add top level since we rename them in pyo3 derives.
+    m.add_class::<kcmc::format::step::import::Options>()?;
+    m.add_class::<kcmc::format::step::export::Options>()?;
+    m.add_class::<kcmc::format::gltf::import::Options>()?;
+    m.add_class::<kcmc::format::gltf::export::Options>()?;
+    m.add_class::<kcmc::format::obj::import::Options>()?;
+    m.add_class::<kcmc::format::obj::export::Options>()?;
+    m.add_class::<kcmc::format::ply::import::Options>()?;
+    m.add_class::<kcmc::format::ply::export::Options>()?;
+    m.add_class::<kcmc::format::stl::import::Options>()?;
+    m.add_class::<kcmc::format::stl::export::Options>()?;
+    m.add_class::<kcmc::format::sldprt::import::Options>()?;
 
     // Add our functions to the module.
     m.add_function(wrap_pyfunction!(parse, m)?)?;
@@ -712,6 +769,9 @@ fn kcl(py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(format, m)?)?;
     m.add_function(wrap_pyfunction!(format_dir, m)?)?;
     m.add_function(wrap_pyfunction!(lint, m)?)?;
+    m.add_function(wrap_pyfunction!(lint_and_fix_all, m)?)?;
+    m.add_function(wrap_pyfunction!(lint_and_fix_families, m)?)?;
+    m.add_function(wrap_pyfunction!(relevant_file_extensions, m)?)?;
     Ok(())
 }
 

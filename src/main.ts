@@ -21,7 +21,7 @@ import {
 } from 'electron'
 import { Issuer } from 'openid-client'
 
-import { getAutoUpdater } from '@src/updater'
+import fs from 'fs'
 import {
   argvFromYargs,
   getPathOrUrlFromArgs,
@@ -29,8 +29,8 @@ import {
 } from '@src/commandLineArgs'
 import { initPromiseNode } from '@src/lang/wasmUtilsNode'
 import {
-  ZOO_STUDIO_PROTOCOL,
   OAUTH2_DEVICE_CLIENT_ID,
+  ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
@@ -41,7 +41,7 @@ import {
   disableMenu,
   enableMenu,
 } from '@src/menu'
-import fs from 'fs'
+import { getAutoUpdater } from '@src/updater'
 
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')
@@ -69,9 +69,9 @@ dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // default vite values based on mode
 process.env.NODE_ENV ??= viteEnv.MODE
-process.env.VITE_KITTYCAD_API_WEBSOCKET_URL ??=
-  viteEnv.VITE_KITTYCAD_API_WEBSOCKET_URL
-process.env.VITE_KITTYCAD_BASE_DOMAIN ??= viteEnv.VITE_KITTYCAD_BASE_DOMAIN
+process.env.VITE_KITTYCAD_WEBSOCKET_URL ??= viteEnv.VITE_KITTYCAD_WEBSOCKET_URL
+process.env.VITE_MLEPHANT_WEBSOCKET_URL ??= viteEnv.VITE_MLEPHANT_WEBSOCKET_URL
+process.env.VITE_ZOO_BASE_DOMAIN ??= viteEnv.VITE_ZOO_BASE_DOMAIN
 
 // Likely convenient to keep for debugging
 console.log('Environment vars', process.env)
@@ -92,7 +92,7 @@ if (process.defaultApp) {
 // Global app listeners
 // Must be done before ready event.
 // Checking against this lock is needed for Windows and Linux, see
-// https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
+// electronjs dot org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
 if (!singleInstanceLock && process.env.NODE_ENV !== 'test') {
   app.quit()
 } else {
@@ -235,6 +235,13 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
+
+  // Disable refresh shortcut globally for the desktop application
+  newWindow.webContents.on('before-input-event', (event, input) => {
+    if ((input.control || input.meta) && input.key.toLowerCase() === 'r') {
+      event.preventDefault()
+    }
+  })
 
   if (!process.env.HEADLESS) newWindow.show()
 
@@ -656,7 +663,7 @@ const getProjectPathAtStartup = async (
 }
 
 function registerStartupListeners() {
-  // Linux and Windows from https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
+  // Linux and Windows from electronjs dot org/docs/latest/tutorial/launch-app-from-url-in-another-app
   app.on('second-instance', (event, commandLine, workingDirectory) => {
     // Deep Link: second instance for Windows and Linux
     // Likely convenient to keep for debugging

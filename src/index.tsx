@@ -8,13 +8,19 @@ import { Router } from '@src/Router'
 import { ToastUpdate } from '@src/components/ToastUpdate'
 import '@src/index.css'
 import { initPromise } from '@src/lang/wasmUtils'
+import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import { markOnce } from '@src/lib/performance'
+import {
+  appActor,
+  commandBarActor,
+  mlEphantManagerActor,
+  systemIOActor,
+} from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { appActor, systemIOActor, commandBarActor } from '@src/lib/singletons'
 import reportWebVitals from '@src/reportWebVitals'
-import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
+import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler()
@@ -29,11 +35,21 @@ initPromise
     commandBarActor.send({
       type: 'Add commands',
       data: {
-        commands: [...createApplicationCommands({ systemIOActor })],
+        commands: [
+          ...createApplicationCommands({ systemIOActor, mlEphantManagerActor }),
+        ],
       },
     })
   })
   .catch(reportRejection)
+
+// Monkey patch to prevent issues in the web app with automated browser translation
+// This mitigates https://github.com/KittyCAD/modeling-app/issues/8667, until
+// we roll out our own i18n solution and can disable browser translation altogether.
+// https://github.com/KittyCAD/modeling-app/issues/4959
+if (!window.electron) {
+  monkeyPatchForBrowserTranslation()
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
