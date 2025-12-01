@@ -96,6 +96,7 @@ class PointSegment implements SegmentUtils {
         >
         <div
           ${{ key: 'id', value: 'inner-circle' }}
+          data-point-inner-circle="true"
           style="
             position: absolute;
             top: 50%;

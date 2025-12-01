@@ -844,6 +844,52 @@ export function createOnDragStartCallback({
   }
 }
 
+/**
+ * Creates the onDragEnd callback for sketch solve drag operations.
+ * Restores visual feedback for point segments after dragging ends.
+ *
+ * @param getDraggingPointElement - Getter for the currently dragging point element
+ * @param setDraggingPointElement - Setter to clear the dragging point element
+ * @param findInnerCircle - Function to find the inner circle element within a point element (defaults to querying by data attribute)
+ */
+export function createOnDragEndCallback({
+  getDraggingPointElement,
+  setDraggingPointElement,
+  findInnerCircle = (element: HTMLElement): HTMLElement | null => {
+    const found = element.querySelector('[data-point-inner-circle="true"]')
+    // querySelector returns Element | null, but we know it's an HTMLElement (a div)
+    // Use type guard to narrow to HTMLElement
+    if (found instanceof HTMLElement) {
+      return found
+    }
+    return null
+  },
+}: {
+  getDraggingPointElement: () => HTMLElement | null
+  setDraggingPointElement: (element: HTMLElement | null) => void
+  findInnerCircle?: (element: HTMLElement) => HTMLElement | null
+}): (arg: {
+  intersectionPoint: { twoD: Vector2; threeD: Vector3 }
+  selected?: Object3D
+  mouseEvent: MouseEvent
+  intersects: Array<any>
+}) => void | Promise<void> {
+  return () => {
+    // Restore opacity for point segment if we were dragging one
+    const element = getDraggingPointElement()
+    if (element) {
+      const innerCircle = findInnerCircle(element)
+      if (innerCircle) {
+        // Restore full opacity to indicate dragging has ended
+        innerCircle.style.opacity = '1'
+      }
+    }
+    // Always clear the dragging state, even if no element was being dragged
+    // This ensures state is always clean after drag ends
+    setDraggingPointElement(null)
+  }
+}
+
 export function setUpOnDragAndSelectionClickCallbacks({
   self,
   context,
@@ -1494,17 +1540,10 @@ export function setUpOnDragAndSelectionClickCallbacks({
       setDraggingPointElement,
       getDraggingPointElement,
     }),
-    onDragEnd: () => {
-      // Restore opacity for point segment if we were dragging one
-      const element = getDraggingPointElement()
-      if (element) {
-        const innerCircle = element.querySelector('div')
-        if (innerCircle) {
-          innerCircle.style.opacity = '1'
-        }
-        setDraggingPointElement(null)
-      }
-    },
+    onDragEnd: createOnDragEndCallback({
+      getDraggingPointElement,
+      setDraggingPointElement,
+    }),
     onDrag: async ({ selected, intersectionPoint }) => {
       if (getIsSolveInProgress()) {
         return

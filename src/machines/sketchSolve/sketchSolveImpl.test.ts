@@ -1,6 +1,9 @@
 import { describe, it, expect, vi } from 'vitest'
 import { Group, Vector2, Vector3 } from 'three'
-import { createOnDragStartCallback } from '@src/machines/sketchSolve/sketchSolveImpl'
+import {
+  createOnDragStartCallback,
+  createOnDragEndCallback,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import type { Themes } from '@src/lib/theme'
 
@@ -270,6 +273,148 @@ describe('createOnDragStartCallback', () => {
 
     // Line segments don't need DOM element lookup for visual feedback
     expect(findPointSegmentElement).not.toHaveBeenCalled()
+    expect(setDraggingPointElement).toHaveBeenCalledWith(null)
+  })
+})
+
+describe('createOnDragEndCallback', () => {
+  it('should restore visual feedback opacity when drag ends on a point segment', () => {
+    const setDraggingPointElement = vi.fn()
+    // Create a real point segment to get the actual DOM structure
+    const segmentId = 13
+    const pointGroup = createPointSegmentGroup({ segmentId })
+
+    // Get the actual DOM element from the point segment
+    const handleElement =
+      pointGroup.children[0]?.userData?.type === 'handle'
+        ? (pointGroup.children[0] as any).element
+        : null
+    if (!(handleElement instanceof HTMLElement)) {
+      throw new Error('Failed to get handle element from point segment group')
+    }
+
+    // Find the inner circle that shows the visual feedback using the data attribute
+    const innerCircle = handleElement.querySelector(
+      '[data-point-inner-circle="true"]'
+    )
+    if (innerCircle instanceof HTMLElement === false) {
+      throw new Error('Failed to find inner circle in point segment')
+    }
+
+    // Simulate the drag state by setting opacity to 0.7 (as done in onDragStart)
+    innerCircle.style.opacity = '0.7'
+
+    const getDraggingPointElement = vi.fn(() => handleElement)
+
+    const callback = createOnDragEndCallback({
+      getDraggingPointElement,
+      setDraggingPointElement,
+    })
+
+    void callback({
+      intersectionPoint: {
+        twoD: new Vector2(0, 0),
+        threeD: new Vector3(0, 0, 0),
+      },
+      selected: undefined,
+      mouseEvent: {} as MouseEvent,
+      intersects: [],
+    })
+
+    // Opacity should be restored to full visibility to indicate drag has ended
+    expect(innerCircle.style.opacity).toBe('1')
+    // Dragging element should be cleared
+    expect(setDraggingPointElement).toHaveBeenCalledWith(null)
+  })
+
+  it('should clear dragging state even when no element is currently being dragged', () => {
+    const setDraggingPointElement = vi.fn()
+    const getDraggingPointElement = vi.fn(() => null)
+
+    const callback = createOnDragEndCallback({
+      getDraggingPointElement,
+      setDraggingPointElement,
+    })
+
+    void callback({
+      intersectionPoint: {
+        twoD: new Vector2(0, 0),
+        threeD: new Vector3(0, 0, 0),
+      },
+      selected: undefined,
+      mouseEvent: {} as MouseEvent,
+      intersects: [],
+    })
+
+    // Should still clear the dragging state even if no element was being dragged
+    // This ensures state is always clean after drag ends
+    expect(setDraggingPointElement).toHaveBeenCalledWith(null)
+  })
+
+  it('should handle missing inner circle element gracefully', () => {
+    const setDraggingPointElement = vi.fn()
+    // Create an element without the inner circle structure
+    const mockElement = document.createElement('div')
+    // Don't add the inner circle div
+
+    const getDraggingPointElement = vi.fn(() => mockElement)
+
+    const callback = createOnDragEndCallback({
+      getDraggingPointElement,
+      setDraggingPointElement,
+    })
+
+    // Should not throw when inner circle is missing
+    void callback({
+      intersectionPoint: {
+        twoD: new Vector2(0, 0),
+        threeD: new Vector3(0, 0, 0),
+      },
+      selected: undefined,
+      mouseEvent: {} as MouseEvent,
+      intersects: [],
+    })
+
+    // Should still clear the dragging state even if inner circle is missing
+    expect(setDraggingPointElement).toHaveBeenCalledWith(null)
+  })
+
+  it('should allow custom inner circle finder for testing', () => {
+    const setDraggingPointElement = vi.fn()
+    const mockElement = document.createElement('div')
+    const customInnerCircle = document.createElement('div')
+    customInnerCircle.id = 'custom-inner'
+    mockElement.appendChild(customInnerCircle)
+
+    // Set initial opacity
+    customInnerCircle.style.opacity = '0.7'
+
+    const getDraggingPointElement = vi.fn(() => mockElement)
+    // Custom finder that looks for element with id 'custom-inner'
+    const findInnerCircle = vi.fn((element: HTMLElement) =>
+      element.querySelector('#custom-inner')
+    )
+
+    const callback = createOnDragEndCallback({
+      getDraggingPointElement,
+      setDraggingPointElement,
+      findInnerCircle,
+    })
+
+    void callback({
+      intersectionPoint: {
+        twoD: new Vector2(0, 0),
+        threeD: new Vector3(0, 0, 0),
+      },
+      selected: undefined,
+      mouseEvent: {} as MouseEvent,
+      intersects: [],
+    })
+
+    // Custom finder should be used
+    expect(findInnerCircle).toHaveBeenCalledWith(mockElement)
+    // Opacity should be restored
+    expect(customInnerCircle.style.opacity).toBe('1')
     expect(setDraggingPointElement).toHaveBeenCalledWith(null)
   })
 })
