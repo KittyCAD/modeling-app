@@ -707,29 +707,6 @@ function getLayoutMigrations(): LayoutMigrationMap {
         transformationSets: [{ matcher: true, transformations: [(l) => l] }],
       },
     ],
-    [
-      'v2',
-      {
-        newVersion: 'v3',
-        transformationSets: [
-          {
-            matcher: (l) =>
-              l.type === LayoutType.Simple && l.areaType === AreaType.TTC,
-            transformations: [
-              (l) => {
-                if (!('icon' in l)) {
-                  return l
-                }
-                return {
-                  ...l,
-                  icon: 'questionMark',
-                } satisfies PaneChild
-              },
-            ],
-          },
-        ],
-      },
-    ],
   ])
 
   return migrationMap
