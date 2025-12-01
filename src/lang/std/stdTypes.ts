@@ -12,7 +12,10 @@ import type {
 } from '@src/lang/constants'
 import type { ToolTip } from '@src/lang/langHelpers'
 import type { Coords2d } from '@src/lang/util'
-import type { ConstrainInfoType, LineInputsType } from '@src/lang/std/sketchcombos'
+import type {
+  ConstrainInfoType,
+  LineInputsType,
+} from '@src/lang/std/sketchcombos'
 import type {
   BinaryPart,
   CallExpressionKw,
