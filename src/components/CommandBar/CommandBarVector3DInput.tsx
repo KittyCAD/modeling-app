@@ -72,7 +72,6 @@ function CommandBarVector3DInput({
   arg,
   stepBack,
   onSubmit,
-  currentCode,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'vector3d'
@@ -80,7 +79,6 @@ function CommandBarVector3DInput({
   }
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
-  currentCode: string
 }) {
   const commandBarState = useCommandBarState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
@@ -132,21 +130,18 @@ function CommandBarVector3DInput({
     value: x,
     selectionRanges: { graphSelections: [], otherSelections: [] },
     allowArrays: false,
-    code: currentCode,
   })
 
   const yCalculation = useCalculateKclExpression({
     value: y,
     selectionRanges: { graphSelections: [], otherSelections: [] },
     allowArrays: false,
-    code: currentCode,
   })
 
   const zCalculation = useCalculateKclExpression({
     value: z,
     selectionRanges: { graphSelections: [], otherSelections: [] },
     allowArrays: false,
-    code: currentCode,
   })
 
   // DOM access for focus and keyboard navigation

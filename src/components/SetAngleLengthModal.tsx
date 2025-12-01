@@ -27,7 +27,6 @@ type SetAngleLengthModalProps = InstanceProps<ModalResolve, ModalReject> & {
   valueName: string
   shouldCreateVariable?: boolean
   selectionRanges: Selections
-  currentCode: string
 }
 
 export const createSetAngleLengthModal = create<
@@ -44,7 +43,6 @@ export const SetAngleLengthModal = ({
   valueName,
   shouldCreateVariable: initialShouldCreateVariable = false,
   selectionRanges,
-  currentCode,
 }: SetAngleLengthModalProps) => {
   const [sign, setSign] = useState(initialValue.startsWith('-') ? -1 : 1)
   const [value, setValue] = useState(
@@ -67,7 +65,6 @@ export const SetAngleLengthModal = ({
     value,
     initialVariableName: valueName,
     selectionRanges,
-    code: currentCode,
   })
   const isDisabled =
     (calcResult === 'NAN' || !isNewVariableNameUnique) && shouldCreateVariable

@@ -172,7 +172,6 @@ export async function applyConstraintIntersect({
     value: valueUsedInTransform,
     initialVariableName: 'offset',
     selectionRanges,
-    currentCode: kclManager.codeSignal.value,
   })
   if (
     !variableName &&

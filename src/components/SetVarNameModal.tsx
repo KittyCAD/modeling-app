@@ -13,7 +13,6 @@ type ModalReject = boolean
 type SetVarNameModalProps = InstanceProps<ModalResolve, ModalReject> & {
   valueName: string
   selectionRanges: Selections
-  currentCode: string
 }
 
 export const createSetVarNameModal = create<
@@ -28,14 +27,12 @@ export const SetVarNameModal = ({
   onReject,
   valueName,
   selectionRanges,
-  currentCode,
 }: SetVarNameModalProps) => {
   const { isNewVariableNameUnique, newVariableName, setNewVariableName } =
     useCalculateKclExpression({
       value: '',
       initialVariableName: valueName,
       selectionRanges,
-      code: currentCode,
     })
 
   return (

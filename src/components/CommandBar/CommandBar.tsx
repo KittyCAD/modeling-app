@@ -8,11 +8,7 @@ import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import {
-  commandBarActor,
-  kclManager,
-  useCommandBarState,
-} from '@src/lib/singletons'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import Loading from '@src/components/Loading'
 
@@ -154,10 +150,7 @@ export const CommandBar = () => {
                 })}
               />
             ) : commandBarState.matches('Gathering arguments') ? (
-              <CommandBarArgument
-                stepBack={stepBack}
-                currentCode={kclManager.codeSignal.value}
-              />
+              <CommandBarArgument stepBack={stepBack} />
             ) : (
               <>
                 {commandBarState.matches('Review') && (

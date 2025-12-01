@@ -25,14 +25,12 @@ export function useCalculateKclExpression({
   sourceRange,
   selectionRanges,
   allowArrays,
-  code,
 }: {
   value: string
   initialVariableName?: string
   sourceRange?: SourceRange
   selectionRanges: Selections
   allowArrays?: boolean
-  code: string
 }): {
   inputRef: React.RefObject<HTMLInputElement | null>
   valueNode: Expr | null
@@ -50,6 +48,7 @@ export function useCalculateKclExpression({
   const [isExecuting, setIsExecuting] = useState(false)
   const ast = kclManager.astSignal.value
   const variables = kclManager.variablesSignal.value
+  const code = kclManager.codeSignal.value
   // If there is no selection, use the end of the code
   // so all variables are available
   const selectionRange: SourceRange | undefined =

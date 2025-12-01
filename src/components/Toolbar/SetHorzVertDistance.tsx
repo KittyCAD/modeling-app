@@ -129,7 +129,6 @@ export async function applyConstraintHorzVertDistance({
     value: valueUsedInTransform,
     initialVariableName: constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
     selectionRanges,
-    currentCode: kclManager.codeSignal.value,
   })
   if (
     !variableName &&

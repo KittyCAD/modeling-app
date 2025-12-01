@@ -53,7 +53,6 @@ export function useConvertToVariable(range?: SourceRange) {
       const { variableName } = await getVarNameModal({
         valueName: valueName || 'var',
         selectionRanges: context.selectionRanges,
-        currentCode: kclManager.codeSignal.value,
       })
 
       const { modifiedAst: _modifiedAst, pathToReplacedNode } =

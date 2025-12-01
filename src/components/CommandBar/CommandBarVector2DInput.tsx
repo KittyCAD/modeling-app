@@ -72,7 +72,6 @@ function CommandBarVector2DInput({
   arg,
   stepBack,
   onSubmit,
-  currentCode,
 }: {
   arg: CommandArgument<unknown> & {
     inputType: 'vector2d'
@@ -80,7 +79,6 @@ function CommandBarVector2DInput({
   }
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
-  currentCode: string
 }) {
   const commandBarState = useCommandBarState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
@@ -130,14 +128,12 @@ function CommandBarVector2DInput({
     value: x,
     selectionRanges: { graphSelections: [], otherSelections: [] },
     allowArrays: false,
-    code: currentCode,
   })
 
   const yCalculation = useCalculateKclExpression({
     value: y,
     selectionRanges: { graphSelections: [], otherSelections: [] },
     allowArrays: false,
-    code: currentCode,
   })
 
   // DOM access for focus and keyboard navigation
