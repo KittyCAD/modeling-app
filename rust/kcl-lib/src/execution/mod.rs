@@ -683,8 +683,9 @@ impl ExecutorContext {
                         reapply_settings,
                         ast: changed_program,
                     } => {
-                        if reapply_settings
-                            && self
+                        let mut reapply_failed = false;
+                        if reapply_settings {
+                            if self
                                 .engine
                                 .reapply_settings(
                                     &self.settings,
@@ -693,8 +694,19 @@ impl ExecutorContext {
                                     grid_scale,
                                 )
                                 .await
-                                .is_err()
-                        {
+                                .is_ok()
+                            {
+                                cache::write_old_ast(GlobalState::with_settings(
+                                    cached_state.clone(),
+                                    self.settings.clone(),
+                                ))
+                                .await;
+                            } else {
+                                reapply_failed = true;
+                            }
+                        }
+
+                        if reapply_failed {
                             (true, program, None)
                         } else {
                             // We need to check our imports to see if they changed.
