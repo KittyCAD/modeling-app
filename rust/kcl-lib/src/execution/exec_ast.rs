@@ -1360,7 +1360,6 @@ fn substitute_sketch_var_in_unsolved_expr(
     source_ranges: &[SourceRange],
 ) -> Result<(TyF64, Freedom), KclError> {
     match unsolved_expr {
-        // TODO: sketch-api: is this right?
         UnsolvedExpr::Known(n) => Ok((n.clone(), Freedom::Fixed)),
         UnsolvedExpr::Unknown(var_id) => {
             let Some(solution) = solve_outcome.final_values.get(var_id.0) else {
@@ -1371,6 +1370,8 @@ fn substitute_sketch_var_in_unsolved_expr(
                     source_ranges.to_vec(),
                 )));
             };
+            // TODO: sketch-api: This isn't implemented properly yet.
+            // solve_outcome.unsatisfied.contains means "Fixed or over-constrained"
             let freedom = if solve_outcome.unsatisfied.contains(&var_id.0) {
                 Freedom::Free
             } else {
