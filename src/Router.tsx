@@ -162,7 +162,7 @@ const router = createRouter([
  * @returns RouterProvider
  */
 export const Router = () => {
-  const networkStatus = useNetworkStatus()
+  const networkStatus = useNetworkStatus(engineCommandManager)
 
   return (
     <NetworkContext.Provider value={networkStatus}>

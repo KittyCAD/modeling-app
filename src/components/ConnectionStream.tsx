@@ -171,7 +171,12 @@ export const ConnectionStream = (props: {
     engineCommandManager: engineCommandManager,
     sceneInfra: sceneInfra,
   })
-  useOnPageResize({ videoWrapperRef, videoRef, canvasRef })
+  useOnPageResize({
+    videoWrapperRef,
+    videoRef,
+    canvasRef,
+    engineCommandManager,
+  })
   useOnPageIdle({
     startCallback: () => {
       if (!videoWrapperRef.current) return
@@ -228,6 +233,7 @@ export const ConnectionStream = (props: {
     engineCommandManager,
   })
   useOnVitestEngineOnline({
+    engineCommandManager,
     callback: () => {
       setShowManualConnect(false)
       tryConnecting({
