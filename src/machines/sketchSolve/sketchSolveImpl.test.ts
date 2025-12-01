@@ -4,18 +4,25 @@ import {
   createOnDragStartCallback,
   createOnDragEndCallback,
   createOnDragCallback,
+  createOnClickCallback,
   findEntityUnderCursorId,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
-import type { Themes } from '@src/lib/theme'
+import { Themes } from '@src/lib/theme'
 import type {
   ApiObject,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
-import type { ExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
 import { isArray } from '@src/lib/utils'
+
+function createTestMouseEvent(): MouseEvent {
+  return new MouseEvent('click', {
+    bubbles: true,
+    cancelable: true,
+  })
+}
 
 /**
  * Helper function to create a point segment group for testing.
@@ -24,7 +31,7 @@ import { isArray } from '@src/lib/utils'
  */
 function createPointSegmentGroup({
   segmentId,
-  theme = 'dark' as Themes,
+  theme = Themes.Dark,
   scale = 1,
 }: {
   segmentId: number
@@ -71,7 +78,7 @@ describe('createOnDragStartCallback', () => {
     void callback({
       intersectionPoint,
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -105,7 +112,7 @@ describe('createOnDragStartCallback', () => {
         threeD: new Vector3(0, 0, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -134,7 +141,7 @@ describe('createOnDragStartCallback', () => {
         threeD: new Vector3(0, 0, 0),
       },
       selected: group,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -165,7 +172,7 @@ describe('createOnDragStartCallback', () => {
         threeD: new Vector3(0, 0, 0),
       },
       selected: group,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -206,7 +213,7 @@ describe('createOnDragStartCallback', () => {
         threeD: new Vector3(0, 0, 0),
       },
       selected: pointGroup,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -240,7 +247,7 @@ describe('createOnDragStartCallback', () => {
         threeD: new Vector3(0, 0, 0),
       },
       selected: pointGroup,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -277,7 +284,7 @@ describe('createOnDragStartCallback', () => {
         threeD: new Vector3(0, 0, 0),
       },
       selected: group,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -327,7 +334,7 @@ describe('createOnDragEndCallback', () => {
         threeD: new Vector3(0, 0, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -352,7 +359,7 @@ describe('createOnDragEndCallback', () => {
         threeD: new Vector3(0, 0, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -381,7 +388,7 @@ describe('createOnDragEndCallback', () => {
         threeD: new Vector3(0, 0, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -417,7 +424,7 @@ describe('createOnDragEndCallback', () => {
         threeD: new Vector3(0, 0, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -505,7 +512,7 @@ function createSceneGraphDelta(objects: Array<ApiObject>): SceneGraphDelta {
       artifactGraph: { map: {}, itemCount: 0 },
       filenames: {},
       defaultPlanes: null,
-    } as ExecOutcome,
+    },
   }
 }
 
@@ -543,7 +550,7 @@ describe('createOnDragCallback', () => {
         threeD: new Vector3(10, 20, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -585,7 +592,7 @@ describe('createOnDragCallback', () => {
         threeD: new Vector3(10, 20, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -629,7 +636,7 @@ describe('createOnDragCallback', () => {
         threeD: new Vector3(10, 20, 0),
       },
       selected: undefined, // No entity under cursor
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -680,7 +687,7 @@ describe('createOnDragCallback', () => {
         threeD: new Vector3(15, 25, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -751,7 +758,7 @@ describe('createOnDragCallback', () => {
         threeD: new Vector3(15, 25, 0),
       },
       selected: pointGroup, // Entity under cursor
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -821,7 +828,7 @@ describe('createOnDragCallback', () => {
         threeD: new Vector3(15, 25, 0),
       },
       selected: pointGroupUnderCursor, // Entity 13 under cursor
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -894,7 +901,7 @@ describe('createOnDragCallback', () => {
         threeD: new Vector3(10, 20, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -918,7 +925,7 @@ describe('createOnDragCallback', () => {
         threeD: new Vector3(15, 25, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -991,7 +998,7 @@ describe('createOnDragCallback', () => {
         threeD: new Vector3(10, 20, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -1044,7 +1051,7 @@ describe('createOnDragCallback', () => {
         threeD: new Vector3(10, 20, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -1089,7 +1096,7 @@ describe('createOnDragCallback', () => {
         threeD: new Vector3(10, 20, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -1137,7 +1144,7 @@ describe('createOnDragCallback', () => {
         threeD: new Vector3(10, 20, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -1196,7 +1203,7 @@ describe('createOnDragCallback', () => {
         threeD: new Vector3(10, 20, 0),
       },
       selected: undefined,
-      mouseEvent: {} as MouseEvent,
+      mouseEvent: createTestMouseEvent(),
       intersects: [],
     })
 
@@ -1282,5 +1289,154 @@ describe('findEntityUnderCursorId', () => {
 
     const result = findEntityUnderCursorId(mesh, getParentGroup)
     expect(result).toBeNull()
+  })
+})
+
+describe('createOnClickCallback', () => {
+  it('should select a segment when clicking on it to enable editing', async () => {
+    const getParentGroup = vi.fn()
+    const onUpdateSelectedIds = vi.fn()
+    const pointGroup = createPointSegmentGroup({ segmentId: 13 })
+
+    const callback = createOnClickCallback({
+      getParentGroup,
+      onUpdateSelectedIds,
+    })
+
+    await callback({
+      selected: pointGroup,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    // Clicking on a segment should select it, enabling the user to edit it
+    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
+      selectedIds: [13],
+      duringAreaSelectIds: [],
+    })
+  })
+
+  it('should clear selection when clicking on empty space to deselect all segments', async () => {
+    const getParentGroup = vi.fn(() => null)
+    const onUpdateSelectedIds = vi.fn()
+
+    const callback = createOnClickCallback({
+      getParentGroup,
+      onUpdateSelectedIds,
+    })
+
+    await callback({
+      selected: undefined,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    // Clicking on empty space should clear selection, allowing user to start fresh
+    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
+      selectedIds: [],
+      duringAreaSelectIds: [],
+    })
+  })
+
+  it('should find segment via getParentGroup when selected is not a Group', async () => {
+    const mesh = new Group() // Mock for any Object3D
+    const parentGroup = new Group()
+    parentGroup.name = '42'
+    const getParentGroup = vi.fn(() => parentGroup)
+    const onUpdateSelectedIds = vi.fn()
+
+    const callback = createOnClickCallback({
+      getParentGroup,
+      onUpdateSelectedIds,
+    })
+
+    await callback({
+      selected: mesh,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    // Should find the segment through getParentGroup and select it
+    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
+      selectedIds: [42],
+      duringAreaSelectIds: [],
+    })
+  })
+
+  it('should handle clicking on non-segment objects by clearing selection', async () => {
+    const nonSegmentGroup = new Group()
+    nonSegmentGroup.name = 'not-a-segment'
+    nonSegmentGroup.userData = { type: 'other' }
+    const getParentGroup = vi.fn(() => null)
+    const onUpdateSelectedIds = vi.fn()
+
+    const callback = createOnClickCallback({
+      getParentGroup,
+      onUpdateSelectedIds,
+    })
+
+    await callback({
+      selected: nonSegmentGroup,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    // Clicking on non-segment objects should clear selection
+    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
+      selectedIds: [],
+      duringAreaSelectIds: [],
+    })
+  })
+
+  it('should select point segments identified by handle children', async () => {
+    const pointGroup = new Group()
+    pointGroup.name = '7'
+    const handleChild = new Group()
+    handleChild.userData = { type: 'handle' }
+    pointGroup.add(handleChild)
+    const getParentGroup = vi.fn()
+    const onUpdateSelectedIds = vi.fn()
+
+    const callback = createOnClickCallback({
+      getParentGroup,
+      onUpdateSelectedIds,
+    })
+
+    await callback({
+      selected: pointGroup,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    // Point segments with handle children should be selectable
+    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
+      selectedIds: [7],
+      duringAreaSelectIds: [],
+    })
+  })
+
+  it('should select line segments identified by STRAIGHT_SEGMENT_BODY children', async () => {
+    const lineGroup = new Group()
+    lineGroup.name = '5'
+    lineGroup.userData = { type: 'LINE' }
+    const getParentGroup = vi.fn()
+    const onUpdateSelectedIds = vi.fn()
+
+    const callback = createOnClickCallback({
+      getParentGroup,
+      onUpdateSelectedIds,
+    })
+
+    await callback({
+      selected: lineGroup,
+      mouseEvent: createTestMouseEvent(),
+      intersects: [],
+    })
+
+    // Line segments should be selectable
+    expect(onUpdateSelectedIds).toHaveBeenCalledWith({
+      selectedIds: [5],
+      duringAreaSelectIds: [],
+    })
   })
 })

@@ -944,6 +944,55 @@ export function findEntityUnderCursorId(
 }
 
 /**
+ * Creates the onClick callback for sketch solve click operations.
+ * Handles selecting segments when clicked and clearing selection when clicking on empty space.
+ *
+ * @param getParentGroup - Function to find parent group for non-Group objects
+ * @param onUpdateSelectedIds - Function to update the selected IDs in the state machine
+ * @returns The onClick callback function
+ */
+export function createOnClickCallback({
+  getParentGroup,
+  onUpdateSelectedIds,
+}: {
+  getParentGroup: (object: Object3D, segmentTypes: string[]) => Group | null
+  onUpdateSelectedIds: (data: {
+    selectedIds: Array<number>
+    duringAreaSelectIds: Array<number>
+  }) => void
+}): (arg: {
+  selected?: Object3D
+  mouseEvent: MouseEvent
+  intersectionPoint?: { twoD: Vector2; threeD: Vector3 }
+  intersects: Array<unknown>
+}) => Promise<void> {
+  return async ({ selected }) => {
+    // Find the segment group under the cursor using the same logic as drag operations
+    const entityUnderCursorId = findEntityUnderCursorId(
+      selected,
+      getParentGroup
+    )
+
+    if (entityUnderCursorId !== null) {
+      // Segment found - select it and clear any area selection
+      onUpdateSelectedIds({
+        selectedIds: [entityUnderCursorId],
+        duringAreaSelectIds: [],
+      })
+      return
+    }
+
+    // No segment found - clicked on blank space, clear selection
+    // sceneInfra should have detected CSS2DObjects in onMouseDown, so if we get here
+    // with no group, it means we clicked on nothing
+    onUpdateSelectedIds({
+      selectedIds: [],
+      duringAreaSelectIds: [],
+    })
+  }
+}
+
+/**
  * Creates the onDrag callback for sketch solve drag operations.
  * Handles dragging segments by calculating drag vectors and updating segment positions.
  *
@@ -1789,54 +1838,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
         context.kclManager.fileSettings.defaultLengthUnit,
       getJsAppSettings: async () => await jsAppSettings(),
     }),
-    onClick: async ({ selected, mouseEvent }) => {
-      // Check if selected is already a Group with a numeric name (segment group)
-      // This handles CSS2DObjects where sceneInfra sets selected to the parent Group
-      let group: Group | null = null
-      if (selected instanceof Group) {
-        const groupId = Number(selected.name)
-        if (!Number.isNaN(groupId)) {
-          // Check if it's a point or line segment
-          const isPointSegment =
-            selected.userData?.type === 'point' ||
-            selected.children.some((child) => child.userData?.type === 'handle')
-          const isLineSegment =
-            selected.userData?.type === SEGMENT_TYPE_LINE ||
-            selected.children.some(
-              (child) => child.userData?.type === STRAIGHT_SEGMENT_BODY
-            )
-
-          if (isPointSegment || isLineSegment) {
-            group = selected
-          }
-        }
-      }
-
-      // If not found above, try getParentGroup (for three.js objects that aren't already Groups)
-      if (!group) {
-        group = getParentGroup(selected, [
-          SEGMENT_TYPE_POINT,
-          SEGMENT_TYPE_LINE,
-        ])
-      }
-
-      if (group) {
-        const newSelectedIds = [Number(group.name)]
-        self.send({
-          type: 'update selected ids',
-          data: { selectedIds: newSelectedIds, duringAreaSelectIds: [] },
-        })
-        return
-      }
-
-      // No segment found - clicked on blank space, clear selection
-      // sceneInfra should have detected CSS2DObjects in onMouseDown, so if we get here
-      // with no group, it means we clicked on nothing
-      self.send({
-        type: 'update selected ids',
-        data: { selectedIds: [], duringAreaSelectIds: [] },
-      })
-    },
+    onClick: createOnClickCallback({
+      getParentGroup,
+      onUpdateSelectedIds: (data: {
+        selectedIds: Array<number>
+        duringAreaSelectIds: Array<number>
+      }) => self.send({ type: 'update selected ids', data }),
+    }),
     onMouseEnter: ({ selected, isAreaSelectActive }) => {
       // Disable hover highlighting during area select
       if (isAreaSelectActive) {
