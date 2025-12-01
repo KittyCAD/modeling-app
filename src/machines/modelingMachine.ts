@@ -1148,9 +1148,7 @@ export const modelingMachine = setup({
           theSceneInfra.modelingSend(
             currentTool === 'tangentialArc'
               ? { type: 'Continue existing profile', data }
-              : currentTool === 'arc'
-                ? { type: 'Add start point', data }
-                : { type: 'Add start point', data }
+              : { type: 'Add start point', data }
           ),
       })
     },
