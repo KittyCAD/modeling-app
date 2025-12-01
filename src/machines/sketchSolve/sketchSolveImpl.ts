@@ -22,6 +22,7 @@ import {
   ExtrudeGeometry,
   Group,
   OrthographicCamera,
+  type PerspectiveCamera,
   Vector3,
   Mesh,
   Vector2,
@@ -944,6 +945,117 @@ export function findEntityUnderCursorId(
 }
 
 /**
+ * Projects a 3D point to 2D screen coordinates.
+ * Pure function that converts world space coordinates to screen pixel coordinates.
+ *
+ * @param point3D - The 3D point in world space
+ * @param camera - The camera used for projection
+ * @param viewportSize - The viewport size in pixels (width, height)
+ * @returns The 2D screen coordinates in pixels
+ */
+export function project3DToScreen(
+  point3D: Vector3,
+  camera: OrthographicCamera | PerspectiveCamera,
+  viewportSize: Vector2
+): Vector2 {
+  const projected = point3D.clone().project(camera)
+  return new Vector2(
+    ((projected.x + 1) / 2) * viewportSize.x,
+    ((1 - projected.y) / 2) * viewportSize.y
+  )
+}
+
+/**
+ * Calculates the bounding box in screen space from two screen points.
+ * Pure function that determines the min/max bounds of a selection box.
+ *
+ * @param point1 - First screen point
+ * @param point2 - Second screen point
+ * @returns Object containing min and max bounds of the box
+ */
+export function calculateBoxBounds(
+  point1: Vector2,
+  point2: Vector2
+): { min: Vector2; max: Vector2 } {
+  return {
+    min: new Vector2(
+      Math.min(point1.x, point2.x),
+      Math.min(point1.y, point2.y)
+    ),
+    max: new Vector2(
+      Math.max(point1.x, point2.x),
+      Math.max(point1.y, point2.y)
+    ),
+  }
+}
+
+/**
+ * Determines the area selection mode based on drag direction.
+ * Pure function that returns true for intersection mode (right-to-left drag),
+ * false for contains mode (left-to-right drag).
+ *
+ * @param startPoint - The starting screen point
+ * @param currentPoint - The current screen point
+ * @returns True if intersection mode, false if contains mode
+ */
+export function isIntersectionSelectionMode(
+  startPoint: Vector2,
+  currentPoint: Vector2
+): boolean {
+  return startPoint.x > currentPoint.x
+}
+
+/**
+ * Checks if two axis-aligned bounding boxes intersect.
+ * Pure function that determines if two boxes overlap in screen space.
+ *
+ * @param box1Min - Minimum corner of first box
+ * @param box1Max - Maximum corner of first box
+ * @param box2Min - Minimum corner of second box
+ * @param box2Max - Maximum corner of second box
+ * @returns True if boxes intersect, false otherwise
+ */
+export function doBoxesIntersect(
+  box1Min: Vector2,
+  box1Max: Vector2,
+  box2Min: Vector2,
+  box2Max: Vector2
+): boolean {
+  // Two axis-aligned boxes intersect if:
+  // - box1Min.x <= box2Max.x AND box1Max.x >= box2Min.x AND
+  // - box1Min.y <= box2Max.y AND box1Max.y >= box2Min.y
+  return (
+    box1Min.x <= box2Max.x &&
+    box1Max.x >= box2Min.x &&
+    box1Min.y <= box2Max.y &&
+    box1Max.y >= box2Min.y
+  )
+}
+
+/**
+ * Checks if all points are contained within a bounding box.
+ * Pure function that determines if all points are inside the box boundaries.
+ *
+ * @param points - Array of points to check
+ * @param boxMin - Minimum corner of the box
+ * @param boxMax - Maximum corner of the box
+ * @returns True if all points are contained, false otherwise
+ */
+export function areAllPointsContained(
+  points: Array<Vector2>,
+  boxMin: Vector2,
+  boxMax: Vector2
+): boolean {
+  return points.every(
+    (point) =>
+      point.x >= boxMin.x &&
+      point.x <= boxMax.x &&
+      point.y >= boxMin.y &&
+      point.y <= boxMax.y
+  )
+}
+
+/**
  * Creates the onMouseEnter callback for sketch solve hover operations.
  * Handles highlighting line segments when the mouse enters them to provide visual feedback.
  *
@@ -1308,33 +1420,19 @@ export function setUpOnDragAndSelectionClickCallbacks({
     const camera = context.sceneInfra.camControls.camera
     const renderer = context.sceneInfra.renderer
 
-    // Project 3D coordinates to screen space (NDC)
-    const startScreen = startPoint3D.clone().project(camera)
-    const currentScreen = currentPoint3D.clone().project(camera)
-
     // Convert NDC to screen pixels
     // Use client size (CSS pixels) not drawing buffer size (device pixels)
     const viewportSize = new Vector2(
       renderer.domElement.clientWidth,
       renderer.domElement.clientHeight
     )
-    const startPx = new Vector2(
-      ((startScreen.x + 1) / 2) * viewportSize.x,
-      ((1 - startScreen.y) / 2) * viewportSize.y
-    )
-    const currentPx = new Vector2(
-      ((currentScreen.x + 1) / 2) * viewportSize.x,
-      ((1 - currentScreen.y) / 2) * viewportSize.y
-    )
+    const startPx = project3DToScreen(startPoint3D, camera, viewportSize)
+    const currentPx = project3DToScreen(currentPoint3D, camera, viewportSize)
 
     // Calculate box dimensions in screen pixels
-    const boxMinPx = new Vector2(
-      Math.min(startPx.x, currentPx.x),
-      Math.min(startPx.y, currentPx.y)
-    )
-    const boxMaxPx = new Vector2(
-      Math.max(startPx.x, currentPx.x),
-      Math.max(startPx.y, currentPx.y)
+    const { min: boxMinPx, max: boxMaxPx } = calculateBoxBounds(
+      startPx,
+      currentPx
     )
 
     const widthPx = boxMaxPx.x - boxMinPx.x
@@ -1343,7 +1441,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
     // Determine selection direction:
     // - L to R (dashed intersection box)
     // - R to L (solid contains box)
-    const isIntersectionBox = startPx.x > currentPx.x
+    const isIntersectionBox = isIntersectionSelectionMode(startPx, currentPx)
     const isDraggingUpward = startPx.y > currentPx.y
     const borderStyle = isIntersectionBox ? 'dashed' : 'solid'
 
@@ -1730,14 +1828,11 @@ export function setUpOnDragAndSelectionClickCallbacks({
         })
 
         // For "contains" selection, check if ALL corners are within the selection box
-        const allCornersContained = screenCorners.every((corner) => {
-          return (
-            corner.x >= boxMinPx.x &&
-            corner.x <= boxMaxPx.x &&
-            corner.y >= boxMinPx.y &&
-            corner.y <= boxMaxPx.y
-          )
-        })
+        const allCornersContained = areAllPointsContained(
+          screenCorners,
+          boxMinPx,
+          boxMaxPx
+        )
 
         if (allCornersContained) {
           containedIds.push(segmentId)
@@ -1863,14 +1958,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
         )
 
         // Check if bounding boxes overlap (intersect)
-        // Two axis-aligned boxes intersect if:
-        // - segmentMinPx.x <= boxMaxPx.x AND segmentMaxPx.x >= boxMinPx.x AND
-        // - segmentMinPx.y <= boxMaxPx.y AND segmentMaxPx.y >= boxMinPx.y
-        const boxesIntersect =
-          segmentMinPx.x <= boxMaxPx.x &&
-          segmentMaxPx.x >= boxMinPx.x &&
-          segmentMinPx.y <= boxMaxPx.y &&
-          segmentMaxPx.y >= boxMinPx.y
+        const boxesIntersect = doBoxesIntersect(
+          segmentMinPx,
+          segmentMaxPx,
+          boxMinPx,
+          boxMaxPx
+        )
 
         if (boxesIntersect) {
           intersectingIds.push(segmentId)
@@ -2013,29 +2106,27 @@ export function setUpOnDragAndSelectionClickCallbacks({
           renderer.domElement.clientHeight
         )
 
-        const startScreen = scaledStartPoint.clone().project(camera)
-        const currentScreen = scaledCurrentPoint.clone().project(camera)
+        const startPx = project3DToScreen(
+          scaledStartPoint,
+          camera,
+          viewportSize
+        )
+        const currentPx = project3DToScreen(
+          scaledCurrentPoint,
+          camera,
+          viewportSize
+        )
 
-        const startPx = new Vector2(
-          ((startScreen.x + 1) / 2) * viewportSize.x,
-          ((1 - startScreen.y) / 2) * viewportSize.y
-        )
-        const currentPx = new Vector2(
-          ((currentScreen.x + 1) / 2) * viewportSize.x,
-          ((1 - currentScreen.y) / 2) * viewportSize.y
-        )
-
-        const boxMinPx = new Vector2(
-          Math.min(startPx.x, currentPx.x),
-          Math.min(startPx.y, currentPx.y)
-        )
-        const boxMaxPx = new Vector2(
-          Math.max(startPx.x, currentPx.x),
-          Math.max(startPx.y, currentPx.y)
+        const { min: boxMinPx, max: boxMaxPx } = calculateBoxBounds(
+          startPx,
+          currentPx
         )
 
         // Determine selection mode based on drag direction
-        const isIntersectionBox = startPx.x > currentPx.x
+        const isIntersectionBox = isIntersectionSelectionMode(
+          startPx,
+          currentPx
+        )
         if (isIntersectionBox) {
           // Intersection box: find segments that intersect with the selection box
           const intersectingIds = findIntersectingSegments(boxMinPx, boxMaxPx)

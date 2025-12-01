@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { Group, Vector2, Vector3, Mesh } from 'three'
+import { Group, Vector2, Vector3, Mesh, OrthographicCamera } from 'three'
 import {
   createOnDragStartCallback,
   createOnDragEndCallback,
@@ -8,6 +8,11 @@ import {
   createOnMouseEnterCallback,
   createOnMouseLeaveCallback,
   findEntityUnderCursorId,
+  project3DToScreen,
+  calculateBoxBounds,
+  isIntersectionSelectionMode,
+  doBoxesIntersect,
+  areAllPointsContained,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
@@ -1727,5 +1732,219 @@ describe('createOnMouseLeaveCallback', () => {
 
     // Point segments should not trigger hover clearing
     expect(updateLineSegmentHover).not.toHaveBeenCalled()
+  })
+})
+
+describe('project3DToScreen', () => {
+  it('should project 3D world coordinates to 2D screen coordinates', () => {
+    const camera = new OrthographicCamera(-10, 10, 10, -10, 0.1, 1000)
+    camera.position.set(0, 0, 10)
+    camera.lookAt(0, 0, 0)
+    const viewportSize = new Vector2(800, 600)
+
+    // Point at origin should project to center of screen
+    const point3D = new Vector3(0, 0, 0)
+    const screenPos = project3DToScreen(point3D, camera, viewportSize)
+
+    // Center of screen should be approximately (400, 300) for 800x600 viewport
+    expect(screenPos.x).toBeCloseTo(400, 0)
+    expect(screenPos.y).toBeCloseTo(300, 0)
+  })
+
+  it('should handle different viewport sizes correctly', () => {
+    const camera = new OrthographicCamera(-10, 10, 10, -10, 0.1, 1000)
+    camera.position.set(0, 0, 10)
+    camera.lookAt(0, 0, 0)
+
+    // random numbers 3 and 4, but should be find since we're asserting relationship between the two
+    const point3D = new Vector3(3, 4, 0)
+    const smallViewport = new Vector2(400, 300)
+    const largeViewport = new Vector2(1600, 1200)
+
+    const smallScreen = project3DToScreen(point3D, camera, smallViewport)
+    const largeScreen = project3DToScreen(point3D, camera, largeViewport)
+
+    // Should scale proportionally with viewport size (1600/400 = 4x, 1200/300 = 4x)
+    expect(largeScreen.x).toBeCloseTo(smallScreen.x * 4, 0)
+    expect(largeScreen.y).toBeCloseTo(smallScreen.y * 4, 0)
+  })
+})
+
+describe('calculateBoxBounds', () => {
+  it('should calculate correct min/max bounds from two points', () => {
+    const point1 = new Vector2(10, 20)
+    const point2 = new Vector2(30, 40)
+
+    const bounds = calculateBoxBounds(point1, point2)
+
+    expect(bounds.min.x).toBe(10)
+    expect(bounds.min.y).toBe(20)
+    expect(bounds.max.x).toBe(30)
+    expect(bounds.max.y).toBe(40)
+  })
+
+  it('should handle points in reverse order correctly', () => {
+    const point1 = new Vector2(30, 40)
+    const point2 = new Vector2(10, 20)
+
+    const bounds = calculateBoxBounds(point1, point2)
+
+    // Should still produce correct min/max regardless of order
+    expect(bounds.min.x).toBe(10)
+    expect(bounds.min.y).toBe(20)
+    expect(bounds.max.x).toBe(30)
+    expect(bounds.max.y).toBe(40)
+  })
+
+  it('should handle negative coordinates', () => {
+    const point1 = new Vector2(-10, -20)
+    const point2 = new Vector2(30, 40)
+
+    const bounds = calculateBoxBounds(point1, point2)
+
+    expect(bounds.min.x).toBe(-10)
+    expect(bounds.min.y).toBe(-20)
+    expect(bounds.max.x).toBe(30)
+    expect(bounds.max.y).toBe(40)
+  })
+})
+
+describe('isIntersectionSelectionMode', () => {
+  it('should return true for right-to-left drag (intersection mode)', () => {
+    const startPoint = new Vector2(100, 50)
+    const currentPoint = new Vector2(50, 50)
+
+    const result = isIntersectionSelectionMode(startPoint, currentPoint)
+
+    // Right-to-left drag should use intersection mode
+    expect(result).toBe(true)
+  })
+
+  it('should return false for left-to-right drag (contains mode)', () => {
+    const startPoint = new Vector2(50, 50)
+    const currentPoint = new Vector2(100, 50)
+
+    const result = isIntersectionSelectionMode(startPoint, currentPoint)
+
+    // Left-to-right drag should use contains mode
+    expect(result).toBe(false)
+  })
+
+  it('should return false when start and current are at same x position', () => {
+    const startPoint = new Vector2(50, 50)
+    const currentPoint = new Vector2(50, 100)
+
+    const result = isIntersectionSelectionMode(startPoint, currentPoint)
+
+    // Vertical drag should use contains mode
+    expect(result).toBe(false)
+  })
+})
+
+describe('doBoxesIntersect', () => {
+  it('should return true when boxes overlap', () => {
+    const box1Min = new Vector2(10, 10)
+    const box1Max = new Vector2(30, 30)
+    const box2Min = new Vector2(20, 20)
+    const box2Max = new Vector2(40, 40)
+
+    const result = doBoxesIntersect(box1Min, box1Max, box2Min, box2Max)
+
+    // Overlapping boxes should intersect
+    expect(result).toBe(true)
+  })
+
+  it('should return false when boxes do not overlap', () => {
+    const box1Min = new Vector2(10, 10)
+    const box1Max = new Vector2(20, 20)
+    const box2Min = new Vector2(30, 30)
+    const box2Max = new Vector2(40, 40)
+
+    const result = doBoxesIntersect(box1Min, box1Max, box2Min, box2Max)
+
+    // Non-overlapping boxes should not intersect
+    expect(result).toBe(false)
+  })
+
+  it('should return true when boxes touch at edges', () => {
+    const box1Min = new Vector2(10, 10)
+    const box1Max = new Vector2(20, 20)
+    const box2Min = new Vector2(20, 10)
+    const box2Max = new Vector2(30, 20)
+
+    const result = doBoxesIntersect(box1Min, box1Max, box2Min, box2Max)
+
+    // Touching boxes should intersect
+    expect(result).toBe(true)
+  })
+
+  it('should return true when one box is completely inside another', () => {
+    const box1Min = new Vector2(10, 10)
+    const box1Max = new Vector2(50, 50)
+    const box2Min = new Vector2(20, 20)
+    const box2Max = new Vector2(30, 30)
+
+    const result = doBoxesIntersect(box1Min, box1Max, box2Min, box2Max)
+
+    // Nested boxes should intersect
+    expect(result).toBe(true)
+  })
+})
+
+describe('areAllPointsContained', () => {
+  it('should return true when all points are within the box', () => {
+    const points = [
+      new Vector2(15, 15),
+      new Vector2(20, 20),
+      new Vector2(25, 25),
+    ]
+    const boxMin = new Vector2(10, 10)
+    const boxMax = new Vector2(30, 30)
+
+    const result = areAllPointsContained(points, boxMin, boxMax)
+
+    // All points inside should return true
+    expect(result).toBe(true)
+  })
+
+  it('should return false when any point is outside the box', () => {
+    const points = [
+      new Vector2(15, 15),
+      new Vector2(35, 20), // This one is outside
+      new Vector2(25, 25),
+    ]
+    const boxMin = new Vector2(10, 10)
+    const boxMax = new Vector2(30, 30)
+
+    const result = areAllPointsContained(points, boxMin, boxMax)
+
+    // Any point outside should return false
+    expect(result).toBe(false)
+  })
+
+  it('should return true when points are on the box boundaries', () => {
+    const points = [
+      new Vector2(10, 10), // On min corner
+      new Vector2(30, 30), // On max corner
+      new Vector2(20, 10), // On edge
+    ]
+    const boxMin = new Vector2(10, 10)
+    const boxMax = new Vector2(30, 30)
+
+    const result = areAllPointsContained(points, boxMin, boxMax)
+
+    // Points on boundaries should be considered contained
+    expect(result).toBe(true)
+  })
+
+  it('should return true for empty array', () => {
+    const points: Array<Vector2> = []
+    const boxMin = new Vector2(10, 10)
+    const boxMax = new Vector2(30, 30)
+
+    const result = areAllPointsContained(points, boxMin, boxMax)
+
+    // Empty array should return true (vacuous truth)
+    expect(result).toBe(true)
   })
 })
