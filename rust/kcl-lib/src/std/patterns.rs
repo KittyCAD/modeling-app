@@ -134,7 +134,11 @@ async fn execute_pattern_transform<T: GeometryTrait>(
 
     let mut output = Vec::new();
     for geo in starting {
+        println!("Patterning entity {}", geo.id());
         let new = send_pattern_transform(transforms.clone(), &geo, use_original, exec_state, args).await?;
+        for solid in &new {
+            println!("\tGot replica {}", solid.id());
+        }
         output.extend(new)
     }
     Ok(output)

@@ -91,6 +91,15 @@ async fn inner_appearance(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrImportedGeometry, KclError> {
+    println!("Setting appearance of solids:");
+    match solids {
+        SolidOrImportedGeometry::ImportedGeometry(_) => {}
+        SolidOrImportedGeometry::SolidSet(ref solids) => {
+            for s in solids {
+                println!("\t{}", s.id);
+            }
+        }
+    }
     let mut solids = solids.clone();
 
     for solid_id in solids.ids(&args.ctx).await? {
