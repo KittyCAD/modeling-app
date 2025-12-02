@@ -15,6 +15,7 @@ import { markOnce } from '@src/lib/performance'
 import {
   appActor,
   commandBarActor,
+  kclManager,
   mlEphantManagerActor,
   systemIOActor,
 } from '@src/lib/singletons'
@@ -23,7 +24,7 @@ import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 
 markOnce('code/willAuth')
-initializeWindowExceptionHandler()
+initializeWindowExceptionHandler(kclManager)
 
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.
