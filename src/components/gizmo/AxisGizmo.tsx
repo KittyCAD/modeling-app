@@ -117,6 +117,7 @@ export default function AxisGizmo() {
     renderer.render(scene, camera)
 
     return () => {
+      renderer.forceContextLoss()
       renderer.dispose()
       disposeMouseEvents()
       sceneInfra.camControls.cameraChange.remove(animate)
