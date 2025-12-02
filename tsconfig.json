@@ -18,7 +18,6 @@
       "vite/client",
       "@types/wicg-file-system-access",
       "node",
-      "mocha",
       "@lezer/generator"
     ],
     "target": "esnext",

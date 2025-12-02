@@ -65,7 +65,9 @@ function ProjectCard({
       )
       if (await fsManager.exists(projectImagePath)) {
         const imageData = await fsManager.readFile(projectImagePath)
-        const blob = new Blob([imageData], { type: 'image/png' })
+        const blob = new Blob([new Uint8Array(imageData)], {
+          type: 'image/png',
+        })
         const imageUrl = URL.createObjectURL(blob)
 
         if (blob.size > 0) {

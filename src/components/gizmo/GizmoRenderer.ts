@@ -324,6 +324,7 @@ export default class GizmoRenderer {
       cancelAnimationFrame(this.raf)
     }
     this.dprDetector.dispose()
+    this.renderer.forceContextLoss()
     this.renderer.dispose()
   }
 
