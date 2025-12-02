@@ -47,13 +47,6 @@ This setting has the following nested options:
 
 **Default:** None
 
-##### enable_zookeeper
-
-Enable the conversational agent in Text-to-CAD for this project.
-
-
-**Default:** None
-
 
 #### app
 
