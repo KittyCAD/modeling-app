@@ -1,4 +1,3 @@
-import { useKclContext } from '@src/lang/KclProvider'
 import { findUniqueName } from '@src/lang/create'
 import type { PrevVariable } from '@src/lang/queryAst'
 import { findAllPreviousVariables } from '@src/lang/queryAst'
@@ -47,7 +46,9 @@ export function useCalculateKclExpression({
   // is asynchronous. Use this state variable to track if execution
   // has completed
   const [isExecuting, setIsExecuting] = useState(false)
-  const { variables, code } = useKclContext()
+  const ast = kclManager.astSignal.value
+  const variables = kclManager.variablesSignal.value
+  const code = kclManager.codeSignal.value
   // If there is no selection, use the end of the code
   // so all variables are available
   const selectionRange: SourceRange | undefined =
@@ -99,7 +100,7 @@ export function useCalculateKclExpression({
       inputRef.current &&
         inputRef.current.setSelectionRange(0, String(value).length)
     }, 100)
-    setNewVariableName(findUniqueName(kclManager.ast, valueName))
+    setNewVariableName(findUniqueName(ast, valueName))
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
@@ -117,14 +118,10 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     if (!variables) return
-    const varInfo = findAllPreviousVariables(
-      kclManager.ast,
-      kclManager.variables,
-      endingSourceRange
-    )
+    const varInfo = findAllPreviousVariables(ast, variables, endingSourceRange)
     setAvailableVarInfo(varInfo)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.ast, kclManager.variables, endingSourceRange])
+  }, [ast, variables, endingSourceRange])
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
@@ -135,7 +132,7 @@ export function useCalculateKclExpression({
         setValueNode(null)
         return
       }
-      const newInsertIndex = getSafeInsertIndex(result.astNode, kclManager.ast)
+      const newInsertIndex = getSafeInsertIndex(result.astNode, ast)
       setInsertIndex(newInsertIndex)
       setCalcResult(result?.valueAsString || 'NAN')
       result?.astNode && setValueNode(result.astNode)
@@ -148,7 +145,7 @@ export function useCalculateKclExpression({
       setValueNode(null)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [value, availableVarInfo, code, kclManager.variables, allowArrays])
+  }, [value, availableVarInfo, code, variables, allowArrays])
 
   return {
     valueNode,

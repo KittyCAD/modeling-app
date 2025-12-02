@@ -147,8 +147,10 @@ export class KclPlugin implements PluginValue {
     }
 
     if (!this.client.ready) return
+
+    const clearSelections = true // no reason to keep them after a manual edit
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    kclManager.executeCode()
+    kclManager.executeCode(clearSelections)
   }
 
   ensureDocUpdated() {

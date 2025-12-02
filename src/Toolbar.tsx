@@ -9,7 +9,6 @@ import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { useKclContext } from '@src/lang/KclProvider'
 import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
@@ -63,14 +62,13 @@ export function Toolbar({
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const { overallState, immediateState } = useNetworkContext()
-  const { isExecuting } = useKclContext()
   const { isStreamReady, isStreamAcceptingInput } = useAppState()
   const [showRichContent, setShowRichContent] = useState(false)
 
   const disableAllButtons =
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
-    isExecuting ||
+    kclManager.isExecutingSignal.value ||
     immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
     !isStreamReady ||
     !isStreamAcceptingInput

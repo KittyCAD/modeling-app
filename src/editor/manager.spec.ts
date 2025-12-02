@@ -1,4 +1,6 @@
 import type { Diagnostic } from '@codemirror/lint'
+
+import { expect, describe, it } from 'vitest'
 import { kclManager } from '@src/lib/singletons'
 
 describe('EditorManager Class', () => {

@@ -923,7 +923,8 @@ async fn inner_start_sketch_on(
             if let Some(align_axis) = align_axis {
                 let plane_of = inner_plane_of(*solid, tag, exec_state, args).await?;
 
-                let offset = normal_offset.map_or(0.0, |x| x.n);
+                // plane_of info axis units are Some(UnitLength::Millimeters), see inner_plane_of and PlaneInfo
+                let offset = normal_offset.map_or(0.0, |x| x.to_mm());
                 let (x_axis, y_axis, normal_offset) = match align_axis {
                     Axis2dOrEdgeReference::Axis { direction, origin: _ } => {
                         if (direction[0].n - 1.0).abs() < f64::EPSILON {
