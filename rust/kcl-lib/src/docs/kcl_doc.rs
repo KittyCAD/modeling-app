@@ -1047,9 +1047,9 @@ trait ApplyMeta {
                 if let Some((e, p)) = example {
                     if p.inline {
                         description.as_mut().unwrap().push_str("```\n");
+                    } else {
+                        examples.push((e.trim().to_owned(), p));
                     }
-
-                    examples.push((e.trim().to_owned(), p));
                     example = None;
                 } else {
                     let args = l[3..].split(',');

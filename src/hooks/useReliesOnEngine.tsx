@@ -1,17 +1,16 @@
-import { useKclContext } from '@src/lang/KclProvider'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useAppState } from '@src/AppState'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { EngineConnectionStateType } from '@src/network/utils'
+import { kclManager } from '@src/lib/singletons'
 
 export function useReliesOnEngine() {
   const { overallState, immediateState } = useNetworkContext()
-  const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
   const reliesOnEngine =
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
-    isExecuting ||
+    kclManager.isExecutingSignal.value ||
     immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
     !isStreamReady
 
