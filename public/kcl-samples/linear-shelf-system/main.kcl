@@ -1,7 +1,6 @@
 // Linear Shelf System
 // A parametric, horizontally stackable shelf system for furniture layout and prototyping.
 
-
 // This model generates a configurable number of narrow shelf units arranged side-by-side.
 // Each unit includes:
 // - Two vertical side panels
@@ -11,9 +10,6 @@
 // are customizable, allowing for rapid iteration of layout concepts such as storage walls,
 // room dividers, or library-style shelving.
 // Designed for clean stacking, clarity in construction, and modular expansion.
-
-
-
 
 @settings(defaultLengthUnit = m, kclVersion = 1.0)
 
