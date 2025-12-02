@@ -461,6 +461,7 @@ impl GeometryTrait for Solid {
         self.id = id;
         // We need this for in extrude.rs when you sketch on face.
         self.sketch.id = id;
+        self.sketch.original_id = id;
         self.artifact_id = id.into();
     }
 
@@ -494,9 +495,6 @@ impl GeometryTrait for Solid {
         exec_state: &mut ExecState,
         args: &Args,
     ) -> Result<(), KclError> {
-        // self.id = new_geometry_id;
-        // self.sketch.original_id = new_geometry_id;
-        // self.artifact_id = new_geometry_id.into();
         super::clone::fix_tags_and_references_solid(
             new_geometry_id,
             old_geometry_id,
