@@ -3215,6 +3215,21 @@ fn function001() {
     }
 
     #[test]
+    fn no_weird_extra_lines() {
+        let code = "\
+// Initial comment
+
+@settings(defaultLengthUnit = mm)
+
+x = 1
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
     fn module_prefix() {
         let code = "x = std::sweep::SKETCH_PLANE\n";
         let ast = crate::parsing::top_level_parse(code).unwrap();
