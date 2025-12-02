@@ -469,7 +469,10 @@ export class SceneFixture {
    */
   getBoundingBox = async (locator: string) => {
     const box = await this.page.locator(locator).boundingBox({ timeout: 5_000 })
-    return { ...box, x: box?.x || 0, y: box?.y || 0 }
+    if (!box) {
+      return { x: 0, y: 0, width: 0, height: 0 }
+    }
+    return { ...box, x: box.x || 0, y: box.y || 0 }
   }
 
   /**
