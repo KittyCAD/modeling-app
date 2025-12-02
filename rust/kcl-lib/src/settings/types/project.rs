@@ -266,9 +266,7 @@ mod tests {
     fn test_project_settings_named_views() {
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
-                meta: ProjectMetaSettings {
-                    id: uuid::Uuid::nil(),
-                },
+                meta: ProjectMetaSettings { id: uuid::Uuid::nil() },
                 app: ProjectAppSettings {
                     onboarding_status: Default::default(),
                     stream_idle_mode: false,
