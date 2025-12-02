@@ -29,7 +29,6 @@ import {
   CHILD_TOOL_ID,
   CHILD_TOOL_DONE_EVENT,
   equipTools,
-  setUpOnDragAndSelectionClickCallbacks,
   initializeIntersectionPlane,
   initializeInitialSceneGraph,
   clearHoverCallbacks,
@@ -38,7 +37,8 @@ import {
   refreshSelectionStyling,
   updateSketchOutcome,
   spawnTool,
-} from '@src/machines/sketchSolve/tools/moveTool'
+} from '@src/machines/sketchSolve/sketchSolveImpl'
+import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool'
 
 export const sketchSolveMachine = setup({
   types: {
