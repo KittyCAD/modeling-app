@@ -416,6 +416,8 @@ export const featureTreeMachine = setup({
                 operation: context.currentOperation!,
                 artifact,
                 commandBarSend: commandBarActor.send,
+                code: kclManager.code,
+                artifactGraph: kclManager.artifactGraph,
               }
             },
             onDone: {
