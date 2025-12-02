@@ -27,7 +27,9 @@ export async function kcCall<T>(fn: () => Promise<T>): Promise<T | Error> {
   try {
     return await fn()
   } catch (e: unknown) {
-    const ae = e as Partial<ApiError> & { message?: string }
+    // We do not need to type this with {message?: string}
+    // The type system is already thrown out the window and we do a key check before dereferencing.
+    const ae = e as Partial<ApiError>
     const msg =
       (ae && (ae as any).body && (ae as any).body.message) ||
       ae?.message ||
