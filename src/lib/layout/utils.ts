@@ -23,7 +23,7 @@ import {
   parseLayoutFromJsonString,
   parseLayoutInner,
 } from '@src/lib/layout/parse'
-import { LAYOUT_PERSIST_PREFIX, LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
+import { LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
 
 /** Most recent layout system version */
 export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v2'
@@ -258,6 +258,11 @@ export function findAndUpdateSplitSizes({
   return rootLayout
 }
 
+/** prefix for localStorage persisted layout data */
+export function getLayoutPersistKey(id = 'default') {
+  return `layout-${id}`
+}
+
 /**
  * Load in a layout's persisted JSON and parse and validate it
  */
@@ -265,9 +270,7 @@ export function loadLayout(id: string): Layout | Error {
   if (!globalThis.localStorage) {
     return Error('No localStorage to load from')
   }
-  const layoutString = globalThis.localStorage.getItem(
-    `${LAYOUT_PERSIST_PREFIX}${id}`
-  )
+  const layoutString = globalThis.localStorage.getItem(getLayoutPersistKey(id))
   if (!layoutString) {
     return new Error('No persisted layout found')
   }
@@ -275,7 +278,7 @@ export function loadLayout(id: string): Layout | Error {
     applyLayoutMigrationMap(l, getLayoutMigrations())
   )
   if (!isErr(parsedLayout)) {
-    saveLayoutInner({ layout: parsedLayout })
+    saveLayoutInner({ layout: parsedLayout, layoutName: id })
   }
   return parsedLayout
 }
@@ -295,7 +298,7 @@ function saveLayoutInner({ layout, layoutName = 'default' }: ISaveLayout) {
     return
   }
   globalThis.localStorage.setItem(
-    `${LAYOUT_PERSIST_PREFIX}${layoutName}`,
+    getLayoutPersistKey(layoutName),
     globalThis.JSON?.stringify({
       version: LATEST_LAYOUT_VERSION,
       layout,
