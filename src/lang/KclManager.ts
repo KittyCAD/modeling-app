@@ -475,13 +475,13 @@ export class KclManager extends EventTarget {
       // TODO: we wanna remove this logic from xstate, it is racey
       // This defer is bullshit but playwright wants it
       // It was like this in engineConnection.ts already
-      deferExecution((a?: null) => {
+      deferExecution((_a?: null) => {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph populated',
         })
       }, 200)(null)
     } else {
-      deferExecution((a?: null) => {
+      deferExecution((_a?: null) => {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph emptied',
         })
@@ -489,7 +489,7 @@ export class KclManager extends EventTarget {
     }
 
     // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
-    deferExecution((a?: null) => {
+    deferExecution((_a?: null) => {
       if (this.defaultPlanes) {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph initialized',
@@ -607,7 +607,7 @@ export class KclManager extends EventTarget {
           instance: this.singletons.rustContext.getRustInstance(),
         })
       )
-      await setSelectionFilterToDefault(this.engineCommandManager)
+      await setSelectionFilterToDefault(this.engineCommandManager, this)
     }
 
     this.isExecuting = false
@@ -922,6 +922,7 @@ export class KclManager extends EventTarget {
   ) {
     setSelectionFilterToDefault(
       this.engineCommandManager,
+      this,
       selectionsToRestore,
       handleSelectionBatch
     )
@@ -935,6 +936,7 @@ export class KclManager extends EventTarget {
     setSelectionFilter(
       filter,
       this.engineCommandManager,
+      this,
       selectionsToRestore,
       handleSelectionBatch
     )
@@ -1295,6 +1297,7 @@ export class KclManager extends EventTarget {
       isShiftDown: this._isShiftDown,
       ast: this.ast,
       artifactGraph: this.artifactGraph,
+      artifactIndex: this.artifactIndex,
     })
     if (!eventInfo) {
       return

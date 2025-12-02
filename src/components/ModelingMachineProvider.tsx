@@ -545,8 +545,12 @@ export const ModelingMachineProvider = ({
             }
             console.log('result', result)
             if (!result) {
-              const sweepFaceSelected =
-                await selectionBodyFace(artifactOrPlaneId)
+              const sweepFaceSelected = await selectionBodyFace(
+                artifactOrPlaneId,
+                kclManager.artifactGraph,
+                kclManager.astSignal.value,
+                kclManager.execState
+              )
               if (sweepFaceSelected) {
                 result = sweepFaceSelected
               }
@@ -684,7 +688,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -742,7 +747,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -810,7 +816,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -873,7 +880,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -929,7 +937,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -986,7 +995,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -1043,7 +1053,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -1280,6 +1291,7 @@ export const ModelingMachineProvider = ({
         },
         machineManager,
         sketchSolveToolName: null,
+        kclManager,
       },
       // devTools: true,
     }
@@ -1531,7 +1543,7 @@ export const ModelingMachineProvider = ({
       if (!inSketchMode) return
 
       e.preventDefault()
-      const selection = selectAllInCurrentSketch()
+      const selection = selectAllInCurrentSketch(kclManager.artifactGraph)
       modelingSend({
         type: 'Set selection',
         data: { selectionType: 'completeSelection', selection },

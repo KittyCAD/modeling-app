@@ -136,7 +136,7 @@ export function App() {
     toast.success('Your work is auto-saved in real-time')
   })
 
-  useEngineConnectionSubscriptions()
+  useEngineConnectionSubscriptions(kclManager)
 
   useEffect(() => {
     // Not too useful for regular flows but on modeling view refresh,
@@ -288,6 +288,7 @@ export function App() {
               element: 'text',
               label:
                 getSelectionTypeDisplayText(
+                  kclManager.astSignal.value,
                   modelingState.context.selectionRanges
                 ) ?? 'No selection',
               toolTip: {

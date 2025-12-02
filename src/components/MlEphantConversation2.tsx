@@ -21,6 +21,7 @@ import type {
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
+import { kclManager } from '@src/lib/singletons'
 
 const noop = () => {}
 
@@ -150,7 +151,10 @@ export interface MlEphantContextsProps {
 const MlCopilotSelectionsContext = (props: {
   selections: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
 }) => {
-  const selectionText = getSelectionTypeDisplayText(props.selections.data)
+  const selectionText = getSelectionTypeDisplayText(
+    kclManager.astSignal.value,
+    props.selections.data
+  )
   return selectionText ? (
     <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 pl-1 pr-2">
       <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
