@@ -8,7 +8,7 @@ updates:
   directory: /
   schedule:
     interval: weekly
-    day: monday
+    day: saturday
     time: '03:00'
     timezone: America/Los_Angeles
   open-pull-requests-limit: 5
@@ -49,7 +49,7 @@ updates:
   directory: /rust
   schedule:
     interval: weekly
-    day: monday
+    day: saturday
     time: '03:00'
     timezone: America/Los_Angeles
   open-pull-requests-limit: 5
@@ -86,175 +86,13 @@ updates:
       update-types:
       - minor
       - patch
-- package-ecosystem: cargo
-  directory: /rust/kcl-lib
-  schedule:
-    interval: weekly
-    day: monday
-    time: '03:00'
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  groups:
-    security:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    patch:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-- package-ecosystem: cargo
-  directory: /rust/kcl-language-server
-  schedule:
-    interval: weekly
-    day: monday
-    time: '03:00'
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  groups:
-    security:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    patch:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-- package-ecosystem: cargo
-  directory: /rust/kcl-wasm-lib
-  schedule:
-    interval: weekly
-    day: monday
-    time: '03:00'
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  groups:
-    security:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    patch:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-- package-ecosystem: cargo
-  directory: /rust/kcl-bumper
-  schedule:
-    interval: weekly
-    day: monday
-    time: '03:00'
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  groups:
-    security:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    patch:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
+  cooldown:
+    default-days: 7
 - package-ecosystem: cargo
   directory: /rust/kcl-lib/fuzz
   schedule:
     interval: weekly
-    day: monday
+    day: saturday
     time: '03:00'
     timezone: America/Los_Angeles
   open-pull-requests-limit: 5
@@ -291,257 +129,13 @@ updates:
       update-types:
       - minor
       - patch
-- package-ecosystem: cargo
-  directory: /rust/kcl-to-core
-  schedule:
-    interval: weekly
-    day: monday
-    time: '03:00'
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  groups:
-    security:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    patch:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-- package-ecosystem: cargo
-  directory: /rust/kcl-derive-docs
-  schedule:
-    interval: weekly
-    day: monday
-    time: '03:00'
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  groups:
-    security:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    patch:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-- package-ecosystem: cargo
-  directory: /rust/kcl-python-bindings
-  schedule:
-    interval: weekly
-    day: monday
-    time: '03:00'
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  groups:
-    security:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    patch:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-- package-ecosystem: cargo
-  directory: /rust/kcl-language-server-release
-  schedule:
-    interval: weekly
-    day: monday
-    time: '03:00'
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  groups:
-    security:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    patch:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-- package-ecosystem: cargo
-  directory: /rust/kcl-test-server
-  schedule:
-    interval: weekly
-    day: monday
-    time: '03:00'
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  groups:
-    security:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    patch:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-- package-ecosystem: cargo
-  directory: /rust/kcl-directory-test-macro
-  schedule:
-    interval: weekly
-    day: monday
-    time: '03:00'
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  groups:
-    security:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    patch:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
+  cooldown:
+    default-days: 7
 - package-ecosystem: npm
   directory: /
   schedule:
     interval: weekly
-    day: monday
+    day: saturday
     time: '03:00'
     timezone: America/Los_Angeles
   open-pull-requests-limit: 5
@@ -578,93 +172,13 @@ updates:
       update-types:
       - minor
       - patch
-- package-ecosystem: npm
-  directory: /packages/codemirror-lsp-client
-  schedule:
-    interval: weekly
-    day: monday
-    time: '03:00'
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  groups:
-    security:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    patch:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-- package-ecosystem: npm
-  directory: /rust/kcl-language-server
-  schedule:
-    interval: weekly
-    day: monday
-    time: '03:00'
-    timezone: America/Los_Angeles
-  open-pull-requests-limit: 5
-  groups:
-    security:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    patch:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
-    minor:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - minor
-      - patch
+  cooldown:
+    default-days: 7
 - package-ecosystem: npm
   directory: /packages/codemirror-lang-kcl
   schedule:
     interval: weekly
-    day: monday
+    day: saturday
     time: '03:00'
     timezone: America/Los_Angeles
   open-pull-requests-limit: 5
@@ -701,11 +215,142 @@ updates:
       update-types:
       - minor
       - patch
+  cooldown:
+    default-days: 7
+- package-ecosystem: npm
+  directory: /rust/kcl-language-server
+  schedule:
+    interval: weekly
+    day: saturday
+    time: '03:00'
+    timezone: America/Los_Angeles
+  open-pull-requests-limit: 5
+  groups:
+    security:
+      applies-to: security-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+    security-major:
+      applies-to: security-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - major
+    patch:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - patch
+    major:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - major
+    minor:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+  cooldown:
+    default-days: 7
+- package-ecosystem: npm
+  directory: /public/fonts/source-code-pro
+  schedule:
+    interval: weekly
+    day: saturday
+    time: '03:00'
+    timezone: America/Los_Angeles
+  open-pull-requests-limit: 5
+  groups:
+    security:
+      applies-to: security-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+    security-major:
+      applies-to: security-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - major
+    patch:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - patch
+    major:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - major
+    minor:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+  cooldown:
+    default-days: 7
+- package-ecosystem: npm
+  directory: /packages/codemirror-lsp-client
+  schedule:
+    interval: weekly
+    day: saturday
+    time: '03:00'
+    timezone: America/Los_Angeles
+  open-pull-requests-limit: 5
+  groups:
+    security:
+      applies-to: security-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+    security-major:
+      applies-to: security-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - major
+    patch:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - patch
+    major:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - major
+    minor:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+  cooldown:
+    default-days: 7
 - package-ecosystem: npm
   directory: /.github/actions/github-release
   schedule:
     interval: weekly
-    day: monday
+    day: saturday
     time: '03:00'
     timezone: America/Los_Angeles
   open-pull-requests-limit: 5
@@ -742,11 +387,13 @@ updates:
       update-types:
       - minor
       - patch
+  cooldown:
+    default-days: 7
 - package-ecosystem: pip
   directory: /rust/kcl-python-bindings
   schedule:
     interval: weekly
-    day: monday
+    day: saturday
     time: '03:00'
     timezone: America/Los_Angeles
   open-pull-requests-limit: 5
@@ -783,11 +430,13 @@ updates:
       update-types:
       - minor
       - patch
+  cooldown:
+    default-days: 7
 - package-ecosystem: docker
   directory: /.github/actions/github-release
   schedule:
     interval: weekly
-    day: monday
+    day: saturday
     time: '03:00'
     timezone: America/Los_Angeles
   open-pull-requests-limit: 5
@@ -824,3 +473,5 @@ updates:
       update-types:
       - minor
       - patch
+  cooldown:
+    default-days: 7
