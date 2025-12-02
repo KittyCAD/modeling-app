@@ -46,6 +46,8 @@ import {
 import { forceSuffix } from '@src/lang/util'
 
 const AREA_SELECT_BORDER_WIDTH = 2
+const LINE_EXTENSION_SIZE = 12
+const LABEL_VERTICAL_OFFSET = 12
 
 /**
  * Helper function to extract numeric value from an Expr.
@@ -760,6 +762,214 @@ export function createOnDragCallback({
   }
 }
 
+/**
+ * Pure function: Calculates all selection box properties from 3D points
+ * Returns all computed values needed to render and position the selection box
+ */
+export function calculateSelectionBoxProperties(
+  startPoint3D: Vector3,
+  currentPoint3D: Vector3,
+  camera: OrthographicCamera | PerspectiveCamera,
+  viewportSize: Vector2
+): {
+  widthPx: number
+  heightPx: number
+  boxMinPx: Vector2
+  boxMaxPx: Vector2
+  startPx: Vector2
+  currentPx: Vector2
+  isIntersectionBox: boolean
+  isDraggingUpward: boolean
+  borderStyle: 'dashed' | 'solid'
+  center3D: Vector3
+} {
+  const startPx = project3DToScreen(startPoint3D, camera, viewportSize)
+  const currentPx = project3DToScreen(currentPoint3D, camera, viewportSize)
+
+  const { min: boxMinPx, max: boxMaxPx } = calculateBoxBounds(
+    startPx,
+    currentPx
+  )
+
+  const widthPx = boxMaxPx.x - boxMinPx.x
+  const heightPx = boxMaxPx.y - boxMinPx.y
+
+  const isIntersectionBox = isIntersectionSelectionMode(startPx, currentPx)
+  const isDraggingUpward = startPx.y > currentPx.y
+  const borderStyle = isIntersectionBox ? 'dashed' : 'solid'
+
+  const center3D = new Vector3()
+    .addVectors(startPoint3D, currentPoint3D)
+    .multiplyScalar(0.5)
+
+  return {
+    widthPx,
+    heightPx,
+    boxMinPx,
+    boxMaxPx,
+    startPx,
+    currentPx,
+    isIntersectionBox,
+    isDraggingUpward,
+    borderStyle,
+    center3D,
+  }
+}
+
+/**
+ * Pure function: Calculates label positioning relative to box center
+ * Determines where labels should be positioned based on drag start point
+ */
+export function calculateLabelPositioning(
+  startPx: Vector2,
+  boxMinPx: Vector2,
+  boxMaxPx: Vector2,
+  isDraggingUpward: boolean
+): {
+  offsetX: number
+  offsetY: number
+  finalOffsetY: number
+  startX: number
+  startY: number
+} {
+  const centerPx = new Vector2(
+    (boxMinPx.x + boxMaxPx.x) / 2,
+    (boxMinPx.y + boxMaxPx.y) / 2
+  )
+
+  const offsetX = startPx.x - centerPx.x
+  const offsetY = startPx.y - centerPx.y
+
+  const verticalOffset = isDraggingUpward
+    ? LABEL_VERTICAL_OFFSET
+    : -LABEL_VERTICAL_OFFSET
+  const finalOffsetY = offsetY + verticalOffset
+
+  const startX = offsetX
+  const startY = offsetY
+
+  return {
+    offsetX,
+    offsetY,
+    finalOffsetY,
+    startX,
+    startY,
+  }
+}
+
+/**
+ * Pure function: Calculates corner line styles and positions
+ * Determines how corner lines should be positioned and sized
+ */
+export function calculateCornerLineStyles(
+  startX: number,
+  startY: number,
+  lineExtensionSize: number,
+  borderWidth: number
+): {
+  verticalLine: {
+    height: string
+    bottom?: string
+    top?: string
+    left?: string
+    right?: string
+  }
+  horizontalLine: {
+    width: string
+    left?: string
+    right?: string
+    top?: string
+    bottom?: string
+  }
+} {
+  const verticalLine: {
+    height: string
+    bottom?: string
+    top?: string
+    left?: string
+    right?: string
+  } = {
+    height: `${lineExtensionSize}px`,
+  }
+
+  if (startY > 0) {
+    verticalLine.bottom = `-${lineExtensionSize + borderWidth}px`
+  } else {
+    verticalLine.top = `-${lineExtensionSize + borderWidth}px`
+  }
+
+  if (startX > 0) {
+    verticalLine.right = `-${borderWidth}px`
+  } else {
+    verticalLine.left = `-${borderWidth}px`
+  }
+
+  const horizontalLine: {
+    width: string
+    left?: string
+    right?: string
+    top?: string
+    bottom?: string
+  } = {
+    width: `${lineExtensionSize}px`,
+  }
+
+  if (startX < 0) {
+    horizontalLine.left = `-${lineExtensionSize + borderWidth}px`
+  } else {
+    horizontalLine.right = `-${lineExtensionSize + borderWidth}px`
+  }
+
+  if (startY > 0) {
+    horizontalLine.bottom = `-${borderWidth}px`
+  } else {
+    horizontalLine.top = `-${borderWidth}px`
+  }
+
+  return {
+    verticalLine,
+    horizontalLine,
+  }
+}
+
+/**
+ * Pure function: Calculates label styles based on selection mode
+ * Determines opacity and font weight for intersection/contains labels
+ */
+export function calculateLabelStyles(isIntersectionBox: boolean): {
+  intersectsLabel: { opacity: string; fontWeight: string }
+  containsLabel: { opacity: string; fontWeight: string }
+} {
+  if (isIntersectionBox) {
+    return {
+      intersectsLabel: { opacity: '1', fontWeight: '600' },
+      containsLabel: { opacity: '0.4', fontWeight: '400' },
+    }
+  } else {
+    return {
+      intersectsLabel: { opacity: '0.4', fontWeight: '400' },
+      containsLabel: { opacity: '1', fontWeight: '600' },
+    }
+  }
+}
+
+/**
+ * Pure function: Transforms world position to local space
+ * Converts 3D world coordinates to the sketch solve group's local coordinate system
+ */
+export function transformToLocalSpace(
+  center3D: Vector3,
+  sketchSceneGroup: Group | null
+): Vector3 {
+  const localCenter = new Vector3()
+  if (sketchSceneGroup) {
+    sketchSceneGroup.worldToLocal(localCenter.copy(center3D))
+  } else {
+    localCenter.copy(center3D)
+  }
+  return localCenter
+}
+
 export function setUpOnDragAndSelectionClickCallbacks({
   self,
   context,
@@ -800,6 +1010,220 @@ export function setUpOnDragAndSelectionClickCallbacks({
     createGetSet<HTMLElement | null>(null)
 
   /**
+   * Mutation function: Creates selection box DOM elements
+   * Creates the initial HTML structure for the selection box visual
+   */
+  function createSelectionBoxElements(borderStyle: 'dashed' | 'solid'): {
+    boxDiv: HTMLElement
+    verticalLine: HTMLElement
+    horizontalLine: HTMLElement
+    labelsWrapper: HTMLElement
+  } {
+    const borderWidthPx = `${AREA_SELECT_BORDER_WIDTH}px`
+    const [boxDiv, verticalLine, horizontalLine, labelsWrapper] = htmlHelper`
+            <div
+              ${{ key: 'id', value: 'selection-box' }}
+              style="
+                position: absolute;
+                pointer-events: none;
+                border: ${borderWidthPx} ${borderStyle} rgba(255, 255, 255, 0.5);
+                background-color: rgba(255, 255, 255, 0.1);
+                transform: translate(-50%, -50%);
+                box-sizing: border-box;
+              "
+            >
+              <div
+                ${{ key: 'id', value: 'vertical-line' }}
+                style="
+                  position: absolute;
+                  pointer-events: none;
+                  background-color: rgba(255, 255, 255, 0.5);
+                  width: ${borderWidthPx};
+                "
+              ></div>
+              <div
+                ${{ key: 'id', value: 'horizontal-line' }}
+                style="
+                  position: absolute;
+                  pointer-events: none;
+                  background-color: rgba(255, 255, 255, 0.5);
+                  height: ${borderWidthPx};
+                "
+              ></div>
+              <div
+                ${{ key: 'id', value: 'labels-wrapper' }}
+                style="
+                  position: absolute;
+                  pointer-events: none;
+                  white-space: nowrap;
+                  display: flex;
+                  gap: 0px;
+                  align-items: center;
+                "
+              >
+                <div
+                  ${{ key: 'id', value: 'intersects-label' }}
+                  style="
+                    font-size: 11px;
+                    color: rgba(255, 255, 255, 0.7);
+                    user-select: none;
+                    width: 100px;
+                    padding: 6px;
+                    margin: 0px;
+                    text-align: right;
+                  "
+                >Intersects</div>
+                <div
+                  ${{ key: 'id', value: 'contains-label' }}
+                  style="
+                    font-size: 11px;
+                    color: rgba(255, 255, 255, 0.7);
+                    user-select: none;
+                    width: 100px;
+                    padding: 6px;
+                    margin: 0px;
+                  "
+                >Within</div>
+              </div>
+            </div>
+          `
+
+    return {
+      boxDiv,
+      verticalLine,
+      horizontalLine,
+      labelsWrapper,
+    }
+  }
+
+  /**
+   * Mutation function: Updates selection box position in 3D space
+   * Positions the CSS2DObject at the calculated local space position
+   */
+  function updateSelectionBoxPosition(
+    selectionBoxObject: CSS2DObject,
+    localCenter: Vector3
+  ): void {
+    selectionBoxObject.position.copy(localCenter)
+  }
+
+  /**
+   * Mutation function: Updates selection box size and border style
+   * Sets the box dimensions and border appearance
+   */
+  function updateSelectionBoxSizeAndBorder(
+    boxDiv: HTMLElement,
+    widthPx: number,
+    heightPx: number,
+    borderStyle: 'dashed' | 'solid'
+  ): void {
+    boxDiv.style.width = `${widthPx}px`
+    boxDiv.style.height = `${heightPx}px`
+    boxDiv.style.border = `${AREA_SELECT_BORDER_WIDTH}px ${borderStyle} rgba(255, 255, 255, 0.5)`
+  }
+
+  /**
+   * Mutation function: Updates label styles based on selection mode
+   * Applies opacity and font weight to show which mode is active
+   */
+  function updateLabelStyles(
+    labelsWrapper: HTMLElement,
+    labelStyles: {
+      intersectsLabel: { opacity: string; fontWeight: string }
+      containsLabel: { opacity: string; fontWeight: string }
+    }
+  ): void {
+    const intersectsLabel = labelsWrapper.children[0] as HTMLElement
+    const containsLabel = labelsWrapper.children[1] as HTMLElement
+
+    if (intersectsLabel && containsLabel) {
+      intersectsLabel.style.opacity = labelStyles.intersectsLabel.opacity
+      intersectsLabel.style.fontWeight = labelStyles.intersectsLabel.fontWeight
+      containsLabel.style.opacity = labelStyles.containsLabel.opacity
+      containsLabel.style.fontWeight = labelStyles.containsLabel.fontWeight
+    }
+  }
+
+  /**
+   * Mutation function: Updates label position
+   * Positions labels at the drag start point relative to box center
+   */
+  function updateLabelPosition(
+    labelsWrapper: HTMLElement,
+    startX: number,
+    finalOffsetY: number
+  ): void {
+    labelsWrapper.style.left = `calc(50% + ${startX}px)`
+    labelsWrapper.style.top = `calc(50% + ${finalOffsetY}px)`
+    labelsWrapper.style.transform = 'translate(-50%, -50%)'
+  }
+
+  /**
+   * Mutation function: Updates corner line positions and styles
+   * Positions and sizes the vertical and horizontal corner lines
+   */
+  function updateCornerLinePositions(
+    verticalLine: HTMLElement,
+    horizontalLine: HTMLElement,
+    cornerLineStyles: {
+      verticalLine: {
+        height: string
+        bottom?: string
+        top?: string
+        left?: string
+        right?: string
+      }
+      horizontalLine: {
+        width: string
+        left?: string
+        right?: string
+        top?: string
+        bottom?: string
+      }
+    }
+  ): void {
+    // Reset vertical line positions
+    verticalLine.style.top = ''
+    verticalLine.style.right = ''
+    verticalLine.style.bottom = ''
+    verticalLine.style.left = ''
+
+    verticalLine.style.height = cornerLineStyles.verticalLine.height
+    if (cornerLineStyles.verticalLine.bottom !== undefined) {
+      verticalLine.style.bottom = cornerLineStyles.verticalLine.bottom
+    }
+    if (cornerLineStyles.verticalLine.top !== undefined) {
+      verticalLine.style.top = cornerLineStyles.verticalLine.top
+    }
+    if (cornerLineStyles.verticalLine.left !== undefined) {
+      verticalLine.style.left = cornerLineStyles.verticalLine.left
+    }
+    if (cornerLineStyles.verticalLine.right !== undefined) {
+      verticalLine.style.right = cornerLineStyles.verticalLine.right
+    }
+
+    // Reset horizontal line positions
+    horizontalLine.style.top = ''
+    horizontalLine.style.right = ''
+    horizontalLine.style.bottom = ''
+    horizontalLine.style.left = ''
+
+    horizontalLine.style.width = cornerLineStyles.horizontalLine.width
+    if (cornerLineStyles.horizontalLine.left !== undefined) {
+      horizontalLine.style.left = cornerLineStyles.horizontalLine.left
+    }
+    if (cornerLineStyles.horizontalLine.right !== undefined) {
+      horizontalLine.style.right = cornerLineStyles.horizontalLine.right
+    }
+    if (cornerLineStyles.horizontalLine.top !== undefined) {
+      horizontalLine.style.top = cornerLineStyles.horizontalLine.top
+    }
+    if (cornerLineStyles.horizontalLine.bottom !== undefined) {
+      horizontalLine.style.bottom = cornerLineStyles.horizontalLine.bottom
+    }
+  }
+
+  /**
    * Helper function to create or update the selection box visual
    * Uses 3D coordinates and projects to screen space for accurate sizing
    */
@@ -810,39 +1234,23 @@ export function setUpOnDragAndSelectionClickCallbacks({
     const camera = context.sceneInfra.camControls.camera
     const renderer = context.sceneInfra.renderer
 
-    // Convert NDC to screen pixels
-    // Use client size (CSS pixels) not drawing buffer size (device pixels)
     const viewportSize = new Vector2(
       renderer.domElement.clientWidth,
       renderer.domElement.clientHeight
     )
-    const startPx = project3DToScreen(startPoint3D, camera, viewportSize)
-    const currentPx = project3DToScreen(currentPoint3D, camera, viewportSize)
 
-    // Calculate box dimensions in screen pixels
-    const { min: boxMinPx, max: boxMaxPx } = calculateBoxBounds(
-      startPx,
-      currentPx
+    // Calculate all properties using pure functions
+    const properties = calculateSelectionBoxProperties(
+      startPoint3D,
+      currentPoint3D,
+      camera,
+      viewportSize
     )
 
-    const widthPx = boxMaxPx.x - boxMinPx.x
-    const heightPx = boxMaxPx.y - boxMinPx.y
-
-    // Determine selection direction:
-    // - L to R (dashed intersection box)
-    // - R to L (solid contains box)
-    const isIntersectionBox = isIntersectionSelectionMode(startPx, currentPx)
-    const isDraggingUpward = startPx.y > currentPx.y
-    const borderStyle = isIntersectionBox ? 'dashed' : 'solid'
-
-    // Calculate center in 3D world space
-    const center3D = new Vector3()
-      .addVectors(startPoint3D, currentPoint3D)
-      .multiplyScalar(0.5)
-
-    // Get the sketch solve group to transform coordinates to its local space
-    const sketchSceneGroup =
+    const sketchSceneObject =
       context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+    const sketchSceneGroup =
+      sketchSceneObject instanceof Group ? sketchSceneObject : null
 
     if (!getSelectionBoxGroup()) {
       // Create the selection box group and CSS2DObject
@@ -851,83 +1259,14 @@ export function setUpOnDragAndSelectionClickCallbacks({
       newSelectionBoxGroup.userData.type = 'selectionBox'
       setSelectionBoxGroup(newSelectionBoxGroup)
 
-      // TODO configure to work with light mode too
-      const borderWidthPx = `${AREA_SELECT_BORDER_WIDTH}px`
-      const [newBoxDiv, newVerticalLine, newHorizontalLine, newLabelsWrapper] =
-        htmlHelper`
-              <div
-                ${{ key: 'id', value: 'selection-box' }}
-                style="
-                  position: absolute;
-                  pointer-events: none;
-                  border: ${borderWidthPx} ${borderStyle} rgba(255, 255, 255, 0.5);
-                  background-color: rgba(255, 255, 255, 0.1);
-                  transform: translate(-50%, -50%);
-                  box-sizing: border-box;
-                "
-              >
-                <div
-                  ${{ key: 'id', value: 'vertical-line' }}
-                  style="
-                    position: absolute;
-                    pointer-events: none;
-                    background-color: rgba(255, 255, 255, 0.5);
-                    width: ${borderWidthPx};
-                  "
-                ></div>
-                <div
-                  ${{ key: 'id', value: 'horizontal-line' }}
-                  style="
-                    position: absolute;
-                    pointer-events: none;
-                    background-color: rgba(255, 255, 255, 0.5);
-                    height: ${borderWidthPx};
-                  "
-                ></div>
-                <div
-                  ${{ key: 'id', value: 'labels-wrapper' }}
-                  style="
-                    position: absolute;
-                    pointer-events: none;
-                    white-space: nowrap;
-                    display: flex;
-                    gap: 0px;
-                    align-items: center;
-                  "
-                >
-                  <div
-                    ${{ key: 'id', value: 'intersects-label' }}
-                    style="
-                      font-size: 11px;
-                      color: rgba(255, 255, 255, 0.7);
-                      user-select: none;
-                      width: 100px;
-                      padding: 6px;
-                      margin: 0px;
-                      text-align: right;
-                    "
-                  >Intersects</div>
-                  <div
-                    ${{ key: 'id', value: 'contains-label' }}
-                    style="
-                      font-size: 11px;
-                      color: rgba(255, 255, 255, 0.7);
-                      user-select: none;
-                      width: 100px;
-                      padding: 6px;
-                      margin: 0px;
-                    "
-                  >Within</div>
-                </div>
-              </div>
-            `
+      // Create DOM elements using mutation function
+      const elements = createSelectionBoxElements(properties.borderStyle)
+      setBoxDiv(elements.boxDiv)
+      setVerticalLine(elements.verticalLine)
+      setHorizontalLine(elements.horizontalLine)
+      setLabelsWrapper(elements.labelsWrapper)
 
-      setBoxDiv(newBoxDiv)
-      setVerticalLine(newVerticalLine)
-      setHorizontalLine(newHorizontalLine)
-      setLabelsWrapper(newLabelsWrapper)
-
-      const newSelectionBoxObject = new CSS2DObject(newBoxDiv)
+      const newSelectionBoxObject = new CSS2DObject(elements.boxDiv)
       newSelectionBoxObject.userData.type = 'selectionBox'
       setSelectionBoxObject(newSelectionBoxObject)
       getSelectionBoxGroup()?.add(newSelectionBoxObject)
@@ -945,136 +1284,66 @@ export function setUpOnDragAndSelectionClickCallbacks({
       currentSelectionBoxObject &&
       currentSelectionBoxObject.element instanceof HTMLElement
     ) {
-      // Transform center position to sketch solve group's local space
-      // Since the selection box group is a child of the rotated sketch solve group,
-      // we need to position the CSS2DObject in the sketch solve group's local space
-      const localCenter = new Vector3()
-      if (sketchSceneGroup) {
-        // Transform world position to local space of sketch solve group
-        sketchSceneGroup.worldToLocal(localCenter.copy(center3D))
-      } else {
-        localCenter.copy(center3D)
-      }
-      currentSelectionBoxObject.position.copy(localCenter)
+      // Calculate local space position using pure function
+      const localCenter = transformToLocalSpace(
+        properties.center3D,
+        sketchSceneGroup ?? null
+      )
+      updateSelectionBoxPosition(currentSelectionBoxObject, localCenter)
 
-      // Size in CSS pixels (already calculated from screen projection)
+      // Update box size and border
       const boxDivElement = getBoxDiv()
       if (boxDivElement) {
-        boxDivElement.style.width = `${widthPx}px`
-        boxDivElement.style.height = `${heightPx}px`
-
-        // Update border style based on selection direction
-        boxDivElement.style.border = `${AREA_SELECT_BORDER_WIDTH}px ${borderStyle} rgba(255, 255, 255, 0.5)`
+        updateSelectionBoxSizeAndBorder(
+          boxDivElement,
+          properties.widthPx,
+          properties.heightPx,
+          properties.borderStyle
+        )
       }
 
-      // Update label opacity based on active selection mode
-      const currentLabelsWrapper = getLabelsWrapper()
-      if (currentLabelsWrapper) {
-        const intersectsLabel = currentLabelsWrapper.children[0] as HTMLElement
-        const containsLabel = currentLabelsWrapper.children[1] as HTMLElement
-
-        if (intersectsLabel && containsLabel) {
-          if (isIntersectionBox) {
-            // Intersection mode active - "Intersects" is full opacity, "Within" is lower contrast
-            intersectsLabel.style.opacity = '1'
-            containsLabel.style.opacity = '0.4'
-            intersectsLabel.style.fontWeight = '600'
-            containsLabel.style.fontWeight = '400'
-          } else {
-            // Contains mode active - "Within" is full opacity, "Intersects" is lower contrast
-            intersectsLabel.style.opacity = '0.4'
-            containsLabel.style.opacity = '1'
-            intersectsLabel.style.fontWeight = '400'
-            containsLabel.style.fontWeight = '600'
-          }
-        }
-      }
-
-      // Position labels at the drag start point
-      // The boxDiv is centered with translate(-50%, -50%), so its top-left is at (-width/2, -height/2)
-      // We need to position the labels at the start point relative to the boxDiv's coordinate system
-
-      // Calculate box center in screen pixels
-      const centerPx = new Vector2(
-        (boxMinPx.x + boxMaxPx.x) / 2,
-        (boxMinPx.y + boxMaxPx.y) / 2
+      // Calculate label positioning using pure function
+      const labelPositioning = calculateLabelPositioning(
+        properties.startPx,
+        properties.boxMinPx,
+        properties.boxMaxPx,
+        properties.isDraggingUpward
       )
 
-      // Calculate offset from box center to start point (in screen pixels)
-      const offsetX = startPx.x - centerPx.x
-      const offsetY = startPx.y - centerPx.y
-
-      // Adjust vertical position based on drag direction
-      // If dragging downward, labels should be above (negative offset)
-      // If dragging upward, labels should be below (positive offset)
-      const verticalOffset = isDraggingUpward ? 12 : -12 // spacing from box edge
-      const finalOffsetY = offsetY + verticalOffset
-
-      // Position corner lines and labels at the start point
-      // Since boxDiv has transform: translate(-50%, -50%), its coordinate system
-      // has the center at (0, 0), with top-left at (-width/2, -height/2)
-      // So we position at (offsetX, finalOffsetY) and center the labels wrapper there
-
-      // Calculate start point position relative to box center
-      const startX = offsetX
-      const startY = offsetY
-
-      const lineExtensionSize = 12
-
-      // Position vertical line (extends from start point to nearest vertical edge)
-      const currentVerticalLine = getVerticalLine()
-      if (currentVerticalLine && currentVerticalLine instanceof HTMLElement) {
-        currentVerticalLine.style.height = `${lineExtensionSize}px`
-        // reset positions
-        currentVerticalLine.style.top = ''
-        currentVerticalLine.style.right = ''
-        currentVerticalLine.style.bottom = ''
-        currentVerticalLine.style.left = ''
-        if (startY > 0) {
-          currentVerticalLine.style.bottom = `-${lineExtensionSize + AREA_SELECT_BORDER_WIDTH}px`
-        } else {
-          currentVerticalLine.style.top = `-${lineExtensionSize + AREA_SELECT_BORDER_WIDTH}px`
-        }
-
-        if (startX > 0) {
-          currentVerticalLine.style.right = `-${AREA_SELECT_BORDER_WIDTH}px`
-        } else {
-          currentVerticalLine.style.left = `-${AREA_SELECT_BORDER_WIDTH}px`
-        }
+      // Update label styles using pure function
+      const labelStyles = calculateLabelStyles(properties.isIntersectionBox)
+      const currentLabelsWrapper = getLabelsWrapper()
+      if (currentLabelsWrapper) {
+        updateLabelStyles(currentLabelsWrapper, labelStyles)
+        updateLabelPosition(
+          currentLabelsWrapper,
+          labelPositioning.startX,
+          labelPositioning.finalOffsetY
+        )
       }
 
-      // Position horizontal line (extends from start point to nearest horizontal edge)
+      // Calculate corner line styles using pure function
+      const cornerLineStyles = calculateCornerLineStyles(
+        labelPositioning.startX,
+        labelPositioning.startY,
+        LINE_EXTENSION_SIZE,
+        AREA_SELECT_BORDER_WIDTH
+      )
+
+      // Update corner line positions
+      const currentVerticalLine = getVerticalLine()
       const currentHorizontalLine = getHorizontalLine()
       if (
+        currentVerticalLine &&
+        currentVerticalLine instanceof HTMLElement &&
         currentHorizontalLine &&
         currentHorizontalLine instanceof HTMLElement
       ) {
-        currentHorizontalLine.style.width = `${lineExtensionSize}px`
-        // reset positions
-        currentHorizontalLine.style.top = ''
-        currentHorizontalLine.style.right = ''
-        currentHorizontalLine.style.bottom = ''
-        currentHorizontalLine.style.left = ''
-        if (startX < 0) {
-          currentHorizontalLine.style.left = `-${lineExtensionSize + AREA_SELECT_BORDER_WIDTH}px`
-        } else {
-          currentHorizontalLine.style.right = `-${lineExtensionSize + AREA_SELECT_BORDER_WIDTH}px`
-        }
-
-        if (startY > 0) {
-          currentHorizontalLine.style.bottom = `-${AREA_SELECT_BORDER_WIDTH}px`
-        } else {
-          currentHorizontalLine.style.top = `-${AREA_SELECT_BORDER_WIDTH}px`
-        }
-      }
-
-      if (currentLabelsWrapper) {
-        // Position relative to boxDiv center (which is at 50%, 50% in boxDiv's coordinate system)
-        // Then add the offset to move to the start point
-        currentLabelsWrapper.style.left = `calc(50% + ${startX}px)`
-        currentLabelsWrapper.style.top = `calc(50% + ${finalOffsetY}px)`
-        // Center the labels wrapper at this point so the middle of the two labels aligns with the corner
-        currentLabelsWrapper.style.transform = 'translate(-50%, -50%)'
+        updateCornerLinePositions(
+          currentVerticalLine,
+          currentHorizontalLine,
+          cornerLineStyles
+        )
       }
     }
   }
