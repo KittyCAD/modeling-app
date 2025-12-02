@@ -36,6 +36,46 @@ face, since it will include all the parent faces and Solids.
 
 See [sketch on face](/docs/kcl-lang/sketch-on-face) for more details.
 
+### Multiple Profiles
+
+When creating multiple profiles in a sketch, each profile must be made
+separately and assigned to a variable. Using one pipeline to create multiple
+profiles, where one profile is piped into the next, is not currently
+supported.
+
+```js
+// This does NOT work.
+twoSquares = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+  |> startProfile(at = [20, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+twoCubes = extrude(twoSquares, length = 10)
+```
+
+Instead, use separate pipelines, and extrude an array of them all.
+
+```js
+sketch1 = startSketchOn(XY)
+squareProfile1 = startProfile(sketch1, at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+squareProfile2 = startProfile(sketch1, at = [20, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+twoCubes = extrude([squareProfile1, squareProfile2], length = 10)
+```
+
 ### Arguments
 
 | Name | Type | Description | Required |
