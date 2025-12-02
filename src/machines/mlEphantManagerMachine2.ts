@@ -16,7 +16,7 @@ import { getKclVersion } from '@src/lib/kclVersion'
 import { Socket } from '@src/lib/socket'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
-// import { MockSocket } from '@src/mocks/copilot'
+import { MockSocket } from '@src/mocks/copilot'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -506,7 +506,6 @@ export const mlEphantManagerMachine2 = setup({
 
       const request: Extract<MlCopilotClientMessage, { type: 'system' }> = {
         type: 'system',
-        // @ts-expect-error
         command: 'interrupt',
       }
       context.ws.send(JSON.stringify(request))
