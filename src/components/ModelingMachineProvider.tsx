@@ -26,7 +26,6 @@ import {
   useSketchModeMenuEnableDisable,
 } from '@src/hooks/useMenu'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
-import { useKclContext } from '@src/lang/KclProvider'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   sketchOnExtrudedFace,
@@ -1318,14 +1317,13 @@ export const ModelingMachineProvider = ({
   useMenuListener(cb)
 
   const { overallState } = useNetworkContext()
-  const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
 
   // Assumes all commands are network commands
   useSketchModeMenuEnableDisable(
     modelingState.context.currentMode,
     overallState,
-    isExecuting,
+    kclManager.isExecutingSignal.value,
     isStreamReady,
     [
       { menuLabel: 'View.Standard views' },

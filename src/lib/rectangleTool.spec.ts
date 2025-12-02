@@ -1,4 +1,4 @@
-import { expect } from 'vitest'
+import { expect, describe, test } from 'vitest'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { topLevelRange } from '@src/lang/util'

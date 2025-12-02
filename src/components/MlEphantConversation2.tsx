@@ -207,19 +207,12 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
   )
 }
 
-const ANIMATION_TIME = 2000
-
 export const MlEphantConversationInput = (
   props: MlEphantConversationInputProps
 ) => {
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const [value, setValue] = useState<string>('')
-  const [heightConvo, setHeightConvo] = useState(0)
   const [mode, setMode] = useState<MlCopilotMode>(DEFAULT_ML_COPILOT_MODE)
-  const [lettersForAnimation, setLettersForAnimation] = useState<ReactNode[]>(
-    []
-  )
-  const [isAnimating, setAnimating] = useState(false)
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
@@ -230,36 +223,9 @@ export const MlEphantConversationInput = (
     if (!value) return
     if (!refDiv.current) return
 
-    setHeightConvo(refDiv.current.getBoundingClientRect().height)
-
     props.onProcess(value, mode)
-
-    setLettersForAnimation(
-      value.split('').map((c, index) => (
-        <span
-          key={index}
-          style={{
-            display: 'inline-block',
-            animation: `${Math.random() * 2}s linear 0s 1 normal forwards running send-up`,
-          }}
-        >
-          {c}
-        </span>
-      ))
-    )
-    setAnimating(true)
     setValue('')
-
-    setTimeout(() => {
-      setAnimating(false)
-    }, ANIMATION_TIME)
   }
-
-  useEffect(() => {
-    if (!isAnimating && refDiv.current !== null) {
-      refDiv.current.focus()
-    }
-  }, [isAnimating])
 
   const selectionsContext:
     | Extract<MlEphantManagerPromptContext, { type: 'selections' }>
@@ -293,15 +259,9 @@ export const MlEphantConversationInput = (
               onClick()
             }
           }}
-          className={`bg-transparent outline-none w-full text-sm overflow-auto ${isAnimating ? 'hidden' : ''}`}
+          className="bg-transparent outline-none w-full text-sm overflow-auto"
           style={{ height: '3lh' }}
         ></textarea>
-        <div
-          className={`${isAnimating ? '' : 'hidden'} overflow-hidden w-full p-2`}
-          style={{ height: heightConvo }}
-        >
-          {lettersForAnimation}
-        </div>
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div className="flex items-end">
           <MlEphantExtraInputs

@@ -1,7 +1,6 @@
 import type { EntityType } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
-import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { KCLError } from '@src/lang/errors'
@@ -93,6 +92,7 @@ import { historyCompartment } from '@src/editor/compartments'
 import { bracket } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
 import toast from 'react-hot-toast'
+import { signal } from '@preact/signals-core'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -144,7 +144,7 @@ export class KclManager extends EventTarget {
   artifactGraph: ArtifactGraph = new Map()
   artifactIndex: ArtifactIndex = []
 
-  private _ast: Node<Program> = {
+  private _ast = signal<Node<Program>>({
     body: [],
     shebang: null,
     start: 0,
@@ -158,7 +158,7 @@ export class KclManager extends EventTarget {
     outerAttrs: [],
     preComments: [],
     commentStart: 0,
-  }
+  })
   _lastAst: Node<Program> = {
     body: [],
     shebang: null,
@@ -175,7 +175,7 @@ export class KclManager extends EventTarget {
     commentStart: 0,
   }
   private _execState: ExecState = emptyExecState()
-  private _variables: VariableMap = {}
+  private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: Operation[] = []
   /**
@@ -183,12 +183,12 @@ export class KclManager extends EventTarget {
    * operations were executed on.
    */
   lastSuccessfulCode: string = ''
-  private _logs: string[] = []
-  private _errors: KCLError[] = []
-  private _diagnostics: Diagnostic[] = []
-  private _isExecuting = false
+  private _logs = signal<string[]>([])
+  private _errors = signal<KCLError[]>([])
+  private _diagnostics = signal<Diagnostic[]>([])
+  private _isExecuting = signal(false)
   private _executeIsStale: ExecuteArgs | null = null
-  private _wasmInitFailed = true
+  private _wasmInitFailed = signal(true)
   private _astParseFailed = false
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
@@ -201,22 +201,10 @@ export class KclManager extends EventTarget {
 
   engineCommandManager: ConnectionManager
 
-  private _isExecutingCallback: (arg: boolean) => void = () => {}
-  private _astCallBack: (arg: Node<Program>) => void = () => {}
-  private _variablesCallBack: (
-    arg: {
-      [key in string]?: KclValue | undefined
-    }
-  ) => void = () => {}
-  private _logsCallBack: (arg: string[]) => void = () => {}
-  private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
-  private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
-  private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
   /** Values merged in from former EditorManager and CodeManager classes */
-  private _code: string = bracket
-  #updateState: (arg: string) => void = () => {}
+  private _code = signal(bracket)
   private _currentFilePath: string | null = null
   private _hotkeys: { [key: string]: () => void } = {}
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
@@ -240,15 +228,17 @@ export class KclManager extends EventTarget {
   /** End merged items */
 
   get ast() {
-    return this._ast
+    return this._ast.value
   }
   set ast(ast) {
-    if (this._ast.body.length !== 0) {
+    if (this._ast.value.body.length !== 0) {
       // last intact ast, if the user makes a typo with a syntax error, we want to keep the one before they made that mistake
-      this._lastAst = structuredClone(this._ast)
+      this._lastAst = structuredClone(this._ast.value)
     }
-    this._ast = ast
-    this._astCallBack(ast)
+    this._ast.value = ast
+  }
+  get astSignal() {
+    return this._ast
   }
 
   set switchedFiles(switchedFiles: boolean) {
@@ -261,16 +251,19 @@ export class KclManager extends EventTarget {
 
     // Without this, when leaving a project which has errors and opening another project which doesn't,
     // you'd see the errors from the previous project for a short time until the new code is executed.
-    this._errors = []
+    this.errors = []
   }
 
   get variables() {
+    return this._variables.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get variablesSignal() {
     return this._variables
   }
   // This is private because callers should be setting the entire execState.
   private set variables(variables) {
-    this._variables = variables
-    this._variablesCallBack(variables)
+    this._variables.value = variables
   }
 
   private set execState(execState) {
@@ -293,27 +286,37 @@ export class KclManager extends EventTarget {
   }
 
   get errors() {
+    return this._errors.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get errorsSignal() {
     return this._errors
   }
   set errors(errors) {
-    this._errors = errors
-    this._kclErrorsCallBack(errors)
+    this._errors.value = errors
   }
   get logs() {
+    return this._logs.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get logsSignal() {
     return this._logs
   }
   set logs(logs) {
-    this._logs = logs
-    this._logsCallBack(logs)
+    this._logs.value = logs
   }
 
   get diagnostics() {
+    return this._diagnostics.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get diagnosticsSignal() {
     return this._diagnostics
   }
 
   set diagnostics(ds) {
-    if (ds === this._diagnostics) return
-    this._diagnostics = ds
+    if (ds === this._diagnostics.value) return
+    this._diagnostics.value = ds
     this.setDiagnosticsForCurrentErrors()
   }
 
@@ -323,20 +326,22 @@ export class KclManager extends EventTarget {
   }
 
   hasErrors(): boolean {
-    return this._astParseFailed || this._errors.length > 0
+    return this._astParseFailed || this.errors.length > 0
   }
 
   setDiagnosticsForCurrentErrors() {
     this.setDiagnostics(this.diagnostics)
-    this._diagnosticsCallback(this.diagnostics)
   }
 
   get isExecuting() {
+    return this._isExecuting.value
+  }
+  get isExecutingSignal() {
     return this._isExecuting
   }
 
   set isExecuting(isExecuting) {
-    this._isExecuting = isExecuting
+    this._isExecuting.value = isExecuting
     // If we have finished executing, but the execute is stale, we should
     // execute again.
     if (!isExecuting && this.executeIsStale) {
@@ -345,7 +350,6 @@ export class KclManager extends EventTarget {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.executeAst(args)
     }
-    this._isExecutingCallback(isExecuting)
   }
 
   get executeIsStale() {
@@ -357,11 +361,14 @@ export class KclManager extends EventTarget {
   }
 
   get wasmInitFailed() {
+    return this._wasmInitFailed.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get wasmInitFailedSignal() {
     return this._wasmInitFailed
   }
   set wasmInitFailed(wasmInitFailed) {
-    this._wasmInitFailed = wasmInitFailed
-    this._wasmInitFailedCallback(wasmInitFailed)
+    this._wasmInitFailed.value = wasmInitFailed
   }
 
   constructor(engineCommandManager: ConnectionManager, singletons: Singletons) {
@@ -420,39 +427,8 @@ export class KclManager extends EventTarget {
     })
   }
 
-  registerCallBacks({
-    setVariables,
-    setAst,
-    setLogs,
-    setErrors,
-    setDiagnostics,
-    setIsExecuting,
-    setWasmInitFailed,
-    setCode,
-  }: {
-    setVariables: (arg: VariableMap) => void
-    setAst: (arg: Node<Program>) => void
-    setLogs: (arg: string[]) => void
-    setErrors: (errors: KCLError[]) => void
-    setDiagnostics: (errors: Diagnostic[]) => void
-    setIsExecuting: (arg: boolean) => void
-    setWasmInitFailed: (arg: boolean) => void
-    setCode: (arg: string) => void
-  }) {
-    this._variablesCallBack = setVariables
-    this._astCallBack = setAst
-    this._logsCallBack = setLogs
-    this._kclErrorsCallBack = setErrors
-    this._diagnosticsCallback = setDiagnostics
-    this._isExecutingCallback = setIsExecuting
-    this._wasmInitFailedCallback = setWasmInitFailed
-
-    /** Merged in from EditorManager's duplicate impl */
-    this.#updateState = setCode
-  }
-
   clearAst() {
-    this._ast = {
+    this._ast.value = {
       body: [],
       shebang: null,
       start: 0,
@@ -543,8 +519,8 @@ export class KclManager extends EventTarget {
     // When we safeParse this is tied to execution because they clicked a new file to load
     // Clear all previous errors and logs because they are old since they executed a new file
     // If we decouple safeParse from execution we need to move this application logic.
-    this._kclErrorsCallBack([])
-    this._logsCallBack([])
+    this.errors = []
+    this.logs = []
 
     this.addDiagnostics(compilationErrorsToDiagnostics(result.errors, code))
     this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings, code))
@@ -727,7 +703,7 @@ export class KclManager extends EventTarget {
       this.clearAst()
       return new Error('failed to re-parse')
     }
-    this._ast = { ...newAst }
+    this._ast.value = { ...newAst }
 
     const codeThatExecuted = this.code
     const { logs, errors, execState } = await executeAstMock({
@@ -735,9 +711,9 @@ export class KclManager extends EventTarget {
       rustContext: this.singletons.rustContext,
     })
 
-    this._logs = logs
+    this.logs = logs
     this._execState = execState
-    this._variables = execState.variables
+    this._variables.value = execState.variables
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
@@ -1346,9 +1322,12 @@ export class KclManager extends EventTarget {
     })
   }
   set code(code: string) {
-    this._code = code
+    this._code.value = code
   }
   get code(): string {
+    return this._code.value
+  }
+  get codeSignal() {
     return this._code
   }
   localStoragePersistCode(): string {
@@ -1398,9 +1377,8 @@ export class KclManager extends EventTarget {
    * Update the code, state, and the code the code mirror editor sees.
    */
   updateCodeStateEditor(code: string, clearHistory?: boolean): void {
-    if (this._code !== code) {
+    if (this._code.value !== code) {
       this.code = code
-      this.#updateState(code)
       this.updateCodeEditor(code, clearHistory)
     }
   }

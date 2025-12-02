@@ -7,7 +7,7 @@ import {
   createVariableDeclaration,
 } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
-import { expect } from 'vitest'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { type ActorRefFrom, createActor } from 'xstate'
 import { vi } from 'vitest'
