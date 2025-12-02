@@ -36,6 +36,7 @@ import { EngineDebugger } from '@src/lib/debugger'
 import { initPromise } from '@src/lang/wasmUtils'
 
 export const engineCommandManager = new ConnectionManager()
+export const rustContext = new RustContext(engineCommandManager, initPromise)
 
 declare global {
   interface Window {
@@ -48,7 +49,6 @@ declare global {
 // Accessible for tests mostly
 window.engineCommandManager = engineCommandManager
 
-export const rustContext = new RustContext(engineCommandManager, initPromise)
 export const sceneInfra = new SceneInfra(engineCommandManager)
 export const kclManager = new KclManager(engineCommandManager, initPromise, {
   rustContext,
@@ -70,7 +70,7 @@ initPromise
   .then(() => {
     if (processEnv()?.VITEST) {
       const message =
-        'singletons is trying to call initWasmPromise and setKclVersion. This will be blocked in VITEST runtimes.'
+        'singletons is trying to call initPromise and setKclVersion. This will be blocked in VITEST runtimes.'
       console.log(message)
       return
     }
