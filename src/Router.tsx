@@ -200,7 +200,7 @@ function CoreDump() {
         )
         .catch(reportRejection)
     },
-    kclManager.registerHotkey
+    kclManager
   )
   return null
 }

@@ -127,7 +127,7 @@ export function App() {
   useHotkeyWrapper(
     [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
     () => navigate(filePath + PATHS.SETTINGS),
-    kclManager.registerHotkey,
+    kclManager,
     {
       splitKey: '|',
     }
@@ -138,7 +138,7 @@ export function App() {
     () => {
       toast.success('Your work is auto-saved in real-time')
     },
-    kclManager.registerHotkey
+    kclManager
   )
 
   useEngineConnectionSubscriptions(kclManager)

@@ -120,7 +120,7 @@ function CommandBarKclInput({
   useHotkeyWrapper(
     ['mod + k', 'esc'],
     () => commandBarActor.send({ type: 'Close' }),
-    kclManager.registerHotkey,
+    kclManager,
     { enableOnFormTags: true, enableOnContentEditable: true }
   )
   const editorRef = useRef<HTMLDivElement>(null)

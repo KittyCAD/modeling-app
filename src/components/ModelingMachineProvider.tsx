@@ -1537,7 +1537,7 @@ export const ModelingMachineProvider = ({
         data: { level: 'project', value: !snapToGrid.current },
       })
     },
-    kclManager.registerHotkey
+    kclManager
   )
 
   useHotkeys(

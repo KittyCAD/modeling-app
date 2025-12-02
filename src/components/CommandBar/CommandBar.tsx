@@ -55,12 +55,12 @@ export const CommandBar = () => {
         commandBarActor.send({ type: 'Close' })
       }
     },
-    kclManager.registerHotkey
+    kclManager
   )
   useHotkeyWrapper(
     ['esc'],
     () => commandBarActor.send({ type: 'Close' }),
-    kclManager.registerHotkey,
+    kclManager,
     {
       enableOnFormTags: true,
       enableOnContentEditable: true,
