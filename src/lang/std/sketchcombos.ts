@@ -118,6 +118,20 @@ export type ConstraintType =
   | 'yAbs'
   | 'setAngleBetween'
 
+export type ConstrainInfoType =
+  | 'xAbsolute'
+  | 'yAbsolute'
+  | 'xRelative'
+  | 'yRelative'
+  | 'angle'
+  | 'length'
+  | 'intersectionOffset'
+  | 'intersectionTag'
+  | 'radius'
+  | 'vertical'
+  | 'horizontal'
+  | 'tangentialWithPrevious'
+
 const REF_NUM_ERR = new Error('Referenced segment does not have a to value')
 
 function asNum(val: LiteralValue): number | Error {
@@ -2317,6 +2331,6 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
   }
 }
 
-function getInputOfType(a: InputArgs, b: LineInputsType | 'radius'): InputArg {
+function getInputOfType(a: InputArgs, b: LineInputsType): InputArg {
   return a.find(({ argType }) => argType === b) || a[0]
 }

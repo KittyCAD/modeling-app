@@ -50,9 +50,8 @@ test.describe(
       homePage,
       tronApp,
     }) => {
-      if (!tronApp) {
-        fail()
-      }
+      if (!tronApp) throw new Error('tronApp is missing.')
+
       // Override beforeEach test setup
       // with corrupted settings
       await tronApp.cleanProjectDir(
@@ -234,9 +233,8 @@ test.describe(
         tag: '@desktop',
       },
       async ({ page, tronApp }) => {
-        if (!tronApp) {
-          fail()
-        }
+        if (!tronApp) throw new Error('tronApp is missing.')
+
         await tronApp.cleanProjectDir({
           modeling: {
             base_unit: 'in',
@@ -693,9 +691,7 @@ test.describe(
       homePage,
       tronApp,
     }) => {
-      if (!tronApp) {
-        fail()
-      }
+      if (!tronApp) throw new Error('tronApp is missing.')
 
       await tronApp.cleanProjectDir({
         // Override the settings so that the theme is set to `system`
