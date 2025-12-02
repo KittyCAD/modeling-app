@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
-import { vi } from 'vitest'
+import { expect, vi, describe, test } from 'vitest'
 import { engineCommandManager } from '@src/lib/singletons'
 
 describe('useOnPageMounted', () => {

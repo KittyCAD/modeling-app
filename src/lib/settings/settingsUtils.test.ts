@@ -9,6 +9,7 @@ import {
   setSettingsAtLevel,
 } from '@src/lib/settings/settingsUtils'
 import type { DeepPartial } from '@src/lib/types'
+import { expect, describe, it } from 'vitest'
 
 describe(`testing settings initialization`, () => {
   it(`sets settings at the 'user' level`, () => {

@@ -7,7 +7,7 @@ import { KclManager } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { Connection } from '@src/network/connection'
-import { vi } from 'vitest'
+import { expect, vi, describe, test } from 'vitest'
 
 const tick = () => {
   return new Promise((resolve, reject) => {
