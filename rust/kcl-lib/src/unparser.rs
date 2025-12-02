@@ -57,16 +57,13 @@ enum LeadingKind<'a> {
     Attr(&'a Node<Annotation>),
 }
 
-fn recast_body(
-    items: &[BodyItem],
+fn recast_leading(
     non_code_meta: &NonCodeMeta,
     inner_attrs: &NodeList<Annotation>,
     buf: &mut String,
     options: &FormatOptions,
     indentation_level: usize,
 ) {
-    let indentation = options.get_indentation(indentation_level);
-
     let mut leading_elements = Vec::with_capacity(non_code_meta.start_nodes.len() + inner_attrs.len());
     if non_code_meta
         .start_nodes
@@ -136,6 +133,19 @@ fn recast_body(
     if !inner_attrs.is_empty() && !newline_after_last_attr {
         buf.push('\n');
     }
+}
+
+fn recast_body(
+    items: &[BodyItem],
+    non_code_meta: &NonCodeMeta,
+    inner_attrs: &NodeList<Annotation>,
+    buf: &mut String,
+    options: &FormatOptions,
+    indentation_level: usize,
+) {
+    let indentation = options.get_indentation(indentation_level);
+
+    recast_leading(non_code_meta, inner_attrs, buf, options, indentation_level);
 
     let body_item_lines = items.iter().map(|body_item| {
         let mut result = String::with_capacity(256);
