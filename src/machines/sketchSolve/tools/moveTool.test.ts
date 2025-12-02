@@ -18,6 +18,10 @@ import {
   calculateCornerLineStyles,
   calculateLabelStyles,
   transformToLocalSpace,
+  extractTrianglesFromMesh,
+  doesTriangleIntersectBox,
+  doesAnyPolygonIntersectBox,
+  doesSegmentIntersectSelectionBox,
 } from '@src/machines/sketchSolve/tools/moveTool'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
@@ -2291,5 +2295,234 @@ describe('transformToLocalSpace', () => {
     expect(result).toBeInstanceOf(Vector3)
     // After 90 degree rotation, x should map to -y in local space
     expect(result.y).toBeCloseTo(-10, 5)
+  })
+})
+
+describe('extractTrianglesFromMesh', () => {
+  it('should extract triangles from a mesh geometry and project to screen space', () => {
+    const camera = new OrthographicCamera(-10, 10, 10, -10, 0.1, 1000)
+    camera.position.set(0, 0, 10)
+    camera.lookAt(0, 0, 0)
+    const viewportSize = new Vector2(800, 600)
+
+    // Create a simple mesh with known geometry
+    const lineMesh = createLineSegmentMesh({ segmentId: 1 })
+
+    const triangles = extractTrianglesFromMesh(lineMesh, camera, viewportSize)
+
+    // Should extract at least some triangles from the mesh
+    expect(triangles.length).toBeGreaterThan(0)
+    // Each triangle should have 3 vertices
+    triangles.forEach((triangle) => {
+      expect(triangle).toHaveLength(3)
+      triangle.forEach((vertex) => {
+        expect(vertex).toBeInstanceOf(Vector2)
+      })
+    })
+  })
+})
+
+describe('doesTriangleIntersectBox', () => {
+  it('should return true when triangle vertex is inside the box', () => {
+    const triangle: [Vector2, Vector2, Vector2] = [
+      new Vector2(50, 50), // Inside box
+      new Vector2(200, 200),
+      new Vector2(300, 300),
+    ]
+    const boxMin = new Vector2(0, 0)
+    const boxMax = new Vector2(100, 100)
+
+    const result = doesTriangleIntersectBox(triangle, boxMin, boxMax)
+
+    // Triangle with vertex inside box should intersect
+    expect(result).toBe(true)
+  })
+
+  it('should return true when triangle edge intersects box', () => {
+    const triangle: [Vector2, Vector2, Vector2] = [
+      new Vector2(-50, 50), // Outside box
+      new Vector2(150, 50), // Outside box, but edge crosses through
+      new Vector2(50, 150),
+    ]
+    const boxMin = new Vector2(0, 0)
+    const boxMax = new Vector2(100, 100)
+
+    const result = doesTriangleIntersectBox(triangle, boxMin, boxMax)
+
+    // Triangle edge that crosses through box should intersect
+    expect(result).toBe(true)
+  })
+
+  it('should return true when box is entirely inside triangle', () => {
+    // Large triangle that contains the box
+    // Triangle vertices form a triangle that definitely contains the box (0,0) to (50,50)
+    const triangle: [Vector2, Vector2, Vector2] = [
+      new Vector2(-10, -10), // Bottom-left of triangle
+      new Vector2(100, -10), // Bottom-right of triangle
+      new Vector2(45, 100), // Top of triangle (centered above box)
+    ]
+    const boxMin = new Vector2(0, 0)
+    const boxMax = new Vector2(50, 50)
+
+    const result = doesTriangleIntersectBox(triangle, boxMin, boxMax)
+
+    // Box entirely inside triangle should intersect
+    expect(result).toBe(true)
+  })
+
+  it('should return false when triangle is completely outside box', () => {
+    const triangle: [Vector2, Vector2, Vector2] = [
+      new Vector2(200, 200),
+      new Vector2(300, 200),
+      new Vector2(250, 300),
+    ]
+    const boxMin = new Vector2(0, 0)
+    const boxMax = new Vector2(100, 100)
+
+    const result = doesTriangleIntersectBox(triangle, boxMin, boxMax)
+
+    // Triangle completely outside box should not intersect
+    expect(result).toBe(false)
+  })
+
+  it('should return true when triangle touches box edge', () => {
+    const triangle: [Vector2, Vector2, Vector2] = [
+      new Vector2(100, 50), // On box edge
+      new Vector2(150, 50),
+      new Vector2(125, 100),
+    ]
+    const boxMin = new Vector2(0, 0)
+    const boxMax = new Vector2(100, 100)
+
+    const result = doesTriangleIntersectBox(triangle, boxMin, boxMax)
+
+    // Triangle touching box edge should intersect
+    expect(result).toBe(true)
+  })
+})
+
+describe('doesAnyPolygonIntersectBox', () => {
+  it('should return true when at least one polygon intersects', () => {
+    const polygons: Array<[Vector2, Vector2, Vector2]> = [
+      [new Vector2(200, 200), new Vector2(300, 200), new Vector2(250, 300)], // Outside
+      [new Vector2(50, 50), new Vector2(60, 50), new Vector2(55, 60)], // Inside
+      [new Vector2(500, 500), new Vector2(600, 500), new Vector2(550, 600)], // Outside
+    ]
+    const boxMin = new Vector2(0, 0)
+    const boxMax = new Vector2(100, 100)
+
+    const result = doesAnyPolygonIntersectBox(polygons, boxMin, boxMax)
+
+    // Should return true because second polygon intersects
+    expect(result).toBe(true)
+  })
+
+  it('should return false when no polygons intersect', () => {
+    const polygons: Array<[Vector2, Vector2, Vector2]> = [
+      [new Vector2(200, 200), new Vector2(300, 200), new Vector2(250, 300)],
+      [new Vector2(400, 400), new Vector2(500, 400), new Vector2(450, 500)],
+    ]
+    const boxMin = new Vector2(0, 0)
+    const boxMax = new Vector2(100, 100)
+
+    const result = doesAnyPolygonIntersectBox(polygons, boxMin, boxMax)
+
+    // Should return false when no polygons intersect
+    expect(result).toBe(false)
+  })
+
+  it('should return false for empty array', () => {
+    const polygons: Array<[Vector2, Vector2, Vector2]> = []
+    const boxMin = new Vector2(0, 0)
+    const boxMax = new Vector2(100, 100)
+
+    const result = doesAnyPolygonIntersectBox(polygons, boxMin, boxMax)
+
+    // Empty array should return false
+    expect(result).toBe(false)
+  })
+})
+
+describe('doesSegmentIntersectSelectionBox', () => {
+  it('should return true when segment bounding box is entirely inside selection box', () => {
+    const segmentMin = new Vector2(10, 10)
+    const segmentMax = new Vector2(50, 50)
+    const selectionMin = new Vector2(0, 0)
+    const selectionMax = new Vector2(100, 100)
+    const polygons: Array<[Vector2, Vector2, Vector2]> = []
+
+    const result = doesSegmentIntersectSelectionBox(
+      segmentMin,
+      segmentMax,
+      selectionMin,
+      selectionMax,
+      polygons
+    )
+
+    // Segment entirely inside should intersect (early exit, no polygon check needed)
+    expect(result).toBe(true)
+  })
+
+  it('should return false when bounding boxes do not intersect', () => {
+    const segmentMin = new Vector2(200, 200)
+    const segmentMax = new Vector2(300, 300)
+    const selectionMin = new Vector2(0, 0)
+    const selectionMax = new Vector2(100, 100)
+    const polygons: Array<[Vector2, Vector2, Vector2]> = []
+
+    const result = doesSegmentIntersectSelectionBox(
+      segmentMin,
+      segmentMax,
+      selectionMin,
+      selectionMax,
+      polygons
+    )
+
+    // Non-overlapping boxes should not intersect
+    expect(result).toBe(false)
+  })
+
+  it('should check polygon intersection when bounding boxes overlap', () => {
+    const segmentMin = new Vector2(50, 50)
+    const segmentMax = new Vector2(150, 150)
+    const selectionMin = new Vector2(0, 0)
+    const selectionMax = new Vector2(100, 100)
+    // Polygons that actually intersect the selection box
+    const polygons: Array<[Vector2, Vector2, Vector2]> = [
+      [new Vector2(50, 50), new Vector2(60, 50), new Vector2(55, 60)],
+    ]
+
+    const result = doesSegmentIntersectSelectionBox(
+      segmentMin,
+      segmentMax,
+      selectionMin,
+      selectionMax,
+      polygons
+    )
+
+    // Should check polygons and find intersection
+    expect(result).toBe(true)
+  })
+
+  it('should return false when bounding boxes overlap but no polygons intersect', () => {
+    const segmentMin = new Vector2(50, 50)
+    const segmentMax = new Vector2(150, 150)
+    const selectionMin = new Vector2(0, 0)
+    const selectionMax = new Vector2(100, 100)
+    // Polygons that are in the segment but don't intersect selection box
+    const polygons: Array<[Vector2, Vector2, Vector2]> = [
+      [new Vector2(120, 120), new Vector2(130, 120), new Vector2(125, 130)],
+    ]
+
+    const result = doesSegmentIntersectSelectionBox(
+      segmentMin,
+      segmentMax,
+      selectionMin,
+      selectionMax,
+      polygons
+    )
+
+    // Bounding boxes overlap but polygons don't intersect
+    expect(result).toBe(false)
   })
 })

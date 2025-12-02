@@ -23,6 +23,7 @@ import {
   Vector3,
   Mesh,
   Vector2,
+  BufferGeometry,
 } from 'three'
 
 import {
@@ -970,6 +971,319 @@ export function transformToLocalSpace(
   return localCenter
 }
 
+/**
+ * Pure function: Extracts triangles (polygons) from a Three.js mesh geometry
+ * Returns an array of triangles, where each triangle is an array of 3 Vector3 vertices in world space
+ */
+export function extractTrianglesFromMesh(
+  mesh: Mesh,
+  camera: OrthographicCamera | PerspectiveCamera,
+  viewportSize: Vector2
+): Array<[Vector2, Vector2, Vector2]> {
+  const geometry = mesh.geometry
+  // ExtrudeGeometry extends BufferGeometry, so this check works for both
+  if (!(geometry instanceof BufferGeometry)) {
+    return []
+  }
+
+  mesh.updateMatrixWorld()
+  const positionAttr = geometry.getAttribute('position')
+  if (!positionAttr) {
+    return []
+  }
+
+  const positions = positionAttr.array as Float32Array
+  const triangles: Array<[Vector2, Vector2, Vector2]> = []
+
+  // Get indices or generate sequential indices
+  let indices: Array<number>
+  if (geometry.index) {
+    const idxArr = geometry.index.array as ArrayLike<number>
+    indices = Array.from(idxArr)
+  } else {
+    indices = Array.from({ length: positionAttr.count }, (_, i) => i)
+  }
+
+  // Extract triangles (every 3 indices form a triangle)
+  for (let i = 0; i < indices.length; i += 3) {
+    const i0 = indices[i] * 3
+    const i1 = indices[i + 1] * 3
+    const i2 = indices[i + 2] * 3
+
+    // Get vertices in local space
+    const v0 = new Vector3(positions[i0], positions[i0 + 1], positions[i0 + 2])
+    const v1 = new Vector3(positions[i1], positions[i1 + 1], positions[i1 + 2])
+    const v2 = new Vector3(positions[i2], positions[i2 + 1], positions[i2 + 2])
+
+    // Transform to world space
+    v0.applyMatrix4(mesh.matrixWorld)
+    v1.applyMatrix4(mesh.matrixWorld)
+    v2.applyMatrix4(mesh.matrixWorld)
+
+    // Project to screen space
+    const screen0 = project3DToScreen(v0, camera, viewportSize)
+    const screen1 = project3DToScreen(v1, camera, viewportSize)
+    const screen2 = project3DToScreen(v2, camera, viewportSize)
+
+    triangles.push([screen0, screen1, screen2])
+  }
+
+  return triangles
+}
+
+/**
+ * Pure function: Checks if a point is inside a 2D axis-aligned box
+ */
+function isPointInBox(
+  point: Vector2,
+  boxMin: Vector2,
+  boxMax: Vector2
+): boolean {
+  return (
+    point.x >= boxMin.x &&
+    point.x <= boxMax.x &&
+    point.y >= boxMin.y &&
+    point.y <= boxMax.y
+  )
+}
+
+/**
+ * Pure function: Checks if a line segment intersects with a 2D axis-aligned box
+ * Uses Liang-Barsky algorithm for efficient line-box intersection
+ */
+function doesLineSegmentIntersectBox(
+  p0: Vector2,
+  p1: Vector2,
+  boxMin: Vector2,
+  boxMax: Vector2
+): boolean {
+  // If either endpoint is inside the box, it intersects
+  if (isPointInBox(p0, boxMin, boxMax) || isPointInBox(p1, boxMin, boxMax)) {
+    return true
+  }
+
+  // Check if line segment intersects box edges
+  // Use parametric line equation: P(t) = p0 + t * (p1 - p0), t in [0, 1]
+  const dx = p1.x - p0.x
+  const dy = p1.y - p0.y
+
+  // Check intersection with box edges
+  // Left edge: x = boxMin.x
+  if (dx !== 0) {
+    const t = (boxMin.x - p0.x) / dx
+    if (t >= 0 && t <= 1) {
+      const y = p0.y + t * dy
+      if (y >= boxMin.y && y <= boxMax.y) {
+        return true
+      }
+    }
+  }
+
+  // Right edge: x = boxMax.x
+  if (dx !== 0) {
+    const t = (boxMax.x - p0.x) / dx
+    if (t >= 0 && t <= 1) {
+      const y = p0.y + t * dy
+      if (y >= boxMin.y && y <= boxMax.y) {
+        return true
+      }
+    }
+  }
+
+  // Top edge: y = boxMin.y
+  if (dy !== 0) {
+    const t = (boxMin.y - p0.y) / dy
+    if (t >= 0 && t <= 1) {
+      const x = p0.x + t * dx
+      if (x >= boxMin.x && x <= boxMax.x) {
+        return true
+      }
+    }
+  }
+
+  // Bottom edge: y = boxMax.y
+  if (dy !== 0) {
+    const t = (boxMax.y - p0.y) / dy
+    if (t >= 0 && t <= 1) {
+      const x = p0.x + t * dx
+      if (x >= boxMin.x && x <= boxMax.x) {
+        return true
+      }
+    }
+  }
+
+  return false
+}
+
+/**
+ * Pure function: Checks if a triangle (polygon) intersects with a 2D axis-aligned box
+ * Returns true if the triangle intersects the box (not just contained)
+ */
+export function doesTriangleIntersectBox(
+  triangle: [Vector2, Vector2, Vector2],
+  boxMin: Vector2,
+  boxMax: Vector2
+): boolean {
+  const [v0, v1, v2] = triangle
+
+  // Check if any vertex is inside the box
+  if (
+    isPointInBox(v0, boxMin, boxMax) ||
+    isPointInBox(v1, boxMin, boxMax) ||
+    isPointInBox(v2, boxMin, boxMax)
+  ) {
+    return true
+  }
+
+  // Check if any triangle edge intersects the box
+  if (
+    doesLineSegmentIntersectBox(v0, v1, boxMin, boxMax) ||
+    doesLineSegmentIntersectBox(v1, v2, boxMin, boxMax) ||
+    doesLineSegmentIntersectBox(v2, v0, boxMin, boxMax)
+  ) {
+    return true
+  }
+
+  // Check if box is entirely inside triangle (for convex triangles)
+  // This handles cases where the box is inside a large triangle
+  const boxCorners = [
+    new Vector2(boxMin.x, boxMin.y),
+    new Vector2(boxMax.x, boxMin.y),
+    new Vector2(boxMax.x, boxMax.y),
+    new Vector2(boxMin.x, boxMax.y),
+  ]
+
+  // Check if all box corners are inside the triangle
+  // Using barycentric coordinates or point-in-triangle test
+  const allCornersInside = boxCorners.every((corner) => {
+    return isPointInTriangle(corner, v0, v1, v2)
+  })
+
+  if (allCornersInside) {
+    return true
+  }
+
+  return false
+}
+
+/**
+ * Pure function: Checks if a point is inside a triangle using barycentric coordinates
+ */
+function isPointInTriangle(
+  point: Vector2,
+  v0: Vector2,
+  v1: Vector2,
+  v2: Vector2
+): boolean {
+  const dX = point.x - v2.x
+  const dY = point.y - v2.y
+  const dX20 = v2.x - v0.x
+  const dY20 = v2.y - v0.y
+  const dX21 = v2.x - v1.x
+  const dY21 = v2.y - v1.y
+
+  const denom = dX20 * dY21 - dX21 * dY20
+  if (Math.abs(denom) < 1e-10) {
+    return false // Degenerate triangle
+  }
+
+  const a = (dX * dY21 - dY * dX21) / denom
+  const b = (dX20 * dY - dY20 * dX) / denom
+  const c = 1 - a - b
+
+  return a >= 0 && b >= 0 && c >= 0
+}
+
+/**
+ * Pure function: Checks if any polygon in an array intersects with a box
+ * Uses binary tree pattern for efficiency: starts in middle, keeps dividing
+ * Returns true as soon as one polygon intersects (early exit)
+ */
+export function doesAnyPolygonIntersectBox(
+  polygons: Array<[Vector2, Vector2, Vector2]>,
+  boxMin: Vector2,
+  boxMax: Vector2
+): boolean {
+  if (polygons.length === 0) {
+    return false
+  }
+
+  // Binary tree pattern: check middle, then divide
+  function checkRange(start: number, end: number): boolean {
+    if (start >= end) {
+      return false
+    }
+
+    const mid = Math.floor((start + end) / 2)
+
+    // Check middle polygon
+    if (doesTriangleIntersectBox(polygons[mid], boxMin, boxMax)) {
+      return true
+    }
+
+    // Recursively check left and right halves
+    if (checkRange(start, mid)) {
+      return true
+    }
+
+    if (checkRange(mid + 1, end)) {
+      return true
+    }
+
+    return false
+  }
+
+  return checkRange(0, polygons.length)
+}
+
+/**
+ * Pure function: Determines if a segment intersects with the selection box
+ * Uses improved logic:
+ * 1. If segment bounding box is entirely inside selection box → intersects
+ * 2. Else if bounding boxes intersect → check if any polygon intersects
+ * 3. Else doesn't intersect
+ */
+export function doesSegmentIntersectSelectionBox(
+  segmentBoundingBoxMin: Vector2,
+  segmentBoundingBoxMax: Vector2,
+  selectionBoxMin: Vector2,
+  selectionBoxMax: Vector2,
+  polygons: Array<[Vector2, Vector2, Vector2]>
+): boolean {
+  // Step 1: Check if segment bounding box is entirely inside selection box
+  const segmentCorners = [
+    new Vector2(segmentBoundingBoxMin.x, segmentBoundingBoxMin.y),
+    new Vector2(segmentBoundingBoxMax.x, segmentBoundingBoxMin.y),
+    new Vector2(segmentBoundingBoxMax.x, segmentBoundingBoxMax.y),
+    new Vector2(segmentBoundingBoxMin.x, segmentBoundingBoxMax.y),
+  ]
+
+  const allCornersInside = areAllPointsContained(
+    segmentCorners,
+    selectionBoxMin,
+    selectionBoxMax
+  )
+
+  if (allCornersInside) {
+    return true
+  }
+
+  // Step 2: Check if bounding boxes intersect
+  const boxesIntersect = doBoxesIntersect(
+    segmentBoundingBoxMin,
+    segmentBoundingBoxMax,
+    selectionBoxMin,
+    selectionBoxMax
+  )
+
+  if (!boxesIntersect) {
+    return false
+  }
+
+  // Step 3: Check if any polygon intersects the selection box
+  return doesAnyPolygonIntersectBox(polygons, selectionBoxMin, selectionBoxMax)
+}
+
 export function setUpOnDragAndSelectionClickCallbacks({
   self,
   context,
@@ -1540,7 +1854,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
   /**
    * Helper function to find segments (line segments and point segments) that intersect with the selection box
-   * Uses screen-space projection to check if segments intersect the box
+   * Uses improved intersection logic: checks bounding box containment first, then polygon intersection
    */
   function findIntersectingSegments(
     boxMinPx: Vector2,
@@ -1620,7 +1934,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
           )
         })
 
-        // For "intersection" selection, check if the bounding box overlaps with the selection box
         // Compute the bounding box of the line segment in screen space
         const segmentMinPx = new Vector2(
           Math.min(...screenCorners.map((c) => c.x)),
@@ -1631,15 +1944,23 @@ export function setUpOnDragAndSelectionClickCallbacks({
           Math.max(...screenCorners.map((c) => c.y))
         )
 
-        // Check if bounding boxes overlap (intersect)
-        const boxesIntersect = doBoxesIntersect(
+        // Extract triangles from the mesh
+        const triangles = extractTrianglesFromMesh(
+          lineMesh,
+          camera,
+          viewportSize
+        )
+
+        // Use improved intersection logic
+        const intersects = doesSegmentIntersectSelectionBox(
           segmentMinPx,
           segmentMaxPx,
           boxMinPx,
-          boxMaxPx
+          boxMaxPx,
+          triangles
         )
 
-        if (boxesIntersect) {
+        if (intersects) {
           intersectingIds.push(segmentId)
         }
         return
