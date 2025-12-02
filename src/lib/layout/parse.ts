@@ -25,7 +25,6 @@ export function parseLayoutFromJsonString(
     if (
       !(
         'version' in layoutWithMetadata &&
-        layoutWithMetadata.version === 'v1' &&
         'layout' in layoutWithMetadata &&
         layoutWithMetadata.layout
       )
