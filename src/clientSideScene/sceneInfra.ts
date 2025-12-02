@@ -393,6 +393,7 @@ export class SceneInfra {
 
   dispose = () => {
     // Dispose of scene resources, renderer, and controls
+    this.renderer.forceContextLoss()
     this.renderer.dispose()
     // Dispose of any other resources like geometries, materials, textures
   }
