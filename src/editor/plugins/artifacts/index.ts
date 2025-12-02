@@ -1,4 +1,4 @@
-import type { Extension } from '@codemirror/state'
+import type { Extension, Range } from '@codemirror/state'
 import { StateEffect, StateField, Annotation } from '@codemirror/state'
 import { Decoration, EditorView } from '@codemirror/view'
 
@@ -6,21 +6,21 @@ import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 
-// Transaction annotation to identify artifact annotation updates
 const artifactAnnotationsAnnotation = Annotation.define<boolean>()
+/** Transaction annotation to identify artifact annotation updates */
 export const artifactAnnotationsEvent = artifactAnnotationsAnnotation.of(true)
 
-// Effect used to replace the current artifact graph in state
+/** Effect used to replace the current artifact graph in state */
 export const setArtifactGraphEffect = StateEffect.define<ArtifactGraph | null>()
 
-// Public shape stored on each decoration so we can inspect it later
+/** Public shape stored on each decoration so we can inspect it later */
 export interface ArtifactAnnotationData {
   id: string
   type: Artifact['type']
   codeRef: CodeRef
 }
 
-// StateField to hold the current artifact graph reference on the EditorState
+/** StateField to hold the current artifact graph reference on the EditorState */
 export const artifactGraphField = StateField.define<ArtifactGraph>({
   create() {
     return new Map()
@@ -35,7 +35,7 @@ export const artifactGraphField = StateField.define<ArtifactGraph>({
   },
 })
 
-// Decorations field that stores ranges annotated with artifact metadata
+/** Decorations field that stores ranges annotated with artifact metadata */
 export const artifactDecorationsField = StateField.define<
   ReturnType<typeof Decoration.set>
 >({
@@ -59,11 +59,15 @@ export const artifactDecorationsField = StateField.define<
   provide: (f) => EditorView.decorations.from(f),
 })
 
+/**
+ * Given an ArtifactGraph, apply decorations to the corresponding code ranges with
+ * each artifact's metadata.
+ */
 function buildArtifactDecorations(
   graph: ArtifactGraph,
   state: EditorView['state']
 ) {
-  const widgets: ReturnType<typeof Decoration.range>[] = []
+  const widgets: Range<Decoration>[] = []
   const docLen = state.doc.length
 
   for (const [id, artifact] of graph.entries()) {
