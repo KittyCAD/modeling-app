@@ -45,6 +45,16 @@ impl Program {
     }
 }
 
+struct LeadingElement<'a> {
+    start: usize,
+    kind: LeadingKind<'a>,
+}
+
+enum LeadingKind<'a> {
+    NonCode(&'a Node<NonCodeNode>),
+    Attr(&'a Node<Annotation>),
+}
+
 fn recast_body(
     items: &[BodyItem],
     non_code_meta: &NonCodeMeta,
@@ -55,21 +65,68 @@ fn recast_body(
 ) {
     let indentation = options.get_indentation(indentation_level);
 
+    let mut leading_elements = Vec::with_capacity(non_code_meta.start_nodes.len() + inner_attrs.len());
     if non_code_meta
         .start_nodes
         .iter()
         .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine))
     {
-        for start in &non_code_meta.start_nodes {
-            let noncode_recast = start.recast(options, indentation_level);
-            buf.push_str(&noncode_recast);
+        leading_elements.extend(non_code_meta.start_nodes.iter().map(|node| LeadingElement {
+            start: node.start,
+            kind: LeadingKind::NonCode(node),
+        }));
+    }
+    leading_elements.extend(inner_attrs.iter().map(|attr| LeadingElement {
+        start: attr.start,
+        kind: LeadingKind::Attr(attr),
+    }));
+    leading_elements.sort_by_key(|item| item.start);
+
+    let mut saw_attr = false;
+    let mut newline_after_last_attr = false;
+
+    for (idx, element) in leading_elements.iter().enumerate() {
+        match element.kind {
+            LeadingKind::NonCode(node) => {
+                let next_is_newline = matches!(
+                    leading_elements.get(idx + 1),
+                    Some(LeadingElement {
+                        kind: LeadingKind::NonCode(next),
+                        ..
+                    }) if matches!(next.value, NonCodeValue::NewLine)
+                );
+                match &node.value {
+                    NonCodeValue::NewLine => {
+                        let newline_to_write = if buf.ends_with('\n') { "\n" } else { "\n\n" };
+                        buf.push_str(newline_to_write);
+                    }
+                    NonCodeValue::BlockComment {
+                        style: CommentStyle::Line,
+                        ..
+                    } if next_is_newline => {
+                        let mut rendered = node.recast(options, indentation_level);
+                        while rendered.ends_with('\n') {
+                            rendered.pop();
+                        }
+                        buf.push_str(&rendered);
+                    }
+                    _ => buf.push_str(&node.recast(options, indentation_level)),
+                }
+
+                if saw_attr && matches!(node.value, NonCodeValue::NewLine) {
+                    newline_after_last_attr = true;
+                }
+            }
+            LeadingKind::Attr(attr) => {
+                saw_attr = true;
+                newline_after_last_attr = false;
+                options.write_indentation(buf, indentation_level);
+                attr.recast(buf, options, indentation_level);
+            }
         }
     }
-    for attr in inner_attrs {
-        options.write_indentation(buf, indentation_level);
-        attr.recast(buf, options, indentation_level);
-    }
-    if !inner_attrs.is_empty() {
+
+    if !inner_attrs.is_empty() && !newline_after_last_attr {
         buf.push('\n');
     }
 
