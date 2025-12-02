@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    front::FrontendState, wasm_engine::FileManager, EngineManager, ExecOutcome, KclError, KclErrorWithOutputs, Program,
-    ProjectManager,
+    front::FrontendState, wasm_engine::FileManager, EngineManager, ExecOutcome, KclError, KclErrorWithOutputs,
+    MockConfig, Program, ProjectManager,
 };
 use wasm_bindgen::prelude::*;
 
@@ -184,7 +184,11 @@ impl Context {
                 "Could not create KCL executor context. {TRUE_BUG} Details: {e}"
             )))
         })?;
-        ctx.run_mock(&program, use_prev_memory).await
+        let mock_config = MockConfig {
+            use_prev_memory,
+            ..Default::default()
+        };
+        ctx.run_mock(&program, &mock_config).await
     }
 
     /// Export a scene to a file.

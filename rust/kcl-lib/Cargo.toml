@@ -41,6 +41,7 @@ lsp-test-util = []
 tabled = ["dep:tabled"]
 
 [dependencies]
+ahash = { workspace = true }
 anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
 async-trait = { workspace = true }

@@ -56,6 +56,7 @@ macro_rules! eprint {
 #[global_allocator]
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
+pub mod collections;
 mod coredump;
 mod docs;
 mod engine;
@@ -93,8 +94,8 @@ pub use errors::{
     ReportWithOutputs,
 };
 pub use execution::{
-    ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d, bust_cache, clear_mem_cache,
-    typed_path::TypedPath,
+    ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, MockConfig, Point2d, bust_cache,
+    clear_mem_cache, typed_path::TypedPath,
 };
 pub use kcl_error::SourceRange;
 pub use lsp::{
