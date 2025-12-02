@@ -45,6 +45,8 @@ impl Program {
     }
 }
 
+// Keep initial non-code (comments/blank lines) and inner attributes ordered by their
+// source position so we don't invent or drop leading whitespace before the first item.
 struct LeadingElement<'a> {
     start: usize,
     kind: LeadingKind<'a>,
@@ -88,6 +90,8 @@ fn recast_body(
     for (idx, element) in leading_elements.iter().enumerate() {
         match element.kind {
             LeadingKind::NonCode(node) => {
+                // If a line comment is immediately followed by a blank-line marker, avoid
+                // writing both the comment's newline and the marker (would become 3 lines).
                 let next_is_newline = matches!(
                     leading_elements.get(idx + 1),
                     Some(LeadingElement {
@@ -97,6 +101,7 @@ fn recast_body(
                 );
                 match &node.value {
                     NonCodeValue::NewLine => {
+                        // Respect existing blank lines without creating triples.
                         let newline_to_write = if buf.ends_with('\n') { "\n" } else { "\n\n" };
                         buf.push_str(newline_to_write);
                     }
@@ -118,6 +123,8 @@ fn recast_body(
                 }
             }
             LeadingKind::Attr(attr) => {
+                // Attributes should appear in source order and keep a trailing newline unless
+                // a blank line already follows them.
                 saw_attr = true;
                 newline_after_last_attr = false;
                 options.write_indentation(buf, indentation_level);
