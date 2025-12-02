@@ -1564,6 +1564,7 @@ export const ModelingMachineProvider = ({
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig: modelingMachineCommandConfig,
+    isExecuting: kclManager.isExecutingSignal.value,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically
     // make this function take the actor or state so it
