@@ -72,7 +72,7 @@ if (window.electron) {
 
 export function App() {
   const { state: modelingState } = useModelingContext()
-  useQueryParamEffects()
+  useQueryParamEffects(kclManager)
   const { project, file } = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
