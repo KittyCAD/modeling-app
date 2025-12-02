@@ -71,7 +71,7 @@ const router = createRouter([
         },
       },
       {
-        loader: fileLoader,
+        loader: () => fileLoader(kclManager),
         id: PATHS.FILE,
         path: PATHS.FILE + '/:id',
         errorElement: <ErrorPage />,
