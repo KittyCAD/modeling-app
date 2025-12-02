@@ -62,7 +62,6 @@ import {
   MlEphantManagerReactContext,
   MlEphantManagerTransitions2,
 } from '@src/machines/mlEphantManagerMachine2'
-import { getArtifactAnnotationsAtCursor } from './lib/getArtifactAnnotationsAtCursor'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -263,15 +262,6 @@ export function App() {
           localItems={[
             ...(getSettings().app.showDebugPanel.current
               ? ([
-                  {
-                    id: 'artifact-under-cursor',
-                    element: 'text',
-                    label: `Artifacts under selections: ${
-                      getArtifactAnnotationsAtCursor(editorManager.editorState)
-                        .map((value) => `${value.type}`)
-                        .join(', ') || 'none'
-                    }`,
-                  },
                   {
                     id: 'modeling-state',
                     element: 'text',
