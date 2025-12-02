@@ -1,0 +1,24 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing color_one_pattern.kcl
+---
+// Sketch a cylinder.
+sketch001 = startSketchOn(XY)
+profile001 = circle(
+  sketch001,
+  center = [0, 0],
+  radius = 1.72,
+  tag = $seg01,
+)
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
+
+// Pattern it, total of 5 cylinders.
+pattern001 = patternLinear3d(
+  extrude001,
+  instances = 5,
+  distance = 5,
+  axis = Y,
+)
+
+// Color just the third solid in the pattern.
+appearance(pattern001[2], color = "#ff9900")
