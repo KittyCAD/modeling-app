@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: 0 * * * * # hourly
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -97,7 +99,7 @@ jobs:
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - name: npm run test:integration
-        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
+        if: ${{ github.event_name != 'release' }}
         run: |-
           xvfb-run -a npm run test:integration || true # let TAB determine failure
           .github/ci-cd-scripts/upload-results.sh

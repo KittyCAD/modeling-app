@@ -49,7 +49,6 @@ import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import {
-  codeManager,
   engineCommandManager,
   kclManager,
   rustContext,
@@ -247,7 +246,7 @@ export function handleSelectionBatch({
     resetAndSetEngineEntitySelectionCmds(selectionToEngine)
   selections.graphSelections.forEach(({ codeRef }) => {
     if (codeRef.range?.[1]) {
-      const safeEnd = Math.min(codeRef.range[1], codeManager.code.length)
+      const safeEnd = Math.min(codeRef.range[1], kclManager.code.length)
       ranges.push(EditorSelection.cursor(safeEnd))
     }
   })
@@ -264,7 +263,7 @@ export function handleSelectionBatch({
 
   return {
     codeMirrorSelection: EditorSelection.create(
-      [EditorSelection.cursor(codeManager.code.length)],
+      [EditorSelection.cursor(kclManager.code.length)],
       0
     ),
     engineEvents,
