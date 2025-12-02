@@ -150,7 +150,7 @@ pub(crate) async fn fix_tags_and_references_solid(
 
     fix_sketch_tags_and_references(
         &mut solid.sketch,
-        &entity_id_map,
+        entity_id_map,
         exec_state,
         args,
         Some(solid.value.clone()),
