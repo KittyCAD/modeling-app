@@ -13,8 +13,8 @@ import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import type { EnterEditFlowProps } from '@src/lib/operations'
 import { enterEditFlow } from '@src/lib/operations'
-import { kclManager } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
+import type { KclManager } from '@src/lang/KclManager'
 import { err } from '@src/lib/trap'
 
 type FeatureTreeEvent =
@@ -64,9 +64,8 @@ type FeatureTreeEvent =
 type FeatureTreeContext = {
   targetSourceRange?: SourceRange
   currentOperation?: Operation
+  kclManager: KclManager
 }
-
-export const featureTreeMachineDefaultContext: FeatureTreeContext = {}
 
 export const featureTreeMachine = setup({
   types: {
@@ -108,6 +107,7 @@ export const featureTreeMachine = setup({
         input: {
           artifact: Artifact | undefined
           targetSourceRange: SourceRange | undefined
+          kclManager: KclManager
         }
       }) => {
         return new Promise((resolve, reject) => {
@@ -118,7 +118,7 @@ export const featureTreeMachine = setup({
           }
 
           const pathToNode = getNodePathFromSourceRange(
-            kclManager.ast,
+            input.kclManager.ast,
             targetSourceRange
           )
           const selection = {
@@ -408,7 +408,7 @@ export const featureTreeMachine = setup({
               const artifact = context.targetSourceRange
                 ? (getArtifactFromRange(
                     context.targetSourceRange,
-                    kclManager.artifactGraph
+                    context.kclManager.artifactGraph
                   ) ?? undefined)
                 : undefined
               return {
@@ -416,8 +416,8 @@ export const featureTreeMachine = setup({
                 operation: context.currentOperation!,
                 artifact,
                 commandBarSend: commandBarActor.send,
-                code: kclManager.code,
-                artifactGraph: kclManager.artifactGraph,
+                code: context.kclManager.code,
+                artifactGraph: context.kclManager.artifactGraph,
               }
             },
             onDone: {
@@ -464,12 +464,13 @@ export const featureTreeMachine = setup({
               const artifact = context.targetSourceRange
                 ? (getArtifactFromRange(
                     context.targetSourceRange,
-                    kclManager.artifactGraph
+                    context.kclManager.artifactGraph
                   ) ?? undefined)
                 : undefined
               return {
                 artifact,
                 targetSourceRange: context.targetSourceRange,
+                kclManager: context.kclManager,
               }
             },
             onDone: {
