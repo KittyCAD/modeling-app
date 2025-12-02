@@ -180,7 +180,7 @@ description: Operations executed fillet_one_instance_of_pattern.kcl
         "instances": {
           "value": {
             "type": "Number",
-            "value": 5.0,
+            "value": 2.0,
             "ty": {
               "type": "Known",
               "type": "Count"

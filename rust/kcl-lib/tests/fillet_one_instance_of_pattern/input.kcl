@@ -15,4 +15,4 @@ pattern001 = patternLinear3d(
   axis = X,
 )
 // Fillet just one instance.
-fillet001 = fillet(extrude001, tags = pattern001[1].sketch.tags.seg01, radius = 1)
+fillet001 = fillet(pattern001[1], tags = pattern001[1].sketch.tags.seg01, radius = 1)

@@ -19,7 +19,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   9["SweepEdge Opposite"]
   10["SweepEdge Adjacent"]
-  11["EdgeCut Fillet<br>[363, 433, 0]"]
+  11["EdgeCut Fillet<br>[363, 436, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
@@ -29,7 +29,6 @@ flowchart LR
   3 x--> 7
   3 --- 9
   3 --- 10
-  3 --- 11
   5 --- 6
   5 --- 7
   5 --- 8

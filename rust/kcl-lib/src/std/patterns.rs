@@ -1,6 +1,6 @@
 //! Standard library patterns.
 
-use std::cmp::Ordering;
+use std::{cmp::Ordering, collections::HashMap};
 
 use anyhow::Result;
 use kcmc::{
@@ -181,10 +181,17 @@ async fn send_pattern_transform<T: GeometryTrait>(
         )));
     };
 
+    let old_geometry_id = solid.id();
     let mut geometries = vec![solid.clone()];
-    for id in entity_ids.iter().copied() {
+    for new_geometry_id in entity_ids.iter().copied() {
         let mut new_solid = solid.clone();
-        new_solid.set_id(id);
+        new_solid.set_id(new_geometry_id);
+        // Update the tags and IDs.
+        let entity_id_map =
+            super::clone::get_old_new_child_map(new_geometry_id, old_geometry_id, exec_state, args).await?;
+        new_solid
+            .fixup_tags(old_geometry_id, new_geometry_id, &entity_id_map, exec_state, args)
+            .await?;
         geometries.push(new_solid);
     }
     Ok(geometries)
@@ -386,6 +393,19 @@ pub trait GeometryTrait: Clone {
     ) -> Result<[TyF64; 3], KclError>;
     #[allow(async_fn_in_trait)]
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: &Self::Set) -> Result<(), KclError>;
+
+    /// When we duplicate geometry, the old IDs refer to the original geometry, but the new one has
+    /// new, different IDs. So this method changes the new replica to use the correct IDs instead
+    /// of the old stale IDs.
+    #[allow(async_fn_in_trait)]
+    async fn fixup_tags(
+        &mut self,
+        old_geometry_id: Uuid,
+        new_geometry_id: Uuid,
+        entity_id_map: &HashMap<Uuid, Uuid>,
+        exec_state: &mut ExecState,
+        args: &Args,
+    ) -> Result<(), KclError>;
 }
 
 impl GeometryTrait for Sketch {
@@ -412,6 +432,27 @@ impl GeometryTrait for Sketch {
     async fn flush_batch(_: &Args, _: &mut ExecState, _: &Self::Set) -> Result<(), KclError> {
         Ok(())
     }
+
+    async fn fixup_tags(
+        &mut self,
+        old_geometry_id: Uuid,
+        _new_geometry_id: Uuid,
+        entity_id_map: &HashMap<Uuid, Uuid>,
+        exec_state: &mut ExecState,
+        args: &Args,
+    ) -> Result<(), KclError> {
+        self.clone = Some(old_geometry_id);
+        super::clone::fix_sketch_tags_and_references(
+            self,
+            entity_id_map,
+            exec_state,
+            args,
+            // Sketches don't have surfaces, they are a singular surface.
+            None,
+        )
+        .await?;
+        Ok(())
+    }
 }
 
 impl GeometryTrait for Solid {
@@ -420,6 +461,7 @@ impl GeometryTrait for Solid {
         self.id = id;
         // We need this for in extrude.rs when you sketch on face.
         self.sketch.id = id;
+        self.artifact_id = id.into();
     }
 
     fn id(&self) -> Uuid {
@@ -442,6 +484,28 @@ impl GeometryTrait for Solid {
         exec_state
             .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, args), solid_set)
             .await
+    }
+
+    async fn fixup_tags(
+        &mut self,
+        old_geometry_id: Uuid,
+        new_geometry_id: Uuid,
+        entity_id_map: &HashMap<Uuid, Uuid>,
+        exec_state: &mut ExecState,
+        args: &Args,
+    ) -> Result<(), KclError> {
+        // self.id = new_geometry_id;
+        // self.sketch.original_id = new_geometry_id;
+        // self.artifact_id = new_geometry_id.into();
+        super::clone::fix_tags_and_references_solid(
+            new_geometry_id,
+            old_geometry_id,
+            exec_state,
+            args,
+            self,
+            entity_id_map,
+        )
+        .await
     }
 }
 
