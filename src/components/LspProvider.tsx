@@ -217,12 +217,15 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     let plugin = null
     if (isCopilotLspReady && copilotLspClient) {
       // Set up the lsp plugin.
-      const lsp = copilotPlugin({
-        documentUri: `file:///${PROJECT_ENTRYPOINT}`,
-        workspaceFolders: getWorkspaceFolders(),
-        client: copilotLspClient,
-        allowHTMLContent: true,
-      })
+      const lsp = copilotPlugin(
+        {
+          documentUri: `file:///${PROJECT_ENTRYPOINT}`,
+          workspaceFolders: getWorkspaceFolders(),
+          client: copilotLspClient,
+          allowHTMLContent: true,
+        },
+        kclManager
+      )
 
       plugin = lsp
     }
