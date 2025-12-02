@@ -141,6 +141,9 @@ function CommandBarKclInput({
     sourceRange: sourceRangeForPrevVariables,
     selectionRanges,
     allowArrays,
+    code: kclManager.codeSignal.value,
+    ast: kclManager.astSignal.value,
+    variables: kclManager.variablesSignal.value,
   })
 
   const varMentionData: Completion[] = prevVariables.map((v) => {
