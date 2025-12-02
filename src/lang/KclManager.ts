@@ -25,7 +25,6 @@ import {
   setArtifactGraphEffect,
   artifactAnnotationsEvent,
 } from '@src/editor/plugins/artifacts'
-import { Transaction } from '@codemirror/state'
 import { initPromise } from '@src/lang/wasmUtils'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
@@ -502,7 +501,7 @@ export class KclManager extends EventTarget {
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
 
     // Push the artifact graph into the editor state so annotations/decorations update
-    const editorView = this.singletons.editorManager.getEditorView()
+    const editorView = this.getEditorView()
     if (editorView) {
       editorView.dispatch({
         effects: [setArtifactGraphEffect.of(this.artifactGraph)],

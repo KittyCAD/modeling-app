@@ -16,7 +16,7 @@ export function getArtifactAnnotationsAtCursor(
 
   const results: ArtifactAnnotationData[] = []
   decos.between(pos, pos, (_from, _to, value) => {
-    const attrs = (value.spec && (value.spec as any).attributes) || null
+    const attrs = (value.spec && value.spec.attributes) || null
     const json = attrs?.['data-artifact-json']
     if (json) {
       try {

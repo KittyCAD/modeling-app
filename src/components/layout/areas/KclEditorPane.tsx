@@ -219,7 +219,7 @@ export const KclEditorPaneContents = () => {
             key: 'Mod-Shift-d',
             preventDefault: true,
             run: () => {
-              const view = editorManager.getEditorView()
+              const view = kclManager.getEditorView()
               if (!view) return false
               const data = getArtifactAnnotationsAtCursor(view.state)
               // eslint-disable-next-line no-console
