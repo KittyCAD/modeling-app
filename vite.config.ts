@@ -30,7 +30,6 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     test: {
-      globals: true,
       pool: 'forks',
       poolOptions: {
         forks: {

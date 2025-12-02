@@ -12,7 +12,8 @@
     "strict": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
-    "declaration": true
+    "declaration": true,
+    "types":["node"]
   },
   "include": ["src", "./*.ts"],
   "exclude": ["node_modules", "vitest.main.config.ts"]
