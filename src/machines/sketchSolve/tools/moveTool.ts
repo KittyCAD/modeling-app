@@ -45,6 +45,8 @@ import {
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { forceSuffix } from '@src/lang/util'
 
+const AREA_SELECT_BORDER_WIDTH = 2
+
 /**
  * Helper function to extract numeric value from an Expr.
  * Returns the value and units, or null if the Expr doesn't contain a numeric value.
@@ -850,6 +852,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       setSelectionBoxGroup(newSelectionBoxGroup)
 
       // TODO configure to work with light mode too
+      const borderWidthPx = `${AREA_SELECT_BORDER_WIDTH}px`
       const [newBoxDiv, newVerticalLine, newHorizontalLine, newLabelsWrapper] =
         htmlHelper`
               <div
@@ -857,7 +860,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                 style="
                   position: absolute;
                   pointer-events: none;
-                  border: 2px ${borderStyle} rgba(255, 255, 255, 0.5);
+                  border: ${borderWidthPx} ${borderStyle} rgba(255, 255, 255, 0.5);
                   background-color: rgba(255, 255, 255, 0.1);
                   transform: translate(-50%, -50%);
                   box-sizing: border-box;
@@ -869,7 +872,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     position: absolute;
                     pointer-events: none;
                     background-color: rgba(255, 255, 255, 0.5);
-                    width: 2px;
+                    width: ${borderWidthPx};
                   "
                 ></div>
                 <div
@@ -878,7 +881,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
                     position: absolute;
                     pointer-events: none;
                     background-color: rgba(255, 255, 255, 0.5);
-                    height: 2px;
+                    height: ${borderWidthPx};
                   "
                 ></div>
                 <div
@@ -961,7 +964,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
         boxDivElement.style.height = `${heightPx}px`
 
         // Update border style based on selection direction
-        boxDivElement.style.border = `2px ${borderStyle} rgba(255, 255, 255, 0.5)`
+        boxDivElement.style.border = `${AREA_SELECT_BORDER_WIDTH}px ${borderStyle} rgba(255, 255, 255, 0.5)`
       }
 
       // Update label opacity based on active selection mode
@@ -1016,20 +1019,27 @@ export function setUpOnDragAndSelectionClickCallbacks({
       const startX = offsetX
       const startY = offsetY
 
-      const lineExtensionSize = '12px'
+      const lineExtensionSize = 12
 
       // Position vertical line (extends from start point to nearest vertical edge)
       const currentVerticalLine = getVerticalLine()
       if (currentVerticalLine && currentVerticalLine instanceof HTMLElement) {
-        currentVerticalLine.style.left = `calc(50% + ${startX}px)`
-        currentVerticalLine.style.top = `calc(50% + ${startY}px)`
-        currentVerticalLine.style.height = lineExtensionSize
+        currentVerticalLine.style.height = `${lineExtensionSize}px`
+        // reset positions
+        currentVerticalLine.style.top = ''
+        currentVerticalLine.style.right = ''
+        currentVerticalLine.style.bottom = ''
+        currentVerticalLine.style.left = ''
         if (startY > 0) {
-          // Start point is above center, line extends upward to top edge
-          currentVerticalLine.style.transform = 'translateX(-50%)'
+          currentVerticalLine.style.bottom = `-${lineExtensionSize + AREA_SELECT_BORDER_WIDTH}px`
         } else {
-          // Start point is below center, line extends downward to bottom edge
-          currentVerticalLine.style.transform = 'translate(-50%, -100%)'
+          currentVerticalLine.style.top = `-${lineExtensionSize + AREA_SELECT_BORDER_WIDTH}px`
+        }
+
+        if (startX > 0) {
+          currentVerticalLine.style.right = `-${AREA_SELECT_BORDER_WIDTH}px`
+        } else {
+          currentVerticalLine.style.left = `-${AREA_SELECT_BORDER_WIDTH}px`
         }
       }
 
@@ -1039,15 +1049,22 @@ export function setUpOnDragAndSelectionClickCallbacks({
         currentHorizontalLine &&
         currentHorizontalLine instanceof HTMLElement
       ) {
-        currentHorizontalLine.style.top = `calc(50% + ${startY}px)`
-        currentHorizontalLine.style.width = lineExtensionSize
-        currentHorizontalLine.style.left = `calc(50% + ${startX}px)`
+        currentHorizontalLine.style.width = `${lineExtensionSize}px`
+        // reset positions
+        currentHorizontalLine.style.top = ''
+        currentHorizontalLine.style.right = ''
+        currentHorizontalLine.style.bottom = ''
+        currentHorizontalLine.style.left = ''
         if (startX < 0) {
-          // Start point is left of center, line extends leftward to left edge
-          currentHorizontalLine.style.transform = 'translate(-100%, -50%)'
+          currentHorizontalLine.style.left = `-${lineExtensionSize + AREA_SELECT_BORDER_WIDTH}px`
         } else {
-          // Start point is right of center, line extends rightward to right edge
-          currentHorizontalLine.style.transform = 'translateY(-50%)'
+          currentHorizontalLine.style.right = `-${lineExtensionSize + AREA_SELECT_BORDER_WIDTH}px`
+        }
+
+        if (startY > 0) {
+          currentHorizontalLine.style.bottom = `-${AREA_SELECT_BORDER_WIDTH}px`
+        } else {
+          currentHorizontalLine.style.top = `-${AREA_SELECT_BORDER_WIDTH}px`
         }
       }
 
