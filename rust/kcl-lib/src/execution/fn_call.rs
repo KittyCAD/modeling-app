@@ -424,7 +424,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
         KclValue::Solid { value } => {
             for v in &value.value {
                 let mut solid_copy = value.clone();
-                        solid_copy.sketch.tags.clear(); // Avoid recursive tags.
+                solid_copy.sketch.tags.clear(); // Avoid recursive tags.
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
                     let tag_id = if let Some(t) = value.sketch.tags.get(&tag.name) {
