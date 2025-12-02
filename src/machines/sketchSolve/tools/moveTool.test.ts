@@ -13,7 +13,7 @@ import {
   isIntersectionSelectionMode,
   doBoxesIntersect,
   areAllPointsContained,
-} from '@src/machines/sketchSolve/sketchSolveImpl'
+} from '@src/machines/sketchSolve/tools/moveTool'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
 import { Themes } from '@src/lib/theme'

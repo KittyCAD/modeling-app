@@ -38,7 +38,7 @@ import {
   refreshSelectionStyling,
   updateSketchOutcome,
   spawnTool,
-} from '@src/machines/sketchSolve/sketchSolveImpl'
+} from '@src/machines/sketchSolve/tools/moveTool'
 
 export const sketchSolveMachine = setup({
   types: {
