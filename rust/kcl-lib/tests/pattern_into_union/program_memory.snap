@@ -575,43 +575,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -750,22 +714,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -776,43 +724,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -951,22 +863,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -977,43 +873,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -1152,22 +1012,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -1178,43 +1022,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -1353,22 +1161,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -1379,43 +1171,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -1554,22 +1310,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -1580,43 +1320,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -1755,22 +1459,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -1781,43 +1469,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -1956,22 +1608,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -1982,43 +1618,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -2157,22 +1757,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -2183,43 +1767,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -2358,22 +1906,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -2384,43 +1916,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -2559,22 +2055,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -2585,43 +2065,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -2760,22 +2204,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -2786,43 +2214,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -2961,22 +2353,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -2987,43 +2363,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -3162,22 +2502,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -3188,43 +2512,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -3363,22 +2651,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -3389,43 +2661,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -3564,22 +2800,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -3590,43 +2810,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -3765,22 +2949,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -3791,43 +2959,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -3966,22 +3098,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -3992,43 +3108,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -4167,22 +3247,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -4193,43 +3257,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -4368,22 +3396,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -4394,43 +3406,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 996,
-                "end": 1005,
-                "moduleId": 0,
-                "start": 996,
-                "type": "TagDeclarator",
-                "value": "toFillet"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -4569,22 +3545,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -4801,43 +3761,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -4976,22 +3900,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -5002,43 +3910,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -5177,22 +4049,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -5203,43 +4059,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -5378,22 +4198,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -5404,43 +4208,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -5579,22 +4347,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -5605,43 +4357,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -5780,22 +4496,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -5806,43 +4506,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -5981,22 +4645,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -6007,43 +4655,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -6182,22 +4794,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -6208,43 +4804,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -6383,22 +4943,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -6409,43 +4953,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -6584,22 +5092,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -6610,43 +5102,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -6785,22 +5241,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -6811,43 +5251,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -6986,22 +5390,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -7012,43 +5400,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -7187,22 +5539,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -7213,43 +5549,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -7388,22 +5688,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -7414,43 +5698,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -7589,22 +5837,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -7615,43 +5847,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -7790,22 +5986,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -7816,43 +5996,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -7991,22 +6135,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -8017,43 +6145,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -8192,22 +6284,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -8218,43 +6294,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -8393,22 +6433,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -8419,43 +6443,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -8594,22 +6582,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -8620,43 +6592,7 @@ description: Variables in memory after executing pattern_into_union.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 1574,
-                "end": 1584,
-                "moduleId": 0,
-                "start": 1574,
-                "type": "TagDeclarator",
-                "value": "toFillet2"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -8795,22 +6731,6 @@ description: Variables in memory after executing pattern_into_union.kcl
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }

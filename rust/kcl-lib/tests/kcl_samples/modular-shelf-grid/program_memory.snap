@@ -1036,36 +1036,143 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.2,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.2,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.2,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.2,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
+            "start": {
+              "from": [
+                -0.2,
+                0.0
+              ],
+              "to": [
+                -0.2,
+                0.0
+              ],
+              "units": "m",
               "tag": null,
-              "type": "extrudePlane"
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -1366,36 +1473,143 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.2,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.2,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.2,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.2,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
+            "start": {
+              "from": [
+                -0.2,
+                0.0
+              ],
+              "to": [
+                -0.2,
+                0.0
+              ],
+              "units": "m",
               "tag": null,
-              "type": "extrudePlane"
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -1696,36 +1910,143 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.2,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.2,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.2,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.2,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
+            "start": {
+              "from": [
+                -0.2,
+                0.0
+              ],
+              "to": [
+                -0.2,
+                0.0
+              ],
+              "units": "m",
               "tag": null,
-              "type": "extrudePlane"
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -2026,36 +2347,143 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.2,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.2,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.2,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.2,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
+            "start": {
+              "from": [
+                -0.2,
+                0.0
+              ],
+              "to": [
+                -0.2,
+                0.0
+              ],
+              "units": "m",
               "tag": null,
-              "type": "extrudePlane"
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -3123,7 +3551,36 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -3531,7 +3988,36 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -3939,551 +4425,36 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.2,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.2,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.2,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.2,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
               "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -0.2,
-                0.0
-              ],
-              "to": [
-                -0.2,
-                0.0
-              ],
-              "units": "m",
+              "sourceRange": [],
               "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
+              "type": "extrudePlane"
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.2,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.2,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.2,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.2,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
+            {
+              "faceId": "[uuid]",
               "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -0.2,
-                0.0
-              ],
-              "to": [
-                -0.2,
-                0.0
-              ],
-              "units": "m",
+              "sourceRange": [],
               "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
+              "type": "extrudePlane"
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.2,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.2,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.2,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.2,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
+            {
+              "faceId": "[uuid]",
               "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -0.2,
-                0.0
-              ],
-              "to": [
-                -0.2,
-                0.0
-              ],
-              "units": "m",
+              "sourceRange": [],
               "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
+              "type": "extrudePlane"
             },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.2,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.2,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.2,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.2,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
+            {
+              "faceId": "[uuid]",
               "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -0.2,
-                0.0
-              ],
-              "to": [
-                -0.2,
-                0.0
-              ],
-              "units": "m",
+              "sourceRange": [],
               "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -5551,36 +5522,143 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
+            "start": {
+              "from": [
+                -0.18000000000000002,
+                0.0
+              ],
+              "to": [
+                -0.18000000000000002,
+                0.0
+              ],
+              "units": "m",
               "tag": null,
-              "type": "extrudePlane"
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -5881,36 +5959,143 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
+            "start": {
+              "from": [
+                -0.18000000000000002,
+                0.0
+              ],
+              "to": [
+                -0.18000000000000002,
+                0.0
+              ],
+              "units": "m",
               "tag": null,
-              "type": "extrudePlane"
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -6211,36 +6396,143 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
+            "start": {
+              "from": [
+                -0.18000000000000002,
+                0.0
+              ],
+              "to": [
+                -0.18000000000000002,
+                0.0
+              ],
+              "units": "m",
               "tag": null,
-              "type": "extrudePlane"
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -6541,36 +6833,143 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
+            "start": {
+              "from": [
+                -0.18000000000000002,
+                0.0
+              ],
+              "to": [
+                -0.18000000000000002,
+                0.0
+              ],
+              "units": "m",
               "tag": null,
-              "type": "extrudePlane"
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
             },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -6871,36 +7270,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -7036,36 +7406,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -7201,36 +7542,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -7366,36 +7678,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -7531,36 +7814,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -7696,36 +7950,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -7861,36 +8086,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -8026,36 +8222,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -8191,36 +8358,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -8356,36 +8494,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -8521,36 +8630,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -8686,36 +8766,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -8851,36 +8902,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -9016,696 +9038,7 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -0.18000000000000002,
-                0.0
-              ],
-              "to": [
-                -0.18000000000000002,
-                0.0
-              ],
-              "units": "m",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -0.18000000000000002,
-                0.0
-              ],
-              "to": [
-                -0.18000000000000002,
-                0.0
-              ],
-              "units": "m",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -0.18000000000000002,
-                0.0
-              ],
-              "to": [
-                -0.18000000000000002,
-                0.0
-              ],
-              "units": "m",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -0.18000000000000002,
-                0.0
-              ],
-              "to": [
-                -0.18000000000000002,
-                0.0
-              ],
-              "units": "m",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -10666,7 +9999,36 @@ description: Variables in memory after executing modular-shelf-grid.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [],
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",

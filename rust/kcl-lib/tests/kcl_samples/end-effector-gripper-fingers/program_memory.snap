@@ -8517,20 +8517,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
             }
           ],
           "sketch": {

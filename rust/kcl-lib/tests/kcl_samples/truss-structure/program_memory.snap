@@ -752,64 +752,7 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 695,
-                "end": 706,
-                "moduleId": 0,
-                "start": 695,
-                "type": "TagDeclarator",
-                "value": "bottomFace"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 795,
-                "end": 802,
-                "moduleId": 0,
-                "start": 795,
-                "type": "TagDeclarator",
-                "value": "tag001"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 881,
-                "end": 888,
-                "moduleId": 0,
-                "start": 881,
-                "type": "TagDeclarator",
-                "value": "tag002"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -985,8 +928,8 @@ description: Variables in memory after executing truss-structure.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "in",
           "sectional": false
         }
@@ -997,64 +940,7 @@ description: Variables in memory after executing truss-structure.kcl
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 695,
-                "end": 706,
-                "moduleId": 0,
-                "start": 695,
-                "type": "TagDeclarator",
-                "value": "bottomFace"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 795,
-                "end": 802,
-                "moduleId": 0,
-                "start": 795,
-                "type": "TagDeclarator",
-                "value": "tag001"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 881,
-                "end": 888,
-                "moduleId": 0,
-                "start": 881,
-                "type": "TagDeclarator",
-                "value": "tag002"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -1230,8 +1116,8 @@ description: Variables in memory after executing truss-structure.kcl
             "originalId": "[uuid]",
             "units": "in"
           },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": "in",
           "sectional": false
         }

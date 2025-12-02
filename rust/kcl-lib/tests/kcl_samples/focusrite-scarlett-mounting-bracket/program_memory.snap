@@ -1929,71 +1929,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 2923,
-                "end": 2930,
-                "moduleId": 0,
-                "start": 2923,
-                "type": "TagDeclarator",
-                "value": "edge21"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 2979,
-                "end": 2986,
-                "moduleId": 0,
-                "start": 2979,
-                "type": "TagDeclarator",
-                "value": "edge22"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 3038,
-                "end": 3045,
-                "moduleId": 0,
-                "start": 3038,
-                "type": "TagDeclarator",
-                "value": "edge23"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 3064,
-                "end": 3071,
-                "moduleId": 0,
-                "start": 3064,
-                "type": "TagDeclarator",
-                "value": "edge24"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -2190,36 +2126,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 2.5,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            },
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 2.5,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
@@ -2536,71 +2442,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "type": "Solid",
           "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 2097,
-                "end": 2104,
-                "moduleId": 0,
-                "start": 2097,
-                "type": "TagDeclarator",
-                "value": "edge11"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 2153,
-                "end": 2160,
-                "moduleId": 0,
-                "start": 2153,
-                "type": "TagDeclarator",
-                "value": "edge12"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 2213,
-                "end": 2220,
-                "moduleId": 0,
-                "start": 2213,
-                "type": "TagDeclarator",
-                "value": "edge13"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": {
-                "commentStart": 2239,
-                "end": 2246,
-                "moduleId": 0,
-                "start": 2239,
-                "type": "TagDeclarator",
-                "value": "edge14"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
+          "value": [],
           "sketch": {
             "type": "Sketch",
             "id": "[uuid]",
@@ -2797,36 +2639,6 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           },
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "edgeCuts": [
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 2.5,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            },
-            {
-              "type": "fillet",
-              "id": "[uuid]",
-              "radius": {
-                "n": 2.5,
-                "ty": {
-                  "type": "Default",
-                  "len": "mm",
-                  "angle": "degrees"
-                }
-              },
-              "edgeId": "[uuid]",
-              "tag": null
-            }
-          ],
           "units": "mm",
           "sectional": false
         }
