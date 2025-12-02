@@ -262,7 +262,7 @@ test.describe(
         await clickElectronNativeMenuById(tronApp, 'View.Orthographic view')
         const textToCheck =
           'Set camera projection to "orthographic" as a user default'
-        const toast = page.locator('#_rht_toaster')
+        const toast = page.locator('[data-rht-toaster]')
         // Let the previous toast clear
         await expect(toast).toHaveText(textToCheck)
       })
@@ -273,7 +273,7 @@ test.describe(
         await clickElectronNativeMenuById(tronApp, 'View.Perspective view')
         const textToCheck =
           'Set camera projection to "perspective" as a user default'
-        const toast = page.locator('#_rht_toaster')
+        const toast = page.locator('[data-rht-toaster]')
         await expect(toast).toHaveText(textToCheck)
       })
       await test.step('Modeling.View.Standard views.Right view', async () => {
