@@ -51,8 +51,8 @@ clap = { version = "4.5.53", default-features = false, optional = true, features
   "std",
   "derive",
 ] }
-convert_case = "0.8.0"
-csscolorparser = "0.7.2"
+convert_case = "0.10.0"
+csscolorparser = "0.8.1"
 dashmap = { workspace = true }
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
@@ -141,7 +141,7 @@ web-sys = { version = "0.3.76", features = ["console"] }
 [dev-dependencies]
 approx = "0.5"
 base64 = "0.22.1"
-criterion = { version = "0.7.0", features = ["async_tokio"] }
+criterion = { version = "0.8.0", features = ["async_tokio"] }
 expectorate = "1.2.0"
 handlebars = "6.3.2"
 image = { version = "0.25.9", default-features = false, features = ["png"] }
