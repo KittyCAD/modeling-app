@@ -105,7 +105,7 @@ export function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [projectName, projectPath])
 
-  useHotKeyListener()
+  useHotKeyListener(kclManager)
 
   const settings = useSettings()
   const authToken = useToken()
