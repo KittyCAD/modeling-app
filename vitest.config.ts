@@ -6,7 +6,6 @@ import { lezer } from '@lezer/generator/rollup'
 export default defineConfig({
   plugins: [tsconfigPaths(), lezer()],
   test: {
-    globals: true,
     globalSetup: './src/test-setup/global-setup.ts',
     environment: 'happy-dom',
     setupFiles: ['./src/setupTests.ts'],

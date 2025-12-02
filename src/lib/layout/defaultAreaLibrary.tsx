@@ -13,7 +13,6 @@ import { UnitsMenu } from '@src/components/UnitsMenu'
 import { Toolbar } from '@src/Toolbar'
 import type { AreaType, AreaTypeDefinition } from '@src/lib/layout/types'
 import { isDesktop } from '@src/lib/isDesktop'
-import { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import type { MouseEventHandler } from 'react'
 import { useMemo } from 'react'
@@ -69,8 +68,7 @@ export const defaultAreaLibrary = Object.freeze({
     shortcut: 'Shift + C',
     Component: KclEditorPane,
     useNotifications() {
-      const kclContext = useKclContext()
-      const value = kclContext.diagnostics.filter(
+      const value = kclManager.diagnosticsSignal.value.filter(
         (diagnostic) => diagnostic.severity === 'error'
       ).length
       return useMemo(() => {
@@ -84,9 +82,8 @@ export const defaultAreaLibrary = Object.freeze({
     Component: ProjectExplorerPane,
     useNotifications() {
       const title = 'Project files have runtime errors'
-      const kclContext = useKclContext()
       // Only compute runtime errors! Compilation errors are not tracked here.
-      const errors = kclErrorsByFilename(kclContext.errors)
+      const errors = kclErrorsByFilename(kclManager.errorsSignal.value)
       const value = errors.size > 0 ? 'x' : ''
       const onClick: MouseEventHandler = (e) => {
         e.preventDefault()
