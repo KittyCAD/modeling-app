@@ -12,5 +12,5 @@ permissions:
   checks: read
 jobs:
   security:
-    uses: KittyCAD/gha-workflows/.github/workflows/security-default-branch.yml@security
+    uses: KittyCAD/gha-workflows/.github/workflows/security-default-branch.yml@main
     secrets: inherit
