@@ -1529,12 +1529,16 @@ export const ModelingMachineProvider = ({
   })
 
   // Toggle Snap to grid
-  useHotkeyWrapper([SNAP_TO_GRID_HOTKEY], () => {
-    settingsActor.send({
-      type: 'set.modeling.snapToGrid',
-      data: { level: 'project', value: !snapToGrid.current },
-    })
-  })
+  useHotkeyWrapper(
+    [SNAP_TO_GRID_HOTKEY],
+    () => {
+      settingsActor.send({
+        type: 'set.modeling.snapToGrid',
+        data: { level: 'project', value: !snapToGrid.current },
+      })
+    },
+    kclManager.registerHotkey
+  )
 
   useHotkeys(
     ['mod + a'],
