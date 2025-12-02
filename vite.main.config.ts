@@ -35,7 +35,6 @@ export default defineConfig((env) => {
       },
     },
     test: {
-      globals: true,
       pool: 'forks',
       poolOptions: {
         forks: {
