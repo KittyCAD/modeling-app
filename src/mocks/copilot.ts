@@ -198,7 +198,7 @@ function generateUserResponse(
         new MessageEvent('message', { data: JSON.stringify(forceResponse) })
       )
     }
-    return 
+    return
   }
 
   const messages = generateMlServerMessages()
