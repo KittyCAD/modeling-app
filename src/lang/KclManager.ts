@@ -225,6 +225,10 @@ export class KclManager extends EventTarget {
   private _editorView: EditorView | null = null
   /** End merged items */
 
+  /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
+  set wasmInstancePromise(newInstancePromise: Promise<ModuleType | string>) {
+    this._wasmInstance = newInstancePromise
+  }
   get ast() {
     return this._ast.value
   }
