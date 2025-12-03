@@ -80,6 +80,7 @@ fn recast_body(
             if !is_last && last_was_comment && is_newline {
                 // eprintln!("Skipping newline preceded by comment because comment ends in newline");
                 buf.push('\n');
+                last_was_comment = is_comment;
                 continue;
             }
             last_was_comment = is_comment;
