@@ -5,6 +5,9 @@ import type {
   LayoutWithMetadata,
 } from '@src/lib/layout/types'
 import { applyLayoutMigrationMap } from '@src/lib/layout/utils'
+import { expect } from 'vitest'
+import { it } from 'vitest'
+import { describe } from 'vitest'
 
 const basicSplitLayout: Layout = {
   id: 'root',
