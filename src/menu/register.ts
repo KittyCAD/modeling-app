@@ -1,7 +1,7 @@
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { sceneInfra } from '@src/lib/singletons'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import {
   authActor,
@@ -18,7 +18,8 @@ export function modelingMenuCallbackMostActions(
   settings: SettingsType,
   navigate: NavigateFunction,
   filePath: string,
-  engineCommandManager: ConnectionManager
+  engineCommandManager: ConnectionManager,
+  sceneInfra: SceneInfra
 ) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
