@@ -27,6 +27,7 @@ import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimens
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineTool'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
+import { deferExecution } from '@src/lib/utils'
 import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
@@ -84,6 +85,7 @@ export type SketchSolveMachineEvent =
       data: {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
+        debounceEditorUpdate?: boolean // If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
       }
     }
   | { type: 'delete selected' }
@@ -580,16 +582,44 @@ export function initializeInitialSceneGraph({
   return {}
 }
 
+// Debounced editor update function - persists across calls
+// This allows us to cancel editor updates if a double-click is detected
+// The debounce delay is short (100ms) to minimize perceived lag while still allowing cancellation
+// We store the latest kclManager reference so the debounced function can access it
+const debouncedEditorUpdate = deferExecution(
+  ({ text, kclManager }: { text: string; kclManager: KclManager }) =>
+    kclManager.updateCodeEditor(text),
+  200
+)
+
 export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   assertEvent(event, 'update sketch outcome')
-  context.kclManager.updateCodeEditor(event.data.kclSource.text)
 
+  // Update scene immediately - no delay, no flicker
   updateSceneGraphFromDelta({
     sceneGraphDelta: event.data.sceneGraphDelta,
     context,
     selectedIds: context.selectedIds,
     duringAreaSelectIds: context.duringAreaSelectIds,
   })
+
+  // Update editor - debounce only if explicitly requested (e.g., for single-click that might be double-click)
+  // This allows frequent updates (dragging handles) to be immediate, while others can be debounce
+  // a good example of this is When a user double clicks with the line tool, we want to end the chaining and so
+  // - First click still adds the new segment and coincident constraint
+  // - Followed closely by the second click making it a double click, in which case we want to delete the recently added segments, but don't want flicker in the editor
+  if (event.data.debounceEditorUpdate) {
+    // Debounce editor update - this can be cancelled if a double-click is detected
+    // by calling the debounced function again with new text before the delay expires
+    // If a new update comes in within 200ms, the previous one is cancelled
+    debouncedEditorUpdate({
+      text: event.data.kclSource.text,
+      kclManager: context.kclManager,
+    })
+  } else {
+    // Update editor immediately - no debounce for frequent updates like onMove
+    context.kclManager.updateCodeEditor(event.data.kclSource.text)
+  }
 
   return {
     sketchExecOutcome: {

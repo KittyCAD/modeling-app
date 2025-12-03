@@ -231,37 +231,38 @@ test.describe('Sketch solve edit tests', () => {
       const [line1Start] = scene.makeMouseHelpers(0.3, 0.4, {
         format: 'ratio',
       })
-      const [line1End] = scene.makeMouseHelpers(0.3, 0.8, {
+      const [, , line1End] = scene.makeMouseHelpers(0.3, 0.8, {
         format: 'ratio',
       })
       await line1Start()
       previousCode = await waitForCodeChange(page, previousCode)
-      await line1End()
+      await line1End() // Double-click to end the line and stop chaining
       previousCode = await waitForCodeChange(page, previousCode)
 
       // Second line segment
       const [line2Start] = scene.makeMouseHelpers(0.5, 0.4, {
         format: 'ratio',
       })
-      const [line2End] = scene.makeMouseHelpers(0.8, 0.2, {
+      const [, , line2End] = scene.makeMouseHelpers(0.8, 0.2, {
         format: 'ratio',
       })
       await line2Start()
       previousCode = await waitForCodeChange(page, previousCode)
-      await line2End()
+      await line2End() // Double-click to end the line and stop chaining
       previousCode = await waitForCodeChange(page, previousCode)
 
       // Third line segment
       const [line3Start] = scene.makeMouseHelpers(0.7, 0.4, {
         format: 'ratio',
       })
-      const [line3End] = scene.makeMouseHelpers(0.15, 0.3, {
+      const [, , line3End] = scene.makeMouseHelpers(0.15, 0.3, {
         format: 'ratio',
       })
       await line3Start()
       previousCode = await waitForCodeChange(page, previousCode)
-      await line3End()
+      await line3End() // Double-click to end the line and stop chaining
       await waitForCodeChange(page, previousCode)
+      await page.waitForTimeout(300)
     })
 
     await test.step('Add three points', async () => {
@@ -277,7 +278,7 @@ test.describe('Sketch solve edit tests', () => {
       previousCode = await waitForCodeChange(page, previousCode)
 
       // Second point
-      const [point2Click] = scene.makeMouseHelpers(0.4, 0.6, {
+      const [point2Click] = scene.makeMouseHelpers(0.5, 0.6, {
         format: 'ratio',
       })
       await point2Click()
@@ -302,7 +303,7 @@ test.describe('Sketch solve edit tests', () => {
       await page.getByTestId('coincident').click()
 
       await editor.expectEditor.toContain(
-        'sketch2::coincident([line1.start, line2.end])'
+        'sketch2::coincident([line1.start, line3.end])'
       )
       await page.waitForTimeout(100)
     })
@@ -338,7 +339,7 @@ test.describe('Sketch solve edit tests', () => {
       // await page.waitForTimeout(100)
       await page.getByTestId('Parallel').click()
 
-      await editor.expectEditor.toContain('sketch2::parallel([line1, line3])')
+      await editor.expectEditor.toContain('sketch2::parallel([line1, line2])')
     })
   })
 })
