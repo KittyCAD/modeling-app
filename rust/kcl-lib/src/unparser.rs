@@ -55,16 +55,34 @@ fn recast_body(
 ) {
     let indentation = options.get_indentation(indentation_level);
 
-    if non_code_meta
+    let all_start_nodes_are_newline = non_code_meta
         .start_nodes
         .iter()
-        .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine))
-    {
-        for start in &non_code_meta.start_nodes {
-            let noncode_recast = start.recast(options, indentation_level);
+        .all(|noncode| matches!(noncode.value, NonCodeValue::NewLine));
+    if !all_start_nodes_are_newline {
+        let mut last_was_newline = false;
+        let mut last_was_comment = false;
+        for start_node in &non_code_meta.start_nodes {
+            let is_newline = matches!(start_node.value, NonCodeValue::NewLine);
+            let is_comment = matches!(start_node.value, NonCodeValue::BlockComment { .. });
+            // Don't emit double-newlines.
+            if last_was_newline && is_newline {
+                eprintln!("Skipping double newline");
+                continue;
+            }
+            last_was_newline = is_newline;
+            if last_was_comment && is_newline {
+                eprintln!("Skipping comment followed by newline");
+                buf.push('\n');
+                continue;
+            }
+            last_was_comment = is_comment;
+            let noncode_recast = start_node.recast(options, indentation_level);
+            eprintln!("Pushing {noncode_recast}");
             buf.push_str(&noncode_recast);
         }
     }
+
     for attr in inner_attrs {
         options.write_indentation(buf, indentation_level);
         attr.recast(buf, options, indentation_level);
@@ -3216,6 +3234,8 @@ fn function001() {
 
     #[test]
     fn no_weird_extra_lines() {
+        // Regression test, this used to insert a lot of new lines
+        // between the initial comment and the @settings.
         let code = "\
 // Initial comment
 
