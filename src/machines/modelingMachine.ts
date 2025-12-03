@@ -5559,9 +5559,11 @@ export const modelingMachine = setup({
       },
       on: {
         Cancel: {
-          actions: [sendTo('sketchSolveMachine', { type: 'exit' })],
-          // Don't transition immediately - wait for sketchSolveMachine to finish
-          // which will trigger onDone and transition to exiting
+          actions: [sendTo('sketchSolveMachine', { type: 'escape' })],
+          // Forward escape to sketch solve machine for hierarchical handling:
+          // - If tool equipped in ShowDraftLine: delete draft, return to ready
+          // - If tool equipped in ready: unequip tool
+          // - If no tool equipped (move and select): exit sketch mode
         },
         'equip tool': {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],

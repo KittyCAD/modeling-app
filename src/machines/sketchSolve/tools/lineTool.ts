@@ -19,6 +19,7 @@ const CONFIRMING_DIMENSIONS_EVENT = `xstate.done.actor.0.${TOOL_ID}.${CONFIRMING
 
 type ToolEvents =
   | { type: 'unequip' }
+  | { type: 'escape' }
   | {
       type: 'add point'
       data: [x: number, y: number]
@@ -48,6 +49,7 @@ type ToolContext = {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }
+  deleteFromEscape?: boolean // Track if deletion was triggered by escape (vs unequip)
   sceneGraphDelta: SceneGraphDelta
   sceneInfra: SceneInfra
   rustContext: RustContext
@@ -586,7 +588,7 @@ export const machine = setup({
     ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QBkCWA7MACALgezwBsBiAV0wEdTUAHAbQAYBdRUGvWVHVPdVkAB6IAjAGZhDAHQMATKJkA2ABwAWAJzyA7EoCsAGhABPRAFo1mycqUMdylZoYqVDTQF9XBtJlwESpGhAAhjjYsGCEYADG3LyMLEgg7JwxfAlCCMJiUsoKKjIM5sIKDKoGxggmoipKksJO+TI6ojqaOsJqCu6eGNj4RJIATmCBEIZYAGZ4A1ikYdORhKiRANbEIxBY7Bg4cfxJXDypoOkmMmo6kvmiqs3VxcKtZYiaFkqiDOI6DMI61iqiai6IC8vV8kgAwrxxqgBgBbDBQLAQVCwsDoTi8WDECC8MCSDAANzwyzxIJ8-Uh6GhcIRSJRaIx6IQhLwkWChziuwS+xS-HSCjEtU0uRUCjkAvuTwqMkUlwFmjOMiKSkUOiBZL6hAhUJh8PQiORqPRhyxYAGAymkhohGCkzhkg1YMp1L1BvpxsxzPQRLZKU5zD2HAOvD5ImEShqmRV7wUOlF5n0RhEUmsogU10UmXDYuE6p65K1zt1tMNDJNxDCOE2aOR+qReFIACMIlgFktlly2EHeWlEGprJJNKLs+12nkFFKxZIlK0dGdzto3u0895NZJIgALKLLetNlttlbETuJbuHUMZGWSDoMYp5KpFWQTpMVCQyQdKYRnUTvNRnCOdDxgXzNdN23Xdm2wA9VjoYR4i7ZIz17DIHkkeQAVyNQVB+ZR2ilExfkuWQ0w+FptCaBQAO6VcwQgcIwBCLBMAAd0IMZ1kgLA0W4bg4GxXF8W9YlSWAmi6IY5jWKwdiNi4g44C9H12ViZhjx5RDjlMHQ41QxwSLnCjrE0KUrlQpQKLqMzflyZoV1BfpaIicSwBYtiIFomT0G41BeLNC0BitG0cDtWEHRE+yxOwCTXPczjPLk2AFNZJT0H9OCTwQkMkJMCQLEUIcWhHd4XClZpREsCUmj02M1UAx1+gAQTc2ktk8vjMAEokSVC6iGqausWpwRLfQ5FSA25U9Mo0hB7BUVC4zUT8FpVB4jOfORhEkFoAQVBRzBjXNarCrVGtrREBuIXzLWtW0phCurjr6s68G2IbktSwMMqOQRTHkWbrljAUdF-Yc8M0Mq1HOBRhQKKH8mFWyC0kABlDc8CYgARAZAnGHAQTWNzNmezzVImr70mFCxhQ6NpNGBsGZDwqHpAKTQxCUX8IfMBG1xRtHMex3Gegrejq3QU7wP3RYVhJz7z2cC4nC+XIimudQVETcpspkGoGBcMzv1yMzMJqwD0DwWj4ASe6PuDMnTGKN93mcZp9OUYrn0qAjMwVWRVFFaoVG5sEhhGMY7RmOZWyl5YbZ7Kb8PV6QsNZ65jZVBnn2078Pm+T8HiabQg4pHUaTrUsPXRWP1O+hBzjUSRqkwiGxC+dXhDw8Nsj2mQZtUP2aqouytVAlYJcg6Oq8mmvvwuBVfl0AV2lkew8KVKRObBgozlFD4lCLrUHPoyLnMk6TYq8uBJ7tipdFQtMm+cJfxGMs5NtbjpRCHGxij3w6eq1cgYAqC0BoAiK+54xBM10L+T81Q8qrXKPIS4DxIFOF+t8AeQF-6SBOs1ImOBwFZTqPXb4FEAQlF1p-JQUos7vE-recQMY3B-yHsjVGGMsY4xBIQqa35ZpvHVphAoWF5Dt2fIKRwthGi-G-A+KG7h3BAA */
+  /** @xstate-layout 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-2fEXSOE-OFCwNRDkIRbLbZ0qgS4BJoDQTkCKVGoRyBoNQhQXwRMuF2AupJgXXFUCC6SagS7IzOsLHAFKHqnN4l7NCKsnB5BbHot2UyFq0xcJkbRJcy4T1+AKuOvZGzsokGivimQ0TfUih8WoQ5cS9izjTSFYjvGT0kcg6RPCaBqvSNiHujQZDET9O+Qc30aY1GwtkZwFxeJPGLpkoAA */
   context: ({ input }): ToolContext => ({
     draftPointId: undefined,
     lastLineEndPointId: undefined,
@@ -594,6 +596,7 @@ export const machine = setup({
     pendingDoubleClick: undefined,
     newlyAddedSketchEntities: undefined,
     pendingSketchOutcome: undefined,
+    deleteFromEscape: undefined,
     sceneGraphDelta: {} as SceneGraphDelta,
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
@@ -620,6 +623,10 @@ export const machine = setup({
 
       on: {
         'add point': 'Adding point',
+        escape: {
+          target: 'unequipping',
+          description: 'ESC in ready state unequips the tool',
+        },
       },
     },
 
@@ -826,6 +833,17 @@ export const machine = setup({
         },
         unequip: {
           target: 'delete draft entities on unequip',
+          actions: assign({
+            deleteFromEscape: false, // Mark as unequip, not escape
+          }),
+        },
+        escape: {
+          target: 'delete draft entities on unequip',
+          actions: assign({
+            deleteFromEscape: true, // Mark as escape so we return to ready state
+          }),
+          description:
+            'ESC in ShowDraftLine deletes draft segment and returns to ready state',
         },
       },
 
@@ -847,41 +865,90 @@ export const machine = setup({
             rustContext: context.rustContext,
           }
         },
-        onDone: {
-          target: 'unequipping',
-          actions: [
-            assign({
-              newlyAddedSketchEntities: undefined, // Clear tracking
-              draftPointId: undefined, // Clear draftPointId so onMove won't try to edit deleted segment
+        onDone: [
+          {
+            // If this was triggered by escape (not unequip), go back to ready state
+            guard: ({ context }) => context.deleteFromEscape === true,
+            target: 'ready for user click',
+            actions: [
+              assign({
+                newlyAddedSketchEntities: undefined, // Clear tracking
+                draftPointId: undefined, // Clear draftPointId so onMove won't try to edit deleted segment
+                deleteFromEscape: undefined, // Clear flag
+              }),
+              ({ event, self }) => {
+                // Send the delete result to parent
+                if ('output' in event && event.output) {
+                  const output = event.output as {
+                    kclSource?: SourceDelta
+                    sceneGraphDelta?: SceneGraphDelta
+                  }
+                  if (output.kclSource && output.sceneGraphDelta) {
+                    self._parent?.send({
+                      type: 'update sketch outcome',
+                      data: {
+                        kclSource: output.kclSource,
+                        sceneGraphDelta: output.sceneGraphDelta,
+                      },
+                    })
+                  }
+                }
+                return {}
+              },
+            ],
+          },
+          {
+            // Default: unequip (for actual unequip events)
+            target: 'unequipping',
+            actions: [
+              assign({
+                newlyAddedSketchEntities: undefined, // Clear tracking
+                draftPointId: undefined, // Clear draftPointId so onMove won't try to edit deleted segment
+                deleteFromEscape: undefined, // Clear flag
+              }),
+              ({ event, self }) => {
+                // Send the delete result to parent
+                if ('output' in event && event.output) {
+                  const output = event.output as {
+                    kclSource?: SourceDelta
+                    sceneGraphDelta?: SceneGraphDelta
+                  }
+                  if (output.kclSource && output.sceneGraphDelta) {
+                    self._parent?.send({
+                      type: 'update sketch outcome',
+                      data: {
+                        kclSource: output.kclSource,
+                        sceneGraphDelta: output.sceneGraphDelta,
+                      },
+                    })
+                  }
+                }
+                return {}
+              },
+            ],
+          },
+        ],
+        onError: [
+          {
+            // If this was triggered by escape, go back to ready state even on error
+            guard: ({ context }) => context.deleteFromEscape === true,
+            target: 'ready for user click',
+            actions: assign({
+              newlyAddedSketchEntities: undefined,
+              draftPointId: undefined,
+              deleteFromEscape: undefined,
             }),
-            ({ event, self }) => {
-              // Send the delete result to parent
-              if ('output' in event && event.output) {
-                const output = event.output as {
-                  kclSource?: SourceDelta
-                  sceneGraphDelta?: SceneGraphDelta
-                }
-                if (output.kclSource && output.sceneGraphDelta) {
-                  self._parent?.send({
-                    type: 'update sketch outcome',
-                    data: {
-                      kclSource: output.kclSource,
-                      sceneGraphDelta: output.sceneGraphDelta,
-                    },
-                  })
-                }
-              }
-              return {}
-            },
-          ],
-        },
-        onError: {
-          target: 'unequipping',
-          actions: assign({
-            newlyAddedSketchEntities: undefined,
-            draftPointId: undefined, // Clear draftPointId so onMove won't try to edit deleted segment
-          }),
-        },
+          },
+          {
+            // Default: unequip on error
+            target: 'unequipping',
+            actions: assign({
+              newlyAddedSketchEntities: undefined,
+              draftPointId: undefined,
+              deleteFromEscape: undefined,
+            }),
+          },
+        ],
       },
     },
   },

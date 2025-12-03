@@ -65,6 +65,7 @@ export const sketchSolveMachine = setup({
     'clear hover callbacks': clearHoverCallbacks,
     'cleanup sketch solve group': cleanupSketchSolveGroup,
     'send unequip to tool': sendTo(CHILD_TOOL_ID, { type: 'unequip' }),
+    'send escape to tool': sendTo(CHILD_TOOL_ID, { type: 'escape' }),
     'send update selection to equipped tool': sendTo(CHILD_TOOL_ID, {
       type: 'update selection',
     }),
@@ -141,6 +142,13 @@ export const sketchSolveMachine = setup({
     },
     'unequip tool': {
       actions: 'send unequip to tool',
+    },
+    escape: {
+      // Only forward to tool if we're in 'using tool' state
+      // If in 'move and select', the state-level handler will exit sketch mode
+      // If in 'unequipping tool' or 'switching tool', ignore (tool is already stopping)
+      description:
+        'ESC key - forwarded to child tool when a tool is equipped. Handled at state level when no tool is equipped.',
     },
     coincident: {
       actions: async ({ self, context }) => {
@@ -369,6 +377,15 @@ export const sketchSolveMachine = setup({
           target: 'using tool',
           actions: 'store pending tool',
         },
+        escape: {
+          target: '#Sketch Solve Mode.exiting',
+          actions: [
+            'send tool unequipped to parent',
+            'cleanup sketch solve group',
+          ],
+          description:
+            'ESC in move and select (no tool equipped) exits sketch mode',
+        },
       },
       invoke: {
         id: 'moveTool',
@@ -396,6 +413,15 @@ export const sketchSolveMachine = setup({
         'equip tool': {
           target: 'switching tool',
           actions: ['send unequip to tool', 'store pending tool'],
+        },
+        [CHILD_TOOL_DONE_EVENT]: {
+          target: 'move and select',
+          actions: ['send tool unequipped to parent'],
+        },
+        escape: {
+          // Forward escape to child tool only when tool is active
+          actions: 'send escape to tool',
+          description: 'ESC forwarded to child tool for hierarchical handling',
         },
       },
 

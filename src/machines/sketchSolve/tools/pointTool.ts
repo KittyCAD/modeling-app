@@ -17,6 +17,7 @@ const CONFIRMING_DIMENSIONS_DONE = `xstate.done.actor.0.${TOOL_ID}.${CONFIRMING_
 
 type ToolEvents =
   | { type: 'unequip' }
+  | { type: 'escape' }
   | { type: 'add point'; data: [x: number, y: number] }
   | { type: 'update selection' }
   | {
@@ -160,6 +161,10 @@ export const machine = setup({
 
       on: {
         'add point': CONFIRMING_DIMENSIONS,
+        escape: {
+          target: 'unequipping',
+          description: 'ESC in ready state unequips the tool',
+        },
       },
     },
 
