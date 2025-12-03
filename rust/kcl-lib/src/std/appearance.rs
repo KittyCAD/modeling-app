@@ -115,6 +115,7 @@ async fn inner_appearance(
                 ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
                     object_id: solid_id,
                     color,
+                    backface_color: None,
                     metalness: metalness.unwrap_or(DEFAULT_METALNESS) as f32 / 100.0,
                     roughness: roughness.unwrap_or(DEFAULT_ROUGHNESS) as f32 / 100.0,
                     ambient_occlusion: 0.0,

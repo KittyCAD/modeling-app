@@ -21,6 +21,7 @@ interface UseStateMachineCommandsArgs<
   send: (event: EventFrom<T>) => void
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
+  isExecuting: boolean
   onCancel?: () => void
 }
 
@@ -41,6 +42,7 @@ export default function useStateMachineCommands<
   actor,
   commandBarConfig,
   onCancel,
+  isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()

@@ -11,13 +11,13 @@ import {
 } from '@src/lib/selections'
 import {
   engineCommandManager,
-  kclManager,
   sceneInfra,
   rustContext,
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
+import type { KclManager } from '@src/lang/KclManager'
 
-export function useEngineConnectionSubscriptions() {
+export function useEngineConnectionSubscriptions(kclManager: KclManager) {
   const { send, context, state } = useModelingContext()
   const stateRef = useRef(state)
   stateRef.current = state
@@ -52,7 +52,10 @@ export function useEngineConnectionSubscriptions() {
       callback: (engineEvent) => {
         ;(async () => {
           if (stateRef.current.matches('Sketch no face')) return
-          const event = await getEventForSelectWithPoint(engineEvent)
+          const event = await getEventForSelectWithPoint(
+            engineEvent,
+            kclManager.artifactGraph
+          )
           event && send(event)
         })().catch(reportRejection)
       },
@@ -61,8 +64,7 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager, context?.sketchEnginePathId])
+  }, [context?.sketchEnginePathId, kclManager, send])
 
   useEffect(() => {
     if (!engineCommandManager) return
@@ -72,6 +74,7 @@ export function useEngineConnectionSubscriptions() {
       callback: state.matches('Sketch no face')
         ? ({ data }) => {
             void selectSketchPlane(
+              kclManager,
               data.entity_id,
               context.store.useNewSketchMode?.current
             )
@@ -79,8 +82,7 @@ export function useEngineConnectionSubscriptions() {
         : () => {},
     })
     return unSub
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager, state])
+  }, [context.store.useNewSketchMode, state, kclManager])
 
   // Re-apply plane visibility when planes are (re)created on the Rust side
   useEffect(() => {
@@ -91,10 +93,11 @@ export function useEngineConnectionSubscriptions() {
       void kclManager.setPlaneVisibilityByKey('yz', vis.yz)
     })
     return unsubscribe
-  }, [])
+  }, [kclManager])
 }
 
 export async function selectSketchPlane(
+  kclManager: KclManager,
   planeOrFaceId: string | undefined,
   useNewSketchMode: boolean | undefined
 ) {
@@ -120,7 +123,12 @@ export async function selectSketchPlane(
       return
     }
 
-    const sweepFaceSelected = await selectionBodyFace(planeOrFaceId)
+    const sweepFaceSelected = await selectionBodyFace(
+      planeOrFaceId,
+      kclManager.artifactGraph,
+      kclManager.ast,
+      kclManager.execState
+    )
     if (sweepFaceSelected) {
       sceneInfra.modelingSend({
         type: 'Select sketch plane',
