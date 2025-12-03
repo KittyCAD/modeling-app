@@ -43,7 +43,6 @@ patternCircular3d(
 ```kcl
 // / Pattern using a named axis.
 
-
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
 
@@ -74,7 +73,6 @@ example = extrude(exampleSketch, length = -5)
 
 ```kcl
 // / Pattern using a raw axis.
-
 
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)

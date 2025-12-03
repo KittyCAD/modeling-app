@@ -290,7 +290,6 @@ part001 = revolve(
 ```kcl
 // Revolve two sketches around the same axis.
 
-
 sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [4, 8])
   |> xLine(length = 3)
@@ -327,7 +326,6 @@ revolve([profile001, profile002], axis = X)
 ```kcl
 // Revolve around a path that has not been extruded.
 
-
 profile001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 20], tag = $revolveAxis)
@@ -358,7 +356,6 @@ sketch001 = startSketchOn(XY)
 ```kcl
 // Revolve around a path that has not been extruded or closed.
 
-
 profile001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 20], tag = $revolveAxis)
@@ -387,7 +384,6 @@ sketch001 = startSketchOn(XY)
 ```kcl
 // Symmetrically revolve around a path.
 
-
 profile001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 20], tag = $revolveAxis)
@@ -415,7 +411,6 @@ sketch001 = startSketchOn(XY)
 
 ```kcl
 // Bidirectional revolve around a path.
-
 
 profile001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])

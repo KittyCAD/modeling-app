@@ -1,6 +1,10 @@
 import type {
   Direction,
   Layout,
+  LayoutMatcher,
+  LayoutMigration,
+  LayoutMigrationMap,
+  LayoutTransformation,
   LayoutWithMetadata,
   Orientation,
   Side,
@@ -19,7 +23,10 @@ import {
   parseLayoutFromJsonString,
   parseLayoutInner,
 } from '@src/lib/layout/parse'
-import { LAYOUT_PERSIST_PREFIX, LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
+import { LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
+
+/** Most recent layout system version */
+export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v2'
 
 // Attempt to load a persisted layout
 const defaultLayoutLoadResult = loadLayout('default')
@@ -251,6 +258,11 @@ export function findAndUpdateSplitSizes({
   return rootLayout
 }
 
+/** prefix for localStorage persisted layout data */
+export function getLayoutPersistKey(id = 'default') {
+  return `layout-${id}`
+}
+
 /**
  * Load in a layout's persisted JSON and parse and validate it
  */
@@ -258,13 +270,17 @@ export function loadLayout(id: string): Layout | Error {
   if (!globalThis.localStorage) {
     return Error('No localStorage to load from')
   }
-  const layoutString = globalThis.localStorage.getItem(
-    `${LAYOUT_PERSIST_PREFIX}${id}`
-  )
+  const layoutString = globalThis.localStorage.getItem(getLayoutPersistKey(id))
   if (!layoutString) {
     return new Error('No persisted layout found')
   }
-  return parseLayoutFromJsonString(layoutString)
+  const parsedLayout = parseLayoutFromJsonString(layoutString, (l) =>
+    applyLayoutMigrationMap(l, getLayoutMigrations())
+  )
+  if (!isErr(parsedLayout)) {
+    saveLayoutInner({ layout: parsedLayout, layoutName: id })
+  }
+  return parsedLayout
 }
 
 interface ISaveLayout {
@@ -282,9 +298,9 @@ function saveLayoutInner({ layout, layoutName = 'default' }: ISaveLayout) {
     return
   }
   globalThis.localStorage.setItem(
-    `${LAYOUT_PERSIST_PREFIX}${layoutName}`,
+    getLayoutPersistKey(layoutName),
     globalThis.JSON?.stringify({
-      version: 'v1',
+      version: LATEST_LAYOUT_VERSION,
       layout,
     } satisfies LayoutWithMetadata)
   )
@@ -627,4 +643,88 @@ export function setOpenPanes(rootLayout: Layout, paneIDs: string[]): Layout {
     })
   }
   return rootLayout
+}
+
+/**
+ * Given a versioned layout, apply migrations defined for the version or successive output versions
+ * until no more migrations are found.
+ *
+ * If an error occurs while migrating, bail out to returning our default layout.
+ */
+export function applyLayoutMigrationMap(
+  layout: LayoutWithMetadata,
+  migrations: LayoutMigrationMap
+): LayoutWithMetadata {
+  let newLayout = layout
+  let versionMatch = migrations.get(newLayout.version)
+  while (versionMatch !== undefined) {
+    newLayout = applyLayoutMigration(newLayout, versionMatch)
+    versionMatch = migrations.get(newLayout.version)
+  }
+
+  return newLayout
+}
+
+/**
+ * Apply a single migration, taking a versioned layout to a targeted output version
+ * by applying a set of migrations, which match on layout nodes and apply a defined
+ * set of transformation functions on any matches.
+ */
+function applyLayoutMigration(
+  layout: LayoutWithMetadata,
+  migration: LayoutMigration
+): LayoutWithMetadata {
+  let newLayout = Object.assign(layout, { version: migration.newVersion })
+  for (let transformationSet of migration.transformationSets) {
+    const result = applyTransformationsToMatchedLayoutChildren(
+      newLayout.layout,
+      transformationSet.matcher,
+      transformationSet.transformations
+    )
+    newLayout.layout = result ?? defaultLayoutConfig
+  }
+  return newLayout
+}
+
+/**
+ * A recursive search through a Layout's node using a matcher function. If a match is found,
+ * iterates through the provided transformations and replaces the matched node with the result.
+ */
+function applyTransformationsToMatchedLayoutChildren(
+  layout: Layout,
+  matcher: LayoutMatcher,
+  transformations: LayoutTransformation[]
+): Layout | null {
+  let newLayout: Layout | null = structuredClone(layout)
+  if (matcher === true || matcher(layout) === true) {
+    newLayout = transformations.reduce<Layout | null>(
+      (prevResult, transformation) =>
+        prevResult === null ? null : transformation(prevResult),
+      newLayout
+    )
+  }
+  if (newLayout && 'children' in newLayout) {
+    newLayout.children = newLayout.children
+      .map((l) =>
+        applyTransformationsToMatchedLayoutChildren(l, matcher, transformations)
+      )
+      .filter((c) => c !== null)
+  }
+  return newLayout
+}
+
+/** Get a Map of all layout migrations authored by developers. */
+function getLayoutMigrations(): LayoutMigrationMap {
+  const migrationMap: LayoutMigrationMap = new Map([
+    // This first migration is going to do nothing: just increment the version.
+    [
+      'v1',
+      {
+        newVersion: 'v2',
+        transformationSets: [{ matcher: true, transformations: [(l) => l] }],
+      },
+    ],
+  ])
+
+  return migrationMap
 }

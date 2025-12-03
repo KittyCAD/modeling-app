@@ -121,7 +121,6 @@ springSketch = startSketchOn(XZ)
 ```kcl
 // Sweep two sketches along the same path.
 
-
 sketch001 = startSketchOn(XY)
 rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
   |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
@@ -158,7 +157,6 @@ sweep([rectangleSketch, circleSketch], path = sweepPath)
 
 ```kcl
 // Sectionally sweep one sketch along the path
-
 
 sketch001 = startSketchOn(XY)
 circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
