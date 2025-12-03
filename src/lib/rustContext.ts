@@ -459,38 +459,6 @@ export default class RustContext {
     }
   }
 
-  /** Add a segment to a sketch using the stub implementation. */
-  async addSegmentStub(
-    version: number,
-    sketch: number,
-    segment: SegmentCtor,
-    label: string,
-    settings: DeepPartial<Configuration>
-  ): Promise<{
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }> {
-    const instance = this._checkInstance()
-
-    try {
-      const result: string = await instance.add_segment_stub(
-        version,
-        sketch,
-        JSON.stringify(segment),
-        label,
-        JSON.stringify(settings)
-      )
-      const tuple: [SourceDelta, SceneGraphDelta] = JSON.parse(result)
-      return {
-        kclSource: tuple[0],
-        sceneGraphDelta: tuple[1],
-      }
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      return Promise.reject(err)
-    }
-  }
-
   /** Edit a segment in a sketch. */
   async editSegments(
     version: ApiVersion,

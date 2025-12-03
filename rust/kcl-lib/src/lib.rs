@@ -163,7 +163,7 @@ pub mod front {
         sketch::{
             Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Freedom,
             Horizontal, Line, LineCtor, LinesEqualLength, Parallel, Point, Point2d, PointCtor, Segment, SegmentCtor,
-            Sketch, SketchApi, SketchApiStub, SketchArgs, StartOrEnd, TangentArcCtor, Vertical,
+            Sketch, SketchApi, SketchArgs, StartOrEnd, TangentArcCtor, Vertical,
         },
     };
 }
