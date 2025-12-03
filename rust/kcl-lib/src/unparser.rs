@@ -60,19 +60,25 @@ fn recast_body(
         .iter()
         .all(|noncode| matches!(noncode.value, NonCodeValue::NewLine));
     if !all_start_nodes_are_newline {
+        println!("{:#?}", non_code_meta.start_nodes);
         let mut last_was_newline = false;
         let mut last_was_comment = false;
-        for start_node in &non_code_meta.start_nodes {
+        let n = non_code_meta.start_nodes.len();
+        for (i, start_node) in non_code_meta.start_nodes.iter().enumerate() {
+            let is_last = i == n - 1;
             let is_newline = matches!(start_node.value, NonCodeValue::NewLine);
-            let is_comment = matches!(start_node.value, NonCodeValue::BlockComment { .. });
+            let is_comment = matches!(
+                start_node.value,
+                NonCodeValue::NewLineBlockComment { .. } | NonCodeValue::BlockComment { .. }
+            );
             // Don't emit double-newlines.
             if last_was_newline && is_newline {
                 eprintln!("Skipping double newline");
                 continue;
             }
             last_was_newline = is_newline;
-            if last_was_comment && is_newline {
-                eprintln!("Skipping comment followed by newline");
+            if !is_last && last_was_comment && is_newline {
+                eprintln!("Skipping newline preceded by comment");
                 buf.push('\n');
                 continue;
             }
