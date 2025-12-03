@@ -325,7 +325,6 @@ sweepSketch = startSketchOn(XY)
 ```kcl
 // Change the appearance of an imported model.
 
-
 import "tests/inputs/cube.sldprt" as cube
 
 cube
