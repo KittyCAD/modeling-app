@@ -171,9 +171,10 @@ export const machine = setup({
       // ...
     },
     'remove point listener': ({ context }) => {
-      // Reset callbacks to remove the onClick listener
+      // Reset callbacks to remove the onClick and onMove listeners
       context.sceneInfra.setCallbacks({
         onClick: () => {},
+        onMove: () => {},
       })
     },
     'send result to parent': assign(({ event, self }) => {
@@ -229,9 +230,7 @@ export const machine = setup({
         const lineId = [...output.sceneGraphDelta!.new_objects]
           .reverse()
           .find((objId) => {
-            const obj = output.sceneGraphDelta!.new_graph.objects.find(
-              (o) => o.id === objId
-            )
+            const obj = output.sceneGraphDelta!.new_graph.objects[objId]
             if (!obj) return false
             return (
               obj.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
@@ -240,9 +239,7 @@ export const machine = setup({
 
         let lastLineEndPointId: number | undefined
         if (lineId !== undefined) {
-          const lineObj = output.sceneGraphDelta!.new_graph.objects.find(
-            (o) => o.id === lineId
-          )
+          const lineObj = output.sceneGraphDelta!.new_graph.objects[lineId]
           if (
             lineObj?.kind.type === 'Segment' &&
             lineObj.kind.segment.type === 'Line'
@@ -261,9 +258,7 @@ export const machine = setup({
       // For the first point creation, find the point ID normally
       const pointIds =
         output.sceneGraphDelta?.new_objects.filter((objId) => {
-          const obj = output.sceneGraphDelta!.new_graph.objects.find(
-            (o) => o.id === objId
-          )
+          const obj = output.sceneGraphDelta!.new_graph.objects[objId]
           if (!obj) return false
           return (
             obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
@@ -277,18 +272,14 @@ export const machine = setup({
       const lineId = [...(output.sceneGraphDelta?.new_objects || [])]
         .reverse()
         .find((objId) => {
-          const obj = output.sceneGraphDelta!.new_graph.objects.find(
-            (o) => o.id === objId
-          )
+          const obj = output.sceneGraphDelta!.new_graph.objects[objId]
           if (!obj) return false
           return obj.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
         })
 
       let lastLineEndPointId: number | undefined
       if (lineId !== undefined && output.sceneGraphDelta) {
-        const lineObj = output.sceneGraphDelta.new_graph.objects.find(
-          (o) => o.id === lineId
-        )
+        const lineObj = output.sceneGraphDelta.new_graph.objects[lineId]
         if (
           lineObj?.kind.type === 'Segment' &&
           lineObj.kind.segment.type === 'Line'
@@ -298,11 +289,29 @@ export const machine = setup({
         }
       }
 
+      // Track entities created in first point creation for potential deletion on unequip
+      const entitiesToTrack: {
+        segmentIds: Array<number>
+        constraintIds: Array<number>
+      } = {
+        segmentIds: [],
+        constraintIds: [],
+      }
+
+      // Add point IDs and line ID to tracking
+      if (pointIds.length > 0 && output.sceneGraphDelta) {
+        entitiesToTrack.segmentIds.push(...pointIds)
+      }
+      if (lineId !== undefined) {
+        entitiesToTrack.segmentIds.push(lineId)
+      }
+
       if (pointId !== undefined && output.sceneGraphDelta) {
         return {
           draftPointId: pointId,
           lastLineEndPointId,
           sceneGraphDelta: output.sceneGraphDelta,
+          newlyAddedSketchEntities: entitiesToTrack, // Track for potential deletion on unequip
         }
       }
       return {}
@@ -577,7 +586,7 @@ export const machine = setup({
     ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QBkCWA7MACALgezwBsBiAV0wEdTUAHAbQAYBdRUGvWVHVPdVkAB6IAjAGZhDAHQMATKJkA2ABwAWAJzyA7EoCsAGhABPRAFo1mycqUMdylZoYqVDTQF9XBtJlwESpGhAAhjjYsGCEYADG3LyMLEgg7JwxfAlCCMJiUsoKKjIM5sIKDKoGxggmoipKksJO+TI6ojqaOsJqCu6eGNj4RJIATmCBEIZYAGZ4A1ikYdORhKiRANbEIxBY7Bg4cfxJXDypoOkmMmo6kvmiqs3VxcKtZYiaFkqiDOI6DMI61iqiai6IC8vV8kgAwrxxqgBgBbDBQLAQVCwsDoTi8WDECC8MCSDAANzwyzxIJ8-Uh6GhcIRSJRaIx6IQhLwkWChziuwS+xS-HSCjEtU0uRUCjkAvuTwqMkUlwFmjOMiKSkUOiBZL6hAhUJh8PQiORqPRhyxOMw+PQRJJkg1YMp1L1BvpxsxzMtrPZsWYdGE8TYHAOvD5iHkCmkb2c5zqYvFUtOssUD2aYvONiU6p65K19t1tMNDJNxDAAwGU0kNEIwUmcJtmc12qpuf1dKNjNgbqJbJSnOYewDvLSImEShqmRV7wUOlF5n0RhEUmsogU10TY7Fwgz3nrAEEIMjm1t0DhsbiLVbSXWwbv94jDzgOx7u97e9z+4dgxlqpY1DJNPZ-n+DjCFKuSSLY7QqjK7zvD+m6gv0160neRYlmWFZVlMsK1luV57kheDbA+XYcs+fqJG+QaDhU8gqJI1yTgKOg-qKwFzhUmiiJIajnAowoFLx+TCnBWaSAAygAFngADuAAiAyBOMOAgmse6bARR5cv6yTvlRLwWDI1Q2GoLjLiodQgZxDACtxBkfAK+Tph4wKXv0EnSXJClKT0KkbHePpkTyOnHM8mhqJIdzvCOSh1GIShxmFchqMOnyTvIPwbkC6B4BAcD8LaRB9tplHBRUTGWWZmixWoKi-DKcZLmGGg6HIorqCqGgqMJ9ZDCMYzVjMcxYAsSzLIVgZHIIphThcjgPFVNWQVKU50dB3zCEqrSiNoXV2jqNLNvmLromNA4lecYXVNV3FiF8NWseUpxVFxzS2U4k7Vc1O39OQYBULQNAIidQWTRkS6vExSoGSqvGaFK8iXHNS5ODR3xqk5+VaohB7qTgQPFSDJh1GF3wKMuxnWB82hLbRojQXx-xZLxX1am5snyYpIJ4xN6R5Bc622HkjQKNxAIKNTK0fFktNqEooXNO47hAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QBkCWA7MACALgezwBsBiAV0wEdTUAHAbQAYBdRUGvWVHVPdVkAB6IAjAGZhDAHQMATKJkA2ABwAWAJzyA7EoCsAGhABPRAFo1mycqUMdylZoYqVDTQF9XBtJlwESpGhAAhjjYsGCEYADG3LyMLEgg7JwxfAlCCMJiUsoKKjIM5sIKDKoGxggmoipKksJO+TI6ojqaOsJqCu6eGNj4RJIATmCBEIZYAGZ4A1ikYdORhKiRANbEIxBY7Bg4cfxJXDypoOkmMmo6kvmiqs3VxcKtZYiaFkqiDOI6DMI61iqiai6IC8vV8kgAwrxxqgBgBbDBQLAQVCwsDoTi8WDECC8MCSDAANzwyzxIJ8-Uh6GhcIRSJRaIx6IQhLwkWChziuwS+xS-HSCjEtU0uRUCjkAvuTwqMkUlwFmjOMiKSkUOiBZL6hAhUJh8PQiORqPRhyxYAGAymkhohGCkzhkg1YMp1L1BvpxsxzPQRLZKU5zD2HAOvD5ImEShqmRV7wUOlF5n0RhEUmsogU10UmXDYuE6p65K1zt1tMNDJNxDCOE2aOR+qReFIACMIlgFktlly2EHeWlEGprJJNKLs+12nkFFKxZIlK0dGdzto3u0895NZJIgALKLLetNlttlbETuJbuHUMZGWSDoMYp5KpFWQTpMVCQyQdKYRnUTvNRnCOdDxgXzNdN23Xdm2wA9VjoYR4i7ZIz17DIHkkeQAVyNQVB+ZR2ilExfkuWQ0w+FptCaBQAO6VcwQgcIwBCLBMAAd0IMZ1kgLA0W4bg4GxXF8W9YlSWAmi6IY5jWKwdiNi4g44C9H12ViZhjx5RDjlMHQ41QxwSLnCjrE0KUrlQpQKLqMzflyZoV1BfpaIicSwBYtiIFomT0G41BeLNC0BitG0cDtWEHRE+yxOwCTXPczjPLk2AFNZJT0H9OCTwQkMkJMCQLEUIcWhHd4XClZpREsCUmj02M1UAx1+gAQTc2ktk8vjMAEokSVC6iGqausWpwRLfQ5FSA25U9Mo0hB7BUVC4zUT8FpVB4jOfORhEkFoAQVBRzBjXNarCrVGtrREBuIXzLWtW0phCurjr6s68G2IbktSwMMqOQRTHkWbrljAUdF-Yc8M0Mq1HOBRhQKKH8mFWyC0kABlDc8CYgARAZAnGHAQTWNzNmezzVImr70mFCxhQ6NpNGBsGZDwqHpAKTQxCUX8IfMBG1xRtHMex3Gegrejq3QU7wP3RYVhJz7z2cC4nC+XIimudQVETcpspkGoGBcMzv1yMzMJqwD0DwWj4ASe6PuDMnTGKN93mcZp9OUYrn0qAjMwVWRVFFaoVG5sEhhGMY7RmOZWyl5YbZ7Kb8PV6QsNZ65jZVBnn2078Pm+T8HiabQg4pHUaTrUsPXRWP1O+hBzjUSRqkwiGxC+dXhDw8Nsj2mQZtUP2aqouytVAlYJcg6Oq8mmvvwuBVfl0AV2lkew8KVKRObBgozlFD4lCLrUHPoyLnMk6TYq8uBJ7tipdFQtMm+cJfxGMs5NtbjpRCHGxij3w6eq1cgYAqC0BoAiK+54xBM10L+T81Q8qrXKPIS4DxIFOF+t8AeQF-6SBOs1ImOBwFZTqPXb4FEAQlF1p-JQUos7vE-recQMY3B-yHsjVGGMsY4xBIQqa35ZpvHVphAoWF5Dt2fIKRwthGi-G-A+KG7h3BAA */
   context: ({ input }): ToolContext => ({
     draftPointId: undefined,
     lastLineEndPointId: undefined,
@@ -815,9 +824,65 @@ export const machine = setup({
             pendingDoubleClick: true,
           }),
         },
+        unequip: {
+          target: 'delete draft entities on unequip',
+        },
       },
 
       entry: 'animate draft segment listener',
+      exit: 'remove point listener', // Stop the onMove listener when leaving this state
+    },
+    'delete draft entities on unequip': {
+      invoke: {
+        src: 'deleteNewlyAddedEntities',
+        input: ({ context }) => {
+          const entities = context.newlyAddedSketchEntities || {
+            segmentIds: [],
+            constraintIds: [],
+          }
+          return {
+            sketchId: context.sketchId,
+            segmentIds: entities.segmentIds,
+            constraintIds: entities.constraintIds,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: {
+          target: 'unequipping',
+          actions: [
+            assign({
+              newlyAddedSketchEntities: undefined, // Clear tracking
+              draftPointId: undefined, // Clear draftPointId so onMove won't try to edit deleted segment
+            }),
+            ({ event, self }) => {
+              // Send the delete result to parent
+              if ('output' in event && event.output) {
+                const output = event.output as {
+                  kclSource?: SourceDelta
+                  sceneGraphDelta?: SceneGraphDelta
+                }
+                if (output.kclSource && output.sceneGraphDelta) {
+                  self._parent?.send({
+                    type: 'update sketch outcome',
+                    data: {
+                      kclSource: output.kclSource,
+                      sceneGraphDelta: output.sceneGraphDelta,
+                    },
+                  })
+                }
+              }
+              return {}
+            },
+          ],
+        },
+        onError: {
+          target: 'unequipping',
+          actions: assign({
+            newlyAddedSketchEntities: undefined,
+            draftPointId: undefined, // Clear draftPointId so onMove won't try to edit deleted segment
+          }),
+        },
+      },
     },
   },
 })
