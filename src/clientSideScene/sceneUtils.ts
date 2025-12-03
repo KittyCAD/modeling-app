@@ -34,21 +34,3 @@ export const SEGMENT_LENGTH_LABEL = 'segment-length-label'
 export const SEGMENT_LENGTH_LABEL_TEXT = 'segment-length-label-text'
 export const SEGMENT_LENGTH_LABEL_OFFSET_PX = 30
 export const SKETCH_POINT_HANDLE = 'sketch-point-handle'
-
-export function getSceneScale(
-  camera: PerspectiveCamera | OrthographicCamera,
-  target: Vector3
-): number {
-  const distance =
-    camera instanceof PerspectiveCamera
-      ? camera.position.distanceTo(target)
-      : 63.7942123 / camera.zoom
-
-  if (distance <= 20) return 0.1
-  else if (distance > 20 && distance <= 200) return 1
-  else if (distance > 200 && distance <= 2000) return 10
-  else if (distance > 2000 && distance <= 20000) return 100
-  else if (distance > 20000) return 1000
-
-  return 1
-}

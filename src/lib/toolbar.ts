@@ -78,7 +78,7 @@ export const isToolbarItemResolvedDropdown = (
   return (item as ToolbarItemResolvedDropdown).array !== undefined
 }
 
-function isSketchBlockSelected(selectionRanges: Selections): boolean {
+export function isSketchBlockSelected(selectionRanges: Selections): boolean {
   const artifact = selectionRanges.graphSelections[0]?.artifact
   return (
     artifact?.type === 'sketchBlock' && typeof artifact.sketchId === 'number'

@@ -18,6 +18,7 @@ import type {
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
@@ -143,6 +144,7 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
+import { isSketchBlockSelected } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
@@ -380,11 +382,7 @@ export const modelingMachine = setup({
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
-      const artifact = selectionRanges.graphSelections[0]?.artifact
-      const result =
-        artifact?.type === 'sketchBlock' &&
-        typeof artifact.sketchId === 'number'
-      return result
+      return isSketchBlockSelected(selectionRanges)
     },
     'Selection is on face': ({
       context: { selectionRanges, kclManager: providedKclManager },
@@ -2343,13 +2341,24 @@ export const modelingMachine = setup({
       }
     ),
     'animate-to-sketch-solve': fromPromise(
-      async (_: { input: ArtifactId | undefined }) => {
-        return {} as any // TODO
+      async (_: {
+        input: ArtifactId | undefined
+      }) => {
+        return {} as {
+          plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+          sketchSolveId: number
+        }
       }
     ),
     'animate-to-existing-sketch-solve': fromPromise(
-      async (_: { input: ArtifactId | undefined }) => {
-        return {} as any // TODO
+      async (_: {
+        input: ArtifactId | undefined
+      }) => {
+        return {} as {
+          plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+          sketchSolveId: number
+          initialSceneGraphDelta?: SceneGraphDelta
+        }
       }
     ),
     'Get horizontal info': fromPromise(

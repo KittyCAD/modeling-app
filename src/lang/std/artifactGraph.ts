@@ -531,6 +531,8 @@ function getPlaneFromStartSketchOnPlane(
   )
   return plane
 }
+
+// TODO: stubbed out for now.
 function getPlaneFromSketchBlock(
   sketchBlock: Extract<Artifact, { type: 'sketchBlock' }>,
   graph: ArtifactGraph

@@ -149,8 +149,7 @@ export class KclPlugin implements PluginValue {
 
     const clearSelections = true // no reason to keep them after a manual edit
     if (!this.client.ready)
-      return // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      // If we're in sketchSolveMode, update Rust state with the latest AST
+      return // If we're in sketchSolveMode, update Rust state with the latest AST
       // This handles the case where the user directly edits in the CodeMirror editor
       // these are short term hacks while in rapid development for sketch revamp
       // should be clean up.
