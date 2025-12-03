@@ -2369,7 +2369,6 @@ impl Node<BinaryExpression> {
                                     })?,
                                 });
                                 sketch_block_state.sketch_constraints.push(constraint_id);
-                                // track_constraint(constraint_id, constraint, exec_state, &args);
                                 exec_state.add_scene_object(
                                     Object {
                                         id: constraint_id,
