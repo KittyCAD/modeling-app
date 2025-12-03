@@ -121,11 +121,10 @@ export const MlEphantConversationPane2 = (props: {
 
   const isProcessing = lastExchange[0]
     ? lastExchange[0].responses.some(
-        (x: MlCopilotServerMessage) => 'end_of_stream' in x || 'error' in x || 'info' in x
+        (x: MlCopilotServerMessage) =>
+          'end_of_stream' in x || 'error' in x || 'info' in x
       ) === false
     : false
-
-  console.log(conversation?.exchanges)
 
   const needsReconnect = abruptlyClosed
 
