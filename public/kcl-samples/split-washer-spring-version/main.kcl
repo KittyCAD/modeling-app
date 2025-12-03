@@ -1,9 +1,6 @@
 // Split Washer (Spring Version)
 // A spring lock washer is a small metal ring with a gap. Unlike flat washers, this one is twisted into a spiral shape, like a slice of a spring. It’s designed to stay slightly compressed, which helps hold bolts and nuts in place — even when things vibrate. This version shows how to model that twist using a helical sweep.
 
-
-
-
 @settings(defaultLengthUnit = mm)
 
 // ──────────

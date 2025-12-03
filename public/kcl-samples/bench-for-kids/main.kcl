@@ -1,9 +1,6 @@
 // Bench for kids.
 // Shaped like a friendly animal and sturdy enough for climbing.
 
-
-
-
 @settings(defaultLengthUnit = cm)
 
 // Define primary parameters for the bench geometry.

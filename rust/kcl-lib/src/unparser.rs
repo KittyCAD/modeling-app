@@ -55,16 +55,40 @@ fn recast_body(
 ) {
     let indentation = options.get_indentation(indentation_level);
 
-    if non_code_meta
+    let has_non_newline_start_node = non_code_meta
         .start_nodes
         .iter()
-        .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine))
-    {
-        for start in &non_code_meta.start_nodes {
-            let noncode_recast = start.recast(options, indentation_level);
-            buf.push_str(&noncode_recast);
+        .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine));
+    if has_non_newline_start_node {
+        let mut pending_newline = false;
+        for start_node in &non_code_meta.start_nodes {
+            match start_node.value {
+                NonCodeValue::NewLine => pending_newline = true,
+                _ => {
+                    if pending_newline {
+                        // If the previous emission already ended with '\n', only add one more.
+                        if buf.ends_with('\n') {
+                            buf.push('\n');
+                        } else {
+                            buf.push_str("\n\n");
+                        }
+                        pending_newline = false;
+                    }
+                    let noncode_recast = start_node.recast(options, indentation_level);
+                    buf.push_str(&noncode_recast);
+                }
+            }
+        }
+        // Handle any trailing newlines that weren't flushed yet.
+        if pending_newline {
+            if buf.ends_with('\n') {
+                buf.push('\n');
+            } else {
+                buf.push_str("\n\n");
+            }
         }
     }
+
     for attr in inner_attrs {
         options.write_indentation(buf, indentation_level);
         attr.recast(buf, options, indentation_level);
@@ -3208,6 +3232,23 @@ fn function001() {
   extrude002 = extrude()
 }\n";
 
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn no_weird_extra_lines() {
+        // Regression test, this used to insert a lot of new lines
+        // between the initial comment and the @settings.
+        let code = "\
+// Initial comment
+
+@settings(defaultLengthUnit = mm)
+
+x = 1
+";
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         let expected = code;

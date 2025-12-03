@@ -1,9 +1,6 @@
 // Split Washer (Flat Version)
 // A flat split washer — also known as a spring lock washer — is a small metal ring with a gap in it. It's usually placed under a nut or bolt head to stop it from loosening when things vibrate. Normally, this washer is springy and twisted, but for simplicity, we’re making a flat version.
 
-
-
-
 @settings(defaultLengthUnit = mm)
 
 // ───────────

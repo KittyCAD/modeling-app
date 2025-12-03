@@ -1,13 +1,9 @@
 // Dining Table
 // Simple dining table with rectangular tabletop, aprons and four legs with square section
 
-
 // ──────────────
 // PARAMETERS
 // ──────────────
-
-
-
 
 @settings(defaultLengthUnit = mm)
 

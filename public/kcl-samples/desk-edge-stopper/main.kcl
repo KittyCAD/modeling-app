@@ -1,9 +1,6 @@
 // Desk-Edge Stopper
 // 3-D–printable U-shaped guard that slides onto a desk edge and raises a vertical wall to keep pens, phones, cables, etc. from slipping off the tabletop.
 
-
-
-
 @settings(defaultLengthUnit = mm)
 
 // ──────────────────

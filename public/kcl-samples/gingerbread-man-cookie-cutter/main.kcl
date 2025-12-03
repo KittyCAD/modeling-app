@@ -1,9 +1,6 @@
 // Gingerbread Man Cookie Cutter
 // A gingerbread man cookie cutter is a charming kitchen tool designed in the iconic silhouette of a little person. Typically crafted from metal (often tin or stainless steel) or durable plastic, this cookie cutter features the distinctive outline of a stylized human figure with a round head, a simple torso, and extended arms and legs. The cutter's edges are sharp enough to cleanly slice through cookie dough but blunt enough to be handled safely.
 
-
-
-
 @settings(defaultLengthUnit = mm)
 
 // Define parameters

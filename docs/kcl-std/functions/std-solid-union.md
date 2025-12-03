@@ -33,7 +33,6 @@ union(
 ```kcl
 // Union two cubes using the stdlib functions.
 
-
 fn cube(center, size) {
   return startSketchOn(XY)
     |> startProfile(at = [center[0] - size, center[1] - size])
@@ -70,7 +69,6 @@ unionedPart = union([part001, part002])
 // Union two cubes using operators.
 // NOTE: This will not work when using codemods through the UI.
 // Codemods will generate the stdlib function call instead.
-
 
 fn cube(center, size) {
   return startSketchOn(XY)
@@ -109,7 +107,6 @@ unionedPart = part001 + part002
 // Union two cubes using the more programmer-friendly operator.
 // NOTE: This will not work when using codemods through the UI.
 // Codemods will generate the stdlib function call instead.
-
 
 fn cube(center, size) {
   return startSketchOn(XY)
