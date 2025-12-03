@@ -11,6 +11,7 @@ import {
 import type { Expr } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import { kclManager } from '@src/lib/singletons'
 
 type ModalResolve = {
   value: string
@@ -65,6 +66,9 @@ export const SetAngleLengthModal = ({
     value,
     initialVariableName: valueName,
     selectionRanges,
+    code: kclManager.codeSignal.value,
+    ast: kclManager.astSignal.value,
+    variables: kclManager.variablesSignal.value,
   })
   const isDisabled =
     (calcResult === 'NAN' || !isNewVariableNameUnique) && shouldCreateVariable
