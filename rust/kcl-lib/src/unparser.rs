@@ -73,18 +73,18 @@ fn recast_body(
             );
             // Don't emit double-newlines.
             if last_was_newline && is_newline {
-                eprintln!("Skipping double newline");
+                // eprintln!("Skipping double newline");
                 continue;
             }
             last_was_newline = is_newline;
             if !is_last && last_was_comment && is_newline {
-                eprintln!("Skipping newline preceded by comment");
+                // eprintln!("Skipping newline preceded by comment because comment ends in newline");
                 buf.push('\n');
                 continue;
             }
             last_was_comment = is_comment;
             let noncode_recast = start_node.recast(options, indentation_level);
-            eprintln!("Pushing {noncode_recast}");
+            // eprintln!("Pushing {noncode_recast}");
             buf.push_str(&noncode_recast);
         }
     }
