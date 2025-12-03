@@ -15,6 +15,7 @@ import type {
   DefaultPlane,
   ExtrudeFacePlane,
   OffsetPlane,
+  Selections,
   SetSelections,
 } from '@src/machines/modelingSharedTypes'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -627,6 +628,13 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
       sceneGraphDelta: event.data.sceneGraphDelta,
     },
   }
+}
+
+export function isSketchBlockSelected(selectionRanges: Selections): boolean {
+  const artifact = selectionRanges.graphSelections[0]?.artifact
+  return (
+    artifact?.type === 'sketchBlock' && typeof artifact.sketchId === 'number'
+  )
 }
 
 export function spawnTool(

@@ -1,9 +1,6 @@
 // 63.5 is definitely a bit of a magic number, play with it until it looked right
 // if it were 64, that would feel like it's something in the engine where a random
 
-import type { OrthographicCamera, Vector3 } from 'three'
-import { PerspectiveCamera } from 'three'
-
 // power of 2 is used, but it's the 0.5 seems to make things look much more correct
 export const ZOOM_MAGIC_NUMBER = 63.5
 

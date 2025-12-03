@@ -144,7 +144,7 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { isSketchBlockSelected } from '@src/lib/toolbar'
+import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'

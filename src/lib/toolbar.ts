@@ -10,7 +10,7 @@ import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
@@ -76,13 +76,6 @@ export const isToolbarItemResolvedDropdown = (
   item: ToolbarItemResolved | ToolbarItemResolvedDropdown
 ): item is ToolbarItemResolvedDropdown => {
   return (item as ToolbarItemResolvedDropdown).array !== undefined
-}
-
-export function isSketchBlockSelected(selectionRanges: Selections): boolean {
-  const artifact = selectionRanges.graphSelections[0]?.artifact
-  return (
-    artifact?.type === 'sketchBlock' && typeof artifact.sketchId === 'number'
-  )
 }
 
 export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
