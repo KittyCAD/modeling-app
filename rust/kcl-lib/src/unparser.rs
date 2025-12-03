@@ -55,38 +55,37 @@ fn recast_body(
 ) {
     let indentation = options.get_indentation(indentation_level);
 
-    let all_start_nodes_are_newline = non_code_meta
+    let has_non_newline_start_node = non_code_meta
         .start_nodes
         .iter()
-        .all(|noncode| matches!(noncode.value, NonCodeValue::NewLine));
-    if !all_start_nodes_are_newline {
-        println!("{:#?}", non_code_meta.start_nodes);
-        let mut last_was_newline = false;
-        let mut last_was_comment = false;
-        let n = non_code_meta.start_nodes.len();
-        for (i, start_node) in non_code_meta.start_nodes.iter().enumerate() {
-            let is_last = i == n - 1;
-            let is_newline = matches!(start_node.value, NonCodeValue::NewLine);
-            let is_comment = matches!(
-                start_node.value,
-                NonCodeValue::NewLineBlockComment { .. } | NonCodeValue::BlockComment { .. }
-            );
-            // Don't emit double-newlines.
-            if last_was_newline && is_newline {
-                // eprintln!("Skipping double newline");
-                continue;
+        .any(|noncode| !matches!(noncode.value, NonCodeValue::NewLine));
+    if has_non_newline_start_node {
+        let mut pending_newline = false;
+        for start_node in &non_code_meta.start_nodes {
+            match start_node.value {
+                NonCodeValue::NewLine => pending_newline = true,
+                _ => {
+                    if pending_newline {
+                        // If the previous emission already ended with '\n', only add one more.
+                        if buf.ends_with('\n') {
+                            buf.push('\n');
+                        } else {
+                            buf.push_str("\n\n");
+                        }
+                        pending_newline = false;
+                    }
+                    let noncode_recast = start_node.recast(options, indentation_level);
+                    buf.push_str(&noncode_recast);
+                }
             }
-            last_was_newline = is_newline;
-            if !is_last && last_was_comment && is_newline {
-                // eprintln!("Skipping newline preceded by comment because comment ends in newline");
+        }
+        // Handle any trailing newlines that weren't flushed yet.
+        if pending_newline {
+            if buf.ends_with('\n') {
                 buf.push('\n');
-                last_was_comment = is_comment;
-                continue;
+            } else {
+                buf.push_str("\n\n");
             }
-            last_was_comment = is_comment;
-            let noncode_recast = start_node.recast(options, indentation_level);
-            // eprintln!("Pushing {noncode_recast}");
-            buf.push_str(&noncode_recast);
         }
     }
 
