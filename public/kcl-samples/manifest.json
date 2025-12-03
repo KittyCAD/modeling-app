@@ -779,6 +779,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "pipe-manifold/main.kcl",
+    "multipleFiles": false,
+    "title": "Pipe manifold",
+    "description": "A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Each port provides an attachment point for a threaded pipe fitting",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "pipe-with-bend/main.kcl",
     "multipleFiles": false,
     "title": "Pipe with bend",
@@ -1233,6 +1243,16 @@
     "multipleFiles": false,
     "title": "Truss Structure",
     "description": "A truss structure is a framework composed of triangular units made from straight members connected at joints, often called nodes. Trusses are widely used in architecture, civil engineering, and construction for their ability to support large loads with minimal material.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "tube-manifold/main.kcl",
+    "multipleFiles": false,
+    "title": "Tube manifold",
+    "description": "A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically refered to by their inner diameters, so the fittings are parameterized by their outer diameters",
     "files": [
       "main.kcl"
     ]
