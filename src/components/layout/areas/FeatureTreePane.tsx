@@ -45,10 +45,7 @@ import {
   useLayout,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import {
-  featureTreeMachine,
-  featureTreeMachineDefaultContext,
-} from '@src/machines/featureTreeMachine'
+import { featureTreeMachine } from '@src/machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
@@ -195,7 +192,7 @@ export const FeatureTreePaneContents = () => {
     }),
     {
       input: {
-        ...featureTreeMachineDefaultContext,
+        kclManager,
       },
       // devTools: true,
     }

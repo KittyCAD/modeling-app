@@ -72,7 +72,7 @@ if (window.electron) {
 
 export function App() {
   const { state: modelingState } = useModelingContext()
-  useQueryParamEffects()
+  useQueryParamEffects(kclManager)
   const { project, file } = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
@@ -105,7 +105,7 @@ export function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [projectName, projectPath])
 
-  useHotKeyListener()
+  useHotKeyListener(kclManager)
 
   const settings = useSettings()
   const authToken = useToken()
@@ -127,16 +127,21 @@ export function App() {
   useHotkeyWrapper(
     [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
     () => navigate(filePath + PATHS.SETTINGS),
+    kclManager,
     {
       splitKey: '|',
     }
   )
 
-  useHotkeyWrapper(['mod + s'], () => {
-    toast.success('Your work is auto-saved in real-time')
-  })
+  useHotkeyWrapper(
+    ['mod + s'],
+    () => {
+      toast.success('Your work is auto-saved in real-time')
+    },
+    kclManager
+  )
 
-  useEngineConnectionSubscriptions()
+  useEngineConnectionSubscriptions(kclManager)
 
   useEffect(() => {
     // Not too useful for regular flows but on modeling view refresh,
@@ -288,6 +293,7 @@ export function App() {
               element: 'text',
               label:
                 getSelectionTypeDisplayText(
+                  kclManager.astSignal.value,
                   modelingState.context.selectionRanges
                 ) ?? 'No selection',
               toolTip: {

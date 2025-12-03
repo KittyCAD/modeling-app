@@ -12,13 +12,18 @@ import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicatio
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import { markOnce } from '@src/lib/performance'
-import { appActor, commandBarActor, systemIOActor } from '@src/lib/singletons'
+import {
+  appActor,
+  commandBarActor,
+  kclManager,
+  systemIOActor,
+} from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 
 markOnce('code/willAuth')
-initializeWindowExceptionHandler()
+initializeWindowExceptionHandler(kclManager)
 
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.
