@@ -762,7 +762,9 @@ test.describe(
 
       await test.step(`Initial units from settings are ignored`, async () => {
         await homePage.openProject('project-000')
-        await expect(unitsIndicator).toHaveText('mm')
+        await expect(unitsIndicator).toHaveText(
+          'Default units for current filemm'
+        )
       })
 
       await test.step(`Manually write inline settings`, async () => {
