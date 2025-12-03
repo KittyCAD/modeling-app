@@ -2449,8 +2449,9 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
 
             let val = expression
                 .try_map(|val| {
-                    // Function bodies can be used if and only if declaring a function.
-                    // Check the 'if' direction:
+                    // Check if declaring a variable where the value is a
+                    // function expression, e.g. `f = fn() {}`. If so, suggest
+                    // using `fn f() {}` instead.
                     if matches!(val, Expr::FunctionExpression(_)) {
                         let fn_end = val.start();
                         ParseContext::warn(
