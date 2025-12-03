@@ -63,6 +63,7 @@ import {
   MlEphantManagerTransitions2,
 } from '@src/machines/mlEphantManagerMachine2'
 import { useSignalEffect } from '@preact/signals-react'
+import { UnitsMenu } from '@src/components/UnitsMenu'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -295,6 +296,10 @@ export function App() {
               },
             },
             ...defaultLocalStatusBarItems,
+            {
+              id: 'units',
+              component: UnitsMenu,
+            },
           ]}
         />
       </div>

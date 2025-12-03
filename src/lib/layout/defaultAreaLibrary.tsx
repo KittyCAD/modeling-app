@@ -9,7 +9,6 @@ import {
 import env from '@src/env'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/gizmo/Gizmo'
-import { UnitsMenu } from '@src/components/UnitsMenu'
 import { Toolbar } from '@src/Toolbar'
 import type { AreaType, AreaTypeDefinition } from '@src/lib/layout/types'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -149,7 +148,6 @@ function ModelingArea() {
       <ConnectionStream pool={pool} authToken={authToken} />
       <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
         <ExperimentalFeaturesMenu />
-        <UnitsMenu />
         <Gizmo />
       </div>
     </div>
