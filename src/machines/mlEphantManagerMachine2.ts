@@ -16,7 +16,7 @@ import { getKclVersion } from '@src/lib/kclVersion'
 import { Socket } from '@src/lib/socket'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
-import { MockSocket } from '@src/mocks/copilot'
+// import { MockSocket } from '@src/mocks/copilot'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -640,9 +640,11 @@ export const mlEphantManagerMachine2 = setup({
                       ),
                     }
 
-                    // Errors and information are considered their own
+                    // Errors are considered their own
                     // exchanges because they have no end_of_stream signal.
-                    if ('error' in event.response || 'info' in event.response) {
+                    // It is assumed `info` messages are followed up
+                    // with an end_of_stream signal.
+                    if ('error' in event.response) {
                       conversation.exchanges.push({
                         responses: [event.response],
                         deltasAggregated: '',
