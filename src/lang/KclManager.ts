@@ -1104,7 +1104,6 @@ export class KclManager extends EventTarget {
   }
   setEditorTheme(theme: 'light' | 'dark') {
     if (this._editorView) {
-      console.trace(`kclManager.setEditorTheme: ${theme}`)
       this._editorView.dispatch({
         effects: [
           appSettingsThemeEffect.of(theme),
