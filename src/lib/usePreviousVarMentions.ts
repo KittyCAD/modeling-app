@@ -5,7 +5,9 @@ import { usePreviousVariables } from '@src/lib/usePreviousVariables'
 /// Basically a fork of the `mentions` extension https://github.com/uiwjs/react-codemirror/blob/master/extensions/mentions/src/index.ts
 /// But it matches on any word, not just the `@` symbol
 export function usePreviousVarMentions(context: CompletionContext) {
-  const previousVariables = usePreviousVariables()
+  const previousVariables = usePreviousVariables({
+    code: context.view?.state.doc.toString() || '',
+  })
   const data = previousVariables.variables.map((variable) => {
     return {
       label: variable.key,

@@ -4,6 +4,7 @@ import {
   getStringValue,
 } from '@src/lib/kclHelpers'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { expect, describe, it } from 'vitest'
 
 describe('KCL expression calculations', () => {
   it('calculates a simple expression without units', async () => {

@@ -269,7 +269,7 @@ const Overlay = ({
 
   const constraints = getConstraintInfoKw(
     callExpression,
-    kclManager.code,
+    kclManager.codeSignal.value,
     overlay.pathToNode,
     overlay.filterValue
   )
