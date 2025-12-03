@@ -1,9 +1,6 @@
 // Impeller (Flat-bladed)
 // A parametric impeller with straight, flat blades used in centrifugal fans or pumps. Moves air or fluid radially outward from the center. Useful for mechanical design and prototyping.
 
-
-
-
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // parameters
