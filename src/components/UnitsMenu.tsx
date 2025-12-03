@@ -9,8 +9,8 @@ import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { kclManager, sceneInfra } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { OrthographicCamera } from 'three'
-import { defaultStatusBarItemClassNames } from './StatusBar/StatusBar'
-import Tooltip from './Tooltip'
+import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
+import Tooltip from '@src/components/Tooltip'
 
 export function UnitsMenu() {
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)

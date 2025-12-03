@@ -13,7 +13,7 @@ import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
-import Tooltip from './Tooltip'
+import Tooltip from '@src/components/Tooltip'
 
 export function ExperimentalFeaturesMenu() {
   const currentLevel: WarningLevel =
