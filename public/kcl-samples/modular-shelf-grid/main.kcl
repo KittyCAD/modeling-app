@@ -1,7 +1,6 @@
 // Modular Shelf Grid
 // A parametric, grid-based shelving system for layout prototyping and modular storage design.
 
-
 // This model generates a configurable number of uniform shelf modules,
 // stacked in a grid defined by row and column counts.
 // Each module is:
@@ -9,9 +8,6 @@
 // - Open at the front for accessible storage
 // All dimensions and counts are parametric, enabling rapid iteration
 // for uses such as built-ins, modular wall storage, or retail shelving.
-
-
-
 
 @settings(defaultLengthUnit = m, kclVersion = 1.0)
 

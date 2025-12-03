@@ -7,9 +7,6 @@ description: Result of unparsing loop_tag.kcl
 // explodes in program memory, then you might want to look at how tag infos are being merged
 // by `update_memory_for_tags_of_geometry`.
 
-
-
-
 @settings(defaultLengthUnit = mm)
 
 // Define constants for the cylinder

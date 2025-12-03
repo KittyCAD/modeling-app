@@ -1,9 +1,6 @@
 // Impeller Blade (Single)
 // A solid impeller blade created by lofting a root and a twisted tip profile. Useful for analyzing blade geometry, airflow shaping, or preparing for radial array placement.
 
-
-
-
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // parameters

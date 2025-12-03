@@ -75,9 +75,9 @@ flowchart LR
     109[Solid2d]
   end
   subgraph path116 [Path]
-    116["Path<br>[491, 553, 3]"]
+    116["Path<br>[490, 552, 3]"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    117["Segment<br>[491, 553, 3]"]
+    117["Segment<br>[490, 552, 3]"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     118[Solid2d]
   end
@@ -267,11 +267,11 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   112["SweepEdge Opposite"]
   113["SweepEdge Adjacent"]
-  114["Helix<br>[311, 451, 3]"]
+  114["Helix<br>[310, 450, 3]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  115["Plane<br>[468, 485, 3]"]
+  115["Plane<br>[467, 484, 3]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  119["Sweep Sweep<br>[559, 582, 3]"]
+  119["Sweep Sweep<br>[558, 581, 3]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   120[Wall]
     %% face_code_ref=Missing NodePath

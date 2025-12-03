@@ -1,7 +1,6 @@
 // Inner Thread
 // An example of an inner thread on a cylinder.
 
-
 outerCylinderRadius = 5
 outerCylinder = circle(startSketchOn(XY), center = [0, 0], diameter = outerCylinderRadius * 2)
   |> extrude(length = 10)
