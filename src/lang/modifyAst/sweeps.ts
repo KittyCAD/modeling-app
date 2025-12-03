@@ -55,6 +55,7 @@ export function addExtrude({
   twistAngleStep,
   twistCenter,
   method,
+  bodyType,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -70,6 +71,7 @@ export function addExtrude({
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
   method?: string
+  bodyType?: string
   nodeToEdit?: PathToNode
 }):
   | {
@@ -136,6 +138,9 @@ export function addExtrude({
   const methodExpr = method
     ? [createLabeledArg('method', createLocalName(method))]
     : []
+  const bodyTypeExpr = bodyType
+    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
+    : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('extrude', sketchesExpr, [
@@ -149,6 +154,7 @@ export function addExtrude({
     ...twistAngleStepExpr,
     ...twistCenterExpr,
     ...methodExpr,
+    ...bodyTypeExpr,
   ])
 
   // Insert variables for labeled arguments if provided
