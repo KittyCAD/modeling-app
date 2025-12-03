@@ -35,7 +35,7 @@ interface LSPRequestMap {
   'textDocument/rename': [LSP.RenameParams, LSP.WorkspaceEdit | null]
   'textDocument/prepareRename': [
     LSP.PrepareRenameParams,
-    LSP.Range | LSP.PrepareRenameResult | null,
+    LSP.PrepareRenameResult | null,
   ]
   'textDocument/definition': [
     LSP.DefinitionParams,
