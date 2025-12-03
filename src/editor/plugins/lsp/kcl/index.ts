@@ -147,6 +147,7 @@ export class KclPlugin implements PluginValue {
       this.sendScheduledInput = null
     }
 
+    const clearSelections = true // no reason to keep them after a manual edit
     if (!this.client.ready)
       return // eslint-disable-next-line @typescript-eslint/no-floating-promises
       // If we're in sketchSolveMode, update Rust state with the latest AST
@@ -158,7 +159,7 @@ export class KclPlugin implements PluginValue {
       const modelingState = (kclManager as any)._modelingState
       if (modelingState?.matches('sketchSolveMode')) {
         try {
-          await kclManager.executeCode()
+          await kclManager.executeCode(clearSelections)
           await rustContext.hackSetProgram(
             kclManager.ast,
             await jsAppSettings()
@@ -168,7 +169,7 @@ export class KclPlugin implements PluginValue {
           console.error('Error calling hackSetProgram after user edit:', error)
         }
       } else {
-        await kclManager.executeCode()
+        await kclManager.executeCode(clearSelections)
       }
     })().catch((error) => {
       console.error(
