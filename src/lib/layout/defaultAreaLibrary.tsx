@@ -17,7 +17,6 @@ import type { MouseEventHandler } from 'react'
 import { useMemo } from 'react'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
 import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
 import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
@@ -147,7 +146,6 @@ function ModelingArea() {
       <Toolbar />
       <ConnectionStream pool={pool} authToken={authToken} />
       <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
-        <ExperimentalFeaturesMenu />
         <Gizmo />
       </div>
     </div>

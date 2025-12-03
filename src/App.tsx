@@ -64,6 +64,7 @@ import {
 } from '@src/machines/mlEphantManagerMachine2'
 import { useSignalEffect } from '@preact/signals-react'
 import { UnitsMenu } from '@src/components/UnitsMenu'
+import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -295,11 +296,15 @@ export function App() {
                 children: 'Currently selected geometry',
               },
             },
-            ...defaultLocalStatusBarItems,
             {
               id: 'units',
               component: UnitsMenu,
             },
+            {
+              id: 'experimental-features',
+              component: ExperimentalFeaturesMenu,
+            },
+            ...defaultLocalStatusBarItems,
           ]}
         />
       </div>
