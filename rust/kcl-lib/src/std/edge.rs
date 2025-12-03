@@ -172,18 +172,11 @@ async fn inner_get_previous_adjacent_edge(
 
 /// Get the shared edge between two faces.
 pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let mut faces: Vec<FaceTag> = args.get_kw_arg(
+    let faces: Vec<FaceTag> = args.get_kw_arg(
         "faces",
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Known(2)),
         exec_state,
     )?;
-
-    if faces.len() != 2 {
-        return Err(KclError::new_type(KclErrorDetails::new(
-            "getCommonEdge requires exactly two tags for faces".to_owned(),
-            vec![args.source_range],
-        )));
-    }
 
     fn into_tag(face: FaceTag, source_range: SourceRange) -> Result<TagIdentifier, KclError> {
         match face {
@@ -195,8 +188,15 @@ pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<K
         }
     }
 
-    let face2 = into_tag(faces.pop().unwrap(), args.source_range)?;
-    let face1 = into_tag(faces.pop().unwrap(), args.source_range)?;
+    let [face1, face2]: [FaceTag; 2] = faces.try_into().map_err(|_: Vec<FaceTag>| {
+        KclError::new_type(KclErrorDetails::new(
+            "getCommonEdge requires exactly two tags for faces".to_owned(),
+            vec![args.source_range],
+        ))
+    })?;
+
+    let face1 = into_tag(face1, args.source_range)?;
+    let face2 = into_tag(face2, args.source_range)?;
 
     let edge = inner_get_common_edge(face1, face2, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
