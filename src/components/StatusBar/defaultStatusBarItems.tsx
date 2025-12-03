@@ -40,10 +40,14 @@ export const defaultGlobalStatusBarItems = ({
             "The present web app is limited in features. We don't want you to miss out!",
         },
       },
-  {
-    id: 'environment',
-    component: EnvironmentStatusBarItem,
-  },
+  ...(isDesktop()
+    ? [
+        {
+          id: 'environment',
+          component: EnvironmentStatusBarItem,
+        },
+      ]
+    : []),
   {
     id: 'telemetry',
     element: 'link',
