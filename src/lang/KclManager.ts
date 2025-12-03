@@ -186,7 +186,7 @@ export class KclManager extends EventTarget {
   private _diagnostics = signal<Diagnostic[]>([])
   private _isExecuting = signal(false)
   private _executeIsStale: ExecuteArgs | null = null
-  private _wasmInitFailed = signal(true)
+  private _wasmInitFailed = signal<boolean | undefined>(undefined)
   private _astParseFailed = false
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
