@@ -12,12 +12,7 @@ import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicatio
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import { markOnce } from '@src/lib/performance'
-import {
-  appActor,
-  commandBarActor,
-  mlEphantManagerActor,
-  systemIOActor,
-} from '@src/lib/singletons'
+import { appActor, commandBarActor, systemIOActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
@@ -35,9 +30,7 @@ initPromise
     commandBarActor.send({
       type: 'Add commands',
       data: {
-        commands: [
-          ...createApplicationCommands({ systemIOActor, mlEphantManagerActor }),
-        ],
+        commands: [...createApplicationCommands({ systemIOActor })],
       },
     })
   })

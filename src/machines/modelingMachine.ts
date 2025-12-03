@@ -1563,7 +1563,6 @@ export const modelingMachine = setup({
     'Set mouse state': () => {},
     'Set Segment Overlays': () => {},
     'Center camera on selection': () => {},
-    'Submit to Text-to-CAD API': () => {},
     'Set sketchDetails': () => {},
     'debug-action': (data) => {
       console.log('re-eval debug-action', data)
@@ -4039,12 +4038,6 @@ export const modelingMachine = setup({
           target: 'Applying Delete selection',
           guard: 'has valid selection for deletion',
           reenter: true,
-        },
-
-        'Text-to-CAD': {
-          target: 'idle',
-          reenter: false,
-          actions: ['Submit to Text-to-CAD API'],
         },
 
         'Prompt-to-edit': 'Applying Prompt-to-edit',
