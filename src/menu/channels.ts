@@ -58,6 +58,7 @@ export type MenuLabels =
   | 'View.Panes.Project files'
   | 'View.Panes.Variables'
   | 'View.Panes.Logs'
+  | 'View.Panes.Zookeeper'
   | 'View.Panes.Debug'
   | 'View.Standard views'
   | 'View.Named views'

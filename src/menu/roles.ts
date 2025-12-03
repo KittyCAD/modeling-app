@@ -61,6 +61,7 @@ type ViewRoleLabel =
   | 'Variables'
   | 'Logs'
   | 'Debug'
+  | 'Zookeeper'
   | 'Standard Views'
   | 'Orthographic View'
   | 'Perspective View'

@@ -1307,6 +1307,8 @@ export const ModelingMachineProvider = ({
       toggle(DefaultLayoutPaneID.Variables)
     } else if (data.menuLabel === 'View.Panes.Logs') {
       toggle(DefaultLayoutPaneID.Logs)
+    } else if (data.menuLabel === 'View.Panes.Zookeeper') {
+      toggle(DefaultLayoutPaneID.TTC)
     } else if (data.menuLabel === 'Design.Start sketch') {
       modelingSend({
         type: 'Enter sketch',
