@@ -148,6 +148,7 @@ export function useViewControlMenuItems() {
 
             void selectSketchPlane(
               kclManager,
+              sceneInfra,
               planeOrFaceId,
               modelingState.context.store.useNewSketchMode?.current
             )

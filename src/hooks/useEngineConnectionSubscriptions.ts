@@ -9,15 +9,15 @@ import {
   selectionBodyFace,
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
-import {
-  engineCommandManager,
-  sceneInfra,
-  rustContext,
-} from '@src/lib/singletons'
+import { engineCommandManager, rustContext } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { KclManager } from '@src/lang/KclManager'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
-export function useEngineConnectionSubscriptions(kclManager: KclManager) {
+export function useEngineConnectionSubscriptions(
+  kclManager: KclManager,
+  sceneInfra: SceneInfra
+) {
   const { send, context, state } = useModelingContext()
   const stateRef = useRef(state)
   stateRef.current = state
@@ -75,6 +75,7 @@ export function useEngineConnectionSubscriptions(kclManager: KclManager) {
         ? ({ data }) => {
             void selectSketchPlane(
               kclManager,
+              sceneInfra,
               data.entity_id,
               context.store.useNewSketchMode?.current
             )
@@ -82,7 +83,7 @@ export function useEngineConnectionSubscriptions(kclManager: KclManager) {
         : () => {},
     })
     return unSub
-  }, [context.store.useNewSketchMode, state, kclManager])
+  }, [context.store.useNewSketchMode, state, kclManager, sceneInfra])
 
   // Re-apply plane visibility when planes are (re)created on the Rust side
   useEffect(() => {
@@ -98,6 +99,7 @@ export function useEngineConnectionSubscriptions(kclManager: KclManager) {
 
 export async function selectSketchPlane(
   kclManager: KclManager,
+  sceneInfra: SceneInfra,
   planeOrFaceId: string | undefined,
   useNewSketchMode: boolean | undefined
 ) {
@@ -112,13 +114,17 @@ export async function selectSketchPlane(
       return
     }
 
-    const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId)
+    const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId, {
+      sceneInfra,
+    })
     if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
       return
     }
 
     const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-    const offsetPlaneSelected = await selectOffsetSketchPlane(artifact)
+    const offsetPlaneSelected = await selectOffsetSketchPlane(artifact, {
+      sceneInfra,
+    })
     if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
       return
     }
@@ -127,7 +133,8 @@ export async function selectSketchPlane(
       planeOrFaceId,
       kclManager.artifactGraph,
       kclManager.ast,
-      kclManager.execState
+      kclManager.execState,
+      { sceneInfra }
     )
     if (sweepFaceSelected) {
       sceneInfra.modelingSend({

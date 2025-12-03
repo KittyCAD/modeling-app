@@ -53,8 +53,8 @@ import {
   engineCommandManager,
   rustContext,
   sceneEntitiesManager,
-  sceneInfra,
 } from '@src/lib/singletons'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err } from '@src/lib/trap'
 import {
   getModuleId,
@@ -850,8 +850,12 @@ export function getSemanticSelectionType(selectionType: Artifact['type'][]) {
 }
 
 export function getDefaultSketchPlaneData(
-  defaultPlaneId: string
+  defaultPlaneId: string,
+  systemDeps: {
+    sceneInfra: SceneInfra
+  }
 ): Error | false | DefaultPlane {
+  const { sceneInfra } = systemDeps
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) {
     return new Error('No default planes defined in rustContext')
@@ -922,9 +926,13 @@ export function getDefaultSketchPlaneData(
   }
 }
 export function selectDefaultSketchPlane(
-  defaultPlaneId: string
+  defaultPlaneId: string,
+  systemDeps: {
+    sceneInfra: SceneInfra
+  }
 ): Error | boolean {
-  const result = getDefaultSketchPlaneData(defaultPlaneId)
+  const { sceneInfra } = systemDeps
+  const result = getDefaultSketchPlaneData(defaultPlaneId, systemDeps)
   if (err(result) || result === false) return result
   sceneInfra.modelingSend({
     type: 'Select sketch plane',
@@ -934,8 +942,12 @@ export function selectDefaultSketchPlane(
 }
 
 export async function getOffsetSketchPlaneData(
-  artifact: Artifact | undefined
+  artifact: Artifact | undefined,
+  systemDeps: {
+    sceneInfra: SceneInfra
+  }
 ): Promise<Error | false | OffsetPlane> {
+  const { sceneInfra } = systemDeps
   if (artifact?.type !== 'plane') {
     return new Error(
       `Invalid artifact type for offset sketch plane selection: ${artifact?.type}`
@@ -1004,9 +1016,13 @@ export async function getOffsetSketchPlaneData(
 }
 
 export async function selectOffsetSketchPlane(
-  artifact: Artifact | undefined
+  artifact: Artifact | undefined,
+  systemDeps: {
+    sceneInfra: SceneInfra
+  }
 ): Promise<Error | boolean> {
-  const result = await getOffsetSketchPlaneData(artifact)
+  const { sceneInfra } = systemDeps
+  const result = await getOffsetSketchPlaneData(artifact, systemDeps)
   if (err(result) || result === false) return result
 
   try {
@@ -1025,15 +1041,25 @@ export async function selectionBodyFace(
   planeOrFaceId: ArtifactId,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
-  execState: ExecState
+  execState: ExecState,
+  systemDeps: {
+    sceneInfra: SceneInfra
+  }
 ): Promise<ExtrudeFacePlane | undefined> {
-  const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId)
+  const { sceneInfra } = systemDeps
+  const defaultSketchPlaneSelected = selectDefaultSketchPlane(
+    planeOrFaceId,
+    systemDeps
+  )
   if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
     return
   }
 
   const artifact = artifactGraph.get(planeOrFaceId)
-  const offsetPlaneSelected = await selectOffsetSketchPlane(artifact)
+  const offsetPlaneSelected = await selectOffsetSketchPlane(
+    artifact,
+    systemDeps
+  )
   if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
     return
   }

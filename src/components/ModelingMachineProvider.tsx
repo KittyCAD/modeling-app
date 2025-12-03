@@ -121,6 +121,11 @@ import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
+// Defined outside of React to prevent rerenders
+const systemDeps = {
+  sceneInfra,
+}
+
 export const ModelingMachineContext = createContext(
   {} as {
     state: StateFrom<typeof modelingMachine>
@@ -529,7 +534,10 @@ export const ModelingMachineProvider = ({
             let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null =
               null
 
-            const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId)
+            const defaultResult = getDefaultSketchPlaneData(
+              artifactOrPlaneId,
+              systemDeps
+            )
             if (!err(defaultResult) && defaultResult) {
               result = defaultResult
             }
@@ -538,7 +546,10 @@ export const ModelingMachineProvider = ({
             // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
             if (!result) {
               const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
-              const offsetResult = await getOffsetSketchPlaneData(artifact)
+              const offsetResult = await getOffsetSketchPlaneData(
+                artifact,
+                systemDeps
+              )
               if (!err(offsetResult) && offsetResult) {
                 result = offsetResult
               }
@@ -549,7 +560,8 @@ export const ModelingMachineProvider = ({
                 artifactOrPlaneId,
                 kclManager.artifactGraph,
                 kclManager.astSignal.value,
-                kclManager.execState
+                kclManager.execState,
+                systemDeps
               )
               if (sweepFaceSelected) {
                 result = sweepFaceSelected

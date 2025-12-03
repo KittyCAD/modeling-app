@@ -42,6 +42,7 @@ import {
   useLayout,
   setLayout,
   getLayout,
+  sceneInfra,
 } from '@src/lib/singletons'
 import { useSettings, useToken } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
@@ -143,7 +144,7 @@ export function App() {
     kclManager
   )
 
-  useEngineConnectionSubscriptions(kclManager)
+  useEngineConnectionSubscriptions(kclManager, sceneInfra)
 
   useEffect(() => {
     // Not too useful for regular flows but on modeling view refresh,
