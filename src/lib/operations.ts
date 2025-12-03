@@ -395,7 +395,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
   // bodyType argument from a string
   let bodyType: string | undefined
   if ('bodyType' in operation.labeledArgs && operation.labeledArgs.bodyType) {
-    bodyType = kclManager.code.slice(
+    bodyType = code.slice(
       operation.labeledArgs.bodyType.sourceRange[0],
       operation.labeledArgs.bodyType.sourceRange[1]
     )
