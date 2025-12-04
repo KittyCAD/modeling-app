@@ -81,7 +81,6 @@ description: Variables in memory after executing rect_helper.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,

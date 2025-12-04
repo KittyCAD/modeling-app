@@ -138,7 +138,6 @@ description: Variables in memory after executing plane_of_chamfer.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -330,7 +329,6 @@ description: Variables in memory after executing plane_of_chamfer.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -408,7 +406,6 @@ description: Variables in memory after executing plane_of_chamfer.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,

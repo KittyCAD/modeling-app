@@ -107,7 +107,6 @@ description: Variables in memory after executing pipe.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": null,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -234,7 +233,6 @@ description: Variables in memory after executing pipe.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,

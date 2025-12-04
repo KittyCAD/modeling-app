@@ -83,7 +83,6 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -149,7 +148,6 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,

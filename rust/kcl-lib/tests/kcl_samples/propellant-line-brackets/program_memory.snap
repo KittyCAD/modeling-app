@@ -379,7 +379,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": null,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -877,7 +876,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
-                    "objectId": null,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1408,7 +1406,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
-                    "objectId": null,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1939,7 +1936,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
-                    "objectId": null,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2414,7 +2410,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2611,7 +2606,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -3010,7 +3004,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
-                    "objectId": null,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3541,7 +3534,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
-                    "objectId": null,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4136,7 +4128,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4279,7 +4270,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -4461,7 +4451,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4861,7 +4850,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5374,7 +5362,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5887,7 +5874,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6400,7 +6386,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6913,7 +6898,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7300,7 +7284,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -7729,7 +7712,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8243,7 +8225,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8741,7 +8722,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "objectId": null,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -9205,7 +9185,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "objectId": null,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -9706,7 +9685,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "objectId": null,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -10171,7 +10149,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "objectId": null,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -10687,7 +10664,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": null,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,

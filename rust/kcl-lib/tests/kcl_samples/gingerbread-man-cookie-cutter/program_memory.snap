@@ -303,7 +303,6 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -385,7 +384,6 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,

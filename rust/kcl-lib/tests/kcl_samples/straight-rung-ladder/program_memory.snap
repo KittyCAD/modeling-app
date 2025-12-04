@@ -8,7 +8,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -144,7 +143,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "objectId": null,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -271,7 +269,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "objectId": null,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -443,7 +440,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 10.0,
             "y": 0.0,
@@ -538,7 +534,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 10.0,
         "y": 0.0,
@@ -644,7 +639,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 10.0,
           "y": 0.0,
@@ -817,7 +811,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 10.0,
                 "y": 0.0,
@@ -983,7 +976,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 10.0,
                 "y": 0.0,
@@ -1149,7 +1141,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 10.0,
                 "y": 0.0,
@@ -1315,7 +1306,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 10.0,
                 "y": 0.0,
@@ -1481,7 +1471,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 10.0,
                 "y": 0.0,
@@ -1652,7 +1641,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1789,7 +1777,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,

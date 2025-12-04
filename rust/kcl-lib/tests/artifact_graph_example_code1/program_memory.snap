@@ -143,7 +143,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -463,7 +462,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": null,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -672,7 +670,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -944,7 +941,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
