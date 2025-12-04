@@ -722,7 +722,7 @@ export class KclManager extends EventTarget {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(clearSelections = false): Promise<void> {
+  async executeCode(): Promise<void> {
     const ast = await this.safeParse(this.code)
 
     if (!ast) {
@@ -742,13 +742,6 @@ export class KclManager extends EventTarget {
 
       this.dispatchEvent(new CustomEvent(KclManagerEvents.LongExecution, {}))
     }, this.longExecutionTimeMs)
-
-    if (clearSelections) {
-      this._modelingSend({
-        type: 'Set selection',
-        data: { selection: undefined, selectionType: 'singleCodeCursor' },
-      })
-    }
 
     return this.executeAst({ ast })
   }
