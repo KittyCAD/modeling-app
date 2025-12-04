@@ -153,7 +153,10 @@ describe('modelingMachine.test.ts', () => {
       it('should start in the idle state', async () => {
         const contextCopied = generateModelingMachineDefaultContext(
           kclManagerInThisFile,
-          sceneInfraInThisFile
+          sceneInfraInThisFile,
+          rustContextInThisFile,
+          instanceInThisFile,
+          sceneEntitiesManagerInThisFile
         )
         contextCopied.engineCommandManager = engineCommandManagerInThisFile
         contextCopied.sceneInfra = sceneInfraInThisFile
@@ -939,7 +942,10 @@ p3 = [342.51, 216.38],
 
             const contextCopied = generateModelingMachineDefaultContext(
               kclManagerInThisFile,
-              sceneInfraInThisFile
+              sceneInfraInThisFile,
+              rustContextInThisFile,
+              instanceInThisFile,
+              sceneEntitiesManagerInThisFile
             )
             const kclEditorActor = createActor(kclEditorMachine).start()
 
@@ -1068,7 +1074,10 @@ p3 = [342.51, 216.38],
 
             const contextCopied = generateModelingMachineDefaultContext(
               kclManagerInThisFile,
-              sceneInfraInThisFile
+              sceneInfraInThisFile,
+              rustContextInThisFile,
+              instanceInThisFile,
+              sceneEntitiesManagerInThisFile
             )
             const kclEditorActor = createActor(kclEditorMachine).start()
 
@@ -1207,7 +1216,10 @@ p3 = [342.51, 216.38],
 
             const contextCopied = generateModelingMachineDefaultContext(
               kclManagerInThisFile,
-              sceneInfraInThisFile
+              sceneInfraInThisFile,
+              rustContextInThisFile,
+              instanceInThisFile,
+              sceneEntitiesManagerInThisFile
             )
             const kclEditorActor = createActor(kclEditorMachine).start()
 
@@ -1333,7 +1345,10 @@ p3 = [342.51, 216.38],
 
             const contextCopied = generateModelingMachineDefaultContext(
               kclManagerInThisFile,
-              sceneInfraInThisFile
+              sceneInfraInThisFile,
+              rustContextInThisFile,
+              instanceInThisFile,
+              sceneEntitiesManagerInThisFile
             )
             const kclEditorActor = createActor(kclEditorMachine).start()
 

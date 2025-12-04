@@ -40,6 +40,7 @@ import {
   getLayout,
   kclManager,
   rustContext,
+  sceneEntitiesManager,
   sceneInfra,
   setLayout,
   useLayout,
@@ -199,6 +200,7 @@ export const FeatureTreePaneContents = () => {
       input: {
         rustContext,
         kclManager,
+        sceneEntitiesManager,
       },
       // devTools: true,
     }

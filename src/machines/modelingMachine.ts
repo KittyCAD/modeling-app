@@ -14,8 +14,9 @@ import type {
   SketchTool,
   PlaneVisibilityMap,
   ModelingMachineContext,
+  ModelingMachineInput,
 } from '@src/machines/modelingSharedTypes'
-import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import { modelingMachineInitialInternalContext } from '@src/machines/modelingSharedContext'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
@@ -357,9 +358,10 @@ const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
 
 export const modelingMachine = setup({
   types: {
+    // We store everything in the input on context as well
     context: {} as ModelingMachineContext,
     events: {} as ModelingMachineEvent,
-    input: {} as ModelingMachineContext,
+    input: {} as ModelingMachineInput,
   },
   guards: {
     'should use new sketch mode': ({ context }) => {
@@ -3154,9 +3156,16 @@ export const modelingMachine = setup({
     ),
     deleteSelectionAstMod: fromPromise(
       ({
-        input: { selectionRanges },
+        input: { selectionRanges, systemDeps },
       }: {
-        input: { selectionRanges: Selections }
+        input: {
+          selectionRanges: Selections
+          systemDeps: {
+            kclManager: KclManager
+            rustContext: RustContext
+            sceneEntitiesManager: SceneEntities
+          }
+        }
       }) => {
         return new Promise((resolve, reject) => {
           if (!selectionRanges) {
@@ -3168,7 +3177,7 @@ export const modelingMachine = setup({
             reject(new Error(deletionErrorMessage))
           }
 
-          deleteSelectionPromise(selection)
+          deleteSelectionPromise({ selection, systemDeps })
             .then((result) => {
               if (err(result)) {
                 reject(result)
@@ -3816,8 +3825,12 @@ export const modelingMachine = setup({
   id: 'Modeling',
 
   context: ({ input }) => ({
-    ...modelingMachineDefaultContext,
+    ...modelingMachineInitialInternalContext,
     ...input,
+    store: {
+      ...modelingMachineInitialInternalContext.store,
+      ...input.store,
+    },
   }),
 
   states: {
@@ -5602,7 +5615,14 @@ export const modelingMachine = setup({
         id: 'deleteSelectionAstMod',
 
         input: ({ context }) => {
-          return { selectionRanges: context.selectionRanges }
+          return {
+            selectionRanges: context.selectionRanges,
+            systemDeps: {
+              kclManager: context.kclManager,
+              rustContext: context.rustContext,
+              sceneEntitiesManager: context.sceneEntitiesManager,
+            },
+          }
         },
 
         onDone: 'idle',

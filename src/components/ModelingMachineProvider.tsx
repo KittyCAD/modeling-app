@@ -106,7 +106,6 @@ import type {
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
 import { modelingMachine } from '@src/machines/modelingMachine'
-import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { useFolders } from '@src/machines/systemIO/hooks'
 
 import {
@@ -1295,16 +1294,15 @@ export const ModelingMachineProvider = ({
     }),
     {
       input: {
-        ...modelingMachineDefaultContext,
-        store: {
-          ...modelingMachineDefaultContext.store,
-          cameraProjection,
-          useNewSketchMode,
-        },
         machineManager,
-        sketchSolveToolName: null,
         kclManager,
         sceneInfra,
+        rustContext,
+        sceneEntitiesManager,
+        store: {
+          useNewSketchMode,
+          cameraProjection,
+        },
       },
       // devTools: true,
     }
