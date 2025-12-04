@@ -11,7 +11,7 @@ import {
 } from '@kittycad/react-shared'
 import { type BillingContext } from '@src/machines/billingMachine'
 import type { MlCopilotMode } from '@kittycad/lib'
-import { Popover, Transition } from '@headlessui/react'
+import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import type {
@@ -19,8 +19,9 @@ import type {
   Exchange,
 } from '@src/machines/mlEphantManagerMachine2'
 import type { ReactNode } from 'react'
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
+import { kclManager } from '@src/lib/singletons'
 
 const noop = () => {}
 
@@ -150,7 +151,10 @@ export interface MlEphantContextsProps {
 const MlCopilotSelectionsContext = (props: {
   selections: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
 }) => {
-  const selectionText = getSelectionTypeDisplayText(props.selections.data)
+  const selectionText = getSelectionTypeDisplayText(
+    kclManager.astSignal.value,
+    props.selections.data
+  )
   return selectionText ? (
     <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 pl-1 pr-2">
       <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
@@ -190,7 +194,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
             hoverOnly
             wrapperClassName="ui-open:!hidden"
           >
-            Text-to-CAD credits
+            Zookeeper credits
           </Tooltip>
         )}
       </Popover.Button>
@@ -291,7 +295,7 @@ export const MlEphantConversationInput = (
         </div>
       </div>
       <div className="text-3 text-xs">
-        Text-to-CAD can make mistakes. Always verify information.
+        Zookeeper can make mistakes. Always verify information.
       </div>
     </div>
   )
@@ -419,38 +423,3 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
     </div>
   )
 }
-
-export const MLEphantConversationPaneMenu2 = () => (
-  <Popover className="relative">
-    <Popover.Button className="p-0 !bg-transparent border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 ui-open:!border-primary dark:ui-open:!border-chalkboard-70 !outline-none">
-      <CustomIcon name="questionMark" className="w-5 h-5" />
-    </Popover.Button>
-
-    <Transition
-      enter="duration-100 ease-out"
-      enterFrom="opacity-0 -translate-y-2"
-      enterTo="opacity-100 translate-y-0"
-      as={Fragment}
-    >
-      <Popover.Panel className="w-max max-w-md z-10 bg-default flex flex-col gap-4 absolute top-full left-auto right-0 mt-1 p-4 border border-solid b-5 rounded shadow-lg">
-        <div className="flex gap-2 items-center">
-          <CustomIcon
-            name="beaker"
-            className="w-5 h-5 bg-ml-green dark:text-chalkboard-100 rounded-sm"
-          />
-          <p className="text-base font-bold">
-            <span className="dark:text-ml-green light:underline decoration-ml-green underline-offset-4">
-              Text-to-CAD
-            </span>{' '}
-            is experimental
-          </p>
-        </div>
-        <p className="text-sm">
-          Text-to-CAD is now conversational, so you can refer to previous
-          prompts and iterate. Conversations are not currently shared between
-          computers.
-        </p>
-      </Popover.Panel>
-    </Transition>
-  </Popover>
-)

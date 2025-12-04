@@ -8,6 +8,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { handleSelectionBatch } from '@src/lib/selections'
 import { uuidv4 } from '@src/lib/utils'
+import type { KclManager } from '@src/lang/KclManager'
 
 export const defaultSelectionFilter: EntityType[] = [
   'face',
@@ -20,6 +21,7 @@ export const defaultSelectionFilter: EntityType[] = [
 /** TODO: This function is not synchronous but is currently treated as such */
 export function setSelectionFilterToDefault(
   engineCommandManager: ConnectionManager,
+  kclManager: KclManager,
   selectionsToRestore?: Selections,
   handleSelectionBatchFn?: typeof handleSelectionBatch
 ) {
@@ -27,6 +29,7 @@ export function setSelectionFilterToDefault(
   setSelectionFilter(
     defaultSelectionFilter,
     engineCommandManager,
+    kclManager,
     selectionsToRestore,
     handleSelectionBatchFn
   )
@@ -36,6 +39,7 @@ export function setSelectionFilterToDefault(
 export function setSelectionFilter(
   filter: EntityType[],
   engineCommandManager: ConnectionManager,
+  kclManager: KclManager,
   selectionsToRestore?: Selections,
   handleSelectionBatchFn?: typeof handleSelectionBatch
 ) {
@@ -43,6 +47,9 @@ export function setSelectionFilter(
     selectionsToRestore && handleSelectionBatchFn
       ? handleSelectionBatchFn({
           selections: selectionsToRestore,
+          artifactGraph: kclManager.artifactGraph,
+          code: kclManager.code,
+          ast: kclManager.ast,
         })
       : { engineEvents: undefined }
 

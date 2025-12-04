@@ -274,7 +274,7 @@ function copyKclCodeToClipboard() {
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
-    useConvertToVariable()
+    useConvertToVariable(kclManager)
 
   return (
     <Menu>

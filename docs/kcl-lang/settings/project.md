@@ -102,13 +102,6 @@ Information about the project itself. Choices about how settings are merged have
 
 This setting has the following nested options:
 
-##### enable_zookeeper
-
-Enable the conversational agent in Text-to-CAD for this project.
-
-
-**Default:** None
-
 ##### id
 
 

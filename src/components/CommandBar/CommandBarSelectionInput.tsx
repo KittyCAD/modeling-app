@@ -34,7 +34,7 @@ function CommandBarSelectionInput({
   const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
-    return getSelectionCountByType(selection)
+    return getSelectionCountByType(kclManager.astSignal.value, selection)
   }, [selection])
   const isArgRequired =
     arg.required instanceof Function
@@ -158,7 +158,8 @@ function CommandBarSelectionInput({
         }
       >
         {canSubmitSelection
-          ? getSelectionTypeDisplayText(selection) + ' selected'
+          ? getSelectionTypeDisplayText(kclManager.astSignal.value, selection) +
+            ' selected'
           : `Please select ${
               arg.multiple ? 'one or more ' : 'one '
             }${getSemanticSelectionType(arg.selectionTypes).join(' or ')}`}

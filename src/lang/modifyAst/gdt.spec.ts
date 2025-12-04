@@ -78,12 +78,7 @@ async function getKclCommandValue(
   instance: ModuleType,
   rustContext: RustContext
 ) {
-  const result = await stringToKclExpression(
-    value,
-    undefined,
-    instance,
-    rustContext
-  )
+  const result = await stringToKclExpression(value, rustContext)
   if (err(result) || 'errors' in result) {
     throw new Error('Failed to create KCL expression')
   }
