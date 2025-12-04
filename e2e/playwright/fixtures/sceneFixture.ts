@@ -489,7 +489,13 @@ export class SceneFixture {
     height: number
   }> => {
     const box = await this.getBoundingBox(locator)
-    if (!box || box.width === undefined || box.height === undefined) {
+    if (
+      !box ||
+      box.width === undefined ||
+      box.height === undefined ||
+      box.x === undefined ||
+      box.y === undefined
+    ) {
       throw new Error(
         `Could not find element with locator "${locator}" or element has no dimensions`
       )
