@@ -14,10 +14,16 @@ import type { KclManager } from '@src/lang/KclManager'
 import {
   type ToolEvents,
   type ToolContext,
-  ADDING_POINT,
-  CONFIRMING_DIMENSIONS_EVENT,
   TOOL_ID,
   CONFIRMING_DIMENSIONS,
+  animateDraftSegmentListener,
+  addPointListener,
+  removePointListener,
+  sendResultToParent,
+  storePendingSketchOutcome,
+  sendStoredResultToParent,
+  sendDeleteResultToParentWithDebounce,
+  sendDeleteResultToParent,
 } from '@src/machines/sketchSolve/tools/lineToolImpl'
 
 export const machine = setup({
@@ -32,251 +38,10 @@ export const machine = setup({
     },
   },
   actions: {
-    'animate draft segment listener': ({ self, context }) => {
-      let isEditInProgress = false
-      context.sceneInfra.setCallbacks({
-        onMove: async (args) => {
-          if (!args || !context.draftPointId) return
-          const twoD = args.intersectionPoint?.twoD
-          if (twoD && !isEditInProgress) {
-            // Send the add point event with the clicked coordinates
-
-            const units = baseUnitToNumericSuffix(
-              context.kclManager.fileSettings.defaultLengthUnit
-            )
-            try {
-              isEditInProgress = true
-              const settings = await jsAppSettings()
-              // Note: twoD comes from intersectionPoint.unscaledTwoD which is in world coordinates, and always mm
-              const result = await context.rustContext.editSegments(
-                0,
-                context.sketchId,
-                [
-                  {
-                    id: context.draftPointId,
-                    ctor: {
-                      type: 'Point',
-                      position: {
-                        x: {
-                          type: 'Var',
-                          value: roundOff(twoD.x),
-                          units,
-                        },
-                        y: {
-                          type: 'Var',
-                          value: roundOff(twoD.y),
-                          units,
-                        },
-                      },
-                    },
-                  },
-                ],
-                settings
-              )
-              self._parent?.send({
-                type: 'update sketch outcome',
-                data: result,
-              })
-            } catch (err) {
-              console.error('failed to edit segment', err)
-            } finally {
-              isEditInProgress = false
-            }
-          }
-        },
-        onClick: async (args) => {
-          if (!args || !context.draftPointId) return
-          const twoD = args.intersectionPoint?.twoD
-          if (twoD) {
-            const isDoubleClick = args.mouseEvent.detail === 2
-            // Set pending double-click flag immediately if detected
-            if (isDoubleClick) {
-              self.send({
-                type: 'set pending double click',
-              })
-            }
-            self.send({
-              type: 'add point',
-              data: [twoD.x, twoD.y],
-              id: context.draftPointId,
-              isDoubleClick,
-            })
-          }
-        },
-      })
-    },
-    'add point listener': ({ self, context }) => {
-      context.sceneInfra.setCallbacks({
-        onClick: (args) => {
-          if (!args) return
-          if (args.mouseEvent.which !== 1) return // Only left click
-
-          const twoD = args.intersectionPoint?.twoD
-          if (twoD) {
-            const isDoubleClick = args.mouseEvent.detail === 2
-            // If it's a double-click, set the flag immediately BEFORE sending the event
-            // This ensures any pending operations from the first click will be cancelled
-            if (isDoubleClick) {
-              // Send the flag-setting event first, synchronously
-              self.send({ type: 'set pending double click' })
-            }
-            // Send the add point event with the clicked coordinates
-            self.send({
-              type: 'add point',
-              data: [twoD.x, twoD.y],
-              isDoubleClick,
-            })
-          }
-        },
-        onMove: () => {},
-      })
-    },
-    'remove point listener': ({ context }) => {
-      // Reset callbacks to remove the onClick and onMove listeners
-      context.sceneInfra.setCallbacks({
-        onClick: () => {},
-        onMove: () => {},
-      })
-    },
-    'send result to parent': assign(({ event, self }) => {
-      if (
-        event.type !== ADDING_POINT &&
-        event.type !== CONFIRMING_DIMENSIONS_EVENT
-      ) {
-        // Handle delete result or other events
-        if ('output' in event && event.output) {
-          const output = event.output as {
-            kclSource?: SourceDelta
-            sceneGraphDelta?: SceneGraphDelta
-            error?: string
-          }
-
-          if (output.error) {
-            return {}
-          }
-
-          // Send result to parent if we have valid data
-          if (output.kclSource && output.sceneGraphDelta) {
-            self._parent?.send({
-              type: 'update sketch outcome',
-              data: {
-                kclSource: output.kclSource,
-                sceneGraphDelta: output.sceneGraphDelta,
-              },
-            })
-          }
-        }
-        return {}
-      }
-
-      // Check if the output has a newLineEndPointId (from modAndSolve when chaining)
-      const output = event.output as {
-        kclSource?: SourceDelta
-        sceneGraphDelta?: SceneGraphDelta
-        newLineEndPointId?: number
-        error?: string
-      }
-
-      // If there's an error, don't update context
-      if (output.error) {
-        return {}
-      }
-
-      // Don't send result to parent here - we'll send it after checking double-click flag
-      // This prevents editor flicker by only updating once we know if we're keeping or deleting
-
-      // If we have a newLineEndPointId from chaining, use that as the draftPointId
-      if (output.newLineEndPointId !== undefined) {
-        // Find the line segment to get its end point ID for tracking
-        const lineId = [...output.sceneGraphDelta!.new_objects]
-          .reverse()
-          .find((objId) => {
-            const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-            if (!obj) return false
-            return (
-              obj.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
-            )
-          })
-
-        let lastLineEndPointId: number | undefined
-        if (lineId !== undefined) {
-          const lineObj = output.sceneGraphDelta!.new_graph.objects[lineId]
-          if (
-            lineObj?.kind.type === 'Segment' &&
-            lineObj.kind.segment.type === 'Line'
-          ) {
-            // The end point ID is stored in the Line segment
-            lastLineEndPointId = lineObj.kind.segment.end
-          }
-        }
-        return {
-          draftPointId: output.newLineEndPointId,
-          lastLineEndPointId,
-          sceneGraphDelta: output.sceneGraphDelta,
-        }
-      }
-
-      // For the first point creation, find the point ID normally
-      const pointIds =
-        output.sceneGraphDelta?.new_objects.filter((objId) => {
-          const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-          if (!obj) return false
-          return (
-            obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
-          )
-        }) || []
-
-      // The last point ID is the end point of the newly created line
-      const pointId = pointIds[pointIds.length - 1]
-
-      // Find the line segment to get its end point ID
-      const lineId = [...(output.sceneGraphDelta?.new_objects || [])]
-        .reverse()
-        .find((objId) => {
-          const obj = output.sceneGraphDelta!.new_graph.objects[objId]
-          if (!obj) return false
-          return obj.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
-        })
-
-      let lastLineEndPointId: number | undefined
-      if (lineId !== undefined && output.sceneGraphDelta) {
-        const lineObj = output.sceneGraphDelta.new_graph.objects[lineId]
-        if (
-          lineObj?.kind.type === 'Segment' &&
-          lineObj.kind.segment.type === 'Line'
-        ) {
-          // The end point ID is stored in the Line segment
-          lastLineEndPointId = lineObj.kind.segment.end
-        }
-      }
-
-      // Track entities created in first point creation for potential deletion on unequip
-      const entitiesToTrack: {
-        segmentIds: Array<number>
-        constraintIds: Array<number>
-      } = {
-        segmentIds: [],
-        constraintIds: [],
-      }
-
-      // Add point IDs and line ID to tracking
-      if (pointIds.length > 0 && output.sceneGraphDelta) {
-        entitiesToTrack.segmentIds.push(...pointIds)
-      }
-      if (lineId !== undefined) {
-        entitiesToTrack.segmentIds.push(lineId)
-      }
-
-      if (pointId !== undefined && output.sceneGraphDelta) {
-        return {
-          draftPointId: pointId,
-          lastLineEndPointId,
-          sceneGraphDelta: output.sceneGraphDelta,
-          newlyAddedSketchEntities: entitiesToTrack, // Track for potential deletion on unequip
-        }
-      }
-      return {}
-    }),
+    'animate draft segment listener': animateDraftSegmentListener,
+    'add point listener': addPointListener,
+    'remove point listener': removePointListener,
+    'send result to parent': assign(sendResultToParent),
   },
   actors: {
     modAndSolveFirstClick: fromPromise(
@@ -626,38 +391,7 @@ export const machine = setup({
 
         onDone: {
           target: 'check double click',
-          actions: [
-            assign(({ event }) => {
-              const output = event.output as {
-                kclSource?: SourceDelta
-                sceneGraphDelta?: SceneGraphDelta
-                newLineEndPointId?: number
-                newlyAddedEntities?: {
-                  segmentIds: Array<number>
-                  constraintIds: Array<number>
-                }
-                error?: string
-              }
-
-              const result: Partial<ToolContext> = {}
-
-              if (output.newlyAddedEntities) {
-                result.newlyAddedSketchEntities = output.newlyAddedEntities
-              }
-
-              // Store the result, but DON'T send it yet - we'll check the flag in 'check double click' state
-              // The key insight: if pendingDoubleClick is already true (set by the second click),
-              // we should delete this result instead of sending it
-              if (output.kclSource && output.sceneGraphDelta && !output.error) {
-                result.pendingSketchOutcome = {
-                  kclSource: output.kclSource,
-                  sceneGraphDelta: output.sceneGraphDelta,
-                }
-              }
-
-              return result
-            }),
-          ],
+          actions: [assign(storePendingSketchOutcome)],
         },
         onError: {
           target: 'unequipping',
@@ -674,22 +408,7 @@ export const machine = setup({
         {
           target: 'ShowDraftLine',
           actions: [
-            ({ context, self }) => {
-              // Send the stored result to parent (with new entities)
-              // Note: We only reach this action if pendingDoubleClick is false (the guard above routes
-              // double-clicks to the delete path). The debounceEditorUpdate flag allows the parent to
-              // cancel this update if a subsequent double-click is detected within the debounce window.
-              if (context.pendingSketchOutcome) {
-                self._parent?.send({
-                  type: 'update sketch outcome',
-                  data: {
-                    ...context.pendingSketchOutcome,
-                    debounceEditorUpdate: true, // Debounce to allow cancellation if double-click is detected
-                  },
-                })
-              }
-              return {}
-            },
+            sendStoredResultToParent,
             assign({
               pendingDoubleClick: undefined, // Clear the flag AFTER checking
               pendingSketchOutcome: undefined, // Clear after sending
@@ -723,26 +442,7 @@ export const machine = setup({
               lastLineEndPointId: undefined, // Clear on double-click to stop chaining
               pendingSketchOutcome: undefined, // Clear stored result
             }),
-            ({ event, self }) => {
-              // Send the delete result to parent (this removes the entities)
-              if ('output' in event && event.output) {
-                const output = event.output as {
-                  kclSource?: SourceDelta
-                  sceneGraphDelta?: SceneGraphDelta
-                }
-                if (output.kclSource && output.sceneGraphDelta) {
-                  self._parent?.send({
-                    type: 'update sketch outcome',
-                    data: {
-                      kclSource: output.kclSource,
-                      sceneGraphDelta: output.sceneGraphDelta,
-                      debounceEditorUpdate: true, // Debounce to allow cancellation if needed
-                    },
-                  })
-                }
-              }
-              return {}
-            },
+            sendDeleteResultToParentWithDebounce,
           ],
         },
         onError: {
@@ -837,25 +537,7 @@ export const machine = setup({
                 draftPointId: undefined, // Clear draftPointId so onMove won't try to edit deleted segment
                 deleteFromEscape: undefined, // Clear flag
               }),
-              ({ event, self }) => {
-                // Send the delete result to parent
-                if ('output' in event && event.output) {
-                  const output = event.output as {
-                    kclSource?: SourceDelta
-                    sceneGraphDelta?: SceneGraphDelta
-                  }
-                  if (output.kclSource && output.sceneGraphDelta) {
-                    self._parent?.send({
-                      type: 'update sketch outcome',
-                      data: {
-                        kclSource: output.kclSource,
-                        sceneGraphDelta: output.sceneGraphDelta,
-                      },
-                    })
-                  }
-                }
-                return {}
-              },
+              sendDeleteResultToParent,
             ],
           },
           {
@@ -867,25 +549,7 @@ export const machine = setup({
                 draftPointId: undefined, // Clear draftPointId so onMove won't try to edit deleted segment
                 deleteFromEscape: undefined, // Clear flag
               }),
-              ({ event, self }) => {
-                // Send the delete result to parent
-                if ('output' in event && event.output) {
-                  const output = event.output as {
-                    kclSource?: SourceDelta
-                    sceneGraphDelta?: SceneGraphDelta
-                  }
-                  if (output.kclSource && output.sceneGraphDelta) {
-                    self._parent?.send({
-                      type: 'update sketch outcome',
-                      data: {
-                        kclSource: output.kclSource,
-                        sceneGraphDelta: output.sceneGraphDelta,
-                      },
-                    })
-                  }
-                }
-                return {}
-              },
+              sendDeleteResultToParent,
             ],
           },
         ],
