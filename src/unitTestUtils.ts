@@ -20,6 +20,7 @@ import env from '@src/env'
 import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createActor } from 'xstate'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -81,6 +82,7 @@ export async function buildTheWorldAndConnectToEngine() {
     await instancePromise
   )
   sceneEntitiesManager.commandBarActor = commandBarActor
+  kclManager.sceneEntitiesManager = sceneEntitiesManager
 
   await new Promise((resolve) => {
     engineCommandManager
@@ -110,12 +112,19 @@ export async function buildTheWorldAndConnectToEngine() {
 }
 
 // Initialize all the singletons and the WASM blob but do not connect to the engine
-export async function buildTheWorldAndNoEngineConnection() {
-  const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
-  const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
+export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
+  async function loadWasm() {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
+    return instancePromise
+  }
+  const instancePromise = mockWasm
+    ? Promise.resolve({} as ModuleType)
+    : loadWasm()
   const engineCommandManager = new ConnectionManager()
   const rustContext = new RustContext(engineCommandManager, instancePromise)
   const sceneInfra = new SceneInfra(engineCommandManager)
+
   const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
     sceneInfra,
@@ -123,11 +132,19 @@ export async function buildTheWorldAndNoEngineConnection() {
   engineCommandManager.kclManager = kclManager
   engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
+  const sceneEntitiesManager = new SceneEntities(
+    engineCommandManager,
+    sceneInfra,
+    kclManager,
+    rustContext
+  )
+  kclManager.sceneEntitiesManager = sceneEntitiesManager
   return {
     instance: await instancePromise,
     engineCommandManager,
     rustContext,
     sceneInfra,
     kclManager,
+    sceneEntitiesManager,
   }
 }

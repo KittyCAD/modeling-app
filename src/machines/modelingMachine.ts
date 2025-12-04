@@ -1094,11 +1094,16 @@ export const modelingMachine = setup({
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': ({ context }) => {
-      context.kclManager.setSelectionFilter(['face', 'object'])
+      context.kclManager.setSelectionFilter(
+        ['face', 'object'],
+        context.sceneEntitiesManager
+      )
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to defaults': ({ context }) => {
-      context.kclManager.setSelectionFilterToDefault()
+      context.kclManager.setSelectionFilterToDefault(
+        context.sceneEntitiesManager
+      )
     },
     'Delete segments': ({
       context: {
@@ -1229,6 +1234,7 @@ export const modelingMachine = setup({
           selectionRanges,
           sketchDetails,
           engineCommandManager,
+          sceneEntitiesManager,
           kclManager,
           kclEditorMachine: providedKclEditorMachine,
         },
@@ -1352,6 +1358,10 @@ export const modelingMachine = setup({
               artifactGraph: kclManager.artifactGraph,
               code: kclManager.code,
               ast: kclManager.ast,
+              systemDeps: {
+                engineCommandManager,
+                sceneEntitiesManager,
+              },
             })
           if (codeMirrorSelection) {
             theKclEditorMachine.send({
@@ -1416,6 +1426,10 @@ export const modelingMachine = setup({
             artifactGraph: kclManager.artifactGraph,
             code: kclManager.code,
             ast: kclManager.ast,
+            systemDeps: {
+              engineCommandManager,
+              sceneEntitiesManager,
+            },
           })
           updateSceneObjectColors()
 

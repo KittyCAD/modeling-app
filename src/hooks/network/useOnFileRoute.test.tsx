@@ -9,6 +9,7 @@ import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { Connection } from '@src/network/connection'
 import { expect, vi, describe, test } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 const tick = () => {
   return new Promise((resolve, reject) => {
@@ -18,20 +19,14 @@ const tick = () => {
 
 describe('useOnFileRoute', () => {
   describe('after mount', () => {
-    test('should call unmount', () => {
+    test('should call unmount', async () => {
       const file: FileEntry = {
         path: '/application/project-001/main.kcl',
         name: 'main.kcl',
         children: null,
       }
-      const engineCommandManager = new ConnectionManager()
-      const initWasmMock = Promise.resolve({} as ModuleType)
-      const rustContext = new RustContext(engineCommandManager, initWasmMock)
-      const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, initWasmMock, {
-        rustContext,
-        sceneInfra,
-      })
+      const { engineCommandManager, sceneInfra, kclManager } =
+        await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() => {
         useOnFileRoute({
           file,

@@ -123,6 +123,8 @@ const OVERLAY_TIMEOUT_MS = 1_000
 // Defined outside of React to prevent rerenders
 const systemDeps = {
   sceneInfra,
+  rustContext,
+  sceneEntitiesManager,
 }
 
 export const ModelingMachineContext = createContext(
@@ -1555,7 +1557,10 @@ export const ModelingMachineProvider = ({
       if (!inSketchMode) return
 
       e.preventDefault()
-      const selection = selectAllInCurrentSketch(kclManager.artifactGraph)
+      const selection = selectAllInCurrentSketch(
+        kclManager.artifactGraph,
+        systemDeps
+      )
       modelingSend({
         type: 'Set selection',
         data: { selectionType: 'completeSelection', selection },

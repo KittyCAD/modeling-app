@@ -97,7 +97,9 @@ export const ConnectionStream = (props: {
     if (sceneInfra.camControls.wasDragging === true) return
 
     if (btnName(e.nativeEvent).left) {
-      sendSelectEventToEngine(e, videoRef.current).catch(reportRejection)
+      sendSelectEventToEngine(e, videoRef.current, {
+        engineCommandManager,
+      }).catch(reportRejection)
     }
   }
 
@@ -118,7 +120,9 @@ export const ConnectionStream = (props: {
       return
     }
 
-    sendSelectEventToEngine(e, videoRef.current)
+    sendSelectEventToEngine(e, videoRef.current, {
+      engineCommandManager,
+    })
       .then((result) => {
         if (!result) {
           return
