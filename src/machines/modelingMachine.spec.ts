@@ -151,8 +151,10 @@ describe('modelingMachine.test.ts', () => {
   describe('modelingMachine - XState', () => {
     describe('when initialized', () => {
       it('should start in the idle state', async () => {
-        const contextCopied =
-          generateModelingMachineDefaultContext(kclManagerInThisFile)
+        const contextCopied = generateModelingMachineDefaultContext(
+          kclManagerInThisFile,
+          sceneInfraInThisFile
+        )
         contextCopied.engineCommandManager = engineCommandManagerInThisFile
         contextCopied.sceneInfra = sceneInfraInThisFile
         contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
@@ -935,8 +937,10 @@ p3 = [342.51, 216.38],
               )
             }
 
-            const contextCopied =
-              generateModelingMachineDefaultContext(kclManagerInThisFile)
+            const contextCopied = generateModelingMachineDefaultContext(
+              kclManagerInThisFile,
+              sceneInfraInThisFile
+            )
             const kclEditorActor = createActor(kclEditorMachine).start()
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
@@ -1062,8 +1066,10 @@ p3 = [342.51, 216.38],
               )
             }
 
-            const contextCopied =
-              generateModelingMachineDefaultContext(kclManagerInThisFile)
+            const contextCopied = generateModelingMachineDefaultContext(
+              kclManagerInThisFile,
+              sceneInfraInThisFile
+            )
             const kclEditorActor = createActor(kclEditorMachine).start()
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
@@ -1199,8 +1205,10 @@ p3 = [342.51, 216.38],
               )
             }
 
-            const contextCopied =
-              generateModelingMachineDefaultContext(kclManagerInThisFile)
+            const contextCopied = generateModelingMachineDefaultContext(
+              kclManagerInThisFile,
+              sceneInfraInThisFile
+            )
             const kclEditorActor = createActor(kclEditorMachine).start()
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
@@ -1323,8 +1331,10 @@ p3 = [342.51, 216.38],
               )
             }
 
-            const contextCopied =
-              generateModelingMachineDefaultContext(kclManagerInThisFile)
+            const contextCopied = generateModelingMachineDefaultContext(
+              kclManagerInThisFile,
+              sceneInfraInThisFile
+            )
             const kclEditorActor = createActor(kclEditorMachine).start()
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile

@@ -1,9 +1,10 @@
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 
 export const modelingMachineDefaultContext: Omit<
   ModelingMachineContext,
-  'kclManager'
+  'kclManager' | 'sceneInfra'
 > = {
   currentMode: 'modeling',
   currentTool: 'none',
@@ -43,7 +44,10 @@ export const modelingMachineDefaultContext: Omit<
   sketchSolveTool: null,
 }
 
-export function generateModelingMachineDefaultContext(kclManager: KclManager) {
+export function generateModelingMachineDefaultContext(
+  kclManager: KclManager,
+  sceneInfra: SceneInfra
+) {
   const context: ModelingMachineContext = {
     currentMode: 'modeling',
     currentTool: 'none',
@@ -82,6 +86,7 @@ export function generateModelingMachineDefaultContext(kclManager: KclManager) {
     sketchSolveTool: null,
     sketchSolveToolName: null,
     kclManager,
+    sceneInfra,
   }
   return context
 }

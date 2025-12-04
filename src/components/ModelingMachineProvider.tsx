@@ -1304,6 +1304,7 @@ export const ModelingMachineProvider = ({
         machineManager,
         sketchSolveToolName: null,
         kclManager,
+        sceneInfra,
       },
       // devTools: true,
     }

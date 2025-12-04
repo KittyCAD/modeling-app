@@ -140,7 +140,6 @@ import {
   engineCommandManager,
   rustContext,
   sceneEntitiesManager,
-  sceneInfra,
 } from '@src/lib/singletons'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
@@ -769,7 +768,7 @@ export const modelingMachine = setup({
       context: {
         sketchDetails,
         sceneEntitiesManager: providedSceneEntitiesManager,
-        sceneInfra: providedSceneInfra,
+        sceneInfra,
       },
     }) => {
       if (!sketchDetails) return
@@ -781,7 +780,6 @@ export const modelingMachine = setup({
       const theSceneEntitiesManager = providedSceneEntitiesManager
         ? providedSceneEntitiesManager
         : sceneEntitiesManager
-      const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
       // Position the click raycast plane
 
       theSceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
@@ -791,7 +789,7 @@ export const modelingMachine = setup({
         new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
-      theSceneInfra.setCallbacks({
+      sceneInfra.setCallbacks({
         onMove: (args) => {
           listenForOriginMove(args, sketchDetails, theSceneEntitiesManager)
         },
@@ -801,7 +799,7 @@ export const modelingMachine = setup({
           if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
-            theSceneInfra.modelingSend({
+            sceneInfra.modelingSend({
               type: 'click in scene',
               data: theSceneEntitiesManager.getSnappedDragPoint(
                 twoD,
@@ -820,7 +818,7 @@ export const modelingMachine = setup({
       context: {
         sketchDetails,
         sceneEntitiesManager: providedSceneEntitiesManager,
-        sceneInfra: providedSceneInfra,
+        sceneInfra,
       },
     }) => {
       if (!sketchDetails) return
@@ -831,7 +829,6 @@ export const modelingMachine = setup({
       const theSceneEntitiesManager = providedSceneEntitiesManager
         ? providedSceneEntitiesManager
         : sceneEntitiesManager
-      const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
       // Position the click raycast plane
 
       theSceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
@@ -841,7 +838,7 @@ export const modelingMachine = setup({
         new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
-      theSceneInfra.setCallbacks({
+      sceneInfra.setCallbacks({
         onMove: (args) => {
           listenForOriginMove(args, sketchDetails, theSceneEntitiesManager)
         },
@@ -851,7 +848,7 @@ export const modelingMachine = setup({
           if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
-            theSceneInfra.modelingSend({
+            sceneInfra.modelingSend({
               type: 'Add center rectangle origin',
               data: theSceneEntitiesManager.getSnappedDragPoint(
                 twoD,
@@ -870,7 +867,7 @@ export const modelingMachine = setup({
       context: {
         sketchDetails,
         sceneEntitiesManager: providedSceneEntitiesManager,
-        sceneInfra: providedSceneInfra,
+        sceneInfra,
       },
     }) => {
       if (!sketchDetails) return
@@ -881,7 +878,6 @@ export const modelingMachine = setup({
       const theSceneEntitiesManager = providedSceneEntitiesManager
         ? providedSceneEntitiesManager
         : sceneEntitiesManager
-      const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
       // Position the click raycast plane
 
       theSceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
@@ -891,7 +887,7 @@ export const modelingMachine = setup({
         new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
-      theSceneInfra.setCallbacks({
+      sceneInfra.setCallbacks({
         onMove: (args) => {
           listenForOriginMove(args, sketchDetails, theSceneEntitiesManager)
         },
@@ -902,7 +898,7 @@ export const modelingMachine = setup({
           if (!intersectionPoint?.twoD) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
-            theSceneInfra.modelingSend({
+            sceneInfra.modelingSend({
               type: 'Add circle origin',
               data: theSceneEntitiesManager.getSnappedDragPoint(
                 twoD,
@@ -920,7 +916,7 @@ export const modelingMachine = setup({
       context: {
         sketchDetails,
         sceneEntitiesManager: providedSceneEntitiesManager,
-        sceneInfra: providedSceneInfra,
+        sceneInfra,
       },
     }) => {
       if (!sketchDetails) return
@@ -931,7 +927,6 @@ export const modelingMachine = setup({
       const theSceneEntitiesManager = providedSceneEntitiesManager
         ? providedSceneEntitiesManager
         : sceneEntitiesManager
-      const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
       // Position the click raycast plane
 
       theSceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
@@ -941,7 +936,7 @@ export const modelingMachine = setup({
         new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
-      theSceneInfra.setCallbacks({
+      sceneInfra.setCallbacks({
         onMove: (args) => {
           listenForOriginMove(args, sketchDetails, theSceneEntitiesManager)
         },
@@ -952,7 +947,7 @@ export const modelingMachine = setup({
           if (!intersectionPoint?.twoD) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
-            theSceneInfra.modelingSend({
+            sceneInfra.modelingSend({
               type: 'Add first point',
               data: theSceneEntitiesManager.getSnappedDragPoint(
                 twoD,
@@ -970,7 +965,7 @@ export const modelingMachine = setup({
       context: {
         sketchDetails,
         sceneEntitiesManager: providedSceneEntitiesManager,
-        sceneInfra: providedSceneInfra,
+        sceneInfra,
       },
       event,
     }) => {
@@ -983,7 +978,6 @@ export const modelingMachine = setup({
       const theSceneEntitiesManager = providedSceneEntitiesManager
         ? providedSceneEntitiesManager
         : sceneEntitiesManager
-      const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
       // Position the click raycast plane
 
       theSceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
@@ -995,19 +989,19 @@ export const modelingMachine = setup({
 
       const dummy = new Mesh()
       dummy.position.set(0, 0, 0)
-      const scale = theSceneInfra.getClientSceneScaleFactor(dummy)
+      const scale = sceneInfra.getClientSceneScaleFactor(dummy)
       const position = new Vector3(event.data[0], event.data[1], 0)
       position.applyQuaternion(quaternion)
       const draftPoint = createProfileStartHandle({
         isDraft: true,
         from: event.data,
         scale,
-        theme: theSceneInfra.theme,
+        theme: sceneInfra.theme,
       })
       draftPoint.position.copy(position)
-      theSceneInfra.scene.add(draftPoint)
+      sceneInfra.scene.add(draftPoint)
 
-      theSceneInfra.setCallbacks({
+      sceneInfra.setCallbacks({
         onMove: (args) => {
           listenForOriginMove(args, sketchDetails, theSceneEntitiesManager)
         },
@@ -1018,7 +1012,7 @@ export const modelingMachine = setup({
           if (!intersectionPoint?.twoD) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
-            theSceneInfra.modelingSend({
+            sceneInfra.modelingSend({
               type: 'Add second point',
               data: {
                 p1: event.data,
@@ -1108,19 +1102,18 @@ export const modelingMachine = setup({
         sketchDetails,
         currentTool,
         sceneEntitiesManager: providedSceneEntitiesManager,
-        sceneInfra: providedSceneInfra,
+        sceneInfra,
       },
     }) => {
       if (!sketchDetails) return
       const theSceneEntitiesManager = providedSceneEntitiesManager
         ? providedSceneEntitiesManager
         : sceneEntitiesManager
-      const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
       theSceneEntitiesManager.setupNoPointsListener({
         sketchDetails,
         currentTool,
         afterClick: (_, data) =>
-          theSceneInfra.modelingSend(
+          sceneInfra.modelingSend(
             currentTool === 'tangentialArc'
               ? { type: 'Continue existing profile', data }
               : { type: 'Add start point', data }
@@ -1157,12 +1150,10 @@ export const modelingMachine = setup({
     'reset client scene mouse handlers': ({ context }) => {
       // when not in sketch mode we don't need any mouse listeners
       // (note the orbit controls are always active though)
-      const theSceneInfra = context.sceneInfra ? context.sceneInfra : sceneInfra
-      theSceneInfra.resetMouseListeners()
+      context.sceneInfra.resetMouseListeners()
     },
     'clientToEngine cam sync direction': ({ context }) => {
-      const theSceneInfra = context.sceneInfra ? context.sceneInfra : sceneInfra
-      theSceneInfra.camControls.syncDirection = 'clientToEngine'
+      context.sceneInfra.camControls.syncDirection = 'clientToEngine'
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': ({ context }) => {
@@ -1179,7 +1170,7 @@ export const modelingMachine = setup({
         wasmInstance,
         rustContext: providedRustContext,
         sceneEntitiesManager: providedSceneEntitiesManager,
-        sceneInfra: providedSceneInfra,
+        sceneInfra,
       },
       event,
     }) => {
@@ -1191,7 +1182,6 @@ export const modelingMachine = setup({
       const theSceneEntitiesManager = providedSceneEntitiesManager
         ? providedSceneEntitiesManager
         : sceneEntitiesManager
-      const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deleteSegmentsOrProfiles({
         pathToNodes: event.data,
@@ -1201,7 +1191,7 @@ export const modelingMachine = setup({
           wasmInstance,
           rustContext: theRustContext,
           sceneEntitiesManager: theSceneEntitiesManager,
-          sceneInfra: theSceneInfra,
+          sceneInfra,
         },
       })
         .then(() => {
@@ -1215,15 +1205,14 @@ export const modelingMachine = setup({
           console.warn('error', e)
         })
     },
-    'remove draft entities': ({ context }) => {
-      const theSceneInfra = context.sceneInfra ? context.sceneInfra : sceneInfra
-      const draftPoint = theSceneInfra.scene.getObjectByName(DRAFT_POINT)
+    'remove draft entities': ({ context: { sceneInfra } }) => {
+      const draftPoint = sceneInfra.scene.getObjectByName(DRAFT_POINT)
       if (draftPoint) {
-        theSceneInfra.scene.remove(draftPoint)
+        sceneInfra.scene.remove(draftPoint)
       }
-      const draftLine = theSceneInfra.scene.getObjectByName(DRAFT_DASHED_LINE)
+      const draftLine = sceneInfra.scene.getObjectByName(DRAFT_DASHED_LINE)
       if (draftLine) {
-        theSceneInfra.scene.remove(draftLine)
+        sceneInfra.scene.remove(draftLine)
       }
     },
     'add draft line': ({ event, context }) => {
@@ -1236,7 +1225,7 @@ export const modelingMachine = setup({
       const theSceneEntitiesManager = context.sceneEntitiesManager
         ? context.sceneEntitiesManager
         : sceneEntitiesManager
-      const theSceneInfra = context.sceneInfra ? context.sceneInfra : sceneInfra
+      const sceneInfra = context.sceneInfra
       let sketchEntryNodePath: PathToNode | undefined
 
       if (event.type === 'Add start point') {
@@ -1267,9 +1256,9 @@ export const modelingMachine = setup({
         from: to,
         to: [to[0] + 0.001, to[1] + 0.001],
       })
-      theSceneInfra.scene.add(group)
-      const orthoFactor = orthoScale(theSceneInfra.camControls.camera)
-      theSceneInfra.setCallbacks({
+      sceneInfra.scene.add(group)
+      const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+      sceneInfra.setCallbacks({
         onMove: (args) => {
           const { intersectionPoint } = args
           if (!intersectionPoint?.twoD) return
@@ -1618,9 +1607,7 @@ export const modelingMachine = setup({
         const theEngineCommandManager = context.engineCommandManager
           ? context.engineCommandManager
           : engineCommandManager
-        const theSceneInfra = context.sceneInfra
-          ? context.sceneInfra
-          : sceneInfra
+        const sceneInfra = context.sceneInfra
         const theSceneEntitiesManager = context.sceneEntitiesManager
           ? context.sceneEntitiesManager
           : sceneEntitiesManager
@@ -1632,13 +1619,13 @@ export const modelingMachine = setup({
           cmd: { type: 'sketch_mode_disable' },
         })
 
-        theSceneInfra.camControls.syncDirection = 'clientToEngine'
+        sceneInfra.camControls.syncDirection = 'clientToEngine'
 
         if (store.cameraProjection?.current === 'perspective') {
-          await theSceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+          await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
         }
 
-        theSceneInfra.camControls.syncDirection = 'engineToClient'
+        sceneInfra.camControls.syncDirection = 'engineToClient'
 
         // TODO: Re-evaluate if this pause/play logic is needed.
         // TODO: Do I need this video element?
@@ -1661,9 +1648,9 @@ export const modelingMachine = setup({
           .catch(reportRejection)
         theSceneEntitiesManager.tearDownSketch({ removeAxis: false })
         theSceneEntitiesManager.removeSketchGrid()
-        theSceneInfra.camControls.syncDirection = 'engineToClient'
+        sceneInfra.camControls.syncDirection = 'engineToClient'
         theSceneEntitiesManager.resetOverlays()
-        theSceneInfra.stop()
+        sceneInfra.stop()
       }
     ),
     /* Below are all the do-constrain sketch actors,
@@ -2305,7 +2292,7 @@ export const modelingMachine = setup({
         input: {
           sketchDetails,
           selectionRanges,
-          sceneInfra: providedSceneInfra,
+          sceneInfra,
           sceneEntitiesManager: providedSceneEntitiesManager,
           kclManager: providedKclManager,
           wasmInstance,
@@ -2314,7 +2301,7 @@ export const modelingMachine = setup({
         input: {
           sketchDetails: SketchDetails | null
           selectionRanges: Selections
-          sceneInfra?: SceneInfra
+          sceneInfra: SceneInfra
           sceneEntitiesManager?: SceneEntities
           kclManager: KclManager
           wasmInstance?: ModuleType
@@ -2323,16 +2310,13 @@ export const modelingMachine = setup({
         if (!sketchDetails) {
           return
         }
-        const theSceneInfra = providedSceneInfra
-          ? providedSceneInfra
-          : sceneInfra
         const theSceneEntitiesManager = providedSceneEntitiesManager
           ? providedSceneEntitiesManager
           : sceneEntitiesManager
         if (!sketchDetails.sketchEntryNodePath?.length) {
           // When unequipping eg. the three-point arc tool during placement of the 3rd point, sketchEntryNodePath is
           // empty if its the first profile in a sketch, but we still need to tear down and cancel the current tool properly.
-          theSceneInfra.resetMouseListeners()
+          sceneInfra.resetMouseListeners()
           theSceneEntitiesManager.tearDownSketch({ removeAxis: false })
           return
         }
@@ -2347,7 +2331,7 @@ export const modelingMachine = setup({
           selectionRanges,
           wasmInstance,
         })
-        theSceneInfra.resetMouseListeners()
+        sceneInfra.resetMouseListeners()
 
         theSceneEntitiesManager.setupSketchIdleCallbacks({
           sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
@@ -2374,6 +2358,7 @@ export const modelingMachine = setup({
           kclManager: providedKclManager,
           engineCommandManager: providedEngineCommandManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
+          sceneInfra,
         },
       }: {
         input: {
@@ -2381,6 +2366,7 @@ export const modelingMachine = setup({
           kclManager: KclManager
           engineCommandManager?: ConnectionManager
           sceneEntitiesManager?: SceneEntities
+          sceneInfra: SceneInfra
         }
       }): Promise<ModelingMachineContext['sketchDetails']> => {
         const theEngineCommandManager = providedEngineCommandManager
@@ -3841,8 +3827,8 @@ export const modelingMachine = setup({
           {
             target: 'animating to existing sketch',
             actions: [
-              () => {
-                sceneInfra.animate()
+              ({ context }) => {
+                context.sceneInfra.animate()
               },
             ],
             guard: 'Selection is on face',
@@ -3850,8 +3836,8 @@ export const modelingMachine = setup({
           {
             target: 'Sketch no face',
             actions: [
-              () => {
-                sceneInfra.animate()
+              ({ context }) => {
+                context.sceneInfra.animate()
               },
             ],
           },
@@ -5359,6 +5345,7 @@ export const modelingMachine = setup({
           kclManager: context.kclManager,
           engineCommandManager: context.engineCommandManager,
           sceneEntitiesManager: context.sceneEntitiesManager,
+          sceneInfra: context.sceneInfra,
         }),
 
         onDone: {
@@ -5914,8 +5901,8 @@ export const modelingMachine = setup({
         'reset sketch metadata',
         'enable copilot',
         'enter modeling mode',
-        () => {
-          sceneInfra.stop()
+        ({ context }) => {
+          context.sceneInfra.stop()
         },
       ],
     },

@@ -218,7 +218,7 @@ export interface ModelingMachineContext {
   sketchSolveTool: EquipTool | null
   kclManager: KclManager
   engineCommandManager?: ConnectionManager
-  sceneInfra?: SceneInfra
+  sceneInfra: SceneInfra
   sceneEntitiesManager?: SceneEntities
   wasmInstance?: ModuleType
   kclEditorMachine?: ActorRefFrom<typeof kclEditorMachine>
