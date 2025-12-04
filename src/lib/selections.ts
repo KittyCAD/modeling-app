@@ -926,7 +926,8 @@ export function getDefaultSketchPlaneData(
   }
 }
 export async function getPlaneDataFromSketchBlock(
-  sketchBlock: Extract<Artifact, { type: 'sketchBlock' }>
+  sketchBlock: Extract<Artifact, { type: 'sketchBlock' }>,
+  artifactGraph: ArtifactGraph
 ): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane | null> {
   // TODO this function is stubbed out for now since sketchBlocks really only work on default planes
   // and I don't think we have enough info or the sketchBlock.planeId is wrong, so it just default to the
@@ -938,7 +939,7 @@ export async function getPlaneDataFromSketchBlock(
   }
 
   // Try to get the artifact from the graph
-  const artifact = kclManager.artifactGraph.get(sketchBlock.planeId)
+  const artifact = artifactGraph.get(sketchBlock.planeId)
 
   // If artifact doesn't exist in the graph, fallback to default XY plane
   // This is a temporary solution while we determine the proper approach for default planes

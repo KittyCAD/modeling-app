@@ -650,7 +650,10 @@ export const ModelingMachineProvider = ({
             }
 
             // Get plane/face data from the sketchBlock
-            const planeData = await getPlaneDataFromSketchBlock(artifact)
+            const planeData = await getPlaneDataFromSketchBlock(
+              artifact,
+              kclManager.artifactGraph
+            )
             if (!planeData) {
               console.trace('yo!!')
 
