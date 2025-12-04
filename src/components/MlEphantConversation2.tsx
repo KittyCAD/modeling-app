@@ -194,7 +194,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
             hoverOnly
             wrapperClassName="ui-open:!hidden"
           >
-            Zookeeper credits
+            Text-to-CAD credits
           </Tooltip>
         )}
       </Popover.Button>
