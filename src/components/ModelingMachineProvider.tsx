@@ -1319,6 +1319,8 @@ export const ModelingMachineProvider = ({
       toggle(DefaultLayoutPaneID.Variables)
     } else if (data.menuLabel === 'View.Panes.Logs') {
       toggle(DefaultLayoutPaneID.Logs)
+    } else if (data.menuLabel === 'View.Panes.Zookeeper') {
+      toggle(DefaultLayoutPaneID.TTC)
     } else if (data.menuLabel === 'Design.Start sketch') {
       modelingSend({
         type: 'Enter sketch',
@@ -1338,7 +1340,6 @@ export const ModelingMachineProvider = ({
     kclManager.isExecutingSignal.value,
     isStreamReady,
     [
-      { menuLabel: 'Edit.Modify with Zoo Text-To-CAD' },
       { menuLabel: 'View.Standard views' },
       { menuLabel: 'View.Named views' },
       { menuLabel: 'Design.Start sketch' },
@@ -1385,11 +1386,6 @@ export const ModelingMachineProvider = ({
       {
         menuLabel: 'Design.Apply modification feature.Shell',
         commandName: 'Shell',
-        groupId: 'modeling',
-      },
-      {
-        menuLabel: 'Design.Modify with Zoo Text-To-CAD',
-        commandName: 'Prompt-to-edit',
         groupId: 'modeling',
       },
     ]

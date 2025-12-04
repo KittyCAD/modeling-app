@@ -16,7 +16,6 @@ import {
   appActor,
   commandBarActor,
   kclManager,
-  mlEphantManagerActor,
   systemIOActor,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -36,9 +35,7 @@ initPromise
     commandBarActor.send({
       type: 'Add commands',
       data: {
-        commands: [
-          ...createApplicationCommands({ systemIOActor, mlEphantManagerActor }),
-        ],
+        commands: [...createApplicationCommands({ systemIOActor })],
       },
     })
   })
