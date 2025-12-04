@@ -205,7 +205,7 @@ export function updateSegmentGroup({
   }
 
   if (input.type === 'Point') {
-    void segmentUtilsMap.PointSegment.update({
+    segmentUtilsMap.PointSegment.update({
       input,
       theme,
       scale,
@@ -214,7 +214,7 @@ export function updateSegmentGroup({
       selectedIds,
     })
   } else if (input.type === 'Line') {
-    void segmentUtilsMap.LineSegment.update({
+    segmentUtilsMap.LineSegment.update({
       input,
       theme,
       scale,
