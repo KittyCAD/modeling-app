@@ -89,9 +89,9 @@ updates:
     cooldown:
       default-days: 7
       exclude:
-        - *kcl*
-        - *zoo*
-        - *kittycad*
+        - "*kcl*"
+        - "*zoo*"
+        - "*kittycad*"
   - package-ecosystem: cargo
     directory: /rust/kcl-lib/fuzz
     schedule:
@@ -136,9 +136,9 @@ updates:
     cooldown:
       default-days: 7
       exclude:
-        - *kcl*
-        - *zoo*
-        - *kittycad*
+        - "*kcl*"
+        - "*zoo*"
+        - "*kittycad*"
   - package-ecosystem: npm
     directory: /
     schedule:
@@ -183,9 +183,9 @@ updates:
     cooldown:
       default-days: 7
       exclude:
-        - *kcl*
-        - *zoo*
-        - *kittycad*
+        - "*kcl*"
+        - "*zoo*"
+        - "*kittycad*"
   - package-ecosystem: npm
     directory: /packages/codemirror-lang-kcl
     schedule:
@@ -230,9 +230,9 @@ updates:
     cooldown:
       default-days: 7
       exclude:
-        - *kcl*
-        - *zoo*
-        - *kittycad*
+        - "*kcl*"
+        - "*zoo*"
+        - "*kittycad*"
   - package-ecosystem: npm
     directory: /rust/kcl-language-server
     schedule:
@@ -277,9 +277,9 @@ updates:
     cooldown:
       default-days: 7
       exclude:
-        - *kcl*
-        - *zoo*
-        - *kittycad*
+        - "*kcl*"
+        - "*zoo*"
+        - "*kittycad*"
   - package-ecosystem: npm
     directory: /public/fonts/source-code-pro
     schedule:
@@ -324,9 +324,9 @@ updates:
     cooldown:
       default-days: 7
       exclude:
-        - *kcl*
-        - *zoo*
-        - *kittycad*
+        - "*kcl*"
+        - "*zoo*"
+        - "*kittycad*"
   - package-ecosystem: npm
     directory: /packages/codemirror-lsp-client
     schedule:
@@ -371,9 +371,9 @@ updates:
     cooldown:
       default-days: 7
       exclude:
-        - *kcl*
-        - *zoo*
-        - *kittycad*
+        - "*kcl*"
+        - "*zoo*"
+        - "*kittycad*"
   - package-ecosystem: npm
     directory: /.github/actions/github-release
     schedule:
@@ -418,9 +418,9 @@ updates:
     cooldown:
       default-days: 7
       exclude:
-        - *kcl*
-        - *zoo*
-        - *kittycad*
+        - "*kcl*"
+        - "*zoo*"
+        - "*kittycad*"
   - package-ecosystem: pip
     directory: /rust/kcl-python-bindings
     schedule:
@@ -465,9 +465,9 @@ updates:
     cooldown:
       default-days: 7
       exclude:
-        - *kcl*
-        - *zoo*
-        - *kittycad*
+        - "*kcl*"
+        - "*zoo*"
+        - "*kittycad*"
   - package-ecosystem: docker
     directory: /.github/actions/github-release
     schedule:
@@ -512,6 +512,6 @@ updates:
     cooldown:
       default-days: 7
       exclude:
-        - *kcl*
-        - *zoo*
-        - *kittycad*
+        - "*kcl*"
+        - "*zoo*"
+        - "*kittycad*"
