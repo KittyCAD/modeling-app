@@ -12,6 +12,8 @@ import { warningLevels } from '@src/lib/settings/settingsTypes'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
+import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
+import Tooltip from '@src/components/Tooltip'
 
 export function ExperimentalFeaturesMenu() {
   const currentLevel: WarningLevel =
@@ -20,19 +22,17 @@ export function ExperimentalFeaturesMenu() {
 
   return (
     currentLevel.type !== 'Deny' && (
-      <Popover className="relative pointer-events-auto">
+      <Popover className="relative pointer-events-auto flex">
         {({ close }) => (
           <>
             <Popover.Button
               data-testid="experimental-features-menu"
-              className={`flex items-center gap-2 px-1 py-1 
-        text-xs text-primary bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm 
-        border !border-primary/50 rounded-full`}
+              className={`${defaultStatusBarItemClassNames} gap-2 m-0`}
             >
               <CustomIcon name="beaker" className="w-4 h-4" />
-              <span className="sr-only">
+              <Tooltip hoverOnly={true} position="top-right">
                 Experimental features:&nbsp; {currentLevel.type}
-              </span>
+              </Tooltip>
             </Popover.Button>
             <Popover.Panel
               className={`absolute bottom-full right-0 mb-2 w-48 bg-chalkboard-10 dark:bg-chalkboard-90

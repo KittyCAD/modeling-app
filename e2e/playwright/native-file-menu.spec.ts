@@ -394,6 +394,13 @@ test.describe(
         const isPressed = await button.getAttribute('aria-pressed')
         expect(isPressed).toBe('true')
       })
+      await test.step('Modeling.View.Panes.Zookeeper', async () => {
+        await page.waitForTimeout(250)
+        await clickElectronNativeMenuById(tronApp, 'View.Panes.Zookeeper')
+        const button = page.getByTestId('ttc-pane-button')
+        const isPressed = await button.getAttribute('aria-pressed')
+        expect(isPressed).toBe('true')
+      })
       await test.step('Modeling.Design.Create an offset plane', async () => {
         await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
