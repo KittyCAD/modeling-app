@@ -93,12 +93,9 @@ impl TcpRead {
             WsMsg::Text(text) => serde_json::from_str(&text)
                 .map_err(anyhow::Error::from)
                 .map_err(WebSocketReadError::from)?,
-            WsMsg::Binary(bin) => match rmp_serde::from_slice(&bin) {
-                Ok(resp) => resp,
-                Err(_) => bson::from_slice(&bin)
-                    .map_err(anyhow::Error::from)
-                    .map_err(WebSocketReadError::from)?,
-            },
+            WsMsg::Binary(bin) => rmp_serde::from_slice(&bin)
+                .map_err(anyhow::Error::from)
+                .map_err(WebSocketReadError::from)?,
             other => return Err(anyhow::anyhow!("Unexpected WebSocket message from engine API: {other}").into()),
         };
         Ok(msg)
@@ -214,7 +211,7 @@ impl EngineConnection {
 
     /// Send the given `request` to the engine via the WebSocket connection `tcp_write` as binary.
     async fn inner_send_to_engine_binary(request: WebSocketRequest, tcp_write: &mut WebSocketTcpWrite) -> Result<()> {
-        let msg = bson::to_vec(&request).map_err(|e| anyhow!("could not serialize bson: {e}"))?;
+        let msg = rmp_serde::to_vec_named(&request).map_err(|e| anyhow!("could not serialize msgpack: {e}"))?;
         tcp_write
             .send(WsMsg::Binary(msg.into()))
             .await

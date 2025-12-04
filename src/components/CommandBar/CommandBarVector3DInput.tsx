@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 import {
   commandBarActor,
   rustContext,
+  kclManager,
   useCommandBarState,
 } from '@src/lib/singletons'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
@@ -138,6 +139,9 @@ function CommandBarVector3DInput({
     selectionRanges: { graphSelections: [], otherSelections: [] },
     rustContext,
     options: calculateKclExpressionOptions,
+    code: kclManager.codeSignal.value,
+    ast: kclManager.astSignal.value,
+    variables: kclManager.variablesSignal.value,
   })
 
   const yCalculation = useCalculateKclExpression({
@@ -145,6 +149,9 @@ function CommandBarVector3DInput({
     selectionRanges: { graphSelections: [], otherSelections: [] },
     rustContext,
     options: calculateKclExpressionOptions,
+    code: kclManager.codeSignal.value,
+    ast: kclManager.astSignal.value,
+    variables: kclManager.variablesSignal.value,
   })
 
   const zCalculation = useCalculateKclExpression({
@@ -152,6 +159,9 @@ function CommandBarVector3DInput({
     selectionRanges: { graphSelections: [], otherSelections: [] },
     rustContext,
     options: calculateKclExpressionOptions,
+    code: kclManager.codeSignal.value,
+    ast: kclManager.astSignal.value,
+    variables: kclManager.variablesSignal.value,
   })
 
   // DOM access for focus and keyboard navigation

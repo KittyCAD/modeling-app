@@ -17,6 +17,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
 import { err } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { expect } from 'vitest'
 
 export async function enginelessExecutor(
   ast: Node<Program>,

@@ -26,7 +26,6 @@ import {
   useSketchModeMenuEnableDisable,
 } from '@src/hooks/useMenu'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
-import { useKclContext } from '@src/lang/KclProvider'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   sketchOnExtrudedFace,
@@ -546,8 +545,12 @@ export const ModelingMachineProvider = ({
             }
             console.log('result', result)
             if (!result) {
-              const sweepFaceSelected =
-                await selectionBodyFace(artifactOrPlaneId)
+              const sweepFaceSelected = await selectionBodyFace(
+                artifactOrPlaneId,
+                kclManager.artifactGraph,
+                kclManager.astSignal.value,
+                kclManager.execState
+              )
               if (sweepFaceSelected) {
                 result = sweepFaceSelected
               }
@@ -685,7 +688,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -743,7 +747,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -811,7 +816,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -874,7 +880,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -930,7 +937,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -987,7 +995,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -1044,7 +1053,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -1281,6 +1291,7 @@ export const ModelingMachineProvider = ({
         },
         machineManager,
         sketchSolveToolName: null,
+        kclManager,
       },
       // devTools: true,
     }
@@ -1318,14 +1329,13 @@ export const ModelingMachineProvider = ({
   useMenuListener(cb)
 
   const { overallState } = useNetworkContext()
-  const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
 
   // Assumes all commands are network commands
   useSketchModeMenuEnableDisable(
     modelingState.context.currentMode,
     overallState,
-    isExecuting,
+    kclManager.isExecutingSignal.value,
     isStreamReady,
     [
       { menuLabel: 'Edit.Modify with Zoo Text-To-CAD' },
@@ -1519,12 +1529,16 @@ export const ModelingMachineProvider = ({
   })
 
   // Toggle Snap to grid
-  useHotkeyWrapper([SNAP_TO_GRID_HOTKEY], () => {
-    settingsActor.send({
-      type: 'set.modeling.snapToGrid',
-      data: { level: 'project', value: !snapToGrid.current },
-    })
-  })
+  useHotkeyWrapper(
+    [SNAP_TO_GRID_HOTKEY],
+    () => {
+      settingsActor.send({
+        type: 'set.modeling.snapToGrid',
+        data: { level: 'project', value: !snapToGrid.current },
+      })
+    },
+    kclManager
+  )
 
   useHotkeys(
     ['mod + a'],
@@ -1533,7 +1547,7 @@ export const ModelingMachineProvider = ({
       if (!inSketchMode) return
 
       e.preventDefault()
-      const selection = selectAllInCurrentSketch()
+      const selection = selectAllInCurrentSketch(kclManager.artifactGraph)
       modelingSend({
         type: 'Set selection',
         data: { selectionType: 'completeSelection', selection },
@@ -1550,6 +1564,7 @@ export const ModelingMachineProvider = ({
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig: modelingMachineCommandConfig,
+    isExecuting: kclManager.isExecutingSignal.value,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically
     // make this function take the actor or state so it

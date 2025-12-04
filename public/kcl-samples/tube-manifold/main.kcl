@@ -1,0 +1,60 @@
+// Tube manifold
+// A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically refered to by their inner diameters, so the fittings are parameterized by their outer diameters
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+bodyDiameter = 5.8
+portDiameter = 2.8
+portCount = 4
+portSpacing = 5
+portHeight = 6
+wallThickness = 0.2
+beadDepth = 1
+beadRadius = 0.2
+
+// Model the interior hole of the manifold ports
+hollowPort = startSketchOn(XY)
+  |> circle(center = [0, 0], diameter = portDiameter - (2 * wallThickness))
+  |> extrude(length = portHeight)
+
+// Create the main body of the manifold and revolve
+body = startSketchOn(XY)
+  |> startProfile(at = [portHeight, bodyDiameter / 2])
+  |> xLine(length = -beadDepth)
+
+  // Add an SAE J1231 type 2 bead to seal a clamped tube connection
+  |> arc(angleStart = 0deg, angleEnd = 180deg, radius = beadRadius)
+  |> xLine(endAbsolute = -portCount * portSpacing)
+  |> tangentialArc(angle = 90deg, radius = lastSegY())
+  |> xLine(length = wallThickness)
+  |> arc(angleStart = 180deg, angleEnd = 90deg, radius = bodyDiameter / 2 - wallThickness)
+  |> xLine(endAbsolute = profileStartX())
+  |> yLine(endAbsolute = profileStartY())
+  |> close()
+  |> revolve(axis = X)
+
+  // subtract an instance of the hollow port feature at each port location
+  |> subtract(tools =   clone(hollowPort)
+    |> patternLinear3d(instances = portCount, distance = portSpacing, axis = [-1, 0, 0]))
+
+// Trim the bottom of the ports so that they fit against the curved main body
+bodyCut = startSketchOn(YZ)
+  |> circle(center = [0, 0], diameter = bodyDiameter)
+  |> extrude(length = -portCount * portSpacing, bidirectionalLength = 5)
+
+// Model a revolved port at each location. Each should have a single beaded connection
+ports = startSketchOn(YZ)
+  |> startProfile(at = [0, portHeight])
+  |> xLine(length = portDiameter / 2)
+  |> yLine(length = -beadDepth)
+  |> arc(angleStart = 90deg, angleEnd = -90deg, radius = beadRadius)
+  |> yLine(endAbsolute = 0)
+  |> xLine(endAbsolute = profileStartX())
+  |> yLine(endAbsolute = profileStartY())
+  |> close()
+  |> revolve(axis = Y)
+  |> subtract(tools = bodyCut)
+  |> subtract(tools = hollowPort)
+  |> patternLinear3d(instances = portCount, distance = portSpacing, axis = [-1, 0, 0])

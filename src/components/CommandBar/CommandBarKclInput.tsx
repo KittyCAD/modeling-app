@@ -120,6 +120,7 @@ function CommandBarKclInput({
   useHotkeyWrapper(
     ['mod + k', 'esc'],
     () => commandBarActor.send({ type: 'Close' }),
+    kclManager,
     { enableOnFormTags: true, enableOnContentEditable: true }
   )
   const editorRef = useRef<HTMLDivElement>(null)
@@ -142,6 +143,9 @@ function CommandBarKclInput({
     sourceRange: sourceRangeForPrevVariables,
     selectionRanges,
     rustContext,
+    code: kclManager.codeSignal.value,
+    ast: kclManager.astSignal.value,
+    variables: kclManager.variablesSignal.value,
     options,
   })
 

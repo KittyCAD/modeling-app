@@ -1,9 +1,6 @@
 // Holder for (shower) rod at a ~45° angle
 // This is used to mount a rod to a 45° angled ceiling
 
-
-
-
 @settings(defaultLengthUnit = cm)
 
 depth = 1

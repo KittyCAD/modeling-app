@@ -4,7 +4,6 @@ description: Result of unparsing if_else.kcl
 ---
 // This tests evaluating if-else expressions.
 
-
 a = if true {
   3
 } else if true {

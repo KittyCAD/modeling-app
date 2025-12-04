@@ -2,6 +2,7 @@ import { assertParse } from '@src/lang/wasm'
 import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
 import { join } from 'path'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { expect, describe, it } from 'vitest'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 describe('getSafeInsertIndex.test.ts', () => {

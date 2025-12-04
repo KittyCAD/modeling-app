@@ -1,7 +1,6 @@
 import type { EntityType } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
-import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { KCLError } from '@src/lang/errors'
@@ -21,7 +20,6 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { emptyExecState, getKclVersion, parse, recast } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
@@ -51,8 +49,6 @@ import {
   type handleSelectionBatch as handleSelectionBatchFn,
   type processCodeMirrorRanges as processCodeMirrorRangesFn,
 } from '@src/lib/selections'
-
-import { processEnv } from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 import {
@@ -93,6 +89,7 @@ import { historyCompartment } from '@src/editor/compartments'
 import { bracket } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
 import toast from 'react-hot-toast'
+import { signal } from '@preact/signals-core'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -144,7 +141,7 @@ export class KclManager extends EventTarget {
   artifactGraph: ArtifactGraph = new Map()
   artifactIndex: ArtifactIndex = []
 
-  private _ast: Node<Program> = {
+  private _ast = signal<Node<Program>>({
     body: [],
     shebang: null,
     start: 0,
@@ -158,7 +155,7 @@ export class KclManager extends EventTarget {
     outerAttrs: [],
     preComments: [],
     commentStart: 0,
-  }
+  })
   _lastAst: Node<Program> = {
     body: [],
     shebang: null,
@@ -174,8 +171,9 @@ export class KclManager extends EventTarget {
     preComments: [],
     commentStart: 0,
   }
+  private _wasmInstance: Promise<ModuleType | string>
   private _execState: ExecState = emptyExecState()
-  private _variables: VariableMap = {}
+  private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: Operation[] = []
   /**
@@ -183,12 +181,12 @@ export class KclManager extends EventTarget {
    * operations were executed on.
    */
   lastSuccessfulCode: string = ''
-  private _logs: string[] = []
-  private _errors: KCLError[] = []
-  private _diagnostics: Diagnostic[] = []
-  private _isExecuting = false
+  private _logs = signal<string[]>([])
+  private _errors = signal<KCLError[]>([])
+  private _diagnostics = signal<Diagnostic[]>([])
+  private _isExecuting = signal(false)
   private _executeIsStale: ExecuteArgs | null = null
-  private _wasmInitFailed = true
+  private _wasmInitFailed = signal<boolean | undefined>(undefined)
   private _astParseFailed = false
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
@@ -201,22 +199,10 @@ export class KclManager extends EventTarget {
 
   engineCommandManager: ConnectionManager
 
-  private _isExecutingCallback: (arg: boolean) => void = () => {}
-  private _astCallBack: (arg: Node<Program>) => void = () => {}
-  private _variablesCallBack: (
-    arg: {
-      [key in string]?: KclValue | undefined
-    }
-  ) => void = () => {}
-  private _logsCallBack: (arg: string[]) => void = () => {}
-  private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
-  private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
-  private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
   /** Values merged in from former EditorManager and CodeManager classes */
-  private _code: string = bracket
-  #updateState: (arg: string) => void = () => {}
+  private _code = signal(bracket)
   private _currentFilePath: string | null = null
   private _hotkeys: { [key: string]: () => void } = {}
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
@@ -239,16 +225,22 @@ export class KclManager extends EventTarget {
   private _editorView: EditorView | null = null
   /** End merged items */
 
+  /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
+  set wasmInstancePromise(newInstancePromise: Promise<ModuleType | string>) {
+    this._wasmInstance = newInstancePromise
+  }
   get ast() {
-    return this._ast
+    return this._ast.value
   }
   set ast(ast) {
-    if (this._ast.body.length !== 0) {
+    if (this._ast.value.body.length !== 0) {
       // last intact ast, if the user makes a typo with a syntax error, we want to keep the one before they made that mistake
-      this._lastAst = structuredClone(this._ast)
+      this._lastAst = structuredClone(this._ast.value)
     }
-    this._ast = ast
-    this._astCallBack(ast)
+    this._ast.value = ast
+  }
+  get astSignal() {
+    return this._ast
   }
 
   set switchedFiles(switchedFiles: boolean) {
@@ -261,16 +253,19 @@ export class KclManager extends EventTarget {
 
     // Without this, when leaving a project which has errors and opening another project which doesn't,
     // you'd see the errors from the previous project for a short time until the new code is executed.
-    this._errors = []
+    this.errors = []
   }
 
   get variables() {
+    return this._variables.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get variablesSignal() {
     return this._variables
   }
   // This is private because callers should be setting the entire execState.
   private set variables(variables) {
-    this._variables = variables
-    this._variablesCallBack(variables)
+    this._variables.value = variables
   }
 
   private set execState(execState) {
@@ -293,27 +288,37 @@ export class KclManager extends EventTarget {
   }
 
   get errors() {
+    return this._errors.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get errorsSignal() {
     return this._errors
   }
   set errors(errors) {
-    this._errors = errors
-    this._kclErrorsCallBack(errors)
+    this._errors.value = errors
   }
   get logs() {
+    return this._logs.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get logsSignal() {
     return this._logs
   }
   set logs(logs) {
-    this._logs = logs
-    this._logsCallBack(logs)
+    this._logs.value = logs
   }
 
   get diagnostics() {
+    return this._diagnostics.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get diagnosticsSignal() {
     return this._diagnostics
   }
 
   set diagnostics(ds) {
-    if (ds === this._diagnostics) return
-    this._diagnostics = ds
+    if (ds === this._diagnostics.value) return
+    this._diagnostics.value = ds
     this.setDiagnosticsForCurrentErrors()
   }
 
@@ -323,20 +328,22 @@ export class KclManager extends EventTarget {
   }
 
   hasErrors(): boolean {
-    return this._astParseFailed || this._errors.length > 0
+    return this._astParseFailed || this.errors.length > 0
   }
 
   setDiagnosticsForCurrentErrors() {
     this.setDiagnostics(this.diagnostics)
-    this._diagnosticsCallback(this.diagnostics)
   }
 
   get isExecuting() {
+    return this._isExecuting.value
+  }
+  get isExecutingSignal() {
     return this._isExecuting
   }
 
   set isExecuting(isExecuting) {
-    this._isExecuting = isExecuting
+    this._isExecuting.value = isExecuting
     // If we have finished executing, but the execute is stale, we should
     // execute again.
     if (!isExecuting && this.executeIsStale) {
@@ -345,7 +352,6 @@ export class KclManager extends EventTarget {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.executeAst(args)
     }
-    this._isExecutingCallback(isExecuting)
   }
 
   get executeIsStale() {
@@ -357,16 +363,24 @@ export class KclManager extends EventTarget {
   }
 
   get wasmInitFailed() {
+    return this._wasmInitFailed.value
+  }
+  /** get entire signal for use in React. A plugin transforms its use there */
+  get wasmInitFailedSignal() {
     return this._wasmInitFailed
   }
   set wasmInitFailed(wasmInitFailed) {
-    this._wasmInitFailed = wasmInitFailed
-    this._wasmInitFailedCallback(wasmInitFailed)
+    this._wasmInitFailed.value = wasmInitFailed
   }
 
-  constructor(engineCommandManager: ConnectionManager, singletons: Singletons) {
+  constructor(
+    engineCommandManager: ConnectionManager,
+    wasmInstance: Promise<ModuleType | string>,
+    singletons: Singletons
+  ) {
     super()
     this.engineCommandManager = engineCommandManager
+    this._wasmInstance = wasmInstance
     this.singletons = singletons
 
     /** Merged code from EditorManager and CodeManager classes */
@@ -399,60 +413,28 @@ export class KclManager extends EventTarget {
     }
     /** End merged code from EditorManager and CodeManager */
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.ensureWasmInit().then(async () => {
-      if (this.wasmInitFailed) {
-        if (processEnv()?.VITEST) {
-          console.log(
-            'Running in vitest runtime. KclSingleton polluting global runtime.'
-          )
-          return
-        }
-      }
-
-      await this.safeParse(this.code).then((ast) => {
-        if (ast) {
-          this.ast = ast
-          // on setup, set _lastAst so it's populated.
-          this._lastAst = ast
+    this._wasmInstance
+      .then(async (wasmInstance) => {
+        if (typeof wasmInstance === 'string') {
+          this.wasmInitFailed = true
+        } else {
+          await this.safeParse(this.code, wasmInstance).then((ast) => {
+            if (ast) {
+              this.ast = ast
+              // on setup, set _lastAst so it's populated.
+              this._lastAst = ast
+            }
+          })
         }
       })
-    })
-  }
-
-  registerCallBacks({
-    setVariables,
-    setAst,
-    setLogs,
-    setErrors,
-    setDiagnostics,
-    setIsExecuting,
-    setWasmInitFailed,
-    setCode,
-  }: {
-    setVariables: (arg: VariableMap) => void
-    setAst: (arg: Node<Program>) => void
-    setLogs: (arg: string[]) => void
-    setErrors: (errors: KCLError[]) => void
-    setDiagnostics: (errors: Diagnostic[]) => void
-    setIsExecuting: (arg: boolean) => void
-    setWasmInitFailed: (arg: boolean) => void
-    setCode: (arg: string) => void
-  }) {
-    this._variablesCallBack = setVariables
-    this._astCallBack = setAst
-    this._logsCallBack = setLogs
-    this._kclErrorsCallBack = setErrors
-    this._diagnosticsCallback = setDiagnostics
-    this._isExecutingCallback = setIsExecuting
-    this._wasmInitFailedCallback = setWasmInitFailed
-
-    /** Merged in from EditorManager's duplicate impl */
-    this.#updateState = setCode
+      .catch((e) => {
+        this._wasmInitFailed.value = true
+        reportRejection(e)
+      })
   }
 
   clearAst() {
-    this._ast = {
+    this._ast.value = {
       body: [],
       shebang: null,
       start: 0,
@@ -499,13 +481,13 @@ export class KclManager extends EventTarget {
       // TODO: we wanna remove this logic from xstate, it is racey
       // This defer is bullshit but playwright wants it
       // It was like this in engineConnection.ts already
-      deferExecution((a?: null) => {
+      deferExecution((_a?: null) => {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph populated',
         })
       }, 200)(null)
     } else {
-      deferExecution((a?: null) => {
+      deferExecution((_a?: null) => {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph emptied',
         })
@@ -513,7 +495,7 @@ export class KclManager extends EventTarget {
     }
 
     // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
-    deferExecution((a?: null) => {
+    deferExecution((_a?: null) => {
       if (this.defaultPlanes) {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph initialized',
@@ -524,9 +506,13 @@ export class KclManager extends EventTarget {
 
   async safeParse(
     code: string,
-    wasmInstance?: ModuleType
+    providedWasmInstance?: ModuleType
   ): Promise<Node<Program> | null> {
-    const result = parse(code, wasmInstance)
+    const wasmInstance = providedWasmInstance || (await this._wasmInstance)
+    const result = parse(
+      code,
+      typeof wasmInstance !== 'string' ? wasmInstance : undefined
+    )
     this.diagnostics = []
     this._astParseFailed = false
 
@@ -543,8 +529,8 @@ export class KclManager extends EventTarget {
     // When we safeParse this is tied to execution because they clicked a new file to load
     // Clear all previous errors and logs because they are old since they executed a new file
     // If we decouple safeParse from execution we need to move this application logic.
-    this._kclErrorsCallBack([])
-    this._logsCallBack([])
+    this.errors = []
+    this.logs = []
 
     this.addDiagnostics(compilationErrorsToDiagnostics(result.errors, code))
     this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings, code))
@@ -556,26 +542,6 @@ export class KclManager extends EventTarget {
     }
 
     return result.program
-  }
-
-  async ensureWasmInit() {
-    if (processEnv()?.VITEST) {
-      const message =
-        'kclSingle is trying to call ensureWasmInit. This will be blocked in VITEST runtimes.'
-      console.log(message)
-      return Promise.resolve(message)
-    }
-
-    try {
-      await initPromise
-      if (this.wasmInitFailed) {
-        this.wasmInitFailed = false
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      console.error(e)
-      this.wasmInitFailed = true
-    }
   }
 
   private _cancelTokens: Map<number, boolean> = new Map()
@@ -603,7 +569,8 @@ export class KclManager extends EventTarget {
     this._cancelTokens.set(currentExecutionId, false)
 
     this.isExecuting = true
-    await this.ensureWasmInit()
+    // Ensure WASM is initialized
+    await this._wasmInstance
 
     const codeThatExecuted = this.code
     const { logs, errors, execState, isInterrupted } = await executeAst({
@@ -631,7 +598,7 @@ export class KclManager extends EventTarget {
           instance: this.singletons.rustContext.getRustInstance(),
         })
       )
-      await setSelectionFilterToDefault(this.engineCommandManager)
+      await setSelectionFilterToDefault(this.engineCommandManager, this)
     }
 
     this.isExecuting = false
@@ -711,15 +678,19 @@ export class KclManager extends EventTarget {
   // DO NOT CALL THIS from codemirror ever.
   async executeAstMock(
     ast: Program,
-    wasmInstance?: ModuleType
+    providedWasmInstance?: ModuleType
   ): Promise<null | Error> {
-    await this.ensureWasmInit()
-    const newCode = recast(ast, wasmInstance)
+    const awaitedWasmInstance =
+      providedWasmInstance || (await this._wasmInstance)
+    const optionalWasmInstance =
+      typeof awaitedWasmInstance !== 'string' ? awaitedWasmInstance : undefined
+
+    const newCode = recast(ast, optionalWasmInstance)
     if (err(newCode)) {
       console.error(newCode)
       return newCode
     }
-    const newAst = await this.safeParse(newCode, wasmInstance)
+    const newAst = await this.safeParse(newCode, optionalWasmInstance)
 
     if (!newAst) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
@@ -727,7 +698,7 @@ export class KclManager extends EventTarget {
       this.clearAst()
       return new Error('failed to re-parse')
     }
-    this._ast = { ...newAst }
+    this._ast.value = { ...newAst }
 
     const codeThatExecuted = this.code
     const { logs, errors, execState } = await executeAstMock({
@@ -735,9 +706,9 @@ export class KclManager extends EventTarget {
       rustContext: this.singletons.rustContext,
     })
 
-    this._logs = logs
+    this.logs = logs
     this._execState = execState
-    this._variables = execState.variables
+    this._variables.value = execState.variables
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
@@ -751,7 +722,7 @@ export class KclManager extends EventTarget {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(): Promise<void> {
+  async executeCode(clearSelections = false): Promise<void> {
     const ast = await this.safeParse(this.code)
 
     if (!ast) {
@@ -771,6 +742,13 @@ export class KclManager extends EventTarget {
 
       this.dispatchEvent(new CustomEvent(KclManagerEvents.LongExecution, {}))
     }, this.longExecutionTimeMs)
+
+    if (clearSelections) {
+      this._modelingSend({
+        type: 'Set selection',
+        data: { selection: undefined, selectionType: 'singleCodeCursor' },
+      })
+    }
 
     return this.executeAst({ ast })
   }
@@ -946,6 +924,7 @@ export class KclManager extends EventTarget {
   ) {
     setSelectionFilterToDefault(
       this.engineCommandManager,
+      this,
       selectionsToRestore,
       handleSelectionBatch
     )
@@ -959,6 +938,7 @@ export class KclManager extends EventTarget {
     setSelectionFilter(
       filter,
       this.engineCommandManager,
+      this,
       selectionsToRestore,
       handleSelectionBatch
     )
@@ -1319,6 +1299,7 @@ export class KclManager extends EventTarget {
       isShiftDown: this._isShiftDown,
       ast: this.ast,
       artifactGraph: this.artifactGraph,
+      artifactIndex: this.artifactIndex,
     })
     if (!eventInfo) {
       return
@@ -1346,9 +1327,12 @@ export class KclManager extends EventTarget {
     })
   }
   set code(code: string) {
-    this._code = code
+    this._code.value = code
   }
   get code(): string {
+    return this._code.value
+  }
+  get codeSignal() {
     return this._code
   }
   localStoragePersistCode(): string {
@@ -1398,9 +1382,8 @@ export class KclManager extends EventTarget {
    * Update the code, state, and the code the code mirror editor sees.
    */
   updateCodeStateEditor(code: string, clearHistory?: boolean): void {
-    if (this._code !== code) {
+    if (this._code.value !== code) {
       this.code = code
-      this.#updateState(code)
       this.updateCodeEditor(code, clearHistory)
     }
   }

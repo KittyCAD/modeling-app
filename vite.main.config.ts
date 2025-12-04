@@ -35,7 +35,6 @@ export default defineConfig((env) => {
       },
     },
     test: {
-      globals: true,
       pool: 'forks',
       poolOptions: {
         forks: {
@@ -86,7 +85,11 @@ export default defineConfig((env) => {
     },
     plugins: [
       pluginHotRestart('restart'),
-      viteJsPluginReact(),
+      viteJsPluginReact({
+        babel: {
+          plugins: [['module:@preact/signals-react-transform']],
+        },
+      }),
       viteTsconfigPaths(),
       vitePluginEslint(),
       vitePluginPackageVersion(),

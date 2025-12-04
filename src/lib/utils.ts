@@ -1,6 +1,5 @@
 import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
 import type { AsyncFn } from '@src/lib/types'
-import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -499,35 +498,18 @@ export function capitaliseFC(str: string): string {
  * @param buffer - The binary buffer containing the UUID bytes.
  * @returns A string representation of the UUID in the format 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.
  */
-export function binaryToUuid(
-  binaryData: Buffer | Uint8Array | BSONBinary | string
-): string {
+export function binaryToUuid(binaryData: Buffer | Uint8Array | string): string {
   if (typeof binaryData === 'string') {
     return binaryData
   }
 
   let buffer: Uint8Array
 
-  // Handle MongoDB BSON Binary object
-  if (
-    binaryData &&
-    '_bsontype' in binaryData &&
-    binaryData._bsontype === 'Binary'
-  ) {
-    // Extract the buffer from the BSON Binary object
-    buffer = binaryData.buffer
-  }
-  // Handle case where buffer property exists (some MongoDB drivers structure)
-  else if (binaryData && binaryData.buffer instanceof Uint8Array) {
-    buffer = binaryData.buffer
-  }
   // Handle direct Buffer or Uint8Array
-  else if (binaryData instanceof Uint8Array || Buffer.isBuffer(binaryData)) {
+  if (binaryData instanceof Uint8Array || Buffer.isBuffer(binaryData)) {
     buffer = binaryData
   } else {
-    console.error(
-      'Invalid input type: expected MongoDB BSON Binary, Buffer, or Uint8Array'
-    )
+    console.error('Invalid input type: expected Uint8Array')
     return ''
   }
 

@@ -182,7 +182,6 @@ sweepSketch = startSketchOn(XY)
 ```kcl
 // Rotate an imported model.
 
-
 import "tests/inputs/cube.sldprt" as cube
 
 cube
@@ -244,7 +243,6 @@ sweepSketch = startSketchOn(XY)
 
 ```kcl
 // Sweep two sketches along the same path.
-
 
 sketch001 = startSketchOn(XY)
 rectangleSketch = startProfile(sketch001, at = [-200, 23.86])

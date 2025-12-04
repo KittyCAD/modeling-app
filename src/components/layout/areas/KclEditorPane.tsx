@@ -253,7 +253,7 @@ export const KclEditorPaneContents = () => {
 }
 
 function copyKclCodeToClipboard() {
-  if (!kclManager.code) {
+  if (!kclManager.codeSignal.value) {
     toast.error('No code available to copy')
     return
   }
@@ -264,7 +264,7 @@ function copyKclCodeToClipboard() {
   }
 
   navigator.clipboard
-    .writeText(kclManager.code)
+    .writeText(kclManager.codeSignal.value)
     .then(() => toast.success(`Copied current file's code to clipboard`))
     .catch((e) =>
       trap(new Error(`Failed to copy code to clipboard: ${e.message}`))
@@ -273,7 +273,7 @@ function copyKclCodeToClipboard() {
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
-    useConvertToVariable()
+    useConvertToVariable(kclManager)
 
   return (
     <Menu>

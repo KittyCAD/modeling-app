@@ -62,6 +62,7 @@ import {
   MlEphantManagerReactContext,
   MlEphantManagerTransitions2,
 } from '@src/machines/mlEphantManagerMachine2'
+import { useSignalEffect } from '@preact/signals-react'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -71,7 +72,7 @@ if (window.electron) {
 
 export function App() {
   const { state: modelingState } = useModelingContext()
-  useQueryParamEffects()
+  useQueryParamEffects(kclManager)
   const { project, file } = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
@@ -104,7 +105,7 @@ export function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [projectName, projectPath])
 
-  useHotKeyListener()
+  useHotKeyListener(kclManager)
 
   const settings = useSettings()
   const authToken = useToken()
@@ -126,16 +127,21 @@ export function App() {
   useHotkeyWrapper(
     [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
     () => navigate(filePath + PATHS.SETTINGS),
+    kclManager,
     {
       splitKey: '|',
     }
   )
 
-  useHotkeyWrapper(['mod + s'], () => {
-    toast.success('Your work is auto-saved in real-time')
-  })
+  useHotkeyWrapper(
+    ['mod + s'],
+    () => {
+      toast.success('Your work is auto-saved in real-time')
+    },
+    kclManager
+  )
 
-  useEngineConnectionSubscriptions()
+  useEngineConnectionSubscriptions(kclManager)
 
   useEffect(() => {
     // Not too useful for regular flows but on modeling view refresh,
@@ -191,8 +197,14 @@ export function App() {
     authToken,
   ])
 
-  useEffect(() => {
-    const needsWasmInitFailedToast = !isDesktop() && kclManager.wasmInitFailed
+  // This is, at time of writing, the only spot we need @preact/signals-react,
+  // because we can't use the core `effect()` function for this signal, because
+  // it is initially set to `true`, and will break the web app.
+  // TODO: get the loading pattern of KclManager in order so that it's for real available,
+  // then you might be able to uninstall this package and stick to just using signals-core.
+  useSignalEffect(() => {
+    const needsWasmInitFailedToast =
+      !isDesktop() && kclManager.wasmInitFailedSignal.value
     if (needsWasmInitFailedToast) {
       toast.success(
         () =>
@@ -209,7 +221,7 @@ export function App() {
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.wasmInitFailed])
+  })
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -281,6 +293,7 @@ export function App() {
               element: 'text',
               label:
                 getSelectionTypeDisplayText(
+                  kclManager.astSignal.value,
                   modelingState.context.selectionRanges
                 ) ?? 'No selection',
               toolTip: {
