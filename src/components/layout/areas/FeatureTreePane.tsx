@@ -192,6 +192,7 @@ export const FeatureTreePaneContents = () => {
     }),
     {
       input: {
+        rustContext,
         kclManager,
       },
       // devTools: true,
