@@ -18,7 +18,10 @@ import type {
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
@@ -358,6 +361,14 @@ export type ModelingMachineEvent =
         | 'Distance'
     }
   | { type: 'unequip tool' }
+  | {
+      type: 'update sketch outcome'
+      data: {
+        kclSource: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+        debounceEditorUpdate?: boolean
+      }
+    }
   | {
       type: 'sketch solve tool changed'
       data: { tool: EquipTool | null }
@@ -5498,6 +5509,9 @@ export const modelingMachine = setup({
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         'delete selected': {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        'update sketch outcome': {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
       },
