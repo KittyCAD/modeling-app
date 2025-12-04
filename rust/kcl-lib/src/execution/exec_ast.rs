@@ -1945,7 +1945,7 @@ impl Node<MemberExpression> {
                                         kind: SegmentKind::Point {
                                             position: end.clone(),
                                             ctor: Box::new(PointCtor {
-                                                position: ctor.start.clone(),
+                                                position: ctor.end.clone(),
                                             }),
                                             freedom: *end_freedom,
                                         },
