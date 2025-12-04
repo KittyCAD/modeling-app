@@ -152,7 +152,7 @@ function createMockKclManager(): KclManager {
 // Helper to create test machine with mocked actors
 // Note: The async actors MUST be mocked as they call real Rust/WASM code and make network requests
 function createTestMachine(mockActors?: {
-  modAndSolveFirstPoint?: (
+  modAndSolveFirstClick?: (
     input: unknown
   ) => Promise<
     | { kclSource: SourceDelta; sceneGraphDelta: SceneGraphDelta }
@@ -178,8 +178,8 @@ function createTestMachine(mockActors?: {
   // Create a machine with mocked actors
   const testMachine = machine.provide({
     actors: {
-      modAndSolveFirstPoint: fromPromise(
-        mockActors?.modAndSolveFirstPoint ||
+      modAndSolveFirstClick: fromPromise(
+        mockActors?.modAndSolveFirstClick ||
           (async () => ({
             kclSource: { text: 'test' } as SourceDelta,
             sceneGraphDelta: createSceneGraphDelta([], []),
@@ -286,7 +286,7 @@ describe('lineTool - XState', () => {
 
       const { machine, sceneInfra, rustContext, kclManager } =
         createTestMachine({
-          modAndSolveFirstPoint: async () => ({
+          modAndSolveFirstClick: async () => ({
             kclSource: { text: 'test' } as SourceDelta,
             sceneGraphDelta: createSceneGraphDelta([pointObj, lineObj], [1, 2]),
           }),
@@ -360,7 +360,7 @@ describe('lineTool - XState', () => {
 
       const { machine, sceneInfra, rustContext, kclManager } =
         createTestMachine({
-          modAndSolveFirstPoint: async () => ({
+          modAndSolveFirstClick: async () => ({
             kclSource: { text: 'test' } as SourceDelta,
             sceneGraphDelta: createSceneGraphDelta([pointObj, lineObj], [1, 2]),
           }),
@@ -428,7 +428,7 @@ describe('lineTool - XState', () => {
 
       const { machine, sceneInfra, rustContext, kclManager } =
         createTestMachine({
-          modAndSolveFirstPoint: async () => ({
+          modAndSolveFirstClick: async () => ({
             kclSource: { text: 'test' } as SourceDelta,
             sceneGraphDelta: createSceneGraphDelta([pointObj, lineObj], [1, 2]),
           }),
@@ -459,7 +459,7 @@ describe('lineTool - XState', () => {
 
       const { machine, sceneInfra, rustContext, kclManager } =
         createTestMachine({
-          modAndSolveFirstPoint: async () => ({
+          modAndSolveFirstClick: async () => ({
             kclSource: { text: 'test' } as SourceDelta,
             sceneGraphDelta: createSceneGraphDelta([pointObj, lineObj], [1, 2]),
           }),
@@ -494,7 +494,7 @@ describe('lineTool - XState', () => {
 
       const { machine, sceneInfra, rustContext, kclManager } =
         createTestMachine({
-          modAndSolveFirstPoint: async () => ({
+          modAndSolveFirstClick: async () => ({
             kclSource: { text: 'test' } as SourceDelta,
             sceneGraphDelta: createSceneGraphDelta(
               [pointObj1, lineObj1],
@@ -549,7 +549,7 @@ describe('lineTool - XState', () => {
 
       const { machine, sceneInfra, rustContext, kclManager } =
         createTestMachine({
-          modAndSolveFirstPoint: async () => ({
+          modAndSolveFirstClick: async () => ({
             kclSource: { text: 'test' } as SourceDelta,
             sceneGraphDelta: createSceneGraphDelta(
               [pointObj1, lineObj1],
@@ -624,7 +624,7 @@ describe('lineTool - XState', () => {
 
       const { machine, sceneInfra, rustContext, kclManager } =
         createTestMachine({
-          modAndSolveFirstPoint: async () => ({
+          modAndSolveFirstClick: async () => ({
             kclSource: { text: 'test' } as SourceDelta,
             sceneGraphDelta: createSceneGraphDelta(
               [pointObj1, lineObj1],

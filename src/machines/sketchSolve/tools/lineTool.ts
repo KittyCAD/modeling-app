@@ -11,51 +11,14 @@ import type {
 import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type { KclManager } from '@src/lang/KclManager'
-
-const TOOL_ID = 'Line tool'
-const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
-const ADDING_POINT = `xstate.done.actor.0.${TOOL_ID}.Adding point`
-const CONFIRMING_DIMENSIONS_EVENT = `xstate.done.actor.0.${TOOL_ID}.${CONFIRMING_DIMENSIONS}`
-
-type ToolEvents =
-  | { type: 'unequip' }
-  | { type: 'escape' }
-  | {
-      type: 'add point'
-      data: [x: number, y: number]
-      id?: number
-      isDoubleClick?: boolean
-    }
-  | { type: 'update selection' }
-  | { type: 'set pending double click' }
-  | {
-      type: typeof ADDING_POINT | typeof CONFIRMING_DIMENSIONS_EVENT
-      output: {
-        kclSource: SourceDelta
-        sceneGraphDelta: SceneGraphDelta
-      }
-    }
-
-type ToolContext = {
-  draftPointId?: number
-  lastLineEndPointId?: number
-  isDoubleClick?: boolean
-  pendingDoubleClick?: boolean
-  newlyAddedSketchEntities?: {
-    segmentIds: Array<number>
-    constraintIds: Array<number>
-  }
-  pendingSketchOutcome?: {
-    kclSource: SourceDelta
-    sceneGraphDelta: SceneGraphDelta
-  }
-  deleteFromEscape?: boolean // Track if deletion was triggered by escape (vs unequip)
-  sceneGraphDelta: SceneGraphDelta
-  sceneInfra: SceneInfra
-  rustContext: RustContext
-  kclManager: KclManager
-  sketchId: number
-}
+import {
+  type ToolEvents,
+  type ToolContext,
+  ADDING_POINT,
+  CONFIRMING_DIMENSIONS_EVENT,
+  TOOL_ID,
+  CONFIRMING_DIMENSIONS,
+} from '@src/machines/sketchSolve/tools/lineToolImpl'
 
 export const machine = setup({
   types: {
@@ -167,10 +130,6 @@ export const machine = setup({
         },
         onMove: () => {},
       })
-    },
-    'show draft geometry': () => {
-      // Add your action code here
-      // ...
     },
     'remove point listener': ({ context }) => {
       // Reset callbacks to remove the onClick and onMove listeners
@@ -320,7 +279,7 @@ export const machine = setup({
     }),
   },
   actors: {
-    modAndSolveFirstPoint: fromPromise(
+    modAndSolveFirstClick: fromPromise(
       async ({
         input,
       }: {
@@ -340,6 +299,8 @@ export const machine = setup({
 
         try {
           // Note: x and y come from intersectionPoint.twoD which is in world coordinates, and scaled to units
+          // we're creating a line with the same start and end point initially
+          // that's because we'll then 'animate' the line by moving the endpoint with the user's mouse
           const segmentCtor: SegmentCtor = {
             type: 'Line',
             start: {
@@ -804,7 +765,7 @@ export const machine = setup({
 
     'Adding point': {
       invoke: {
-        src: 'modAndSolveFirstPoint',
+        src: 'modAndSolveFirstClick',
         input: ({ event, context }) => {
           assertEvent(event, 'add point')
           return {

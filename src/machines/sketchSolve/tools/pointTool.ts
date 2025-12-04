@@ -61,10 +61,6 @@ export const machine = setup({
         },
       })
     },
-    'show draft geometry': () => {
-      // Add your action code here
-      // ...
-    },
     'remove point listener': ({ context }) => {
       console.log('should be exiting point tool now')
       // Reset callbacks to remove the onClick listener

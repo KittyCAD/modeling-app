@@ -307,10 +307,8 @@ export function updateSceneGraphFromDelta({
       // check id is not greater than new_graph.objects length
       return childId >= sceneGraphDelta.new_graph.objects.length
     })
-    if (invalidateScene) {
-      sketchSegments?.children.forEach((child) => {
-        context.sceneInfra.scene.remove(child)
-      })
+    if (invalidateScene && sketchSegments instanceof Group) {
+      disposeGroupChildren(sketchSegments)
     }
   }
 
@@ -327,6 +325,8 @@ export function updateSceneGraphFromDelta({
     if (skipBecauseBeforeCurrentSketch || skipBecauseAfterCurrentSketch) {
       return
     }
+    // sketch is no a drawable object, and
+    // TODO constraints have not been implemented yet
     if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
       return
     }
