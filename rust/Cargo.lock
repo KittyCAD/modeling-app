@@ -2115,17 +2115,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "kcl-api"
-version = "0.1.114"
-dependencies = [
- "indexmap 2.12.1",
- "kcl-error",
- "serde",
- "ts-rs",
- "wasm-bindgen",
-]
-
-[[package]]
 name = "kcl-bumper"
 version = "0.1.114"
 dependencies = [
