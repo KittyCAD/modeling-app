@@ -200,7 +200,7 @@ export type MoveDesc = { line: number; snippet: string }
 /** Input into the Modeling machine consists of its external dependencies */
 export type ModelingMachineInput = {
   kclManager: KclManager
-  engineCommandManager?: ConnectionManager
+  engineCommandManager: ConnectionManager
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
   rustContext: RustContext

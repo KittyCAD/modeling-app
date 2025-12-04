@@ -1295,6 +1295,7 @@ export const ModelingMachineProvider = ({
     {
       input: {
         machineManager,
+        engineCommandManager,
         kclManager,
         sceneInfra,
         rustContext,

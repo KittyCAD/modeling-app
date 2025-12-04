@@ -2,6 +2,7 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import type RustContext from '@src/lib/rustContext'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   ModelingMachineContext,
@@ -41,13 +42,14 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
     sketchSolveTool: null,
   }
 
-export function generateModelingMachineDefaultContext(
-  kclManager: KclManager,
-  sceneInfra: SceneInfra,
-  rustContext: RustContext,
-  wasmInstance: ModuleType,
+export function generateModelingMachineDefaultContext(systemDeps: {
+  kclManager: KclManager
+  sceneInfra: SceneInfra
+  rustContext: RustContext
+  wasmInstance: ModuleType
   sceneEntitiesManager: SceneEntities
-) {
+  engineCommandManager: ConnectionManager
+}) {
   const context: ModelingMachineContext = {
     currentMode: 'modeling',
     currentTool: 'none',
@@ -85,11 +87,7 @@ export function generateModelingMachineDefaultContext(
     planesInitialized: false,
     sketchSolveTool: null,
     sketchSolveToolName: null,
-    kclManager,
-    sceneInfra,
-    rustContext,
-    wasmInstance,
-    sceneEntitiesManager,
+    ...systemDeps,
   }
   return context
 }
