@@ -14,6 +14,7 @@ import {
 import {
   updateOutsideEditorEvent,
   editorCodeUpdateEvent,
+  type KclManager,
 } from '@src/lang/KclManager'
 import { kclManager, rustContext } from '@src/lib/singletons'
 import { deferExecution } from '@src/lib/utils'
@@ -33,9 +34,15 @@ const changesDelay = 600
 export class KclPlugin implements PluginValue {
   private viewUpdate: ViewUpdate | null = null
   private client: LanguageServerClient
+  private kclManager: KclManager
 
-  constructor(client: LanguageServerClient, view: EditorView) {
+  constructor(
+    client: LanguageServerClient,
+    view: EditorView,
+    kclManager: KclManager
+  ) {
     this.client = client
+    this.kclManager = kclManager
 
     // Gotcha: Code can be written into the CodeMirror editor but not propagated to kclManager.code
     // because the update function has not run. We need to initialize the kclManager.code when lsp initializes
@@ -59,12 +66,12 @@ export class KclPlugin implements PluginValue {
       return
     }
 
-    kclManager.handleOnViewUpdate(this.viewUpdate, processCodeMirrorRanges)
+    this.kclManager.handleOnViewUpdate(this.viewUpdate, processCodeMirrorRanges)
   }, 50)
 
   update(viewUpdate: ViewUpdate) {
     this.viewUpdate = viewUpdate
-    kclManager.setEditorView(viewUpdate.view)
+    this.kclManager.setEditorView(viewUpdate.view)
 
     let isUserSelect = false
     let isRelevant = viewUpdate.docChanged
@@ -125,9 +132,9 @@ export class KclPlugin implements PluginValue {
     }
 
     const newCode = viewUpdate.state.doc.toString()
-    kclManager.code = newCode
+    this.kclManager.code = newCode
 
-    void kclManager.writeToFile().then(() => {
+    void this.kclManager.writeToFile().then(() => {
       this.scheduleUpdateDoc()
     })
   }
@@ -195,9 +202,14 @@ export class KclPlugin implements PluginValue {
   }
 }
 
-export function kclPlugin(options: LanguageServerOptions): Extension {
+export function kclPlugin(
+  options: LanguageServerOptions,
+  kclManager: KclManager
+): Extension {
   return [
     lspPlugin(options),
-    ViewPlugin.define((view) => new KclPlugin(options.client, view)),
+    ViewPlugin.define(
+      (view) => new KclPlugin(options.client, view, kclManager)
+    ),
   ]
 }

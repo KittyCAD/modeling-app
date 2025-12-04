@@ -2823,7 +2823,11 @@ export class SceneEntities {
           return
         }
         const { selected } = args
-        const event = getEventForSegmentSelection(selected)
+        const event = getEventForSegmentSelection(
+          selected,
+          this.kclManager.ast,
+          this.kclManager.artifactGraph
+        )
         if (!event) return
         this.sceneInfra.modelingSend(event)
       },

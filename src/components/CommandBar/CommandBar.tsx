@@ -8,7 +8,11 @@ import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  kclManager,
+  useCommandBarState,
+} from '@src/lib/singletons'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import Loading from '@src/components/Loading'
 
@@ -41,18 +45,27 @@ export const CommandBar = () => {
   }, [pathname])
 
   // Hook up keyboard shortcuts
-  useHotkeyWrapper([COMMAND_PALETTE_HOTKEY], () => {
-    if (commandBarState.context.commands.length === 0) return
-    if (commandBarState.matches('Closed')) {
-      commandBarActor.send({ type: 'Open' })
-    } else {
-      commandBarActor.send({ type: 'Close' })
+  useHotkeyWrapper(
+    [COMMAND_PALETTE_HOTKEY],
+    () => {
+      if (commandBarState.context.commands.length === 0) return
+      if (commandBarState.matches('Closed')) {
+        commandBarActor.send({ type: 'Open' })
+      } else {
+        commandBarActor.send({ type: 'Close' })
+      }
+    },
+    kclManager
+  )
+  useHotkeyWrapper(
+    ['esc'],
+    () => commandBarActor.send({ type: 'Close' }),
+    kclManager,
+    {
+      enableOnFormTags: true,
+      enableOnContentEditable: true,
     }
-  })
-  useHotkeyWrapper(['esc'], () => commandBarActor.send({ type: 'Close' }), {
-    enableOnFormTags: true,
-    enableOnContentEditable: true,
-  })
+  )
 
   function stepBack() {
     const entries = Object.entries(selectedCommand?.args || {}).filter(

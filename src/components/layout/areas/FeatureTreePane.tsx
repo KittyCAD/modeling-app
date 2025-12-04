@@ -43,10 +43,7 @@ import {
   useLayout,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import {
-  featureTreeMachine,
-  featureTreeMachineDefaultContext,
-} from '@src/machines/featureTreeMachine'
+import { featureTreeMachine } from '@src/machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
@@ -193,7 +190,8 @@ export const FeatureTreePaneContents = () => {
     }),
     {
       input: {
-        ...featureTreeMachineDefaultContext,
+        rustContext,
+        kclManager,
       },
       // devTools: true,
     }
@@ -890,6 +888,7 @@ const DefaultPlanes = () => {
     (planeId: string) => {
       if (sketchNoFace) {
         void selectSketchPlane(
+          kclManager,
           planeId,
           modelingState.context.store.useNewSketchMode?.current
         )
@@ -925,6 +924,7 @@ const DefaultPlanes = () => {
       })
 
       void selectSketchPlane(
+        kclManager,
         planeId,
         modelingState.context.store.useNewSketchMode?.current
       )

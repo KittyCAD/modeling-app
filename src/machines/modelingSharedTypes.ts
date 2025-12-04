@@ -217,7 +217,7 @@ export interface ModelingMachineContext {
   defaultPlaneVisibility: PlaneVisibilityMap
   savedDefaultPlaneVisibility: PlaneVisibilityMap
   planesInitialized: boolean
-  kclManager?: KclManager
+  kclManager: KclManager
   engineCommandManager?: ConnectionManager
   sceneInfra?: SceneInfra
   sceneEntitiesManager?: SceneEntities

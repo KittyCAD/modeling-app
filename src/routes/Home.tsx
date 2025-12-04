@@ -12,7 +12,6 @@ import {
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
 import { BillingDialog } from '@kittycad/react-shared'
-import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
@@ -28,7 +27,6 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
-import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
@@ -76,7 +74,7 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  useQueryParamEffects()
+  useQueryParamEffects(kclManager)
   const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
@@ -179,18 +177,6 @@ const Home = () => {
           groupId: 'application',
         },
       })
-    } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          name: 'Text-to-CAD',
-          groupId: 'application',
-          argDefaultValues: {
-            method: 'newProject',
-            newProjectName: settings.projects.defaultProjectName.current,
-          },
-        },
-      })
     }
   }
   useMenuListener(cb)
@@ -291,42 +277,6 @@ const Home = () => {
                 data-testid="home-new-file"
               >
                 Create project
-              </ActionButton>
-            </li>
-            <li className="contents">
-              <ActionButton
-                Element="button"
-                onClick={() =>
-                  commandBarActor.send({
-                    type: 'Find and select command',
-                    data: {
-                      groupId: 'application',
-                      name: 'Text-to-CAD',
-                      argDefaultValues: {
-                        method: 'newProject',
-                        newProjectName:
-                          settings.projects.defaultProjectName.current,
-                      },
-                    },
-                  })
-                }
-                className={sidebarButtonClasses}
-                iconStart={{
-                  icon: 'sparkles',
-                  bgClassName: '!bg-transparent rounded-sm',
-                }}
-                data-testid="home-text-to-cad"
-              >
-                Generate with Text-to-CAD
-                <Tooltip position="bottom-left">
-                  <div className="text-sm flex flex-col max-w-xs">
-                    <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
-                      <CustomIcon name="beaker" className="w-4 h-4" />
-                      <span>Experimental</span>
-                    </div>
-                    <p className="pt-2 text-left">{ML_EXPERIMENTAL_MESSAGE}</p>
-                  </div>
-                </Tooltip>
               </ActionButton>
             </li>
             <li className="contents">

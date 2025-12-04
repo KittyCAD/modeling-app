@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import toast from 'react-hot-toast'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  rustContext,
+  kclManager,
+  useCommandBarState,
+} from '@src/lib/singletons'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
@@ -68,6 +73,9 @@ function CoordinateInput({
   )
 }
 
+// GOTCHA: must be defined outside of React to prevent endless rerenders
+const calculateKclExpressionOptions = { allowArrays: false }
+
 function CommandBarVector2DInput({
   arg,
   stepBack,
@@ -127,13 +135,21 @@ function CommandBarVector2DInput({
   const xCalculation = useCalculateKclExpression({
     value: x,
     selectionRanges: { graphSelections: [], otherSelections: [] },
-    allowArrays: false,
+    rustContext: rustContext,
+    options: calculateKclExpressionOptions,
+    code: kclManager.codeSignal.value,
+    ast: kclManager.astSignal.value,
+    variables: kclManager.variablesSignal.value,
   })
 
   const yCalculation = useCalculateKclExpression({
     value: y,
     selectionRanges: { graphSelections: [], otherSelections: [] },
-    allowArrays: false,
+    rustContext: rustContext,
+    options: calculateKclExpressionOptions,
+    code: kclManager.codeSignal.value,
+    ast: kclManager.astSignal.value,
+    variables: kclManager.variablesSignal.value,
   })
 
   // DOM access for focus and keyboard navigation
@@ -192,7 +208,7 @@ function CommandBarVector2DInput({
     const vectorExpression = `[${x.trim()}, ${y.trim()}]`
 
     // Calculate the KCL expression
-    stringToKclExpression(vectorExpression, true)
+    stringToKclExpression(vectorExpression, rustContext, { allowArrays: true })
       .then((result) => {
         if (result instanceof Error || 'errors' in result) {
           toast.error('Unable to create valid vector expression')

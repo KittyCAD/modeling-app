@@ -504,9 +504,7 @@ test.describe(
           unitOfMeasure: string,
           copy: string
         ) => {
-          const gizmo = page.getByRole('button', {
-            name: 'Current units are: ',
-          })
+          const gizmo = page.getByTestId('units-menu')
           await gizmo.click()
           const button = page.locator('ul').getByRole('button', {
             name: copy,
@@ -749,9 +747,7 @@ test.describe(
       const editedInlineUnits = { short: 'mm', long: 'Millimeters' }
       const inlineSettingsString = (s: string) =>
         `@settings(defaultLengthUnit = ${s})`
-      const unitsIndicator = page.getByRole('button', {
-        name: 'Current units are:',
-      })
+      const unitsIndicator = page.getByTestId('units-menu')
       const unitsChangeButton = (name: string) =>
         page.getByRole('button', { name, exact: true })
 
@@ -766,7 +762,9 @@ test.describe(
 
       await test.step(`Initial units from settings are ignored`, async () => {
         await homePage.openProject('project-000')
-        await expect(unitsIndicator).toHaveText('Current units are: mm')
+        await expect(unitsIndicator).toHaveText(
+          'Default units for current filemm'
+        )
       })
 
       await test.step(`Manually write inline settings`, async () => {
