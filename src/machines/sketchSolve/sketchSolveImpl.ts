@@ -27,7 +27,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/centerRectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
-import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineTool'
+import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
 import { deferExecution } from '@src/lib/utils'
 import {

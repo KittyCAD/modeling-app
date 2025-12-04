@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { createActor, waitFor, fromPromise } from 'xstate'
-import { machine } from '@src/machines/sketchSolve/tools/lineTool'
+import { machine } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import type {
   SceneGraphDelta,
   SourceDelta,
