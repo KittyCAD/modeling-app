@@ -325,14 +325,6 @@ export function processCodeMirrorRanges({
   for (const { id, range } of idBasedSelections) {
     if (!id) {
       const pathToNode = getNodePathFromSourceRange(ast, range)
-      const invalidPathToNode =
-        pathToNode.length === 1 &&
-        pathToNode[0][0] === 'body' &&
-        pathToNode[0][1] === ''
-      if (invalidPathToNode) {
-        console.warn('Could not find valid pathToNode, found:', pathToNode)
-        continue
-      }
       selections.push({
         codeRef: {
           range,
