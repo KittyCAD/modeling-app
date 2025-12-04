@@ -5439,27 +5439,14 @@ export const modelingMachine = setup({
             }),
             onDone: {
               target: '#sketchSolveMode.exiting',
-              actions: () => {
-                console.log(
-                  'sketchSolveMachine onDone - transitioning to exiting'
-                )
-              },
             },
             onError: {
               target: '#sketchSolveMode.exiting',
-              actions: () => {
-                console.log(
-                  'sketchSolveMachine onError - transitioning to exiting'
-                )
-              },
             },
           },
           exit: [sendTo('sketchSolveMachine', { type: 'exit' })],
         },
         exiting: {
-          entry: () => {
-            console.log('sketchSolveMode.exiting state entered')
-          },
           invoke: {
             id: 'sketchExit',
             src: 'sketchExit',
