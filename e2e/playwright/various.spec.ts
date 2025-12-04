@@ -5,10 +5,7 @@ test('Units menu', async ({ page, homePage }) => {
   await page.setBodyDimensions({ width: 1200, height: 500 })
   await homePage.goToModelingScene()
 
-  const unitsMenuButton = page.getByRole('button', {
-    name: 'Current Units',
-    exact: false,
-  })
+  const unitsMenuButton = page.getByTestId('units-menu')
   await expect(unitsMenuButton).toBeVisible()
   await expect(unitsMenuButton).toContainText('in')
 
