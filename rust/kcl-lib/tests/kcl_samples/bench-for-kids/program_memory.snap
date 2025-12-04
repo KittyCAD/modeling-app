@@ -80,7 +80,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -234,7 +233,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -388,7 +386,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -542,7 +539,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -734,7 +730,6 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -909,7 +904,6 @@ description: Variables in memory after executing bench-for-kids.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -982,7 +976,6 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1096,7 +1089,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1250,7 +1242,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1406,7 +1397,6 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1560,7 +1550,6 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1742,7 +1731,6 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1864,7 +1852,6 @@ description: Variables in memory after executing bench-for-kids.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1937,7 +1924,6 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -2041,7 +2027,6 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 400.0,
@@ -2160,7 +2145,6 @@ description: Variables in memory after executing bench-for-kids.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 400.0,
@@ -2214,7 +2198,6 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 400.0,
@@ -2247,7 +2230,6 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 400.0,
@@ -2349,7 +2331,6 @@ description: Variables in memory after executing bench-for-kids.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 360.0,
@@ -2471,7 +2452,6 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 360.0,
@@ -2539,7 +2519,6 @@ description: Variables in memory after executing bench-for-kids.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 360.0,
@@ -2612,7 +2591,6 @@ description: Variables in memory after executing bench-for-kids.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 360.0,

@@ -115,7 +115,6 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -215,7 +214,6 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -318,7 +316,6 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -418,7 +415,6 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -518,7 +514,6 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -618,7 +613,6 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -718,7 +712,6 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -852,7 +845,6 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -934,7 +926,6 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1095,7 +1086,6 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1154,7 +1144,6 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1187,7 +1176,6 @@ description: Variables in memory after executing subtract_with_pattern_cut_thru.
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,

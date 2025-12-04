@@ -172,7 +172,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -338,7 +337,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -475,7 +473,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -612,7 +609,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -709,7 +705,6 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -760,7 +755,6 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -837,7 +831,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -937,7 +930,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1052,7 +1044,6 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1185,7 +1176,6 @@ description: Variables in memory after executing utility-sink.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1268,7 +1258,6 @@ description: Variables in memory after executing utility-sink.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1322,7 +1311,6 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1474,7 +1462,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1611,7 +1598,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1748,7 +1734,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1885,7 +1870,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2074,7 +2058,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2211,7 +2194,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2382,7 +2364,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2519,7 +2500,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2607,7 +2587,6 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -2759,7 +2738,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2896,7 +2874,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3094,7 +3071,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3231,7 +3207,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3301,7 +3276,6 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -3583,7 +3557,6 @@ description: Variables in memory after executing utility-sink.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": null,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -3900,7 +3873,6 @@ description: Variables in memory after executing utility-sink.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": null,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -4154,7 +4126,6 @@ description: Variables in memory after executing utility-sink.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "objectId": null,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -4338,7 +4309,6 @@ description: Variables in memory after executing utility-sink.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "objectId": null,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -4542,7 +4512,6 @@ description: Variables in memory after executing utility-sink.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4601,7 +4570,6 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -4684,7 +4652,6 @@ description: Variables in memory after executing utility-sink.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 545.0,
@@ -4784,7 +4751,6 @@ description: Variables in memory after executing utility-sink.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 545.0,
@@ -4884,7 +4850,6 @@ description: Variables in memory after executing utility-sink.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4984,7 +4949,6 @@ description: Variables in memory after executing utility-sink.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -5153,7 +5117,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5290,7 +5253,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5461,7 +5423,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5598,7 +5559,6 @@ description: Variables in memory after executing utility-sink.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5668,7 +5628,6 @@ description: Variables in memory after executing utility-sink.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,

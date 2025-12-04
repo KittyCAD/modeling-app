@@ -124,7 +124,6 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -362,7 +361,6 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": null,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,

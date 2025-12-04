@@ -299,6 +299,7 @@ pub struct Plane {
     /// The scene object ID.
     // TODO: This shouldn't be an Option. It should be part of the [`PlaneType`]
     // enum since it's only none when `Uninit`.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub object_id: Option<ObjectId>,
     // The code for the plane either a string or custom.
     pub value: PlaneType,

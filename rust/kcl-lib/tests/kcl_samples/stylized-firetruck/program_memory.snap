@@ -115,7 +115,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -274,7 +273,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -435,7 +433,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -521,7 +518,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": -900.0,
@@ -627,7 +623,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -806,7 +801,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -1000.0,
@@ -892,7 +886,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": -1000.0,
@@ -998,7 +991,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": -1000.0,
@@ -1168,7 +1160,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -1000.0,
@@ -1382,7 +1373,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1596,7 +1586,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1708,7 +1697,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": -2100.0,
                 "y": 0.0,
@@ -1800,7 +1788,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": -2100.0,
                 "y": 0.0,
@@ -1879,7 +1866,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": -2100.0,
         "y": 0.0,
@@ -1943,7 +1929,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "objectId": null,
             "origin": {
               "x": -2100.0,
               "y": 0.0,
@@ -2025,7 +2010,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "objectId": null,
             "origin": {
               "x": -2100.0,
               "y": 0.0,
@@ -2090,7 +2074,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": -2100.0,
         "y": 0.0,
@@ -2230,7 +2213,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 250.0,
@@ -2389,7 +2371,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 250.0,
@@ -2443,7 +2424,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 250.0,
@@ -2605,7 +2585,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -2737,7 +2716,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -2946,7 +2924,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3160,7 +3137,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3326,7 +3302,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -900.0,
@@ -3476,7 +3451,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": -900.0,
@@ -3640,7 +3614,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 2100.0,
                 "y": 0.0,
@@ -3777,7 +3750,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 2100.0,
                 "y": 0.0,
@@ -3874,7 +3846,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 2100.0,
         "y": 0.0,
@@ -3983,7 +3954,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "objectId": null,
             "origin": {
               "x": 2100.0,
               "y": 0.0,
@@ -4110,7 +4080,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
-            "objectId": null,
             "origin": {
               "x": 2100.0,
               "y": 0.0,
@@ -4175,7 +4144,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 2100.0,
         "y": 0.0,
@@ -4315,7 +4283,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4415,7 +4382,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4552,7 +4518,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4652,7 +4617,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4789,7 +4753,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4889,7 +4852,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5026,7 +4988,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5126,7 +5087,6 @@ description: Variables in memory after executing stylized-firetruck.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,

@@ -49,7 +49,6 @@ description: Variables in memory after executing multi_target_csg.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 2.54,
@@ -381,7 +380,6 @@ description: Variables in memory after executing multi_target_csg.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -604,7 +602,6 @@ description: Variables in memory after executing multi_target_csg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -818,7 +815,6 @@ description: Variables in memory after executing multi_target_csg.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
-              "objectId": null,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -884,7 +880,6 @@ description: Variables in memory after executing multi_target_csg.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1114,7 +1109,6 @@ description: Variables in memory after executing multi_target_csg.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1174,7 +1168,6 @@ description: Variables in memory after executing multi_target_csg.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1314,7 +1307,6 @@ description: Variables in memory after executing multi_target_csg.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1475,7 +1467,6 @@ description: Variables in memory after executing multi_target_csg.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1529,7 +1520,6 @@ description: Variables in memory after executing multi_target_csg.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": null,
       "origin": {
         "x": 0.0,
         "y": 2.54,
@@ -1590,7 +1580,6 @@ description: Variables in memory after executing multi_target_csg.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": null,
         "origin": {
           "x": 0.0,
           "y": 2.54,

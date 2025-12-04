@@ -202,7 +202,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
-                      "objectId": null,
                       "origin": {
                         "x": 0.0,
                         "y": -28.495190528383297,
@@ -526,7 +525,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
-                      "objectId": null,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -706,7 +704,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -806,7 +803,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -933,7 +929,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -28.495190528383297,
@@ -1033,7 +1028,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1431,7 +1425,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1683,7 +1676,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": -47.4951905283833,
@@ -1901,7 +1893,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2343,7 +2334,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "objectId": null,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2640,7 +2630,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": null,
                 "origin": {
                   "x": 0.0,
                   "y": -28.495190528383297,
@@ -2879,7 +2868,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "objectId": null,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
