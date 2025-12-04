@@ -157,7 +157,6 @@ export class KclPlugin implements PluginValue {
       this.sendScheduledInput = null
     }
 
-    const clearSelections = true // no reason to keep them after a manual edit
     if (!this.client.ready) {
       return
     }
@@ -170,7 +169,7 @@ export class KclPlugin implements PluginValue {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const modelingState = (kclManager as any)._modelingState
       if (modelingState?.matches('sketchSolveMode')) {
-        await kclManager.executeCode(clearSelections)
+        await kclManager.executeCode()
         const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
           kclManager.ast,
           await jsAppSettings()
@@ -197,7 +196,7 @@ export class KclPlugin implements PluginValue {
           },
         })
       } else {
-        await kclManager.executeCode(clearSelections)
+        await kclManager.executeCode()
       }
     } catch (error) {
       console.error('Error when updating Rust state after user edit:', error)
