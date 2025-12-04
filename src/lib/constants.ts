@@ -88,11 +88,16 @@ export const KCL_DEFAULT_COLOR = `#3c73ff`
 export const SKETCH_SELECTION_RGB = [255, 183, 39]
 /** The sketch mode revamp selection rgb values as a string */
 export const SKETCH_SELECTION_RGB_STR = SKETCH_SELECTION_RGB.join(', ')
+
+/**
+ * Converts an RGB array [r, g, b] to a single integer color value (0xRRGGBB format).
+ * Used for Three.js color values that expect an integer representation.
+ */
+export function packRgbToColor(rgb: number[]): number {
+  return (rgb[0] << 16) | (rgb[1] << 8) | rgb[2]
+}
 /** The sketch mode revamp selection rgb values as HEX */
-export const SKETCH_SELECTION_COLOR =
-  (SKETCH_SELECTION_RGB[0] << 16) |
-  (SKETCH_SELECTION_RGB[1] << 8) |
-  SKETCH_SELECTION_RGB[2]
+export const SKETCH_SELECTION_COLOR = packRgbToColor(SKETCH_SELECTION_RGB)
 
 /** The default KCL font point size expression */
 export const KCL_DEFAULT_FONT_POINT_SIZE = `36`

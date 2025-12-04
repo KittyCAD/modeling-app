@@ -173,6 +173,7 @@ test.describe('Sketch solve edit tests', () => {
   }) => {
     const INITIAL_CODE = `@settings(experimentalFeatures = allow)
 `
+    const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
     await test.step('Set up the app with initial code and enable new sketch mode', async () => {
       // Set useNewSketchMode in user settings (it's stored at user level even though hideOnLevel is 'project')
@@ -227,42 +228,54 @@ test.describe('Sketch solve edit tests', () => {
 
       let previousCode = await editor.getCurrentCode()
 
+      const cancelLineChaining = async () => {
+        await page.waitForTimeout(60)
+        return page.keyboard.press('Escape')
+      }
       // First line segment
       const [line1Start] = scene.makeMouseHelpers(0.3, 0.4, {
         format: 'ratio',
       })
-      const [, , line1End] = scene.makeMouseHelpers(0.3, 0.8, {
+      const [line1End] = scene.makeMouseHelpers(0.3, 0.8, {
         format: 'ratio',
       })
       await line1Start()
       previousCode = await waitForCodeChange(page, previousCode)
-      await line1End() // Double-click to end the line and stop chaining
+      await line1End()
       previousCode = await waitForCodeChange(page, previousCode)
+      await cancelLineChaining()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await expect(pointHandles).toHaveCount(2)
 
       // Second line segment
       const [line2Start] = scene.makeMouseHelpers(0.5, 0.4, {
         format: 'ratio',
       })
-      const [, , line2End] = scene.makeMouseHelpers(0.8, 0.2, {
+      const [line2End] = scene.makeMouseHelpers(0.8, 0.2, {
         format: 'ratio',
       })
       await line2Start()
       previousCode = await waitForCodeChange(page, previousCode)
-      await line2End() // Double-click to end the line and stop chaining
+      await line2End()
       previousCode = await waitForCodeChange(page, previousCode)
+      await cancelLineChaining()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await expect(pointHandles).toHaveCount(4)
 
       // Third line segment
       const [line3Start] = scene.makeMouseHelpers(0.7, 0.4, {
         format: 'ratio',
       })
-      const [, , line3End] = scene.makeMouseHelpers(0.15, 0.3, {
+      const [line3End] = scene.makeMouseHelpers(0.15, 0.3, {
         format: 'ratio',
       })
       await line3Start()
       previousCode = await waitForCodeChange(page, previousCode)
-      await line3End() // Double-click to end the line and stop chaining
+      await line3End()
+      previousCode = await waitForCodeChange(page, previousCode)
+      await cancelLineChaining()
       await waitForCodeChange(page, previousCode)
-      await page.waitForTimeout(300)
+      await expect(pointHandles).toHaveCount(6)
     })
 
     await test.step('Add three points', async () => {

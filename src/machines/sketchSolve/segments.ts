@@ -7,7 +7,6 @@ import {
   LineCurve3,
   Mesh,
   MeshBasicMaterial,
-  Shape,
   Vector3,
 } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
@@ -15,6 +14,7 @@ import { createLineShape } from '@src/clientSideScene/segments'
 import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
 import {
   KCL_DEFAULT_COLOR,
+  packRgbToColor,
   SKETCH_SELECTION_COLOR,
   SKETCH_SELECTION_RGB,
   SKETCH_SELECTION_RGB_STR,
@@ -64,14 +64,64 @@ class PointSegment implements SegmentUtils {
    */
   private updatePointColors(
     innerCircle: HTMLElement,
-    isSelected: boolean
+    status: {
+      isSelected: boolean
+      isHovered: boolean
+    }
   ): void {
-    innerCircle.style.backgroundColor = isSelected
+    if (status.isHovered) {
+      // Calculate darker version of SKETCH_SELECTION_COLOR (70% brightness)
+      const darkerSelectionRgb = SKETCH_SELECTION_RGB.map((val) =>
+        Math.round(val * 0.7)
+      )
+      const darkerSelectionRgbStr = darkerSelectionRgb.join(', ')
+      innerCircle.style.backgroundColor = `rgb(${darkerSelectionRgbStr})`
+      innerCircle.style.border = `1px solid rgba(${darkerSelectionRgbStr}, 0.5)`
+      return // Hover styles take precedence
+    }
+    innerCircle.style.backgroundColor = status.isSelected
       ? `rgb(${SKETCH_SELECTION_RGB_STR})`
       : KCL_DEFAULT_COLOR
-    innerCircle.style.border = isSelected
+    innerCircle.style.border = status.isSelected
       ? `2px solid rgba(${SKETCH_SELECTION_RGB_STR}, 0.5)`
       : '0px solid #CCCCCC'
+  }
+
+  private updatePointSize(innerCircle: HTMLElement, isHovered = false) {
+    innerCircle.style.width = isHovered ? '10px' : '6px'
+    innerCircle.style.height = isHovered ? '10px' : '6px'
+  }
+
+  private createPointHtml(segmentId: number) {
+    const [handleDiv, innerCircle] = htmlHelper`
+      <div
+          data-segment_id="${String(segmentId)}"
+          ${{ key: 'handle', value: SKETCH_POINT_HANDLE }}
+          style="
+          width: 30px;
+          height: 30px;
+          position: absolute;
+          pointer-events: auto;
+          transform: translate(-50%, -50%);
+          "
+          >
+          <div
+            ${{ key: 'id', value: 'inner-circle' }}
+            data-point-inner-circle="true"
+            style="
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              width: 6px;
+              height: 6px;
+              border-radius: 50%;
+              transition: width 0.15s ease, height 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+            "
+          ></div>
+        </div>
+      `
+    return { handleDiv, innerCircle }
   }
 
   init = (args: CreateSegmentArgs) => {
@@ -81,56 +131,22 @@ class PointSegment implements SegmentUtils {
     const segmentGroup = new Group()
 
     // Create a 2D box using CSS2DObject
+    const { handleDiv, innerCircle } = this.createPointHtml(args.id)
     // Outer div is larger for hitbox, inner div is smaller visually
-    const [handleDiv, innerCircle] = htmlHelper`
-    <div
-        data-segment_id="${String(args.id)}"
-        ${{ key: 'handle', value: SKETCH_POINT_HANDLE }}
-        style="
-        width: 30px;
-        height: 30px;
-        position: absolute;
-        pointer-events: auto;
-        transform: translate(-50%, -50%);
-        "
-        >
-        <div
-          ${{ key: 'id', value: 'inner-circle' }}
-          data-point-inner-circle="true"
-          style="
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            transition: width 0.15s ease, height 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
-          "
-        ></div>
-      </div>
-    `
-
-    // Calculate darker version of SKETCH_SELECTION_COLOR (70% brightness)
-    const darkerSelectionRgb = SKETCH_SELECTION_RGB.map((val) =>
-      Math.round(val * 0.7)
-    )
-    const darkerSelectionRgbStr = darkerSelectionRgb.join(', ')
 
     // Hover styles
     handleDiv.addEventListener('mouseenter', () => {
-      innerCircle.style.width = '10px'
-      innerCircle.style.height = '10px'
-      innerCircle.style.backgroundColor = `rgb(${darkerSelectionRgbStr})`
-      innerCircle.style.border = `1px solid rgba(${darkerSelectionRgbStr}, 0.5)`
+      this.updatePointSize(innerCircle, true)
+      const isSelected = handleDiv.dataset.isSelected === 'true'
+      this.updatePointColors(innerCircle, { isSelected, isHovered: true })
     })
 
     handleDiv.addEventListener('mouseleave', () => {
-      innerCircle.style.width = '6px'
-      innerCircle.style.height = '6px'
+      const isHovered = false
+      this.updatePointSize(innerCircle, isHovered)
       // Restore colors based on selection state stored in data attribute
       const isSelected = handleDiv.dataset.isSelected === 'true'
-      this.updatePointColors(innerCircle, isSelected)
+      this.updatePointColors(innerCircle, { isSelected, isHovered })
     })
 
     const cssObject = new CSS2DObject(handleDiv)
@@ -158,27 +174,28 @@ class PointSegment implements SegmentUtils {
     if (args.input.type !== 'Point') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { x, y } = args.input.position
+    const { input, group, scale, selectedIds, id } = args
+    const { x, y } = input.position
     if (!('value' in x && 'value' in y)) {
       return new Error('Invalid position values for PointSegment')
     }
-    args.group.scale.set(args.scale, args.scale, args.scale)
-    const handle = args.group.getObjectByName('handle')
+    group.scale.set(scale, scale, scale)
+    const handle = group.getObjectByName('handle')
     if (handle && handle instanceof CSS2DObject) {
-      handle.position.set(x.value / args.scale, y.value / args.scale, 0)
+      handle.position.set(x.value / scale, y.value / scale, 0)
 
       // Update selected styling based on whether this segment id is selected
       const el = handle.element
       const innerCircle = el.querySelector('div')
       if (!innerCircle) return
 
-      const isSelected = args.selectedIds.includes(args.id)
+      const isSelected = selectedIds.includes(id)
       // Store selection state in data attribute for hover handlers
       el.dataset.isSelected = String(isSelected)
 
       // Only update colors if not hovering (hover styles take precedence)
       if (!el.matches(':hover')) {
-        this.updatePointColors(innerCircle, isSelected)
+        this.updatePointColors(innerCircle, { isSelected, isHovered: false })
       }
     }
   }
@@ -189,22 +206,15 @@ class LineSegment implements SegmentUtils {
    * Updates the line segment mesh color based on selection and hover state
    */
   updateLineColors(mesh: Mesh, isSelected: boolean, isHovered: boolean): void {
-    // Calculate darker version of SKETCH_SELECTION_COLOR (70% brightness)
-    const darkerSelectionRgb = SKETCH_SELECTION_RGB.map((val) =>
-      Math.round(val * 0.7)
-    )
-    const darkerSelectionColor =
-      (darkerSelectionRgb[0] << 16) |
-      (darkerSelectionRgb[1] << 8) |
-      darkerSelectionRgb[2]
-
     const material = mesh.material
     if (!(material instanceof MeshBasicMaterial)) {
       return
     }
 
     if (isHovered) {
-      material.color.set(darkerSelectionColor)
+      material.color.set(
+        packRgbToColor(SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7)))
+      )
     } else if (isSelected) {
       material.color.set(SKETCH_SELECTION_COLOR)
     } else {
@@ -216,27 +226,27 @@ class LineSegment implements SegmentUtils {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
+    const { input, theme, id, scale } = args
     if (
       !(
-        'value' in args.input.start.x &&
-        'value' in args.input.start.y &&
-        'value' in args.input.end.x &&
-        'value' in args.input.end.y
+        'value' in input.start.x &&
+        'value' in input.start.y &&
+        'value' in input.end.x &&
+        'value' in input.end.y
       )
     ) {
       return new Error('Invalid position values for LineSegment')
     }
-    const startX = args.input.start.x.value
-    const startY = args.input.start.y.value
-    const endX = args.input.end.x.value
-    const endY = args.input.end.y.value
+    const startX = input.start.x.value
+    const startY = input.start.y.value
+    const endX = input.end.x.value
+    const endY = input.end.y.value
     const segmentGroup = new Group()
-    const shape = new Shape()
     const line = new LineCurve3(
-      new Vector3(startX / args.scale, startY / args.scale, 0),
-      new Vector3(endX / args.scale, endY / args.scale, 0)
+      new Vector3(startX / scale, startY / scale, 0),
+      new Vector3(endX / scale, endY / scale, 0)
     )
-    const geometry = new ExtrudeGeometry(shape, {
+    const geometry = new ExtrudeGeometry(createLineShape(scale), {
       steps: 2,
       bevelEnabled: false,
       extrudePath: line,
@@ -246,7 +256,7 @@ class LineSegment implements SegmentUtils {
 
     mesh.userData.type = STRAIGHT_SEGMENT_BODY
     mesh.name = STRAIGHT_SEGMENT_BODY
-    segmentGroup.name = args.id.toString()
+    segmentGroup.name = id.toString()
     segmentGroup.userData = {
       type: SEGMENT_TYPE_LINE,
     }
@@ -254,10 +264,10 @@ class LineSegment implements SegmentUtils {
     segmentGroup.add(mesh)
 
     this.update({
-      input: args.input,
-      theme: args.theme,
-      id: args.id,
-      scale: args.scale,
+      input: input,
+      theme: theme,
+      id: id,
+      scale: scale,
       group: segmentGroup,
       selectedIds: [],
     })
@@ -268,19 +278,20 @@ class LineSegment implements SegmentUtils {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
+    const { input, group, id, scale, selectedIds } = args
     if (
       !(
-        'value' in args.input.start.x &&
-        'value' in args.input.start.y &&
-        'value' in args.input.end.x &&
-        'value' in args.input.end.y
+        'value' in input.start.x &&
+        'value' in input.start.y &&
+        'value' in input.end.x &&
+        'value' in input.end.y
       )
     ) {
       return new Error('Invalid position values for LineSegment')
     }
-    const shape = createLineShape(args.scale)
+    const shape = createLineShape(scale)
 
-    const straightSegmentBody = args.group.children.find(
+    const straightSegmentBody = group.children.find(
       (child) => child.userData.type === STRAIGHT_SEGMENT_BODY
     )
     if (!(straightSegmentBody && straightSegmentBody instanceof Mesh)) {
@@ -289,8 +300,8 @@ class LineSegment implements SegmentUtils {
     }
 
     const line = new LineCurve3(
-      new Vector3(args.input.start.x.value, args.input.start.y.value, 0),
-      new Vector3(args.input.end.x.value, args.input.end.y.value, 0)
+      new Vector3(input.start.x.value, input.start.y.value, 0),
+      new Vector3(input.end.x.value, input.end.y.value, 0)
     )
     straightSegmentBody.geometry.dispose()
     straightSegmentBody.geometry = new ExtrudeGeometry(shape, {
@@ -300,7 +311,7 @@ class LineSegment implements SegmentUtils {
     })
 
     // Update mesh color based on selection
-    const isSelected = args.selectedIds.includes(args.id)
+    const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
     const isHovered = straightSegmentBody.userData.isHovered === true
     this.updateLineColors(straightSegmentBody, isSelected, isHovered)

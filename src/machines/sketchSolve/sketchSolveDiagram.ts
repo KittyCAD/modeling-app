@@ -45,6 +45,12 @@ export const sketchSolveMachine = setup({
     context: {} as SketchSolveContext,
     events: {} as SketchSolveMachineEvent,
     input: {} as {
+      // dependencies
+      sceneInfra: SceneInfra
+      sceneEntitiesManager: SceneEntities
+      rustContext: RustContext
+      kclManager: KclManager
+      // end dependencies
       initialSketchSolvePlane?:
         | DefaultPlane
         | OffsetPlane
@@ -52,10 +58,6 @@ export const sketchSolveMachine = setup({
         | null
       sketchId: number
       initialSceneGraphDelta?: SceneGraphDelta
-      sceneInfra: SceneInfra
-      sceneEntitiesManager: SceneEntities
-      rustContext: RustContext
-      kclManager: KclManager
     },
   },
   actions: {

@@ -2,6 +2,7 @@ import type {
   ApiObject,
   Expr,
   SceneGraphDelta,
+  SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SegmentUtils } from '@src/machines/sketchSolve/segments'
@@ -139,7 +140,7 @@ export const CHILD_TOOL_DONE_EVENT = `xstate.done.actor.${CHILD_TOOL_ID}`
 export function buildSegmentCtorFromObject(
   obj: ApiObject,
   objects: Array<ApiObject>
-): Parameters<SegmentUtils['update']>[0]['input'] | null {
+): SegmentCtor | null {
   if (obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point') {
     return {
       type: 'Point',
@@ -193,7 +194,7 @@ export function updateSegmentGroup({
   theme,
 }: {
   group: Group
-  input: Parameters<SegmentUtils['update']>[0]['input']
+  input: SegmentCtor
   selectedIds: Array<number>
   scale: number
   theme: Themes
