@@ -36,9 +36,12 @@ describe('useOnFileRoute', () => {
         useOnFileRoute({
           file,
           isStreamAcceptingInput: false,
-          engineCommandManager,
-          kclManager,
           resetCameraPosition,
+          systemDeps: {
+            engineCommandManager,
+            kclManager,
+            sceneInfra,
+          },
         })
       })
       unmount()
@@ -72,9 +75,12 @@ describe('useOnFileRoute', () => {
         useOnFileRoute({
           file,
           isStreamAcceptingInput: true,
-          engineCommandManager,
-          kclManager,
           resetCameraPosition: callback,
+          systemDeps: {
+            engineCommandManager,
+            kclManager,
+            sceneInfra,
+          },
         })
       })
       unmount()
@@ -121,9 +127,12 @@ describe('useOnFileRoute', () => {
           useOnFileRoute({
             file,
             isStreamAcceptingInput: true,
-            engineCommandManager,
-            kclManager,
             resetCameraPosition: callback,
+            systemDeps: {
+              engineCommandManager,
+              kclManager,
+              sceneInfra,
+            },
           })
         },
         { initialProps: { file } }
@@ -175,9 +184,12 @@ describe('useOnFileRoute', () => {
           useOnFileRoute({
             file,
             isStreamAcceptingInput: true,
-            engineCommandManager,
-            kclManager,
             resetCameraPosition: callback,
+            systemDeps: {
+              engineCommandManager,
+              kclManager,
+              sceneInfra,
+            },
           })
         },
         { initialProps: { file } }
@@ -231,9 +243,12 @@ describe('useOnFileRoute', () => {
           useOnFileRoute({
             file,
             isStreamAcceptingInput: false,
-            engineCommandManager,
-            kclManager,
             resetCameraPosition: callback,
+            systemDeps: {
+              engineCommandManager,
+              kclManager,
+              sceneInfra,
+            },
           })
         },
         { initialProps: { file } }

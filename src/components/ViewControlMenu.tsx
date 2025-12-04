@@ -74,7 +74,7 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
-          resetCameraPosition().catch(reportRejection)
+          resetCameraPosition({ sceneInfra }).catch(reportRejection)
         }}
         disabled={shouldLockView}
         hotkey="mod+alt+x"
