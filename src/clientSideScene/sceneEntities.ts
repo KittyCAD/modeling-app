@@ -408,9 +408,6 @@ export class SceneEntities {
     xAxisMesh.renderOrder = -2
     yAxisMesh.renderOrder = -1
 
-    // This makes sure axis lines are picked after segment lines in case of overlapping
-    xAxisMesh.position.z = -0.1
-    yAxisMesh.position.z = -0.1
     xAxisMesh.userData = {
       type: X_AXIS,
       baseColor: baseXColor,
@@ -2782,7 +2779,11 @@ export class SceneEntities {
           return
         }
         const { selected } = args
-        const event = getEventForSegmentSelection(selected)
+        const event = getEventForSegmentSelection(
+          selected,
+          this.kclManager.ast,
+          this.kclManager.artifactGraph
+        )
         if (!event) return
         this.sceneInfra.modelingSend(event)
       },

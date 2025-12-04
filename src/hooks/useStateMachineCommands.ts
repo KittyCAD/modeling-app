@@ -4,14 +4,13 @@ import type { Actor, AnyStateMachine, EventFrom, StateFrom } from 'xstate'
 
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { useKclContext } from '@src/lang/KclProvider'
 import type {
   Command,
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
-import { commandBarActor } from '@src/lib/singletons'
+import { commandBarActor, kclManager } from '@src/lib/singletons'
 
 interface UseStateMachineCommandsArgs<
   T extends AnyStateMachine,
@@ -22,6 +21,7 @@ interface UseStateMachineCommandsArgs<
   send: (event: EventFrom<T>) => void
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
+  isExecuting: boolean
   onCancel?: () => void
 }
 
@@ -42,14 +42,14 @@ export default function useStateMachineCommands<
   actor,
   commandBarConfig,
   onCancel,
+  isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
   const { overallState } = useNetworkContext()
-  const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
   const shouldDisableEngineCommands =
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
-    isExecuting ||
+    kclManager.isExecutingSignal.value ||
     !isStreamReady
 
   useEffect(() => {

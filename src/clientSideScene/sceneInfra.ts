@@ -393,6 +393,7 @@ export class SceneInfra {
 
   dispose = () => {
     // Dispose of scene resources, renderer, and controls
+    this.renderer.forceContextLoss()
     this.renderer.dispose()
     // Dispose of any other resources like geometries, materials, textures
   }
@@ -644,9 +645,13 @@ export class SceneInfra {
     }
 
     // Convert the map values to an array and sort by distance
-    return Array.from(intersectionsMap.values()).sort(
-      (a, b) => a.distance - b.distance
-    )
+    return Array.from(intersectionsMap.values()).sort((a, b) => {
+      const aIsAxis = isAxisObject(a.object)
+      const bIsAxis = isAxisObject(b.object)
+      if (aIsAxis && !bIsAxis) return 1
+      if (!aIsAxis && bIsAxis) return -1
+      return a.distance - b.distance
+    })
   }
 
   updateMouseState(mouseState: MouseState) {
@@ -780,6 +785,11 @@ export class SceneInfra {
   resumeRendering() {
     this.isRenderingPaused = false
   }
+}
+
+function isAxisObject(object: Object3D | undefined): boolean {
+  if (!object) return false
+  return object.name === X_AXIS || object.name === Y_AXIS
 }
 
 function baseUnitTomm(baseUnit: BaseUnit) {

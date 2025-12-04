@@ -23,6 +23,7 @@ import {
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -112,8 +113,6 @@ revolve001 = revolve(profile001, angle = 270deg, axis = X)`
       )
       const radius = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addFillet({
@@ -154,8 +153,6 @@ revolve001 = revolve(profile001, angle = 270deg, axis = X)`
       )
       const radius = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addFillet({
@@ -209,8 +206,6 @@ fillet001 = fillet(
       )
       const radius = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addFillet({
@@ -261,8 +256,6 @@ fillet001 = fillet(
       const nodeToEdit = createPathToNodeForLastVariable(ast, false)
       const radius = (await stringToKclExpression(
         '1.1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addFillet({
@@ -317,8 +310,6 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       ]
       const radius = (await stringToKclExpression(
         '2',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addFillet({
@@ -373,8 +364,6 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
 
       const radius = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
 
@@ -419,8 +408,6 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
 
       const radius = (await stringToKclExpression(
         '0.5',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
 
@@ -463,8 +450,6 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       )
       const length = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addChamfer({
@@ -505,8 +490,6 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       )
       const length = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addChamfer({
@@ -560,14 +543,10 @@ chamfer001 = chamfer(
       )
       const length = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const secondLength = (await stringToKclExpression(
         '1.1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addChamfer({
@@ -615,14 +594,10 @@ chamfer001 = chamfer(
       )
       const length = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const angle = (await stringToKclExpression(
         '46deg',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addChamfer({
@@ -673,8 +648,6 @@ chamfer001 = chamfer(
       const nodeToEdit = createPathToNodeForLastVariable(ast, false)
       const length = (await stringToKclExpression(
         '1.1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addChamfer({
@@ -731,8 +704,6 @@ chamfer001 = chamfer(
 
       const length = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
 
@@ -777,8 +748,6 @@ chamfer001 = chamfer(
 
       const length = (await stringToKclExpression(
         '0.5',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
 

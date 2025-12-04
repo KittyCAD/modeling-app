@@ -1,6 +1,6 @@
 [package]
 name = "kcl-wasm-lib"
-version = "0.1.111"
+version = "0.1.113"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 publish = false
@@ -17,7 +17,6 @@ rayon = { workspace = true }
 typed-path = "0.12.0"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-bson = { workspace = true, features = ["uuid-1", "chrono"] }
 console_error_panic_hook = { workspace = true }
 data-encoding = "2.9.0"
 futures = "0.3.31"

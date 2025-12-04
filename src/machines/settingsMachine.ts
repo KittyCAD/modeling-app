@@ -57,10 +57,6 @@ export const settingsMachine = setup({
       | WildcardSetEvent<SettingsPaths>
       | SetEventTypes
       | {
-          type: 'set.app.theme'
-          data: { level: SettingsLevel; value: Themes }
-        }
-      | {
           type: 'set.modeling.units'
           data: { level: SettingsLevel; value: BaseUnit }
         }
@@ -500,12 +496,6 @@ export const settingsMachine = setup({
           target: 'persisting settings',
 
           actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
-        },
-
-        'set.meta.enableZookeeper': {
-          target: 'persisting settings',
-
-          actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
         'Reset settings': {

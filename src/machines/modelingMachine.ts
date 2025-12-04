@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
-import { assign, fromPromise, sendTo, setup } from 'xstate'
+import { assertEvent, assign, fromPromise, sendTo, setup } from 'xstate'
 
 import type {
   SetSelections,
@@ -138,7 +138,6 @@ import {
 } from '@src/lib/selections'
 import {
   engineCommandManager,
-  kclManager,
   rustContext,
   sceneEntitiesManager,
   sceneInfra,
@@ -243,6 +242,7 @@ export type ModelingMachineEvent =
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
+  | { type: 'Text-to-CAD' }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
       type: 'Delete selection'
@@ -367,49 +367,46 @@ export const modelingMachine = setup({
       return context.store.useNewSketchMode?.current === true
     },
     'Selection is on face': ({
-      context: { selectionRanges, kclManager: providedKclManager },
+      context: { selectionRanges, kclManager },
       event,
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
-      const theKclManager = providedKclManager ? providedKclManager : kclManager
       if (artifactIsPlaneWithPaths(selectionRanges)) {
         return true
       } else if (selectionRanges.graphSelections[0]?.artifact) {
         // See if the selection is "close enough" to be coerced to the plane later
         const maybePlane = getPlaneFromArtifact(
           selectionRanges.graphSelections[0].artifact,
-          theKclManager.artifactGraph
+          kclManager.artifactGraph
         )
         return !err(maybePlane)
       }
       if (
         isCursorInFunctionDefinition(
-          theKclManager.ast,
+          kclManager.ast,
           selectionRanges.graphSelections[0]
         )
       ) {
         return false
       }
       return !!isCursorInSketchCommandRange(
-        theKclManager.artifactGraph,
+        kclManager.artifactGraph,
         selectionRanges
       )
     },
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
     // TODO: figure out if we really need this one, was separate from 'no kcl errors'
-    'is-error-free': ({ context }): boolean => {
-      const theKclManager = context.kclManager ? context.kclManager : kclManager
-      return theKclManager.errors.length === 0 && !theKclManager.hasErrors()
+    'is-error-free': ({ context: { kclManager } }): boolean => {
+      return kclManager.errors.length === 0 && !kclManager.hasErrors()
     },
     'is editing existing sketch': ({
-      context: { sketchDetails, kclManager: providedKclManager },
+      context: { sketchDetails, kclManager },
     }) => {
-      const theKclManager = providedKclManager ? providedKclManager : kclManager
       return isEditingExistingSketch({
         sketchDetails,
-        kclManager: theKclManager,
+        kclManager,
       })
     },
     'Can make selection horizontal': ({ context: { selectionRanges } }) => {
@@ -454,29 +451,23 @@ export const modelingMachine = setup({
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain angle': ({
-      context: { selectionRanges, kclManager: providedKclManager },
-    }) => {
+    'Can constrain angle': ({ context: { selectionRanges, kclManager } }) => {
       const angleBetween = angleBetweenInfo({
         selectionRanges,
       })
       if (err(angleBetween)) return false
-      const theKclManager = providedKclManager ? providedKclManager : kclManager
       const angleLength = angleLengthInfo({
         selectionRanges,
         angleOrLength: 'setAngle',
-        kclManager: theKclManager,
+        kclManager,
       })
       if (err(angleLength)) return false
       return angleBetween.enabled || angleLength.enabled
     },
-    'Can constrain length': ({
-      context: { selectionRanges, kclManager: providedKclManager },
-    }) => {
-      const theKclManager = providedKclManager ? providedKclManager : kclManager
+    'Can constrain length': ({ context: { selectionRanges, kclManager } }) => {
       const angleLength = angleLengthInfo({
         selectionRanges,
-        kclManager: theKclManager,
+        kclManager,
       })
       if (err(angleLength)) return false
       return angleLength.enabled
@@ -535,11 +526,7 @@ export const modelingMachine = setup({
       return info.enabled
     },
     'Can constrain remove constraints': ({
-      context: {
-        selectionRanges,
-        kclManager: providedKclManager,
-        wasmInstance,
-      },
+      context: { selectionRanges, kclManager, wasmInstance },
       event,
     }) => {
       if (event.type !== 'Constrain remove constraints') return false
@@ -551,7 +538,7 @@ export const modelingMachine = setup({
           })
       const info = removeConstrainingValuesInfo(
         pathToNodes,
-        providedKclManager,
+        kclManager,
         wasmInstance
       )
       if (err(info)) return false
@@ -561,10 +548,12 @@ export const modelingMachine = setup({
       if (event.type !== 'Constrain with named value') return false
       if (!event.data) return false
 
-      const theKclManager = context.kclManager ? context.kclManager : kclManager
       const wasmInstance = context.wasmInstance
 
-      const ast = parse(recast(theKclManager.ast, wasmInstance), wasmInstance)
+      const ast = parse(
+        recast(context.kclManager.ast, wasmInstance),
+        wasmInstance
+      )
       if (err(ast) || !ast.program || ast.errors.length > 0) return false
       const isSafeRetVal = isNodeSafeToReplacePath(
         ast.program,
@@ -575,12 +564,11 @@ export const modelingMachine = setup({
       return isSafeRetVal.isSafe
     },
     'next is tangential arc': ({
-      context: { sketchDetails, currentTool, kclManager: providedKclManager },
+      context: { sketchDetails, currentTool, kclManager },
     }) => {
-      const theKclManager = providedKclManager ? providedKclManager : kclManager
       return (
         currentTool === 'tangentialArc' &&
-        isEditingExistingSketch({ sketchDetails, kclManager: theKclManager })
+        isEditingExistingSketch({ sketchDetails, kclManager })
       )
     },
     'next is rectangle': ({ context: { currentTool } }) =>
@@ -655,11 +643,8 @@ export const modelingMachine = setup({
     ),
     'hide default planes': assign({
       defaultPlaneVisibility: ({ context }) => {
-        const theKclManager = context.kclManager
-          ? context.kclManager
-          : kclManager
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        theKclManager.hidePlanes()
+        context.kclManager.hidePlanes()
         return { xy: false, xz: false, yz: false }
       },
     }),
@@ -699,7 +684,7 @@ export const modelingMachine = setup({
         context: {
           sketchDetails,
           sceneEntitiesManager: providedSceneEntitiesManager,
-          kclManager: providedKclManager,
+          kclManager,
           wasmInstance,
         },
         event,
@@ -709,9 +694,6 @@ export const modelingMachine = setup({
         const theSceneEntitiesManager = providedSceneEntitiesManager
           ? providedSceneEntitiesManager
           : sceneEntitiesManager
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         theSceneEntitiesManager
@@ -725,8 +707,8 @@ export const modelingMachine = setup({
             'line'
           )
           .then(() => {
-            return theKclManager.updateEditorWithAstAndWriteToFile(
-              theKclManager.ast,
+            return kclManager.updateEditorWithAstAndWriteToFile(
+              kclManager.ast,
               undefined,
               wasmInstance
             )
@@ -745,7 +727,7 @@ export const modelingMachine = setup({
         context: {
           sketchDetails,
           sceneEntitiesManager: providedSceneEntitiesManager,
-          kclManager: providedKclManager,
+          kclManager,
           wasmInstance,
         },
         event,
@@ -755,9 +737,6 @@ export const modelingMachine = setup({
         const theSceneEntitiesManager = providedSceneEntitiesManager
           ? providedSceneEntitiesManager
           : sceneEntitiesManager
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         theSceneEntitiesManager
@@ -771,8 +750,8 @@ export const modelingMachine = setup({
             'tangentialArc'
           )
           .then(() => {
-            return theKclManager.updateEditorWithAstAndWriteToFile(
-              theKclManager.ast,
+            return kclManager.updateEditorWithAstAndWriteToFile(
+              kclManager.ast,
               undefined,
               wasmInstance
             )
@@ -1098,25 +1077,21 @@ export const modelingMachine = setup({
     }),
     'show default planes': assign({
       defaultPlaneVisibility: ({ context }) => {
-        const theKclManager = context.kclManager
-          ? context.kclManager
-          : kclManager
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        theKclManager.showPlanes()
+        context.kclManager.showPlanes()
         return { xy: true, xz: true, yz: true }
       },
     }),
     'show default planes if no errors': assign({
-      defaultPlaneVisibility: ({ context }) => {
-        const theKclManager = context.kclManager
-          ? context.kclManager
-          : kclManager
-        if (!theKclManager.hasErrors()) {
+      defaultPlaneVisibility: ({
+        context: { kclManager, defaultPlaneVisibility },
+      }) => {
+        if (!kclManager.hasErrors()) {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          theKclManager.showPlanes()
+          kclManager.showPlanes()
           return { xy: true, xz: true, yz: true }
         }
-        return { ...context.defaultPlaneVisibility }
+        return { ...defaultPlaneVisibility }
       },
     }),
     'show planes sketch no face': assign(({ event, context }) => {
@@ -1125,7 +1100,7 @@ export const modelingMachine = setup({
         // When entering via right-click "Start sketch on selection", show planes only if not requested to keep current visibility
         return {}
       }
-      void kclManager.showPlanes()
+      void context.kclManager.showPlanes()
       return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
     }),
     'setup noPoints onClick listener': ({
@@ -1148,9 +1123,7 @@ export const modelingMachine = setup({
           theSceneInfra.modelingSend(
             currentTool === 'tangentialArc'
               ? { type: 'Continue existing profile', data }
-              : currentTool === 'arc'
-                ? { type: 'Add start point', data }
-                : { type: 'Add start point', data }
+              : { type: 'Add start point', data }
           ),
       })
     },
@@ -1158,7 +1131,7 @@ export const modelingMachine = setup({
       context: {
         sketchDetails,
         sceneEntitiesManager: providedSceneEntitiesManager,
-        kclManager: providedKclManager,
+        kclManager,
         wasmInstance,
       },
     }) => {
@@ -1167,7 +1140,6 @@ export const modelingMachine = setup({
       const theSceneEntitiesManager = providedSceneEntitiesManager
         ? providedSceneEntitiesManager
         : sceneEntitiesManager
-      const theKclManager = providedKclManager ? providedKclManager : kclManager
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       theSceneEntitiesManager.createSketchAxis(
         sketchDetails.zAxis,
@@ -1176,8 +1148,8 @@ export const modelingMachine = setup({
       )
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      theKclManager.updateEditorWithAstAndWriteToFile(
-        theKclManager.ast,
+      kclManager.updateEditorWithAstAndWriteToFile(
+        kclManager.ast,
         undefined,
         wasmInstance
       )
@@ -1194,18 +1166,16 @@ export const modelingMachine = setup({
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': ({ context }) => {
-      const theKclManager = context.kclManager ? context.kclManager : kclManager
-      theKclManager.setSelectionFilter(['face', 'object'])
+      context.kclManager.setSelectionFilter(['face', 'object'])
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to defaults': ({ context }) => {
-      const theKclManager = context.kclManager ? context.kclManager : kclManager
-      theKclManager.setSelectionFilterToDefault()
+      context.kclManager.setSelectionFilterToDefault()
     },
     'Delete segments': ({
       context: {
         sketchDetails,
-        kclManager: providedKclManager,
+        kclManager,
         wasmInstance,
         rustContext: providedRustContext,
         sceneEntitiesManager: providedSceneEntitiesManager,
@@ -1215,7 +1185,6 @@ export const modelingMachine = setup({
     }) => {
       if (event.type !== 'Delete segments') return
       if (!sketchDetails || !event.data) return
-      const theKclManager = providedKclManager ? providedKclManager : kclManager
       const theRustContext = providedRustContext
         ? providedRustContext
         : rustContext
@@ -1228,7 +1197,7 @@ export const modelingMachine = setup({
         pathToNodes: event.data,
         sketchDetails,
         dependencies: {
-          kclManager: theKclManager,
+          kclManager,
           wasmInstance,
           rustContext: theRustContext,
           sceneEntitiesManager: theSceneEntitiesManager,
@@ -1236,8 +1205,8 @@ export const modelingMachine = setup({
         },
       })
         .then(() => {
-          return theKclManager.updateEditorWithAstAndWriteToFile(
-            theKclManager.ast,
+          return kclManager.updateEditorWithAstAndWriteToFile(
+            kclManager.ast,
             undefined,
             wasmInstance
           )
@@ -1268,7 +1237,6 @@ export const modelingMachine = setup({
         ? context.sceneEntitiesManager
         : sceneEntitiesManager
       const theSceneInfra = context.sceneInfra ? context.sceneInfra : sceneInfra
-      const theKclManager = context.kclManager ? context.kclManager : kclManager
       let sketchEntryNodePath: PathToNode | undefined
 
       if (event.type === 'Add start point') {
@@ -1281,13 +1249,16 @@ export const modelingMachine = setup({
       }
       if (!sketchEntryNodePath) return
       const varDec = getNodeFromPath<VariableDeclaration>(
-        theKclManager.ast,
+        context.kclManager.ast,
         sketchEntryNodePath,
         'VariableDeclaration'
       )
       if (err(varDec)) return
       const varName = varDec.node.declaration.id.name
-      const sg = sketchFromKclValue(theKclManager.variables[varName], varName)
+      const sg = sketchFromKclValue(
+        context.kclManager.variables[varName],
+        varName
+      )
       if (err(sg)) return
       const lastSegment = sg.paths[sg.paths.length - 1] || sg.start
       const to = lastSegment.to
@@ -1340,7 +1311,7 @@ export const modelingMachine = setup({
           selectionRanges,
           sketchDetails,
           engineCommandManager: providedEngineCommandManager,
-          kclManager: providedKclManager,
+          kclManager,
           kclEditorMachine: providedKclEditorMachine,
         },
         event,
@@ -1357,7 +1328,6 @@ export const modelingMachine = setup({
             event.output) ||
           null
         if (!setSelections) return {}
-        const theKclManager = providedKclManager || kclManager
         const theKclEditorMachine = providedKclEditorMachine
           ? providedKclEditorMachine
           : kclEditorActor
@@ -1367,7 +1337,7 @@ export const modelingMachine = setup({
           otherSelections: [],
         }
         if (setSelections.selectionType === 'singleCodeCursor') {
-          if (!setSelections.selection && theKclManager.isShiftDown) {
+          if (!setSelections.selection && kclManager.isShiftDown) {
             // if the user is holding shift, but they didn't select anything
             // don't nuke their other selections (frustrating to have one bad click ruin your
             // whole selection)
@@ -1375,17 +1345,17 @@ export const modelingMachine = setup({
               graphSelections: selectionRanges.graphSelections,
               otherSelections: selectionRanges.otherSelections,
             }
-          } else if (!setSelections.selection && !theKclManager.isShiftDown) {
+          } else if (!setSelections.selection && !kclManager.isShiftDown) {
             selections = {
               graphSelections: [],
               otherSelections: [],
             }
-          } else if (setSelections.selection && !theKclManager.isShiftDown) {
+          } else if (setSelections.selection && !kclManager.isShiftDown) {
             selections = {
               graphSelections: [setSelections.selection],
               otherSelections: [],
             }
-          } else if (setSelections.selection && theKclManager.isShiftDown) {
+          } else if (setSelections.selection && kclManager.isShiftDown) {
             // selecting and deselecting multiple objects
 
             /**
@@ -1461,6 +1431,9 @@ export const modelingMachine = setup({
           const { engineEvents, codeMirrorSelection, updateSceneObjectColors } =
             handleSelectionBatch({
               selections,
+              artifactGraph: kclManager.artifactGraph,
+              code: kclManager.code,
+              ast: kclManager.ast,
             })
           if (codeMirrorSelection) {
             theKclEditorMachine.send({
@@ -1501,7 +1474,7 @@ export const modelingMachine = setup({
           setSelections.selectionType === 'axisSelection' ||
           setSelections.selectionType === 'defaultPlaneSelection'
         ) {
-          if (theKclManager.isShiftDown) {
+          if (kclManager.isShiftDown) {
             selections = {
               graphSelections: selectionRanges.graphSelections,
               otherSelections: [setSelections.selection],
@@ -1518,13 +1491,16 @@ export const modelingMachine = setup({
         }
 
         if (setSelections.selectionType === 'completeSelection') {
-          const codeMirrorSelection = theKclManager.createEditorSelection(
+          const codeMirrorSelection = kclManager.createEditorSelection(
             setSelections.selection
           )
 
           // This turns the selection into blue, needed when selecting with ctrl+A
           const { updateSceneObjectColors } = handleSelectionBatch({
             selections: setSelections.selection,
+            artifactGraph: kclManager.artifactGraph,
+            code: kclManager.code,
+            ast: kclManager.ast,
           })
           updateSceneObjectColors()
 
@@ -1565,7 +1541,6 @@ export const modelingMachine = setup({
     'Set mouse state': () => {},
     'Set Segment Overlays': () => {},
     'Center camera on selection': () => {},
-    'Submit to Text-to-CAD API': () => {},
     'Set sketchDetails': () => {},
     'debug-action': (data) => {
       console.log('re-eval debug-action', data)
@@ -1576,9 +1551,8 @@ export const modelingMachine = setup({
       const currentVisibilityMap = context.defaultPlaneVisibility
       const currentVisibility = currentVisibilityMap[event.planeKey]
       const newVisibility = !currentVisibility
-      const theKclManager = context.kclManager ? context.kclManager : kclManager
 
-      theKclManager.engineCommandManager
+      context.kclManager.engineCommandManager
         .setPlaneHidden(event.planeId, !newVisibility)
         .catch(reportRejection)
 
@@ -1598,12 +1572,11 @@ export const modelingMachine = setup({
       }
     }),
     'Restore default plane visibility': assign(({ context }) => {
-      const theKclManager = context.kclManager ? context.kclManager : kclManager
       for (const planeKey of Object.keys(
         context.savedDefaultPlaneVisibility
       ) as (keyof PlaneVisibilityMap)[]) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        theKclManager.setPlaneVisibilityByKey(
+        context.kclManager.setPlaneVisibilityByKey(
           planeKey,
           context.savedDefaultPlaneVisibility[planeKey]
         )
@@ -1648,9 +1621,6 @@ export const modelingMachine = setup({
         const theSceneInfra = context.sceneInfra
           ? context.sceneInfra
           : sceneInfra
-        const theKclManager = context.kclManager
-          ? context.kclManager
-          : kclManager
         const theSceneEntitiesManager = context.sceneEntitiesManager
           ? context.sceneEntitiesManager
           : sceneEntitiesManager
@@ -1674,7 +1644,7 @@ export const modelingMachine = setup({
         // TODO: Do I need this video element?
         store.videoElement?.pause()
 
-        await theKclManager
+        await context.kclManager
           .executeCode()
           .then(() => {
             if (
@@ -1705,7 +1675,7 @@ export const modelingMachine = setup({
           sketchDetails,
           data,
           sceneEntitiesManager: providedSceneEntitiesManager,
-          kclManager: providedKclManager,
+          kclManager,
           wasmInstance,
         },
       }: {
@@ -1721,7 +1691,7 @@ export const modelingMachine = setup({
         const constraint = applyRemoveConstrainingValues({
           selectionRanges,
           pathToNodes: data && [data],
-          providedKclManager,
+          providedKclManager: kclManager,
           wasmInstance,
         })
         if (trap(constraint)) return
@@ -1745,10 +1715,7 @@ export const modelingMachine = setup({
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
 
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
-        await theKclManager.updateEditorWithAstAndWriteToFile(
+        await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -1759,7 +1726,8 @@ export const modelingMachine = setup({
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            updatedAst.newAst
+            updatedAst.newAst,
+            kclManager.artifactGraph
           ),
         }
       }
@@ -1769,7 +1737,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          kclManager: providedKclManager,
+          kclManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -1810,10 +1778,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
-        await theKclManager.updateEditorWithAstAndWriteToFile(
+        await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -1823,7 +1788,8 @@ export const modelingMachine = setup({
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            updatedAst.newAst
+            updatedAst.newAst,
+            kclManager.artifactGraph
           ),
         }
       }
@@ -1833,7 +1799,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          kclManager: providedKclManager,
+          kclManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -1874,10 +1840,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
-        await theKclManager.updateEditorWithAstAndWriteToFile(
+        await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -1887,7 +1850,8 @@ export const modelingMachine = setup({
           selection: updateSelections(
             pathToNodeMap,
             selectionRanges,
-            updatedAst.newAst
+            updatedAst.newAst,
+            kclManager.artifactGraph
           ),
         }
       }
@@ -1897,7 +1861,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          kclManager: providedKclManager,
+          kclManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -1936,10 +1900,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
-        await theKclManager.updateEditorWithAstAndWriteToFile(
+        await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -1947,7 +1908,8 @@ export const modelingMachine = setup({
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          kclManager.artifactGraph
         )
         return {
           selectionType: 'completeSelection',
@@ -1960,7 +1922,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          kclManager: providedKclManager,
+          kclManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -1999,10 +1961,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
-        await theKclManager.updateEditorWithAstAndWriteToFile(
+        await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -2010,7 +1969,8 @@ export const modelingMachine = setup({
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          kclManager.artifactGraph
         )
         return {
           selectionType: 'completeSelection',
@@ -2023,7 +1983,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          kclManager: providedKclManager,
+          kclManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -2062,10 +2022,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
-        await theKclManager.updateEditorWithAstAndWriteToFile(
+        await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -2073,7 +2030,8 @@ export const modelingMachine = setup({
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          kclManager.artifactGraph
         )
         return {
           selectionType: 'completeSelection',
@@ -2086,7 +2044,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          kclManager: providedKclManager,
+          kclManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -2125,10 +2083,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
-        await theKclManager.updateEditorWithAstAndWriteToFile(
+        await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -2136,7 +2091,8 @@ export const modelingMachine = setup({
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          kclManager.artifactGraph
         )
         return {
           selectionType: 'completeSelection',
@@ -2149,7 +2105,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          kclManager: providedKclManager,
+          kclManager,
           wasmInstance,
           sceneEntitiesManager: providedSceneEntitiesManager,
         },
@@ -2194,10 +2150,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
-        await theKclManager.updateEditorWithAstAndWriteToFile(
+        await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -2206,7 +2159,8 @@ export const modelingMachine = setup({
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          kclManager.artifactGraph
         )
         return {
           selectionType: 'completeSelection',
@@ -2219,7 +2173,7 @@ export const modelingMachine = setup({
         input: {
           selectionRanges,
           sketchDetails,
-          kclManager: providedKclManager,
+          kclManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
           wasmInstance,
         },
@@ -2257,10 +2211,7 @@ export const modelingMachine = setup({
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
-        await theKclManager.updateEditorWithAstAndWriteToFile(
+        await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           wasmInstance
@@ -2268,7 +2219,8 @@ export const modelingMachine = setup({
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          kclManager.artifactGraph
         )
         return {
           selectionType: 'completeSelection',
@@ -2364,7 +2316,7 @@ export const modelingMachine = setup({
           selectionRanges: Selections
           sceneInfra?: SceneInfra
           sceneEntitiesManager?: SceneEntities
-          kclManager?: KclManager
+          kclManager: KclManager
           wasmInstance?: ModuleType
         }
       }) => {
@@ -2377,9 +2329,6 @@ export const modelingMachine = setup({
         const theSceneEntitiesManager = providedSceneEntitiesManager
           ? providedSceneEntitiesManager
           : sceneEntitiesManager
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
         if (!sketchDetails.sketchEntryNodePath?.length) {
           // When unequipping eg. the three-point arc tool during placement of the 3rd point, sketchEntryNodePath is
           // empty if its the first profile in a sketch, but we still need to tear down and cancel the current tool properly.
@@ -2394,7 +2343,7 @@ export const modelingMachine = setup({
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
           position: sketchDetails.origin,
-          maybeModdedAst: theKclManager.ast,
+          maybeModdedAst: providedKclManager.ast,
           selectionRanges,
           wasmInstance,
         })
@@ -2429,14 +2378,11 @@ export const modelingMachine = setup({
       }: {
         input: {
           selectionRanges: Selections
-          kclManager?: KclManager
+          kclManager: KclManager
           engineCommandManager?: ConnectionManager
           sceneEntitiesManager?: SceneEntities
         }
       }): Promise<ModelingMachineContext['sketchDetails']> => {
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
         const theEngineCommandManager = providedEngineCommandManager
           ? providedEngineCommandManager
           : engineCommandManager
@@ -2446,7 +2392,7 @@ export const modelingMachine = setup({
         const artifact = selectionRanges.graphSelections[0].artifact
         const plane = getPlaneFromArtifact(
           artifact,
-          theKclManager.artifactGraph
+          providedKclManager.artifactGraph
         )
         if (err(plane)) return Promise.reject(plane)
         // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
@@ -2459,7 +2405,7 @@ export const modelingMachine = setup({
         let planeVar: Plane | null = null
 
         for (const variable of Object.values(
-          theKclManager.execState.variables
+          providedKclManager.execState.variables
         )) {
           // find programMemory that matches path artifact
           if (
@@ -2497,7 +2443,7 @@ export const modelingMachine = setup({
               point.z,
             ]
             const planPath = getNodePathFromSourceRange(
-              theKclManager.ast,
+              providedKclManager.ast,
               planeCodeRef.range
             )
             await letEngineAnimateAndSyncCamAfter(
@@ -2524,22 +2470,22 @@ export const modelingMachine = setup({
           info?.sketchDetails?.faceId || ''
         )
 
-        const sketchArtifact = theKclManager.artifactGraph.get(mainPath)
+        const sketchArtifact = providedKclManager.artifactGraph.get(mainPath)
         if (sketchArtifact?.type !== 'path') {
           return Promise.reject(new Error('No sketch artifact'))
         }
         const sketchPaths = getPathsFromArtifact({
-          artifact: theKclManager.artifactGraph.get(plane.id),
+          artifact: providedKclManager.artifactGraph.get(plane.id),
           sketchPathToNode: sketchArtifact?.codeRef?.pathToNode,
-          artifactGraph: theKclManager.artifactGraph,
-          ast: theKclManager.ast,
+          artifactGraph: providedKclManager.artifactGraph,
+          ast: providedKclManager.ast,
         })
         if (err(sketchPaths)) return Promise.reject(sketchPaths)
         let codeRef = getFaceCodeRef(plane)
         if (!codeRef) return Promise.reject(new Error('No plane codeRef'))
         // codeRef.pathToNode is not always populated correctly
         const planeNodePath = getNodePathFromSourceRange(
-          theKclManager.ast,
+          providedKclManager.ast,
           codeRef.range
         )
         return {
@@ -2577,12 +2523,11 @@ export const modelingMachine = setup({
         if (!data) {
           return Promise.reject(new Error('No data from command flow'))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theSceneEntitiesManager = input.sceneEntitiesManager
           ? input.sceneEntitiesManager
           : sceneEntitiesManager
         let pResult = parse(
-          recast(theKclManager.ast, input.wasmInstance),
+          recast(input.kclManager.ast, input.wasmInstance),
           input.wasmInstance
         )
         if (trap(pResult) || !resultIsOk(pResult))
@@ -2690,7 +2635,7 @@ export const modelingMachine = setup({
           )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
-        await theKclManager.updateEditorWithAstAndWriteToFile(
+        await input.kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
           input.wasmInstance
@@ -2699,7 +2644,8 @@ export const modelingMachine = setup({
         const selection = updateSelections(
           { 0: result.pathToReplaced },
           selectionRanges,
-          updatedAst.newAst
+          updatedAst.newAst,
+          input.kclManager.artifactGraph
         )
         if (err(selection)) return Promise.reject(selection)
         return {
@@ -2771,9 +2717,7 @@ export const modelingMachine = setup({
       }
     ),
     'submit-prompt-edit': fromPromise(
-      async ({
-        input,
-      }: {
+      async ({}: {
         input: ModelingCommandSchema['Prompt-to-edit']
       }) => {}
     ),
@@ -2787,7 +2731,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Extrude'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -2795,9 +2739,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast, artifactGraph } = theKclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addExtrude({
           ast,
           artifactGraph,
@@ -2815,7 +2758,7 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -2831,7 +2774,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Sweep'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -2839,9 +2782,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast } = theKclManager
+        const { ast } = input.kclManager
         const astResult = addSweep({
           ...input.data,
           ast,
@@ -2858,7 +2800,7 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -2874,7 +2816,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Loft'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -2882,8 +2824,7 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
-        const { ast } = theKclManager
+        const { ast } = input.kclManager
         const astResult = addLoft({ ast, ...input.data })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2897,7 +2838,7 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -2913,7 +2854,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Revolve'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -2921,9 +2862,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast } = theKclManager
+        const { ast } = input.kclManager
         const astResult = addRevolve({
           ast,
           ...input.data,
@@ -2940,7 +2880,7 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -2956,7 +2896,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Offset plane'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -2964,9 +2904,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast, artifactGraph, variables } = theKclManager
+        const { ast, artifactGraph, variables } = input.kclManager
         const astResult = addOffsetPlane({
           ...input.data,
           ast,
@@ -2985,7 +2924,7 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3001,7 +2940,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Helix'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3009,9 +2948,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast, artifactGraph } = theKclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addHelix({
           ...input.data,
           ast,
@@ -3029,7 +2967,7 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3045,7 +2983,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Shell'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3053,9 +2991,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast, artifactGraph } = theKclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addShell({
           ...input.data,
           ast,
@@ -3073,7 +3010,7 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3089,7 +3026,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Hole'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3097,12 +3034,13 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
         // Remove once this command isn't experimental anymore
         let astWithNewSetting: Node<Program> | undefined
-        if (theKclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
-          const ast = setExperimentalFeatures(kclManager.code, {
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(input.kclManager.code, {
             type: 'Allow',
           })
           if (err(ast)) {
@@ -3114,8 +3052,8 @@ export const modelingMachine = setup({
 
         const astResult = addHole({
           ...input.data,
-          ast: astWithNewSetting ?? theKclManager.ast,
-          artifactGraph: theKclManager.artifactGraph,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -3129,7 +3067,7 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3145,7 +3083,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Fillet'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
               engineCommandManager?: ConnectionManager
             }
@@ -3154,9 +3092,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast, artifactGraph } = theKclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addFillet({
           ...input.data,
           ast,
@@ -3175,7 +3112,7 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3191,7 +3128,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Chamfer'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
               engineCommandManager?: ConnectionManager
             }
@@ -3201,9 +3138,7 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
-
-        const { ast, artifactGraph } = theKclManager
+        const { ast, artifactGraph } = input.kclManager
         const astResult = addChamfer({
           ...input.data,
           ast,
@@ -3222,7 +3157,7 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3266,7 +3201,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Appearance'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3274,9 +3209,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
-        const ast = theKclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addAppearance({
           ...input.data,
           ast,
@@ -3292,7 +3226,7 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3308,7 +3242,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Translate'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3316,10 +3250,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const ast = theKclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addTranslate({
           ...input.data,
           ast,
@@ -3335,7 +3268,7 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3351,7 +3284,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Rotate'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3359,12 +3292,11 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theRustContext = input.rustContext
           ? input.rustContext
           : rustContext
-        const ast = theKclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addRotate({
           ...input.data,
           ast,
@@ -3378,7 +3310,7 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3394,7 +3326,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Scale'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3402,10 +3334,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const ast = theKclManager.ast
-        const artifactGraph = theKclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addScale({
           ...input.data,
           ast,
@@ -3422,7 +3353,7 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3438,7 +3369,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Clone'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3446,9 +3377,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
-        const ast = theKclManager.ast
-        const artifactGraph = theKclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addClone({
           ...input.data,
           ast,
@@ -3464,7 +3394,7 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3480,7 +3410,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Flatness'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3489,15 +3419,16 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theRustContext = input.rustContext
           ? input.rustContext
           : rustContext
 
         // Remove once this command isn't experimental anymore
         let astWithNewSetting: Node<Program> | undefined
-        if (theKclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
-          const ast = setExperimentalFeatures(theKclManager.code, {
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(input.kclManager.code, {
             type: 'Allow',
           })
           if (err(ast)) {
@@ -3509,8 +3440,8 @@ export const modelingMachine = setup({
 
         const result = addFlatnessGdt({
           ...input.data,
-          ast: astWithNewSetting ?? theKclManager.ast,
-          artifactGraph: theKclManager.artifactGraph,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3520,7 +3451,7 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3536,7 +3467,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['GDT Datum'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3545,15 +3476,16 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theRustContext = input.rustContext
           ? input.rustContext
           : rustContext
 
         // Remove once this command isn't experimental anymore
         let astWithNewSetting: Node<Program> | undefined
-        if (theKclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
-          const ast = setExperimentalFeatures(theKclManager.code, {
+        if (
+          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+        ) {
+          const ast = setExperimentalFeatures(input.kclManager.code, {
             type: 'Allow',
           })
           if (err(ast)) {
@@ -3565,8 +3497,8 @@ export const modelingMachine = setup({
 
         const result = addDatumGdt({
           ...input.data,
-          ast: astWithNewSetting ?? theKclManager.ast,
-          artifactGraph: theKclManager.artifactGraph,
+          ast: astWithNewSetting ?? input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3576,7 +3508,7 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3606,7 +3538,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Boolean Subtract'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3614,9 +3546,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
-        const ast = theKclManager.ast
-        const artifactGraph = theKclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addSubtract({
           ...input.data,
           ast,
@@ -3632,7 +3563,7 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3648,7 +3579,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Boolean Union'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3656,9 +3587,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
-        const ast = theKclManager.ast
-        const artifactGraph = theKclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addUnion({
           ...input.data,
           ast,
@@ -3674,7 +3604,7 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3690,7 +3620,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Boolean Intersect'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3698,10 +3628,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const ast = theKclManager.ast
-        const artifactGraph = theKclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addIntersect({
           ...input.data,
           ast,
@@ -3717,7 +3646,7 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3734,7 +3663,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Pattern Circular 3D'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3742,9 +3671,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
-        const ast = theKclManager.ast
-        const artifactGraph = theKclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addPatternCircular3D({
           ...input.data,
           ast,
@@ -3760,7 +3688,7 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3777,7 +3705,7 @@ export const modelingMachine = setup({
         input:
           | {
               data: ModelingCommandSchema['Pattern Linear 3D'] | undefined
-              kclManager?: KclManager
+              kclManager: KclManager
               rustContext?: RustContext
             }
           | undefined
@@ -3785,10 +3713,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const ast = theKclManager.ast
-        const artifactGraph = theKclManager.artifactGraph
+        const ast = input.kclManager.ast
+        const artifactGraph = input.kclManager.artifactGraph
         const result = addPatternLinear3D({
           ...input.data,
           ast,
@@ -3804,7 +3731,7 @@ export const modelingMachine = setup({
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: theKclManager,
+            kclManager: input.kclManager,
             rustContext: theRustContext,
           },
           {
@@ -3817,7 +3744,7 @@ export const modelingMachine = setup({
     /* Pierre: looks like somewhat of a one-off */
     'reeval-node-paths': fromPromise(
       async ({
-        input: { sketchDetails, kclManager: providedKclManager },
+        input: { sketchDetails, kclManager },
       }: {
         input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'>
       }) => {
@@ -3826,12 +3753,9 @@ export const modelingMachine = setup({
         if (!sketchDetails) {
           return Promise.reject(new Error(errorMessage))
         }
-        const theKclManager = providedKclManager
-          ? providedKclManager
-          : kclManager
 
         // hasErrors is for parse errors, errors is for runtime errors
-        if (theKclManager.errors.length > 0 || theKclManager.hasErrors()) {
+        if (kclManager.errors.length > 0 || kclManager.hasErrors()) {
           // if there's an error in the execution, we don't actually want to disable sketch mode
           // instead we'll give the user the chance to fix their error
           return {
@@ -3842,25 +3766,25 @@ export const modelingMachine = setup({
         }
 
         const updatedPlaneNodePath = updatePathToNodesAfterEdit(
-          theKclManager._lastAst,
-          theKclManager.ast,
+          kclManager._lastAst,
+          kclManager.ast,
           sketchDetails.planeNodePath
         )
 
         if (err(updatedPlaneNodePath)) {
           return Promise.reject(new Error(errorMessage))
         }
-        const maybePlaneArtifact = [
-          ...theKclManager.artifactGraph.values(),
-        ].find((artifact) => {
-          const codeRef = getFaceCodeRef(artifact)
-          if (!codeRef) return false
+        const maybePlaneArtifact = [...kclManager.artifactGraph.values()].find(
+          (artifact) => {
+            const codeRef = getFaceCodeRef(artifact)
+            if (!codeRef) return false
 
-          return (
-            stringifyPathToNode(codeRef.pathToNode) ===
-            stringifyPathToNode(updatedPlaneNodePath)
-          )
-        })
+            return (
+              stringifyPathToNode(codeRef.pathToNode) ===
+              stringifyPathToNode(updatedPlaneNodePath)
+            )
+          }
+        )
         if (
           !maybePlaneArtifact ||
           (maybePlaneArtifact.type !== 'plane' &&
@@ -3872,9 +3796,7 @@ export const modelingMachine = setup({
         if (maybePlaneArtifact.type === 'plane') {
           planeArtifact = maybePlaneArtifact
         } else {
-          const face = theKclManager.artifactGraph.get(
-            maybePlaneArtifact.faceId
-          )
+          const face = kclManager.artifactGraph.get(maybePlaneArtifact.faceId)
           if (face) {
             planeArtifact = face
           }
@@ -3890,8 +3812,8 @@ export const modelingMachine = setup({
 
         const newPaths = getPathsFromPlaneArtifact(
           planeArtifact,
-          theKclManager.artifactGraph,
-          theKclManager.ast
+          kclManager.artifactGraph,
+          kclManager.ast
         )
 
         return {
@@ -4041,12 +3963,6 @@ export const modelingMachine = setup({
           target: 'Applying Delete selection',
           guard: 'has valid selection for deletion',
           reenter: true,
-        },
-
-        'Text-to-CAD': {
-          target: 'idle',
-          reenter: false,
-          actions: ['Submit to Text-to-CAD API'],
         },
 
         'Prompt-to-edit': 'Applying Prompt-to-edit',
@@ -4689,24 +4605,18 @@ export const modelingMachine = setup({
                 selectionRanges,
                 sketchDetails,
                 wasmInstance,
-                kclManager: providedKclManager,
+                kclManager,
                 sceneEntitiesManager: providedSceneEntitiesManager,
               },
               event,
             }) => {
-              if (event.type !== 'Constrain with named value') {
-                return {
-                  selectionRanges,
-                  sketchDetails,
-                  data: undefined,
-                }
-              }
+              assertEvent(event, 'Constrain with named value')
               return {
                 selectionRanges,
                 sketchDetails,
                 data: event.data,
                 wasmInstance,
-                kclManager: providedKclManager,
+                kclManager,
                 sceneEntitiesManager: providedSceneEntitiesManager,
               }
             },
@@ -5468,10 +5378,7 @@ export const modelingMachine = setup({
       invoke: {
         id: 'sketchSolveMachine',
         src: 'sketchSolveMachine',
-        input: ({ context }) => ({
-          parentContext: context,
-          initialSketchDetails: context.sketchDetails,
-        }),
+        input: ({ context }) => context,
         onDone: {
           target: 'idle',
         },
@@ -5707,7 +5614,7 @@ export const modelingMachine = setup({
         src: 'deleteSelectionAstMod',
         id: 'deleteSelectionAstMod',
 
-        input: ({ event, context }) => {
+        input: ({ context }) => {
           return { selectionRanges: context.selectionRanges }
         },
 

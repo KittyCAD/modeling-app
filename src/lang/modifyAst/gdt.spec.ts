@@ -18,6 +18,7 @@ import {
   enginelessExecutor,
   getCapFromCylinder,
 } from '@src/lib/testHelpers'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -77,12 +78,7 @@ async function getKclCommandValue(
   instance: ModuleType,
   rustContext: RustContext
 ) {
-  const result = await stringToKclExpression(
-    value,
-    undefined,
-    instance,
-    rustContext
-  )
+  const result = await stringToKclExpression(value, rustContext)
   if (err(result) || 'errors' in result) {
     throw new Error('Failed to create KCL expression')
   }

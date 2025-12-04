@@ -331,8 +331,8 @@ export async function resetCodeAndAdvanceOnboarding({
 
 function hasResetReadyCode(kclManager: KclManager) {
   return (
-    isKclEmptyOrOnlySettings(kclManager.code) ||
-    kclManager.code === browserAxialFan
+    isKclEmptyOrOnlySettings(kclManager.codeSignal.value) ||
+    kclManager.codeSignal.value === browserAxialFan
   )
 }
 
@@ -410,10 +410,10 @@ export function TutorialRequestToast(
       <div className="grid grid-cols-3 gap-4">
         <TutorialToastCard
           src={quickTipSrc(1)}
-          alt="a screenshot of the Design Studio interface highlighting the Text-to-CAD button in the right sidebar"
+          alt="a screenshot of the Design Studio interface highlighting the Zookeeper button in the right sidebar"
         >
-          <strong>Text-to-CAD</strong> is in the upper right panel, where you
-          can create or modify parts with prompts.{' '}
+          <strong>Zookeeper</strong> is in the right sidebar, where you can
+          create or modify parts with prompts.{' '}
           <strong>1 credit = 1 second of compute time.</strong>
         </TutorialToastCard>
         <TutorialToastCard
@@ -556,7 +556,7 @@ export function useOnboardingHighlight(elementId: string) {
       `[data-${ONBOARDING_DATA_ATTRIBUTE}="${elementId}"`
     )
     if (elementToHighlight === null) {
-      console.error('Text-to-CAD dropdown element not found')
+      console.error('Dropdown element not found')
       return
     }
     // There is an ".onboarding-highlight" class defined in index.css
