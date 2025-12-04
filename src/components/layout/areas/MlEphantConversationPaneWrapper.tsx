@@ -9,7 +9,6 @@ import { MlEphantConversationPane2 } from '@src/components/layout/areas/MlEphant
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { IndexLoaderData } from '@src/lib/types'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { MLEphantConversationPaneMenu2 } from '@src/components/MlEphantConversation2'
 import { useLoaderData } from 'react-router-dom'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
@@ -35,7 +34,6 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
         id={props.layout.id}
         icon="sparkles"
         title="Zookeeper"
-        Menu={MLEphantConversationPaneMenu2}
         onClose={props.onClose}
       />
       <MlEphantConversationPane2
