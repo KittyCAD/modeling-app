@@ -106,6 +106,8 @@ export class ConnectionManager extends EventTarget {
     showScaleGrid: false,
     cameraProjection: 'orthographic', // Gotcha: was perspective now is orthographic
     cameraOrbit: 'spherical',
+    //TODO: get this from user land
+    backfaceColor: DEFAULT_BACKFACE_COLOR,
   }
 
   subscriptions: {
