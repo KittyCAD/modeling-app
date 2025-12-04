@@ -2,9 +2,7 @@ use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    front::{
-        Error, ExistingSegmentCtor, File, FileId, LifecycleApi, ObjectId, ProjectId, SegmentCtor, SketchApi, Version,
-    },
+    front::{Error, ExistingSegmentCtor, File, FileId, LifecycleApi, ObjectId, ProjectId, SketchApi, Version},
     Program,
 };
 use wasm_bindgen::prelude::*;
