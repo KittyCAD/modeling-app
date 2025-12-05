@@ -1916,21 +1916,16 @@ impl Node<UnaryExpression> {
                 }
             }
             UnaryOperator::Plus => {
-                let value = &self.argument.get_result(exec_state, ctx).await?;
-                let err = || {
-                    KclError::new_semantic(KclErrorDetails::new(
+                let operand = &self.argument.get_result(exec_state, ctx).await?;
+                match operand {
+                    KclValue::Number { .. } | KclValue::Plane { .. } => Ok(value.clone()),
+                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
                         format!(
-                            "You can only apply unary + to numbers, planes, or lines, but this is a {}",
+                            "You can only apply unary + to numbers or planes, but this is a {}",
                             value.human_friendly_type()
                         ),
                         vec![self.into()],
-                    ))
-                };
-                match value {
-                    KclValue::Number { .. } | KclValue::Plane { .. } | KclValue::Object { .. } => {
-                        Ok(value.clone())
-                    }
-                    _ => Err(err()),
+                    ))),
                 }
             }
         }
