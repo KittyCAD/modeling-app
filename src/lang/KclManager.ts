@@ -59,13 +59,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import {
-  defaultKeymap,
-  history,
-  historyKeymap,
-  redo,
-  undo,
-} from '@codemirror/commands'
+import { history, redo, undo } from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
@@ -77,7 +71,7 @@ import {
   type TransactionSpec,
 } from '@codemirror/state'
 import type { KeyBinding, ViewUpdate } from '@codemirror/view'
-import { drawSelection, EditorView } from '@codemirror/view'
+import { drawSelection, EditorView, keymap } from '@codemirror/view'
 import type { StateFrom } from 'xstate'
 
 import {
@@ -221,7 +215,10 @@ export class KclManager extends EventTarget {
   /** Values merged in from former EditorManager and CodeManager classes */
   private _code = signal(bracket)
   private _currentFilePath: string | null = null
-  private _hotkeys: { [key: string]: () => void } = {}
+  private _hotkeys: { [key: string]: () => void } = {
+    ['Ctrl-Shift-c']: () => this.convertToVariable(),
+    ['Alt-Shift-f']: () => this.format(),
+  }
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public isBufferMode = false
@@ -401,9 +398,10 @@ export class KclManager extends EventTarget {
           this.executeCode(update.state.doc.toString())
         }
       }),
+      keymap.of(this.getCodemirrorHotkeys()),
     ]
   }
-  private createEditorView(code = '') {
+  private createEditorView() {
     return new EditorView({
       state: EditorState.create({
         doc: '',
