@@ -94,6 +94,7 @@ import { bracket } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
 import toast from 'react-hot-toast'
 import { signal } from '@preact/signals-core'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -195,6 +196,7 @@ export class KclManager extends EventTarget {
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
   private _kclVersion: string | undefined = undefined
+  private _sceneEntitiesManager?: SceneEntities
   private singletons: Singletons
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
@@ -346,11 +348,15 @@ export class KclManager extends EventTarget {
     return this._isExecuting
   }
 
+  set sceneEntitiesManager(s: SceneEntities) {
+    this._sceneEntitiesManager = s
+  }
+
   set isExecuting(isExecuting) {
     this._isExecuting.value = isExecuting
     // If we have finished executing, but the execute is stale, we should
     // execute again.
-    if (!isExecuting && this.executeIsStale) {
+    if (!isExecuting && this.executeIsStale && this._sceneEntitiesManager) {
       const args = this.executeIsStale
       this.executeIsStale = null
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -614,7 +620,13 @@ export class KclManager extends EventTarget {
           instance: this.singletons.rustContext.getRustInstance(),
         })
       )
-      await setSelectionFilterToDefault(this.engineCommandManager, this)
+      if (this._sceneEntitiesManager) {
+        await setSelectionFilterToDefault({
+          engineCommandManager: this.engineCommandManager,
+          kclManager: this,
+          sceneEntitiesManager: this._sceneEntitiesManager,
+        })
+      }
     }
 
     this.isExecuting = false
@@ -928,29 +940,33 @@ export class KclManager extends EventTarget {
 
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilterToDefault(
+    sceneEntitiesManager: SceneEntities,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
-    setSelectionFilterToDefault(
-      this.engineCommandManager,
-      this,
+    setSelectionFilterToDefault({
+      engineCommandManager: this.engineCommandManager,
+      kclManager: this,
+      sceneEntitiesManager,
       selectionsToRestore,
-      handleSelectionBatch
-    )
+      handleSelectionBatchFn: handleSelectionBatch,
+    })
   }
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilter(
     filter: EntityType[],
+    sceneEntitiesManager: SceneEntities,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
-    setSelectionFilter(
+    setSelectionFilter({
       filter,
-      this.engineCommandManager,
-      this,
+      engineCommandManager: this.engineCommandManager,
+      kclManager: this,
+      sceneEntitiesManager,
       selectionsToRestore,
-      handleSelectionBatch
-    )
+      handleSelectionBatchFn: handleSelectionBatch,
+    })
   }
 
   // Determines if there is no KCL code which means it is executing a blank KCL file
@@ -1278,7 +1294,8 @@ export class KclManager extends EventTarget {
   // doing. (jess)
   handleOnViewUpdate(
     viewUpdate: ViewUpdate,
-    processCodeMirrorRanges: typeof processCodeMirrorRangesFn
+    processCodeMirrorRanges: typeof processCodeMirrorRangesFn,
+    sceneEntitiesManager: SceneEntities
   ): void {
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
@@ -1309,6 +1326,10 @@ export class KclManager extends EventTarget {
       ast: this.ast,
       artifactGraph: this.artifactGraph,
       artifactIndex: this.artifactIndex,
+      systemDeps: {
+        engineCommandManager: this.engineCommandManager,
+        sceneEntitiesManager,
+      },
     })
     if (!eventInfo) {
       return

@@ -197,11 +197,21 @@ export type SketchTool =
 
 export type MoveDesc = { line: number; snippet: string }
 
-export interface ModelingMachineContext {
+/** Input into the Modeling machine consists of its external dependencies */
+export type ModelingMachineInput = {
+  kclManager: KclManager
+  engineCommandManager: ConnectionManager
+  sceneInfra: SceneInfra
+  sceneEntitiesManager: SceneEntities
+  rustContext: RustContext
+  machineManager: MachineManager
+  wasmInstance?: ModuleType
+  store?: Store
+}
+export type ModelingMachineInternalContext = {
   currentMode: ToolbarModeName
   currentTool: SketchTool
   toastId: string | null
-  machineManager: MachineManager
   selection: string[]
   selectionRanges: Selections
   sketchDetails: SketchDetails | null
@@ -216,15 +226,11 @@ export interface ModelingMachineContext {
   savedDefaultPlaneVisibility: PlaneVisibilityMap
   planesInitialized: boolean
   sketchSolveTool: EquipTool | null
-  kclManager: KclManager
-  engineCommandManager?: ConnectionManager
-  sceneInfra?: SceneInfra
-  sceneEntitiesManager?: SceneEntities
-  wasmInstance?: ModuleType
   kclEditorMachine?: ActorRefFrom<typeof kclEditorMachine>
-  rustContext?: RustContext
   sketchSolveToolName: EquipTool | null
 }
+export type ModelingMachineContext = ModelingMachineInput &
+  ModelingMachineInternalContext
 
 export type PlaneVisibilityMap = {
   xy: boolean
