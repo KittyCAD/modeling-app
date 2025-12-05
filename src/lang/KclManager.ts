@@ -1071,6 +1071,9 @@ export class KclManager extends EventTarget {
     }
     return false
   }
+  get modelingState(): StateFrom<typeof modelingMachine> | null {
+    return this._modelingState
+  }
   set modelingState(state: StateFrom<typeof modelingMachine>) {
     this._modelingState = state
   }

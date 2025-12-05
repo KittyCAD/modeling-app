@@ -166,8 +166,7 @@ export class KclPlugin implements PluginValue {
     // these are short term hacks while in rapid development for sketch revamp
     // should be clean up.
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const modelingState = (kclManager as any)._modelingState
+      const modelingState = kclManager.modelingState
       if (modelingState?.matches('sketchSolveMode')) {
         await kclManager.executeCode()
         const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
