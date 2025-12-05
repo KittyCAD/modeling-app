@@ -189,7 +189,7 @@ export const settingsMachine = setup({
     setAllowOrbitInSketchMode: () => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
-    setLineWrapping: () => {
+    setEditorLineWrapping: () => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
     toastSuccess: ({ event }) => {
@@ -224,11 +224,18 @@ export const settingsMachine = setup({
      * Update the --cursor-color CSS variable
      * based on the setting textEditor.blinkingCursor.current
      */
-    setCursorColor: ({ context }) => {
+    setCursorBlinking: ({ context, self }) => {
       document.documentElement.style.setProperty(
         `--cursor-color`,
         context.textEditor.blinkingCursor.current ? 'auto' : 'transparent'
       )
+      const rootContext = self.system.get('root')?.getSnapshot().context
+      const kclManager = rootContext?.kclManager
+
+      if (!kclManager) {
+        return
+      }
+      kclManager.setCursorBlinking(context.textEditor.blinkingCursor.current)
     },
     /** Unload the project-level setting values from memory */
     clearProjectSettings: assign(({ context }) => {
@@ -341,7 +348,7 @@ export const settingsMachine = setup({
                   ({ event }) => event.type === 'set.textEditor.blinkingCursor'
                 )
               ) {
-                enqueue('setCursorColor')
+                enqueue('setCursorBlinking')
               }
             }),
           ],
@@ -389,9 +396,18 @@ export const settingsMachine = setup({
             'setThemeClass',
             'setEngineTheme',
             'setClientTheme',
-            'setLineWrapping',
             'sendThemeToWatcher',
           ],
+        },
+        'set.textEditor.textWrapping': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel', 'setEditorLineWrapping'],
+        },
+        'set.textEditor.blinkingCursor': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel', 'setCursorBlinking'],
         },
 
         'set.app.streamIdleMode': {
@@ -439,7 +455,8 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
-            'setLineWrapping',
+            'setEditorLineWrapping',
+            'setCursorBlinking',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -458,7 +475,8 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
-            'setLineWrapping',
+            'setEditorLineWrapping',
+            'setCursorBlinking',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -538,7 +556,8 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'setClientTheme',
             'setEngineHighlightEdges',
-            'setLineWrapping',
+            'setEditorLineWrapping',
+            'setCursorBlinking',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -574,7 +593,8 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
-            'setLineWrapping',
+            'setEditorLineWrapping',
+            'setCursorBlinking',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
