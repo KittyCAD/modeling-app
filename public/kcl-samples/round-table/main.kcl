@@ -1,9 +1,6 @@
 // Round Table
 // Simple round table with a base, single leg, and tabletop
 
-
-
-
 @settings(defaultLengthUnit = mm)
 
 // Parameters

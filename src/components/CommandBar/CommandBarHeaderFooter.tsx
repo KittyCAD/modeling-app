@@ -12,7 +12,11 @@ import type {
 } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  kclManager,
+  useCommandBarState,
+} from '@src/lib/singletons'
 import { roundOffWithUnits } from '@src/lib/utils'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
@@ -180,7 +184,10 @@ function CommandBarHeaderFooter({
                       {argValue ? (
                         arg.inputType === 'selection' ||
                         arg.inputType === 'selectionMixed' ? (
-                          getSelectionTypeDisplayText(argValue as Selections)
+                          getSelectionTypeDisplayText(
+                            kclManager.astSignal.value,
+                            argValue as Selections
+                          )
                         ) : arg.inputType === 'kcl' ? (
                           roundOffWithUnits(
                             (argValue as KclCommandValue).valueCalculated,

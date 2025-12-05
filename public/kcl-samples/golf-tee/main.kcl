@@ -1,9 +1,6 @@
 // Golf Tee
 // A parametric model of a golf tee with realistic proportions, including a pointed tip, cylindrical shaft, and flared cup to hold the ball. Designed for prototyping, printing, or sports equipment simulations.
 
-
-
-
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // --- Main Dimensions ---

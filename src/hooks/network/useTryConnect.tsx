@@ -7,13 +7,13 @@ import {
   engineCommandManager,
   kclManager,
   rustContext,
-  sceneInfra,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { getDimensions } from '@src/network/utils'
 import { useRef } from 'react'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import toast from 'react-hot-toast'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -49,7 +49,6 @@ const attemptToConnectToEngine = async ({
         if (!authToken) {
           return reject('authToken is missing on connection initialization')
         }
-
         if (engineCommandManager.started) {
           return reject('engine is already started. You cannot start again')
         }
@@ -110,7 +109,9 @@ const attemptToConnectToEngine = async ({
   return connection
 }
 
-const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async () => {
+const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
+  sceneInfra,
+}: { sceneInfra: SceneInfra }) => {
   const settings = await jsAppSettings()
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',
@@ -138,7 +139,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async () => {
   if (sceneInfra.camControls.oldCameraState) {
     await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
   } else {
-    await resetCameraPosition()
+    await resetCameraPosition({ sceneInfra })
   }
 
   // Since you reconnected you are not idle, clear the old camera state
@@ -169,6 +170,7 @@ async function tryConnecting({
   timeToConnect,
   settings,
   setShowManualConnect,
+  sceneInfra,
 }: {
   isConnecting: React.RefObject<boolean>
   numberOfConnectionAttempts: React.RefObject<number>
@@ -180,6 +182,7 @@ async function tryConnecting({
   timeToConnect: number
   settings: SettingsViaQueryString
   setShowManualConnect: React.Dispatch<React.SetStateAction<boolean>>
+  sceneInfra: SceneInfra
 }) {
   const connection = new Promise<string>((resolve, reject) => {
     void (async () => {
@@ -208,7 +211,9 @@ async function tryConnecting({
           })
 
           // Do not count the 30 second timer to connect within the kcl execution and scene setup
-          await setupSceneAndExecuteCodeAfterOpenedEngineConnection()
+          await setupSceneAndExecuteCodeAfterOpenedEngineConnection({
+            sceneInfra,
+          })
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAttempts.current = 0

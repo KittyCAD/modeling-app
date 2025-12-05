@@ -106,7 +106,6 @@ import type {
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
 import { modelingMachine } from '@src/machines/modelingMachine'
-import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { useFolders } from '@src/machines/systemIO/hooks'
 
 import {
@@ -120,6 +119,13 @@ import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 
 const OVERLAY_TIMEOUT_MS = 1_000
+
+// Defined outside of React to prevent rerenders
+const systemDeps = {
+  sceneInfra,
+  rustContext,
+  sceneEntitiesManager,
+}
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -529,7 +535,10 @@ export const ModelingMachineProvider = ({
             let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null =
               null
 
-            const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId)
+            const defaultResult = getDefaultSketchPlaneData(
+              artifactOrPlaneId,
+              systemDeps
+            )
             if (!err(defaultResult) && defaultResult) {
               result = defaultResult
             }
@@ -538,15 +547,23 @@ export const ModelingMachineProvider = ({
             // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
             if (!result) {
               const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
-              const offsetResult = await getOffsetSketchPlaneData(artifact)
+              const offsetResult = await getOffsetSketchPlaneData(
+                artifact,
+                systemDeps
+              )
               if (!err(offsetResult) && offsetResult) {
                 result = offsetResult
               }
             }
             console.log('result', result)
             if (!result) {
-              const sweepFaceSelected =
-                await selectionBodyFace(artifactOrPlaneId)
+              const sweepFaceSelected = await selectionBodyFace(
+                artifactOrPlaneId,
+                kclManager.artifactGraph,
+                kclManager.astSignal.value,
+                kclManager.execState,
+                systemDeps
+              )
               if (sweepFaceSelected) {
                 result = sweepFaceSelected
               }
@@ -684,7 +701,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -742,7 +760,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -810,7 +829,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -873,7 +893,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -929,7 +950,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -986,7 +1008,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -1043,7 +1066,8 @@ export const ModelingMachineProvider = ({
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
-              updatedAst.newAst
+              updatedAst.newAst,
+              kclManager.artifactGraph
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -1272,14 +1296,16 @@ export const ModelingMachineProvider = ({
     }),
     {
       input: {
-        ...modelingMachineDefaultContext,
-        store: {
-          ...modelingMachineDefaultContext.store,
-          cameraProjection,
-          useNewSketchMode,
-        },
         machineManager,
-        sketchSolveToolName: null,
+        engineCommandManager,
+        kclManager,
+        sceneInfra,
+        rustContext,
+        sceneEntitiesManager,
+        store: {
+          useNewSketchMode,
+          cameraProjection,
+        },
       },
       // devTools: true,
     }
@@ -1307,6 +1333,8 @@ export const ModelingMachineProvider = ({
       toggle(DefaultLayoutPaneID.Variables)
     } else if (data.menuLabel === 'View.Panes.Logs') {
       toggle(DefaultLayoutPaneID.Logs)
+    } else if (data.menuLabel === 'View.Panes.Zookeeper') {
+      toggle(DefaultLayoutPaneID.TTC)
     } else if (data.menuLabel === 'Design.Start sketch') {
       modelingSend({
         type: 'Enter sketch',
@@ -1326,7 +1354,6 @@ export const ModelingMachineProvider = ({
     kclManager.isExecutingSignal.value,
     isStreamReady,
     [
-      { menuLabel: 'Edit.Modify with Zoo Text-To-CAD' },
       { menuLabel: 'View.Standard views' },
       { menuLabel: 'View.Named views' },
       { menuLabel: 'Design.Start sketch' },
@@ -1373,11 +1400,6 @@ export const ModelingMachineProvider = ({
       {
         menuLabel: 'Design.Apply modification feature.Shell',
         commandName: 'Shell',
-        groupId: 'modeling',
-      },
-      {
-        menuLabel: 'Design.Modify with Zoo Text-To-CAD',
-        commandName: 'Prompt-to-edit',
         groupId: 'modeling',
       },
     ]
@@ -1513,16 +1535,20 @@ export const ModelingMachineProvider = ({
     modelingSend({ type: 'Center camera on selection' })
   })
   useHotkeys(['mod + alt + x'], () => {
-    resetCameraPosition().catch(reportRejection)
+    resetCameraPosition({ sceneInfra }).catch(reportRejection)
   })
 
   // Toggle Snap to grid
-  useHotkeyWrapper([SNAP_TO_GRID_HOTKEY], () => {
-    settingsActor.send({
-      type: 'set.modeling.snapToGrid',
-      data: { level: 'project', value: !snapToGrid.current },
-    })
-  })
+  useHotkeyWrapper(
+    [SNAP_TO_GRID_HOTKEY],
+    () => {
+      settingsActor.send({
+        type: 'set.modeling.snapToGrid',
+        data: { level: 'project', value: !snapToGrid.current },
+      })
+    },
+    kclManager
+  )
 
   useHotkeys(
     ['mod + a'],
@@ -1531,7 +1557,10 @@ export const ModelingMachineProvider = ({
       if (!inSketchMode) return
 
       e.preventDefault()
-      const selection = selectAllInCurrentSketch()
+      const selection = selectAllInCurrentSketch(
+        kclManager.artifactGraph,
+        systemDeps
+      )
       modelingSend({
         type: 'Set selection',
         data: { selectionType: 'completeSelection', selection },
@@ -1548,6 +1577,7 @@ export const ModelingMachineProvider = ({
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig: modelingMachineCommandConfig,
+    isExecuting: kclManager.isExecutingSignal.value,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically
     // make this function take the actor or state so it

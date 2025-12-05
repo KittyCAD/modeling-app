@@ -1,9 +1,6 @@
 // Saturn V Rocket
 // Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes
 
-
-
-
 @settings(defaultLengthUnit = m)
 
 r1 = 4.5 // baseRadiusStage1

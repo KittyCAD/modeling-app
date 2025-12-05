@@ -2413,10 +2413,10 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
             "an identifier, which becomes name you're binding the value to",
         ))
         .parse_next(i)?;
-    let (kind, mut start, dec_end) = if let Some((kind, token)) = &decl_token {
-        (*kind, token.start, token.end)
+    let (kind, mut start) = if let Some((kind, token)) = &decl_token {
+        (*kind, token.start)
     } else {
-        (VariableKind::Const, id.start, id.end)
+        (VariableKind::Const, id.start)
     };
     if let Some(token) = visibility_token {
         start = token.start;
@@ -2449,13 +2449,23 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
 
             let val = expression
                 .try_map(|val| {
-                    // Function bodies can be used if and only if declaring a function.
-                    // Check the 'if' direction:
+                    // Check if declaring a variable where the value is a
+                    // function expression, e.g. `f = fn() {}`. If so, suggest
+                    // using `fn f() {}` instead.
                     if matches!(val, Expr::FunctionExpression(_)) {
-                        return Err(CompilationError::fatal(
-                            SourceRange::new(start, dec_end, id.module_id),
-                            format!("Expected a `fn` variable kind, found: `{kind}`"),
-                        ));
+                        let fn_end = val.start();
+                        ParseContext::warn(
+                            CompilationError::err(
+                                SourceRange::new(start, fn_end, id.module_id),
+                                "Define a function with `fn name()` instead of assigning the function to a variable",
+                            )
+                            .with_suggestion(
+                                format!("Use `fn {}`", &id.name),
+                                format!("fn {}", &id.name),
+                                Some(SourceRange::new(start, fn_end, id.module_id)),
+                                Tag::None,
+                            ),
+                        );
                     }
                     Ok(val)
                 })
@@ -5001,6 +5011,18 @@ e
             let actual = optional_after_required(&params);
             assert_eq!(actual.is_ok(), expect_ok, "failed test {i}");
         }
+    }
+
+    #[test]
+    fn function_defined_with_var() {
+        let code = r#"
+        foo = fn(@x) {
+            return x
+        }
+        answer = foo(2)
+        "#;
+        let (_, errs) = assert_no_err(code);
+        assert!(errs[0].message.contains("Define a function with `fn name()` instead") && errs[0].suggestion.is_some());
     }
 
     #[test]

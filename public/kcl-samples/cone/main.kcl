@@ -1,9 +1,6 @@
 // Cone
 // A cone is defined by it's diameter and height.
 
-
-
-
 @settings(defaultLengthUnit = mm)
 
 // Define parameters

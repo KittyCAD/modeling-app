@@ -1,9 +1,6 @@
 // Artemis SLS Rocket
 // Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes
 
-
-
-
 @settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 // RS-25 engine (x4)
