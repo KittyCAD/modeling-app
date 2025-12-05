@@ -50,6 +50,7 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import {
+  processCodeMirrorRanges,
   type handleSelectionBatch as handleSelectionBatchFn,
   type processCodeMirrorRanges as processCodeMirrorRangesFn,
 } from '@src/lib/selections'
@@ -107,6 +108,7 @@ import {
   cursorBlinkingCompartment,
   lineWrappingCompartment,
 } from '@src/editor'
+import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -447,10 +449,51 @@ export class KclManager extends EventTarget {
     this._wasmInitFailed.value = wasmInitFailed
   }
 
+  private deferredExecution = deferredCallback(async (newCode: string) => {
+    void this.writeToFile(newCode)
+    void this.executeCode(newCode)
+  }, 300)
+
   private createEditorExtensions() {
     return [
       baseEditorExtensions(),
       keymapCompartment.of(keymap.of(this.getCodemirrorHotkeys())),
+      EditorView.updateListener.of((update: ViewUpdate) => {
+        if (update.transactions.some((tr) => tr.isUserEvent('select'))) {
+          this.handleOnViewUpdate(update, processCodeMirrorRanges)
+        }
+      }),
+      EditorView.updateListener.of((update) => {
+        const shouldExecute =
+          update.docChanged &&
+          update.transactions.some((tr) => {
+            // The old KCL ViewPlugin had checks that seemed to check for
+            // certain events, but really they just set the already-true to true.
+            // Leaving here in case we need to switch to an opt-in listener.
+            // const releventEvents = [
+            //   tr.isUserEvent('input'),
+            //   tr.isUserEvent('delete'),
+            //   tr.isUserEvent('undo'),
+            //   tr.isUserEvent('redo'),
+            //   tr.isUserEvent('move'),
+            //   tr.annotation(lspRenameEvent.type),
+            //   tr.annotation(lspCodeActionEvent.type),
+            // ]
+            const ignoredEvents = [
+              tr.annotation(editorCodeUpdateEvent.type),
+              tr.annotation(copilotPluginEvent.type),
+              tr.annotation(updateOutsideEditorEvent.type),
+              tr.annotation(hotkeyRegisteredAnnotation),
+            ]
+
+            return !ignoredEvents.some((v) => Boolean(v))
+          })
+
+        if (shouldExecute) {
+          const newCode = update.state.doc.toString()
+          this.deferredExecution(newCode)
+        }
+      }),
     ]
   }
   private createEditorView() {
@@ -835,7 +878,6 @@ export class KclManager extends EventTarget {
       this.clearAst()
       return
     }
-    clearTimeout(this.executionTimeoutId)
 
     // We consider anything taking longer than 5 minutes a long execution.
     this.executionTimeoutId = setTimeout(() => {
@@ -1530,7 +1572,7 @@ export class KclManager extends EventTarget {
       this.updateCodeEditor(code, clearHistory)
     }
   }
-  async writeToFile() {
+  async writeToFile(newCode = this.code) {
     if (this.isBufferMode) return
     if (window.electron) {
       const electron = window.electron
@@ -1550,7 +1592,7 @@ export class KclManager extends EventTarget {
             time: Date.now(),
           }
           electron
-            .writeFile(this._currentFilePath, this.code ?? '')
+            .writeFile(this._currentFilePath, newCode)
             .then(resolve)
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
@@ -1561,7 +1603,7 @@ export class KclManager extends EventTarget {
         }, 1000)
       })
     } else {
-      safeLSSetItem(PERSIST_CODE_KEY, this.code)
+      safeLSSetItem(PERSIST_CODE_KEY, newCode)
     }
   }
   async updateEditorWithAstAndWriteToFile(

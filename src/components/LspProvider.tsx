@@ -139,34 +139,31 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     let plugin = null
     if (isKclLspReady && kclLspClient) {
       // Set up the lsp plugin.
-      const lsp = kcl(
-        {
-          documentUri: `file:///${PROJECT_ENTRYPOINT}`,
-          workspaceFolders: getWorkspaceFolders(),
-          client: kclLspClient,
-          processLspNotification: (
-            plugin: LanguageServerPlugin,
-            notification: LSP.NotificationMessage
-          ) => {
-            try {
-              switch (notification.method) {
-                case 'kcl/astUpdated':
-                  // Update the folding ranges, since the AST has changed.
-                  // This is a hack since codemirror does not support async foldService.
-                  // When they do we can delete this.
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  plugin.updateFoldingRanges()
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  plugin.requestSemanticTokens()
-                  break
-              }
-            } catch (error) {
-              console.error(error)
+      const lsp = kcl({
+        documentUri: `file:///${PROJECT_ENTRYPOINT}`,
+        workspaceFolders: getWorkspaceFolders(),
+        client: kclLspClient,
+        processLspNotification: (
+          plugin: LanguageServerPlugin,
+          notification: LSP.NotificationMessage
+        ) => {
+          try {
+            switch (notification.method) {
+              case 'kcl/astUpdated':
+                // Update the folding ranges, since the AST has changed.
+                // This is a hack since codemirror does not support async foldService.
+                // When they do we can delete this.
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                plugin.updateFoldingRanges()
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                plugin.requestSemanticTokens()
+                break
             }
-          },
+          } catch (error) {
+            console.error(error)
+          }
         },
-        { kclManager, sceneEntitiesManager }
-      )
+      })
 
       // New code to just update the CodeMirror extensions directly.
       kclManager.editorView.dispatch({
