@@ -20,6 +20,7 @@ import { lintGutter, lintKeymap } from '@codemirror/lint'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { Compartment, EditorState, Extension, Prec } from '@codemirror/state'
 import {
+  drawSelection,
   dropCursor,
   highlightActiveLine,
   highlightActiveLineGutter,
@@ -36,12 +37,18 @@ import { kclLspCompartment } from './plugins/lsp/kcl'
 import { themeCompartment } from './plugins/theme'
 
 export const lineWrappingCompartment = new Compartment()
+export const cursorBlinkingCompartment = new Compartment()
 
 export function baseEditorExtensions() {
   const extensions: Extension = [
     // This extension is empty to begin with, then reconfigured when the LSP becomes available
     kclLspCompartment.of([]),
     lineWrappingCompartment.of([]),
+    cursorBlinkingCompartment.of(
+      drawSelection({
+        cursorBlinkRate: 1200,
+      })
+    ),
     lineHighlightField,
     historyCompartment.of(history()),
     closeBrackets(),

@@ -77,7 +77,7 @@ import {
   type TransactionSpec,
 } from '@codemirror/state'
 import type { KeyBinding, ViewUpdate } from '@codemirror/view'
-import { EditorView } from '@codemirror/view'
+import { drawSelection, EditorView } from '@codemirror/view'
 import type { StateFrom } from 'xstate'
 
 import {
@@ -100,8 +100,12 @@ import {
   appSettingsThemeEffect,
   settingsUpdateAnnotation,
 } from '@src/editor/plugins/theme'
-import { baseEditorExtensions, lineWrappingCompartment } from '@src/editor'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import {
+  baseEditorExtensions,
+  cursorBlinkingCompartment,
+  lineWrappingCompartment,
+} from '@src/editor'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -1191,6 +1195,20 @@ export class KclManager extends EventTarget {
       ],
     })
   }
+  setCursorBlinking(shouldBlink: boolean) {
+    this._editorView.dispatch({
+      effects: [
+        cursorBlinkingCompartment.reconfigure(
+          drawSelection({ cursorBlinkRate: shouldBlink ? 1200 : 0 })
+        ),
+      ],
+      annotations: [
+        settingsUpdateAnnotation.of(null),
+        Transaction.addToHistory.of(false),
+      ],
+    })
+  }
+
   /**
    * Given an array of Diagnostics remove any duplicates by hashing a key
    * in the format of from + ' ' + to + ' ' + message.
