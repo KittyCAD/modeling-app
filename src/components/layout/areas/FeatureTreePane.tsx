@@ -59,6 +59,14 @@ type SystemDeps = Pick<
   | 'commandBarActor'
 >
 
+// Defined outside of React to prevent rerenders
+// TODO: get all system dependencies into React via global context
+const systemDeps = {
+  sceneInfra,
+  sceneEntitiesManager,
+  rustContext,
+}
+
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
     <LayoutPanel

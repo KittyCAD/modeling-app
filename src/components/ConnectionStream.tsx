@@ -33,6 +33,13 @@ import { DEFAULT_BACKFACE_COLOR } from '@src/lib/constants'
 
 const TIME_TO_CONNECT = 30_000
 
+// Object defined outside of React to prevent rerenders
+const systemDeps = {
+  engineCommandManager,
+  kclManager,
+  sceneInfra,
+}
+
 export const ConnectionStream = (props: {
   authToken: string | undefined
 }) => {

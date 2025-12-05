@@ -440,6 +440,10 @@ export class KclManager extends EventTarget {
     return this._sceneEntitiesManager
   }
 
+  set sceneEntitiesManager(s: SceneEntities) {
+    this._sceneEntitiesManager = s
+  }
+
   set isExecuting(isExecuting) {
     this._isExecuting.value = isExecuting
     // If we have finished executing, but the execute is stale, we should
