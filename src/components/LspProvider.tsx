@@ -177,7 +177,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       plugin = lsp
     }
     return plugin
-  }, [kclLspClient, isKclLspReady, kclManager])
+  }, [kclLspClient, isKclLspReady])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '') {
