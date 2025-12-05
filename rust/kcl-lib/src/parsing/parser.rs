@@ -564,9 +564,22 @@ fn minus_sign(i: &mut TokenSlice) -> ModalResult<Token> {
     .parse_next(i)
 }
 
+fn plus_sign(i: &mut TokenSlice) -> ModalResult<Token> {
+    any.verify_map(|token: Token| {
+        if token.token_type == TokenType::Operator && token.value == "+" {
+            Some(token)
+        } else {
+            None
+        }
+    })
+    .context(expected("a plus sign `+`"))
+    .parse_next(i)
+}
+
 /// Numeric literal with suffix and optional leading negative sign.
 fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
-    let negative_token = opt(minus_sign).parse_next(i)?;
+    let prefix_token = opt(alt((minus_sign, plus_sign))).parse_next(i)?;
+    let is_negative = prefix_token.as_ref().is_some_and(|tok| tok.value == "-");
     let (value, suffix, number_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
@@ -585,14 +598,14 @@ fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
         })
         .context(expected("a number literal (e.g. 3 or 12.5)"))
         .parse_next(i)?;
-    let start = negative_token.as_ref().map(|t| t.start).unwrap_or(number_token.start);
+    let start = prefix_token.as_ref().map(|t| t.start).unwrap_or(number_token.start);
     Ok(Node::new(
         NumericLiteral {
-            value: if negative_token.is_some() { -value } else { value },
+            value: if is_negative { -value } else { value },
             suffix,
             raw: format!(
                 "{}{}",
-                negative_token.map(|t| t.value).unwrap_or_default(),
+                prefix_token.map(|t| t.value).unwrap_or_default(),
                 number_token.value
             ),
             digest: None,
@@ -2768,6 +2781,7 @@ fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Operator if token.value == "-" => Ok((UnaryOperator::Neg, token)),
+            TokenType::Operator if token.value == "+" => Ok((UnaryOperator::Plus, token)),
             TokenType::Operator => Err(CompilationError::fatal(
                  token.as_source_range(),
                  format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
@@ -4914,15 +4928,6 @@ e
     #[test]
     fn test_parse_weird_close_before_nada() {
         assert_err_contains(r#"fn)n-"#, "expected whitespace, found ')' which is brace");
-    }
-
-    #[test]
-    fn test_parse_weird_lots_of_slashes() {
-        assert_err_contains(
-            r#"J///////////o//+///////////P++++*++++++P///////˟
-++4"#,
-            "Unexpected token: +",
-        );
     }
 
     #[test]
