@@ -1813,7 +1813,7 @@ impl Node<UnaryExpression> {
                     meta,
                 };
 
-                return Ok(negated);
+                Ok(negated)
             }
             UnaryOperator::Neg => {
                 let value = &self.argument.get_result(exec_state, ctx).await?;
