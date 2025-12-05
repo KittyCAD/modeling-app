@@ -16,7 +16,6 @@ import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { CustomIcon } from '@src/components/CustomIcon'
-import { useCodeMirror } from '@src/components/layout/areas/CodeEditor'
 import { Spinner } from '@src/components/Spinner'
 import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -34,11 +33,32 @@ import { varMentions } from '@src/lib/varCompletionExtension'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import styles from './CommandBarKclInput.module.css'
-import { editorTheme } from '@src/editor/plugins/theme'
+import { editorTheme, themeCompartment } from '@src/editor/plugins/theme'
+import { Compartment, EditorState } from '@codemirror/state'
+import { kclLspCompartment } from '@src/editor/plugins/lsp/kcl'
+import { kclAutocompleteCompartment } from '@src/editor'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
   snapshot?.context
+
+const varMentionsCompartment = new Compartment()
+const setValueCompartment = new Compartment()
+const keymapCompartment = new Compartment()
+const miniEditor = new EditorView({
+  state: EditorState.create({
+    extensions: [
+      themeCompartment.of([]),
+      varMentionsCompartment.of([]),
+      setValueCompartment.of([]),
+      kclLspCompartment.of([]),
+      kclAutocompleteCompartment.of([]),
+      closeBrackets(),
+      keymap.of([...closeBracketsKeymap, ...completionKeymap]),
+      keymapCompartment.of([]),
+    ],
+  }),
+})
 
 function CommandBarKclInput({
   arg,
@@ -168,74 +188,64 @@ function CommandBarKclInput({
   })
   const varMentionsExtension = varMentions(varMentionData)
 
-  const { setContainer, view } = useCodeMirror({
-    container: editorRef.current,
-    initialDocValue: value,
-    autoFocus: true,
-    selection: {
-      anchor: 0,
-      head:
-        typeof previouslySetValue === 'object' &&
-        'valueText' in previouslySetValue
-          ? previouslySetValue.valueText.length
-          : defaultValue.length,
-    },
-    extensions: [
-      // Typically we prefer to update CodeMirror outside of React, but this "micro-editor" doesn't exist outside of React.
-      editorTheme[getResolvedTheme(settings.app.theme.current)],
-      varMentionsExtension,
-      EditorView.updateListener.of((vu: ViewUpdate) => {
-        if (vu.docChanged) {
-          setValue(vu.state.doc.toString())
-        }
-      }),
-      closeBrackets(),
-      keymap.of([
-        ...closeBracketsKeymap,
-        ...completionKeymap,
-        {
-          key: 'Enter',
-          run: (editor) => {
-            // Only submit if there is no completion active
-            if (completionStatus(editor.state) === null) {
-              handleSubmit()
-              return true
-            } else {
-              return false
-            }
-          },
-        },
-        {
-          key: 'Meta-Backspace',
-          run: () => {
-            stepBack()
-            return true
-          },
-        },
-      ]),
-    ],
-  })
+  useEffect(() => {
+    miniEditor.dispatch({
+      effects: [
+        keymapCompartment.reconfigure(
+          keymap.of([
+            {
+              key: 'Enter',
+              run: (editor) => {
+                // Only submit if there is no completion active
+                if (completionStatus(editor.state) === null) {
+                  handleSubmit()
+                  return true
+                } else {
+                  return false
+                }
+              },
+            },
+            {
+              key: 'Meta-Backspace',
+              run: () => {
+                stepBack()
+                return true
+              },
+            },
+          ])
+        ),
+      ],
+    })
+  }, [handleSubmit, stepBack])
+
+  useEffect(() => {
+    miniEditor.dispatch({
+      effects: [varMentionsCompartment.reconfigure(varMentionsExtension)],
+    })
+  }, [varMentionsExtension])
+
+  useEffect(() => {
+    miniEditor.dispatch({
+      effects: themeCompartment.reconfigure(
+        editorTheme[getResolvedTheme(settings.app.theme.current)]
+      ),
+    })
+  }, [settings.app.theme])
 
   useEffect(() => {
     if (editorRef.current) {
-      setContainer(editorRef.current)
-      // Reset the value when the arg changes and
-      // the new arg is also a KCL type, since the component
-      // sticks around.
-      view?.focus()
-      view?.dispatch({
-        changes: {
-          from: 0,
-          to: view.state.doc.length,
-          insert: initialValue,
-        },
-        selection: {
-          anchor: 0,
-          head: initialValue.length,
-        },
-      })
+      editorRef.current.appendChild(miniEditor.dom)
+      miniEditor.focus()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    miniEditor.dispatch({
+      effects: setValueCompartment.reconfigure(
+        EditorView.updateListener.of((vu: ViewUpdate) => {
+          if (vu.docChanged) {
+            setValue(vu.state.doc.toString())
+          }
+        })
+      ),
+    })
   }, [arg, editorRef])
 
   useEffect(() => {
