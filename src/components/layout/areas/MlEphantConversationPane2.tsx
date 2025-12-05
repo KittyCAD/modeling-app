@@ -127,10 +127,34 @@ export const MlEphantConversationPane2 = (props: {
 
   const needsReconnect = abruptlyClosed
 
+  const getConversationId = () => {
+    const mlEphantConversations =
+      props.systemIOActor.getSnapshot().context.mlEphantConversations
+
+    // Not ready yet.
+    if (mlEphantConversations === undefined) {
+      return undefined
+    }
+    if (props.settings.meta.id.current === uuidNIL) {
+      return undefined
+    }
+
+    const conversationId = mlEphantConversations.get(
+      props.settings.meta.id.current
+    )
+
+    if (conversationId === uuidNIL) {
+      return undefined
+    }
+
+    return conversationId
+  }
+
   const onReconnect = () => {
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions2.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
+      conversationId: getConversationId(),
     })
   }
 
@@ -153,22 +177,8 @@ export const MlEphantConversationPane2 = (props: {
   }
 
   const tryToGetExchanges = () => {
-    const mlEphantConversations =
-      props.systemIOActor.getSnapshot().context.mlEphantConversations
-
-    // Not ready yet.
-    if (mlEphantConversations === undefined) {
-      return
-    }
-    if (props.settings.meta.id.current === uuidNIL) {
-      return
-    }
-
-    const conversationId = mlEphantConversations.get(
-      props.settings.meta.id.current
-    )
-
-    if (conversationId === uuidNIL) {
+    const conversationId = getConversationId()
+    if (conversationId === undefined) {
       return
     }
 
