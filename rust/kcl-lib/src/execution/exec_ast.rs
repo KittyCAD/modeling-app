@@ -1915,7 +1915,24 @@ impl Node<UnaryExpression> {
                     _ => Err(err()),
                 }
             }
-            UnaryOperator::Plus => self.argument.get_result(exec_state, ctx).await,
+            UnaryOperator::Plus => {
+                let value = &self.argument.get_result(exec_state, ctx).await?;
+                let err = || {
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "You can only apply unary + to numbers, planes, or lines, but this is a {}",
+                            value.human_friendly_type()
+                        ),
+                        vec![self.into()],
+                    ))
+                };
+                match value {
+                    KclValue::Number { .. } | KclValue::Plane { .. } | KclValue::Object { .. } => {
+                        Ok(value.clone())
+                    }
+                    _ => Err(err()),
+                }
+            }
         }
     }
 }
