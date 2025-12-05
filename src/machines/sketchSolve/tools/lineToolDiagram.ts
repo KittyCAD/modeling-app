@@ -14,8 +14,8 @@ import type { KclManager } from '@src/lang/KclManager'
 import {
   type ToolEvents,
   type ToolContext,
-  TOOL_ID,
-  CONFIRMING_DIMENSIONS,
+  type TOOL_ID,
+  type CONFIRMING_DIMENSIONS,
   animateDraftSegmentListener,
   addPointListener,
   removePointListener,
@@ -25,6 +25,12 @@ import {
   sendDeleteResultToParentWithDebounce,
   sendDeleteResultToParent,
 } from '@src/machines/sketchSolve/tools/lineToolImpl'
+
+// This might seem a bit redundant, but this xstate visualizer stops working
+// when I use TOOL_ID and CONFIRMING_DIMENSIONS directly when they're imported.
+export const toolId: typeof TOOL_ID = 'Line tool'
+export const confirmingDimensions: typeof CONFIRMING_DIMENSIONS =
+  'Confirming dimensions'
 
 export const machine = setup({
   types: {
@@ -329,7 +335,7 @@ export const machine = setup({
     kclManager: input.kclManager,
     sketchId: input.sketchId || 0,
   }),
-  id: TOOL_ID,
+  id: toolId,
   initial: 'ready for user click',
   on: {
     unequip: {
@@ -356,7 +362,7 @@ export const machine = setup({
       },
     },
 
-    [CONFIRMING_DIMENSIONS]: {
+    [confirmingDimensions]: {
       entry: assign(({ event }) => {
         // Set pendingDoubleClick flag if this event is a double-click
         // This flag will cause any pending results to be deleted instead of sent
