@@ -38,12 +38,13 @@ import interact from '@replit/codemirror-interact'
 import { historyCompartment } from '@src/editor/compartments'
 import { lineHighlightField } from '@src/editor/highlightextension'
 import { onMouseDragRegex, onMouseDragMakeANewNumber } from '@src/lib/utils'
-import { kclLspCompartment } from '@src/editor/plugins/lsp/kcl'
 import { themeCompartment } from '@src/editor/plugins/theme'
 import { kclAstExtension } from '@src/editor/plugins/ast'
 
 export const lineWrappingCompartment = new Compartment()
 export const cursorBlinkingCompartment = new Compartment()
+/** Compartment wrapping KCL CodeMirror plugin, allowing for runtime reconfiguration */
+export const kclLspCompartment = new Compartment()
 /** Compartment wrapping KCL autocompletion "copilot" plugin, allowing for runtime reconfiguration */
 export const kclAutocompleteCompartment = new Compartment()
 

@@ -1,4 +1,4 @@
-import { Compartment, type Extension } from '@codemirror/state'
+import { type Extension } from '@codemirror/state'
 import type { PluginValue, ViewUpdate } from '@codemirror/view'
 import { ViewPlugin } from '@codemirror/view'
 import type {
@@ -224,9 +224,6 @@ export class KclPlugin implements PluginValue {
     return this.client.requestCustom('kcl/updateCanExecute', params)
   }
 }
-
-/** Compartment wrapping KCL CodeMirror plugin, allowing for runtime reconfiguration */
-export const kclLspCompartment = new Compartment()
 
 export function kclPlugin(
   options: LanguageServerOptions,
