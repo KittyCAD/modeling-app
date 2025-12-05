@@ -1915,7 +1915,7 @@ impl Node<UnaryExpression> {
                     _ => Err(err()),
                 }
             }
-            UnaryOperator::Plus => todo!(),
+            UnaryOperator::Plus => self.argument.get_result(exec_state, ctx).await,
         }
     }
 }
