@@ -59,13 +59,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import {
-  defaultKeymap,
-  history,
-  historyKeymap,
-  redo,
-  undo,
-} from '@codemirror/commands'
+import { history, redo, undo } from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
@@ -77,7 +71,7 @@ import {
   type TransactionSpec,
 } from '@codemirror/state'
 import type { KeyBinding, ViewUpdate } from '@codemirror/view'
-import { drawSelection, EditorView } from '@codemirror/view'
+import { drawSelection, EditorView, keymap } from '@codemirror/view'
 import type { StateFrom } from 'xstate'
 
 import {
@@ -456,6 +450,7 @@ export class KclManager extends EventTarget {
           this.executeCode(update.state.doc.toString())
         }
       }),
+      keymap.of(this.getCodemirrorHotkeys()),
     ]
   }
   private createEditorView() {
