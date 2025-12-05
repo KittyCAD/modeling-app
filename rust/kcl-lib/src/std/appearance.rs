@@ -118,6 +118,7 @@ async fn inner_appearance(
                     metalness: metalness.unwrap_or(DEFAULT_METALNESS) as f32 / 100.0,
                     roughness: roughness.unwrap_or(DEFAULT_ROUGHNESS) as f32 / 100.0,
                     ambient_occlusion: 0.0,
+                    backface_color: None,
                 }),
             )
             .await?;
