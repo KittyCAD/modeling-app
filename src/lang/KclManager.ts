@@ -50,6 +50,7 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import {
+  processCodeMirrorRanges,
   type handleSelectionBatch as handleSelectionBatchFn,
   type processCodeMirrorRanges as processCodeMirrorRangesFn,
 } from '@src/lib/selections'
@@ -107,6 +108,11 @@ import {
   cursorBlinkingCompartment,
   lineWrappingCompartment,
 } from '@src/editor'
+import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
+import type {
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -447,10 +453,118 @@ export class KclManager extends EventTarget {
     this._wasmInitFailed.value = wasmInitFailed
   }
 
+  /**
+   * This is a CodeMirror extension that listens for selection events
+   * and fires off engine commands to highlight the corresponding engine entities.
+   * It is not debounced.
+   */
+  private highlightEngineEntitiesEffect = EditorView.updateListener.of(
+    (update: ViewUpdate) => {
+      if (update.transactions.some((tr) => tr.isUserEvent('select'))) {
+        this.wasmInstancePromise
+          .then((wasmInstance) =>
+            this.handleOnViewUpdate(
+              update,
+              processCodeMirrorRanges,
+              wasmInstance
+            )
+          )
+          .catch(reportRejection)
+      }
+    }
+  )
+
+  /**
+   * This is a CodeMirror extension that watches for updates to the document,
+   * discerns if the change is a kind that we want to re-execute on,
+   * then fires (and forgets) an execution with a debounce.
+   */
+  private executeKclEffect = EditorView.updateListener.of((update) => {
+    const shouldExecute =
+      this.engineCommandManager.started &&
+      update.docChanged &&
+      update.transactions.some((tr) => {
+        // The old KCL ViewPlugin had checks that seemed to check for
+        // certain events, but really they just set the already-true to true.
+        // Leaving here in case we need to switch to an opt-in listener.
+        // const relevantEvents = [
+        //   tr.isUserEvent('input'),
+        //   tr.isUserEvent('delete'),
+        //   tr.isUserEvent('undo'),
+        //   tr.isUserEvent('redo'),
+        //   tr.isUserEvent('move'),
+        //   tr.annotation(lspRenameEvent.type),
+        //   tr.annotation(lspCodeActionEvent.type),
+        // ]
+        const ignoredEvents = [
+          tr.annotation(editorCodeUpdateEvent.type),
+          tr.annotation(copilotPluginEvent.type),
+          tr.annotation(updateOutsideEditorEvent.type),
+          tr.annotation(hotkeyRegisteredAnnotation),
+        ]
+
+        return !ignoredEvents.some((v) => Boolean(v))
+      })
+
+    if (shouldExecute) {
+      const newCode = update.state.doc.toString()
+      this.deferredExecution(newCode)
+    }
+  })
+
+  private deferredExecution = deferredCallback(async (newCode: string) => {
+    // We don't want to block on file writing
+    void this.writeToFile(newCode)
+
+    // If we're in sketchSolveMode, update Rust state with the latest AST
+    // This handles the case where the user directly edits in the CodeMirror editor
+    // these are short term hacks while in rapid development for sketch revamp
+    // should be clean up.
+    try {
+      if (this.modelingState?.matches('sketchSolveMode')) {
+        await this.executeCode(newCode)
+        const { sceneGraph, execOutcome } =
+          await this.singletons.rustContext.hackSetProgram(
+            this.ast,
+            await jsAppSettings(this.singletons.rustContext.settingsActor)
+          )
+
+        // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
+        const sceneGraphDelta: SceneGraphDelta = {
+          new_graph: sceneGraph,
+          new_objects: [],
+          invalidates_ids: false,
+          exec_outcome: execOutcome,
+        }
+
+        const kclSource: SourceDelta = {
+          text: this.code,
+        }
+
+        // Send event to sketch solve machine via modeling machine
+        this.sendModelingEvent({
+          type: 'update sketch outcome',
+          data: {
+            kclSource,
+            sceneGraphDelta,
+          },
+        })
+      } else if (this.modelingState?.matches('Sketch')) {
+        // Do nothing and see what happens!
+      } else {
+        await this.executeCode(newCode)
+      }
+    } catch (error) {
+      console.error('Error when updating Rust state after user edit:', error)
+    }
+  }, 300)
+
   private createEditorExtensions() {
     return [
       baseEditorExtensions(),
       keymapCompartment.of(keymap.of(this.getCodemirrorHotkeys())),
+      this.highlightEngineEntitiesEffect,
+      this.executeKclEffect,
     ]
   }
   private createEditorView() {
@@ -1416,14 +1530,14 @@ export class KclManager extends EventTarget {
   handleOnViewUpdate(
     viewUpdate: ViewUpdate,
     processCodeMirrorRanges: typeof processCodeMirrorRangesFn,
-    sceneEntitiesManager: SceneEntities,
     wasmInstance: ModuleType
   ): void {
+    const sceneEntitiesManager = this._sceneEntitiesManager
     const ranges = viewUpdate?.state?.selection?.ranges || []
     if (ranges.length === 0) {
       return
     }
-    if (!this._modelingState) {
+    if (!this._modelingState || !sceneEntitiesManager) {
       return
     }
     if (this._modelingState.matches({ Sketch: 'Change Tool' })) {
@@ -1537,7 +1651,7 @@ export class KclManager extends EventTarget {
       this.updateCodeEditor(code, clearHistory)
     }
   }
-  async writeToFile() {
+  async writeToFile(newCode = this.code) {
     if (this.isBufferMode) return
     if (window.electron) {
       const electron = window.electron
@@ -1557,7 +1671,7 @@ export class KclManager extends EventTarget {
             time: Date.now(),
           }
           electron
-            .writeFile(this._currentFilePath, this.code ?? '')
+            .writeFile(this._currentFilePath, newCode)
             .then(resolve)
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
@@ -1568,7 +1682,7 @@ export class KclManager extends EventTarget {
         }, 1000)
       })
     } else {
-      safeLSSetItem(PERSIST_CODE_KEY, this.code)
+      safeLSSetItem(PERSIST_CODE_KEY, newCode)
     }
   }
   async updateEditorWithAstAndWriteToFile(
