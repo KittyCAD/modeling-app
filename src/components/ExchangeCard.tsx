@@ -358,7 +358,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
 
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
 
-  const cssCard = `flex flex-col p-2 gap-2 justify-between
+  const cssCard = `flex flex-col px-4 py-2 gap-2 justify-between
     transition-height duration-500 overflow-hidden text-sm
   `
 

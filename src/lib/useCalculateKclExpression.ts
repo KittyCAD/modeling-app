@@ -2,14 +2,15 @@ import { findUniqueName } from '@src/lang/create'
 import type { PrevVariable } from '@src/lang/queryAst'
 import { findAllPreviousVariables } from '@src/lang/queryAst'
 import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
-import type { Expr, SourceRange } from '@src/lang/wasm'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Expr, Program, SourceRange, VariableMap } from '@src/lang/wasm'
 import { parse, resultIsOk } from '@src/lang/wasm'
 import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { getInVariableCase } from '@src/lib/utils'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type RustContext from '@src/lib/rustContext'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -24,13 +25,21 @@ export function useCalculateKclExpression({
   initialVariableName: valueName = '',
   sourceRange,
   selectionRanges,
-  allowArrays,
+  rustContext,
+  code,
+  ast,
+  variables,
+  options,
 }: {
   value: string
   initialVariableName?: string
   sourceRange?: SourceRange
   selectionRanges: Selections
-  allowArrays?: boolean
+  rustContext: RustContext
+  code: string
+  ast: Node<Program>
+  variables: VariableMap
+  options?: { allowArrays?: boolean }
 }): {
   inputRef: React.RefObject<HTMLInputElement | null>
   valueNode: Expr | null
@@ -46,9 +55,6 @@ export function useCalculateKclExpression({
   // is asynchronous. Use this state variable to track if execution
   // has completed
   const [isExecuting, setIsExecuting] = useState(false)
-  const ast = kclManager.astSignal.value
-  const variables = kclManager.variablesSignal.value
-  const code = kclManager.codeSignal.value
   // If there is no selection, use the end of the code
   // so all variables are available
   const selectionRange: SourceRange | undefined =
@@ -125,7 +131,11 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
-      const result = await getCalculatedKclExpressionValue(value, allowArrays)
+      const result = await getCalculatedKclExpressionValue(
+        value,
+        rustContext,
+        options
+      )
       setIsExecuting(false)
       if (result instanceof Error || 'errors' in result || !result.astNode) {
         setCalcResult('NAN')
@@ -144,8 +154,7 @@ export function useCalculateKclExpression({
       setIsExecuting(false)
       setValueNode(null)
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [value, availableVarInfo, code, variables, allowArrays])
+  }, [value, availableVarInfo, code, rustContext, options, ast])
 
   return {
     valueNode,

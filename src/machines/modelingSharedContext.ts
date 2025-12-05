@@ -1,6 +1,10 @@
+import type { KclManager } from '@src/lang/KclManager'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 
-export const modelingMachineDefaultContext: ModelingMachineContext = {
+export const modelingMachineDefaultContext: Omit<
+  ModelingMachineContext,
+  'kclManager'
+> = {
   currentMode: 'modeling',
   currentTool: 'none',
   toastId: null,
@@ -39,7 +43,7 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
   sketchSolveTool: null,
 }
 
-export function generateModelingMachineDefaultContext() {
+export function generateModelingMachineDefaultContext(kclManager: KclManager) {
   const context: ModelingMachineContext = {
     currentMode: 'modeling',
     currentTool: 'none',
@@ -77,6 +81,7 @@ export function generateModelingMachineDefaultContext() {
     planesInitialized: false,
     sketchSolveTool: null,
     sketchSolveToolName: null,
+    kclManager,
   }
   return context
 }

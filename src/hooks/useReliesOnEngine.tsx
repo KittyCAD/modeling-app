@@ -4,7 +4,7 @@ import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { EngineConnectionStateType } from '@src/network/utils'
 import { kclManager } from '@src/lib/singletons'
 
-export function useReliesOnEngine() {
+export function useReliesOnEngine(isExecuting: boolean) {
   const { overallState, immediateState } = useNetworkContext()
   const { isStreamReady } = useAppState()
   const reliesOnEngine =

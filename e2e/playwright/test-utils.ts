@@ -825,12 +825,11 @@ export const doExport = async (
     const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
 
-    const textToCadCommand = page.getByRole('option', {
+    const exportCommand = page.getByRole('option', {
       name: 'floppy disk arrow Export',
     })
-    await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
-    await textToCadCommand.first().click()
+    await expect(exportCommand.first()).toBeVisible()
+    await exportCommand.first().click()
   }
   await expect(page.getByTestId('command-bar')).toBeVisible()
 
