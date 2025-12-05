@@ -28,6 +28,7 @@ interface CreateSegmentArgs {
   theme: Themes
   id: number
   scale: number
+  isDraft?: boolean
 }
 
 interface UpdateSegmentArgs {
@@ -37,6 +38,7 @@ interface UpdateSegmentArgs {
   scale: number
   group: Group
   selectedIds: Array<number>
+  isDraft?: boolean
 }
 
 export interface SegmentUtils {
@@ -67,8 +69,15 @@ class PointSegment implements SegmentUtils {
     status: {
       isSelected: boolean
       isHovered: boolean
+      isDraft?: boolean
     }
   ): void {
+    // Draft segments are grey
+    if (status.isDraft) {
+      innerCircle.style.backgroundColor = '#888888'
+      innerCircle.style.border = '0px solid #CCCCCC'
+      return // draft styles take precedence
+    }
     if (status.isHovered) {
       // Calculate darker version of SKETCH_SELECTION_COLOR (70% brightness)
       const darkerSelectionRgb = SKETCH_SELECTION_RGB.map((val) =>
@@ -77,7 +86,7 @@ class PointSegment implements SegmentUtils {
       const darkerSelectionRgbStr = darkerSelectionRgb.join(', ')
       innerCircle.style.backgroundColor = `rgb(${darkerSelectionRgbStr})`
       innerCircle.style.border = `1px solid rgba(${darkerSelectionRgbStr}, 0.5)`
-      return // Hover styles take precedence
+      return // Hover styles take precedence over isSelection status
     }
     innerCircle.style.backgroundColor = status.isSelected
       ? `rgb(${SKETCH_SELECTION_RGB_STR})`
@@ -138,7 +147,12 @@ class PointSegment implements SegmentUtils {
     handleDiv.addEventListener('mouseenter', () => {
       this.updatePointSize(innerCircle, true)
       const isSelected = handleDiv.dataset.isSelected === 'true'
-      this.updatePointColors(innerCircle, { isSelected, isHovered: true })
+      const isDraft = handleDiv.dataset.isDraft === 'true'
+      this.updatePointColors(innerCircle, {
+        isSelected,
+        isHovered: true,
+        isDraft,
+      })
     })
 
     handleDiv.addEventListener('mouseleave', () => {
@@ -146,7 +160,8 @@ class PointSegment implements SegmentUtils {
       this.updatePointSize(innerCircle, isHovered)
       // Restore colors based on selection state stored in data attribute
       const isSelected = handleDiv.dataset.isSelected === 'true'
-      this.updatePointColors(innerCircle, { isSelected, isHovered })
+      const isDraft = handleDiv.dataset.isDraft === 'true'
+      this.updatePointColors(innerCircle, { isSelected, isHovered, isDraft })
     })
 
     const cssObject = new CSS2DObject(handleDiv)
@@ -166,6 +181,7 @@ class PointSegment implements SegmentUtils {
       scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
+      isDraft: args.isDraft,
     })
     return segmentGroup
   }
@@ -174,7 +190,7 @@ class PointSegment implements SegmentUtils {
     if (args.input.type !== 'Point') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, scale, selectedIds, id } = args
+    const { input, group, scale, selectedIds, id, isDraft } = args
     const { x, y } = input.position
     if (!('value' in x && 'value' in y)) {
       return new Error('Invalid position values for PointSegment')
@@ -192,10 +208,16 @@ class PointSegment implements SegmentUtils {
       const isSelected = selectedIds.includes(id)
       // Store selection state in data attribute for hover handlers
       el.dataset.isSelected = String(isSelected)
+      // Store draft state in data attribute for hover handlers
+      el.dataset.isDraft = String(isDraft ?? false)
 
       // Only update colors if not hovering (hover styles take precedence)
       if (!el.matches(':hover')) {
-        this.updatePointColors(innerCircle, { isSelected, isHovered: false })
+        this.updatePointColors(innerCircle, {
+          isSelected,
+          isHovered: false,
+          isDraft,
+        })
       }
     }
   }
@@ -205,7 +227,12 @@ class LineSegment implements SegmentUtils {
   /**
    * Updates the line segment mesh color based on selection and hover state
    */
-  updateLineColors(mesh: Mesh, isSelected: boolean, isHovered: boolean): void {
+  updateLineColors(
+    mesh: Mesh,
+    isSelected: boolean,
+    isHovered: boolean,
+    isDraft?: boolean
+  ): void {
     const material = mesh.material
     if (!(material instanceof MeshBasicMaterial)) {
       return
@@ -217,6 +244,9 @@ class LineSegment implements SegmentUtils {
       )
     } else if (isSelected) {
       material.color.set(SKETCH_SELECTION_COLOR)
+    } else if (isDraft) {
+      // Draft segments are grey (0x888888)
+      material.color.set(0x888888)
     } else {
       material.color.set(KCL_DEFAULT_COLOR)
     }
@@ -270,6 +300,7 @@ class LineSegment implements SegmentUtils {
       scale: scale,
       group: segmentGroup,
       selectedIds: [],
+      isDraft: args.isDraft,
     })
 
     return segmentGroup
@@ -278,7 +309,7 @@ class LineSegment implements SegmentUtils {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, id, scale, selectedIds } = args
+    const { input, group, id, scale, selectedIds, isDraft } = args
     if (
       !(
         'value' in input.start.x &&
@@ -314,7 +345,7 @@ class LineSegment implements SegmentUtils {
     const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
     const isHovered = straightSegmentBody.userData.isHovered === true
-    this.updateLineColors(straightSegmentBody, isSelected, isHovered)
+    this.updateLineColors(straightSegmentBody, isSelected, isHovered, isDraft)
   }
 }
 
@@ -329,7 +360,8 @@ export const segmentUtilsMap = {
 export function updateLineSegmentHover(
   mesh: Mesh | null,
   isHovered: boolean,
-  selectedIds: Array<number>
+  selectedIds: Array<number>,
+  draftEntityIds?: Array<number>
 ): void {
   if (!mesh || mesh.userData.type !== STRAIGHT_SEGMENT_BODY) {
     return
@@ -350,7 +382,13 @@ export function updateLineSegmentHover(
   }
 
   const isSelected = selectedIds.includes(segmentId)
-  segmentUtilsMap.LineSegment.updateLineColors(mesh, isSelected, isHovered)
+  const isDraft = draftEntityIds?.includes(segmentId) ?? false
+  segmentUtilsMap.LineSegment.updateLineColors(
+    mesh,
+    isSelected,
+    isHovered,
+    isDraft
+  )
 }
 
 /**

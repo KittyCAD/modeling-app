@@ -37,6 +37,9 @@ import {
   refreshSelectionStyling,
   updateSketchOutcome,
   spawnTool,
+  setDraftEntities,
+  clearDraftEntities,
+  deleteDraftEntities,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool'
 
@@ -89,6 +92,14 @@ export const sketchSolveMachine = setup({
     'update selected ids': assign(updateSelectedIds),
     'refresh selection styling': refreshSelectionStyling,
     'update sketch outcome': assign(updateSketchOutcome),
+    'set draft entities': assign(setDraftEntities),
+    'clear draft entities': assign(clearDraftEntities),
+    'delete draft entities': (
+      args: Parameters<typeof deleteDraftEntities>[0]
+    ) => {
+      // Async action - XState handles promises in actions
+      void deleteDraftEntities(args)
+    },
     'spawn tool': assign((args) => {
       const typedSpawn: SpawnToolActor = args.spawn
       return spawnTool(args, typedSpawn)
@@ -141,6 +152,20 @@ export const sketchSolveMachine = setup({
       actions: 'update sketch outcome',
       description:
         'Updates the sketch execution outcome in the context when tools complete operations',
+    },
+    'set draft entities': {
+      actions: 'set draft entities',
+      description:
+        'Sets which entities are currently in draft state (e.g., while user is drawing a line)',
+    },
+    'clear draft entities': {
+      actions: 'clear draft entities',
+      description: 'Clears the draft entities tracking',
+    },
+    'delete draft entities': {
+      actions: 'delete draft entities',
+      description:
+        'Deletes the currently tracked draft entities (e.g., when user cancels with escape)',
     },
     'unequip tool': {
       actions: 'send unequip to tool',

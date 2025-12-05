@@ -167,9 +167,6 @@ function createTestMachine(mockActors?: {
       }
     | { error: string }
   >
-  deleteNewlyAddedEntities?: (
-    input: unknown
-  ) => Promise<{ kclSource: SourceDelta; sceneGraphDelta: SceneGraphDelta }>
 }) {
   const sceneInfra = createMockSceneInfra()
   const rustContext = createMockRustContext()
@@ -193,16 +190,6 @@ function createTestMachine(mockActors?: {
             newLineEndPointId: 2,
             newlyAddedEntities: { segmentIds: [1], constraintIds: [1] },
           }))
-      ),
-      deleteNewlyAddedEntities: fromPromise(
-        (mockActors?.deleteNewlyAddedEntities ||
-          (async () => ({
-            kclSource: { text: 'deleted' } as SourceDelta,
-            sceneGraphDelta: createSceneGraphDelta([], []),
-          }))) as (input: unknown) => Promise<{
-          kclSource: SourceDelta
-          sceneGraphDelta: SceneGraphDelta
-        }>
       ),
     },
   })
@@ -233,7 +220,6 @@ describe('lineTool - XState', () => {
       expect(context.draftPointId).toBeUndefined()
       expect(context.lastLineEndPointId).toBeUndefined()
       expect(context.pendingDoubleClick).toBeUndefined()
-      expect(context.newlyAddedSketchEntities).toBeUndefined()
       expect(context.deleteFromEscape).toBeUndefined()
       expect(context.sketchId).toBe(0)
       actor.stop()
@@ -274,60 +260,6 @@ describe('lineTool - XState', () => {
       expect(actor.getSnapshot().value).toBe('unequipping')
       actor.stop()
     })
-
-    it('should delete draft entities and return to ready when escape is pressed in ShowDraftLine', async () => {
-      const pointObj = createPointApiObject({ id: 1, x: 10, y: 20 })
-      const lineObj = createLineApiObject({ id: 2, start: 1, end: 1 })
-
-      const mockDelete = vi.fn().mockResolvedValue({
-        kclSource: { text: 'deleted' } as SourceDelta,
-        sceneGraphDelta: createSceneGraphDelta([], []),
-      })
-
-      const { machine, sceneInfra, rustContext, kclManager } =
-        createTestMachine({
-          modAndSolveFirstClick: async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
-            sceneGraphDelta: createSceneGraphDelta([pointObj, lineObj], [1, 2]),
-          }),
-          deleteNewlyAddedEntities: mockDelete,
-        })
-
-      const actor = createActor(machine, {
-        input: {
-          sceneInfra,
-          rustContext,
-          kclManager,
-          sketchId: 0,
-        },
-      }).start()
-
-      // Add first point to get to ShowDraftLine
-      actor.send({ type: 'add point', data: [10, 20] })
-      await waitFor(actor, (state) => state.matches('ShowDraftLine'))
-
-      // Press escape
-      actor.send({ type: 'escape' })
-
-      // Should transition to delete draft entities on unequip
-      await waitFor(actor, (state) =>
-        state.matches('delete draft entities on unequip')
-      )
-
-      // Wait for deletion to complete and return to ready
-      await waitFor(actor, (state) => state.matches('ready for user click'))
-
-      // Note: We don't verify rustContext.deleteObjects directly because we're mocking
-      // the entire deleteNewlyAddedEntities actor. The state transition to 'ready for user click'
-      // confirms that the deletion actor completed successfully.
-
-      const context = actor.getSnapshot().context
-      expect(context.deleteFromEscape).toBeUndefined() // Should be cleared
-      expect(context.newlyAddedSketchEntities).toBeUndefined() // Should be cleared
-      expect(context.draftPointId).toBeUndefined() // Should be cleared
-
-      actor.stop()
-    })
   })
 
   describe('unequip handling', () => {
@@ -346,59 +278,6 @@ describe('lineTool - XState', () => {
       actor.send({ type: 'unequip' })
 
       expect(actor.getSnapshot().value).toBe('unequipping')
-      actor.stop()
-    })
-
-    it('should delete draft entities and unequip when unequip is pressed in ShowDraftLine', async () => {
-      const pointObj = createPointApiObject({ id: 1, x: 10, y: 20 })
-      const lineObj = createLineApiObject({ id: 2, start: 1, end: 1 })
-
-      const mockDelete = vi.fn().mockResolvedValue({
-        kclSource: { text: 'deleted' } as SourceDelta,
-        sceneGraphDelta: createSceneGraphDelta([], []),
-      })
-
-      const { machine, sceneInfra, rustContext, kclManager } =
-        createTestMachine({
-          modAndSolveFirstClick: async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
-            sceneGraphDelta: createSceneGraphDelta([pointObj, lineObj], [1, 2]),
-          }),
-          deleteNewlyAddedEntities: mockDelete,
-        })
-
-      const actor = createActor(machine, {
-        input: {
-          sceneInfra,
-          rustContext,
-          kclManager,
-          sketchId: 0,
-        },
-      }).start()
-
-      // Add first point to get to ShowDraftLine
-      actor.send({ type: 'add point', data: [10, 20] })
-      await waitFor(actor, (state) => state.matches('ShowDraftLine'))
-
-      // Send unequip
-      actor.send({ type: 'unequip' })
-
-      // Should transition to delete draft entities on unequip
-      await waitFor(actor, (state) =>
-        state.matches('delete draft entities on unequip')
-      )
-
-      // Wait for deletion to complete and transition to unequipping
-      await waitFor(actor, (state) => state.matches('unequipping'))
-
-      // Note: We don't verify rustContext.deleteObjects directly because we're mocking
-      // the entire deleteNewlyAddedEntities actor. The state transition to 'unequipping'
-      // confirms that the deletion actor completed successfully.
-
-      const context = actor.getSnapshot().context
-      expect(context.deleteFromEscape).toBeUndefined() // Should be cleared
-      expect(context.newlyAddedSketchEntities).toBeUndefined() // Should be cleared
-
       actor.stop()
     })
   })
@@ -536,156 +415,6 @@ describe('lineTool - XState', () => {
 
       const context = actor.getSnapshot().context
       expect(context.lastLineEndPointId).toBe(3) // Should track the end point
-
-      actor.stop()
-    })
-  })
-
-  describe('double-click handling', () => {
-    it('should set pendingDoubleClick flag when double-click is detected', async () => {
-      const pointObj1 = createPointApiObject({ id: 1, x: 10, y: 20 })
-      const lineObj1 = createLineApiObject({ id: 2, start: 1, end: 1 })
-      const pointObj2 = createPointApiObject({ id: 3, x: 30, y: 40 })
-
-      const { machine, sceneInfra, rustContext, kclManager } =
-        createTestMachine({
-          modAndSolveFirstClick: async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
-            sceneGraphDelta: createSceneGraphDelta(
-              [pointObj1, lineObj1],
-              [1, 2]
-            ),
-          }),
-          modAndSolve: async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
-            sceneGraphDelta: createSceneGraphDelta(
-              [pointObj1, lineObj1, pointObj2],
-              [3]
-            ),
-            newLineEndPointId: 3,
-            newlyAddedEntities: { segmentIds: [2], constraintIds: [1] },
-          }),
-          deleteNewlyAddedEntities: async () => ({
-            kclSource: { text: 'deleted' } as SourceDelta,
-            sceneGraphDelta: createSceneGraphDelta([], []),
-          }),
-        })
-
-      const actor = createActor(machine, {
-        input: {
-          sceneInfra,
-          rustContext,
-          kclManager,
-          sketchId: 0,
-        },
-      }).start()
-
-      // Add first point
-      actor.send({ type: 'add point', data: [10, 20] })
-      await waitFor(actor, (state) => state.matches('ShowDraftLine'))
-
-      // Add second point with double-click
-      actor.send({
-        type: 'add point',
-        data: [30, 40],
-        isDoubleClick: true,
-      })
-
-      // Should set pendingDoubleClick flag
-      await waitFor(actor, (state) => state.matches('Confirming dimensions'))
-      const contextAfterClick = actor.getSnapshot().context
-      expect(contextAfterClick.pendingDoubleClick).toBe(true)
-
-      // Should transition to delete newly added entities
-      await waitFor(actor, (state) =>
-        state.matches('delete newly added entities')
-      )
-
-      // Should return to ready for user click after deletion
-      await waitFor(actor, (state) => state.matches('ready for user click'))
-
-      const finalContext = actor.getSnapshot().context
-      expect(finalContext.pendingDoubleClick).toBeUndefined()
-      expect(finalContext.newlyAddedSketchEntities).toBeUndefined()
-      expect(finalContext.lastLineEndPointId).toBeUndefined() // Should clear on double-click
-
-      actor.stop()
-    })
-
-    it('should handle set pending double click event during modAndSolve (i.e. this is how the second click of a double click is detected clean up last added segment and transition back to', async () => {
-      const pointObj1 = createPointApiObject({ id: 1, x: 10, y: 20 })
-      const lineObj1 = createLineApiObject({ id: 2, start: 1, end: 1 })
-      const pointObj2 = createPointApiObject({ id: 3, x: 30, y: 40 })
-
-      let resolveModAndSolve: (value: unknown) => void
-      const modAndSolvePromise = new Promise((resolve) => {
-        resolveModAndSolve = resolve
-      })
-
-      const { machine, sceneInfra, rustContext, kclManager } =
-        createTestMachine({
-          modAndSolveFirstClick: async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
-            sceneGraphDelta: createSceneGraphDelta(
-              [pointObj1, lineObj1],
-              [1, 2]
-            ),
-          }),
-          modAndSolve: async () => {
-            return modAndSolvePromise as Promise<{
-              kclSource: SourceDelta
-              sceneGraphDelta: SceneGraphDelta
-              newLineEndPointId: number
-              newlyAddedEntities: {
-                segmentIds: number[]
-                constraintIds: number[]
-              }
-            }>
-          },
-          deleteNewlyAddedEntities: async () => ({
-            kclSource: { text: 'deleted' } as SourceDelta,
-            sceneGraphDelta: createSceneGraphDelta([], []),
-          }),
-        })
-
-      const actor = createActor(machine, {
-        input: {
-          sceneInfra,
-          rustContext,
-          kclManager,
-          sketchId: 0,
-        },
-      }).start()
-
-      // Add first point
-      actor.send({ type: 'add point', data: [10, 20] })
-      await waitFor(actor, (state) => state.matches('ShowDraftLine'))
-
-      // Add second point (starts modAndSolve)
-      actor.send({ type: 'add point', data: [30, 40] })
-      await waitFor(actor, (state) => state.matches('Confirming dimensions'))
-
-      // Send set pending double click while modAndSolve is running
-      actor.send({ type: 'set pending double click' })
-
-      // Resolve modAndSolve
-      resolveModAndSolve!({
-        kclSource: { text: 'test' } as SourceDelta,
-        sceneGraphDelta: createSceneGraphDelta(
-          [pointObj1, lineObj1, pointObj2],
-          [3]
-        ),
-        newLineEndPointId: 3,
-        newlyAddedEntities: { segmentIds: [2], constraintIds: [1] },
-      })
-
-      // Should transition to delete newly added entities
-      await waitFor(actor, (state) =>
-        state.matches('delete newly added entities')
-      )
-
-      // Wait for deletion to complete and return to ready
-      await waitFor(actor, (state) => state.matches('ready for user click'))
 
       actor.stop()
     })

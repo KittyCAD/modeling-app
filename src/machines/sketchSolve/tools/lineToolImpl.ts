@@ -50,10 +50,6 @@ export type ToolContext = {
   lastLineEndPointId?: number
   isDoubleClick?: boolean
   pendingDoubleClick?: boolean
-  newlyAddedSketchEntities?: {
-    segmentIds: Array<number>
-    constraintIds: Array<number>
-  }
   pendingSketchOutcome?: {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -222,6 +218,10 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
     kclSource?: SourceDelta
     sceneGraphDelta?: SceneGraphDelta
     newLineEndPointId?: number
+    newlyAddedEntities?: {
+      segmentIds: Array<number>
+      constraintIds: Array<number>
+    }
     error?: string
   }
 
@@ -255,6 +255,15 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
         lastLineEndPointId = lineObj.kind.segment.end
       }
     }
+
+    // Send draft entities to parent if they exist (from chaining)
+    if (output.newlyAddedEntities) {
+      self._parent?.send({
+        type: 'set draft entities',
+        data: output.newlyAddedEntities,
+      })
+    }
+
     return {
       draftPointId: output.newLineEndPointId,
       lastLineEndPointId,
@@ -311,12 +320,19 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
     entitiesToTrack.segmentIds.push(lineId)
   }
 
+  // Send draft entities to parent for tracking
+  if (entitiesToTrack.segmentIds.length > 0) {
+    self._parent?.send({
+      type: 'set draft entities',
+      data: entitiesToTrack,
+    })
+  }
+
   if (pointId !== undefined && output.sceneGraphDelta) {
     return {
       draftPointId: pointId,
       lastLineEndPointId,
       sceneGraphDelta: output.sceneGraphDelta,
-      newlyAddedSketchEntities: entitiesToTrack, // Track for potential deletion on unequip
     }
   }
   return {}
@@ -324,6 +340,7 @@ export function sendResultToParent({ event, self }: ToolAssignArgs<any>) {
 
 export function storePendingSketchOutcome({
   event,
+  self,
 }: {
   event: DoneActorEvent<{
     kclSource?: SourceDelta
@@ -335,6 +352,7 @@ export function storePendingSketchOutcome({
     }
     error?: string
   }>
+  self: ToolActionArgs['self']
 }) {
   const output = event.output as {
     kclSource?: SourceDelta
@@ -349,8 +367,12 @@ export function storePendingSketchOutcome({
 
   const result: Partial<ToolContext> = {}
 
+  // Send draft entities to parent for tracking
   if (output.newlyAddedEntities) {
-    result.newlyAddedSketchEntities = output.newlyAddedEntities
+    self._parent?.send({
+      type: 'set draft entities',
+      data: output.newlyAddedEntities,
+    })
   }
 
   // Store the result, but DON'T send it yet - we'll check the flag in 'check double click' state
@@ -379,6 +401,8 @@ export function sendStoredResultToParent({ context, self }: ToolActionArgs) {
         debounceEditorUpdate: true, // Debounce to allow cancellation if double-click is detected
       },
     })
+    // Clear draft entities after successfully sending (they're now committed)
+    self._parent?.send({ type: 'clear draft entities' })
   }
   return {}
 }

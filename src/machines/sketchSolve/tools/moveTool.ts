@@ -461,14 +461,17 @@ export function createOnMouseEnterCallback({
   updateLineSegmentHover,
   getSelectedIds,
   setLastHoveredMesh,
+  getDraftEntityIds,
 }: {
   updateLineSegmentHover: (
     mesh: Mesh,
     isHovering: boolean,
-    selectedIds: Array<number>
+    selectedIds: Array<number>,
+    draftEntityIds?: Array<number>
   ) => void
   getSelectedIds: () => Array<number>
   setLastHoveredMesh: (mesh: Mesh | null) => void
+  getDraftEntityIds?: () => Array<number> | undefined
 }): (arg: {
   selected?: Object3D
   isAreaSelectActive?: boolean
@@ -486,8 +489,9 @@ export function createOnMouseEnterCallback({
     const mesh = selected
     if (mesh.userData?.type === STRAIGHT_SEGMENT_BODY && mesh instanceof Mesh) {
       const allSelectedIds = getSelectedIds()
+      const draftEntityIds = getDraftEntityIds?.()
       // Highlight the line segment to show it's interactive
-      updateLineSegmentHover(mesh, true, allSelectedIds)
+      updateLineSegmentHover(mesh, true, allSelectedIds, draftEntityIds)
       // Store the hovered mesh so we can clear it on mouse leave
       setLastHoveredMesh(mesh)
     }
@@ -509,15 +513,18 @@ export function createOnMouseLeaveCallback({
   getSelectedIds,
   getLastHoveredMesh,
   setLastHoveredMesh,
+  getDraftEntityIds,
 }: {
   updateLineSegmentHover: (
     mesh: Mesh,
     isHovering: boolean,
-    selectedIds: Array<number>
+    selectedIds: Array<number>,
+    draftEntityIds?: Array<number>
   ) => void
   getSelectedIds: () => Array<number>
   getLastHoveredMesh: () => Mesh | null
   setLastHoveredMesh: (mesh: Mesh | null) => void
+  getDraftEntityIds?: () => Array<number> | undefined
 }): (arg: {
   selected?: Object3D
   isAreaSelectActive?: boolean
@@ -534,8 +541,9 @@ export function createOnMouseLeaveCallback({
     const hoveredMesh = getLastHoveredMesh()
     if (hoveredMesh) {
       const allSelectedIds = getSelectedIds()
+      const draftEntityIds = getDraftEntityIds?.()
       // Remove hover highlighting from the previously hovered segment
-      updateLineSegmentHover(hoveredMesh, false, allSelectedIds)
+      updateLineSegmentHover(hoveredMesh, false, allSelectedIds, draftEntityIds)
       setLastHoveredMesh(null)
     }
 
@@ -547,8 +555,9 @@ export function createOnMouseLeaveCallback({
         mesh instanceof Mesh
       ) {
         const allSelectedIds = getSelectedIds()
+        const draftEntityIds = getDraftEntityIds?.()
         // Ensure hover is cleared even if the mesh wasn't in our tracking
-        updateLineSegmentHover(mesh, false, allSelectedIds)
+        updateLineSegmentHover(mesh, false, allSelectedIds, draftEntityIds)
       }
     }
   }
@@ -2052,6 +2061,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
         )
       },
       setLastHoveredMesh,
+      getDraftEntityIds: () => {
+        const snapshot = self.getSnapshot()
+        return snapshot.context.draftEntities
+          ? [...snapshot.context.draftEntities.segmentIds]
+          : undefined
+      },
     }),
     onMouseLeave: createOnMouseLeaveCallback({
       updateLineSegmentHover,
@@ -2067,6 +2082,12 @@ export function setUpOnDragAndSelectionClickCallbacks({
       },
       getLastHoveredMesh,
       setLastHoveredMesh,
+      getDraftEntityIds: () => {
+        const snapshot = self.getSnapshot()
+        return snapshot.context.draftEntities
+          ? [...snapshot.context.draftEntities.segmentIds]
+          : undefined
+      },
     }),
     onAreaSelectStart: ({ startPoint }) => {
       const scaledStartPoint = startPoint.threeD

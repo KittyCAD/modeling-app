@@ -22,8 +22,6 @@ import {
   sendResultToParent,
   storePendingSketchOutcome,
   sendStoredResultToParent,
-  sendDeleteResultToParentWithDebounce,
-  sendDeleteResultToParent,
 } from '@src/machines/sketchSolve/tools/lineToolImpl'
 
 // This might seem a bit redundant, but this xstate visualizer stops working
@@ -293,31 +291,6 @@ export const machine = setup({
         }
       }
     ),
-    deleteNewlyAddedEntities: fromPromise(
-      async ({
-        input,
-      }: {
-        input: {
-          sketchId: number
-          segmentIds: Array<number>
-          constraintIds: Array<number>
-          rustContext: RustContext
-        }
-      }) => {
-        const { sketchId, segmentIds, constraintIds, rustContext } = input
-
-        // Delete the newly created entities
-        const deleteResult = await rustContext.deleteObjects(
-          0,
-          sketchId,
-          constraintIds,
-          segmentIds,
-          await jsAppSettings()
-        )
-
-        return deleteResult
-      }
-    ),
   },
 }).createMachine({
   /** @xstate-layout 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-2fEXSOE-OFCwNRDkIRbLbZ0qgS4BJoDQTkCKVGoRyBoNQhQXwRMuF2AupJgXXFUCC6SagS7IzOsLHAFKHqnN4l7NCKsnB5BbHot2UyFq0xcJkbRJcy4T1+AKuOvZGzsokGivimQ0TfUih8WoQ5cS9izjTSFYjvGT0kcg6RPCaBqvSNiHujQZDET9O+Qc30aY1GwtkZwFxeJPGLpkoAA */
@@ -326,7 +299,6 @@ export const machine = setup({
     lastLineEndPointId: undefined,
     isDoubleClick: undefined,
     pendingDoubleClick: undefined,
-    newlyAddedSketchEntities: undefined,
     pendingSketchOutcome: undefined,
     deleteFromEscape: undefined,
     sceneGraphDelta: {} as SceneGraphDelta,
@@ -397,7 +369,11 @@ export const machine = setup({
 
         onDone: {
           target: 'check double click',
-          actions: [assign(storePendingSketchOutcome)],
+          actions: [
+            assign(({ event, self }) =>
+              storePendingSketchOutcome({ event, self })
+            ),
+          ],
         },
         onError: {
           target: 'unequipping',
@@ -425,47 +401,31 @@ export const machine = setup({
       ],
     },
     'delete newly added entities': {
-      invoke: {
-        src: 'deleteNewlyAddedEntities',
-        input: ({ context }) => {
-          const entities = context.newlyAddedSketchEntities || {
-            segmentIds: [],
-            constraintIds: [],
-          }
-          return {
-            sketchId: context.sketchId,
-            segmentIds: entities.segmentIds,
-            constraintIds: entities.constraintIds,
-            rustContext: context.rustContext,
-          }
-        },
-        onDone: {
-          target: 'ready for user click',
-          actions: [
-            assign({
-              pendingDoubleClick: undefined, // Clear the flag
-              newlyAddedSketchEntities: undefined, // Clear tracking
-              lastLineEndPointId: undefined, // Clear on double-click to stop chaining
-              pendingSketchOutcome: undefined, // Clear stored result
-            }),
-            sendDeleteResultToParentWithDebounce,
-          ],
-        },
-        onError: {
-          target: 'ready for user click',
-          actions: [
-            assign({
-              pendingDoubleClick: undefined,
-              newlyAddedSketchEntities: undefined,
-            }),
-          ],
-        },
+      entry: ({ self }) => {
+        // Request parent to delete draft entities
+        self._parent?.send({ type: 'delete draft entities' })
+      },
+      always: {
+        target: 'ready for user click',
+        actions: [
+          assign({
+            pendingDoubleClick: undefined, // Clear the flag
+            lastLineEndPointId: undefined, // Clear on double-click to stop chaining
+            pendingSketchOutcome: undefined, // Clear stored result
+          }),
+        ],
       },
     },
 
     unequipping: {
       type: 'final',
-      entry: 'remove point listener',
+      entry: [
+        'remove point listener',
+        ({ self }) => {
+          // Clear draft entities when unequipping normally
+          self._parent?.send({ type: 'clear draft entities' })
+        },
+      ],
       description: 'Any teardown logic should go here.',
     },
 
@@ -518,69 +478,33 @@ export const machine = setup({
       exit: 'remove point listener', // Stop the onMove listener when leaving this state
     },
     'delete draft entities on unequip': {
-      invoke: {
-        src: 'deleteNewlyAddedEntities',
-        input: ({ context }) => {
-          const entities = context.newlyAddedSketchEntities || {
-            segmentIds: [],
-            constraintIds: [],
-          }
-          return {
-            sketchId: context.sketchId,
-            segmentIds: entities.segmentIds,
-            constraintIds: entities.constraintIds,
-            rustContext: context.rustContext,
-          }
-        },
-        onDone: [
-          {
-            // If this was triggered by escape (not unequip), go back to ready state
-            guard: ({ context }) => context.deleteFromEscape === true,
-            target: 'ready for user click',
-            actions: [
-              assign({
-                newlyAddedSketchEntities: undefined, // Clear tracking
-                draftPointId: undefined, // Clear draftPointId so onMove won't try to edit deleted segment
-                deleteFromEscape: undefined, // Clear flag
-              }),
-              sendDeleteResultToParent,
-            ],
-          },
-          {
-            // Default: unequip (for actual unequip events)
-            target: 'unequipping',
-            actions: [
-              assign({
-                newlyAddedSketchEntities: undefined, // Clear tracking
-                draftPointId: undefined, // Clear draftPointId so onMove won't try to edit deleted segment
-                deleteFromEscape: undefined, // Clear flag
-              }),
-              sendDeleteResultToParent,
-            ],
-          },
-        ],
-        onError: [
-          {
-            // If this was triggered by escape, go back to ready state even on error
-            guard: ({ context }) => context.deleteFromEscape === true,
-            target: 'ready for user click',
-            actions: assign({
-              newlyAddedSketchEntities: undefined,
-              draftPointId: undefined,
-              deleteFromEscape: undefined,
-            }),
-          },
-          {
-            // Default: unequip on error
-            target: 'unequipping',
-            actions: assign({
-              newlyAddedSketchEntities: undefined,
-              draftPointId: undefined,
-              deleteFromEscape: undefined,
-            }),
-          },
-        ],
+      entry: ({ self }) => {
+        // Request parent to delete draft entities
+        self._parent?.send({ type: 'delete draft entities' })
       },
+      always: [
+        {
+          // If this was triggered by escape (not unequip), go back to ready state
+          guard: ({ context }) => context.deleteFromEscape === true,
+          target: 'ready for user click',
+          actions: [
+            assign({
+              draftPointId: undefined, // Clear draftPointId so onMove won't try to edit deleted segment
+              deleteFromEscape: undefined, // Clear flag
+            }),
+          ],
+        },
+        {
+          // Default: unequip (for actual unequip events)
+          target: 'unequipping',
+          actions: [
+            assign({
+              draftPointId: undefined, // Clear draftPointId so onMove won't try to edit deleted segment
+              deleteFromEscape: undefined, // Clear flag
+            }),
+          ],
+        },
+      ],
     },
   },
 })

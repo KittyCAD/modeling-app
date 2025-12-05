@@ -44,6 +44,7 @@ import {
 } from 'xstate'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 export type EquipTool = keyof typeof equipTools
 
@@ -91,6 +92,15 @@ export type SketchSolveMachineEvent =
       }
     }
   | { type: 'delete selected' }
+  | {
+      type: 'set draft entities'
+      data: {
+        segmentIds: Array<number>
+        constraintIds: Array<number>
+      }
+    }
+  | { type: 'clear draft entities' }
+  | { type: 'delete draft entities' }
 
 export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
@@ -100,6 +110,10 @@ export type SketchSolveContext = {
   sketchExecOutcome?: {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
+  }
+  draftEntities?: {
+    segmentIds: Array<number>
+    constraintIds: Array<number>
   }
   initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane
   initialSceneGraphDelta?: SceneGraphDelta
@@ -192,17 +206,21 @@ export function updateSegmentGroup({
   selectedIds,
   scale,
   theme,
+  draftEntityIds,
 }: {
   group: Group
   input: SegmentCtor
   selectedIds: Array<number>
   scale: number
   theme: Themes
+  draftEntityIds?: Array<number>
 }): void {
   const idNum = Number(group.name)
   if (Number.isNaN(idNum)) {
     return
   }
+
+  const isDraft = draftEntityIds?.includes(idNum) ?? false
 
   if (input.type === 'Point') {
     segmentUtilsMap.PointSegment.update({
@@ -212,6 +230,7 @@ export function updateSegmentGroup({
       id: idNum,
       group,
       selectedIds,
+      isDraft,
     })
   } else if (input.type === 'Line') {
     segmentUtilsMap.LineSegment.update({
@@ -221,6 +240,7 @@ export function updateSegmentGroup({
       id: idNum,
       group,
       selectedIds,
+      isDraft,
     })
   }
 }
@@ -234,11 +254,13 @@ function initSegmentGroup({
   theme,
   scale,
   id,
+  isDraft,
 }: {
   input: Parameters<SegmentUtils['init']>[0]['input']
   theme: Themes
   scale: number
   id: number
+  isDraft?: boolean
 }): Group | Error {
   let group
   if (input.type === 'Point') {
@@ -247,6 +269,7 @@ function initSegmentGroup({
       theme,
       scale,
       id,
+      isDraft,
     })
   } else if (input.type === 'Line') {
     group = segmentUtilsMap.LineSegment.init({
@@ -254,6 +277,7 @@ function initSegmentGroup({
       theme,
       scale,
       id,
+      isDraft,
     })
   }
   if (group instanceof Group) return group
@@ -336,11 +360,16 @@ export function updateSceneGraphFromDelta({
       if (!ctor) {
         return
       }
+      // Check if this segment is a draft entity
+      const isDraft =
+        context.draftEntities?.segmentIds.includes(obj.id) ?? false
+
       const newGroup = initSegmentGroup({
         input: ctor,
         theme: context.sceneInfra.theme,
         scale: factor,
         id: obj.id,
+        isDraft,
       })
       if (newGroup instanceof Error) {
         console.error('Failed to init segment group for object', obj.id)
@@ -366,12 +395,18 @@ export function updateSceneGraphFromDelta({
       new Set([...selectedIds, ...duringAreaSelectIds])
     )
 
+    // Get draft entity IDs from context
+    const draftEntityIds = context.draftEntities
+      ? [...context.draftEntities.segmentIds]
+      : undefined
+
     updateSegmentGroup({
       group,
       input: ctor,
       selectedIds: allSelectedIds,
       scale: factor,
       theme: context.sceneInfra.theme,
+      draftEntityIds,
     })
   })
 }
@@ -427,6 +462,9 @@ export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
   // Clear any currently hovered line segment meshes
   const snapshot = self.getSnapshot()
   const selectedIds = snapshot.context.selectedIds
+  const draftEntityIds = snapshot.context.draftEntities
+    ? [...snapshot.context.draftEntities.segmentIds]
+    : undefined
   const sketchSegments =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   if (sketchSegments) {
@@ -436,7 +474,7 @@ export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
         child.userData?.type === STRAIGHT_SEGMENT_BODY &&
         child.userData.isHovered === true
       ) {
-        updateLineSegmentHover(child, false, selectedIds)
+        updateLineSegmentHover(child, false, selectedIds, draftEntityIds)
       }
     })
   }
@@ -533,6 +571,11 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
     new Set([...context.selectedIds, ...context.duringAreaSelectIds])
   )
 
+  // Get draft entity IDs from context
+  const draftEntityIds = context.draftEntities
+    ? [...context.draftEntities.segmentIds]
+    : undefined
+
   sceneGraphDelta.new_graph.objects.forEach((obj) => {
     if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
       return
@@ -551,6 +594,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
       selectedIds: allSelectedIds,
       scale: factor,
       theme: context.sceneInfra.theme,
+      draftEntityIds,
     })
   })
 }
@@ -628,6 +672,57 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
       kclSource: event.data.kclSource,
       sceneGraphDelta: event.data.sceneGraphDelta,
     },
+  }
+}
+
+export function setDraftEntities({ event }: SolveAssignArgs) {
+  assertEvent(event, 'set draft entities')
+  return {
+    draftEntities: {
+      segmentIds: event.data.segmentIds,
+      constraintIds: event.data.constraintIds,
+    },
+  }
+}
+
+export function clearDraftEntities(): Partial<SketchSolveContext> {
+  return {
+    draftEntities: undefined,
+  }
+}
+
+export async function deleteDraftEntities({
+  context,
+  self,
+}: SolveActionArgs): Promise<void> {
+  if (!context.draftEntities) {
+    return
+  }
+
+  const { segmentIds, constraintIds } = context.draftEntities
+
+  try {
+    const result = await context.rustContext.deleteObjects(
+      0,
+      context.sketchId,
+      constraintIds,
+      segmentIds,
+      await jsAppSettings()
+    )
+
+    if (result) {
+      // Clear draft entities after successful deletion
+      self.send({
+        type: 'update sketch outcome',
+        data: {
+          kclSource: result.kclSource,
+          sceneGraphDelta: result.sceneGraphDelta,
+        },
+      })
+      self.send({ type: 'clear draft entities' })
+    }
+  } catch (error) {
+    console.error('Failed to delete draft entities:', error)
   }
 }
 
