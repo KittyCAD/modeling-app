@@ -20,6 +20,10 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { emptyExecState, getKclVersion, parse, recast } from '@src/lang/wasm'
+import {
+  setArtifactGraphEffect,
+  artifactAnnotationsEvent,
+} from '@src/editor/plugins/artifacts'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
@@ -477,6 +481,18 @@ export class KclManager extends EventTarget {
   ) {
     this.artifactGraph = execStateArtifactGraph
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
+
+    // Push the artifact graph into the editor state so annotations/decorations update
+    const editorView = this.getEditorView()
+    if (editorView) {
+      editorView.dispatch({
+        effects: [setArtifactGraphEffect.of(this.artifactGraph)],
+        annotations: [
+          artifactAnnotationsEvent,
+          Transaction.addToHistory.of(false),
+        ],
+      })
+    }
     if (this.artifactGraph.size) {
       // TODO: we wanna remove this logic from xstate, it is racey
       // This defer is bullshit but playwright wants it
