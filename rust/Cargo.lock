@@ -969,16 +969,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "error-stack"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe413319145d1063f080f27556fd30b1d70b01e2ba10c2a6e40d4be982ffc5d1"
-dependencies = [
- "anyhow",
- "rustc_version",
-]
-
-[[package]]
 name = "euler"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2154,15 +2144,14 @@ dependencies = [
 
 [[package]]
 name = "kcl-ezpz"
-version = "0.1.5"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae79e38dd74d57483135a0c29e9be71cd445e6381a2fb99ea683b637cc0934d8"
+checksum = "a760f8c4d768a536c0d3e89dc8d69ac7e69b0a8262f729e7469d46bc9cbc34ef"
 dependencies = [
  "faer",
  "getrandom 0.2.16",
  "indexmap 2.12.1",
  "libm",
- "newtonls_faer",
  "thiserror 2.0.17",
  "winnow",
 ]
@@ -2858,21 +2847,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "47b6b097ecb1cbfed438542d16e84fd7ad9b0c76c8a65b7f9039212a3d14dc7f"
 dependencies = [
  "unicode-segmentation",
-]
-
-[[package]]
-name = "newtonls_faer"
-version = "0.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8245825be07ab6cd8121fc12aa8bbfe7d8fe94512298382a222f0104105e3cfe"
-dependencies = [
- "dyn-stack",
- "error-stack",
- "faer",
- "faer-traits",
- "num-complex",
- "num-traits 0.2.19",
- "rayon",
 ]
 
 [[package]]
@@ -3927,15 +3901,6 @@ name = "rustc-hash"
 version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "357703d41365b4b27c590e3ed91eabb1b663f07c4c084095e60cbed4362dff0d"
-
-[[package]]
-name = "rustc_version"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cfcb3a22ef46e85b45de6ee7e79d063319ebb6594faafcf1c225ea92ab6e9b92"
-dependencies = [
- "semver",
-]
 
 [[package]]
 name = "rustix"
