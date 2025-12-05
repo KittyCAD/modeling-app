@@ -1,0 +1,7 @@
+square = fn sq(@x) {
+  return x * x
+}
+
+map([1, 2, 3], f = fn inc(@x) {
+  return x + 1
+})

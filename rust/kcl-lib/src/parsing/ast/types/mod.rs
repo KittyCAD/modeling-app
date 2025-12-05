@@ -3652,6 +3652,7 @@ fn return_true() -> bool {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct FunctionExpression {
+    pub name: Option<Node<Identifier>>,
     pub params: Vec<Parameter>,
     pub body: Node<Program>,
     #[serde(skip)]
@@ -3689,6 +3690,7 @@ impl FunctionExpression {
         &self,
     ) -> Result<(&[Parameter], &[Parameter]), RequiredParamAfterOptionalParam> {
         let Self {
+            name: _,
             params,
             body: _,
             digest: _,
@@ -3759,6 +3761,7 @@ impl FunctionExpression {
     pub fn dummy() -> Box<Node<Self>> {
         Box::new(Node::new(
             FunctionExpression {
+                name: None,
                 params: Vec::new(),
                 body: Node::new(Program::default(), 0, 0, ModuleId::default()),
                 return_type: None,
@@ -4301,6 +4304,7 @@ cylinder = startSketchOn(-XZ)
                 "no params",
                 (0..=0),
                 Node::no_src(FunctionExpression {
+                    name: None,
                     params: vec![],
                     body: Program::empty(),
                     return_type: None,
@@ -4311,6 +4315,7 @@ cylinder = startSketchOn(-XZ)
                 "all required params",
                 (1..=1),
                 Node::no_src(FunctionExpression {
+                    name: None,
                     params: vec![Parameter {
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
@@ -4330,6 +4335,7 @@ cylinder = startSketchOn(-XZ)
                 "all optional params",
                 (0..=1),
                 Node::no_src(FunctionExpression {
+                    name: None,
                     params: vec![Parameter {
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
@@ -4349,6 +4355,7 @@ cylinder = startSketchOn(-XZ)
                 "mixed params",
                 (1..=2),
                 Node::no_src(FunctionExpression {
+                    name: None,
                     params: vec![
                         Parameter {
                             identifier: Node::no_src(Identifier {

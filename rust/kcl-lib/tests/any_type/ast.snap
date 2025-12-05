@@ -56,6 +56,14 @@ description: Result of parsing any_type.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "id",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -154,6 +162,14 @@ description: Result of parsing any_type.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "singleton",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -304,6 +320,7 @@ description: Result of parsing any_type.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
+                          "name": null,
                           "params": [
                             {
                               "type": "Parameter",
@@ -393,6 +410,14 @@ description: Result of parsing any_type.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "len",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
