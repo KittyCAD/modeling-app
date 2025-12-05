@@ -29,6 +29,7 @@ import { useToken } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { kclLspCompartment } from '@src/editor/plugins/lsp/kcl'
+import { kclAutocompleteCompartment } from '@src/editor'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
@@ -233,6 +234,10 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         kclManager
       )
 
+      // New code to just update the CodeMirror extensions directly.
+      kclManager.editorView.dispatch({
+        effects: kclAutocompleteCompartment.reconfigure(Prec.highest(lsp)),
+      })
       plugin = lsp
     }
     return plugin
