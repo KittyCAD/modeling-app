@@ -209,6 +209,7 @@ async fn inner_revolve(
                 &args,
                 edge_id,
                 None,
+                crate::BodyType::Solid, // TODO: Support surface revolve
             )
             .await?,
         );

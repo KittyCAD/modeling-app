@@ -109,6 +109,7 @@ async fn inner_sweep(
                 &args,
                 None,
                 None,
+                crate::BodyType::Solid, // TODO: Support surface sweep
             )
             .await?,
         );
