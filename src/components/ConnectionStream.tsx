@@ -39,6 +39,13 @@ import { EngineDebugger } from '@src/lib/debugger'
 
 const TIME_TO_CONNECT = 30_000
 
+// Object defined outside of React to prevent rerenders
+const systemDeps = {
+  engineCommandManager,
+  kclManager,
+  sceneInfra,
+}
+
 export const ConnectionStream = (props: {
   pool: string | null
   authToken: string | undefined
@@ -90,7 +97,9 @@ export const ConnectionStream = (props: {
     if (sceneInfra.camControls.wasDragging === true) return
 
     if (btnName(e.nativeEvent).left) {
-      sendSelectEventToEngine(e, videoRef.current).catch(reportRejection)
+      sendSelectEventToEngine(e, videoRef.current, {
+        engineCommandManager,
+      }).catch(reportRejection)
     }
   }
 
@@ -111,7 +120,9 @@ export const ConnectionStream = (props: {
       return
     }
 
-    sendSelectEventToEngine(e, videoRef.current)
+    sendSelectEventToEngine(e, videoRef.current, {
+      engineCommandManager,
+    })
       .then((result) => {
         if (!result) {
           return
@@ -149,6 +160,7 @@ export const ConnectionStream = (props: {
         timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       })
         .then(() => {
           // Take a screen shot after the page mounts and zoom to fit runs
@@ -199,6 +211,7 @@ export const ConnectionStream = (props: {
         timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -222,6 +235,7 @@ export const ConnectionStream = (props: {
         timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -247,6 +261,7 @@ export const ConnectionStream = (props: {
         timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -267,6 +282,7 @@ export const ConnectionStream = (props: {
         timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -296,6 +312,7 @@ export const ConnectionStream = (props: {
         timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -305,9 +322,8 @@ export const ConnectionStream = (props: {
   useOnFileRoute({
     file,
     isStreamAcceptingInput,
-    engineCommandManager,
-    kclManager,
     resetCameraPosition,
+    systemDeps,
   })
 
   useOnOfflineToExitSketchMode({
@@ -379,6 +395,7 @@ export const ConnectionStream = (props: {
               timeToConnect: TIME_TO_CONNECT,
               settings: settingsEngine,
               setShowManualConnect,
+              sceneInfra,
             }).catch((e) => {
               console.warn(e)
               setShowManualConnect(true)

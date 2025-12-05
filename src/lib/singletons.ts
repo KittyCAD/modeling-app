@@ -93,6 +93,8 @@ export const sceneEntitiesManager = new SceneEntities(
   kclManager,
   rustContext
 )
+/** 🚨 Circular dependency alert 🚨 */
+kclManager.sceneEntitiesManager = sceneEntitiesManager
 
 if (typeof window !== 'undefined') {
   ;(window as any).engineCommandManager = engineCommandManager

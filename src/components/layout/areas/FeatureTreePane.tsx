@@ -38,6 +38,7 @@ import {
   getLayout,
   kclManager,
   rustContext,
+  sceneEntitiesManager,
   sceneInfra,
   setLayout,
   useLayout,
@@ -63,6 +64,15 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
+
+// Defined outside of React to prevent rerenders
+// TODO: get all system dependencies into React via global context
+const systemDeps = {
+  kclManager,
+  sceneInfra,
+  sceneEntitiesManager,
+  rustContext,
+}
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -192,6 +202,7 @@ export const FeatureTreePaneContents = () => {
       input: {
         rustContext,
         kclManager,
+        sceneEntitiesManager,
       },
       // devTools: true,
     }
@@ -548,7 +559,7 @@ const OperationItem = (props: OperationProps) => {
           props.item,
           kclManager.artifactGraph
         )
-        const result = await selectOffsetSketchPlane(artifact)
+        const result = await selectOffsetSketchPlane(artifact, systemDeps)
         if (err(result)) {
           console.error(result)
         }
@@ -669,7 +680,7 @@ const OperationItem = (props: OperationProps) => {
           data: { forceNewSketch: true },
         })
 
-        void selectOffsetSketchPlane(artifact)
+        void selectOffsetSketchPlane(artifact, systemDeps)
       }
     }
   }
@@ -888,9 +899,9 @@ const DefaultPlanes = () => {
     (planeId: string) => {
       if (sketchNoFace) {
         void selectSketchPlane(
-          kclManager,
           planeId,
-          modelingState.context.store.useNewSketchMode?.current
+          modelingState.context.store.useNewSketchMode?.current,
+          systemDeps
         )
       } else {
         const foundDefaultPlane =
@@ -924,9 +935,9 @@ const DefaultPlanes = () => {
       })
 
       void selectSketchPlane(
-        kclManager,
         planeId,
-        modelingState.context.store.useNewSketchMode?.current
+        modelingState.context.store.useNewSketchMode?.current,
+        systemDeps
       )
     },
     [modelingState.context.store.useNewSketchMode]
