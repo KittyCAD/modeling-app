@@ -137,6 +137,7 @@ fn line_comment(i: &mut Input<'_>) -> ModalResult<Token> {
 }
 
 fn number(i: &mut Input<'_>) -> ModalResult<Token> {
+    let _ = opt('+').parse_next(i)?;
     let number_parser = alt((
         // Digits before the decimal point.
         (digit1, opt(('.', digit1)), opt('_'), opt(alt(super::NUM_SUFFIXES))).map(|_| ()),
@@ -420,8 +421,10 @@ mod tests {
 
     #[test]
     fn test_number() {
-        for (valid, expected) in [
+        for (valid, expected_remaining) in [
             ("1", false),
+            ("+1", false),
+            ("+1.23", false),
             ("1 abc", true),
             ("1.1", false),
             ("1.1 abv", true),
@@ -435,7 +438,10 @@ mod tests {
             ("1abc", true),
         ] {
             let (_, remaining) = assert_parse_ok(number, valid);
-            assert_eq!(expected, remaining, "`{valid}` expected another token to be {expected}");
+            assert_eq!(
+                expected_remaining, remaining,
+                "`{valid}` expected another token to be {expected_remaining}"
+            );
         }
 
         for invalid in ["a", "!", "!5"] {
