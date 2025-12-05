@@ -3,73 +3,16 @@ import type { PropsWithChildren } from 'react'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import {
-  commandBarActor,
-  getSettings,
-  settingsActor,
-} from '@src/lib/singletons'
+import { commandBarActor, settingsActor } from '@src/lib/singletons'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
-import {
-  closeBrackets,
-  closeBracketsKeymap,
-  completionKeymap,
-} from '@codemirror/autocomplete'
-import {
-  defaultKeymap,
-  history,
-  historyField,
-  historyKeymap,
-  indentWithTab,
-} from '@codemirror/commands'
-import {
-  bracketMatching,
-  codeFolding,
-  foldGutter,
-  foldKeymap,
-  indentOnInput,
-} from '@codemirror/language'
-import { diagnosticCount, lintGutter, lintKeymap } from '@codemirror/lint'
-import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
-import type { Extension } from '@codemirror/state'
-import { EditorState, Prec, Transaction } from '@codemirror/state'
-import {
-  EditorView,
-  drawSelection,
-  dropCursor,
-  highlightActiveLine,
-  highlightActiveLineGutter,
-  highlightSpecialChars,
-  keymap,
-  lineNumbers,
-  rectangularSelection,
-} from '@codemirror/view'
-import interact from '@replit/codemirror-interact'
-import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useRef } from 'react'
-import { useLspContext } from '@src/components/LspProvider'
-import CodeEditor from '@src/components/layout/areas/CodeEditor'
-import { historyCompartment } from '@src/editor/compartments'
-import { lineHighlightField } from '@src/editor/highlightextension'
-import { modelingMachineEvent } from '@src/lang/KclManager'
+import { useEffect, useRef } from 'react'
 import { kclManager } from '@src/lib/singletons'
-import { useSettings } from '@src/lib/singletons'
 import { reportRejection, trap } from '@src/lib/trap'
-import { onMouseDragMakeANewNumber, onMouseDragRegex } from '@src/lib/utils'
-import { artifactAnnotationsExtension } from '@src/editor/plugins/artifacts'
-import { getArtifactAnnotationsAtCursor } from '@src/lib/getArtifactAnnotationsAtCursor'
-import {
-  editorIsMountedSelector,
-  kclEditorActor,
-  selectionEventSelector,
-} from '@src/machines/kclEditorMachine'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { editorTheme, themeCompartment } from '@src/lib/codeEditor'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { getResolvedTheme } from '@src/lib/theme'
-import { kclAstExtension } from '@src/editor/plugins/ast'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -102,19 +45,6 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
 
 export const KclEditorPaneContents = () => {
   const editorParent = useRef<HTMLDivElement>(null)
-  const context = useSettings()
-  // const textWrapping = context.textEditor.textWrapping
-  const cursorBlinking = context.textEditor.blinkingCursor
-  // DO NOT ADD THE CODEMIRROR HOTKEYS HERE TO THE DEPENDENCY ARRAY
-  // It reloads the editor every time we do _anything_ in the editor
-  // I have no idea why.
-  // Instead, hot load hotkeys via code mirror native.
-  // const codeMirrorHotkeys = kclManager.getCodemirrorHotkeys()
-
-  // if (kclLSP) extensions.push(Prec.highest(kclLSP))
-  // if (copilotLSP) extensions.push(copilotLSP)
-  // if (textWrapping.current) extensions.push(EditorView.lineWrapping)
-
   useEffect(() => {
     editorParent.current?.appendChild(kclManager.editorView.dom)
   }, [])
@@ -123,9 +53,7 @@ export const KclEditorPaneContents = () => {
     <div className="relative">
       <div
         id="code-mirror-override"
-        className={
-          'absolute inset-0 pr-1 ' + (cursorBlinking.current ? 'blink' : '')
-        }
+        className="absolute inset-0 pr-1"
         ref={editorParent}
       />
     </div>

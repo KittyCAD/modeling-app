@@ -1,5 +1,5 @@
-import { Compartment, type Extension } from '@codemirror/state'
-import type { EditorView, PluginValue, ViewUpdate } from '@codemirror/view'
+import { type Extension } from '@codemirror/state'
+import type { PluginValue, ViewUpdate } from '@codemirror/view'
 import { ViewPlugin } from '@codemirror/view'
 import type {
   LanguageServerClient,
@@ -92,9 +92,6 @@ export class KclPlugin implements PluginValue {
   }, 50)
 
   update(viewUpdate: ViewUpdate) {
-    this.viewUpdate = viewUpdate
-    this.kclManager.setEditorView(viewUpdate.view)
-
     let isUserSelect = false
     let isRelevant = viewUpdate.docChanged
     for (const tr of viewUpdate.transactions) {
@@ -152,9 +149,6 @@ export class KclPlugin implements PluginValue {
     if (!viewUpdate.docChanged) {
       return
     }
-
-    const newCode = viewUpdate.state.doc.toString()
-    this.kclManager.code = newCode
 
     void this.kclManager.writeToFile().then(() => {
       this.scheduleUpdateDoc()
@@ -241,9 +235,6 @@ export class KclPlugin implements PluginValue {
     return this.client.requestCustom('kcl/updateCanExecute', params)
   }
 }
-
-/** Compartment wrapping KCL CodeMirror plugin, allowing for runtime reconfiguration */
-export const kclLspCompartment = new Compartment()
 
 export function kclPlugin(
   options: LanguageServerOptions,

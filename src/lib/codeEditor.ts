@@ -1,14 +1,3 @@
-import { HighlightStyle, syntaxHighlighting } from '@codemirror/language'
-import {
-  Annotation,
-  Compartment,
-  type Extension,
-  StateEffect,
-} from '@codemirror/state'
-import { tags } from '@lezer/highlight'
-import { EditorView } from 'codemirror'
-import { Themes } from '@src/lib/theme'
-
 export const normalizeLineEndings = (str: string, normalized = '\n') => {
   return str.replace(/\r?\n/g, normalized)
 }
