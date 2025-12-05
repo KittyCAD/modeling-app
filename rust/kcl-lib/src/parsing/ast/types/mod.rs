@@ -1259,6 +1259,33 @@ impl Expr {
             _ => None,
         }
     }
+
+    /// If we have a named function expression, return the name being declared.
+    /// This is a purely lexical check to handle the fact that we copy the fn
+    /// variable declaration name to the function expression name while parsing.
+    pub fn fn_declaring_name(&self) -> Option<&str> {
+        match self {
+            Expr::Literal(_) => None,
+            Expr::Name(_) => None,
+            Expr::TagDeclarator(_) => None,
+            Expr::BinaryExpression(_) => None,
+            Expr::FunctionExpression(func) => func.name.as_ref().map(|name| name.name.as_str()),
+            Expr::CallExpressionKw(_) => None,
+            Expr::PipeExpression(_) => None,
+            Expr::PipeSubstitution(_) => None,
+            Expr::ArrayExpression(_) => None,
+            Expr::ArrayRangeExpression(_) => None,
+            Expr::ObjectExpression(_) => None,
+            Expr::MemberExpression(_) => None,
+            Expr::UnaryExpression(_) => None,
+            Expr::IfExpression(_) => None,
+            Expr::LabelledExpression(node) => node.expr.fn_declaring_name(),
+            Expr::AscribedExpression(node) => node.expr.fn_declaring_name(),
+            Expr::SketchBlock(_) => None,
+            Expr::SketchVar(_) => None,
+            Expr::None(_) => None,
+        }
+    }
 }
 
 impl From<Expr> for SourceRange {

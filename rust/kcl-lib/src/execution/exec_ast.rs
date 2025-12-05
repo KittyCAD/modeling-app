@@ -394,9 +394,22 @@ impl ExecutorContext {
                     exec_state.mod_local.being_declared = prev_being_declared;
                     let rhs = rhs_result?;
 
-                    exec_state
-                        .mut_stack()
-                        .add(var_name.clone(), rhs.clone(), source_range)?;
+                    let should_bind_name =
+                        if let Some(fn_name) = variable_declaration.declaration.init.fn_declaring_name() {
+                            // Declaring a function with a name, so only bind
+                            // the variable name if it differs from the function
+                            // name.
+                            var_name != fn_name
+                        } else {
+                            // Not declaring a function, so we should bind the
+                            // variable name.
+                            true
+                        };
+                    if should_bind_name {
+                        exec_state
+                            .mut_stack()
+                            .add(var_name.clone(), rhs.clone(), source_range)?;
+                    }
 
                     // Track operations, for the feature tree.
                     // Don't track these operations if the KCL code being executed is in the stdlib,
@@ -778,7 +791,7 @@ impl ExecutorContext {
 
                 // Check the KCL @(feature_tree = ) annotation.
                 let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
-                if let Some(attrs) = attrs
+                let closure = if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust || attrs.impl_ == annotations::Impl::RustConstraint)
                 {
                     if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
@@ -809,7 +822,17 @@ impl ExecutorContext {
                         )),
                         meta: vec![metadata.to_owned()],
                     }
+                };
+
+                // If the function expression has a name, i.e. `fn name() {}`,
+                // bind it in the current scope.
+                if let Some(fn_name) = &function_expression.name {
+                    exec_state
+                        .mut_stack()
+                        .add(fn_name.name.clone(), closure.clone(), metadata.source_range)?;
                 }
+
+                closure
             }
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
