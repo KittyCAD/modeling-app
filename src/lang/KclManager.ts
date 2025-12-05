@@ -152,6 +152,8 @@ export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 const setDiagnosticsAnnotation = Annotation.define<boolean>()
 export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
+export const hotkeyRegisteredAnnotation = Annotation.define<string>()
+
 export class KclManager extends EventTarget {
   // SYSTEM DEPENDENCIES
 
@@ -448,14 +450,6 @@ export class KclManager extends EventTarget {
   private createEditorExtensions() {
     return [
       baseEditorExtensions(),
-      EditorView.updateListener.of((update) => {
-        const newCode = update.state.doc.toString()
-        this._code.value = newCode
-        if (!this.isExecuting && update.docChanged) {
-          void this.executeCode()
-        }
-      }),
-
       keymapCompartment.of(keymap.of(this.getCodemirrorHotkeys())),
     ]
   }
@@ -1491,6 +1485,7 @@ export class KclManager extends EventTarget {
       effects: keymapCompartment.reconfigure(
         keymap.of(this.getCodemirrorHotkeys())
       ),
+      annotations: hotkeyRegisteredAnnotation.of(hotkey),
     })
   }
   getCodemirrorHotkeys(): KeyBinding[] {

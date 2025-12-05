@@ -15,6 +15,7 @@ import {
   updateOutsideEditorEvent,
   editorCodeUpdateEvent,
   type KclManager,
+  hotkeyRegisteredAnnotation,
 } from '@src/lang/KclManager'
 import { deferExecution } from '@src/lib/utils'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -130,6 +131,10 @@ export class KclPlugin implements PluginValue {
         break
       } else if (tr.annotation(updateOutsideEditorEvent.type)) {
         // We want to ignore other events outside the editor.
+        isRelevant = false
+        break
+      } else if (tr.annotation(hotkeyRegisteredAnnotation)) {
+        // We want to ignore hotkey registrations
         isRelevant = false
         break
       }
