@@ -576,6 +576,17 @@ impl<'a> FromKclValue<'a> for crate::execution::PlaneType {
     }
 }
 
+impl<'a> FromKclValue<'a> for crate::BodyType {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let body_type = match arg.as_str()? {
+            "solid" => Self::Solid,
+            "surface" => Self::Surface,
+            _ => return None,
+        };
+        Some(body_type)
+    }
+}
+
 impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::units::UnitLength {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let s = arg.as_str()?;
