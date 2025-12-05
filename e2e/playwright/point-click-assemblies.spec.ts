@@ -55,9 +55,7 @@ test.describe('Point-and-click assemblies tests', () => {
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) {
-        fail()
-      }
+      if (!tronApp) throw new Error('tronApp is missing.')
 
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
@@ -189,9 +187,7 @@ test.describe('Point-and-click assemblies tests', () => {
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) {
-        fail()
-      }
+      if (!tronApp) throw new Error('tronApp is missing.')
 
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
@@ -443,9 +439,7 @@ test.describe('Point-and-click assemblies tests', () => {
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) {
-        fail()
-      }
+      if (!tronApp) throw new Error('tronApp is missing.')
 
       const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
       const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
@@ -575,9 +569,7 @@ test.describe('Point-and-click assemblies tests', () => {
     'Assembly gets reexecuted when imported models are updated externally',
     { tag: ['@desktop', '@macos', '@windows'] },
     async ({ context, page, homePage, scene, toolbar, cmdBar, tronApp }) => {
-      if (!tronApp) {
-        fail()
-      }
+      if (!tronApp) throw new Error('tronApp is missing.')
 
       const projectName = 'assembly'
 
@@ -671,9 +663,7 @@ foreign
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) {
-        fail()
-      }
+      if (!tronApp) throw new Error('tronApp is missing.')
 
       const projectName = 'assembly'
       const cloneLine = `clone001 = clone(washer)`

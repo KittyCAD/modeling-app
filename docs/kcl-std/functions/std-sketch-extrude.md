@@ -230,7 +230,6 @@ translate(cylinder, x = 1)
 // You could also use the 'to' parameter if you want extrusions
 // to end at a reference point, axis, scene geometry, tagged geometry, or plane.
 
-
 sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [2, 2])
   |> yLine(length = 1)

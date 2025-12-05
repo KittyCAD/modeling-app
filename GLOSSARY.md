@@ -74,6 +74,6 @@ An Area showing the operations used in the CAD assembly. You can think of it as 
 
 An Area housing a code editor for our underlying language for CAD, called [KCL](https://zoo.dev/docs/kcl-book/intro.html). From here you can edit the model directly, and often use features that we are still developing "point & click" workflows for within the Scene.
 
-## Text-to-CAD
+## Zookeeper
 
 An Area housing a chat interface with our Machine Learning tools. From it you can ask questions about your model, request edits, and more.

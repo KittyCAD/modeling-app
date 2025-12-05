@@ -5,10 +5,7 @@ test('Units menu', async ({ page, homePage }) => {
   await page.setBodyDimensions({ width: 1200, height: 500 })
   await homePage.goToModelingScene()
 
-  const unitsMenuButton = page.getByRole('button', {
-    name: 'Current Units',
-    exact: false,
-  })
+  const unitsMenuButton = page.getByTestId('units-menu')
   await expect(unitsMenuButton).toBeVisible()
   await expect(unitsMenuButton).toContainText('in')
 
@@ -82,9 +79,7 @@ part001 = startSketchOn(-XZ)
     await page.waitForTimeout(1000)
     await u.clearAndCloseDebugPanel()
 
-    if (!tronApp?.projectDirName) {
-      fail()
-    }
+    if (!tronApp) throw new Error('tronApp is missing.')
 
     await doExport(
       {

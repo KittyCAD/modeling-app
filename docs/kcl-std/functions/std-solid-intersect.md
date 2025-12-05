@@ -36,7 +36,6 @@ verifying fit, and analyzing overlapping geometries in assemblies.
 ```kcl
 // Intersect two cubes using the stdlib functions.
 
-
 fn cube(center, size) {
   return startSketchOn(XY)
     |> startProfile(at = [center[0] - size, center[1] - size])
@@ -73,7 +72,6 @@ intersectedPart = intersect([part001, part002])
 // Intersect two cubes using operators.
 // NOTE: This will not work when using codemods through the UI.
 // Codemods will generate the stdlib function call instead.
-
 
 fn cube(center, size) {
   return startSketchOn(XY)

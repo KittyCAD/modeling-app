@@ -149,6 +149,7 @@ export const ModelingPageProvider = ({
     return kclCommands({
       authToken: token ?? '',
       projectData,
+      kclManager,
       settings: {
         defaultUnit:
           settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,

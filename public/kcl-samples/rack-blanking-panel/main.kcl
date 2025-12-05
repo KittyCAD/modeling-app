@@ -1,9 +1,6 @@
 // Rack Blanking Panel - 1U
 // A rack blanking panel, also known as a filler panel or spacer blank, is a flat piece of material (usually metal or plastic) designed to fill empty spaces within a server rack. These panels are primarily used to improve airflow and cooling efficiency in server racks
 
-
-
-
 @settings(defaultLengthUnit = in)
 
 width = 19

@@ -11,7 +11,6 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useKclContext } from '@src/lang/KclProvider'
 import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
@@ -46,10 +45,7 @@ import {
   useLayout,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import {
-  featureTreeMachine,
-  featureTreeMachineDefaultContext,
-} from '@src/machines/featureTreeMachine'
+import { featureTreeMachine } from '@src/machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
@@ -196,7 +192,8 @@ export const FeatureTreePaneContents = () => {
     }),
     {
       input: {
-        ...featureTreeMachineDefaultContext,
+        rustContext,
+        kclManager,
       },
       // devTools: true,
     }
@@ -221,7 +218,8 @@ export const FeatureTreePaneContents = () => {
   // We use the code that corresponds to the operations. In case this is an
   // error on the first run, fall back to whatever is currently in the code
   // editor.
-  const operationsCode = kclManager.lastSuccessfulCode || kclManager.code
+  const operationsCode =
+    kclManager.lastSuccessfulCode || kclManager.codeSignal.value
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = groupOperationTypeStreaks(
@@ -523,18 +521,19 @@ interface OperationProps {
  * for an operation in the feature tree.
  */
 const OperationItem = (props: OperationProps) => {
-  const kclContext = useKclContext()
+  const diagnostics = kclManager.diagnosticsSignal.value
+  const ast = kclManager.astSignal.value
   const name = getOperationLabel(props.item)
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(props.item, props.code)
   }, [props.item, props.code])
 
   const variableName = useMemo(() => {
-    return getOperationVariableName(props.item, kclContext.ast)
-  }, [props.item, kclContext.ast])
+    return getOperationVariableName(props.item, ast)
+  }, [props.item, ast])
 
   const errors = useMemo(() => {
-    return kclContext.diagnostics.filter(
+    return diagnostics.filter(
       (diag) =>
         diag.severity === 'error' &&
         'sourceRange' in props.item &&
@@ -542,7 +541,7 @@ const OperationItem = (props: OperationProps) => {
         diag.to <= props.item.sourceRange[1]
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclContext.diagnostics.length])
+  }, [diagnostics.length])
 
   async function selectOperation() {
     if (props.sketchNoFace) {
