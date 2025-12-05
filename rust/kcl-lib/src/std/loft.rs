@@ -105,6 +105,7 @@ async fn inner_loft(
             &args,
             None,
             None,
+            crate::BodyType::Solid, // TODO: Support surface loft.
         )
         .await?,
     ))
