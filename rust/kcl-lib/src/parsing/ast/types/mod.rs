@@ -3262,6 +3262,10 @@ pub enum UnaryOperator {
     #[serde(rename = "!")]
     #[display("!")]
     Not,
+    /// Identity for numbers.
+    #[serde(rename = "+")]
+    #[display("+")]
+    Plus,
 }
 
 impl UnaryOperator {
@@ -3269,6 +3273,7 @@ impl UnaryOperator {
         match self {
             UnaryOperator::Neg => *b"neg",
             UnaryOperator::Not => *b"not",
+            UnaryOperator::Plus => *b"pls",
         }
     }
 }
