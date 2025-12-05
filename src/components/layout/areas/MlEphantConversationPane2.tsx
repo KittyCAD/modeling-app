@@ -121,7 +121,8 @@ export const MlEphantConversationPane2 = (props: {
 
   const isProcessing = lastExchange[0]
     ? lastExchange[0].responses.some(
-        (x: MlCopilotServerMessage) => 'end_of_stream' in x || 'error' in x
+        (x: MlCopilotServerMessage) =>
+          'end_of_stream' in x || 'error' in x || 'info' in x
       ) === false
     : false
 
@@ -131,6 +132,12 @@ export const MlEphantConversationPane2 = (props: {
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions2.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
+    })
+  }
+
+  const onInterrupt = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions2.Interrupt,
     })
   }
 
@@ -274,9 +281,10 @@ export const MlEphantConversationPane2 = (props: {
       }}
       onClickClearChat={onClickClearChat}
       onReconnect={onReconnect}
-      disabled={isProcessing || needsReconnect}
+      onInterrupt={onInterrupt}
+      disabled={needsReconnect}
       needsReconnect={needsReconnect}
-      hasPromptCompleted={isProcessing}
+      hasPromptCompleted={isProcessing === false}
       userAvatarSrc={props.user?.image}
       defaultPrompt={defaultPrompt}
     />
