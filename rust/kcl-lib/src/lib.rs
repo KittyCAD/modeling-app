@@ -287,8 +287,6 @@ impl Program {
 enum BodyType {
     #[default]
     Solid,
-    // TODO: Support surface extrudes
-    #[expect(dead_code)]
     Surface,
 }
 
