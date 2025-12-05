@@ -578,8 +578,8 @@ fn plus_sign(i: &mut TokenSlice) -> ModalResult<Token> {
 
 /// Numeric literal with suffix and optional leading negative sign.
 fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
-    let negative_token = opt(minus_sign).parse_next(i)?;
-    let positive_token = opt(plus_sign).parse_next(i)?;
+    let prefix_token = opt(alt((minus_sign, plus_sign))).parse_next(i)?;
+    let is_negative = prefix_token.as_ref().is_some_and(|tok| tok.value == "-");
     let (value, suffix, number_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
@@ -598,16 +598,14 @@ fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
         })
         .context(expected("a number literal (e.g. 3 or 12.5)"))
         .parse_next(i)?;
-    let start_neg = negative_token.as_ref().map(|t| t.start);
-    let start_pos = positive_token.as_ref().map(|t| t.start);
-    let start = start_neg.or(start_pos).unwrap_or(number_token.start);
+    let start = prefix_token.as_ref().map(|t| t.start).unwrap_or(number_token.start);
     Ok(Node::new(
         NumericLiteral {
-            value: if negative_token.is_some() { -value } else { value },
+            value: if is_negative { -value } else { value },
             suffix,
             raw: format!(
                 "{}{}",
-                negative_token.map(|t| t.value).unwrap_or_default(),
+                prefix_token.map(|t| t.value).unwrap_or_default(),
                 number_token.value
             ),
             digest: None,

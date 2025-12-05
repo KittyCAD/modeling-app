@@ -1918,11 +1918,11 @@ impl Node<UnaryExpression> {
             UnaryOperator::Plus => {
                 let operand = &self.argument.get_result(exec_state, ctx).await?;
                 match operand {
-                    KclValue::Number { .. } | KclValue::Plane { .. } => Ok(value.clone()),
+                    KclValue::Number { .. } | KclValue::Plane { .. } => Ok(operand.clone()),
                     _ => Err(KclError::new_semantic(KclErrorDetails::new(
                         format!(
                             "You can only apply unary + to numbers or planes, but this is a {}",
-                            value.human_friendly_type()
+                            operand.human_friendly_type()
                         ),
                         vec![self.into()],
                     ))),
