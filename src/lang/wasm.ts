@@ -659,6 +659,9 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'VariableDeclarationInit':
         pathToNode.push(['init', ''])
         break
+      case 'FunctionExpressionName':
+        pathToNode.push(['name', 'FunctionExpression'])
+        break
       case 'FunctionExpressionParam':
         pathToNode.push(['params', 'FunctionExpression'])
         pathToNode.push([step.index, 'index'])
