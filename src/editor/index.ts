@@ -23,6 +23,7 @@ import {
   EditorState,
   type Extension,
   Prec,
+  Annotation,
 } from '@codemirror/state'
 import {
   drawSelection,
