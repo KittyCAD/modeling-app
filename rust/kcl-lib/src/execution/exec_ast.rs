@@ -1789,129 +1789,133 @@ impl Node<BinaryExpression> {
 
 impl Node<UnaryExpression> {
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        if self.operator == UnaryOperator::Not {
-            let value = self.argument.get_result(exec_state, ctx).await?;
-            let KclValue::Bool {
-                value: bool_value,
-                meta: _,
-            } = value
-            else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "Cannot apply unary operator ! to non-boolean value: {}",
-                        value.human_friendly_type()
-                    ),
-                    vec![self.into()],
-                )));
-            };
-            let meta = vec![Metadata {
-                source_range: self.into(),
-            }];
-            let negated = KclValue::Bool {
-                value: !bool_value,
-                meta,
-            };
-
-            return Ok(negated);
-        }
-
-        let value = &self.argument.get_result(exec_state, ctx).await?;
-        let err = || {
-            KclError::new_semantic(KclErrorDetails::new(
-                format!(
-                    "You can only negate numbers, planes, or lines, but this is a {}",
-                    value.human_friendly_type()
-                ),
-                vec![self.into()],
-            ))
-        };
-        match value {
-            KclValue::Number { value, ty, .. } => {
+        match self.operator {
+            UnaryOperator::Not => {
+                let value = self.argument.get_result(exec_state, ctx).await?;
+                let KclValue::Bool {
+                    value: bool_value,
+                    meta: _,
+                } = value
+                else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Cannot apply unary operator ! to non-boolean value: {}",
+                            value.human_friendly_type()
+                        ),
+                        vec![self.into()],
+                    )));
+                };
                 let meta = vec![Metadata {
                     source_range: self.into(),
                 }];
-                Ok(KclValue::Number {
-                    value: -value,
+                let negated = KclValue::Bool {
+                    value: !bool_value,
                     meta,
-                    ty: *ty,
-                })
-            }
-            KclValue::Plane { value } => {
-                let mut plane = value.clone();
-                if plane.info.x_axis.x != 0.0 {
-                    plane.info.x_axis.x *= -1.0;
-                }
-                if plane.info.x_axis.y != 0.0 {
-                    plane.info.x_axis.y *= -1.0;
-                }
-                if plane.info.x_axis.z != 0.0 {
-                    plane.info.x_axis.z *= -1.0;
-                }
-
-                plane.value = PlaneType::Uninit;
-                plane.id = exec_state.next_uuid();
-                Ok(KclValue::Plane { value: plane })
-            }
-            KclValue::Object {
-                value: values, meta, ..
-            } => {
-                // Special-case for negating line-like objects.
-                let Some(direction) = values.get("direction") else {
-                    return Err(err());
                 };
 
-                let direction = match direction {
-                    KclValue::Tuple { value: values, meta } => {
-                        let values = values
-                            .iter()
-                            .map(|v| match v {
-                                KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
-                                    value: *value * -1.0,
-                                    ty: *ty,
-                                    meta: meta.clone(),
-                                }),
-                                _ => Err(err()),
-                            })
-                            .collect::<Result<Vec<_>, _>>()?;
-
-                        KclValue::Tuple {
-                            value: values,
-                            meta: meta.clone(),
-                        }
+                return Ok(negated);
+            }
+            UnaryOperator::Neg => {
+                let value = &self.argument.get_result(exec_state, ctx).await?;
+                let err = || {
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "You can only negate numbers, planes, or lines, but this is a {}",
+                            value.human_friendly_type()
+                        ),
+                        vec![self.into()],
+                    ))
+                };
+                match value {
+                    KclValue::Number { value, ty, .. } => {
+                        let meta = vec![Metadata {
+                            source_range: self.into(),
+                        }];
+                        Ok(KclValue::Number {
+                            value: -value,
+                            meta,
+                            ty: *ty,
+                        })
                     }
-                    KclValue::HomArray {
-                        value: values,
-                        ty: ty @ RuntimeType::Primitive(PrimitiveType::Number(_)),
+                    KclValue::Plane { value } => {
+                        let mut plane = value.clone();
+                        if plane.info.x_axis.x != 0.0 {
+                            plane.info.x_axis.x *= -1.0;
+                        }
+                        if plane.info.x_axis.y != 0.0 {
+                            plane.info.x_axis.y *= -1.0;
+                        }
+                        if plane.info.x_axis.z != 0.0 {
+                            plane.info.x_axis.z *= -1.0;
+                        }
+
+                        plane.value = PlaneType::Uninit;
+                        plane.id = exec_state.next_uuid();
+                        Ok(KclValue::Plane { value: plane })
+                    }
+                    KclValue::Object {
+                        value: values, meta, ..
                     } => {
-                        let values = values
-                            .iter()
-                            .map(|v| match v {
-                                KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
-                                    value: *value * -1.0,
-                                    ty: *ty,
+                        // Special-case for negating line-like objects.
+                        let Some(direction) = values.get("direction") else {
+                            return Err(err());
+                        };
+
+                        let direction = match direction {
+                            KclValue::Tuple { value: values, meta } => {
+                                let values = values
+                                    .iter()
+                                    .map(|v| match v {
+                                        KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
+                                            value: *value * -1.0,
+                                            ty: *ty,
+                                            meta: meta.clone(),
+                                        }),
+                                        _ => Err(err()),
+                                    })
+                                    .collect::<Result<Vec<_>, _>>()?;
+
+                                KclValue::Tuple {
+                                    value: values,
                                     meta: meta.clone(),
-                                }),
-                                _ => Err(err()),
-                            })
-                            .collect::<Result<Vec<_>, _>>()?;
+                                }
+                            }
+                            KclValue::HomArray {
+                                value: values,
+                                ty: ty @ RuntimeType::Primitive(PrimitiveType::Number(_)),
+                            } => {
+                                let values = values
+                                    .iter()
+                                    .map(|v| match v {
+                                        KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
+                                            value: *value * -1.0,
+                                            ty: *ty,
+                                            meta: meta.clone(),
+                                        }),
+                                        _ => Err(err()),
+                                    })
+                                    .collect::<Result<Vec<_>, _>>()?;
 
-                        KclValue::HomArray {
-                            value: values,
-                            ty: ty.clone(),
-                        }
+                                KclValue::HomArray {
+                                    value: values,
+                                    ty: ty.clone(),
+                                }
+                            }
+                            _ => return Err(err()),
+                        };
+
+                        let mut value = values.clone();
+                        value.insert("direction".to_owned(), direction);
+                        Ok(KclValue::Object {
+                            value,
+                            meta: meta.clone(),
+                            constrainable: false,
+                        })
                     }
-                    _ => return Err(err()),
-                };
-
-                let mut value = values.clone();
-                value.insert("direction".to_owned(), direction);
-                Ok(KclValue::Object {
-                    value,
-                    meta: meta.clone(),
-                    constrainable: false,
-                })
+                    _ => Err(err()),
+                }
             }
-            _ => Err(err()),
+            UnaryOperator::Plus => todo!(),
         }
     }
 }
