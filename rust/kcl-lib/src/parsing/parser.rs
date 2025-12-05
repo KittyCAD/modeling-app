@@ -1501,7 +1501,11 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
 fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     let fn_tok = opt(fun).parse_next(i)?;
     ignore_whitespace(i);
-    let result = function_decl.parse_next(i)?;
+    let name = opt(binding_name).parse_next(i)?;
+    ignore_whitespace(i);
+    let mut result = function_decl.parse_next(i)?;
+    // Make the function expression aware of its name.
+    result.name = name;
     if fn_tok.is_none() {
         let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
         return Err(ErrMode::Cut(err.into()));
@@ -1534,6 +1538,7 @@ fn function_decl(i: &mut TokenSlice) -> ModalResult<Node<FunctionExpression>> {
     let end = close.end;
     let result = Node::new(
         FunctionExpression {
+            name: None,
             params,
             body: body.into(),
             return_type,
@@ -2443,6 +2448,11 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
             ignore_whitespace(i);
 
             let val = function_decl
+                .map(|mut func| {
+                    // Make the function expression aware of its name.
+                    func.name = Some(id.clone());
+                    func
+                })
                 .map(Box::new)
                 .map(Expr::FunctionExpression)
                 .context(expected("a KCL function expression, like () { return 1 }"))
@@ -5022,6 +5032,18 @@ e
     fn function_defined_with_var() {
         let code = r#"
         foo = fn(@x) {
+            return x
+        }
+        answer = foo(2)
+        "#;
+        let (_, errs) = assert_no_err(code);
+        assert!(errs[0].message.contains("Define a function with `fn name()` instead") && errs[0].suggestion.is_some());
+    }
+
+    #[test]
+    fn function_defined_with_var_and_recursive_name() {
+        let code = r#"
+        foo = fn bar(@x) {
             return x
         }
         answer = foo(2)
