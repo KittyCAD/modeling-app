@@ -17,7 +17,7 @@ import {
   type KclManager,
   hotkeyRegisteredAnnotation,
 } from '@src/lang/KclManager'
-import { deferExecution } from '@src/lib/utils'
+import { deferredCallback } from '@src/lib/utils'
 
 import type { UpdateCanExecuteParams } from '@rust/kcl-lib/bindings/UpdateCanExecuteParams'
 import type { UpdateCanExecuteResponse } from '@rust/kcl-lib/bindings/UpdateCanExecuteResponse'
@@ -66,7 +66,7 @@ export class KclPlugin implements PluginValue {
   // document.
   private sendScheduledInput: number | null = null
 
-  private _deffererUserSelect = deferExecution(() => {
+  private _deffererUserSelect = deferredCallback(() => {
     if (this.viewUpdate === null) {
       return
     }
