@@ -1,5 +1,5 @@
 import type { LanguageSupport } from '@codemirror/language'
-import type { Extension } from '@codemirror/state'
+import { Prec, type Extension } from '@codemirror/state'
 import type { LanguageServerPlugin } from '@kittycad/codemirror-lsp-client'
 import {
   FromServer,
@@ -28,6 +28,7 @@ import { kclManager, sceneEntitiesManager } from '@src/lib/singletons'
 import { useToken } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { kclLspCompartment } from '@src/editor/plugins/lsp/kcl'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
@@ -167,10 +168,15 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         { kclManager, sceneEntitiesManager }
       )
 
+      // New code to just update the CodeMirror extensions directly.
+      kclManager.editorView.dispatch({
+        effects: kclLspCompartment.reconfigure(Prec.highest(lsp)),
+      })
+
       plugin = lsp
     }
     return plugin
-  }, [kclLspClient, isKclLspReady])
+  }, [kclLspClient, isKclLspReady, kclManager])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '') {

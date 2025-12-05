@@ -220,6 +220,15 @@ export const settingsMachine = setup({
       sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
       kclManager.setEditorTheme(resolvedTheme)
     },
+    setLineWrapping: ({ context, self }) => {
+      const rootContext = self.system.get('root')?.getSnapshot().context
+      const kclManager = rootContext?.kclManager
+
+      if (!kclManager) {
+        return
+      }
+      kclManager.setEditorLineWrapping(context.textEditor.textWrapping)
+    },
     setAllowOrbitInSketchMode: ({ context, self }) => {
       const rootContext = self.system.get('root')?.getSnapshot().context
       const sceneInfra = rootContext?.sceneInfra
@@ -467,6 +476,7 @@ export const settingsMachine = setup({
             'setThemeClass',
             'setEngineTheme',
             'setClientTheme',
+            'setLineWrapping',
             'sendThemeToWatcher',
           ],
         },
@@ -511,6 +521,7 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setLineWrapping',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo(
@@ -530,6 +541,7 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setLineWrapping',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo(
@@ -613,6 +625,7 @@ export const settingsMachine = setup({
             'setThemeClass',
             'setEngineTheme',
             'setClientTheme',
+            'setLineWrapping',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo(
@@ -649,6 +662,7 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setLineWrapping',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo(
