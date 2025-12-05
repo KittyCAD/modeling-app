@@ -1,6 +1,6 @@
 import { type Extension } from '@codemirror/state'
 import type { PluginValue, ViewUpdate } from '@codemirror/view'
-import { ViewPlugin } from '@codemirror/view'
+import { ViewPlugin, EditorView } from '@codemirror/view'
 import type {
   LanguageServerClient,
   LanguageServerOptions,
@@ -17,7 +17,7 @@ import {
   type KclManager,
   hotkeyRegisteredAnnotation,
 } from '@src/lang/KclManager'
-import { deferExecution } from '@src/lib/utils'
+import { deferredCallback } from '@src/lib/utils'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import type { UpdateCanExecuteParams } from '@rust/kcl-lib/bindings/UpdateCanExecuteParams'
@@ -79,7 +79,7 @@ export class KclPlugin implements PluginValue {
   // document.
   private sendScheduledInput: number | null = null
 
-  private _deffererUserSelect = deferExecution((wasmInstance: ModuleType) => {
+  private _deffererUserSelect = deferredCallback((wasmInstance: ModuleType) => {
     if (this.viewUpdate === null) {
       return
     }
