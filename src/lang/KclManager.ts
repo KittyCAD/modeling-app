@@ -898,6 +898,7 @@ export class KclManager extends EventTarget {
       this.clearAst()
       return
     }
+    clearTimeout(this.executionTimeoutId)
 
     // We consider anything taking longer than 5 minutes a long execution.
     this.executionTimeoutId = setTimeout(() => {
