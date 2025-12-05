@@ -65,6 +65,7 @@ import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
 import {
   Annotation,
+  Compartment,
   EditorSelection,
   EditorState,
   Transaction,
@@ -136,6 +137,8 @@ window.EditorSelection = EditorSelection
 window.EditorView = EditorView
 
 const PERSIST_CODE_KEY = 'persistCode'
+
+const keymapCompartment = new Compartment()
 
 const editorCodeUpdateAnnotation = Annotation.define<boolean>()
 export const editorCodeUpdateEvent = editorCodeUpdateAnnotation.of(true)
@@ -446,11 +449,14 @@ export class KclManager extends EventTarget {
     return [
       baseEditorExtensions(),
       EditorView.updateListener.of((update) => {
+        const newCode = update.state.doc.toString()
+        this._code.value = newCode
         if (!this.isExecuting && update.docChanged) {
-          this.executeCode(update.state.doc.toString())
+          void this.executeCode()
         }
       }),
-      keymap.of(this.getCodemirrorHotkeys()),
+
+      keymapCompartment.of(keymap.of(this.getCodemirrorHotkeys())),
     ]
   }
   private createEditorView() {
@@ -1474,6 +1480,11 @@ export class KclManager extends EventTarget {
   }
   registerHotkey(hotkey: string, callback: () => void) {
     this._hotkeys[hotkey] = callback
+    this.editorView.dispatch({
+      effects: keymapCompartment.reconfigure(
+        keymap.of(this.getCodemirrorHotkeys())
+      ),
+    })
   }
   getCodemirrorHotkeys(): KeyBinding[] {
     return Object.keys(this._hotkeys).map((key) => ({

@@ -18,7 +18,12 @@ import {
 } from '@codemirror/language'
 import { lintGutter, lintKeymap } from '@codemirror/lint'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
-import { Compartment, EditorState, Extension, Prec } from '@codemirror/state'
+import {
+  Compartment,
+  EditorState,
+  type Extension,
+  Prec,
+} from '@codemirror/state'
 import {
   drawSelection,
   dropCursor,
@@ -33,8 +38,9 @@ import interact from '@replit/codemirror-interact'
 import { historyCompartment } from '@src/editor/compartments'
 import { lineHighlightField } from '@src/editor/highlightextension'
 import { onMouseDragRegex, onMouseDragMakeANewNumber } from '@src/lib/utils'
-import { kclLspCompartment } from './plugins/lsp/kcl'
-import { themeCompartment } from './plugins/theme'
+import { kclLspCompartment } from '@src/editor/plugins/lsp/kcl'
+import { themeCompartment } from '@src/editor/plugins/theme'
+import { kclAstExtension } from '@src/editor/plugins/ast'
 
 export const lineWrappingCompartment = new Compartment()
 export const cursorBlinkingCompartment = new Compartment()
@@ -54,6 +60,7 @@ export function baseEditorExtensions() {
     ),
     lineHighlightField,
     historyCompartment.of(history()),
+    kclAstExtension(),
     closeBrackets(),
     codeFolding(),
     keymap.of([
