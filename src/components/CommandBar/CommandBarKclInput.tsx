@@ -8,7 +8,7 @@ import {
 import type { ViewUpdate } from '@codemirror/view'
 import { EditorView, keymap } from '@codemirror/view'
 import { useSelector } from '@xstate/react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
@@ -216,7 +216,7 @@ function CommandBarKclInput({
         ),
       ],
     })
-  }, [])
+  }, [handleSubmit, stepBack])
 
   useEffect(() => {
     miniEditor.dispatch({
@@ -230,7 +230,7 @@ function CommandBarKclInput({
         editorTheme[getResolvedTheme(settings.app.theme.current)]
       ),
     })
-  }, [settings.app.theme.current])
+  }, [settings.app.theme])
 
   useEffect(() => {
     if (editorRef.current) {
