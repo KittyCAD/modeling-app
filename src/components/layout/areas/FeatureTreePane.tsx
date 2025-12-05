@@ -30,10 +30,8 @@ import {
 import { stripQuotes } from '@src/lib/utils'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import {
-  selectDefaultSketchPlane,
-  selectOffsetSketchPlane,
-} from '@src/lib/selections'
+import { selectOffsetSketchPlane } from '@src/lib/selections'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import {
   commandBarActor,
   engineCommandManager,
@@ -571,7 +569,8 @@ const OperationItem = (props: OperationProps) => {
   function enterEditFlow() {
     if (
       props.item.type === 'StdLibCall' ||
-      props.item.type === 'VariableDeclaration'
+      props.item.type === 'VariableDeclaration' ||
+      props.item.type === 'SketchSolve'
     ) {
       props.send({
         type: 'enterEditFlow',
@@ -844,6 +843,17 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
+      ...(props.item.type === 'SketchSolve'
+        ? [
+            <ContextMenuItem
+              // TODO disabled
+              onClick={enterEditFlow}
+              hotkey="Double click"
+            >
+              Edit
+            </ContextMenuItem>,
+          ]
+        : []),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [props.item, props.send]
@@ -877,7 +887,11 @@ const DefaultPlanes = () => {
   const onClickPlane = useCallback(
     (planeId: string) => {
       if (sketchNoFace) {
-        selectDefaultSketchPlane(planeId)
+        void selectSketchPlane(
+          kclManager,
+          planeId,
+          modelingState.context.store.useNewSketchMode?.current
+        )
       } else {
         const foundDefaultPlane =
           rustContext.defaultPlanes !== null &&
@@ -899,17 +913,24 @@ const DefaultPlanes = () => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [sketchNoFace]
+    [sketchNoFace, modelingState.context.store.useNewSketchMode]
   )
 
-  const startSketchOnDefaultPlane = useCallback((planeId: string) => {
-    sceneInfra.modelingSend({
-      type: 'Enter sketch',
-      data: { forceNewSketch: true },
-    })
+  const startSketchOnDefaultPlane = useCallback(
+    (planeId: string) => {
+      sceneInfra.modelingSend({
+        type: 'Enter sketch',
+        data: { forceNewSketch: true },
+      })
 
-    selectDefaultSketchPlane(planeId)
-  }, [])
+      void selectSketchPlane(
+        kclManager,
+        planeId,
+        modelingState.context.store.useNewSketchMode?.current
+      )
+    },
+    [modelingState.context.store.useNewSketchMode]
+  )
 
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) return null

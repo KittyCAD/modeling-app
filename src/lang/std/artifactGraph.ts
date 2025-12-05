@@ -532,6 +532,25 @@ function getPlaneFromStartSketchOnPlane(
   return plane
 }
 
+// TODO: stubbed out for now.
+function getPlaneFromSketchBlock(
+  sketchBlock: Extract<Artifact, { type: 'sketchBlock' }>,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | CapArtifact | Error {
+  // If the sketch block is on a default plane, planeId will be null/undefined
+  if (!sketchBlock.planeId) {
+    return new Error(
+      'Sketch block is on a default plane, which is not in the artifact graph'
+    )
+  }
+  // Get the plane artifact (could be plane, wall, or cap)
+  const plane = getArtifactOfTypes(
+    { key: sketchBlock.planeId, types: ['plane', 'wall', 'cap'] },
+    graph
+  )
+  return plane
+}
+
 export function getPlaneFromArtifact(
   artifact: Artifact | undefined,
   graph: ArtifactGraph
@@ -556,6 +575,9 @@ export function getPlaneFromArtifact(
     return getPlaneFromStartSketchOnFace(artifact, graph)
   if (artifact.type === 'startSketchOnPlane')
     return getPlaneFromStartSketchOnPlane(artifact, graph)
+  if (artifact.type === 'sketchBlock') {
+    return getPlaneFromSketchBlock(artifact, graph)
+  }
   return new Error(`Artifact type ${artifact.type} does not have a plane`)
 }
 

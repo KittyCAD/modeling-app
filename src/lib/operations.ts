@@ -827,6 +827,48 @@ const prepareToEditHole: PrepareToEditCallback = async ({
   }
 }
 
+/**
+ * Gather up the argument values for the SketchSolve command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditSketchSolve: PrepareToEditCallback = async ({
+  operation,
+  artifact,
+}) => {
+  if (operation.type !== 'SketchSolve') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  if (!artifact) {
+    return {
+      reason:
+        'No artifact found for this sketch. Please select the sketch in the feature tree.',
+    }
+  }
+
+  if (artifact.type !== 'sketchBlock') {
+    return {
+      reason: 'Artifact is not a sketchBlock. Cannot edit this sketch.',
+    }
+  }
+
+  if (typeof artifact.sketchId !== 'number') {
+    return {
+      reason:
+        'SketchBlock does not have a valid sketchId. Cannot edit this sketch.',
+    }
+  }
+
+  const command = {
+    name: 'Enter sketch',
+    groupId: 'modeling',
+  }
+
+  // Return 'Enter sketch' command - the modeling machine will detect the sketchBlock
+  // in the selection and route to 'animating to existing sketch solve' automatically
+  return command
+}
+
 const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   operation,
   rustContext,
@@ -1833,6 +1875,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsAppearance: false,
     supportsTransform: true,
   },
+  sketchSolve: {
+    label: 'Solve Sketch',
+    icon: 'sketch',
+    prepareToEdit: prepareToEditSketchSolve,
+  },
   startSketchOn: {
     label: 'Sketch',
     icon: 'sketch',
@@ -1898,6 +1945,8 @@ export function getOperationLabel(op: Operation): string {
         const _exhaustiveCheck: never = op.group
         return '' // unreachable
       }
+    case 'SketchSolve':
+      return 'Solve Sketch'
     case 'GroupEnd':
       return 'Group end'
     default:
@@ -1990,6 +2039,8 @@ export function getOperationIcon(op: Operation): CustomIconName {
         return 'function'
       }
       return 'make-variable'
+    case 'SketchSolve':
+      return 'sketch'
     case 'GroupEnd':
       return 'questionMark'
     default:
@@ -2241,12 +2292,15 @@ export async function enterEditFlow({
   }
 
   // Begin StdLibCall processing
-  if (operation.type !== 'StdLibCall') {
+  if (operation.type !== 'StdLibCall' && operation.type !== 'SketchSolve') {
     return new Error(
       'Feature tree editing not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
   }
-  const stdLibInfo = stdLibMap[operation.name]
+  const stdLibInfo =
+    operation.type === 'SketchSolve'
+      ? stdLibMap.sketchSolve
+      : stdLibMap[operation.name]
 
   if (stdLibInfo && stdLibInfo.prepareToEdit) {
     if (typeof stdLibInfo.prepareToEdit === 'function') {

@@ -310,6 +310,19 @@ export function isReducedMotion(): boolean {
   )
 }
 
+/**
+ * Get the list of delete key names for the current platform.
+ * Backspace only on macOS as Windows and Linux have dedicated Delete key.
+ * `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
+ *
+ * @returns Array of key names that should be treated as delete keys for the current platform
+ */
+export function getDeleteKeys(): string[] {
+  return platform() === 'macos'
+    ? ['backspace', 'delete', 'del']
+    : ['delete', 'del']
+}
+
 export function XOR(bool1: boolean, bool2: boolean): boolean {
   return (bool1 || bool2) && !(bool1 && bool2)
 }

@@ -124,6 +124,17 @@ pub fn is_points_ccw(points: &[f64]) -> i32 {
 }
 
 #[wasm_bindgen]
+pub fn point_to_unit(point_json: &str, from_len_unit_json: &str, to_len_unit_json: &str) -> Result<Vec<f64>, String> {
+    console_error_panic_hook::set_once();
+
+    let point: [f64; 2] = serde_json::from_str(point_json).map_err(|e| e.to_string())?;
+    let from_len_unit: UnitLength = serde_json::from_str(from_len_unit_json).map_err(|e| e.to_string())?;
+    let to_len_unit: UnitLength = serde_json::from_str(to_len_unit_json).map_err(|e| e.to_string())?;
+
+    Ok(kcl_lib::std_utils::untyped_point_to_unit(point, from_len_unit, to_len_unit).to_vec())
+}
+
+#[wasm_bindgen]
 pub struct TangentialArcInfoOutputWasm {
     /// The geometric center of the arc x.
     pub center_x: f64,

@@ -1,0 +1,112 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing sketch_block_line_simple.kcl
+---
+{
+  "s": {
+    "type": "Object",
+    "value": {
+      "l1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "objectId": 3,
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 1.0000000040000003,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 1.9999999979999998,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "value": 10.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 1,
+                    "end_object_id": 2,
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "x": {
+        "type": "Number",
+        "value": 1.0000000040000003,
+        "ty": {
+          "mm": null,
+          "type": "Known",
+          "type": "Length"
+        }
+      },
+      "y": {
+        "type": "Number",
+        "value": 1.9999999979999998,
+        "ty": {
+          "mm": null,
+          "type": "Known",
+          "type": "Length"
+        }
+      }
+    },
+    "constrainable": false
+  }
+}
