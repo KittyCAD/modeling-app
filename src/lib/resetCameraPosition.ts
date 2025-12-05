@@ -1,9 +1,6 @@
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { isPlaywright } from '@src/lib/isPlaywright'
-import {
-  engineCommandManager,
-  sceneInfra,
-  settingsActor,
-} from '@src/lib/singletons'
+import { engineCommandManager, settingsActor } from '@src/lib/singletons'
 import { engineStreamZoomToFit, engineViewIsometric } from '@src/lib/utils'
 
 /**
@@ -14,7 +11,9 @@ import { engineStreamZoomToFit, engineViewIsometric } from '@src/lib/utils'
  * your localhost will do view_isometric. Turn this boolean on to have the same experience when manually
  * debugging e2e tests
  */
-export async function resetCameraPosition() {
+export async function resetCameraPosition({
+  sceneInfra,
+}: { sceneInfra: SceneInfra }) {
   // We need a padding of 0.1 for zoom_to_fit for all E2E tests since they were originally
   // written with zoom_to_fit with padding 0.1
   const padding = 0.1

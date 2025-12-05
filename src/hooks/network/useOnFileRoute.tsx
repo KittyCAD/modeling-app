@@ -2,14 +2,18 @@ import { useEffect, useRef } from 'react'
 import type { FileEntry } from '@src/lib/project'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { KclManager } from '@src/lang/KclManager'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 export interface IUseOnFileRoute {
   file: FileEntry | undefined
   isStreamAcceptingInput: boolean
-  engineCommandManager: ConnectionManager
-  kclManager: KclManager
   resetCameraPosition: typeof resetCameraPosition
+  systemDeps: {
+    engineCommandManager: ConnectionManager
+    kclManager: KclManager
+    sceneInfra: SceneInfra
+  }
 }
 
 /**
@@ -21,9 +25,8 @@ export interface IUseOnFileRoute {
 export const useOnFileRoute = ({
   file,
   isStreamAcceptingInput,
-  engineCommandManager,
-  kclManager,
   resetCameraPosition,
+  systemDeps: { engineCommandManager, kclManager, sceneInfra },
 }: IUseOnFileRoute) => {
   const seenFilePath = useRef('')
   useEffect(() => {
@@ -51,7 +54,7 @@ export const useOnFileRoute = ({
       try {
         console.log('file changed, executing code')
         await kclManager.executeCode()
-        await resetCameraPosition()
+        await resetCameraPosition({ sceneInfra })
       } catch (e) {
         console.warn(e)
       }
@@ -68,6 +71,7 @@ export const useOnFileRoute = ({
     isStreamAcceptingInput,
     engineCommandManager,
     kclManager,
+    sceneInfra,
     resetCameraPosition,
   ])
 }

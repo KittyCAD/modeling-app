@@ -106,7 +106,6 @@ import type {
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
 import { modelingMachine } from '@src/machines/modelingMachine'
-import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { useFolders } from '@src/machines/systemIO/hooks'
 
 import {
@@ -120,6 +119,13 @@ import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 
 const OVERLAY_TIMEOUT_MS = 1_000
+
+// Defined outside of React to prevent rerenders
+const systemDeps = {
+  sceneInfra,
+  rustContext,
+  sceneEntitiesManager,
+}
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -529,7 +535,10 @@ export const ModelingMachineProvider = ({
             let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null =
               null
 
-            const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId)
+            const defaultResult = getDefaultSketchPlaneData(
+              artifactOrPlaneId,
+              systemDeps
+            )
             if (!err(defaultResult) && defaultResult) {
               result = defaultResult
             }
@@ -538,7 +547,10 @@ export const ModelingMachineProvider = ({
             // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
             if (!result) {
               const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
-              const offsetResult = await getOffsetSketchPlaneData(artifact)
+              const offsetResult = await getOffsetSketchPlaneData(
+                artifact,
+                systemDeps
+              )
               if (!err(offsetResult) && offsetResult) {
                 result = offsetResult
               }
@@ -549,7 +561,8 @@ export const ModelingMachineProvider = ({
                 artifactOrPlaneId,
                 kclManager.artifactGraph,
                 kclManager.astSignal.value,
-                kclManager.execState
+                kclManager.execState,
+                systemDeps
               )
               if (sweepFaceSelected) {
                 result = sweepFaceSelected
@@ -1283,15 +1296,16 @@ export const ModelingMachineProvider = ({
     }),
     {
       input: {
-        ...modelingMachineDefaultContext,
-        store: {
-          ...modelingMachineDefaultContext.store,
-          cameraProjection,
-          useNewSketchMode,
-        },
         machineManager,
-        sketchSolveToolName: null,
+        engineCommandManager,
         kclManager,
+        sceneInfra,
+        rustContext,
+        sceneEntitiesManager,
+        store: {
+          useNewSketchMode,
+          cameraProjection,
+        },
       },
       // devTools: true,
     }
@@ -1521,7 +1535,7 @@ export const ModelingMachineProvider = ({
     modelingSend({ type: 'Center camera on selection' })
   })
   useHotkeys(['mod + alt + x'], () => {
-    resetCameraPosition().catch(reportRejection)
+    resetCameraPosition({ sceneInfra }).catch(reportRejection)
   })
 
   // Toggle Snap to grid
@@ -1543,7 +1557,10 @@ export const ModelingMachineProvider = ({
       if (!inSketchMode) return
 
       e.preventDefault()
-      const selection = selectAllInCurrentSketch(kclManager.artifactGraph)
+      const selection = selectAllInCurrentSketch(
+        kclManager.artifactGraph,
+        systemDeps
+      )
       modelingSend({
         type: 'Set selection',
         data: { selectionType: 'completeSelection', selection },

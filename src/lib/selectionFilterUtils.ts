@@ -9,6 +9,7 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { handleSelectionBatch } from '@src/lib/selections'
 import { uuidv4 } from '@src/lib/utils'
 import type { KclManager } from '@src/lang/KclManager'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 export const defaultSelectionFilter: EntityType[] = [
   'face',
@@ -19,30 +20,46 @@ export const defaultSelectionFilter: EntityType[] = [
 ]
 
 /** TODO: This function is not synchronous but is currently treated as such */
-export function setSelectionFilterToDefault(
-  engineCommandManager: ConnectionManager,
-  kclManager: KclManager,
-  selectionsToRestore?: Selections,
+export function setSelectionFilterToDefault({
+  engineCommandManager,
+  kclManager,
+  sceneEntitiesManager,
+  selectionsToRestore,
+  handleSelectionBatchFn,
+}: {
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
+  sceneEntitiesManager: SceneEntities
+  selectionsToRestore?: Selections
   handleSelectionBatchFn?: typeof handleSelectionBatch
-) {
+}) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  setSelectionFilter(
-    defaultSelectionFilter,
+  setSelectionFilter({
+    filter: defaultSelectionFilter,
     engineCommandManager,
     kclManager,
+    sceneEntitiesManager,
     selectionsToRestore,
-    handleSelectionBatchFn
-  )
+    handleSelectionBatchFn,
+  })
 }
 
 /** TODO: This function is not synchronous but is currently treated as such */
-export function setSelectionFilter(
-  filter: EntityType[],
-  engineCommandManager: ConnectionManager,
-  kclManager: KclManager,
-  selectionsToRestore?: Selections,
+export function setSelectionFilter({
+  filter,
+  engineCommandManager,
+  kclManager,
+  sceneEntitiesManager,
+  selectionsToRestore,
+  handleSelectionBatchFn,
+}: {
+  filter: EntityType[]
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
+  sceneEntitiesManager: SceneEntities
+  selectionsToRestore?: Selections
   handleSelectionBatchFn?: typeof handleSelectionBatch
-) {
+}) {
   const { engineEvents } =
     selectionsToRestore && handleSelectionBatchFn
       ? handleSelectionBatchFn({
@@ -50,6 +67,10 @@ export function setSelectionFilter(
           artifactGraph: kclManager.artifactGraph,
           code: kclManager.code,
           ast: kclManager.ast,
+          systemDeps: {
+            sceneEntitiesManager,
+            engineCommandManager,
+          },
         })
       : { engineEvents: undefined }
 

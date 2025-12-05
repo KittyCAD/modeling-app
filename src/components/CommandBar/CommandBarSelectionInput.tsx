@@ -9,7 +9,11 @@ import {
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
 } from '@src/lib/selections'
-import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import {
+  engineCommandManager,
+  kclManager,
+  sceneEntitiesManager,
+} from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
@@ -60,7 +64,12 @@ function CommandBarSelectionInput({
     return () => {
       toSync(() => {
         const promises = [
-          new Promise(() => kclManager.setSelectionFilterToDefault(selection)),
+          new Promise(() =>
+            kclManager.setSelectionFilterToDefault(
+              sceneEntitiesManager,
+              selection
+            )
+          ),
         ]
         if (!kclManager._isAstEmpty(kclManager.ast)) {
           promises.push(kclManager.hidePlanes())
@@ -144,8 +153,10 @@ function CommandBarSelectionInput({
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
-    arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
-    return () => kclManager.setSelectionFilterToDefault(selection)
+    arg.selectionFilter &&
+      kclManager.setSelectionFilter(arg.selectionFilter, sceneEntitiesManager)
+    return () =>
+      kclManager.setSelectionFilterToDefault(sceneEntitiesManager, selection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter])
 
