@@ -1,9 +1,6 @@
 // Ceiling Propeller
 // A twisted 3-blade ceiling fan geometry made using boolean cutouts
 
-
-
-
 @settings(defaultLengthUnit = mm)
 
 // Main Parameters

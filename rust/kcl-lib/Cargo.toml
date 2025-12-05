@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.112"
+version = "0.2.114"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -45,7 +45,6 @@ anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
 async-trait = { workspace = true }
 base64 = "0.22.1"
-bson = { workspace = true }
 chrono = "0.4.42"
 clap = { version = "4.5.53", default-features = false, optional = true, features = [
   "std",

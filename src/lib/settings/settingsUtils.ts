@@ -189,7 +189,6 @@ export function projectConfigurationToSettingsPayload(
   return {
     meta: {
       id: configuration?.settings?.meta?.id,
-      enableZookeeper: configuration?.settings?.meta?.enable_zookeeper,
     },
     app: {
       // do not read in `theme`, because it is blocked on the project level
@@ -242,7 +241,6 @@ export function settingsPayloadToProjectConfiguration(
     settings: {
       meta: {
         id: configuration?.meta?.id,
-        enable_zookeeper: configuration?.meta?.enableZookeeper,
       },
       app: {
         onboarding_status: configuration?.app?.onboardingStatus,

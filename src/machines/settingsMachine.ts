@@ -498,12 +498,6 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
         },
 
-        'set.meta.enableZookeeper': {
-          target: 'persisting settings',
-
-          actions: ['setSettingAtLevel', 'toastSuccess'],
-        },
-
         'Reset settings': {
           target: 'persisting settings',
 

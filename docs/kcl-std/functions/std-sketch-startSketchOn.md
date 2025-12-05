@@ -140,7 +140,6 @@ example003 = extrude(exampleSketch003, length = 5)
 ```kcl
 // Sketch on the end of an extruded face by tagging the end face.
 
-
 exampleSketch = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
@@ -269,7 +268,6 @@ example002 = extrude(exampleSketch002, length = 5)
 
 ```kcl
 // Sketch on the end of a revolved face by tagging the end face.
-
 
 exampleSketch = startSketchOn(XY)
   |> startProfile(at = [4, 12])

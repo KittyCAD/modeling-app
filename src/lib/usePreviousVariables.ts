@@ -2,11 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { findAllPreviousVariables } from '@src/lang/queryAst'
-import { kclManager } from '@src/lib/singletons'
+import type { Program, VariableMap } from '@src/lang/wasm'
 
-export function usePreviousVariables({ code }: { code: string }) {
-  const ast = kclManager.astSignal.value
-  const variables = kclManager.variablesSignal.value
+export function usePreviousVariables({
+  code,
+  ast,
+  variables,
+}: { code: string; ast: Program; variables: VariableMap }) {
   const { context } = useModelingContext()
   const selectionFromContext =
     context.selectionRanges.graphSelections[0]?.codeRef?.range

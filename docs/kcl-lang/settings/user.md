@@ -42,6 +42,13 @@ The settings for the Design Studio.
 
 This setting has the following nested options:
 
+##### allow_orbit_in_sketch_mode
+
+Allow orbiting in sketch mode.
+
+
+**Default:** None
+
 ##### appearance
 
 The settings for the appearance of the app.
@@ -57,6 +64,13 @@ The onboarding status of the app.
 
 **Default:** None
 
+##### show_debug_panel
+
+Whether to show the debug panel, which lets you see various states of the app to aid in development.
+
+
+**Default:** None
+
 ##### stream_idle_mode
 
 When the user is idle, teardown the stream after some time.
@@ -64,16 +78,19 @@ When the user is idle, teardown the stream after some time.
 
 **Default:** None
 
-##### allow_orbit_in_sketch_mode
 
-Allow orbiting in sketch mode.
+#### command_bar
+
+Settings that affect the behavior of the command bar.
 
 
 **Default:** None
 
-##### show_debug_panel
+This setting has the following nested options:
 
-Whether to show the debug panel, which lets you see various states of the app to aid in development.
+##### include_settings
+
+Whether to include settings in the command bar.
 
 
 **Default:** None
@@ -95,13 +112,6 @@ The default unit to use in modeling dimensions.
 
 **Default:** `mm`
 
-##### camera_projection
-
-The projection mode the camera should use while modeling.
-
-
-**Default:** None
-
 ##### camera_orbit
 
 The methodology the camera should use to orbit around the model.
@@ -109,38 +119,9 @@ The methodology the camera should use to orbit around the model.
 
 **Default:** None
 
-##### mouse_controls
+##### camera_projection
 
-The controls for how to navigate the 3D view.
-
-**Possible values:** `zoo`, `onshape`, `trackpad_friendly`, `solidworks`, `nx`, `creo`, `autocad`
-
-**Default:** None
-
-##### gizmo_type
-
-Which type of orientation gizmo to use.
-
-
-**Default:** None
-
-##### enable_touch_controls
-
-Toggle touch controls for 3D view navigation
-
-
-**Default:** None
-
-##### use_new_sketch_mode
-
-Toggle new sketch mode implementation
-
-
-**Default:** None
-
-##### highlight_edges
-
-Highlight edges of 3D objects?
+The projection mode the camera should use while modeling.
 
 
 **Default:** None
@@ -152,9 +133,9 @@ Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
 
 **Default:** None
 
-##### show_scale_grid
+##### enable_touch_controls
 
-Whether or not to show a scale grid in the 3D modeling view
+Toggle touch controls for 3D view navigation
 
 
 **Default:** None
@@ -166,9 +147,16 @@ When enabled, the grid will use a fixed size based on your selected units rather
 
 **Default:** None
 
-##### snap_to_grid
+##### gizmo_type
 
-When enabled, tools like line, rectangle, etc. will snap to the grid.
+Which type of orientation gizmo to use.
+
+
+**Default:** None
+
+##### highlight_edges
+
+Highlight edges of 3D objects?
 
 
 **Default:** None
@@ -187,6 +175,28 @@ The number of minor grid lines per major grid line.
 
 **Default:** None
 
+##### mouse_controls
+
+The controls for how to navigate the 3D view.
+
+**Possible values:** `zoo`, `onshape`, `trackpad_friendly`, `solidworks`, `nx`, `creo`, `autocad`
+
+**Default:** None
+
+##### show_scale_grid
+
+Whether or not to show a scale grid in the 3D modeling view
+
+
+**Default:** None
+
+##### snap_to_grid
+
+When enabled, tools like line, rectangle, etc. will snap to the grid.
+
+
+**Default:** None
+
 ##### snaps_per_minor
 
 The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
@@ -194,26 +204,9 @@ The number of snaps between minor grid lines. 1 means snapping to each minor gri
 
 **Default:** None
 
+##### use_new_sketch_mode
 
-#### text_editor
-
-Settings that affect the behavior of the KCL text editor.
-
-
-**Default:** None
-
-This setting has the following nested options:
-
-##### text_wrapping
-
-Whether to wrap text in the editor or overflow with scroll.
-
-
-**Default:** None
-
-##### blinking_cursor
-
-Whether to make the cursor blink in the editor.
+Toggle new sketch mode implementation
 
 
 **Default:** None
@@ -228,13 +221,6 @@ Settings that affect the behavior of project management.
 
 This setting has the following nested options:
 
-##### directory
-
-The directory to save and load projects from.
-
-
-**Default:** None
-
 ##### default_project_name
 
 The default project name to use when creating a new project.
@@ -242,19 +228,33 @@ The default project name to use when creating a new project.
 
 **Default:** None
 
+##### directory
 
-#### command_bar
+The directory to save and load projects from.
 
-Settings that affect the behavior of the command bar.
+
+**Default:** None
+
+
+#### text_editor
+
+Settings that affect the behavior of the KCL text editor.
 
 
 **Default:** None
 
 This setting has the following nested options:
 
-##### include_settings
+##### blinking_cursor
 
-Whether to include settings in the command bar.
+Whether to make the cursor blink in the editor.
+
+
+**Default:** None
+
+##### text_wrapping
+
+Whether to wrap text in the editor or overflow with scroll.
 
 
 **Default:** None
