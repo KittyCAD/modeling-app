@@ -449,6 +449,60 @@ export class KclManager extends EventTarget {
     this._wasmInitFailed.value = wasmInitFailed
   }
 
+  /**
+   * This is a CodeMirror extension that listens for selection events
+   * and fires off engine commands to highlight the corresponding engine entities.
+   * It is not debounced.
+   */
+  private selectionEffectExtension = EditorView.updateListener.of(
+    (update: ViewUpdate) => {
+      if (update.transactions.some((tr) => tr.isUserEvent('select'))) {
+        this.handleOnViewUpdate(
+          update,
+          processCodeMirrorRanges,
+          this.sceneEntitiesManager
+        )
+      }
+    }
+  )
+
+  /**
+   * This is a CodeMirror extension that watches for updates to the document,
+   * discerns if the change is a kind that we want to re-execute on,
+   * then fires (and forgets) an execution with a debounce.
+   */
+  private executionEffectExtension = EditorView.updateListener.of((update) => {
+    const shouldExecute =
+      update.docChanged &&
+      update.transactions.some((tr) => {
+        // The old KCL ViewPlugin had checks that seemed to check for
+        // certain events, but really they just set the already-true to true.
+        // Leaving here in case we need to switch to an opt-in listener.
+        // const relevantEvents = [
+        //   tr.isUserEvent('input'),
+        //   tr.isUserEvent('delete'),
+        //   tr.isUserEvent('undo'),
+        //   tr.isUserEvent('redo'),
+        //   tr.isUserEvent('move'),
+        //   tr.annotation(lspRenameEvent.type),
+        //   tr.annotation(lspCodeActionEvent.type),
+        // ]
+        const ignoredEvents = [
+          tr.annotation(editorCodeUpdateEvent.type),
+          tr.annotation(copilotPluginEvent.type),
+          tr.annotation(updateOutsideEditorEvent.type),
+          tr.annotation(hotkeyRegisteredAnnotation),
+        ]
+
+        return !ignoredEvents.some((v) => Boolean(v))
+      })
+
+    if (shouldExecute) {
+      const newCode = update.state.doc.toString()
+      this.deferredExecution(newCode)
+    }
+  })
+
   private deferredExecution = deferredCallback(async (newCode: string) => {
     void this.writeToFile(newCode)
     void this.executeCode(newCode)
@@ -458,42 +512,8 @@ export class KclManager extends EventTarget {
     return [
       baseEditorExtensions(),
       keymapCompartment.of(keymap.of(this.getCodemirrorHotkeys())),
-      EditorView.updateListener.of((update: ViewUpdate) => {
-        if (update.transactions.some((tr) => tr.isUserEvent('select'))) {
-          this.handleOnViewUpdate(update, processCodeMirrorRanges)
-        }
-      }),
-      EditorView.updateListener.of((update) => {
-        const shouldExecute =
-          update.docChanged &&
-          update.transactions.some((tr) => {
-            // The old KCL ViewPlugin had checks that seemed to check for
-            // certain events, but really they just set the already-true to true.
-            // Leaving here in case we need to switch to an opt-in listener.
-            // const releventEvents = [
-            //   tr.isUserEvent('input'),
-            //   tr.isUserEvent('delete'),
-            //   tr.isUserEvent('undo'),
-            //   tr.isUserEvent('redo'),
-            //   tr.isUserEvent('move'),
-            //   tr.annotation(lspRenameEvent.type),
-            //   tr.annotation(lspCodeActionEvent.type),
-            // ]
-            const ignoredEvents = [
-              tr.annotation(editorCodeUpdateEvent.type),
-              tr.annotation(copilotPluginEvent.type),
-              tr.annotation(updateOutsideEditorEvent.type),
-              tr.annotation(hotkeyRegisteredAnnotation),
-            ]
-
-            return !ignoredEvents.some((v) => Boolean(v))
-          })
-
-        if (shouldExecute) {
-          const newCode = update.state.doc.toString()
-          this.deferredExecution(newCode)
-        }
-      }),
+      this.selectionEffectExtension,
+      this.executionEffectExtension,
     ]
   }
   private createEditorView() {
