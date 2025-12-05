@@ -119,66 +119,86 @@ async fn fix_tags_and_references(
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
-            // Make the sketch id the new geometry id.
-            solid.sketch.id = new_geometry_id;
-            solid.sketch.original_id = new_geometry_id;
-            solid.sketch.artifact_id = new_geometry_id.into();
-            solid.sketch.clone = Some(old_geometry_id);
-
-            fix_sketch_tags_and_references(
-                &mut solid.sketch,
+            fix_tags_and_references_solid(
+                new_geometry_id,
+                old_geometry_id,
+                exec_state,
+                args,
+                solid,
                 &entity_id_map,
-                exec_state,
-                args,
-                Some(solid.value.clone()),
             )
-            .await?;
-
-            let (start_tag, end_tag) = get_named_cap_tags(solid);
-
-            // Fix the edge cuts.
-            for edge_cut in solid.edge_cuts.iter_mut() {
-                if let Some(id) = entity_id_map.get(&edge_cut.id()) {
-                    edge_cut.set_id(*id);
-                } else {
-                    crate::log::logln!(
-                        "Failed to find new edge cut id for old edge cut id: {:?}",
-                        edge_cut.id()
-                    );
-                }
-                if let Some(new_edge_id) = entity_id_map.get(&edge_cut.edge_id()) {
-                    edge_cut.set_edge_id(*new_edge_id);
-                } else {
-                    crate::log::logln!("Failed to find new edge id for old edge id: {:?}", edge_cut.edge_id());
-                }
-            }
-
-            // Do the after extrude things to update those ids, based on the new sketch
-            // information.
-            let new_solid = do_post_extrude(
-                &solid.sketch,
-                new_geometry_id.into(),
-                solid.sectional,
-                &NamedCapTags {
-                    start: start_tag.as_ref(),
-                    end: end_tag.as_ref(),
-                },
-                kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
-                exec_state,
-                args,
-                None,
-                Some(&entity_id_map.clone()),
-            )
-            .await?;
-
-            *solid = new_solid;
+            .await?
         }
     }
 
     Ok(())
 }
 
-async fn get_old_new_child_map(
+pub(crate) async fn fix_tags_and_references_solid(
+    new_geometry_id: uuid::Uuid,
+    old_geometry_id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+    solid: &mut Solid,
+    entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>,
+) -> Result<()> {
+    // Make the sketch id the new geometry id.
+    solid.sketch.id = new_geometry_id;
+    solid.sketch.original_id = new_geometry_id;
+    solid.sketch.artifact_id = new_geometry_id.into();
+    solid.sketch.clone = Some(old_geometry_id);
+
+    fix_sketch_tags_and_references(
+        &mut solid.sketch,
+        entity_id_map,
+        exec_state,
+        args,
+        Some(solid.value.clone()),
+    )
+    .await?;
+
+    let (start_tag, end_tag) = get_named_cap_tags(solid);
+
+    // Fix the edge cuts.
+    for edge_cut in solid.edge_cuts.iter_mut() {
+        if let Some(id) = entity_id_map.get(&edge_cut.id()) {
+            edge_cut.set_id(*id);
+        } else {
+            crate::log::logln!(
+                "Failed to find new edge cut id for old edge cut id: {:?}",
+                edge_cut.id()
+            );
+        }
+        if let Some(new_edge_id) = entity_id_map.get(&edge_cut.edge_id()) {
+            edge_cut.set_edge_id(*new_edge_id);
+        } else {
+            crate::log::logln!("Failed to find new edge id for old edge id: {:?}", edge_cut.edge_id());
+        }
+    }
+
+    // Do the after extrude things to update those ids, based on the new sketch
+    // information.
+    let new_solid = do_post_extrude(
+        &solid.sketch,
+        new_geometry_id.into(),
+        solid.sectional,
+        &NamedCapTags {
+            start: start_tag.as_ref(),
+            end: end_tag.as_ref(),
+        },
+        kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+        exec_state,
+        args,
+        None,
+        Some(&entity_id_map.clone()),
+    )
+    .await?;
+
+    *solid = new_solid;
+    Ok(())
+}
+
+pub(crate) async fn get_old_new_child_map(
     new_geometry_id: uuid::Uuid,
     old_geometry_id: uuid::Uuid,
     exec_state: &mut ExecState,
@@ -238,7 +258,7 @@ async fn get_old_new_child_map(
 }
 
 /// Fix the tags and references of a sketch.
-async fn fix_sketch_tags_and_references(
+pub(crate) async fn fix_sketch_tags_and_references(
     new_sketch: &mut Sketch,
     entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>,
     exec_state: &mut ExecState,

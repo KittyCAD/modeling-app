@@ -1,0 +1,18 @@
+// Sketch a cylinder.
+sketch001 = startSketchOn(XY)
+profile001 = circle(
+  sketch001,
+  center = [0, 0],
+  radius = 1.72,
+  tag = $seg01,
+)
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
+// Pattern the cylinder.
+pattern001 = patternLinear3d(
+  extrude001,
+  instances = 2,
+  distance = 5,
+  axis = X,
+)
+// Fillet just one instance.
+fillet001 = fillet(pattern001[1], tags = pattern001[1].sketch.tags.seg01, radius = 1)
