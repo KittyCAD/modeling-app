@@ -1,9 +1,10 @@
 import toast from 'react-hot-toast'
 
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { kclManager, rustContext } from '@src/lib/singletons'
+import { rustContext } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { getModule, reloadModule } from '@src/lib/wasm_lib_wrapper'
+import type { KclManager } from '@src/lang/KclManager'
 
 let initialized = false
 
@@ -13,7 +14,7 @@ let initialized = false
  * the global/DOM level. This will have to interface with whatever controlflow that needs to be picked up
  * within the error branch in the typescript to cover the application state.
  */
-export const initializeWindowExceptionHandler = () => {
+export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
   if (window && !initialized) {
     window.addEventListener('error', (event) => {
       void (async () => {
@@ -28,8 +29,10 @@ export const initializeWindowExceptionHandler = () => {
             'You have hit a KCL execution bug! Put your KCL code in a github issue to help us resolve this bug.'
           )
           try {
-            await reloadModule()
-            await getModule().default()
+            const newModulePromise = reloadModule().then(() => getModule())
+            // Refresh kclManager singleton's reference to the current WASM module.
+            kclManager.wasmInstancePromise = newModulePromise
+            await newModulePromise.then((newModule) => newModule.default())
             /**
              * If I do not cache bust, swapping between files when a rust runtime error happens
              * it will cache the result of the crashed result and not re executing a new good file

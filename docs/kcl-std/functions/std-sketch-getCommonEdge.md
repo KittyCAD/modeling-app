@@ -29,7 +29,6 @@ getCommonEdge(faces: [TaggedFace; 2]): Edge
 ```kcl
 // Get an edge shared between two faces, created after a chamfer.
 
-
 scale = 20
 part001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])

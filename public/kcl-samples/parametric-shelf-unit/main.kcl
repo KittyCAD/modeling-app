@@ -1,16 +1,12 @@
 // Parametric Shelf Unit
 // A modular and adjustable 3D shelf model designed for basic furniture design.
 
-
 // This model includes:
 // - Two vertical side panels (left and right)
 // - A floor base (spacer) at the bottom
 // - Multiple evenly spaced horizontal shelf boards
 // - Optional top board acting as a cover
 // All elements are parametric and adaptable through clearly named variables.
-
-
-
 
 @settings(defaultLengthUnit = m, kclVersion = 1.0)
 

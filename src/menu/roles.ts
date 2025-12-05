@@ -36,7 +36,6 @@ type EditRoleLabel =
   | 'Redo'
   | 'Speech'
   | 'Edit Parameter'
-  | 'Modify with Zoo Text-To-CAD'
   | 'Format Code'
 
 type HelpRoleLabel =
@@ -50,7 +49,6 @@ type HelpRoleLabel =
   | 'Show Release Notes'
   | 'Check for Updates'
   | 'Manage Account'
-  | 'Get Started with Text-to-CAD'
   | 'Show All Commands'
 
 type ViewRoleLabel =
@@ -63,6 +61,7 @@ type ViewRoleLabel =
   | 'Variables'
   | 'Logs'
   | 'Debug'
+  | 'Zookeeper'
   | 'Standard Views'
   | 'Orthographic View'
   | 'Perspective View'
@@ -83,7 +82,6 @@ type DesignRoleLabel =
   | 'Design'
   | 'Create a Parameter'
   | 'Insert from Project File'
-  | 'Create with Zoo Text-To-CAD'
   | 'Start Sketch'
   | 'Create an Offset Plane'
   | 'Create a Helix'

@@ -1,19 +1,19 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[322, 360, 0]"]
+    2["Path<br>[319, 357, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-    3["Segment<br>[366, 389, 0]"]
+    3["Segment<br>[363, 386, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    4["Segment<br>[395, 417, 0]"]
+    4["Segment<br>[392, 414, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-    5["Segment<br>[423, 430, 0]"]
+    5["Segment<br>[420, 427, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
     6[Solid2d]
   end
-  1["Plane<br>[247, 264, 0]"]
+  1["Plane<br>[244, 261, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  7["Sweep Extrusion<br>[483, 515, 0]"]
+  7["Sweep Extrusion<br>[480, 512, 0]"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   8[Wall]
     %% face_code_ref=Missing NodePath

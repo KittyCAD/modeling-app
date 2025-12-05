@@ -1,0 +1,68 @@
+// Pipe manifold
+// A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Each port provides an attachment point for a threaded pipe fitting
+
+// Set units
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Define parameters
+bodyWidth = 35
+inletDiameter = 12
+outletDiameter = 9
+outletSpacing = 25
+mountingHoleDiameter = 4.5
+
+// Create the manifold body. Chamfer all edges
+body = startSketchOn(YZ)
+  |> startProfile(at = [-bodyWidth / 2, -bodyWidth / 2])
+  |> angledLine(angle = 0deg, length = bodyWidth, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = bodyWidth, tag = $seg03)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+  |> extrude(length = outletSpacing * 4, symmetric = true)
+  |> chamfer(
+       tags = [
+         getCommonEdge(faces = [seg01, seg02]),
+         getCommonEdge(faces = [seg03, seg01]),
+         getCommonEdge(faces = [rectangleSegmentA001, seg02]),
+         getCommonEdge(faces = [rectangleSegmentA001, seg03])
+       ],
+       length = bodyWidth / 10,
+     )
+// Create the inlet hole on the far side of the manifold
+inlet = hole::hole(
+  body,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = outletSpacing * 3.9, diameter = inletDiameter),
+  holeType =   hole::simple(),
+)
+
+// Place four outlet holes along the top of the manifold
+outlets = hole::holes(
+  inlet,
+  face = seg01,
+  cutsAt = [
+    [-outletSpacing / 2, 0],
+    [outletSpacing / 2, 0],
+    [outletSpacing * 1.5, 0],
+    [-outletSpacing * 1.5, 0]
+  ],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = bodyWidth / 2, diameter = outletDiameter),
+  holeType =   hole::simple(),
+)
+
+// Create two diagonal spaced mounting thru holes on the side of the manifold
+mountingHoles = hole::holes(
+  outlets,
+  face = seg02,
+  cutsAt = [
+    [-bodyWidth / 4, -outletSpacing],
+    [bodyWidth / 4, outletSpacing]
+  ],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = bodyWidth * 1.1, diameter = mountingHoleDiameter),
+  holeType =   hole::simple(),
+)

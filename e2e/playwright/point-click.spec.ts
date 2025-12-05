@@ -122,96 +122,115 @@ test.describe('Point-and-click tests', () => {
   }) => {
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 5)`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, code)
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, code)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
 
     await test.step('Add extrude with tags', async () => {
-      await toolbar.extrudeButton.click()
-      await editor.selectText('circle')
-      await cmdBar.progressCmdBar()
-      await cmdBar.clickOptionalArgument('length')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        headerArguments: {
-          Profiles: '1 profile',
-          Length: '',
-        },
-        highlightedHeaderArg: 'length',
-        commandName: 'Extrude',
+      await test.step('Open extrude command from toolbar', async () => {
+        await toolbar.extrudeButton.click()
       })
-      await page.keyboard.insertText('4')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Length: '4',
-          Profiles: '1 profile',
-        },
-        commandName: 'Extrude',
+      await test.step('Select profile', async () => {
+        await editor.selectText('circle')
+        await cmdBar.progressCmdBar()
       })
-      await cmdBar.clickOptionalArgument('tagEnd')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'tagEnd$',
-        currentArgValue: '',
-        headerArguments: {
-          Length: '4',
-          Profiles: '1 profile',
-          TagEnd: '',
-        },
-        highlightedHeaderArg: 'tagEnd',
-        commandName: 'Extrude',
+      await test.step('Set length', async () => {
+        await cmdBar.clickOptionalArgument('length')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'length',
+          currentArgValue: '5',
+          headerArguments: {
+            Profiles: '1 profile',
+            Length: '',
+          },
+          highlightedHeaderArg: 'length',
+          commandName: 'Extrude',
+        })
+        await page.keyboard.insertText('4')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Length: '4',
+            Profiles: '1 profile',
+          },
+          commandName: 'Extrude',
+        })
       })
-      await page.keyboard.insertText('myEndTag')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Length: '4',
-          Profiles: '1 profile',
-          TagEnd: 'myEndTag',
-        },
-        commandName: 'Extrude',
+      await test.step('Set end tag', async () => {
+        await cmdBar.clickOptionalArgument('tagEnd')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'tagEnd$',
+          currentArgValue: '',
+          headerArguments: {
+            Length: '4',
+            Profiles: '1 profile',
+            TagEnd: '',
+          },
+          highlightedHeaderArg: 'tagEnd',
+          commandName: 'Extrude',
+        })
+        await page.keyboard.insertText('myEndTag')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Length: '4',
+            Profiles: '1 profile',
+            TagEnd: 'myEndTag',
+          },
+          commandName: 'Extrude',
+        })
       })
-      await cmdBar.submit()
-      await editor.expectEditor.toContain(
-        'extrude(profile001, length = 4, tagEnd = $myEndTag)'
-      )
+      await test.step('Submit and verify', async () => {
+        await cmdBar.submit()
+        await editor.expectEditor.toContain(
+          'extrude(profile001, length = 4, tagEnd = $myEndTag)'
+        )
+      })
     })
 
     await test.step(`Edit first extrude via feature tree`, async () => {
-      await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
-      await cmdBar.clickHeaderArgument('length')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '4',
-        headerArguments: {
-          Length: '4',
-          TagEnd: 'myEndTag',
-        },
-        highlightedHeaderArg: 'length',
-        commandName: 'Extrude',
+      await test.step('Open extrude operation from feature tree', async () => {
+        await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
       })
-      await page.keyboard.insertText('3')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Length: '3',
-          TagEnd: 'myEndTag',
-        },
-        commandName: 'Extrude',
+      await test.step('Edit length argument', async () => {
+        await cmdBar.clickHeaderArgument('length')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'length',
+          currentArgValue: '4',
+          headerArguments: {
+            Length: '4',
+            TagEnd: 'myEndTag',
+          },
+          highlightedHeaderArg: 'length',
+          commandName: 'Extrude',
+        })
+        await page.keyboard.insertText('3')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Length: '3',
+            TagEnd: 'myEndTag',
+          },
+          commandName: 'Extrude',
+        })
       })
-      await cmdBar.progressCmdBar()
-      await editor.expectEditor.toContain(
-        'extrude(profile001, length = 3, tagEnd = $myEndTag)'
-      )
+      await test.step('Submit and verify', async () => {
+        await cmdBar.submit()
+        await editor.expectEditor.toContain(
+          'extrude(profile001, length = 3, tagEnd = $myEndTag)'
+        )
+      })
     })
   })
 

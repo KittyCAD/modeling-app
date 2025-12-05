@@ -1,7 +1,6 @@
 // Gallows Bracket lib
 // Supporting library for the gallows bracket
 
-
 export fn angleIron(length, thickness, width, miterStart, miterEnd) {
   assert(miterStart, isGreaterThan = -90deg, isLessThan = 90deg)
   assert(miterEnd, isGreaterThanOrEqual = -90deg, isLessThan = 90deg)
