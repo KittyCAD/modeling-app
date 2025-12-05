@@ -3679,6 +3679,7 @@ fn return_true() -> bool {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct FunctionExpression {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<Node<Identifier>>,
     pub params: Vec<Parameter>,
     pub body: Node<Program>,
