@@ -428,7 +428,7 @@ export class KclManager extends EventTarget {
         // The old KCL ViewPlugin had checks that seemed to check for
         // certain events, but really they just set the already-true to true.
         // Leaving here in case we need to switch to an opt-in listener.
-        // const releventEvents = [
+        // const relevantEvents = [
         //   tr.isUserEvent('input'),
         //   tr.isUserEvent('delete'),
         //   tr.isUserEvent('undo'),
