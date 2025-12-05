@@ -28,8 +28,7 @@ import { kclManager, sceneEntitiesManager } from '@src/lib/singletons'
 import { useToken } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { kclLspCompartment } from '@src/editor/plugins/lsp/kcl'
-import { kclAutocompleteCompartment } from '@src/editor'
+import { kclLspCompartment, kclAutocompleteCompartment } from '@src/editor'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []
