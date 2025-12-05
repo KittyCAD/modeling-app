@@ -2768,6 +2768,7 @@ fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Operator if token.value == "-" => Ok((UnaryOperator::Neg, token)),
+            TokenType::Operator if token.value == "+" => Ok((UnaryOperator::Plus, token)),
             TokenType::Operator => Err(CompilationError::fatal(
                  token.as_source_range(),
                  format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
@@ -4914,15 +4915,6 @@ e
     #[test]
     fn test_parse_weird_close_before_nada() {
         assert_err_contains(r#"fn)n-"#, "expected whitespace, found ')' which is brace");
-    }
-
-    #[test]
-    fn test_parse_weird_lots_of_slashes() {
-        assert_err_contains(
-            r#"J///////////o//+///////////P++++*++++++P///////˟
-++4"#,
-            "Unexpected token: +",
-        );
     }
 
     #[test]
