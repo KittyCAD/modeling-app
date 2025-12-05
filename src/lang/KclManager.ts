@@ -20,6 +20,10 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { emptyExecState, getKclVersion, parse, recast } from '@src/lang/wasm'
+import {
+  setArtifactGraphEffect,
+  artifactAnnotationsEvent,
+} from '@src/editor/plugins/artifacts'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
@@ -96,6 +100,7 @@ import {
   appSettingsThemeEffect,
   settingsUpdateAnnotation,
 } from '@src/lib/codeEditor'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -197,6 +202,7 @@ export class KclManager extends EventTarget {
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
   private _kclVersion: string | undefined = undefined
+  private _sceneEntitiesManager?: SceneEntities
   private singletons: Singletons
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
@@ -348,11 +354,15 @@ export class KclManager extends EventTarget {
     return this._isExecuting
   }
 
+  set sceneEntitiesManager(s: SceneEntities) {
+    this._sceneEntitiesManager = s
+  }
+
   set isExecuting(isExecuting) {
     this._isExecuting.value = isExecuting
     // If we have finished executing, but the execute is stale, we should
     // execute again.
-    if (!isExecuting && this.executeIsStale) {
+    if (!isExecuting && this.executeIsStale && this._sceneEntitiesManager) {
       const args = this.executeIsStale
       this.executeIsStale = null
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -483,6 +493,18 @@ export class KclManager extends EventTarget {
   ) {
     this.artifactGraph = execStateArtifactGraph
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
+
+    // Push the artifact graph into the editor state so annotations/decorations update
+    const editorView = this.getEditorView()
+    if (editorView) {
+      editorView.dispatch({
+        effects: [setArtifactGraphEffect.of(this.artifactGraph)],
+        annotations: [
+          artifactAnnotationsEvent,
+          Transaction.addToHistory.of(false),
+        ],
+      })
+    }
     if (this.artifactGraph.size) {
       // TODO: we wanna remove this logic from xstate, it is racey
       // This defer is bullshit but playwright wants it
@@ -604,7 +626,13 @@ export class KclManager extends EventTarget {
           instance: this.singletons.rustContext.getRustInstance(),
         })
       )
-      await setSelectionFilterToDefault(this.engineCommandManager, this)
+      if (this._sceneEntitiesManager) {
+        await setSelectionFilterToDefault({
+          engineCommandManager: this.engineCommandManager,
+          kclManager: this,
+          sceneEntitiesManager: this._sceneEntitiesManager,
+        })
+      }
     }
 
     this.isExecuting = false
@@ -918,29 +946,33 @@ export class KclManager extends EventTarget {
 
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilterToDefault(
+    sceneEntitiesManager: SceneEntities,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
-    setSelectionFilterToDefault(
-      this.engineCommandManager,
-      this,
+    setSelectionFilterToDefault({
+      engineCommandManager: this.engineCommandManager,
+      kclManager: this,
+      sceneEntitiesManager,
       selectionsToRestore,
-      handleSelectionBatch
-    )
+      handleSelectionBatchFn: handleSelectionBatch,
+    })
   }
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilter(
     filter: EntityType[],
+    sceneEntitiesManager: SceneEntities,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
-    setSelectionFilter(
+    setSelectionFilter({
       filter,
-      this.engineCommandManager,
-      this,
+      engineCommandManager: this.engineCommandManager,
+      kclManager: this,
+      sceneEntitiesManager,
       selectionsToRestore,
-      handleSelectionBatch
-    )
+      handleSelectionBatchFn: handleSelectionBatch,
+    })
   }
 
   // Determines if there is no KCL code which means it is executing a blank KCL file
@@ -1282,7 +1314,8 @@ export class KclManager extends EventTarget {
   // doing. (jess)
   handleOnViewUpdate(
     viewUpdate: ViewUpdate,
-    processCodeMirrorRanges: typeof processCodeMirrorRangesFn
+    processCodeMirrorRanges: typeof processCodeMirrorRangesFn,
+    sceneEntitiesManager: SceneEntities
   ): void {
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
@@ -1313,6 +1346,10 @@ export class KclManager extends EventTarget {
       ast: this.ast,
       artifactGraph: this.artifactGraph,
       artifactIndex: this.artifactIndex,
+      systemDeps: {
+        engineCommandManager: this.engineCommandManager,
+        sceneEntitiesManager,
+      },
     })
     if (!eventInfo) {
       return
