@@ -384,9 +384,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         if (!requestProjectDirectoryPath) {
           return { value: true, error: undefined }
         }
-        const result = await canReadWriteDirectory(
-          requestProjectDirectoryPath
-        )
+        const result = await canReadWriteDirectory(requestProjectDirectoryPath)
         return result
       }
     ),

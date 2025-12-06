@@ -117,9 +117,7 @@ export async function ensureProjectDirectoryExists(
   return projectDir
 }
 
-export async function mkdirOrNOOP(
-  directoryPath: string
-) {
+export async function mkdirOrNOOP(directoryPath: string) {
   try {
     await fsZds.stat(directoryPath)
   } catch (e) {
@@ -1072,4 +1070,3 @@ export async function statIsDirectory(path: string): Promise<boolean> {
     return false // either way we don't know if it is a directory
   }
 }
-

@@ -20,13 +20,16 @@ export interface IStat {
 }
 
 export interface IZooDesignStudioFS {
-  cp: (src: string, dest: string, options?: any) => (Promise<undefined | void> | void)
-  readFile:
-      ((src: string, options: { encoding: 'utf-8' }) => Promise<string>)
-      // I (lee) made this definition to satisfy other calls, but I'm pretty
-      // sure 'utf8' is not a valid identifier...
-      & ((src: string, options: 'utf8') => Promise<string>)
-      & ((src: string, options: {} | undefined) => Promise<Uint8Array>)
+  cp: (
+    src: string,
+    dest: string,
+    options?: any
+  ) => Promise<undefined | void> | void
+  readFile: ((src: string, options: { encoding: 'utf-8' }) => Promise<string>) &
+    // I (lee) made this definition to satisfy other calls, but I'm pretty
+    // sure 'utf8' is not a valid identifier...
+    ((src: string, options: 'utf8') => Promise<string>) &
+    ((src: string, options: {} | undefined) => Promise<Uint8Array>)
   rename: (src: string, dest: string, options?: any) => Promise<undefined>
   writeFile: (
     src: string,
