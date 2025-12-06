@@ -1,6 +1,13 @@
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language'
+import {
+  Annotation,
+  Compartment,
+  type Extension,
+  StateEffect,
+} from '@codemirror/state'
 import { tags } from '@lezer/highlight'
 import { EditorView } from 'codemirror'
+import { Themes } from '@src/lib/theme'
 
 export const normalizeLineEndings = (str: string, normalized = '\n') => {
   return str.replace(/\r?\n/g, normalized)
@@ -90,6 +97,7 @@ const baseKclHighlights = HighlightStyle.define([
 
 const darkKclHighlights = HighlightStyle.define(
   [
+    ...baseKclHighlights.specs,
     {
       tag: [tags.keyword, tags.annotation],
       color: colors.orange.dark,
@@ -150,22 +158,20 @@ const darkTheme = EditorView.theme(
 )
 
 /**
- * CodeMirror theme extensions for KCL syntax highlighting.
- *
- * Not included in package because it uses CSS variables local to ZDS.
- * TODO: Make application-agnostic maybe, if other clients want this theme.
- */
-export const kclSyntaxHighlightingExtension = [
-  // Overrides are provided by `darkKclHighlights` and must be first
-  syntaxHighlighting(darkKclHighlights),
-  syntaxHighlighting(baseKclHighlights),
-]
-
-/**
  * Nearly-empty themes that just mark themselves as light or dark
  * so our {@link syntaxHighlightingExtension} can apply its styling.
  */
 export const editorTheme = {
-  light: lightTheme,
-  dark: darkTheme,
-}
+  [Themes.Light]: [lightTheme, syntaxHighlighting(baseKclHighlights)],
+  [Themes.Dark]: [darkTheme, syntaxHighlighting(darkKclHighlights)],
+} satisfies Record<Exclude<Themes, 'system'>, Extension>
+/** Compartment to allow us to reconfigure CodeMirror's theme dynamically outside of React */
+export const themeCompartment = new Compartment()
+
+/** Annotation to flag CodeMirror transactions as coming from an app settings update */
+export const settingsUpdateAnnotation = Annotation.define<null>()
+
+/** StateEffect to dispatch to CodeMirror when the app theme setting changes */
+export const appSettingsThemeEffect = StateEffect.define<'light' | 'dark'>()
+/** StateEffect to dispatch to CodeMirror when the app blinkingCursor setting changes */
+export const appSettingsBlinkingCursorEffect = StateEffect.define<boolean>()
