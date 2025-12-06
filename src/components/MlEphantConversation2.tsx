@@ -337,28 +337,6 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
     if (autoScroll === false) {
       return
     }
-    if (refScroll.current === null) {
-      return
-    }
-    if (props.conversation?.exchanges.length === 0) {
-      return
-    }
-
-    setTimeout(() => {
-      if (refScroll.current == null) {
-        return
-      }
-      refScroll.current.scrollTo({
-        top: refScroll.current.scrollHeight,
-        behavior: 'smooth',
-      })
-    })
-  }, [props.conversation?.exchanges, autoScroll])
-
-  useEffect(() => {
-    if (autoScroll === false) {
-      return
-    }
     if (refScroll.current == null) {
       return
     }
