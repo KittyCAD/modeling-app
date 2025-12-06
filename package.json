@@ -29,7 +29,7 @@
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.2",
     "@kittycad/lib": "^3.1.7",
-    "@kittycad/react-shared": "^0.1.6",
+    "@kittycad/react-shared": "^0.1.10",
     "@lezer/highlight": "^1.2.1",
     "@lezer/lr": "^1.4.1",
     "@microlink/react-json-view": "^1.27.0",

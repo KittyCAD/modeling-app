@@ -194,7 +194,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
             hoverOnly
             wrapperClassName="ui-open:!hidden"
           >
-            Text-to-CAD credits
+            Zookeeper credits
           </Tooltip>
         )}
       </Popover.Button>
@@ -238,7 +238,11 @@ export const MlEphantConversationInput = (
   return (
     <div className="flex flex-col p-4 gap-2">
       <div className="flex flex-row justify-between">
-        <div></div>
+        <div>
+          <div className="text-3 text-xs">
+            Zookeeper can make mistakes. Always verify information.
+          </div>
+        </div>
         <BillingStatusBarItem billingContext={props.billingContext} />
       </div>
       <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
@@ -293,9 +297,6 @@ export const MlEphantConversationInput = (
             </button>
           </div>
         </div>
-      </div>
-      <div className="text-3 text-xs">
-        Zookeeper can make mistakes. Always verify information.
       </div>
     </div>
   )
