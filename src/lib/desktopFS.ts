@@ -1,4 +1,5 @@
 import type { IElectronAPI } from '@root/interface'
+import fsZds from '@src/lib/fs-zds'
 import { fsManager } from '@src/lang/std/fileSystemManager'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT, INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
@@ -178,7 +179,7 @@ export async function getNextFileName({
 /**
  * Get the next available directory name by appending a hyphen and number to the end of the name
  */
-export function getNextDirName({
+export async function getNextDirName({
   electron,
   entryName,
   baseDir,
@@ -190,11 +191,16 @@ export function getNextDirName({
   let createdName = entryName
   let createdPath = electron.path.join(baseDir, createdName)
   let i = 1
-  while (electron.exists(createdPath)) {
-    createdName = entryName.replace(/-\d+$/, '') + `-${i}`
-    createdPath = electron.path.join(baseDir, createdName)
-    i++
-  }
+
+  // This code is fucking cursed -- lee
+  try {
+    while (true) {
+      await fsZds.stat(createdPath)
+      createdName = entryName.replace(/-\d+$/, '') + `-${i}`
+      createdPath = electron.path.join(baseDir, createdName)
+      i++
+    }
+  } catch(_e) {}
   return {
     name: createdName,
     path: createdPath,
