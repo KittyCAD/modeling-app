@@ -42,6 +42,7 @@ export interface IElectronAPI {
     key: string,
     callback: (eventType: string, path: string) => void
   ) => void
+  access: typeof fs.access
   readFile: typeof fs.readFile
   copyFile: typeof fs.copyFile
   watchFileOff: (path: string, key: string) => void

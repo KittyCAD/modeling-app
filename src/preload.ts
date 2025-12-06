@@ -331,6 +331,7 @@ contextBridge.exposeInMainWorld('electron', {
   // exported.
   watchFileOn,
   watchFileOff,
+  access: fs.access,
   copyFile: fs.copyFile,
   readFile,
   writeFile,
