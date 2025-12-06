@@ -109,7 +109,7 @@ export const FeatureTreePaneContents = () => {
         codePaneIsOpen: () =>
           getOpenPanes({ rootLayout: getLayout() }).includes(
             DefaultLayoutPaneID.Code
-          ) && kclManager.getEditorView() !== null,
+          ) && kclManager.editorView !== null,
       },
       actions: {
         openCodePane: () => {
