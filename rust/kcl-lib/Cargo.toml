@@ -52,7 +52,7 @@ clap = { version = "4.5.53", default-features = false, optional = true, features
   "derive",
 ] }
 convert_case = "0.10.0"
-csscolorparser = "0.8.0"
+csscolorparser = "0.8.1"
 dashmap = { workspace = true }
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
@@ -144,7 +144,7 @@ criterion = { version = "0.7.0", features = ["async_tokio"] }
 expectorate = "1.2.0"
 handlebars = "6.3.2"
 image = { version = "0.25.9", default-features = false, features = ["png"] }
-insta = { version = "1.44.1", features = ["json", "filters", "redactions"] }
+insta = { version = "1.44.3", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"

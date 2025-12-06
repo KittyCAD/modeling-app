@@ -435,6 +435,14 @@ description: Result of parsing sketch_in_object.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "test",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [],
             "start": 0,
             "type": "FunctionExpression",
@@ -931,6 +939,14 @@ description: Result of parsing sketch_in_object.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "test2",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [],
             "start": 0,
             "type": "FunctionExpression",

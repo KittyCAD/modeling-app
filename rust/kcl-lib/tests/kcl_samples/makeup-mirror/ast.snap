@@ -825,6 +825,14 @@ description: Result of parsing makeup-mirror.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "hingeFn",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -2465,6 +2473,14 @@ description: Result of parsing makeup-mirror.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "armFn",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -4161,6 +4177,14 @@ description: Result of parsing makeup-mirror.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "mirrorFn",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",

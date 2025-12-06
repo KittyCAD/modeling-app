@@ -1733,6 +1733,14 @@ description: Result of parsing brake-rotor.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "drillHole",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -3056,6 +3064,14 @@ description: Result of parsing brake-rotor.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "createDiscHalf",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",

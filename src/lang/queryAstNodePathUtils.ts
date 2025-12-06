@@ -160,6 +160,10 @@ function moreNodePathFromSourceRange(
     return path
   }
   if (_node.type === 'FunctionExpression' && isInRange) {
+    if (_node.name && _node.name.start <= start && _node.name.end >= end) {
+      path.push(['name', 'FunctionExpression'])
+      return moreNodePathFromSourceRange(_node.name, sourceRange, path)
+    }
     for (let i = 0; i < _node.params.length; i++) {
       const param = _node.params[i]
       if (param.identifier.start <= start && param.identifier.end >= end) {

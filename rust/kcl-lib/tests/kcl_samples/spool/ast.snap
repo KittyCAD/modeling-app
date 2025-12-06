@@ -2036,6 +2036,14 @@ description: Result of parsing spool.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "score",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",

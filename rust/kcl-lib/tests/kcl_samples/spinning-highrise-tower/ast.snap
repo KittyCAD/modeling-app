@@ -1612,6 +1612,14 @@ description: Result of parsing spinning-highrise-tower.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "boxFn",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -1891,6 +1899,14 @@ description: Result of parsing spinning-highrise-tower.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "transformFn",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",

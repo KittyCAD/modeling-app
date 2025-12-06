@@ -83,6 +83,14 @@ description: Result of parsing kw_fn_too_few_args.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "add",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",

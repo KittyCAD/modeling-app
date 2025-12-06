@@ -15,6 +15,8 @@ import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import {
   getLayout,
   kclManager,
+  rustContext,
+  sceneEntitiesManager,
   sceneInfra,
   settingsActor,
 } from '@src/lib/singletons'
@@ -74,7 +76,7 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
-          resetCameraPosition().catch(reportRejection)
+          resetCameraPosition({ sceneInfra }).catch(reportRejection)
         }}
         disabled={shouldLockView}
         hotkey="mod+alt+x"
@@ -147,9 +149,14 @@ export function useViewControlMenuItems() {
             })
 
             void selectSketchPlane(
-              kclManager,
               planeOrFaceId,
-              modelingState.context.store.useNewSketchMode?.current
+              modelingState.context.store.useNewSketchMode?.current,
+              {
+                kclManager,
+                rustContext,
+                sceneEntitiesManager,
+                sceneInfra,
+              }
             )
           }
         }}

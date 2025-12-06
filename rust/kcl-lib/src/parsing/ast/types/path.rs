@@ -41,6 +41,7 @@ pub enum Step {
     ExpressionStatementExpr,
     VariableDeclarationDeclaration,
     VariableDeclarationInit,
+    FunctionExpressionName,
     FunctionExpressionParam { index: usize },
     FunctionExpressionBody,
     FunctionExpressionBodyItem { index: usize },
@@ -194,6 +195,12 @@ impl NodePath {
                 }
             }
             Expr::FunctionExpression(node) => {
+                if let Some(name) = &node.name
+                    && name.contains_range(&range)
+                {
+                    path.push(Step::FunctionExpressionName);
+                    return Some(path);
+                }
                 for (i, param) in node.params.iter().enumerate() {
                     // TODO: Check the type annotation and default value.
                     if param.contains_range(&range) {

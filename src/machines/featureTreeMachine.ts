@@ -17,6 +17,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import type RustContext from '@src/lib/rustContext'
 import { commandBarActor } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 type FeatureTreeEvent =
   | {
@@ -67,6 +68,7 @@ type FeatureTreeContext = {
   currentOperation?: Operation
   rustContext: RustContext
   kclManager: KclManager
+  sceneEntitiesManager: SceneEntities
 }
 
 export const featureTreeMachine = setup({
@@ -109,7 +111,11 @@ export const featureTreeMachine = setup({
         input: {
           artifact: Artifact | undefined
           targetSourceRange: SourceRange | undefined
-          kclManager: KclManager
+          systemDeps: {
+            kclManager: KclManager
+            rustContext: RustContext
+            sceneEntitiesManager: SceneEntities
+          }
         }
       }) => {
         return new Promise((resolve, reject) => {
@@ -120,7 +126,7 @@ export const featureTreeMachine = setup({
           }
 
           const pathToNode = getNodePathFromSourceRange(
-            input.kclManager.ast,
+            input.systemDeps.kclManager.ast,
             targetSourceRange
           )
           const selection = {
@@ -130,7 +136,7 @@ export const featureTreeMachine = setup({
             },
             artifact,
           }
-          deleteSelectionPromise(selection)
+          deleteSelectionPromise({ selection, systemDeps: input.systemDeps })
             .then((result) => {
               if (err(result)) {
                 reject(result)
@@ -473,7 +479,11 @@ export const featureTreeMachine = setup({
               return {
                 artifact,
                 targetSourceRange: context.targetSourceRange,
-                kclManager: context.kclManager,
+                systemDeps: {
+                  kclManager: context.kclManager,
+                  rustContext: context.rustContext,
+                  sceneEntitiesManager: context.sceneEntitiesManager,
+                },
               }
             },
             onDone: {

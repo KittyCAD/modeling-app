@@ -672,7 +672,11 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
 
     // Wait for highlighting to kick in, a good proxy that the LSP is ready.
     await expect
-      .poll(() => page.evaluate(() => document.querySelector('.ͼj') !== null))
+      .poll(() =>
+        page.evaluate(
+          () => document.querySelector('.cm-line > span[class*="ͼ"]') !== null
+        )
+      )
       .toBe(true)
 
     // Expect the signature help to NOT be visible

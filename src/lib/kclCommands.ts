@@ -50,6 +50,8 @@ interface KclCommandConfig {
 }
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
+const EXECUTING_MESSAGE =
+  'Cannot run command while code is executing. Please try again later.'
 
 export function kclCommands(commandProps: KclCommandConfig): Command[] {
   return [
@@ -178,6 +180,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       groupId: 'code',
       hide: 'web',
       needsReview: true,
+      reviewValidation: async () => {
+        if (commandProps.kclManager.isExecuting) {
+          return new Error(EXECUTING_MESSAGE)
+        }
+      },
       args: {
         path: {
           inputType: 'options',
