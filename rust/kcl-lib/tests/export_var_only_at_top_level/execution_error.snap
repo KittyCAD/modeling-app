@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Error from executing export_only_at_top_level.kcl
+description: Error from executing export_var_only_at_top_level.kcl
 ---
 KCL Semantic error
 

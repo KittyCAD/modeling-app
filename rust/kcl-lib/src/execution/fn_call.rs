@@ -5,8 +5,8 @@ use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
-        annotations,
+        BodyType, ExecState, ExecutorContext, Geometry, KclValue, Metadata, StatementKind, TagEngineInfo,
+        TagIdentifier, annotations,
         cad_op::{Group, OpArg, OpKclValue, Operation},
         kcl_value::{FunctionBody, FunctionSource},
         memory,
@@ -423,6 +423,8 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
         }
         KclValue::Solid { value } => {
             for v in &value.value {
+                let mut solid_copy = value.clone();
+                solid_copy.sketch.tags.clear(); // Avoid recursive tags.
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
                     let tag_id = if let Some(t) = value.sketch.tags.get(&tag.name) {
@@ -436,7 +438,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
 
                         let mut info = info.clone();
                         info.surface = Some(v.clone());
-                        info.sketch = value.id;
+                        info.geometry = Geometry::Solid(*solid_copy);
                         t.info.push((exec_state.stack().current_epoch(), info));
                         t
                     } else {
@@ -450,7 +452,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                                     id: v.get_id(),
                                     surface: Some(v.clone()),
                                     path: None,
-                                    sketch: value.id,
+                                    geometry: Geometry::Solid(*solid_copy),
                                 },
                             )],
                             meta: vec![Metadata {
