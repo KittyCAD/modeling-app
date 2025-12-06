@@ -44,10 +44,7 @@ export interface IElectronAPI {
   ) => void
   readFile: typeof fs.readFile
   watchFileOff: (path: string, key: string) => void
-  writeFile: (
-    path: string,
-    data: string | Uint8Array
-  ) => Promise<undefined>
+  writeFile: (path: string, data: string | Uint8Array) => Promise<undefined>
   readdir: (path: string) => Promise<string[]>
   getPath: (name: string) => Promise<string>
   rm: typeof fs.rm

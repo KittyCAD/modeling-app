@@ -91,10 +91,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
           requestedFileName: requestedFileName,
         },
       })
-    } else if (
-      isRelevantFile(entry.path) &&
-      projectRef.current?.path
-    ) {
+    } else if (isRelevantFile(entry.path) && projectRef.current?.path) {
       // Allow insert if it is a importable file
       toast.custom(
         ToastInsert({

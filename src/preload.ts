@@ -117,7 +117,6 @@ const stat = (path: string) => {
 
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
 
-
 const exposeProcessEnvs = (varNames: Array<string>) => {
   const envs: Record<string, string> = {}
   varNames.forEach((varName) => {
