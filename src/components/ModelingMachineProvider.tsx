@@ -185,7 +185,7 @@ export const ModelingMachineProvider = ({
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
-    if (!project || !file) {
+    if (!projects || !project || !file) {
       return
     }
 
@@ -691,8 +691,6 @@ export const ModelingMachineProvider = ({
               systemDeps
             )
             if (!planeData) {
-              console.trace('yo!!')
-
               const errorMessage = 'Could not determine plane/face information'
               toast.error(errorMessage)
               return reject(new Error(errorMessage))

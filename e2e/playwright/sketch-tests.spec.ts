@@ -317,22 +317,35 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
   test(
     'Can edit a sketch that has been extruded in the same pipe',
     { tag: '@web' },
-    async ({ page, editor, toolbar, scene, cmdBar }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `@settings(defaultLengthUnit=in)
+    async ({
+      page,
+      editor,
+      toolbar,
+      scene,
+      cmdBar,
+      folderSetupFn,
+      fs,
+      homePage,
+    }) => {
+      await folderSetupFn(async (dir) => {
+        const projectDir = await fs.join(dir, 'demo-project')
+        await fs.mkdir(projectDir, { recursive: true })
+        await fs.writeFile(
+          await fs.join(projectDir, 'main.kcl'),
+          new TextEncoder().encode(
+            `@settings(defaultLengthUnit=in)
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [5, 0])
   |> tangentialArc(end = [5, 5])
   |> close()
   |> extrude(length = 5)`
+          )
         )
       })
 
-      await toolbar.waitForFeatureTreeToBeBuilt()
       await scene.settled(cmdBar)
+      await toolbar.waitForFeatureTreeToBeBuilt()
 
       await editor.closePane()
       await toolbar.editSketch()
@@ -2050,11 +2063,11 @@ profile001 = startProfile(sketch001, at = [-102.72, 237.44])
 
   // Ensure feature tree is not showing previous file's content when switching to a file with KCL errors.
   test('Feature tree shows correct sketch count per file', async ({
-    context,
     homePage,
     scene,
     toolbar,
     page,
+    folderSetupFn,
   }) => {
     const u = await getUtils(page)
 
@@ -2078,7 +2091,7 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
   |> line(end = [85.33, 234.01])
   |> line(enfd = [-137.23, -54.55])`
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const projectDir = path.join(dir, 'multi-file-sketch-test')
       await fs.mkdir(projectDir, { recursive: true })
       await Promise.all([

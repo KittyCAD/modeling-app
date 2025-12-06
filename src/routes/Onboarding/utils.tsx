@@ -1,3 +1,5 @@
+import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { type PropsWithChildren, useCallback, useEffect, useState } from 'react'
 import {
   type NavigateFunction,
@@ -13,15 +15,12 @@ import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import type { KclManager } from '@src/lang/KclManager'
-import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
   ONBOARDING_PROJECT_NAME,
   ONBOARDING_TOAST_ID,
 } from '@src/lib/constants'
 import { browserAxialFan, fanParts } from '@src/lib/exampleKcl'
-import { isDesktop } from '@src/lib/isDesktop'
-import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   type OnboardingPath,
   isOnboardingPath,
@@ -30,6 +29,7 @@ import {
 } from '@src/lib/onboardingPaths'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import { err, reportRejection } from '@src/lib/trap'
+import { waitForToastAnimationEnd } from '@src/lib/toast'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import {
@@ -39,7 +39,6 @@ import {
 } from '@src/lib/layout'
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SystemIOActor } from '@src/lib/app'
 import { useSingletons } from '@src/lib/boot'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -48,7 +47,7 @@ import type { SettingsActorType } from '@src/machines/settingsMachine'
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
   slug?: OnboardingPath,
-  platform: keyof typeof onboardingPaths = 'browser'
+  platform: keyof typeof onboardingPaths = 'desktop'
 ) {
   return slug ? Object.values(onboardingPaths[platform]).indexOf(slug) + 1 : -1
 }
@@ -72,6 +71,10 @@ export function useNextClick(newStatus: OnboardingStatus) {
   const navigate = useNavigate()
 
   return useCallback(() => {
+    if (!filePath) {
+      return new Error(`filePath is undefined`)
+    }
+
     if (!isOnboardingPath(newStatus)) {
       return new Error(
         `Failed to navigate to invalid onboarding status ${newStatus}`
@@ -98,6 +101,10 @@ export function useDismiss() {
         | Extract<OnboardingStatus, 'completed' | 'dismissed'>
         | undefined = 'dismissed'
     ) => {
+      if (!filePath) {
+        return new Error('filePath is undefined')
+      }
+
       send({
         type: 'set.app.onboardingStatus',
         data: { level: 'user', value: dismissalType },
@@ -122,7 +129,7 @@ export function useDismiss() {
 
 export function useAdjacentOnboardingSteps(
   currentSlug?: OnboardingPath,
-  platform: undefined | keyof typeof onboardingPaths = 'browser'
+  platform: undefined | keyof typeof onboardingPaths = 'desktop'
 ) {
   const onboardingPathsArray = Object.values(onboardingPaths[platform])
   const stepNumber = getStepNumber(currentSlug, platform)
@@ -141,7 +148,7 @@ export function useAdjacentOnboardingSteps(
 
 export function useOnboardingClicks(
   currentSlug?: OnboardingPath,
-  platform: undefined | keyof typeof onboardingPaths = 'browser'
+  platform: undefined | keyof typeof onboardingPaths = 'desktop'
 ) {
   const [previousOnboardingStatus, nextOnboardingStatus] =
     useAdjacentOnboardingSteps(currentSlug, platform)
@@ -153,7 +160,7 @@ export function useOnboardingClicks(
 
 export function OnboardingButtons({
   currentSlug,
-  platform = 'browser',
+  platform = 'desktop',
   dismissPosition = 'left',
   className,
   dismissClassName,
@@ -276,11 +283,11 @@ export const ERROR_MUST_WARN = 'Must warn user before overwrite'
  * depending on the platform and the state of the user's code.
  */
 export async function acceptOnboarding(deps: OnboardingUtilDeps) {
-  // Non-path statuses should be coerced to the start path
   const onboardingStatus = !isOnboardingPath(deps.onboardingStatus)
     ? onboardingStartPath
     : deps.onboardingStatus
-  if (isDesktop()) {
+
+  if (window.electron) {
     /**
      * Bulk create the assembly and navigate to the project
      */
@@ -325,12 +332,10 @@ export async function resetCodeAndAdvanceOnboarding({
   const resolvedOnboardingStatus = !isOnboardingPath(onboardingStatus)
     ? onboardingStartPath
     : onboardingStatus
-  // We do want to update both the state and editor here.
   kclManager.updateCodeEditor(browserAxialFan, { shouldExecute: true })
   void navigate(
-    makeUrlPathRelative(
+    location.pathname.replace(PATHS.SETTINGS, '') +
       joinRouterPaths(String(PATHS.ONBOARDING), resolvedOnboardingStatus)
-    )
   )
 }
 
@@ -357,7 +362,9 @@ export function onDismissOnboardingInvite(settingsActor: SettingsActorType) {
     type: 'set.app.onboardingStatus',
     data: { level: 'user', value: 'dismissed' },
   })
-  toast.dismiss(ONBOARDING_TOAST_ID)
+  void waitForToastAnimationEnd(ONBOARDING_TOAST_ID, () => {
+    toast.dismiss(ONBOARDING_TOAST_ID)
+  })
   toast.success(
     'Click the question mark in the lower-right corner if you ever want to do the tutorial!',
     {
@@ -400,6 +407,7 @@ export function TutorialRequestToast(
   return (
     <div
       data-testid="onboarding-toast"
+      id={ONBOARDING_TOAST_ID}
       className="flex flex-col justify-between gap-6 text-default"
     >
       <section className="flex items-center gap-4">
@@ -448,6 +456,7 @@ export function TutorialRequestToast(
             iconClassName: 'bg-destroy-80 text-6',
           }}
           data-negative-button="dismiss"
+          data-testid="onboarding-not-right-now"
           name="dismiss"
           onClick={() => onDismissOnboardingInvite(settingsActor)}
         >
@@ -649,7 +658,7 @@ export function useOnModelingCmdGroupReadyOnce(
  */
 export function useAdvanceOnboardingOnFormSubmit(
   currentSlug?: OnboardingPath,
-  platform: undefined | keyof typeof onboardingPaths = 'browser'
+  platform: undefined | keyof typeof onboardingPaths = 'desktop'
 ) {
   const [_prev, goToNext] = useOnboardingClicks(currentSlug, platform)
 

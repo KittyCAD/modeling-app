@@ -5,18 +5,18 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { Project } from '@src/lib/project'
 
-export function useProjectSearch(projects: Project[]) {
+export function useProjectSearch(projects: Project[] | undefined) {
   const [query, setQuery] = useState('')
   const [searchResults, setSearchResults] = useState(projects)
 
-  const fuse = new Fuse(projects, {
+  const fuse = new Fuse(projects ?? [], {
     keys: [{ name: 'name', weight: 0.7 }],
     includeScore: true,
   })
 
   useEffect(() => {
     const results = fuse.search(query).map((result) => result.item)
-    setSearchResults(query.length > 0 ? results : projects)
+    setSearchResults(query.length > 0 ? results : (projects ?? []))
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [query, projects])
 

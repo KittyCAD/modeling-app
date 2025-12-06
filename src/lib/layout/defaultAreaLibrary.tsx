@@ -4,7 +4,6 @@ import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/gizmo/Gizmo'
 import { Toolbar } from '@src/Toolbar'
 import type { AreaType, AreaTypeDefinition } from '@src/lib/layout/types'
-import { isDesktop } from '@src/lib/isDesktop'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo } from 'react'
@@ -98,7 +97,7 @@ export const useDefaultAreaLibrary = () => {
           },
         },
         files: {
-          hide: () => !isDesktop(),
+          hide: () => false,
           shortcut: 'Shift + F',
           Component: ProjectExplorerPane,
           useNotifications() {

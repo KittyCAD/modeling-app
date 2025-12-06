@@ -1,14 +1,8 @@
-import type { PlatformPath } from 'path'
+import fsZds from '@src/lib/fs-zds'
+
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
-import type { IElectronAPI } from '@root/interface'
-import { fsManager } from '@src/lang/std/fileSystemManager'
-import {
-  BROWSER_FILE_NAME,
-  BROWSER_PROJECT_NAME,
-  FILE_EXT,
-} from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -34,16 +28,11 @@ export const PATHS = {
   ONBOARDING: '/onboarding',
   TELEMETRY: '/telemetry',
 } as const
-export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 
 export async function getProjectMetaByRouteId(
   readAppSettingsFile: (
-    electron: IElectronAPI,
     wasmInstance: ModuleType
   ) => Promise<DeepPartial<Configuration>>,
-  readLocalStorageAppSettingsFile: (
-    wasmInstance: ModuleType
-  ) => DeepPartial<Configuration> | Error,
   wasmInstance: ModuleType,
   id?: string,
   configuration?: DeepPartial<Configuration> | Error
@@ -53,9 +42,7 @@ export async function getProjectMetaByRouteId(
   const isPlaywright = localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
   if (configuration === undefined || isPlaywright) {
-    configuration = window.electron
-      ? await readAppSettingsFile(window.electron, wasmInstance)
-      : readLocalStorageAppSettingsFile(wasmInstance)
+    configuration = await readAppSettingsFile(wasmInstance)
   }
 
   if (err(configuration)) return Promise.reject(configuration)
@@ -65,7 +52,7 @@ export async function getProjectMetaByRouteId(
     return Promise.reject(new Error('No configuration found'))
   }
 
-  const route = parseProjectRoute(configuration, id, window?.electron?.path)
+  const route = parseProjectRoute(configuration, id)
 
   if (err(route)) return Promise.reject(route)
 
@@ -74,51 +61,39 @@ export async function getProjectMetaByRouteId(
 
 export function parseProjectRoute(
   configuration: DeepPartial<Configuration>,
-  id: string,
-  pathlib: PlatformPath | undefined
+  id: string
 ): ProjectRoute {
   let projectName = null
   let projectPath = ''
   let currentFileName = null
   let currentFilePath = null
   if (
-    pathlib &&
     configuration.settings?.project?.directory &&
     id.startsWith(configuration.settings.project.directory)
   ) {
-    const relativeToRoot = pathlib.relative(
+    const relativeToRoot = fsZds.relative(
       configuration.settings.project.directory,
       id
     )
-    projectName = relativeToRoot.split(pathlib.sep)[0]
-    projectPath = pathlib.join(
+    projectName = relativeToRoot.split(fsZds.sep)[0]
+    projectPath = fsZds.join(
       configuration.settings.project.directory,
       projectName
     )
     projectName = projectName === '' ? null : projectName
   } else {
     projectPath = id
-    if (pathlib) {
-      if (pathlib.extname(id) === '.kcl') {
-        projectPath = pathlib.dirname(id)
-      }
-      projectName = pathlib.basename(projectPath)
-    } else {
-      if (id.endsWith('.kcl')) {
-        projectPath = '/browser'
-        projectName = 'browser'
-      }
+    if (fsZds.extname(id) === '.kcl') {
+      projectPath = fsZds.dirname(id)
     }
+    projectName = fsZds.basename(projectPath)
   }
-  if (pathlib) {
-    if (projectPath !== id) {
-      currentFileName = pathlib.basename(id)
-      currentFilePath = id
-    }
-  } else {
-    currentFileName = 'main.kcl'
+
+  if (projectPath !== id) {
+    currentFileName = fsZds.basename(id)
     currentFilePath = id
   }
+
   return {
     projectName: projectName,
     projectPath: projectPath,
@@ -153,7 +128,7 @@ export function joinRouterPaths(...parts: string[]): string {
  * or \dog\cat on POSIX
  */
 export function joinOSPaths(...parts: string[]): string {
-  const sep = window.electron?.sep || '/'
+  const sep = fsZds.sep
   const regexSep = sep === '/' ? '/' : '\\'
   return (
     (sep === '\\' ? '' : sep) + // Windows absolute paths should not be prepended with a separator, they start with the drive name
@@ -175,8 +150,8 @@ export function safeEncodeForRouterPaths(dynamicValue: string): string {
  * \dog\cat\house.kcl gives you house.kcl
  * Works on all OS!
  */
-export function getStringAfterLastSeparator(path: string): string {
-  return path.split(fsManager.path.sep).pop() || ''
+export function getStringAfterLastSeparator(targetPath: string): string {
+  return targetPath.split(fsZds.sep).pop() || ''
 }
 
 /**
@@ -189,10 +164,10 @@ export function getStringAfterLastSeparator(path: string): string {
  *
  */
 export function getProjectDirectoryFromKCLFilePath(
-  path: string,
+  targetPath: string,
   applicationProjectDirectory: string
 ): string {
-  const replacedPath = path.replace(applicationProjectDirectory, '')
+  const replacedPath = targetPath.replace(applicationProjectDirectory, '')
   const [iAmABlankString, projectDirectory] = desktopSafePathSplit(replacedPath)
   if (iAmABlankString === '') {
     return projectDirectory
@@ -228,28 +203,28 @@ export function parentPathRelativeToApplicationDirectory(
 /**
  * Use this for only web related paths not paths in OS or on disk
  * e.g. document.location.pathname
+ * WARNING (lee): THIS IS TRULY FOR ALL WEB USES, EVEN IN ELECTRON RENDERER!
+ * I got bit hard by this.
  */
-export function webSafePathSplit(path: string): string[] {
-  const webSafeSep = '/'
-  return path.split(webSafeSep)
+export function webSafePathSplit(targetPath: string): string[] {
+  // eslint-disable-next-line no-restricted-syntax
+  return targetPath.split('/')
 }
 
 export function webSafeJoin(paths: string[]): string {
-  const webSafeSep = '/'
-  return paths.join(webSafeSep)
+  // eslint-disable-next-line no-restricted-syntax
+  return paths.join('/')
 }
 
 /**
  * Splits any paths safely based on the runtime
  */
-export function desktopSafePathSplit(path: string): string[] {
-  return window.electron
-    ? path.split(window.electron.sep)
-    : webSafePathSplit(path)
+export function desktopSafePathSplit(targetPath: string): string[] {
+  return targetPath.split(fsZds.sep)
 }
 
 export function desktopSafePathJoin(paths: string[]): string {
-  return window.electron ? paths.join(window.electron.sep) : webSafeJoin(paths)
+  return paths.join(fsZds.sep)
 }
 
 /**
@@ -310,7 +285,7 @@ export const isExtensionARelevantExtension = (
 export function getFilePathRelativeToProject(
   absoluteFilePath: string,
   projectName: string,
-  sep = window.electron?.sep
+  sep = fsZds.sep
 ) {
   // Gotcha: below we're gonna look for the index of the project name,
   // but what if the project name happens to be in the path earlier than the real one?
@@ -324,14 +299,8 @@ export function getFilePathRelativeToProject(
   return absoluteFilePath.slice(projectIndexInPath + sliceOffset) ?? ''
 }
 
-/** TODO: This is not used by the web yet. */
 async function getArchiveBasePath() {
-  return window.electron
-    ? desktopSafePathJoin([
-        await window.electron.getPathUserData(),
-        ARCHIVE_DIR,
-      ])
-    : webSafeJoin(['/', ARCHIVE_DIR])
+  return desktopSafePathJoin([await fsZds.getPath('userData'), ARCHIVE_DIR])
 }
 
 /** Convert any given path to an archived one.
@@ -342,12 +311,8 @@ async function getArchiveBasePath() {
 export async function toArchivePath(absolutePath: string) {
   const basePath = await getArchiveBasePath()
 
-  if (window.electron) {
-    // On Windows, drive names have ':' (eg C:\) but ':' is not allowed in file paths.
-    // Make that make sense, right? So our archive paths need to replace that character.
-    const absolutePathWithSafeDriveName = absolutePath.replace(':', '_DRIVE')
-    return window.electron.join(basePath, absolutePathWithSafeDriveName)
-  }
-
-  return webSafeJoin([basePath, absolutePath])
+  // On Windows, drive names have ':' (eg C:\) but ':' is not allowed in file paths.
+  // Make that make sense, right? So our archive paths need to replace that character.
+  const absolutePathWithSafeDriveName = absolutePath.replace(':', '_DRIVE')
+  return fsZds.join(basePath, absolutePathWithSafeDriveName)
 }

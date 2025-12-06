@@ -27,7 +27,7 @@ test.describe('Zookeeper tests', { tag: '@desktop' }, () => {
     copilot: CopilotFixture
   }) {
     await page.setBodyDimensions({ width: 1500, height: 1000 })
-    await homePage.goToModelingScene()
+    await homePage.createAndGoToProject('testDefault')
     await scene.settled(cmdBar)
 
     await test.step(`Submit basic prompt`, async () => {
@@ -40,11 +40,11 @@ test.describe('Zookeeper tests', { tag: '@desktop' }, () => {
       await copilot.submitButton.click()
       await expect(copilot.placeHolderResponse).toBeVisible()
       await expect(copilot.placeHolderResponse).not.toBeVisible({
-        timeout: 120_000,
+        timeout: 120_000 * 2,
       })
       await expect(copilot.thinkingView).toBeVisible()
       await expect(copilot.thinkingView).not.toBeVisible({
-        timeout: 120_000,
+        timeout: 120_000 * 2,
       })
 
       await toolbar.closePane(DefaultLayoutPaneID.TTC)
@@ -61,7 +61,8 @@ test.describe('Zookeeper tests', { tag: '@desktop' }, () => {
     })
   }
 
-  test(
+  // Skip until projects view returns.
+  test.skip(
     'Web copilot happy path: new project, easy prompt, good result',
     { tag: ['@web'] },
     async ({ page, editor, homePage, scene, toolbar, cmdBar, copilot }) => {

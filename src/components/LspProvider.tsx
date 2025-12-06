@@ -27,7 +27,6 @@ import { LspWorker } from '@src/editor/plugins/lsp/types'
 import Worker from '@src/editor/plugins/lsp/worker.ts?worker'
 import { wasmUrl } from '@src/lang/wasmUtils'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import { useSingletons } from '@src/lib/boot'
@@ -124,7 +123,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   ])
 
   useMemo(() => {
-    if (!isDesktop() && isKclLspReady && kclLspClient && kclManager.code) {
+    if (!window.electron && isKclLspReady && kclLspClient && kclManager.code) {
       kclLspClient.textDocumentDidOpen({
         textDocument: {
           uri: `file:///${PROJECT_ENTRYPOINT}`,

@@ -66,27 +66,6 @@ export const MlEphantConversationPane = (props: {
 
     let project: Project = props.theProject
 
-    if (!window.electron) {
-      // If there is no project, we'll create a fake one. Expectation is for
-      // this to only happen on web.
-      project = {
-        metadata: null,
-        kcl_file_count: 1,
-        directory_count: 0,
-        default_file: '/main.kcl',
-        path: '/' + props.settings.meta.id.current,
-        name: props.settings.meta.id.current,
-        children: [
-          {
-            name: 'main.kcl',
-            path: `/main.kcl`,
-            children: null,
-          },
-        ],
-        readWriteAccess: true,
-      }
-    }
-
     const projectFiles = await collectProjectFiles({
       selectedFileContents: props.kclManager.code,
       fileNames: props.kclManager.execState.filenames,

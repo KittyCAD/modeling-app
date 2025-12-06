@@ -3,10 +3,8 @@ import { AppStateProvider } from '@src/AppState'
 import LspProvider from '@src/components/LspProvider'
 import { MachineManagerProvider } from '@src/components/MachineManagerProvider'
 import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler'
-import { SystemIOMachineLogicListenerDesktop } from '@src/components/Providers/SystemIOProviderDesktop'
-import { SystemIOMachineLogicListenerWeb } from '@src/components/Providers/SystemIOProviderWeb'
+import { SystemIOMachineLogicListener } from '@src/components/SystemIOMachineLogicListener'
 import { RouteProvider } from '@src/components/RouteProvider'
-import { isDesktop } from '@src/lib/isDesktop'
 import { Outlet } from 'react-router-dom'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import { useSingletons } from '@src/lib/boot'
@@ -37,11 +35,7 @@ function RootLayout() {
             <LspProvider>
               <AppStateProvider>
                 <MachineManagerProvider>
-                  {isDesktop() ? (
-                    <SystemIOMachineLogicListenerDesktop />
-                  ) : (
-                    <SystemIOMachineLogicListenerWeb />
-                  )}
+                  <SystemIOMachineLogicListener />
                   <Outlet />
                 </MachineManagerProvider>
               </AppStateProvider>

@@ -1,6 +1,7 @@
+import { type PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
+import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
 import {
   getUtils,
   headerMasks,
@@ -8,11 +9,11 @@ import {
   settingsToToml,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import { KCL_DEFAULT_LENGTH, SETTINGS_FILE_NAME } from '@src/lib/constants'
 
 const TEST_OVERLAY_TIMEOUT_MS = 1_500 // slightly longer than OVERLAY_TIMEOUT_MS in @src/components/ModelingMachineProvider
 
-test.beforeEach(async ({ page, context }) => {
+test.beforeEach(async ({ page, fs, folderSetupFn }) => {
   // Make the user avatar image always 404
   // so we see the fallback menu icon for all snapshot tests
   await page.route('https://lh3.googleusercontent.com/**', async (route) => {
@@ -21,6 +22,38 @@ test.beforeEach(async ({ page, context }) => {
       contentType: 'text/plain',
       body: 'Not Found!',
     })
+  })
+  const tomlStr = settingsToToml({
+    settings: {
+      modeling: {
+        base_unit: 'in',
+        mouse_controls: 'zoo',
+      },
+      app: {
+        onboarding_status: 'dismissed',
+        show_debug_panel: true,
+        appearance: {
+          theme: 'dark',
+        },
+      },
+      project: {
+        default_project_name: 'untitled',
+      },
+      text_editor: {
+        text_wrapping: true,
+      },
+    },
+  })
+
+  await folderSetupFn(async (dir: string) => {
+    const projectDir = await fs.join(dir, 'demo-project')
+    await fs.mkdir(projectDir, { recursive: true })
+    const tempSettingsFilePath = await fs.resolve(
+      projectDir,
+      '..',
+      SETTINGS_FILE_NAME
+    )
+    await fs.writeFile(tempSettingsFilePath, new TextEncoder().encode(tomlStr))
   })
 })
 
@@ -34,11 +67,14 @@ test.afterEach(async ({ page }) => {
 test.setTimeout(60_000)
 
 const extrudeDefaultPlane = async (
-  context: any,
   page: any,
   cmdBar: CmdBarFixture,
   scene: SceneFixture,
-  plane: string
+  plane: string,
+  fs: PromisifiedZooDesignStudioFS,
+  folderSetupFn: (
+    fn: (dir: string) => Promise<void>
+  ) => Promise<{ dir: string }>
 ) => {
   const code = `part001 = startSketchOn(${plane})
   |> startProfile(at = [7.00, 4.40])
@@ -50,42 +86,18 @@ const extrudeDefaultPlane = async (
   |> extrude(length = 10.00)
 `
 
-  // This probably does absolutely nothing based on my trip through here.
-  await page.addInitScript(async () => {
-    localStorage.setItem(
-      'SETTINGS_PERSIST_KEY',
-      settingsToToml({
-        settings: {
-          modeling: {
-            base_unit: 'in',
-            mouse_controls: 'zoo',
-          },
-          app: {
-            onboarding_status: 'dismissed',
-            show_debug_panel: true,
-            appearance: {
-              theme: 'dark',
-            },
-          },
-          project: {
-            default_project_name: 'untitled',
-          },
-          text_editor: {
-            text_wrapping: true,
-          },
-        },
-      })
+  await folderSetupFn(async (dir: string) => {
+    const projectDir = await fs.join(dir, 'demo-project')
+    await fs.mkdir(projectDir, { recursive: true })
+    await fs.writeFile(
+      await fs.join(projectDir, 'main.kcl'),
+      new TextEncoder().encode(code)
     )
   })
-
-  await page.addInitScript(async (code: string) => {
-    localStorage.setItem('persistCode', code)
-  }, code)
 
   const u = await getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
 
-  await u.waitForAuthSkipAppStart()
   await scene.settled(cmdBar)
 
   await expect(page).toHaveScreenshot({
@@ -99,28 +111,28 @@ test.describe(
   'extrude on default planes should be stable',
   { tag: '@snapshot' },
   () => {
-    test('XY', async ({ page, context, cmdBar, scene }) => {
-      await extrudeDefaultPlane(context, page, cmdBar, scene, 'XY')
+    test('XY', async ({ page, cmdBar, scene, fs, folderSetupFn }) => {
+      await extrudeDefaultPlane(page, cmdBar, scene, 'XY', fs, folderSetupFn)
     })
 
-    test('XZ', async ({ page, context, cmdBar, scene }) => {
-      await extrudeDefaultPlane(context, page, cmdBar, scene, 'XZ')
+    test('XZ', async ({ page, cmdBar, scene, fs, folderSetupFn }) => {
+      await extrudeDefaultPlane(page, cmdBar, scene, 'XZ', fs, folderSetupFn)
     })
 
-    test('YZ', async ({ page, context, cmdBar, scene }) => {
-      await extrudeDefaultPlane(context, page, cmdBar, scene, 'YZ')
+    test('YZ', async ({ page, cmdBar, scene, fs, folderSetupFn }) => {
+      await extrudeDefaultPlane(page, cmdBar, scene, 'YZ', fs, folderSetupFn)
     })
 
-    test('-XY', async ({ page, context, cmdBar, scene }) => {
-      await extrudeDefaultPlane(context, page, cmdBar, scene, '-XY')
+    test('-XY', async ({ page, cmdBar, scene, fs, folderSetupFn }) => {
+      await extrudeDefaultPlane(page, cmdBar, scene, '-XY', fs, folderSetupFn)
     })
 
-    test('-XZ', async ({ page, context, cmdBar, scene }) => {
-      await extrudeDefaultPlane(context, page, cmdBar, scene, '-XZ')
+    test('-XZ', async ({ page, cmdBar, scene, fs, folderSetupFn }) => {
+      await extrudeDefaultPlane(page, cmdBar, scene, '-XZ', fs, folderSetupFn)
     })
 
-    test('-YZ', async ({ page, context, cmdBar, scene }) => {
-      await extrudeDefaultPlane(context, page, cmdBar, scene, '-YZ')
+    test('-YZ', async ({ page, cmdBar, scene, fs, folderSetupFn }) => {
+      await extrudeDefaultPlane(page, cmdBar, scene, '-YZ', fs, folderSetupFn)
     })
   }
 )
@@ -128,10 +140,9 @@ test.describe(
 test(
   'Draft rectangles should look right',
   { tag: '@snapshot' },
-  async ({ page, toolbar, editor }) => {
-    const u = await getUtils(page)
+  async ({ page, toolbar, editor, scene, cmdBar }) => {
     await page.setViewportSize({ width: 1200, height: 500 })
-    await u.waitForAuthSkipAppStart()
+    await scene.settled(cmdBar)
 
     // Start a sketch
     await toolbar.startSketchOnDefaultPlane('Front plane')
@@ -168,19 +179,29 @@ test.describe(
   'Client side scene scale should match engine scale',
   { tag: '@snapshot' },
   () => {
-    test('Inch scale', async ({ page, cmdBar, scene, toolbar }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch001 = startSketchOn(XZ)
+    test('Inch scale', async ({
+      page,
+      cmdBar,
+      scene,
+      toolbar,
+      fs,
+      folderSetupFn,
+    }) => {
+      const code = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [-5, -5])
   |> xLine(length = 50)
   |> tangentialArc(end = [50, 50])
 `
+      await folderSetupFn(async (dir: string) => {
+        const projectDir = await fs.join(dir, 'demo-project')
+        await fs.mkdir(projectDir, { recursive: true })
+        await fs.writeFile(
+          await fs.join(projectDir, 'main.kcl'),
+          new TextEncoder().encode(code)
         )
       })
+
       const u = await getUtils(page)
-      await u.waitForAuthSkipAppStart()
       await scene.settled(cmdBar)
 
       await toolbar.editSketch(0)
@@ -205,40 +226,46 @@ profile001 = startProfile(sketch001, at = [-5, -5])
 
     test('Millimeter scale', async ({
       page,
-      context,
       cmdBar,
       scene,
       toolbar,
+      fs,
+      folderSetupFn,
     }) => {
-      await context.addInitScript(
-        async ({ settingsKey, settings }) => {
-          localStorage.setItem(settingsKey, settings)
+      const tomlStr = settingsToToml({
+        settings: {
+          ...TEST_SETTINGS,
+          modeling: {
+            ...TEST_SETTINGS.modeling,
+            base_unit: 'mm',
+          },
         },
-        {
-          settingsKey: TEST_SETTINGS_KEY,
-          settings: settingsToToml({
-            settings: {
-              ...TEST_SETTINGS,
-              modeling: {
-                ...TEST_SETTINGS.modeling,
-                base_unit: 'mm',
-              },
-            },
-          }),
-        }
-      )
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `sketch001 = startSketchOn(XZ)
+      })
+
+      const code = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [-5, -5])
   |> xLine(length = 50)
   |> tangentialArc(end = [50, 50])
 `
+
+      await folderSetupFn(async (dir: string) => {
+        const projectDir = await fs.join(dir, 'demo-project')
+        await fs.mkdir(projectDir, { recursive: true })
+        await fs.writeFile(
+          await fs.join(projectDir, 'main.kcl'),
+          new TextEncoder().encode(code)
+        )
+        const tempSettingsFilePath = await fs.resolve(
+          projectDir,
+          '..',
+          SETTINGS_FILE_NAME
+        )
+        await fs.writeFile(
+          tempSettingsFilePath,
+          new TextEncoder().encode(tomlStr)
         )
       })
       const u = await getUtils(page)
-      await u.waitForAuthSkipAppStart()
       await scene.settled(cmdBar)
 
       await toolbar.editSketch(0)
@@ -266,12 +293,8 @@ profile001 = startProfile(sketch001, at = [-5, -5])
 test(
   'Sketch on face with none z-up',
   { tag: '@snapshot' },
-  async ({ page, context, cmdBar, scene, toolbar }) => {
-    const u = await getUtils(page)
-    await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
-      localStorage.setItem(
-        'persistCode',
-        `part001 = startSketchOn(-XZ)
+  async ({ page, cmdBar, scene, toolbar, fs, folderSetupFn }) => {
+    const code = `part001 = startSketchOn(-XZ)
   |> startProfile(at = [1.4, 2.47])
   |> line(end = [9.31, 10.55], tag = $seg01)
   |> line(end = [11.91, -10.42])
@@ -284,13 +307,16 @@ part002 = startSketchOn(part001, face = seg01)
   |> close()
   |> extrude(length = ${KCL_DEFAULT_LENGTH})
 `
+    await folderSetupFn(async (dir: string) => {
+      const projectDir = await fs.join(dir, 'demo-project')
+      await fs.mkdir(projectDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectDir, 'main.kcl'),
+        new TextEncoder().encode(code)
       )
-    }, KCL_DEFAULT_LENGTH)
+    })
 
     await page.setViewportSize({ width: 1200, height: 500 })
-
-    await u.waitForAuthSkipAppStart()
-
     await scene.settled(cmdBar)
 
     // Wait for the second extrusion to appear
@@ -322,24 +348,24 @@ part002 = startSketchOn(part001, face = seg01)
 test(
   'Zoom to fit on load - solid 2d',
   { tag: '@snapshot' },
-  async ({ page, context, cmdBar, scene }) => {
-    const u = await getUtils(page)
-    await context.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `part001 = startSketchOn(XY)
+  async ({ page, cmdBar, scene, fs, folderSetupFn }) => {
+    const code = `part001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
   |> close()
 `
+    await folderSetupFn(async (dir: string) => {
+      const projectDir = await fs.join(dir, 'demo-project')
+      await fs.mkdir(projectDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectDir, 'main.kcl'),
+        new TextEncoder().encode(code)
       )
-    }, KCL_DEFAULT_LENGTH)
+    })
 
     await page.setViewportSize({ width: 1200, height: 500 })
-
-    await u.waitForAuthSkipAppStart()
 
     await scene.settled(cmdBar)
 
@@ -358,12 +384,8 @@ test(
 test(
   'Zoom to fit on load - solid 3d',
   { tag: '@snapshot' },
-  async ({ page, context, cmdBar, scene }) => {
-    const u = await getUtils(page)
-    await context.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `part001 = startSketchOn(XY)
+  async ({ page, cmdBar, scene, fs, folderSetupFn }) => {
+    const code = `part001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -371,12 +393,16 @@ test(
   |> close()
   |> extrude(length = 10)
 `
+    await folderSetupFn(async (dir: string) => {
+      const projectDir = await fs.join(dir, 'demo-project')
+      await fs.mkdir(projectDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectDir, 'main.kcl'),
+        new TextEncoder().encode(code)
       )
-    }, KCL_DEFAULT_LENGTH)
+    })
 
     await page.setViewportSize({ width: 1200, height: 500 })
-
-    await u.waitForAuthSkipAppStart()
 
     await scene.settled(cmdBar)
 
@@ -402,8 +428,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     const stream = page.getByTestId('stream')
 
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
-    await u.waitForAuthSkipAppStart()
 
     await scene.settled(cmdBar)
 
@@ -461,8 +485,6 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     const stream = page.getByTestId('stream')
 
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
-    await u.waitForAuthSkipAppStart()
 
     await scene.settled(cmdBar)
 
@@ -477,32 +499,38 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     })
   })
 
-  test('Grid turned on', async ({ page, context, cmdBar, scene }) => {
-    await context.addInitScript(
-      async ({ settingsKey, settings }) => {
-        localStorage.setItem(settingsKey, settings)
+  test('Grid turned on', async ({ page, cmdBar, scene, fs, folderSetupFn }) => {
+    const tomlStr = settingsToToml({
+      settings: {
+        ...TEST_SETTINGS,
+        modeling: {
+          ...TEST_SETTINGS.modeling,
+          show_scale_grid: true,
+        },
       },
-      {
-        settingsKey: TEST_SETTINGS_KEY,
-        settings: settingsToToml({
-          settings: {
-            ...TEST_SETTINGS,
-            modeling: {
-              ...TEST_SETTINGS.modeling,
-              show_scale_grid: true,
-            },
-          },
-        }),
-      }
-    )
+    })
+    await folderSetupFn(async (dir: string) => {
+      const projectDir = await fs.join(dir, 'demo-project')
+      await fs.mkdir(projectDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectDir, 'main.kcl'),
+        new TextEncoder().encode('')
+      )
+      const tempSettingsFilePath = await fs.resolve(
+        projectDir,
+        '..',
+        SETTINGS_FILE_NAME
+      )
+      await fs.writeFile(
+        tempSettingsFilePath,
+        new TextEncoder().encode(tomlStr)
+      )
+    })
 
     const u = await getUtils(page)
     const stream = page.getByTestId('stream')
 
     await page.setViewportSize({ width: 1200, height: 500 })
-    await page.goto('/')
-    await u.waitForAuthSkipAppStart()
-
     await scene.settled(cmdBar)
 
     await u.closeKclCodePanel()
@@ -518,12 +546,14 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 })
 
 test.describe('code color goober', { tag: '@snapshot' }, () => {
-  test('code color goober', async ({ page, context, scene, cmdBar }) => {
-    const u = await getUtils(page)
-    await context.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `// Create a pipe using a sweep.
+  test('code color goober', async ({
+    page,
+    scene,
+    cmdBar,
+    fs,
+    folderSetupFn,
+  }) => {
+    const code = `// Create a pipe using a sweep.
 
 // Create a path for the sweep.
 sweepPath = startSketchOn(XZ)
@@ -544,12 +574,16 @@ sweepSketch = startSketchOn(XY)
        roughness = 90
      )
 `
+    await folderSetupFn(async (dir: string) => {
+      const projectDir = await fs.join(dir, 'demo-project')
+      await fs.mkdir(projectDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectDir, 'main.kcl'),
+        new TextEncoder().encode(code)
       )
     })
 
     await page.setViewportSize({ width: 1200, height: 1000 })
-    await u.waitForAuthSkipAppStart()
-
     await scene.settled(cmdBar)
 
     await expect(page, 'expect small color widget').toHaveScreenshot({
@@ -559,15 +593,12 @@ sweepSketch = startSketchOn(XY)
   })
   test('code color goober works with single quotes', async ({
     page,
-    context,
     scene,
     cmdBar,
+    fs,
+    folderSetupFn,
   }) => {
-    const u = await getUtils(page)
-    await context.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `// Create a pipe using a sweep.
+    const code = `// Create a pipe using a sweep.
 
 // Create a path for the sweep.
 sweepPath = startSketchOn(XZ)
@@ -588,12 +619,16 @@ sweepSketch = startSketchOn(XY)
        roughness = 90
      )
 `
+    await folderSetupFn(async (dir: string) => {
+      const projectDir = await fs.join(dir, 'demo-project')
+      await fs.mkdir(projectDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectDir, 'main.kcl'),
+        new TextEncoder().encode(code)
       )
     })
 
     await page.setViewportSize({ width: 1200, height: 1000 })
-    await u.waitForAuthSkipAppStart()
-
     await scene.settled(cmdBar)
 
     await expect(page, 'expect small color widget').toHaveScreenshot({
@@ -604,15 +639,12 @@ sweepSketch = startSketchOn(XY)
 
   test('code color goober opening window', async ({
     page,
-    context,
     scene,
     cmdBar,
+    fs,
+    folderSetupFn,
   }) => {
-    const u = await getUtils(page)
-    await context.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `// Create a pipe using a sweep.
+    const code = `// Create a pipe using a sweep.
 
 // Create a path for the sweep.
 sweepPath = startSketchOn(XZ)
@@ -633,11 +665,17 @@ sweepSketch = startSketchOn(XY)
        roughness = 90
      )
 `
+
+    await folderSetupFn(async (dir: string) => {
+      const projectDir = await fs.join(dir, 'demo-project')
+      await fs.mkdir(projectDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectDir, 'main.kcl'),
+        new TextEncoder().encode(code)
       )
     })
 
     await page.setViewportSize({ width: 1200, height: 1000 })
-    await u.waitForAuthSkipAppStart()
 
     await scene.settled(cmdBar)
 

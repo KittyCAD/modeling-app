@@ -60,13 +60,11 @@ const SignIn = () => {
     const requestedEnvironmentFormatted =
       returnSelfOrGetHostNameFromURL(requestedEnvironment)
     void (async () => {
-      const persistedEnvironment = await readEnvironmentFile(electron).catch(
-        () => ''
-      )
+      const persistedEnvironment = await readEnvironmentFile().catch(() => '')
       if (requestedEnvironmentFormatted === persistedEnvironment) {
         return
       }
-      await writeEnvironmentFile(electron, requestedEnvironmentFormatted).catch(
+      await writeEnvironmentFile(requestedEnvironmentFormatted).catch(
         reportRejection
       )
       window.location.reload()
@@ -74,10 +72,9 @@ const SignIn = () => {
   }
 
   useEffect(() => {
-    if (window.electron && !didReadFromDiskCacheForEnvironment) {
-      const electron = window.electron
+    if (!didReadFromDiskCacheForEnvironment) {
       didReadFromDiskCacheForEnvironment = true
-      readEnvironmentFile(electron)
+      readEnvironmentFile()
         .then((environment) => {
           if (environment) {
             setSelectedEnvironmentFormatter(environment)
