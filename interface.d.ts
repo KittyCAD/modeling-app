@@ -57,6 +57,7 @@ export interface IElectronAPI {
   path: path
   mkdir: typeof fs.mkdir
   path: typeof path
+  sep: typeof path.sep
   cp: typeof fs.cp
   // No such thing as fs.mv, but our function will use fs.cp as a fallback
   move: (

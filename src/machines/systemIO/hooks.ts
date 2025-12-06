@@ -55,6 +55,11 @@ export const useHasListedProjects = () => {
   return useSelector(systemIOActor, (state) => state.context.hasListedProjects)
 }
 
+export const useLastOperation = () => {
+  const { systemIOActor } = useSingletons()
+  return useSelector(systemIOActor, (state) => state.context.lastOperation)
+}
+
 export const useClearURLParams = () => {
   const { systemIOActor } = useSingletons()
   return useSelector(systemIOActor, (state) => state.context.clearURLParams)

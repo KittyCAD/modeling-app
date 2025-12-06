@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
+import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
 
 interface ProjectCardState {
   title: string
@@ -104,7 +105,9 @@ export class HomePageFixture {
   }
 
   projectsLoaded = async () => {
-    await expect(this.projectSection).not.toHaveText('Loading your Projects...')
+    const projectLink = this.page.getByTestId('project-link').first()
+    const noProjects = this.page.getByTestId('projects-none')
+    await expect(projectLink.or(noProjects)).toBeVisible()
   }
 
   createAndGoToProject = async (projectTitle = 'untitled') => {
@@ -112,6 +115,9 @@ export class HomePageFixture {
     await this.projectButtonNew.click()
     await this.projectTextName.fill(projectTitle)
     await this.projectButtonContinue.click()
+
+    await this.page.waitForTimeout(1000)
+    await closeOnboardingModalIfPresent(this.page)
   }
 
   openProject = async (projectTitle: string) => {
@@ -127,6 +133,8 @@ export class HomePageFixture {
     if (process.env.TARGET === 'web') return ''
 
     await this.createAndGoToProject(name)
+    await closeOnboardingModalIfPresent(this.page)
+
     return name
   }
 

@@ -1,7 +1,6 @@
 import fsZds from '@src/lib/fs-zds'
 import { useLspContext } from '@src/components/LspProvider'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
@@ -17,6 +16,7 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
+  useLastOperation,
   useProjectDirectoryPath,
   useProjectIdToConversationId,
   useRequestedFileName,
@@ -27,18 +27,23 @@ import {
   NO_PROJECT_DIRECTORY,
   type RequestedKCLFile,
   SystemIOMachineEvents,
+  SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
+import fsZds from '@src/lib/fs-zds'
 
-export function SystemIOMachineLogicListenerDesktop() {
+export function SystemIOMachineLogicListener() {
   const { auth, billing, settings } = useApp()
   const { engineCommandManager, kclManager, systemIOActor } = useSingletons()
+  // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
   const requestedFileName = useRequestedFileName()
   const projectDirectoryPath = useProjectDirectoryPath()
   const hasListedProjects = useHasListedProjects()
+  const lastOperation = useLastOperation()
+
   const navigate = useNavigate()
   const settingsValues = settings.useSettings()
   const token = auth.useToken()
@@ -115,6 +120,20 @@ export function SystemIOMachineLogicListenerDesktop() {
       if (!requestedProjectName.name) {
         return
       }
+
+      const isCreating = [
+          SystemIOMachineStates.creatingProject,
+          SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
+          SystemIOMachineStates.importFileFromURL,
+        ].includes(lastOperation)
+      const isHomeAndNotCreating = pathname === PATHS.HOME && !isCreating
+      if (
+        isHomeAndNotCreating
+      ) {
+        // Don't navigate
+        return
+      }
+
       const projectPathWithoutSpecificKCLFile = joinOSPaths(
         projectDirectoryPath,
         requestedProjectName.name
@@ -130,7 +149,7 @@ export function SystemIOMachineLogicListenerDesktop() {
         requestedProjectDirectory: projectPathWithoutSpecificKCLFile,
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [requestedProjectName])
+    }, [requestedProjectName, lastOperation])
   }
 
   /**
@@ -198,7 +217,7 @@ export function SystemIOMachineLogicListenerDesktop() {
 
   const useWatchingApplicationProjectDirectory = () => {
     useFileSystemWatcher(
-      async (eventType, path) => {
+      async (eventType, targetPath) => {
         // Gotcha: Chokidar is buggy. It will emit addDir or add on files that did not get created.
         // This means while the application initialize and Chokidar initializes you cannot tell if
         // a directory or file is actually created or they are buggy signals. This means you must
@@ -211,11 +230,11 @@ export function SystemIOMachineLogicListenerDesktop() {
 
         const folderName =
           systemIOActor.getSnapshot().context.lastProjectDeleteRequest.project
-        const folderPath = `${projectDirectoryPath}${fsManager.path.sep}${folderName}`
+        const folderPath = `${projectDirectoryPath}${fsZds.sep}${folderName}`
         if (
           folderName !== NO_PROJECT_DIRECTORY &&
           (eventType === 'unlinkDir' || eventType === 'unlink') &&
-          path.includes(folderPath)
+          targetPath.includes(folderPath)
         ) {
           // NO OP: The systemIOMachine will be triggering the read in the state transition, don't spam it again
           // once this event is processed after the deletion.
@@ -252,7 +271,7 @@ export function SystemIOMachineLogicListenerDesktop() {
       const requestedFiles: RequestedKCLFile[] = Object.entries(
         outputsRecord
       ).map(([relativePath, fileContents]) => {
-        const lastSep = relativePath.lastIndexOf(fsZds.sep ?? '')
+        const lastSep = relativePath.lastIndexOf(fsZds.sep)
         let pathPart = relativePath.slice(0, lastSep)
         let filePart = relativePath.slice(lastSep)
         if (lastSep < 0) {

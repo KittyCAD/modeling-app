@@ -16,7 +16,6 @@ import { assign, createActor, setup, spawnChild } from 'xstate'
 
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { isDesktop } from '@src/lib/isDesktop'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import type { AppMachineContext, AppMachineEvent } from '@src/lib/types'
 import { authMachine } from '@src/machines/authMachine'
@@ -29,8 +28,7 @@ import {
   getOnlySettingsFromContext,
   settingsMachine,
 } from '@src/machines/settingsMachine'
-import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
-import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
+import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
@@ -221,7 +219,7 @@ export class App {
     }
     const { SYSTEM_IO } = ACTOR_IDS
     const appMachineActors = {
-      [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
+      [SYSTEM_IO]: systemIOMachineImpl,
     } as const
 
     const appMachine = setup({

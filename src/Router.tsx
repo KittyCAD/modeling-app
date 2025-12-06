@@ -5,9 +5,7 @@ import {
   RouterProvider,
   createBrowserRouter,
   createHashRouter,
-  redirect,
 } from 'react-router-dom'
-
 import { OpenedProject } from '@src/components/OpenedProject'
 import RootLayout from '@src/Root'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
@@ -17,16 +15,12 @@ import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
 import { coreDump } from '@src/lang/wasm'
-import {
-  ASK_TO_OPEN_QUERY_PARAM,
-  BROWSER_PROJECT_NAME,
-} from '@src/lib/constants'
 import { CoreDumpManager } from '@src/lib/coredump'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
-import { fileLoader, homeLoader } from '@src/lib/routeLoaders'
+import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import Home from '@src/routes/Home'
@@ -62,24 +56,7 @@ export const Router = () => {
             {
               path: PATHS.INDEX,
               errorElement: <ErrorPage />,
-              loader: async ({ request }) => {
-                const onDesktop = isDesktop()
-                const url = new URL(request.url)
-                if (onDesktop) {
-                  return redirect(PATHS.HOME + (url.search || ''))
-                } else {
-                  const searchParams = new URLSearchParams(url.search)
-                  if (!searchParams.has(ASK_TO_OPEN_QUERY_PARAM)) {
-                    return redirect(
-                      PATHS.FILE +
-                        '/%2F' +
-                        BROWSER_PROJECT_NAME +
-                        (url.search || '')
-                    )
-                  }
-                }
-                return null
-              },
+              loader: baseLoader({ kclManager, systemIOActor }),
             },
             {
               loader: fileLoader({
@@ -146,7 +123,7 @@ export const Router = () => {
                 </>
               ),
               id: PATHS.HOME,
-              loader: homeLoader({ settingsActor }),
+              loader: homeLoader({ settingsActor, systemIOActor }),
               children: [
                 {
                   index: true,

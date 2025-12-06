@@ -11,10 +11,13 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test(
   'export works on the first try',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
-  async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
+  async (
+    { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
+    testInfo
+  ) => {
     if (!tronApp) throw new Error('tronApp is missing.')
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
       await Promise.all([
@@ -161,10 +164,13 @@ test(
 test(
   'DXF export works from feature tree sketch context menu',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
-  async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
+  async (
+    { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
+    testInfo
+  ) => {
     if (!tronApp) throw new Error('tronApp is missing.')
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const sketchDir = path.join(dir, 'sketch-project')
       await fsp.mkdir(sketchDir, { recursive: true })
       await fsp.writeFile(
@@ -253,10 +259,13 @@ extrude001 = extrude(profile001, length = 5)`
 test(
   'DXF export works for second sketch in feature tree',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
-  async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
+  async (
+    { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
+    testInfo
+  ) => {
     if (!tronApp) throw new Error('tronApp is missing.')
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const sketchDir = path.join(dir, 'second-sketch-project')
       await fsp.mkdir(sketchDir, { recursive: true })
       await fsp.writeFile(

@@ -1225,11 +1225,11 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
   test(`Can import a local OBJ file`, async ({
     page,
-    context,
     scene,
     cmdBar,
-  }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
+    folderSetupFn,
+  }) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'cube')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
@@ -1485,13 +1485,13 @@ profile001 = startProfile(sketch001, at = [0, 0])
 })
 
 test('Undo/redo recovers deleted files interleaved with code edits', async ({
-  context,
   page,
   homePage,
   toolbar,
   editor,
+  folderSetupFn,
 }) => {
-  await context.folderSetupFn(async (dir) => {
+  await folderSetupFn(async (dir) => {
     const projectDir = join(dir, 'History Project')
     await fsp.mkdir(projectDir, { recursive: true })
     await fsp.copyFile(

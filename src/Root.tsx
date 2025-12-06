@@ -2,10 +2,8 @@ import { Auth } from '@src/Auth'
 import { AppStateProvider } from '@src/AppState'
 import LspProvider from '@src/components/LspProvider'
 import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler'
-import { SystemIOMachineLogicListenerDesktop } from '@src/components/Providers/SystemIOProviderDesktop'
-import { SystemIOMachineLogicListenerWeb } from '@src/components/Providers/SystemIOProviderWeb'
+import { SystemIOMachineLogicListener } from '@src/components/SystemIOMachineLogicListener'
 import { RouteProvider } from '@src/components/RouteProvider'
-import { isDesktop } from '@src/lib/isDesktop'
 import { Outlet } from 'react-router-dom'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import { useApp } from '@src/lib/boot'
@@ -34,12 +32,24 @@ function RootLayout() {
             }}
           >
             <LspProvider>
+<<<<<<< HEAD
               <AppStateProvider>
                 {isDesktop() ? (
                   <SystemIOMachineLogicListenerDesktop />
                 ) : (
                   <SystemIOMachineLogicListenerWeb />
                 )}
+||||||| parent of 9ce55f699 (Generalize filesystem access across various targets)
+              <MachineManagerProvider>
+                {isDesktop() ? (
+                  <SystemIOMachineLogicListenerDesktop />
+                ) : (
+                  <SystemIOMachineLogicListenerWeb />
+                )}
+=======
+              <MachineManagerProvider>
+                <SystemIOMachineLogicListener />
+>>>>>>> 9ce55f699 (Generalize filesystem access across various targets)
                 <Outlet />
               </AppStateProvider>
             </LspProvider>

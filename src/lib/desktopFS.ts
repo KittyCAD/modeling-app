@@ -1,4 +1,4 @@
-import type { IElectronAPI } from '@root/interface'
+
 import fsZds from '@src/lib/fs-zds'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT, INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
@@ -122,7 +122,7 @@ function getPaddedIdentifierRegExp() {
 }
 
 export async function getSettingsFolderPaths(projectPath?: string) {
-  const user = window.electron ? await fsZds.getPath('appData') : '/'
+  const user = await fsZds.getPath('appData')
   const project = projectPath !== undefined ? projectPath : undefined
 
   return {
@@ -135,12 +135,10 @@ export async function getSettingsFolderPaths(projectPath?: string) {
  * Get the next available file name by appending a hyphen and number to the end of the name
  */
 export async function getNextFileName({
-  electron: _electron,
   entryName,
   baseDir,
   wasmInstance,
 }: {
-  electron: IElectronAPI
   entryName: string
   baseDir: string
   wasmInstance: ModuleType
@@ -177,6 +175,7 @@ export async function getNextFileName({
     // `exists` method.
     console.error(e)
   }
+
   return {
     name: createdName,
     path: createdPath,
@@ -187,11 +186,9 @@ export async function getNextFileName({
  * Get the next available directory name by appending a hyphen and number to the end of the name
  */
 export async function getNextDirName({
-  electron,
   entryName,
   baseDir,
 }: {
-  electron: IElectronAPI
   entryName: string
   baseDir: string
 }) {

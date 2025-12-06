@@ -606,12 +606,26 @@ describe('DXF Export', () => {
         'Zmlyc3QtZHhmLWNvbnRlbnQ=',
         await mockDeps.kclManager.wasmInstancePromise
       )
-      expect(mockElectron.save).toHaveBeenCalledWith({
-        defaultPath: 'sketch.dxf',
-        filters: [
-          {
-            extensions: ['dxf'],
-            name: 'DXF files',
+      
+      // todo maybe source of problem
+      expect(mockDeps.browserSaveFile).toHaveBeenCalledWith(
+        expect.any(Blob),
+        'sketch.dxf', // Filename from sketch name, not from selected file
+        'toast-id'
+      )
+    })
+
+    it('should successfully export DXF for subtract2d operation', async () => {
+      // Setup: subtract2d operation with deeper nodePath
+      const subtract2dOperation: StdLibCallOp = {
+        type: 'StdLibCall',
+        name: 'subtract2d',
+        unlabeledArg: {
+          value: {
+            type: 'Sketch',
+            value: {
+              artifactId: 'path-1',
+            },
           },
         ],
       })

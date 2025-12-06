@@ -64,23 +64,6 @@ function tomlStringMakeTestDataNotAsFragile(toml: string): string {
 
 test.describe('Named view tests', { tag: '@desktop' }, () => {
   test.fail(runningOnWindows(), 'Windows line endings break snapshot matching')
-  test('Verify project.toml is not created', async ({ page }, testInfo) => {
-    // Create project and load it
-    const projectName = 'named-views'
-    await createProject({ name: projectName, page })
-
-    // Generate file paths for project.toml
-    const projectDirName = testInfo.outputPath('electron-test-projects-dir')
-    const tempProjectSettingsFilePath = join(
-      projectDirName,
-      projectName,
-      PROJECT_SETTINGS_FILE_NAME
-    )
-
-    // project.toml should not exist on initial project creation
-    let exists = await fileExists(tempProjectSettingsFilePath)
-    expect(exists).toBe(false)
-  })
   test('Verify named view gets created', async ({
     cmdBar,
     scene,

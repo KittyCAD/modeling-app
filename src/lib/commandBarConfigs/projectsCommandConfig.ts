@@ -58,6 +58,8 @@ export function createProjectCommands({
         options: () => {
           const folders = folderSnapshot()
           const options: CommandArgumentOption<string>[] = []
+          if (!folders) return options
+
           folders.forEach((folder) => {
             options.push({
               name: folder.name,
@@ -122,6 +124,8 @@ export function createProjectCommands({
         options: () => {
           const folders = folderSnapshot()
           const options: CommandArgumentOption<string>[] = []
+          if (!folders) return options
+
           folders.forEach((folder) => {
             options.push({
               name: folder.name,
@@ -167,6 +171,8 @@ export function createProjectCommands({
         options: () => {
           const folders = folderSnapshot()
           const options: CommandArgumentOption<string>[] = []
+          if (!folders) return options
+
           folders.forEach((folder) => {
             options.push({
               name: folder.name,
@@ -197,7 +203,6 @@ export function createProjectCommands({
     icon: 'file',
     description: 'Create a file',
     needsReview: true,
-    hideFromSearch: true,
     onSubmit: (record) => {
       if (record) {
         systemIOActor.send({
@@ -240,6 +245,8 @@ export function createProjectCommands({
         options: (_, _context) => {
           const folders = folderSnapshot()
           const options: CommandArgumentOption<string>[] = []
+          if (!folders) return options
+
           folders.forEach((folder) => {
             options.push({
               name: folder.name,
@@ -281,7 +288,7 @@ export function createProjectCommands({
   }
 
   /** No disk-writing commands are available in the browser */
-  const projectCommands = isDesktop()
+  const projectCommands = window.electron
     ? [
         openProjectCommand,
         createProjectCommand,

@@ -984,14 +984,14 @@ profile001 = startProfile(sketch001, at = [-47.54, -26.74])
 test.describe('Electron constraint tests', () => {
   test('Able to double click label to set constraint', async ({
     page,
-    context,
     homePage,
     scene,
     editor,
     toolbar,
     cmdBar,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'test-sample')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.writeFile(
