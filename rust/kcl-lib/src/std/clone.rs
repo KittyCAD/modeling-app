@@ -168,6 +168,7 @@ async fn fix_tags_and_references(
                 args,
                 None,
                 Some(&entity_id_map.clone()),
+                crate::BodyType::Solid, // TODO: Support surface clones.
             )
             .await?;
 
