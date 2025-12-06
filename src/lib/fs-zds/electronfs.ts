@@ -5,22 +5,22 @@ import { IZooDesignStudioFS } from './interface'
 const attach = async () => {}
 const detach = async () => {}
 
-export type  ElectronFSOptions = {}
+export type ElectronFSOptions = {}
 
 // trust me
 const impl: IZooDesignStudioFS = {
-    cp: window.electron?.cp,
-    readFile: window.electron?.readFile,
-    rename: window.electron?.rename,
-    writeFile: window.electron?.writeFile,
-    readdir: window.electron?.readdir,
-    stat: window.electron?.stat,
-    mkdir: window.electron?.mkdir,
-    rm: window.electron?.rm,
-    detach,
-    attach,
+  cp: window.electron?.cp,
+  readFile: window.electron?.readFile,
+  rename: window.electron?.rename,
+  writeFile: window.electron?.writeFile,
+  readdir: window.electron?.readdir,
+  stat: window.electron?.stat,
+  mkdir: window.electron?.mkdir,
+  rm: window.electron?.rm,
+  detach,
+  attach,
 }
 
 export default {
-  impl
+  impl,
 }

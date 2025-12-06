@@ -35,8 +35,8 @@ const STORAGE_IMPL: Record<StorageName, IZooDesignStudioFS> = {
 }
 
 export type StorageBacking =
-    { type: StorageName.NoopFS; options: NoopFSOptions }
-  | { type: StorageName.OPFS, options: OPFSOptions }
+  | { type: StorageName.NoopFS; options: NoopFSOptions }
+  | { type: StorageName.OPFS; options: OPFSOptions }
   | { type: StorageName.ElectronFS; options: ElectronFSOptions }
 
 // We must assign an object to this variable, and not undefined, because this

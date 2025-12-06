@@ -197,7 +197,7 @@ export async function getNextDirName({
       createdPath = electron.path.join(baseDir, createdName)
       i++
     }
-  } catch(_e) {}
+  } catch (_e) {}
   return {
     name: createdName,
     path: createdPath,
