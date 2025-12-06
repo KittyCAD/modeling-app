@@ -59,7 +59,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let twist_center: Option<[TyF64; 2]> = args.get_kw_arg_opt("twistCenter", &RuntimeType::point2d(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let method: Option<String> = args.get_kw_arg_opt("method", &RuntimeType::string(), exec_state)?;
-    let body_type: Option<BodyType> = Some(BodyType::Solid);
+    let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
 
     let result = inner_extrude(
         sketches,
@@ -102,6 +102,12 @@ async fn inner_extrude(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     let body_type = body_type.unwrap_or_default();
+    if matches!(body_type, BodyType::Surface) {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Surface extrude is not yet supported"),
+            vec![args.source_range],
+        )));
+    }
 
     // Extrude the element(s).
     let mut solids = Vec::new();
