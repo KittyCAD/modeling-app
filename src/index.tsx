@@ -1,3 +1,4 @@
+import { useFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { AppStreamProvider } from '@src/AppState'
 import ReactDOM from 'react-dom/client'
 import toast, { Toaster } from 'react-hot-toast'
@@ -16,6 +17,7 @@ import {
   commandBarActor,
   kclManager,
   rustContext,
+  mlEphantManagerActor,
   systemIOActor,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -36,7 +38,7 @@ kclManager.wasmInstancePromise
       type: 'Add commands',
       data: {
         commands: [
-          ...createApplicationCommands({ systemIOActor, wasmInstance }),
+          ...createApplicationCommands({ systemIOActor, mlEphantManagerActor, wasmInstance }),
         ],
       },
     })
@@ -52,6 +54,15 @@ if (!window.electron) {
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+
+// Earliest as possible, configure the fs layer.
+// In the future we can have the user switch between them at run-time, but
+// for now, there is no intention.
+if (window.electron) {
+  useFsViaModuleImport({ type: StorageName.ElectronFS, options: {} })
+} else {
+  useFsViaModuleImport({ type: StorageName.OPFS, options: {} })
+}
 
 root.render(
   <HotkeysProvider>

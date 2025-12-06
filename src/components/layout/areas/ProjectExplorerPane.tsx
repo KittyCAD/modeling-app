@@ -121,17 +121,15 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         navigateHelper()
       }
     } else if (
-      window.electron &&
       isRelevantFile(entry.path) &&
       projectRef.current?.path
     ) {
       // Allow insert if it is a importable file
-      const electron = window.electron
       toast.custom(
         ToastInsert({
           onInsert: () => {
             const relativeFilePath = entry.path.replace(
-              projectRef.current?.path + electron.path.sep,
+              projectRef.current?.path + '/',
               ''
             )
             commandBarActor.send({

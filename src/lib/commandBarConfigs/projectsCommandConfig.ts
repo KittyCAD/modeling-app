@@ -281,15 +281,13 @@ export function createProjectCommands({
   }
 
   /** No disk-writing commands are available in the browser */
-  const projectCommands = isDesktop()
-    ? [
+  const projectCommands = [
         openProjectCommand,
         createProjectCommand,
         deleteProjectCommand,
         renameProjectCommand,
         importFileFromURL,
       ]
-    : [importFileFromURL]
 
   return projectCommands
 }

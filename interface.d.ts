@@ -43,15 +43,12 @@ export interface IElectronAPI {
     callback: (eventType: string, path: string) => void
   ) => void
   readFile: typeof fs.readFile
-  copyFile: typeof fs.copyFile
   watchFileOff: (path: string, key: string) => void
   writeFile: (
     path: string,
     data: string | Uint8Array
-  ) => ReturnType<typeof fs.writeFile>
+  ) => Promise<undefined>
   readdir: (path: string) => Promise<string[]>
-  // This is synchronous.
-  exists: (path: string) => boolean
   getPath: (name: string) => Promise<string>
   rm: typeof fs.rm
   stat: (path: string) => Promise<Stats>
@@ -63,13 +60,13 @@ export interface IElectronAPI {
   mkdir: typeof fs.mkdir
   join: typeof path.join
   sep: typeof path.sep
-  copy: typeof fs.cp
+  cp: typeof fs.cp
   // No such thing as fs.mv, but our function will use fs.cp as a fallback
   move: (
     source: string | URL,
     destination: string | URL
   ) => Promise<void | Error>
-  rename: (prev: string, next: string) => ReturnType<typeof fs.rename>
+  rename: (prev: string, next: string) => Promise<undefined>
   packageJson: {
     name: string
   }

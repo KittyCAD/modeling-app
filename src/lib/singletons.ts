@@ -266,7 +266,7 @@ const appMachineActors = {
       },
     },
   }),
-  [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
+  [SYSTEM_IO]: systemIOMachineDesktop,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
 } as const

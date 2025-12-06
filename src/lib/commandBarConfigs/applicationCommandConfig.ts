@@ -1,4 +1,5 @@
 import env from '@src/env'
+import fsZds from '@src/lib/fs-zds'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
@@ -172,12 +173,11 @@ export function createApplicationCommands({
             systemIOActor,
             isProjectNew,
           })
-        } else if (window.electron && data.source === 'local' && data.path) {
-          const electron = window.electron
+        } else if (data.source === 'local' && data.path) {
           const clonePath = data.path
           const fileNameWithExtension = getStringAfterLastSeparator(clonePath)
           const readFileContentsAndCreateNewFile = async () => {
-            const text = await electron.readFile(clonePath, 'utf8')
+            const text = await fsZds.readFile(clonePath, 'utf8')
             systemIOActor.send({
               type: SystemIOMachineEvents.importFileFromURL,
               data: {

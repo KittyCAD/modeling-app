@@ -1,4 +1,5 @@
 import type { LoaderFunction } from 'react-router-dom'
+import fsZds from '@src/lib/fs-zds'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
@@ -123,7 +124,7 @@ export const fileLoader =
           )
         }
 
-        code = await window.electron.readFile(currentFilePath, {
+        code = await fsZds.readFile(currentFilePath, {
           encoding: 'utf-8',
         })
         code = normalizeLineEndings(code)
@@ -248,12 +249,6 @@ export const homeLoader =
     settingsActor: SettingsActorType
   }): LoaderFunction =>
   async ({ request }): Promise<HomeLoaderData | Response> => {
-    const url = new URL(request.url)
-    if (!isDesktop()) {
-      return redirect(
-        PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
-      )
-    }
     settingsActor.send({
       type: 'clear.project',
     })
