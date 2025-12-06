@@ -28,7 +28,7 @@ kittycad = { version = "0.4.2", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.148", features = [
+kittycad-modeling-cmds = { version = "0.2.149", features = [
   "ts-rs",
   "websocket",
 ] }
