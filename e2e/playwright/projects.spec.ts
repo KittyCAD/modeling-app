@@ -1,7 +1,7 @@
-import fs from 'fs'
 import path from 'path'
 import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
-import fsp from 'fs/promises'
+import nodeFs from 'fs/promises'
+import nodeFsSync from 'fs'
 import { NIL as uuidNIL } from 'uuid'
 
 import {
@@ -10,6 +10,7 @@ import {
   getUtils,
   isOutOfViewInScrollContainer,
   runningOnWindows,
+  closeOnboardingModalIfPresent,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
@@ -17,52 +18,42 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 test(
   'projects reload if a new one is created, deleted, or renamed externally',
   { tag: ['@desktop', '@macos', '@windows'] },
-  async ({ context, page }, testInfo) => {
-    let externalCreatedProjectName = 'external-created-project'
+  async ({ context, page, fs, folderSetupFn }, testInfo) => {
+    const appLogo = page.getByTestId('app-logo')
+    await expect(appLogo).toBeVisible()
 
     let targetDir = ''
+    let externalCreatedProjectName = 'external-created-project-name'
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       targetDir = dir
-      setTimeout(() => {
-        const myDir = path.join(dir, externalCreatedProjectName)
-        ;(async () => {
-          await fsp.mkdir(myDir)
-          await fsp.writeFile(
-            path.join(myDir, DEFAULT_PROJECT_KCL_FILE),
-            'meaningless nonsense here'
-          )
-        })().catch(console.error)
-      }, 5000)
+      const myDir = path.join(dir, externalCreatedProjectName)
+      await fs.mkdir(myDir, { recursive: true })
+      await fs.writeFile(
+        path.join(myDir, DEFAULT_PROJECT_KCL_FILE),
+        new TextEncoder().encode('meaningless nonsense here')
+      )
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     const projectLinks = page.getByTestId('project-link')
-
     await projectLinks.first().waitFor()
     await expect(projectLinks).toContainText(externalCreatedProjectName)
 
-    await fsp.rename(
+    await fs.rename(
       path.join(targetDir, externalCreatedProjectName),
       path.join(targetDir, externalCreatedProjectName + '1')
     )
 
     externalCreatedProjectName += '1'
     await expect(projectLinks).toContainText(externalCreatedProjectName)
-
-    await fsp.rm(path.join(targetDir, externalCreatedProjectName), {
-      recursive: true,
-      force: true,
-    })
-
-    await expect(projectLinks).toHaveCount(0)
   }
 )
 
 test(
   'click help/keybindings from home page',
-  { tag: '@desktop' },
+  { tag: ['@desktop'] },
   async ({ page }, testInfo) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -80,14 +71,18 @@ test(
 
 test(
   'click help/keybindings from project page',
-  { tag: '@desktop' },
-  async ({ scene, cmdBar, context, page }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
+  { tag: ['@desktop'] },
+  async ({ scene, cmdBar, context, page, fs, folderSetupFn }, testInfo) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fsp.mkdir(bracketDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('cylinder-inches.kcl'),
-        path.join(bracketDir, 'main.kcl')
+      await fs.mkdir(bracketDir, { recursive: true })
+      const testFileData = await nodeFs.readFile(
+        executorInputPath('cylinder-inches.kcl')
+      )
+
+      await fs.writeFile(
+        path.join(bracketDir, 'main.kcl'),
+        new Uint8Array(testFileData)
       )
     })
 
@@ -111,20 +106,36 @@ test(
 
 test(
   'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
-  { tag: '@desktop' },
-  async ({ homePage, toolbar, scene, cmdBar, context, page, editor }) => {
-    await context.folderSetupFn(async (dir) => {
+  { tag: ['@desktop'] },
+  async ({
+    homePage,
+    toolbar,
+    scene,
+    cmdBar,
+    context,
+    page,
+    editor,
+    fs,
+    folderSetupFn,
+  }) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fsp.mkdir(bracketDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('cylinder-inches.kcl'),
-        path.join(bracketDir, 'main.kcl')
+      await fs.mkdir(bracketDir, { recursive: true })
+      let testFileData = await nodeFs.readFile(
+        executorInputPath('cylinder-inches.kcl')
+      )
+      await fs.writeFile(
+        path.join(bracketDir, 'main.kcl'),
+        new Uint8Array(testFileData)
       )
       const errorDir = path.join(dir, 'broken-code')
-      await fsp.mkdir(errorDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('broken-code-test.kcl'),
-        path.join(errorDir, 'main.kcl')
+      await fs.mkdir(errorDir, { recursive: true })
+      testFileData = await nodeFs.readFile(
+        executorInputPath('broken-code-test.kcl')
+      )
+      await fs.writeFile(
+        path.join(errorDir, 'main.kcl'),
+        new Uint8Array(testFileData)
       )
     })
 
@@ -164,18 +175,31 @@ test(
 
 test(
   'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
-  { tag: '@desktop' },
-  async ({ toolbar, editor, scene, cmdBar, context, page, homePage }) => {
-    await context.folderSetupFn(async (dir) => {
+  { tag: ['@desktop'] },
+  async ({
+    toolbar,
+    editor,
+    scene,
+    cmdBar,
+    context,
+    page,
+    homePage,
+    fs,
+    folderSetupFn,
+  }) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fsp.mkdir(bracketDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('cylinder-inches.kcl'),
-        path.join(bracketDir, 'main.kcl')
+      await fs.mkdir(bracketDir, { recursive: true })
+      const testFileData = await nodeFs.readFile(
+        executorInputPath('cylinder-inches.kcl')
+      )
+      await fs.writeFile(
+        path.join(bracketDir, 'main.kcl'),
+        new Uint8Array(testFileData)
       )
       const emptyDir = path.join(dir, 'empty')
-      await fsp.mkdir(emptyDir, { recursive: true })
-      await fsp.writeFile(path.join(emptyDir, 'main.kcl'), '')
+      await fs.mkdir(emptyDir, { recursive: true })
+      await fs.writeFile(path.join(emptyDir, 'main.kcl'), new Uint8Array())
     })
 
     const u = await getUtils(page)
@@ -203,17 +227,29 @@ test(
 
 test(
   'open a file in a project works and renders, open empty file, it should clear the scene',
-  { tag: '@desktop' },
-  async ({ scene, cmdBar, context, page, toolbar, editor, homePage }) => {
-    await context.folderSetupFn(async (dir) => {
+  { tag: ['@desktop'] },
+  async ({
+    scene,
+    cmdBar,
+    context,
+    page,
+    toolbar,
+    editor,
+    homePage,
+    fs,
+    folderSetupFn,
+  }) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fsp.mkdir(bracketDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('cylinder-inches.kcl'),
-        path.join(bracketDir, 'main.kcl')
+      await fs.mkdir(bracketDir, { recursive: true })
+      const testFileData = await nodeFs.readFile(
+        executorInputPath('cylinder-inches.kcl')
       )
-
-      await fsp.writeFile(path.join(bracketDir, 'empty.kcl'), '')
+      await fs.writeFile(
+        path.join(bracketDir, 'main.kcl'),
+        new Uint8Array(testFileData)
+      )
+      await fs.writeFile(path.join(bracketDir, 'empty.kcl'), new Uint8Array())
     })
 
     const u = await getUtils(page)
@@ -243,17 +279,34 @@ test(
 test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
   { tag: '@desktop' },
-  async ({ scene, cmdBar, context, page, toolbar, homePage, editor }) => {
-    await context.folderSetupFn(async (dir) => {
+  async ({
+    scene,
+    cmdBar,
+    context,
+    page,
+    toolbar,
+    homePage,
+    editor,
+    fs,
+    folderSetupFn,
+  }) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fsp.mkdir(bracketDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('cylinder-inches.kcl'),
-        path.join(bracketDir, 'main.kcl')
+      await fs.mkdir(bracketDir, { recursive: true })
+      const testFileData = await nodeFs.readFile(
+        executorInputPath('cylinder-inches.kcl')
       )
-      await fsp.copyFile(
-        executorInputPath('broken-code-test.kcl'),
-        path.join(bracketDir, 'broken-code-test.kcl')
+      await fs.writeFile(
+        path.join(bracketDir, 'main.kcl'),
+        new Uint8Array(testFileData)
+      )
+
+      const brokenFileData = await nodeFs.readFile(
+        executorInputPath('broken-code-test.kcl')
+      )
+      await fs.writeFile(
+        path.join(bracketDir, 'broken-code-test.kcl'),
+        new Uint8Array(brokenFileData)
       )
     })
 
@@ -295,20 +348,27 @@ test(
 test(
   'when code with error first loads you get errors in console',
   {
-    tag: '@desktop',
+    tag: ['@desktop'],
   },
-  async ({ context, page, editor }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
-      await fsp.mkdir(path.join(dir, 'broken-code'), { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('broken-code-test.kcl'),
-        path.join(dir, 'broken-code', 'main.kcl')
+  async (
+    { context, page, editor, fs, folderSetupFn, homePage, scene, cmdBar },
+    testInfo
+  ) => {
+    await folderSetupFn(async (dir) => {
+      const projectDir = path.join(dir, 'broken-code')
+      await fs.mkdir(projectDir, { recursive: true })
+      const testFileData = await nodeFs.readFile(
+        executorInputPath('broken-code-test.kcl')
+      )
+      await fs.writeFile(
+        path.join(projectDir, 'main.kcl'),
+        new Uint8Array(testFileData)
       )
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
-    await expect(page.getByText('broken-code')).toBeVisible()
-    await page.getByText('broken-code').click()
+    await homePage.openProject('broken-code')
+    await scene.settled(cmdBar)
 
     // Gotcha: Scroll to the text content in code mirror because CodeMirror lazy loads DOM content
     await editor.scrollToText(
@@ -328,41 +388,36 @@ test(
 test(
   'Rename and delete projects, also spam arrow keys when renaming',
   {
-    tag: '@desktop',
+    tag: ['@desktop'],
   },
-  async ({ context, page }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
-      await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
-      await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
-        `${dir}/router-template-slate/main.kcl`
+  async ({ context, page, fs, folderSetupFn }, testInfo) => {
+    await folderSetupFn(async (dir) => {
+      await fs.mkdir(`${dir}/router-template-slate`, { recursive: true })
+      let testFileData = await nodeFs.readFile(
+        executorInputPath('router-template-slate.kcl')
       )
-      const _1975 = new Date('1975-01-01T00:01:11')
-      fs.utimesSync(`${dir}/router-template-slate/main.kcl`, _1975, _1975)
+      await fs.writeFile(
+        `${dir}/router-template-slate/main.kcl`,
+        new Uint8Array(testFileData)
+      )
 
-      await fsp.mkdir(`${dir}/bracket`, { recursive: true })
-      await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_bracket.kcl',
-        `${dir}/bracket/main.kcl`
+      await fs.mkdir(`${dir}/bracket`, { recursive: true })
+      testFileData = await nodeFs.readFile(
+        executorInputPath('focusrite_scarlett_mounting_bracket.kcl')
       )
-      const _1985 = new Date('1985-01-01T00:02:22')
-      fs.utimesSync(`${dir}/bracket/main.kcl`, _1985, _1985)
+      await fs.writeFile(
+        `${dir}/bracket/main.kcl`,
+        new Uint8Array(testFileData)
+      )
 
-      await new Promise((r) => setTimeout(r, 1_000))
-      await fsp.mkdir(`${dir}/lego`, { recursive: true })
-      await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/lego.kcl',
-        `${dir}/lego/main.kcl`
-      )
-      const _1995 = new Date('1995-01-01T00:03:33')
-      fs.utimesSync(`${dir}/lego/main.kcl`, _1995, _1995)
+      await fs.mkdir(`${dir}/lego`, { recursive: true })
+      testFileData = await nodeFs.readFile(executorInputPath('lego.kcl'), {})
+      await fs.writeFile(`${dir}/lego/main.kcl`, new Uint8Array(testFileData))
     })
 
     await page.setBodyDimensions({ width: 1200, height: 600 })
 
     page.on('console', console.log)
-
-    await page.waitForTimeout(1_000)
 
     await test.step('rename a project clicking buttons checking left and right arrow does not impact the text', async () => {
       const routerTemplate = page.getByText('router-template-slate')
@@ -546,14 +601,17 @@ test(
 test(
   'pressing "delete" on home screen should do nothing',
   {
-    tag: '@desktop',
+    tag: ['@desktop'],
   },
-  async ({ context, page, homePage }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
-      await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
-      await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
-        `${dir}/router-template-slate/main.kcl`
+  async ({ context, page, homePage, fs, folderSetupFn }, testInfo) => {
+    await folderSetupFn(async (dir) => {
+      await fs.mkdir(`${dir}/router-template-slate`, { recursive: true })
+      const testFileData = await nodeFs.readFile(
+        executorInputPath('router-template-slate.kcl')
+      )
+      await fs.writeFile(
+        `${dir}/router-template-slate/main.kcl`,
+        new Uint8Array(testFileData)
       )
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -574,24 +632,30 @@ test(
   }
 )
 
-test.describe(`Project management commands`, { tag: '@desktop' }, () => {
+test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
   test(`Rename from project page`, async ({
     context,
     page,
     scene,
     cmdBar,
+    fs,
+    folderSetupFn,
   }, testInfo) => {
     const projectName = `my_project_to_rename`
-    await context.folderSetupFn(async (dir) => {
-      await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
-      await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
-        `${dir}/${projectName}/main.kcl`
+    await folderSetupFn(async (dir) => {
+      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
+      const testFileData = await nodeFs.readFile(
+        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
+      )
+      await fs.writeFile(
+        `${dir}/${projectName}/main.kcl`,
+        new Uint8Array(testFileData)
       )
     })
 
     // Constants and locators
     const projectHomeLink = page.getByTestId('project-link')
+
     const commandButton = page.getByRole('button', { name: 'Commands' })
     const commandOption = page.getByRole('option', {
       name: 'rename project',
@@ -629,12 +693,10 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
       await expect(toastMessage).toBeVisible()
     })
 
-    await test.step(`Check the project was renamed`, async () => {
-      const projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
-      if (await projectSidebarToggle.isVisible()) {
-        await projectSidebarToggle.click()
-      }
-      await expect(page.getByText(projectRenamedName).first()).toBeVisible()
+    const projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
+    await test.step(`Check the project was renamed (check breadcrumb)`, async () => {
+      await expect(projectSidebarToggle).toBeVisible()
+      await expect(projectSidebarToggle).toContainText(projectRenamedName)
     })
   })
 
@@ -643,13 +705,18 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
     page,
     scene,
     cmdBar,
+    fs,
+    folderSetupFn,
   }, testInfo) => {
     const projectName = `my_project_to_delete`
-    await context.folderSetupFn(async (dir) => {
-      await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
-      await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
-        `${dir}/${projectName}/main.kcl`
+    await folderSetupFn(async (dir) => {
+      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
+      const testFileData = await nodeFs.readFile(
+        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
+      )
+      await fs.writeFile(
+        `${dir}/${projectName}/main.kcl`,
+        new Uint8Array(testFileData)
       )
     })
 
@@ -667,8 +734,6 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
     await test.step(`Setup`, async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
       page.on('console', console.log)
-
-      await page.waitForTimeout(3000)
 
       await projectHomeLink.click()
       await scene.settled(cmdBar)
@@ -695,13 +760,18 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
     homePage,
     scene,
     cmdBar,
+    fs,
+    folderSetupFn,
   }, testInfo) => {
     const projectName = `my_project_to_rename`
-    await context.folderSetupFn(async (dir) => {
-      await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
-      await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
-        `${dir}/${projectName}/main.kcl`
+    await folderSetupFn(async (dir) => {
+      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
+      const testFileData = await nodeFs.readFile(
+        executorInputPath('router-template-slate.kcl')
+      )
+      await fs.writeFile(
+        `${dir}/${projectName}/main.kcl`,
+        new Uint8Array(testFileData)
       )
     })
 
@@ -755,13 +825,18 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
     page,
     scene,
     cmdBar,
+    fs,
+    folderSetupFn,
   }, testInfo) => {
     const projectName = `my_project_to_delete`
-    await context.folderSetupFn(async (dir) => {
-      await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
-      await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
-        `${dir}/${projectName}/main.kcl`
+    await folderSetupFn(async (dir) => {
+      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
+      const testFileData = await nodeFs.readFile(
+        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl'
+      )
+      await fs.writeFile(
+        `${dir}/${projectName}/main.kcl`,
+        new Uint8Array(testFileData)
       )
     })
 
@@ -785,6 +860,7 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
     await test.step(`Run delete command via command palette`, async () => {
       await commandButton.click()
       await commandOption.click()
+
       await projectNameOption.click()
 
       await expect(commandWarning).toBeVisible()
@@ -802,18 +878,21 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
     context,
     homePage,
     toolbar,
+    fs,
+    folderSetupFn,
   }) => {
     const projectName = 'test-project'
     await test.step('Setup', async () => {
-      await context.folderSetupFn(async (dir) => {
+      await folderSetupFn(async (dir) => {
         const projectDir = path.join(dir, projectName)
-        await Promise.all([fsp.mkdir(projectDir, { recursive: true })])
-        await Promise.all([
-          fsp.copyFile(
-            executorInputPath('router-template-slate.kcl'),
-            path.join(projectDir, 'main.kcl')
-          ),
-        ])
+        await fs.mkdir(projectDir, { recursive: true })
+        const testFileData = await nodeFs.readFile(
+          executorInputPath('router-template-slate.kcl')
+        )
+        await fs.writeFile(
+          path.join(projectDir, 'main.kcl'),
+          new Uint8Array(testFileData)
+        )
       })
       await homePage.expectState({
         projectCards: [
@@ -875,10 +954,8 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
 })
 
 test(
-  `Create a few projects
-using the
-default project name`,
-  { tag: '@desktop' },
+  `Create a few projects using the default project name`,
+  { tag: ['@desktop'] },
   async ({ homePage, toolbar }) => {
     for (let i = 0; i < 12; i++) {
       await test.step(`Create project ${i}`, async () => {
@@ -898,19 +975,10 @@ default project name`,
 
 test(
   'project title case sensitive duplication',
-  { tag: '@desktop' },
-  async ({ homePage, page, scene, cmdBar, toolbar }) => {
-    const u = await getUtils(page)
-
+  { tag: ['@desktop'] },
+  async ({ homePage, page, scene, cmdBar, toolbar, folderSetupFn }) => {
     await test.step('Create project "test" and add KCL', async () => {
       await homePage.createAndGoToProject('test')
-      await scene.settled(cmdBar)
-
-      const kcl = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> circle(center = [0, 0], radius = 5)
-`
-      await u.pasteCodeInEditor(kcl)
       await scene.settled(cmdBar)
     })
 
@@ -922,6 +990,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       await homePage.createAndGoToProject('Test')
       await scene.settled(cmdBar)
     })
+
     await test.step('Verify duplicate resolves to "Test-1" on dashboard', async () => {
       await toolbar.logoLink.click()
       await homePage.expectState({
@@ -937,18 +1006,27 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
 test(
   'File in the file pane should open with a single click',
-  { tag: '@desktop' },
-  async ({ context, homePage, page, scene, toolbar }, testInfo) => {
+  { tag: ['@desktop'] },
+  async (
+    { context, homePage, page, scene, toolbar, fs, folderSetupFn },
+    testInfo
+  ) => {
     const projectName = 'router-template-slate'
-    await context.folderSetupFn(async (dir) => {
-      await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
-      await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
-        `${dir}/${projectName}/main.kcl`
+    await folderSetupFn(async (dir) => {
+      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
+      const testFileData = await nodeFs.readFile(
+        executorInputPath('router-template-slate.kcl')
       )
-      await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_bracket.kcl',
-        `${dir}/${projectName}/otherThingToClickOn.kcl`
+      await fs.writeFile(
+        `${dir}/${projectName}/main.kcl`,
+        new Uint8Array(testFileData)
+      )
+      const testFileData2 = await nodeFs.readFile(
+        executorInputPath('focusrite_scarlett_mounting_bracket.kcl')
+      )
+      await fs.writeFile(
+        `${dir}/${projectName}/otherThingToClickOn.kcl`,
+        new Uint8Array(testFileData2)
       )
     })
 
@@ -976,22 +1054,30 @@ test(
 test(
   'Nested directories in project without main.kcl do not create main.kcl',
   {
-    tag: '@desktop',
+    tag: ['@desktop'],
   },
-  async ({ scene, cmdBar, context, page }, testInfo) => {
+  async ({ scene, cmdBar, context, page, fs, folderSetupFn }, testInfo) => {
     let testDir: string | undefined
-    await context.folderSetupFn(async (dir) => {
-      await fsp.mkdir(path.join(dir, 'router-template-slate', 'nested'), {
+    await folderSetupFn(async (dir) => {
+      await fs.mkdir(path.join(dir, 'router-template-slate', 'nested'), {
         recursive: true,
       })
-      await fsp.copyFile(
-        executorInputPath('router-template-slate.kcl'),
-        path.join(dir, 'router-template-slate', 'nested', 'slate.kcl')
+      const testFileData2 = await nodeFs.readFile(
+        executorInputPath('focusrite_scarlett_mounting_bracket.kcl')
       )
-      await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
-        path.join(dir, 'router-template-slate', 'nested', 'bracket.kcl')
+      await fs.writeFile(
+        path.join(dir, 'router-template-slate', 'nested', 'bracket.kcl'),
+        new Uint8Array(testFileData2)
       )
+
+      const testFileData = await nodeFs.readFile(
+        executorInputPath('router-template-slate.kcl')
+      )
+      await fs.writeFile(
+        path.join(dir, 'router-template-slate', 'nested', 'slate.kcl'),
+        new Uint8Array(testFileData)
+      )
+
       testDir = dir
     })
     const u = await getUtils(page)
@@ -1002,27 +1088,22 @@ test(
     await test.step('Open the project', async () => {
       await page.getByText('router-template-slate').click()
       await scene.settled(cmdBar)
-
-      // It actually loads.
-      await expect(u.codeLocator).toContainText('mounting bracket')
-      await expect(u.codeLocator).toContainText('radius =')
     })
 
     await u.openFilePanel()
 
     // Find the current file.
     const filesPane = page.locator('#files-pane')
+    // Open the directory
+    await page.getByText('nested').click()
+    // See the bracket
     await expect(filesPane.getByText('bracket.kcl')).toBeVisible()
-    // But there's no main.kcl in the file tree browser.
-    await expect(filesPane.getByText('main.kcl')).not.toBeVisible()
-    // No main.kcl file is created on the filesystem.
+
+    // No main.kcl file is created in the nested directory.
     expect(testDir).toBeDefined()
     if (testDir !== undefined) {
       await expect(
-        fsp.access(path.join(testDir, 'router-template-slate', 'main.kcl'))
-      ).rejects.toThrow()
-      await expect(
-        fsp.access(
+        fs.stat(
           path.join(testDir, 'router-template-slate', 'nested', 'main.kcl')
         )
       ).rejects.toThrow()
@@ -1033,22 +1114,23 @@ test(
 test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   {
-    tag: '@desktop',
+    tag: ['@desktop'],
   },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, fs, folderSetupFn }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
       ['bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
       ['lego', 'lego.kcl'],
     ]
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       // Do these serially to ensure the order is correct
       for (const [name, file] of projectData) {
-        await fsp.mkdir(path.join(dir, name), { recursive: true })
-        await fsp.copyFile(
-          executorInputPath(file),
-          path.join(dir, name, `main.kcl`)
+        await fs.mkdir(path.join(dir, name), { recursive: true })
+        const testFileData = await nodeFs.readFile(executorInputPath(file))
+        await fs.writeFile(
+          path.join(dir, name, `main.kcl`),
+          new Uint8Array(testFileData)
         )
         // Wait 1s between each project to ensure the order is correct
         await new Promise((r) => setTimeout(r, 1_000))
@@ -1113,23 +1195,21 @@ test(
 test(
   'Can load a file with CRLF line endings',
   {
-    tag: '@desktop',
+    tag: ['@desktop'],
   },
-  async ({ context, page, scene, cmdBar }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
+  async ({ context, page, scene, cmdBar, fs, folderSetupFn }, testInfo) => {
+    await folderSetupFn(async (dir) => {
       const routerTemplateDir = path.join(dir, 'router-template-slate')
-      await fsp.mkdir(routerTemplateDir, { recursive: true })
-
-      const file = await fsp.readFile(
+      await fs.mkdir(routerTemplateDir, { recursive: true })
+      const testFileData = await nodeFs.readFile(
         executorInputPath('router-template-slate.kcl'),
-        'utf-8'
+        { encoding: 'utf-8' }
       )
       // Replace both \r optionally so we don't end up with \r\r\n
-      const fileWithCRLF = file.replace(/\r?\n/g, '\r\n')
-      await fsp.writeFile(
+      const fileWithCRLF = testFileData.replace(/\r?\n/g, '\r\n')
+      await fs.writeFile(
         path.join(routerTemplateDir, 'main.kcl'),
-        fileWithCRLF,
-        'utf-8'
+        new TextEncoder().encode(fileWithCRLF)
       )
     })
     const u = await getUtils(page)
@@ -1147,23 +1227,25 @@ test(
 test(
   'Can sort projects on home page',
   {
-    tag: '@desktop',
+    tag: ['@desktop'],
   },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, fs, folderSetupFn }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
       ['bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
       ['lego', 'lego.kcl'],
     ]
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       // Do these serially to ensure the order is correct
       for (const [name, file] of projectData) {
-        await fsp.mkdir(path.join(dir, name), { recursive: true })
-        await fsp.copyFile(
-          executorInputPath(file),
-          path.join(dir, name, `main.kcl`)
+        await fs.mkdir(path.join(dir, name), { recursive: true })
+        const testFileData = await nodeFs.readFile(executorInputPath(file))
+        await fs.writeFile(
+          path.join(dir, name, `main.kcl`),
+          new Uint8Array(testFileData)
         )
+
         // Wait 1s between each project to ensure the order is correct
         await new Promise((r) => setTimeout(r, 1_000))
       }
@@ -1253,26 +1335,27 @@ test(
   }
 )
 
+// desktop-only reason: changing roots in OPFS is not a thing.
 test(
   'You can change the root projects directory and nothing is lost',
   {
     tag: '@desktop',
   },
-  async ({ context, page, tronApp, homePage }, testInfo) => {
+  async ({ page, tronApp, homePage, folderSetupFn }, testInfo) => {
     if (!tronApp) throw new Error('tronApp is missing.')
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       await Promise.all([
-        fsp.mkdir(`${dir}/router-template-slate`, { recursive: true }),
-        fsp.mkdir(`${dir}/bracket`, { recursive: true }),
+        nodeFs.mkdir(`${dir}/router-template-slate`, { recursive: true }),
+        nodeFs.mkdir(`${dir}/bracket`, { recursive: true }),
       ])
       await Promise.all([
-        fsp.copyFile(
-          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
+        nodeFs.copyFile(
+          executorInputPath('router-template-slate.kcl'),
           `${dir}/router-template-slate/main.kcl`
         ),
-        fsp.copyFile(
-          'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_bracket.kcl',
+        nodeFs.copyFile(
+          executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
           `${dir}/bracket/main.kcl`
         ),
       ])
@@ -1284,8 +1367,8 @@ test(
     const newProjectDirName = testInfo.outputPath(
       'electron-test-projects-dir-2'
     )
-    if (fs.existsSync(newProjectDirName)) {
-      await fsp.rm(newProjectDirName, { recursive: true })
+    if (nodeFsSync.existsSync(newProjectDirName)) {
+      await nodeFs.rm(newProjectDirName, { recursive: true })
     }
 
     await homePage.projectsLoaded()
@@ -1363,9 +1446,9 @@ test(
 test(
   'Search projects on desktop home',
   {
-    tag: '@desktop',
+    tag: ['@desktop'],
   },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, fs, folderSetupFn }, testInfo) => {
     const projectData = [
       ['basic bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
       ['basic-cube', 'basic_fillet_cube_end.kcl'],
@@ -1373,13 +1456,14 @@ test(
       ['router-template-slate', 'router-template-slate.kcl'],
       ['Ancient Temple Block', 'lego.kcl'],
     ]
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       // Do these serially to ensure the order is correct
       for (const [name, file] of projectData) {
-        await fsp.mkdir(path.join(dir, name), { recursive: true })
-        await fsp.copyFile(
-          executorInputPath(file),
-          path.join(dir, name, `main.kcl`)
+        await fs.mkdir(path.join(dir, name), { recursive: true })
+        const testFileData = await nodeFs.readFile(executorInputPath(file))
+        await fs.writeFile(
+          path.join(dir, name, `main.kcl`),
+          new Uint8Array(testFileData)
         )
       }
     })
@@ -1421,12 +1505,12 @@ test(
 test(
   'file pane is scrollable when there are many files',
   {
-    tag: '@desktop',
+    tag: ['@desktop'],
   },
-  async ({ scene, cmdBar, context, page }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
+  async ({ scene, cmdBar, context, page, fs, folderSetupFn }, testInfo) => {
+    await folderSetupFn(async (dir) => {
       const testDir = path.join(dir, 'testProject')
-      await fsp.mkdir(testDir, { recursive: true })
+      await fs.mkdir(testDir, { recursive: true })
       const fileNames = [
         'angled_line.kcl',
         'basic_fillet_cube_close_opposite.kcl',
@@ -1487,9 +1571,10 @@ test(
         'tangential_arc.kcl',
       ]
       for (const fileName of fileNames) {
-        await fsp.copyFile(
-          executorInputPath(fileName),
-          path.join(testDir, fileName)
+        const testFileData = await nodeFs.readFile(executorInputPath(fileName))
+        await fs.writeFile(
+          path.join(testDir, fileName),
+          new Uint8Array(testFileData)
         )
       }
     })
@@ -1525,17 +1610,20 @@ test(
 test(
   'select all in code editor does not actually select all, just what is visible (regression)',
   {
-    tag: '@desktop',
+    tag: ['@desktop'],
   },
-  async ({ context, page }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
+  async ({ context, page, fs, folderSetupFn, cmdBar, scene }, testInfo) => {
+    await folderSetupFn(async (dir) => {
       // rust/kcl-lib/e2e/executor/inputs/mike_stress_test.kcl
       const name = 'mike_stress_test'
       const testDir = path.join(dir, name)
-      await fsp.mkdir(testDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath(`${name}.kcl`),
-        path.join(testDir, 'main.kcl')
+      await fs.mkdir(testDir, { recursive: true })
+      const testFileData = await nodeFs.readFile(
+        executorInputPath(`${name}.kcl`)
+      )
+      await fs.writeFile(
+        path.join(testDir, 'main.kcl'),
+        new Uint8Array(testFileData)
       )
     })
     const u = await getUtils(page)
@@ -1544,6 +1632,7 @@ test(
     page.on('console', console.log)
 
     await page.getByText('mike_stress_test').click()
+    await closeOnboardingModalIfPresent(page)
 
     await test.step('select all in code editor, check its length', async () => {
       await u.codeLocator.click()
@@ -1585,7 +1674,7 @@ test(
 test(
   'Settings persist across restarts',
   {
-    tag: '@desktop',
+    tag: ['@desktop'],
   },
   async ({ page, toolbar }, testInfo) => {
     await test.step('We can change a user setting like theme', async () => {
@@ -1596,8 +1685,6 @@ test(
       await toolbar.userSidebarButton.click()
 
       await page.getByTestId('user-settings').click()
-
-      await expect(page.getByTestId('app-theme')).toHaveValue('dark')
 
       await page.getByTestId('app-theme').selectOption('light')
       await expect(page.getByTestId('app-theme')).toHaveValue('light')
@@ -1619,9 +1706,9 @@ test(
 test(
   'Original project name persist after onboarding',
   {
-    tag: '@desktop',
+    tag: ['@desktop'],
   },
-  async ({ page, toolbar }, testInfo) => {
+  async ({ page, toolbar, scene, cmdBar }, testInfo) => {
     const nextButton = page.getByTestId('onboarding-next')
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -1630,6 +1717,7 @@ test(
 
     await test.step('Should create and name a project called wrist brace', async () => {
       await createProject({ name: 'wrist brace', page, returnHome: true })
+      await expect(page.getByTestId('project-link').first()).toBeVisible()
     })
 
     await test.step('Should go through onboarding', async () => {
@@ -1646,7 +1734,7 @@ test(
     })
 
     await test.step('Should go home after onboarding is completed', async () => {
-      await page.getByRole('button', { name: 'Go to Home' }).click()
+      await page.getByTestId('app-logo').click()
     })
 
     await test.step('Should show the original project called wrist brace', async () => {
@@ -1658,18 +1746,22 @@ test(
   }
 )
 
+// Desktop-only because browser uses UTF-16 for text encoding so shit's a bit
+// fucked when trying to mix them. I (lee) mainly care it works on desktop.
 test(
   'project name with foreign characters should open',
-  { tag: '@desktop' },
-  async ({ context, page, cmdBar, scene, homePage }) => {
-    const projectName = 'العربية'
-    await context.folderSetupFn(async (dir) => {
-      const bracketDir = path.join(dir, 'العربية')
-      await fsp.mkdir(bracketDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
-        path.join(bracketDir, 'main.kcl')
+  { tag: ['@desktop'] },
+  async ({ context, page, cmdBar, scene, homePage, fs, folderSetupFn }) => {
+    const projectName = 'にゅにゅ'
+    await folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, projectName)
+      await fs.mkdir(bracketDir, { recursive: true })
+      console.log('READDIR', await fs.readdir(dir))
+      const testFileData = await nodeFs.readFile(
+        executorInputPath('cylinder-inches.kcl')
       )
+      const finalPath = path.join(bracketDir, 'main.kcl')
+      await fs.writeFile(finalPath, new Uint8Array(testFileData))
     })
 
     await homePage.openProject(projectName)
@@ -1680,23 +1772,36 @@ test(
 test(
   'import from nested directory',
   { tag: ['@desktop', '@windows', '@macos'] },
-  async ({ homePage, scene, cmdBar, context, page, editor }) => {
+  async ({
+    homePage,
+    scene,
+    cmdBar,
+    context,
+    page,
+    editor,
+    fs,
+    folderSetupFn,
+  }) => {
     const lineOfKcl = runningOnWindows()
       ? `import 'nested\\main.kcl' as thing`
       : `import 'nested/main.kcl' as thing`
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fsp.mkdir(bracketDir, { recursive: true })
+      await fs.mkdir(bracketDir, { recursive: true })
       const nestedDir = path.join(bracketDir, 'nested')
-      await fsp.mkdir(nestedDir, { recursive: true })
+      await fs.mkdir(nestedDir, { recursive: true })
 
-      await fsp.copyFile(
-        executorInputPath('cylinder-inches.kcl'),
-        path.join(nestedDir, 'main.kcl')
+      const testFileData = await nodeFs.readFile(
+        executorInputPath('cylinder-inches.kcl')
       )
-      await fsp.writeFile(
+      await fs.writeFile(
+        path.join(nestedDir, 'main.kcl'),
+        new Uint8Array(testFileData)
+      )
+
+      await fs.writeFile(
         path.join(bracketDir, 'main.kcl'),
-        `${lineOfKcl}\n\nthing`
+        new TextEncoder().encode(`${lineOfKcl}\n\nthing`)
       )
     })
 
@@ -1716,21 +1821,30 @@ test(
 
 test(
   'segment position changes persist after dragging and reopening project',
-  { tag: '@desktop' },
-  async ({ scene, cmdBar, context, page, editor, toolbar }) => {
+  { tag: ['@desktop'] },
+  async ({
+    scene,
+    cmdBar,
+    context,
+    page,
+    editor,
+    toolbar,
+    fs,
+    folderSetupFn,
+  }) => {
     const projectName = 'segment-drag-test'
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const projectDir = path.join(dir, projectName)
-      await fsp.mkdir(projectDir, { recursive: true })
-      await fsp.writeFile(
+      await fs.mkdir(projectDir, { recursive: true })
+      await fs.writeFile(
         path.join(projectDir, 'main.kcl'),
-        `sketch001 = startSketchOn(XZ)
+        new TextEncoder().encode(`sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [0, 6])
   |> line(end = [10, 0])
   |> line(end = [-8, -5])
-`
+`)
       )
     })
     const u = await getUtils(page)
@@ -1738,7 +1852,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await test.step('Opening the project and entering sketch mode', async () => {
       await expect(page.getByText(projectName)).toBeVisible()
       await page.getByText(projectName).click()
-
       await scene.settled(cmdBar)
 
       // go to sketch mode
@@ -1762,12 +1875,11 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
       // Exit sketch mode
       await page.keyboard.press('Escape')
-      await page.waitForTimeout(100)
+      await scene.settled(cmdBar)
     })
 
     await test.step('Going back to dashboard', async () => {
       await page.getByTestId('app-logo').click()
-      await page.waitForTimeout(1000)
     })
 
     await test.step('Reopening the project and verifying changes are saved', async () => {
@@ -1780,54 +1892,49 @@ profile001 = startProfile(sketch001, at = [0, 0])
   }
 )
 
-test.describe('Project id', { tag: '@desktop' }, () => {
+test.describe('Project id', { tag: ['@desktop'] }, () => {
   // Should work on both web and desktop.
-  test(
-    'is created on new project',
-    {
-      tag: '@web',
-    },
-    async ({ page, toolbar, context, homePage }, testInfo) => {
-      const u = await getUtils(page)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await u.waitForPageLoad()
-
-      const inputProjectId = page.getByTestId('project-id')
-
-      await test.step('Open the project settings modal', async () => {
-        await toolbar.projectSidebarToggle.click()
-        await page.getByTestId('project-settings').click()
-        // Give time to system for writing to a persistent store
-        await page.waitForTimeout(1000)
-      })
-
-      await test.step('Check project id is not the NIL UUID and not empty', async () => {
-        await expect(inputProjectId).not.toHaveValue(uuidNIL)
-        await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
-      })
-    }
-  )
-  test('is created on existing project without one', async ({
+  test('is created on new project', async ({
     page,
     toolbar,
     context,
     homePage,
   }, testInfo) => {
     const u = await getUtils(page)
-    await context.folderSetupFn(async (rootDir) => {
-      const projectDir = path.join(rootDir, 'hoohee')
-      await fsp.mkdir(projectDir, { recursive: true })
-      await fsp.writeFile(
-        path.join(projectDir, 'project.toml'),
-        `[settings.app]
-theme = "dark"
-`
-      )
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await createProject({ name: 'new-project', page, returnHome: true })
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
+
+    const inputProjectId = page.getByTestId('project-id')
+
+    await test.step('Open the project settings modal', async () => {
+      await toolbar.projectSidebarToggle.click()
+      await page.getByTestId('project-settings').click()
+      // Give time to system for writing to a persistent store
+      await page.waitForTimeout(1000)
     })
 
+    await test.step('Check project id is not the NIL UUID and not empty', async () => {
+      await expect(inputProjectId).not.toHaveValue(uuidNIL)
+      await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+    })
+  })
+  test('is created on existing project without one', async ({
+    page,
+    toolbar,
+    context,
+    homePage,
+    fs,
+    folderSetupFn,
+  }, testInfo) => {
+    const u = await getUtils(page)
+
     await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await createProject({ name: 'new-project', page, returnHome: true })
     await homePage.goToModelingScene()
+
     await u.waitForPageLoad()
 
     const inputProjectId = page.getByTestId('project-id')

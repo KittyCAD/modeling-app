@@ -7,7 +7,7 @@ import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsCo
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { kclCommands } from '@src/lib/kclCommands'
-import { BROWSER_PATH, PATHS } from '@src/lib/paths'
+import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { type IndexLoaderData } from '@src/lib/types'
@@ -22,6 +22,7 @@ import {
   type SettingsActorType,
 } from '@src/machines/settingsMachine'
 import { getAllCurrentSettings } from '@src/lib/settings/settingsUtils'
+import fsZds from '@src/lib/fs-zds'
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -107,8 +108,12 @@ export const ModelingPageProvider = ({
   // Due to the route provider, i've moved this to the ModelingPageProvider instead of CommandBarProvider
   // This will register the commands to route to Telemetry, Home, and Settings.
   useEffect(() => {
-    const filePath =
-      PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
+    if (file?.path === undefined) {
+      return
+    }
+
+    const filePath = PATHS.FILE + '/' + encodeURIComponent(file?.path)
+
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)
     commands.send({
@@ -159,7 +164,7 @@ export const ModelingPageProvider = ({
 
   const kclCommandMemo = useMemo(() => {
     const providedOptions = []
-    if (window.electron && project?.children && file?.path) {
+    if (project?.children && file?.path) {
       const projectPath = project.path
       const filePath = file.path
       let children = project.children
@@ -174,15 +179,12 @@ export const ModelingPageProvider = ({
           continue
         }
 
-        const relativeFilePath = v.path.replace(
-          projectPath + window.electron.sep,
-          ''
-        )
+        const relativeFilePath = v.path.replace(projectPath + fsZds.sep, '')
         const isCurrentFile = v.path === filePath
         if (!isCurrentFile) {
           providedOptions.push({
-            name: relativeFilePath.replaceAll(window.electron.sep, '/'),
-            value: relativeFilePath.replaceAll(window.electron.sep, '/'),
+            name: relativeFilePath.replaceAll(fsZds.sep, '/'),
+            value: relativeFilePath.replaceAll(fsZds.sep, '/'),
           })
         }
       }

@@ -72,11 +72,6 @@ export const AllSettingsFields = forwardRef(
         systemIOActor,
         settingsActor: settings.actor,
       }
-      // We need to navigate out of settings before accepting onboarding
-      // in the web
-      if (!isDesktop()) {
-        void navigate('..')
-      }
       acceptOnboarding(props).catch((reason) =>
         catchOnboardingWarnError(reason, props)
       )

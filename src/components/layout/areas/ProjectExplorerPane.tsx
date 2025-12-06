@@ -1,3 +1,4 @@
+import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -42,12 +43,20 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     send: modelingSend,
     actor: modelingActor,
   } = useModelingContext()
+
   useEffect(() => {
     projectRef.current = loaderData?.project
 
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
     if (!project || !file) {
+      return
+    }
+
+    if (projects === undefined) {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      })
       return
     }
 
@@ -122,18 +131,13 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         // immediately navigate
         navigateHelper()
       }
-    } else if (
-      window.electron &&
-      isRelevantFile(entry.path) &&
-      projectRef.current?.path
-    ) {
+    } else if (isRelevantFile(entry.path) && projectRef.current?.path) {
       // Allow insert if it is a importable file
-      const electron = window.electron
       toast.custom(
         ToastInsert({
           onInsert: () => {
             const relativeFilePath = entry.path.replace(
-              projectRef.current?.path + electron.path.sep,
+              projectRef.current?.path + fsZds.sep,
               ''
             )
             commands.send({

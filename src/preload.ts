@@ -1,7 +1,6 @@
-import fsSync from 'node:fs'
+import path from 'path'
 import fs from 'node:fs/promises'
 import os from 'node:os'
-import path from 'path'
 import packageJson from '@root/package.json'
 import type { MachinesListing } from '@src/components/MachineManagerProvider'
 import chokidar from 'chokidar'
@@ -10,7 +9,6 @@ import { contextBridge, ipcRenderer } from 'electron'
 
 import type { Channel } from '@src/channels'
 import type { WebContentSendPayload } from '@src/menu/channels'
-import { join } from 'node:path'
 
 const typeSafeIpcRendererOn = (
   channel: Channel,
@@ -105,11 +103,7 @@ const watchFileOff = (path: string, key: string) => {
     fsWatchListeners.set(path, watchers)
   }
 }
-const copy = fs.cp
 const readFile = fs.readFile
-// It seems like from the node source code this does not actually block but also
-// don't trust me on that (jess).
-const exists = (path: string) => fsSync.existsSync(path)
 const rename = (prev: string, next: string) => fs.rename(prev, next)
 const writeFile = (path: string, data: string | Uint8Array) =>
   fs.writeFile(path, data, 'utf-8')
@@ -145,8 +139,8 @@ export async function move(
       const bundledContentsResults = await Promise.all(
         sourceContents.map((relPath) =>
           move(
-            join(source.toString(), relPath),
-            join(destination.toString(), relPath)
+            path.join(source.toString(), relPath),
+            path.join(destination.toString(), relPath)
           )
         )
       )
@@ -197,44 +191,7 @@ export async function move(
 
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
-async function statIsDirectory(path: string): Promise<boolean> {
-  try {
-    const res = await stat(path)
-    return res.isDirectory()
-  } catch (e) {
-    if (e === 'ENOENT') {
-      console.error('File does not exist', e)
-      return false
-    }
-    return false // either way we don't know if it is a directory
-  }
-}
-
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
-
-const canReadWriteDirectory = async (
-  path: string
-): Promise<{ value: boolean; error: unknown } | Error> => {
-  const isDirectory = await statIsDirectory(path)
-  if (!isDirectory) {
-    return new Error('path is not a directory. Do not send a file path.')
-  }
-
-  // bitwise OR to check read and write permissions
-  try {
-    const canReadWrite = await fs.access(
-      path,
-      fs.constants.R_OK | fs.constants.W_OK
-    )
-    // This function returns undefined. If it cannot access the path it will throw an error
-    return canReadWrite === undefined
-      ? { value: true, error: undefined }
-      : { value: false, error: undefined }
-  } catch (e) {
-    console.error(e)
-    return { value: false, error: e }
-  }
-}
 
 const exposeProcessEnvs = (varNames: Array<string>) => {
   const envs: Record<string, string> = {}
@@ -299,10 +256,6 @@ const disableMenu = async (menuId: string): Promise<any> => {
   })
 }
 
-// Get the user data folder according to Electron
-const getPathUserData = async (): Promise<string> =>
-  ipcRenderer.invoke('get-path-userdata')
-
 /**
  * Gotcha: Even if the callback function is the same function in JS memory
  * when passing it over the IPC layer it will not map to the same function.
@@ -331,17 +284,16 @@ contextBridge.exposeInMainWorld('electron', {
   // exported.
   watchFileOn,
   watchFileOff,
+  access: fs.access,
   copyFile: fs.copyFile,
   readFile,
   writeFile,
-  exists,
   readdir,
   rename,
   rm: fs.rm,
-  path,
   stat,
-  statIsDirectory,
   mkdir: fs.mkdir,
+  move,
   // opens a dialog
   open,
   save,
@@ -354,8 +306,7 @@ contextBridge.exposeInMainWorld('electron', {
   arch: process.arch,
   platform: process.platform,
   version: process.version,
-  join: path.join.bind(path),
-  sep: path.sep,
+  path: path,
   takeElectronWindowScreenshot,
   os: {
     isMac,
@@ -396,8 +347,5 @@ contextBridge.exposeInMainWorld('electron', {
   enableMenu,
   disableMenu,
   menuOn,
-  canReadWriteDirectory,
-  copy,
-  move,
-  getPathUserData,
+  cp: fs.cp,
 })
