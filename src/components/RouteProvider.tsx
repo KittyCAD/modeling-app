@@ -1,4 +1,5 @@
 import { isCodeTheSame } from '@src/lib/codeEditor'
+import fsZds from '@src/lib/fs-zds'
 import type { ReactNode } from 'react'
 import { createContext, useEffect, useState } from 'react'
 import {
@@ -94,19 +95,17 @@ export function RouteProvider({ children }: { children: ReactNode }) {
 
       const isCurrentFile = loadedProject?.file?.path === path
       if (isCurrentFile && eventType === 'change') {
-        if (window.electron) {
-          // Your current file is changed, read it from disk and write it into the code manager and execute the AST
-          const code = await window.electron.readFile(path, {
-            encoding: 'utf-8',
-          })
+        // Your current file is changed, read it from disk and write it into the code manager and execute the AST
+        const code = await fsZds.readFile(path, {
+          encoding: 'utf-8',
+        })
 
-          // Don't fire a re-execution if the kclManager already knows about this change,
-          // which would be evident if we already have matching code there.
-          if (!isCodeTheSame(code, kclManager.codeSignal.value)) {
-            kclManager.updateCodeStateEditor(code)
-            await kclManager.executeCode()
-            await resetCameraPosition()
-          }
+        // Don't fire a re-execution if the kclManager already knows about this change,
+        // which would be evident if we already have matching code there.
+        if (!isCodeTheSame(code, kclManager.codeSignal.value)) {
+          kclManager.updateCodeStateEditor(code)
+          await kclManager.executeCode()
+          await resetCameraPosition()
         }
       } else if (
         (isImportedInCurrentFile || isInExecStateFilenames) &&

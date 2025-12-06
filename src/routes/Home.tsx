@@ -274,7 +274,7 @@ const Home = () => {
             <li className="contents">
               <ActionButton
                 Element="button"
-                onClick={() =>
+                onClick={() => {
                   commandBarActor.send({
                     type: 'Find and select command',
                     data: {
@@ -282,7 +282,7 @@ const Home = () => {
                       name: 'Create project',
                     },
                   })
-                }
+                }}
                 className={sidebarButtonClasses}
                 iconStart={{
                   icon: 'plus',

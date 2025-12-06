@@ -1,3 +1,4 @@
+import { useFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { AppStreamProvider } from '@src/AppState'
 import ReactDOM from 'react-dom/client'
 import toast, { Toaster } from 'react-hot-toast'
@@ -28,7 +29,7 @@ initializeWindowExceptionHandler()
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.
 initPromise
-  .then(() => {
+  .then(async () => {
     appActor.start()
     // Application commands must be created after the initPromise because
     // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency
@@ -52,6 +53,15 @@ if (!window.electron) {
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+
+// Earliest as possible, configure the fs layer.
+// In the future we can have the user switch between them at run-time, but
+// for now, there is no intention.
+if (window.electron) {
+  useFsViaModuleImport({ type: StorageName.ElectronFS, options: {} })
+} else {
+  useFsViaModuleImport({ type: StorageName.OPFS, options: {} })
+}
 
 root.render(
   <HotkeysProvider>

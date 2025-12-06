@@ -129,7 +129,7 @@ const { AUTH, SETTINGS, SYSTEM_IO, MLEPHANT_MANAGER, COMMAND_BAR, BILLING } =
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
-  [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
+  [SYSTEM_IO]: systemIOMachineDesktop,
   [MLEPHANT_MANAGER]: mlEphantManagerMachine,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,

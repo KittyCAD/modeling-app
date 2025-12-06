@@ -36,11 +36,7 @@ function RootLayout() {
             <LspProvider>
               <AppStateProvider>
                 <MachineManagerProvider>
-                  {isDesktop() ? (
-                    <SystemIOMachineLogicListenerDesktop />
-                  ) : (
-                    <SystemIOMachineLogicListenerWeb />
-                  )}
+                  <SystemIOMachineLogicListenerDesktop />
                   <Outlet />
                 </MachineManagerProvider>
               </AppStateProvider>

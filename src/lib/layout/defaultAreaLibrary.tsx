@@ -77,7 +77,7 @@ export const defaultAreaLibrary = Object.freeze({
     },
   },
   files: {
-    hide: () => !isDesktop(),
+    hide: () => false,
     shortcut: 'Shift + F',
     Component: ProjectExplorerPane,
     useNotifications() {
