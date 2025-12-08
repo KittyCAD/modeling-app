@@ -9,6 +9,35 @@ import type {
   ModelingMachineInternalContext,
 } from '@src/machines/modelingSharedTypes'
 
+const dummyInitSketchGraphDelta = Object.freeze({
+  new_graph: {
+    project: 0,
+    file: 0,
+    version: 0,
+    objects: [],
+    settings: {
+      highlight_edges: false,
+      enable_ssao: false,
+      show_grid: false,
+      replay: null,
+      project_directory: null,
+      current_file: null,
+      fixed_size_grid: true,
+    },
+    sketch_mode: null,
+  },
+  new_objects: [],
+  invalidates_ids: false,
+  exec_outcome: {
+    errors: [],
+    variables: {},
+    operations: [],
+    artifactGraph: { map: {}, itemCount: 0 },
+    filenames: {},
+    defaultPlanes: null,
+  },
+})
+
 export const modelingMachineInitialInternalContext: ModelingMachineInternalContext =
   {
     currentMode: 'modeling',
@@ -41,6 +70,7 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
     planesInitialized: false,
     sketchSolveToolName: null,
     sketchSolveTool: null,
+    initialSceneGraphDelta: dummyInitSketchGraphDelta,
   }
 
 export function generateModelingMachineDefaultContext(systemDeps: {
@@ -89,6 +119,7 @@ export function generateModelingMachineDefaultContext(systemDeps: {
     planesInitialized: false,
     sketchSolveTool: null,
     sketchSolveToolName: null,
+    initialSceneGraphDelta: dummyInitSketchGraphDelta,
     ...systemDeps,
   }
   return context

@@ -62,7 +62,7 @@ export const sketchSolveMachine = setup({
         | ExtrudeFacePlane
         | null
       sketchId: number
-      initialSceneGraphDelta?: SceneGraphDelta
+      initialSceneGraphDelta: SceneGraphDelta
     },
   },
   actions: {
@@ -134,7 +134,12 @@ export const sketchSolveMachine = setup({
       selectedIds: [],
       duringAreaSelectIds: [],
       initialPlane: input?.initialSketchSolvePlane ?? undefined,
-      initialSceneGraphDelta: input?.initialSceneGraphDelta,
+      sketchExecOutcome: {
+        kclSource: {
+          text: input.kclManager.code,
+        },
+        sceneGraphDelta: input.initialSceneGraphDelta,
+      },
       sketchId: input?.sketchId || 0,
       sceneInfra: input.sceneInfra,
       sceneEntitiesManager: input.sceneEntitiesManager,

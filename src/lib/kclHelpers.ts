@@ -10,9 +10,9 @@ import type { KclExpression } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
 import type RustContext from '@src/lib/rustContext'
 import { forceSuffix } from '@src/lang/util'
-import { roundOff } from './utils'
-import { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
-import { Vector2 } from 'three'
+import { roundOff } from '@src/lib/utils'
+import type { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { Vector2 } from 'three'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 

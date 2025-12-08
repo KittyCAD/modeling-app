@@ -2213,7 +2213,7 @@ export const modelingMachine = setup({
         return {} as {
           plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
           sketchSolveId: number
-          initialSceneGraphDelta?: SceneGraphDelta
+          initialSceneGraphDelta: SceneGraphDelta
         }
       }
     ),

@@ -641,7 +641,7 @@ export const ModelingMachineProvider = ({
           }): Promise<{
             plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
             sketchSolveId: number
-            initialSceneGraphDelta?: SceneGraphDelta
+            initialSceneGraphDelta: SceneGraphDelta
           }> => {
             if (!artifactId) {
               const errorMessage = 'No artifact ID provided'
@@ -705,6 +705,11 @@ export const ModelingMachineProvider = ({
                   { settings: { modeling: { base_unit: defaultUnit.current } } }
                 )
                 // Note: editSketch doesn't return kclSource, so we don't update the editor
+              }
+              if (!editSketchSceneGraph) {
+                const errorMessage = 'Failed to edit sketch'
+                toast.error(errorMessage)
+                return reject(new Error(errorMessage))
               }
             } catch (error) {
               console.error('Error calling editSketch:', error)

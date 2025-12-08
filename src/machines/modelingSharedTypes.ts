@@ -230,7 +230,7 @@ export type ModelingMachineInternalContext = {
   // sketch solve context
   sketchSolveInit?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
   sketchSolveId?: number
-  initialSceneGraphDelta?: SceneGraphDelta
+  initialSceneGraphDelta: SceneGraphDelta
   // TODO are these both used?
   sketchSolveTool: EquipTool | null
   kclEditorMachine?: ActorRefFrom<typeof kclEditorMachine>

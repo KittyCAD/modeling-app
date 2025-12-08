@@ -118,7 +118,6 @@ export type SketchSolveContext = {
     constraintIds: Array<number>
   }
   initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane
-  initialSceneGraphDelta?: SceneGraphDelta
   sketchId: number
   // Dependencies passed from parent
   sceneInfra: SceneInfra
@@ -604,11 +603,12 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
 export function initializeInitialSceneGraph({
   context,
 }: SolveAssignArgs): Partial<SketchSolveContext> {
-  if (context.initialSceneGraphDelta) {
+  if (context?.sketchExecOutcome?.sceneGraphDelta) {
     // Update the scene graph directly without sending an event
     // This is for initial setup, just rendering existing state
+    const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
     updateSceneGraphFromDelta({
-      sceneGraphDelta: context.initialSceneGraphDelta,
+      sceneGraphDelta,
       context,
       selectedIds: context.selectedIds,
       duringAreaSelectIds: context.duringAreaSelectIds,
@@ -623,7 +623,7 @@ export function initializeInitialSceneGraph({
     return {
       sketchExecOutcome: {
         kclSource,
-        sceneGraphDelta: context.initialSceneGraphDelta,
+        sceneGraphDelta,
       },
     }
   }
