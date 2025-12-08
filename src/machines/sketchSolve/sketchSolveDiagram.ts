@@ -43,7 +43,7 @@ import {
   deleteDraftEntitiesPromise,
   cleanupSketchSolveGroup,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool'
+import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
 
 export const sketchSolveMachine = setup({
   types: {

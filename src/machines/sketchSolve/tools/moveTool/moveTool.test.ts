@@ -8,6 +8,8 @@ import {
   createOnMouseEnterCallback,
   createOnMouseLeaveCallback,
   findEntityUnderCursorId,
+} from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import {
   project3DToScreen,
   calculateBoxBounds,
   isIntersectionSelectionMode,
@@ -22,7 +24,7 @@ import {
   doesTriangleIntersectBox,
   doesAnyPolygonIntersectBox,
   doesSegmentIntersectSelectionBox,
-} from '@src/machines/sketchSolve/tools/moveTool'
+} from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
 import { Themes } from '@src/lib/theme'
