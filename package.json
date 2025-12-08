@@ -155,7 +155,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.26.9",
     "@babel/preset-react": "^7.27.1",
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.3.8",
     "@electron-forge/cli": "^7.10.2",
     "@electron-forge/plugin-fuses": "^7.8.0",
     "@electron-forge/plugin-vite": "^7.8.0",
