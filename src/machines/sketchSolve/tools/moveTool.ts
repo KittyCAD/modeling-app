@@ -1,7 +1,6 @@
 import type {
   ApiObject,
   ExistingSegmentCtor,
-  Expr,
   SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
@@ -44,57 +43,11 @@ import {
   buildSegmentCtorFromObject,
   type SolveActionArgs,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { forceSuffix } from '@src/lang/util'
+import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
 
 const AREA_SELECT_BORDER_WIDTH = 2
 const LINE_EXTENSION_SIZE = 12
 const LABEL_VERTICAL_OFFSET = 12
-
-/**
- * Helper function to extract numeric value from an Expr.
- * Returns the value and units, or null if the Expr doesn't contain a numeric value.
- */
-function extractNumericValue(
-  expr: Expr
-): { value: number; units: string } | null {
-  if (expr.type === 'Number' || expr.type === 'Var') {
-    return {
-      value: expr.value,
-      units: expr.units,
-    }
-  }
-  return null
-}
-
-/**
- * Helper function to apply a drag vector to a Point2D Expr.
- * Returns a new Expr with the vector applied.
- */
-function applyVectorToPoint2D(
-  point: { x: Expr; y: Expr },
-  vector: Vector2
-): { x: Expr; y: Expr } {
-  const xValue = extractNumericValue(point.x)
-  const yValue = extractNumericValue(point.y)
-
-  if (!xValue || !yValue) {
-    // If we can't extract values, return original
-    return point
-  }
-
-  return {
-    x: {
-      type: 'Var',
-      value: roundOff(xValue.value + vector.x),
-      units: forceSuffix(xValue.units),
-    },
-    y: {
-      type: 'Var',
-      value: roundOff(yValue.value + vector.y),
-      units: forceSuffix(yValue.units),
-    },
-  }
-}
 
 /**
  * Helper function to build a segment ctor with drag applied.
@@ -695,79 +648,82 @@ export function createOnDragCallback({
     }
 
     setIsSolveInProgress(true)
-    const twoD = intersectionPoint.twoD
-    // Calculate drag vector from last successful drag point to current position
-    const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
+    try {
+      const twoD = intersectionPoint.twoD
+      // Calculate drag vector from last successful drag point to current position
+      const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
 
-    const objects = sceneGraphDelta.new_graph.objects
-    const segmentsToEdit: ExistingSegmentCtor[] = []
+      const objects = sceneGraphDelta.new_graph.objects
+      const segmentsToEdit: ExistingSegmentCtor[] = []
 
-    // Collect all IDs to edit (entity under cursor + selectedIds)
-    const idsToEdit = new Set<number>()
-    if (entityUnderCursorId !== null && !Number.isNaN(entityUnderCursorId)) {
-      idsToEdit.add(entityUnderCursorId)
-    }
-    selectedIds.forEach((id) => {
-      if (!Number.isNaN(id)) {
-        idsToEdit.add(id)
+      // Collect all IDs to edit (entity under cursor + selectedIds)
+      const idsToEdit = new Set<number>()
+      if (entityUnderCursorId !== null && !Number.isNaN(entityUnderCursorId)) {
+        idsToEdit.add(entityUnderCursorId)
       }
-    })
-
-    // Build ctors for each segment with drag applied
-    const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
-    for (const id of idsToEdit) {
-      const obj = objects[id]
-      if (!obj) {
-        continue
-      }
-
-      // Skip if not a segment
-      if (obj.kind.type !== 'Segment') {
-        continue
-      }
-
-      const isEntityUnderCursor = id === entityUnderCursorId
-      const ctor = buildSegmentCtorWithDrag({
-        objUnderCursor: obj,
-        selectedObjects: objects,
-        isEntityUnderCursor,
-        currentCursorPosition: twoD,
-        dragVec: dragVec,
-        units,
+      selectedIds.forEach((id) => {
+        if (!Number.isNaN(id)) {
+          idsToEdit.add(id)
+        }
       })
 
-      if (ctor) {
-        segmentsToEdit.push({ id, ctor })
+      // Build ctors for each segment with drag applied
+      const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
+      for (const id of idsToEdit) {
+        const obj = objects[id]
+        if (!obj) {
+          continue
+        }
+
+        // Skip if not a segment
+        if (obj.kind.type !== 'Segment') {
+          continue
+        }
+
+        const isEntityUnderCursor = id === entityUnderCursorId
+        const ctor = buildSegmentCtorWithDrag({
+          objUnderCursor: obj,
+          selectedObjects: objects,
+          isEntityUnderCursor,
+          currentCursorPosition: twoD,
+          dragVec: dragVec,
+          units,
+        })
+
+        if (ctor) {
+          segmentsToEdit.push({ id, ctor })
+        }
       }
-    }
 
-    if (segmentsToEdit.length === 0) {
+      if (segmentsToEdit.length === 0) {
+        setIsSolveInProgress(false)
+        return
+      }
+
+      // Edit segments via Rust context
+      const settings = await getJsAppSettings()
+      // Get sketchId from context data (needed for editSegments)
+      const sketchId = getContextData().sketchId
+      const result = await editSegments(
+        0,
+        sketchId,
+        segmentsToEdit,
+        settings
+      ).catch((err) => {
+        console.error('failed to edit segment', err)
+        return null
+      })
+
+      // After successful drag, update the lastSuccessfulDragFromPoint
+      // This ensures the next drag calculates from the correct starting point
+      setLastSuccessfulDragFromPoint(twoD.clone())
+
+      // Notify about new sketch outcome if edit was successful
+      if (result) {
+        onNewSketchOutcome(result)
+      }
+    } finally {
       setIsSolveInProgress(false)
-      return
-    }
-
-    // Edit segments via Rust context
-    const settings = await getJsAppSettings()
-    // Get sketchId from context data (needed for editSegments)
-    const sketchId = getContextData().sketchId
-    const result = await editSegments(
-      0,
-      sketchId,
-      segmentsToEdit,
-      settings
-    ).catch((err) => {
-      console.error('failed to edit segment', err)
-      return null
-    })
-
-    setIsSolveInProgress(false)
-    // After successful drag, update the lastSuccessfulDragFromPoint
-    // This ensures the next drag calculates from the correct starting point
-    setLastSuccessfulDragFromPoint(twoD.clone())
-
-    // Notify about new sketch outcome if edit was successful
-    if (result) {
-      onNewSketchOutcome(result)
     }
   }
 }
