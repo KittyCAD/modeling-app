@@ -90,6 +90,7 @@ export type SketchSolveMachineEvent =
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
         debounceEditorUpdate?: boolean // If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
+        writeToDisk?: boolean // If false, skip persisting to disk (useful for high-frequency drag updates)
       }
     }
   | { type: 'delete selected' }
@@ -666,6 +667,13 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   } else {
     // Update editor immediately - no debounce for frequent updates like onMove
     context.kclManager.updateCodeEditor(event.data.kclSource.text)
+  }
+
+  // Persist changes to disk unless explicitly disabled
+  if (event.data.writeToDisk !== false) {
+    void context.kclManager.writeToFile().catch((err) => {
+      console.error('Failed to write file', err)
+    })
   }
 
   return {

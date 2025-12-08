@@ -613,6 +613,7 @@ export function createOnDragCallback({
   onNewSketchOutcome: (outcome: {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
+    writeToDisk?: boolean
   }) => void
   getDefaultLengthUnit: () => UnitLength | undefined
   getJsAppSettings: () => Promise<DeepPartial<Configuration>>
@@ -720,7 +721,7 @@ export function createOnDragCallback({
 
       // Notify about new sketch outcome if edit was successful
       if (result) {
-        onNewSketchOutcome(result)
+        onNewSketchOutcome({ ...result, writeToDisk: false })
       }
     } finally {
       setIsSolveInProgress(false)
@@ -1992,7 +1993,10 @@ export function setUpOnDragAndSelectionClickCallbacks({
         )
       },
       onNewSketchOutcome: (outcome) =>
-        self.send({ type: 'update sketch outcome', data: outcome }),
+        self.send({
+          type: 'update sketch outcome',
+          data: { ...outcome, writeToDisk: false },
+        }),
       getDefaultLengthUnit: () =>
         context.kclManager.fileSettings.defaultLengthUnit,
       getJsAppSettings: async () => await jsAppSettings(),

@@ -116,7 +116,7 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
           )
           self._parent?.send({
             type: 'update sketch outcome',
-            data: result,
+            data: { ...result, writeToDisk: false },
           })
         } catch (err) {
           console.error('failed to edit segment', err)
