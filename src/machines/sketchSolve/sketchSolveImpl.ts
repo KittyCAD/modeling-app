@@ -5,7 +5,6 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { SegmentUtils } from '@src/machines/sketchSolve/segments'
 import {
   segmentUtilsMap,
   updateLineSegmentHover,
@@ -263,7 +262,7 @@ function initSegmentGroup({
   id,
   isDraft,
 }: {
-  input: Parameters<SegmentUtils['init']>[0]['input']
+  input: SegmentCtor
   theme: Themes
   scale: number
   id: number

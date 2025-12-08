@@ -41,26 +41,49 @@ interface UpdateSegmentArgs {
   isDraft?: boolean
 }
 
-export interface SegmentUtils {
+/**
+ * Utility interface for creating and updating sketch scene entities in Three.js.
+ *
+ * This interface provides a consistent pattern for rendering various sketch entities
+ * (segments, constraints, points, etc.) in the 3D scene. Implementations handle both
+ * the initial creation of Three.js objects and their subsequent updates as the sketch
+ * state changes.
+ *
+ * The pattern separates initialization (creating the Three.js Group and its children)
+ * from updates (modifying positions, sizes, colors, etc.) to avoid code duplication
+ * and ensure consistent behavior across different entity types.
+ */
+export interface SketchEntityUtils {
   /**
-   * the init is responsible for adding all of the correct entities to the group with important details like `mesh.name = ...`
-   * as these act like handles later
+   * Initializes a new Three.js Group for a sketch entity (segment, constraint, point, etc.).
    *
-   * It's **Not** responsible for doing all calculations to size and position the entities as this would be duplicated in the update function
-   * Which should instead be called at the end of the init function
+   * This method is responsible for:
+   * - Creating a new Three.js Group
+   * - Adding all necessary Three.js objects (meshes, CSS2DObjects, etc.) to the group
+   * - Setting up event listeners for interactive elements (e.g., hover handlers)
+   * - Setting important metadata like `mesh.name` and `mesh.userData.type` for later identification
+   * - Configuring the group's `name` and `userData` properties
+   *
+   * The method should call `update` at the end to position and style the entities correctly,
+   * avoiding duplication of positioning logic between init and update.
    */
   init: (args: CreateSegmentArgs) => Group | Error
   /**
-   * The update function is responsible for updating the group with the correct size and position of the entities
-   * It should be called at the end of the init function and return a callback that can be used to update the overlay
+   * Updates an existing sketch entity's visual representation based on current state.
    *
-   * It returns a callback for updating the overlays, this is so the overlays do not have to update at the same pace threeJs does
-   * This is useful for performance reasons
+   * This method is responsible for:
+   * - Updating positions and sizes of Three.js objects based on input data
+   * - Updating colors and materials based on selection, hover, and draft states
+   * - Updating geometry when entity properties change (e.g., line endpoints, arc parameters)
+   * - Synchronizing visual state with the entity's data model
+   *
+   * The method is called both during initialization (from `init`) and when the entity
+   * needs to be updated due to state changes (e.g., selection, position updates).
    */
   update: (args: UpdateSegmentArgs) => any
 }
 
-class PointSegment implements SegmentUtils {
+class PointSegment implements SketchEntityUtils {
   /**
    * Updates the inner circle colors based on selection state
    */
@@ -223,7 +246,7 @@ class PointSegment implements SegmentUtils {
   }
 }
 
-class LineSegment implements SegmentUtils {
+class LineSegment implements SketchEntityUtils {
   /**
    * Updates the line segment mesh color based on selection and hover state
    */
