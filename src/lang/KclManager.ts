@@ -217,8 +217,12 @@ export class KclManager extends EventTarget {
   get astSignal() {
     return this._ast
   }
-  set ast(newAst: Node<Program>) {
-    this._ast.value = newAst
+  set ast(ast) {
+    if (this._ast.value.body.length !== 0) {
+      // last intact ast, if the user makes a typo with a syntax error, we want to keep the one before they made that mistake
+      this._lastAst = structuredClone(this._ast.value)
+    }
+    this._ast.value = ast
   }
 
   private _execState: ExecState = emptyExecState()
