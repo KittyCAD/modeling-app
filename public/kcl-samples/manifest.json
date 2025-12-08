@@ -66,6 +66,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "bike-hub-washer/main.kcl",
+    "multipleFiles": false,
+    "title": "Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.",
+    "description": "",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "bone-plate/main.kcl",
     "multipleFiles": false,
     "title": "Bone Plate",
