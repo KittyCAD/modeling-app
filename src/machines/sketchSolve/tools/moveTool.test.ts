@@ -1521,7 +1521,12 @@ describe('createOnMouseEnterCallback', () => {
     })
 
     // Hovering over a line segment should highlight it to show it's interactive
-    expect(updateLineSegmentHover).toHaveBeenCalledWith(lineMesh, true, [])
+    expect(updateLineSegmentHover).toHaveBeenCalledWith(
+      lineMesh,
+      true,
+      [],
+      undefined
+    )
     expect(setLastHoveredMesh).toHaveBeenCalledWith(lineMesh)
   })
 
@@ -1590,7 +1595,12 @@ describe('createOnMouseEnterCallback', () => {
     })
 
     // Highlighting should include selected IDs so the hover effect respects selection state
-    expect(updateLineSegmentHover).toHaveBeenCalledWith(lineMesh, true, [5, 13])
+    expect(updateLineSegmentHover).toHaveBeenCalledWith(
+      lineMesh,
+      true,
+      [5, 13],
+      undefined
+    )
   })
 
   it('should handle undefined selected gracefully', () => {
@@ -1638,7 +1648,12 @@ describe('createOnMouseLeaveCallback', () => {
     })
 
     // Leaving a hovered segment should clear the highlight to restore normal appearance
-    expect(updateLineSegmentHover).toHaveBeenCalledWith(lineMesh, false, [])
+    expect(updateLineSegmentHover).toHaveBeenCalledWith(
+      lineMesh,
+      false,
+      [],
+      undefined
+    )
     expect(setLastHoveredMesh).toHaveBeenCalledWith(null)
   })
 
@@ -1691,7 +1706,8 @@ describe('createOnMouseLeaveCallback', () => {
     expect(updateLineSegmentHover).toHaveBeenCalledWith(
       lineMesh,
       false,
-      [5, 13]
+      [5, 13],
+      undefined
     )
   })
 
