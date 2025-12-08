@@ -2776,33 +2776,40 @@ impl Node<ArrayRangeExpression> {
                 StatementKind::Expression,
             )
             .await?;
-        let (start, start_ty) = start_val
-            .as_int_with_ty()
+        let start = start_val
+            .as_ty_f64()
             .ok_or(KclError::new_semantic(KclErrorDetails::new(
-                format!("Expected int but found {}", start_val.human_friendly_type()),
+                format!(
+                    "Expected number for range start but found {}",
+                    start_val.human_friendly_type()
+                ),
                 vec![self.into()],
             )))?;
         let metadata = Metadata::from(&self.end_element);
         let end_val = ctx
             .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
-        let (end, end_ty) = end_val
-            .as_int_with_ty()
-            .ok_or(KclError::new_semantic(KclErrorDetails::new(
-                format!("Expected int but found {}", end_val.human_friendly_type()),
-                vec![self.into()],
-            )))?;
+        let end = end_val.as_ty_f64().ok_or(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Expected number for range end but found {}",
+                end_val.human_friendly_type()
+            ),
+            vec![self.into()],
+        )))?;
 
-        if start_ty != end_ty {
-            let start = start_val.as_ty_f64().unwrap_or(TyF64 { n: 0.0, ty: start_ty });
-            let start = fmt::human_display_number(start.n, start.ty);
-            let end = end_val.as_ty_f64().unwrap_or(TyF64 { n: 0.0, ty: end_ty });
-            let end = fmt::human_display_number(end.n, end.ty);
+        let (start, end, ty) = NumericType::combine_range(start, end, exec_state, self.as_source_range())?;
+        let Some(start) = crate::try_f64_to_i64(start) else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Range start and end must be of the same type, but found {start} and {end}"),
+                format!("Range start must be an integer, but found {start}"),
                 vec![self.into()],
             )));
-        }
+        };
+        let Some(end) = crate::try_f64_to_i64(end) else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("Range end must be an integer, but found {end}"),
+                vec![self.into()],
+            )));
+        };
 
         if end < start {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -2826,11 +2833,11 @@ impl Node<ArrayRangeExpression> {
                 .into_iter()
                 .map(|num| KclValue::Number {
                     value: num as f64,
-                    ty: start_ty,
+                    ty,
                     meta: meta.clone(),
                 })
                 .collect(),
-            ty: RuntimeType::Primitive(PrimitiveType::Number(start_ty)),
+            ty: RuntimeType::Primitive(PrimitiveType::Number(ty)),
         })
     }
 }

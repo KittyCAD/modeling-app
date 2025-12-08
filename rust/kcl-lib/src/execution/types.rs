@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt, str::FromStr};
+use std::{collections::HashMap, str::FromStr};
 
 use anyhow::Result;
 use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
@@ -12,6 +12,7 @@ use crate::{
         kcl_value::{KclValue, TypeDef},
         memory::{self},
     },
+    fmt,
     parsing::{
         ast::types::{PrimitiveType as AstPrimitiveType, Type},
         token::NumericSuffix,
@@ -332,8 +333,8 @@ impl RuntimeType {
     }
 }
 
-impl fmt::Display for RuntimeType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl std::fmt::Display for RuntimeType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             RuntimeType::Primitive(t) => t.fmt(f),
             RuntimeType::Array(t, l) => match l {
@@ -468,8 +469,8 @@ impl PrimitiveType {
     }
 }
 
-impl fmt::Display for PrimitiveType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl std::fmt::Display for PrimitiveType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             PrimitiveType::Any => write!(f, "any"),
             PrimitiveType::None => write!(f, "none"),
@@ -762,6 +763,78 @@ impl NumericType {
             (at @ Known(_), Default { .. }) => (a.n, b.n, at),
             (Known(UnitType::Count), _) => (a.n, b.n, Known(UnitType::Count)),
             _ => (a.n, b.n, Unknown),
+        }
+    }
+
+    /// Combine two types for range operations.
+    ///
+    /// This combinator function is suitable for ranges where uncertainty should
+    /// be handled by the user, and it doesn't make sense to convert units. So
+    /// this is one of th most conservative ways to combine types.
+    pub fn combine_range(
+        a: TyF64,
+        b: TyF64,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> Result<(f64, f64, NumericType), KclError> {
+        use NumericType::*;
+        match (a.ty, b.ty) {
+            (at, bt) if at == bt => Ok((a.n, b.n, at)),
+            (at, Any) => Ok((a.n, b.n, at)),
+            (Any, bt) => Ok((a.n, b.n, bt)),
+
+            (Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => {
+                Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!("Range start and range end have incompatible units: {l1} and {l2}"),
+                    vec![source_range],
+                )))
+            }
+            (Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => {
+                Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!("Range start and range end have incompatible units: {a1} and {a2}"),
+                    vec![source_range],
+                )))
+            }
+
+            (t @ Known(UnitType::Length(_)), Known(UnitType::GenericLength)) => Ok((a.n, b.n, t)),
+            (Known(UnitType::GenericLength), t @ Known(UnitType::Length(_))) => Ok((a.n, b.n, t)),
+            (t @ Known(UnitType::Angle(_)), Known(UnitType::GenericAngle)) => Ok((a.n, b.n, t)),
+            (Known(UnitType::GenericAngle), t @ Known(UnitType::Angle(_))) => Ok((a.n, b.n, t)),
+
+            (Known(UnitType::Count), Default { .. }) | (Default { .. }, Known(UnitType::Count)) => {
+                Ok((a.n, b.n, Known(UnitType::Count)))
+            }
+            (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) if l1 == l2 => Ok((a.n, b.n, t)),
+            (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) if l1 == l2 => Ok((a.n, b.n, t)),
+            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => {
+                if b.n != 0.0 {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                Ok((a.n, b.n, t))
+            }
+            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) if a1 == a2 => {
+                if a.n != 0.0 {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                Ok((a.n, b.n, t))
+            }
+
+            _ => {
+                let a = fmt::human_display_number(a.n, a.ty);
+                let b = fmt::human_display_number(b.n, b.ty);
+                Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "Range start and range end must be of the same type and have compatible units, but found {a} and {b}",
+                    ),
+                    vec![source_range],
+                )))
+            }
         }
     }
 
