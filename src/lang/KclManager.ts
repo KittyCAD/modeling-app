@@ -190,13 +190,6 @@ export class KclManager extends EventTarget {
   private _code = signal(bracket)
   lastSuccessfulCode: string = ''
   set code(code: string) {
-    this._editorView?.dispatch({
-      changes: {
-        from: 0,
-        to: this._editorView.state.doc.length,
-        insert: code,
-      },
-    })
     this._code.value = code
   }
   get code(): string {
