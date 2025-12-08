@@ -227,13 +227,13 @@ export type ModelingMachineInternalContext = {
   defaultPlaneVisibility: PlaneVisibilityMap
   savedDefaultPlaneVisibility: PlaneVisibilityMap
   planesInitialized: boolean
-  kclEditorMachine?: ActorRefFrom<typeof kclEditorMachine>
   // sketch solve context
   sketchSolveInit?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
   sketchSolveId?: number
   initialSceneGraphDelta?: SceneGraphDelta
   // TODO are these both used?
   sketchSolveTool: EquipTool | null
+  kclEditorMachine?: ActorRefFrom<typeof kclEditorMachine>
   sketchSolveToolName: EquipTool | null
 }
 export type ModelingMachineContext = ModelingMachineInput &

@@ -20,6 +20,7 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
       otherSelections: [],
     },
     sketchDetails: null,
+    sketchSolveInit: null,
     sketchPlaneId: '',
     sketchEnginePathId: '',
     moveDescs: [],
