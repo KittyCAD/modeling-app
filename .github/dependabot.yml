@@ -19,24 +19,12 @@ updates:
       update-types:
       - minor
       - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       exclude-patterns:
       - kittycad*
       update-types:
       - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     minor:
       applies-to: version-updates
       exclude-patterns:
@@ -44,6 +32,12 @@ updates:
       update-types:
       - minor
       - patch
+  cooldown:
+    default-days: 7
+    exclude:
+    - '*kcl*'
+    - '*zoo*'
+    - '*kittycad*'
 - package-ecosystem: cargo
   directory: /rust
   schedule:
@@ -59,24 +53,12 @@ updates:
       update-types:
       - minor
       - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       exclude-patterns:
       - kittycad*
       update-types:
       - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     minor:
       applies-to: version-updates
       exclude-patterns:
@@ -105,24 +87,12 @@ updates:
       update-types:
       - minor
       - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       exclude-patterns:
       - kittycad*
       update-types:
       - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     minor:
       applies-to: version-updates
       exclude-patterns:
@@ -151,24 +121,12 @@ updates:
       update-types:
       - minor
       - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       exclude-patterns:
       - kittycad*
       update-types:
       - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     minor:
       applies-to: version-updates
       exclude-patterns:
@@ -197,24 +155,12 @@ updates:
       update-types:
       - minor
       - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       exclude-patterns:
       - kittycad*
       update-types:
       - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     minor:
       applies-to: version-updates
       exclude-patterns:
@@ -243,24 +189,12 @@ updates:
       update-types:
       - minor
       - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       exclude-patterns:
       - kittycad*
       update-types:
       - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     minor:
       applies-to: version-updates
       exclude-patterns:
@@ -289,24 +223,12 @@ updates:
       update-types:
       - minor
       - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       exclude-patterns:
       - kittycad*
       update-types:
       - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     minor:
       applies-to: version-updates
       exclude-patterns:
@@ -335,24 +257,12 @@ updates:
       update-types:
       - minor
       - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       exclude-patterns:
       - kittycad*
       update-types:
       - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     minor:
       applies-to: version-updates
       exclude-patterns:
@@ -381,24 +291,12 @@ updates:
       update-types:
       - minor
       - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       exclude-patterns:
       - kittycad*
       update-types:
       - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     minor:
       applies-to: version-updates
       exclude-patterns:
@@ -427,24 +325,12 @@ updates:
       update-types:
       - minor
       - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       exclude-patterns:
       - kittycad*
       update-types:
       - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     minor:
       applies-to: version-updates
       exclude-patterns:
@@ -473,24 +359,12 @@ updates:
       update-types:
       - minor
       - patch
-    security-major:
-      applies-to: security-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     patch:
       applies-to: version-updates
       exclude-patterns:
       - kittycad*
       update-types:
       - patch
-    major:
-      applies-to: version-updates
-      exclude-patterns:
-      - kittycad*
-      update-types:
-      - major
     minor:
       applies-to: version-updates
       exclude-patterns:
