@@ -2404,12 +2404,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.148"
-<<<<<<< HEAD
 source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena/show-seams#44f12ddb25d62d5c2341331f9c28ce8ab06ea038"
-=======
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c92e249d010420149c324f91e9c5ac9211ec24c79146d7ee5d27ea36ad189fc4"
->>>>>>> bf26e8648ce119bb627846b1562216b6976c5b05
 dependencies = [
  "anyhow",
  "chrono",
