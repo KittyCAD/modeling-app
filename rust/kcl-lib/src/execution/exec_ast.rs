@@ -790,15 +790,18 @@ impl ExecutorContext {
 
                 // Check the KCL @(feature_tree = ) annotation.
                 let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
-                let closure = if let Some(attrs) = attrs
+                let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust || attrs.impl_ == annotations::Impl::RustConstraint)
                 {
                     if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
-                        KclValue::Function {
-                            value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
-                            meta: vec![metadata.to_owned()],
-                        }
+                        (
+                            KclValue::Function {
+                                value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
+                                meta: vec![metadata.to_owned()],
+                            },
+                            None,
+                        )
                     } else {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             "Rust implementation of functions is restricted to the standard library".to_owned(),
@@ -809,26 +812,50 @@ impl ExecutorContext {
                     // Snapshotting memory here is crucial for semantics so that we close
                     // over variables. Variables defined lexically later shouldn't
                     // be available to the function body.
-                    KclValue::Function {
-                        value: Box::new(FunctionSource::kcl(
-                            function_expression.clone(),
-                            exec_state.mut_stack().snapshot(),
-                            KclFunctionSourceParams {
-                                is_std,
-                                experimental,
-                                include_in_feature_tree,
-                            },
-                        )),
-                        meta: vec![metadata.to_owned()],
-                    }
+                    let (env_ref, placeholder_env_ref) = if function_expression.name.is_some() {
+                        // Recursive function needs a snapshot that includes
+                        // itself.
+                        let dummy = EnvironmentRef::dummy();
+                        (dummy, Some(dummy))
+                    } else {
+                        (exec_state.mut_stack().snapshot(), None)
+                    };
+                    (
+                        KclValue::Function {
+                            value: Box::new(FunctionSource::kcl(
+                                function_expression.clone(),
+                                env_ref,
+                                KclFunctionSourceParams {
+                                    is_std,
+                                    experimental,
+                                    include_in_feature_tree,
+                                },
+                            )),
+                            meta: vec![metadata.to_owned()],
+                        },
+                        placeholder_env_ref,
+                    )
                 };
 
                 // If the function expression has a name, i.e. `fn name() {}`,
                 // bind it in the current scope.
                 if let Some(fn_name) = &function_expression.name {
-                    exec_state
-                        .mut_stack()
-                        .add(fn_name.name.clone(), closure.clone(), metadata.source_range)?;
+                    // If we used a placeholder env ref for recursion, fix it up
+                    // with the name recursively bound so that it's available in
+                    // the function body.
+                    if let Some(placeholder_env_ref) = placeholder_env_ref {
+                        closure = exec_state.mut_stack().add_recursive_closure(
+                            fn_name.name.to_owned(),
+                            closure,
+                            placeholder_env_ref,
+                            metadata.source_range,
+                        )?;
+                    } else {
+                        // Regular non-recursive binding.
+                        exec_state
+                            .mut_stack()
+                            .add(fn_name.name.clone(), closure.clone(), metadata.source_range)?;
+                    }
                 }
 
                 closure
