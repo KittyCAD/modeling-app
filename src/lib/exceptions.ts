@@ -24,6 +24,7 @@ export const initializeWindowExceptionHandler = (
         if (
           matchImportExportErrorCrash(event.message) ||
           matchUnreachableErrorCrash(event.message) ||
+          matchStackSizeExceededErrorCrash(event.message) ||
           matchGenericWasmRuntimeHeuristicErrorCrash(event)
         ) {
           // do global singleton cleanup
@@ -78,6 +79,11 @@ const matchImportExportErrorCrash = (message: string): boolean => {
 const matchUnreachableErrorCrash = (message: string): boolean => {
   const substringError = `Uncaught RuntimeError: unreachable`
   return message.indexOf(substringError) !== -1 ? true : false
+}
+
+function matchStackSizeExceededErrorCrash(message: string): boolean {
+  const substringError = `Uncaught RangeError: Maximum call stack size exceeded`
+  return message.indexOf(substringError) !== -1
 }
 
 const matchGenericWasmRuntimeHeuristicErrorCrash = (
