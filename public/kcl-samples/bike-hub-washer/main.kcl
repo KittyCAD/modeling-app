@@ -1,0 +1,41 @@
+// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.
+
+@settings(defaultLengthUnit = mm)
+
+radius = 29
+radius_inner = 22
+ring_width = 7
+ring_height = 7.5
+
+top_height = 7
+top_rim_width = 1.2
+top_inset = 3
+
+bottom_inner_rim_width = 2
+bottom_outer_rim_width = 3
+bottom_edge = 1
+bottom_height = 2
+bottom_extrusion_width = 2
+
+inside_ring_width = 3
+
+assert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)
+
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])
+  |> xLine(length = bottom_inner_rim_width)
+  |> yLine(length = -bottom_height)
+  |> xLine(length = bottom_extrusion_width)
+  |> yLine(length = bottom_height)
+  |> xLine(length = bottom_outer_rim_width - 0.3)
+  |> yLine(length = bottom_edge)
+  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])
+  |> xLine(length = -top_rim_width)
+  |> yLine(length = -top_inset)
+  |> xLine(length = -2)
+  |> yLine(endAbsolute = 0)
+  |> xLine(length = inside_ring_width)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(profile001, angle = 360deg, axis = Y)
+sketch002 = startSketchOn(-XZ)
