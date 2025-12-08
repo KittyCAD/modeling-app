@@ -1117,7 +1117,10 @@ describe('createOnDragCallback', () => {
 
     // Should send event to update the sketch outcome
     // This triggers the state machine to update the scene graph and code
-    expect(onNewSketchOutcome).toHaveBeenCalledWith(result)
+    expect(onNewSketchOutcome).toHaveBeenCalledWith({
+      ...result,
+      writeToDisk: false,
+    })
   })
 
   it('should not send event when edit fails to prevent invalid state updates', async () => {
