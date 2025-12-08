@@ -515,6 +515,10 @@ impl Stack {
         stack
     }
 
+    pub fn len(&self) -> usize {
+        self.call_stack.len()
+    }
+
     /// Get the current (globally most recent) epoch.
     pub fn current_epoch(&self) -> usize {
         self.memory.epoch.load(Ordering::Relaxed)
