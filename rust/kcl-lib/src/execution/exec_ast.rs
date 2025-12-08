@@ -22,7 +22,6 @@ use crate::{
         state::{ModuleState, SketchBlockState},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
-    fmt,
     front::{Freedom, Object, PointCtor},
     modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
