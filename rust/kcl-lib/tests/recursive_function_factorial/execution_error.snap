@@ -1,0 +1,31 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing recursive_function_factorial.kcl
+---
+KCL UndefinedValue error
+
+  × undefined value: `fact` is not defined
+    ╭─[5:9]
+  4 │   } else {
+  5 │     n * fact(n - 1)
+    ·         ──┬─
+    ·           ╰── tests/recursive_function_factorial/input.kcl
+  6 │   }
+  7 │ }
+  8 │ 
+  9 │ assert(fact(0), isEqualTo=1)
+ 10 │ assert(fact(1), isEqualTo=1)
+    ·        ───┬───
+    ·           ╰── tests/recursive_function_factorial/input.kcl
+ 11 │ assert(fact(2), isEqualTo=2)
+    ╰────
+  ╰─▶ KCL UndefinedValue error
+      
+        × undefined value: `fact` is not defined
+         ╭─[5:9]
+       4 │   } else {
+       5 │     n * fact(n - 1)
+         ·         ──┬─
+         ·           ╰── tests/recursive_function_factorial/input.kcl
+       6 │   }
+         ╰────
