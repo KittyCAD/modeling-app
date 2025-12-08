@@ -144,115 +144,145 @@ export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 const setDiagnosticsAnnotation = Annotation.define<boolean>()
 export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
+const createEmptyAst = (): Node<Program> => ({
+  body: [],
+  shebang: null,
+  start: 0,
+  end: 0,
+  moduleId: 0,
+  nonCodeMeta: {
+    nonCodeNodes: {},
+    startNodes: [],
+  },
+  innerAttrs: [],
+  outerAttrs: [],
+  preComments: [],
+  commentStart: 0,
+})
+
 export class KclManager extends EventTarget {
+  // SYSTEM DEPENDENCIES
+
+  private _wasmInstance: Promise<ModuleType | string>
+  /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
+  set wasmInstancePromise(newInstancePromise: Promise<ModuleType | string>) {
+    this._wasmInstance = newInstancePromise
+  }
+  private _sceneEntitiesManager?: SceneEntities
+  private singletons: Singletons
+  engineCommandManager: ConnectionManager
+  private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
+  private _modelingState: StateFrom<typeof modelingMachine> | null = null
+
+  // CORE STATE
+
+  /** TODO: make this be the source of truth for all editor state,
+   * and make it `readonly`
+   */
+  private _editorView: EditorView | null = null
+  /** TODO: remove this field, and only refer to it through `EditorView`. */
+  private _editorState: EditorState
+
   /**
-   * The artifactGraph is a client-side representation of the commands that have been sent
+   * The core state in KclManager are the code and the selection.
+   * all other state should be derived from the code or selection in some way.
+   */
+  private _code = signal(bracket)
+  lastSuccessfulCode: string = ''
+  set code(code: string) {
+    this._editorView?.dispatch({
+      changes: {
+        from: 0,
+        to: this._editorView.state.doc.length,
+        insert: code,
+      },
+    })
+    this._code.value = code
+  }
+  get code(): string {
+    return this._code.value
+  }
+  get codeSignal() {
+    return this._code
+  }
+
+  // Derived state
+
+  /** The Abstract Syntax Tree generated from parsing the KCL code */
+  private _ast = signal<Node<Program>>(createEmptyAst())
+  _lastAst: Node<Program> = createEmptyAst()
+  get ast() {
+    return this._ast.value
+  }
+  get astSignal() {
+    return this._ast
+  }
+  set ast(newAst: Node<Program>) {
+    this._ast.value = newAst
+  }
+
+  private _execState: ExecState = emptyExecState()
+  private _variables = signal<VariableMap>({})
+  lastSuccessfulVariables: VariableMap = {}
+  lastSuccessfulOperations: Operation[] = []
+  private _logs = signal<string[]>([])
+  private _errors = signal<KCLError[]>([])
+  private _diagnostics = signal<Diagnostic[]>([])
+  private _lastEvent: { event: string; time: number } | null = null
+  private _highlightRange: Array<[number, number]> = [[0, 0]]
+  /** a representation of selections used by modelingMachine */
+  private _selectionRanges: Selections = {
+    otherSelections: [],
+    graphSelections: [],
+  }
+  /**
+   * A client-side representation of the commands that have been sent,
+   * the geometry they represent, and the connections between them.
+   *
    * see: src/lang/std/artifactGraph-README.md for a full explanation.
    */
   artifactGraph: ArtifactGraph = new Map()
   artifactIndex: ArtifactIndex = []
 
-  private _ast = signal<Node<Program>>({
-    body: [],
-    shebang: null,
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    nonCodeMeta: {
-      nonCodeNodes: {},
-      startNodes: [],
-    },
-    innerAttrs: [],
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-  })
-  _lastAst: Node<Program> = {
-    body: [],
-    shebang: null,
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    nonCodeMeta: {
-      nonCodeNodes: {},
-      startNodes: [],
-    },
-    innerAttrs: [],
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-  }
-  private _wasmInstance: Promise<ModuleType | string>
-  private _execState: ExecState = emptyExecState()
-  private _variables = signal<VariableMap>({})
-  lastSuccessfulVariables: VariableMap = {}
-  lastSuccessfulOperations: Operation[] = []
-  /**
-   * Since the operations reference the code, we need to store the code that the
-   * operations were executed on.
-   */
-  lastSuccessfulCode: string = ''
-  private _logs = signal<string[]>([])
-  private _errors = signal<KCLError[]>([])
-  private _diagnostics = signal<Diagnostic[]>([])
-  private _isExecuting = signal(false)
-  private _executeIsStale: ExecuteArgs | null = null
+  // INTERNAL BOOKKEEPING STATE
+
   private _wasmInitFailed = signal<boolean | undefined>(undefined)
   private _astParseFailed = false
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
-  private _kclVersion: string | undefined = undefined
-  private _sceneEntitiesManager?: SceneEntities
-  private singletons: Singletons
-  private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
-    undefined
-  // In the future this could be a setting.
-  public longExecutionTimeMs = 1000 * 60 * 5
-
-  engineCommandManager: ConnectionManager
-
-  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
-
-  /** Values merged in from former EditorManager and CodeManager classes */
-  private _code = signal(bracket)
-  private _currentFilePath: string | null = null
-  private _hotkeys: { [key: string]: () => void } = {}
-  private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
-  public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
-  public isBufferMode = false
+  private _cancelTokens: Map<number, boolean> = new Map()
+  private _executeIsStale: ExecuteArgs | null = null
+  private _isExecuting = signal(false)
+  get isExecuting() {
+    return this._isExecuting.value
+  }
+  get isExecutingSignal() {
+    return this._isExecuting
+  }
   private _copilotEnabled: boolean = true
   private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
-  private _selectionRanges: Selections = {
-    otherSelections: [],
-    graphSelections: [],
-  }
-  private _lastEvent: { event: string; time: number } | null = null
-  private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
-  private _modelingState: StateFrom<typeof modelingMachine> | null = null
+  private _kclVersion: string | undefined = undefined
+  private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
+  private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
+    undefined
+  public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+  public isBufferMode = false
+  sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
+  /** Values merged in from former EditorManager and CodeManager classes */
+  private _currentFilePath: string | null = null
   private _convertToVariableEnabled: boolean = false
   private _convertToVariableCallback: () => void = () => {}
-  private _highlightRange: Array<[number, number]> = [[0, 0]]
-  private _editorState: EditorState
-  private _editorView: EditorView | null = null
-  /** End merged items */
 
-  /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
-  set wasmInstancePromise(newInstancePromise: Promise<ModuleType | string>) {
-    this._wasmInstance = newInstancePromise
-  }
-  get ast() {
-    return this._ast.value
-  }
-  set ast(ast) {
-    if (this._ast.value.body.length !== 0) {
-      // last intact ast, if the user makes a typo with a syntax error, we want to keep the one before they made that mistake
-      this._lastAst = structuredClone(this._ast.value)
-    }
-    this._ast.value = ast
-  }
-  get astSignal() {
-    return this._ast
+  // CONFIGURATION
+
+  /** In the future this could be a setting. */
+  public longExecutionTimeMs = 1000 * 60 * 5
+  private _hotkeys: { [key: string]: () => void } = {
+    ['Ctrl-Shift-c']: () => this.convertToVariable(),
+    ['Alt-Shift-f']: () => {
+      void this.format().catch(reportRejection)
+    },
   }
 
   set switchedFiles(switchedFiles: boolean) {
@@ -345,13 +375,6 @@ export class KclManager extends EventTarget {
 
   setDiagnosticsForCurrentErrors() {
     this.setDiagnostics(this.diagnostics)
-  }
-
-  get isExecuting() {
-    return this._isExecuting.value
-  }
-  get isExecutingSignal() {
-    return this._isExecuting
   }
 
   set sceneEntitiesManager(s: SceneEntities) {
@@ -571,8 +594,6 @@ export class KclManager extends EventTarget {
 
     return result.program
   }
-
-  private _cancelTokens: Map<number, boolean> = new Map()
 
   // This NEVER updates the code, if you want to update the code DO NOT add to
   // this function, too many other things that don't want it exist. For that,
@@ -1003,7 +1024,10 @@ export class KclManager extends EventTarget {
     )
   }
 
-  /** Merged code from EditorManager and CodeManager classes. */
+  /** TODO: make this and `editorState` always guaranteed present */
+  get editorView() {
+    return this._editorView
+  }
   get editorState(): EditorState {
     return this._editorView?.state || this._editorState
   }
@@ -1375,15 +1399,6 @@ export class KclManager extends EventTarget {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.engineCommandManager.sendSceneCommand(event)
     })
-  }
-  set code(code: string) {
-    this._code.value = code
-  }
-  get code(): string {
-    return this._code.value
-  }
-  get codeSignal() {
-    return this._code
   }
   localStoragePersistCode(): string {
     return safeLSGetItem(PERSIST_CODE_KEY) || ''
