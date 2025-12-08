@@ -89,8 +89,14 @@ export type SketchSolveMachineEvent =
       data: {
         kclSource: SourceDelta
         sceneGraphDelta: SceneGraphDelta
-        debounceEditorUpdate?: boolean // If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
-        writeToDisk?: boolean // If false, skip persisting to disk (useful for high-frequency drag updates)
+        /**
+         * If true, debounce editor updates to allow cancellation (e.g., for double-click handling)
+         */
+        debounceEditorUpdate?: boolean
+        /**
+         * If false, skip persisting to disk (useful for high-frequency drag updates)
+         */
+        writeToDisk?: boolean
       }
     }
   | { type: 'delete selected' }
