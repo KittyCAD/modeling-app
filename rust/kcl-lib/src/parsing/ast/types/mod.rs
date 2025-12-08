@@ -1268,6 +1268,33 @@ impl Expr {
             _ => None,
         }
     }
+
+    /// If we have a named function expression, return the name being declared.
+    /// This is a purely lexical check to handle the fact that we copy the fn
+    /// variable declaration name to the function expression name while parsing.
+    pub fn fn_declaring_name(&self) -> Option<&str> {
+        match self {
+            Expr::Literal(_) => None,
+            Expr::Name(_) => None,
+            Expr::TagDeclarator(_) => None,
+            Expr::BinaryExpression(_) => None,
+            Expr::FunctionExpression(func) => func.name.as_ref().map(|name| name.name.as_str()),
+            Expr::CallExpressionKw(_) => None,
+            Expr::PipeExpression(_) => None,
+            Expr::PipeSubstitution(_) => None,
+            Expr::ArrayExpression(_) => None,
+            Expr::ArrayRangeExpression(_) => None,
+            Expr::ObjectExpression(_) => None,
+            Expr::MemberExpression(_) => None,
+            Expr::UnaryExpression(_) => None,
+            Expr::IfExpression(_) => None,
+            Expr::LabelledExpression(node) => node.expr.fn_declaring_name(),
+            Expr::AscribedExpression(node) => node.expr.fn_declaring_name(),
+            Expr::SketchBlock(_) => None,
+            Expr::SketchVar(_) => None,
+            Expr::None(_) => None,
+        }
+    }
 }
 
 impl From<Expr> for SourceRange {
@@ -3297,6 +3324,10 @@ pub enum UnaryOperator {
     #[serde(rename = "!")]
     #[display("!")]
     Not,
+    /// Identity for numbers.
+    #[serde(rename = "+")]
+    #[display("+")]
+    Plus,
 }
 
 impl UnaryOperator {
@@ -3304,6 +3335,7 @@ impl UnaryOperator {
         match self {
             UnaryOperator::Neg => *b"neg",
             UnaryOperator::Not => *b"not",
+            UnaryOperator::Plus => *b"pls",
         }
     }
 }
@@ -3687,6 +3719,8 @@ fn return_true() -> bool {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct FunctionExpression {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<Node<Identifier>>,
     pub params: Vec<Parameter>,
     pub body: Node<Program>,
     #[serde(skip)]
@@ -3724,6 +3758,7 @@ impl FunctionExpression {
         &self,
     ) -> Result<(&[Parameter], &[Parameter]), RequiredParamAfterOptionalParam> {
         let Self {
+            name: _,
             params,
             body: _,
             digest: _,
@@ -3794,6 +3829,7 @@ impl FunctionExpression {
     pub fn dummy() -> Box<Node<Self>> {
         Box::new(Node::new(
             FunctionExpression {
+                name: None,
                 params: Vec::new(),
                 body: Node::new(Program::default(), 0, 0, ModuleId::default()),
                 return_type: None,
@@ -4336,6 +4372,7 @@ cylinder = startSketchOn(-XZ)
                 "no params",
                 (0..=0),
                 Node::no_src(FunctionExpression {
+                    name: None,
                     params: vec![],
                     body: Program::empty(),
                     return_type: None,
@@ -4346,6 +4383,7 @@ cylinder = startSketchOn(-XZ)
                 "all required params",
                 (1..=1),
                 Node::no_src(FunctionExpression {
+                    name: None,
                     params: vec![Parameter {
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
@@ -4365,6 +4403,7 @@ cylinder = startSketchOn(-XZ)
                 "all optional params",
                 (0..=1),
                 Node::no_src(FunctionExpression {
+                    name: None,
                     params: vec![Parameter {
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
@@ -4384,6 +4423,7 @@ cylinder = startSketchOn(-XZ)
                 "mixed params",
                 (1..=2),
                 Node::no_src(FunctionExpression {
+                    name: None,
                     params: vec![
                         Parameter {
                             identifier: Node::no_src(Identifier {

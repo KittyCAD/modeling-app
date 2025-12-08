@@ -31,6 +31,7 @@ import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 const changesDelay = 600
 
@@ -38,15 +39,20 @@ const changesDelay = 600
 export class KclPlugin implements PluginValue {
   private viewUpdate: ViewUpdate | null = null
   private client: LanguageServerClient
-  private kclManager: KclManager
+  private readonly kclManager: KclManager
+  private readonly sceneEntitiesManager: SceneEntities
 
   constructor(
     client: LanguageServerClient,
     view: EditorView,
-    kclManager: KclManager
+    systemDeps: {
+      kclManager: KclManager
+      sceneEntitiesManager: SceneEntities
+    }
   ) {
     this.client = client
-    this.kclManager = kclManager
+    this.kclManager = systemDeps.kclManager
+    this.sceneEntitiesManager = systemDeps.sceneEntitiesManager
 
     // Gotcha: Code can be written into the CodeMirror editor but not propagated to kclManager.code
     // because the update function has not run. We need to initialize the kclManager.code when lsp initializes
@@ -56,7 +62,7 @@ export class KclPlugin implements PluginValue {
       return plugin.client.name === 'kcl'
     })
     if (kclLspPlugin) {
-      kclManager.code = view.state.doc.toString()
+      systemDeps.kclManager.code = view.state.doc.toString()
     }
   }
 
@@ -70,7 +76,11 @@ export class KclPlugin implements PluginValue {
       return
     }
 
-    this.kclManager.handleOnViewUpdate(this.viewUpdate, processCodeMirrorRanges)
+    this.kclManager.handleOnViewUpdate(
+      this.viewUpdate,
+      processCodeMirrorRanges,
+      this.sceneEntitiesManager
+    )
   }, 50)
 
   update(viewUpdate: ViewUpdate) {
@@ -223,12 +233,15 @@ export class KclPlugin implements PluginValue {
 
 export function kclPlugin(
   options: LanguageServerOptions,
-  kclManager: KclManager
+  systemDeps: {
+    kclManager: KclManager
+    sceneEntitiesManager: SceneEntities
+  }
 ): Extension {
   return [
     lspPlugin(options),
     ViewPlugin.define(
-      (view) => new KclPlugin(options.client, view, kclManager)
+      (view) => new KclPlugin(options.client, view, systemDeps)
     ),
   ]
 }
