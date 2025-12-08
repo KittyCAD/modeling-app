@@ -594,7 +594,11 @@ const OperationItem = (props: OperationProps) => {
   }
 
   function enterAppearanceFlow() {
-    if (props.item.type === 'StdLibCall') {
+    if (
+      props.item.type === 'StdLibCall' ||
+      (props.item.type === 'GroupBegin' &&
+        props.item.group.type === 'FunctionCall')
+    ) {
       props.send({
         type: 'enterAppearanceFlow',
         data: {
@@ -786,10 +790,18 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall'
+      ...(props.item.type === 'StdLibCall' ||
+      (props.item.type === 'GroupBegin' &&
+        props.item.group.type === 'FunctionCall')
         ? [
             <ContextMenuItem
-              disabled={!stdLibMap[props.item.name]?.supportsAppearance}
+              disabled={
+                !(
+                  (props.item.type === 'GroupBegin' &&
+                    props.item.group.type === 'FunctionCall') ||
+                  stdLibMap[props.item.name]?.supportsAppearance
+                )
+              }
               onClick={enterAppearanceFlow}
               data-testid="context-menu-set-appearance"
             >
