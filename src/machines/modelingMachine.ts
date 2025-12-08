@@ -186,6 +186,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'Sketch no face' }
   | { type: 'Cancel'; cleanup?: () => void }
+  | { type: 'Exit sketch' }
   | {
       type: 'Add start point' | 'Continue existing profile'
       data: {
@@ -5455,7 +5456,6 @@ export const modelingMachine = setup({
               target: '#sketchSolveMode.exiting',
             },
           },
-          exit: [sendTo('sketchSolveMachine', { type: 'exit' })],
         },
         exiting: {
           invoke: {
@@ -5483,6 +5483,10 @@ export const modelingMachine = setup({
           // - If tool equipped in ShowDraftLine: delete draft, return to ready
           // - If tool equipped in ready: unequip tool
           // - If no tool equipped (move and select): exit sketch mode
+        },
+        'Exit sketch': {
+          actions: [sendTo('sketchSolveMachine', { type: 'exit' })],
+          // Exit sketch immediately, bypassing tool unequip logic
         },
         'equip tool': {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],

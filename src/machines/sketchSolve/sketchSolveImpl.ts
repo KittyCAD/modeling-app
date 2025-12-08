@@ -66,6 +66,7 @@ export type SpawnToolActor = <K extends EquipTool>(
 
 export type SketchSolveMachineEvent =
   | { type: 'exit' }
+  | { type: 'escape' }
   | { type: 'update selection'; data?: SetSelections }
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
@@ -498,7 +499,7 @@ export function cleanupSketchSolveGroup({ context }: SolveActionArgs) {
   const sketchSegments =
     context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   if (!sketchSegments || !(sketchSegments instanceof Group)) {
-    console.log('yo no sketch segments to clean up')
+    // no segments to clean
     return
   }
   // We have to manually remove the CSS2DObjects
@@ -696,6 +697,7 @@ export async function deleteDraftEntities({
   self,
 }: SolveActionArgs): Promise<void> {
   if (!context.draftEntities) {
+    // No draft entities to delete, the always guard will handle the transition
     return
   }
 
@@ -719,10 +721,53 @@ export async function deleteDraftEntities({
           sceneGraphDelta: result.sceneGraphDelta,
         },
       })
-      self.send({ type: 'clear draft entities' })
     }
+    // Always clear draft entities, even if deletion failed or returned no result
+    // This allows the exit flow to continue
+    self.send({ type: 'clear draft entities' })
   } catch (error) {
     console.error('Failed to delete draft entities:', error)
+    // Clear draft entities even on error to allow exit to continue
+    self.send({ type: 'clear draft entities' })
+  }
+}
+
+/**
+ * Promise-based function for deleting draft entities during exit.
+ * Returns the result of deletion (if any) so it can be handled in onDone.
+ */
+export async function deleteDraftEntitiesPromise({
+  context,
+}: {
+  context: SketchSolveContext
+}): Promise<{
+  kclSource?: SourceDelta
+  sceneGraphDelta?: SceneGraphDelta
+} | null> {
+  //
+  if (!context.draftEntities) {
+    // No draft entities to delete
+    return null
+  }
+
+  const { segmentIds, constraintIds } = context.draftEntities
+  //
+
+  try {
+    const result = await context.rustContext.deleteObjects(
+      0,
+      context.sketchId,
+      constraintIds,
+      segmentIds,
+      await jsAppSettings()
+    )
+
+    //
+    return result || null
+  } catch (error) {
+    console.error('Failed to delete draft entities:', error)
+    // Return null on error - we'll still clear draft entities in onDone
+    return null
   }
 }
 

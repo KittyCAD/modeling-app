@@ -5,6 +5,7 @@ import {
   sendParent,
   sendTo,
   setup,
+  fromPromise,
 } from 'xstate'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -32,7 +33,6 @@ import {
   initializeIntersectionPlane,
   initializeInitialSceneGraph,
   clearHoverCallbacks,
-  cleanupSketchSolveGroup,
   updateSelectedIds,
   refreshSelectionStyling,
   updateSketchOutcome,
@@ -40,6 +40,8 @@ import {
   setDraftEntities,
   clearDraftEntities,
   deleteDraftEntities,
+  deleteDraftEntitiesPromise,
+  cleanupSketchSolveGroup,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool'
 
@@ -106,6 +108,19 @@ export const sketchSolveMachine = setup({
     }),
   },
   actors: {
+    deleteDraftEntitiesOnExit: fromPromise(
+      async ({
+        input,
+      }: {
+        input: { context: SketchSolveContext }
+      }) => {
+        // Only delete if draft entities exist
+        if (!input.context.draftEntities) {
+          return null
+        }
+        return deleteDraftEntitiesPromise(input)
+      }
+    ),
     moveToolActor: createMachine({
       /* ... */
     }),
@@ -131,12 +146,8 @@ export const sketchSolveMachine = setup({
   initial: 'move and select',
   on: {
     exit: {
-      target: '#Sketch Solve Mode.exiting',
-      actions: [
-        'send unequip to tool',
-        'send tool unequipped to parent',
-        'cleanup sketch solve group',
-      ],
+      target: '#Sketch Solve Mode.exiting with cleanup',
+      actions: ['send unequip to tool', 'send tool unequipped to parent'],
       description:
         'the outside world can request that sketch mode exit, but it needs to handle its own teardown first.',
     },
@@ -472,12 +483,55 @@ export const sketchSolveMachine = setup({
 
       description:
         'Intermediate state while the current tool is cleaning up before spawning a new tool.',
-
-      exit: [() => console.log('exiting switching tool')],
     },
 
+    'exiting with cleanup': {
+      on: {
+        // We override the default `delete draft entities` action with a no-op here
+        // because the async invoke above is already performing that cleanup.
+        'delete draft entities': {
+          actions: [],
+        },
+      },
+      invoke: {
+        id: 'deleteDraftEntitiesOnExit',
+        src: 'deleteDraftEntitiesOnExit',
+        input: ({ context }: { context: SketchSolveContext }) => {
+          return { context }
+        },
+        onDone: {
+          target: '#Sketch Solve Mode.exiting',
+          actions: [
+            ({ event, context, self }) => {
+              // Update code editor if new source was returned
+              if (event.output?.kclSource) {
+                context.kclManager.updateCodeEditor(event.output.kclSource.text)
+              }
+
+              // Scene cleanup will run on entry of final exiting state
+
+              // Always clear draft entities after deletion attempt
+              self.send({ type: 'clear draft entities' })
+            },
+            // No need to update context with scene graph on exit
+          ],
+        },
+        onError: {
+          target: '#Sketch Solve Mode.exiting',
+          actions: [
+            ({ event, context, self }) => {
+              // Clear draft entities even on error to allow exit to continue
+              self.send({ type: 'clear draft entities' })
+            },
+          ],
+        },
+      },
+      description:
+        'Intermediate state that deletes draft entities before final exit. The invoke will return immediately if no draft entities exist, otherwise it waits for deletion to complete.',
+    },
     exiting: {
       type: 'final',
+      entry: ['cleanup sketch solve group'],
       description: 'Place any teardown code here.',
     },
 

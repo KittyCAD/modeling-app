@@ -48,6 +48,7 @@ import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import {
   commandBarActor,
   getLayout,
+  useCommandBarState,
   setLayout,
   settingsActor,
 } from '@src/lib/singletons'
@@ -1698,6 +1699,27 @@ export const ModelingMachineProvider = ({
     {
       enableOnContentEditable: false,
     }
+  )
+
+  const commandBarState = useCommandBarState()
+
+  // Global Esc handler for sketch solve mode when command bar is closed
+  useHotkeys(
+    'esc',
+    () => {
+      // Only handle Esc if we're in sketch solve mode and command bar is closed
+      if (
+        modelingState.matches('sketchSolveMode') &&
+        commandBarState.matches('Closed')
+      ) {
+        modelingSend({ type: 'Cancel' })
+      }
+    },
+    {
+      enableOnFormTags: false,
+      enableOnContentEditable: false,
+    },
+    [modelingState, commandBarState, modelingSend]
   )
 
   useModelingMachineCommands({

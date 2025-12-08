@@ -1234,13 +1234,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         id: 'sketch-exit',
         onClick: ({ modelingSend }) =>
           modelingSend({
-            type: 'Cancel',
+            type: 'Exit sketch',
           }),
         icon: 'arrowLeft',
         status: 'available',
         title: 'Exit sketch',
         showTitle: true,
-        hotkey: 'Esc',
         description: 'Exit the current sketch',
         links: [],
       },
