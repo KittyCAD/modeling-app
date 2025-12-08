@@ -123,7 +123,7 @@ test.describe('Sketch solve edit tests', () => {
       await expect(pointHandles).toHaveCount(9)
     })
 
-    await test.step('Drag point segment 13 down by 30px', async () => {
+    await test.step('Drag point segment 13 down', async () => {
       const segmentBox = await scene.getBoundingBoxOrThrow(
         '[data-segment_id="13"]'
       )
@@ -144,7 +144,7 @@ test.describe('Sketch solve edit tests', () => {
       await editor.expectEditor.not.toContain(lineToEdit)
     })
 
-    await test.step('Drag line segment by dragging midpoint between points 8 and 9 down by 50px', async () => {
+    await test.step('Drag line segment by dragging midpoint between points 8 and 9 down', async () => {
       const midpoint = await getMidpointBetweenSegments(scene, '8', '9')
 
       const lineToEdit = getCodeLine({ code: TEST_CODE, line: 8 })
