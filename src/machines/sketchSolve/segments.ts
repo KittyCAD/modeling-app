@@ -83,7 +83,7 @@ export interface SketchEntityUtils {
    * The method is called both during initialization (from `init`) and when the entity
    * needs to be updated due to state changes (e.g., selection, position updates).
    */
-  update: (args: UpdateSegmentArgs) => any
+  update: (args: UpdateSegmentArgs) => undefined | Error
 }
 
 class PointSegment implements SketchEntityUtils {
