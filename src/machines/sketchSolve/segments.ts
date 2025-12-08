@@ -52,6 +52,9 @@ interface UpdateSegmentArgs {
  * The pattern separates initialization (creating the Three.js Group and its children)
  * from updates (modifying positions, sizes, colors, etc.) to avoid code duplication
  * and ensure consistent behavior across different entity types.
+ * 
+ * if the sketchSolve machine is responsible for drawing the sketch scene, then this is
+ * how it does it.
  */
 export interface SketchEntityUtils {
   /**
