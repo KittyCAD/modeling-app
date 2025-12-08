@@ -116,6 +116,8 @@ pub enum KclError {
     },
     #[error("invalid expression: {details:?}")]
     InvalidExpression { details: KclErrorDetails },
+    #[error("max call stack size exceeded: {details:?}")]
+    MaxCallStack { details: KclErrorDetails },
     #[error("engine: {details:?}")]
     Engine { details: KclErrorDetails },
     #[error("internal error, please report to KittyCAD team: {details:?}")]
@@ -320,6 +322,7 @@ impl miette::Diagnostic for ReportWithOutputs {
             KclError::ValueAlreadyDefined { .. } => "ValueAlreadyDefined",
             KclError::UndefinedValue { .. } => "UndefinedValue",
             KclError::InvalidExpression { .. } => "InvalidExpression",
+            KclError::MaxCallStack { .. } => "MaxCallStack",
             KclError::Engine { .. } => "Engine",
             KclError::Internal { .. } => "Internal",
         };
@@ -370,6 +373,7 @@ impl miette::Diagnostic for Report {
             KclError::ValueAlreadyDefined { .. } => "ValueAlreadyDefined",
             KclError::UndefinedValue { .. } => "UndefinedValue",
             KclError::InvalidExpression { .. } => "InvalidExpression",
+            KclError::MaxCallStack { .. } => "MaxCallStack",
             KclError::Engine { .. } => "Engine",
             KclError::Internal { .. } => "Internal",
         };
@@ -494,6 +498,7 @@ impl KclError {
             KclError::ValueAlreadyDefined { .. } => "value already defined",
             KclError::UndefinedValue { .. } => "undefined value",
             KclError::InvalidExpression { .. } => "invalid expression",
+            KclError::MaxCallStack { .. } => "max call stack",
             KclError::Engine { .. } => "engine",
             KclError::Internal { .. } => "internal",
         }
@@ -512,6 +517,7 @@ impl KclError {
             KclError::ValueAlreadyDefined { details: e } => e.source_ranges.clone(),
             KclError::UndefinedValue { details: e, .. } => e.source_ranges.clone(),
             KclError::InvalidExpression { details: e } => e.source_ranges.clone(),
+            KclError::MaxCallStack { details: e } => e.source_ranges.clone(),
             KclError::Engine { details: e } => e.source_ranges.clone(),
             KclError::Internal { details: e } => e.source_ranges.clone(),
         }
@@ -531,6 +537,7 @@ impl KclError {
             KclError::ValueAlreadyDefined { details: e } => &e.message,
             KclError::UndefinedValue { details: e, .. } => &e.message,
             KclError::InvalidExpression { details: e } => &e.message,
+            KclError::MaxCallStack { details: e } => &e.message,
             KclError::Engine { details: e } => &e.message,
             KclError::Internal { details: e } => &e.message,
         }
@@ -549,6 +556,7 @@ impl KclError {
             | KclError::ValueAlreadyDefined { details: e }
             | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression { details: e }
+            | KclError::MaxCallStack { details: e }
             | KclError::Engine { details: e }
             | KclError::Internal { details: e } => e.backtrace.clone(),
         }
@@ -568,6 +576,7 @@ impl KclError {
             | KclError::ValueAlreadyDefined { details: e }
             | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression { details: e }
+            | KclError::MaxCallStack { details: e }
             | KclError::Engine { details: e }
             | KclError::Internal { details: e } => {
                 e.backtrace = source_ranges
@@ -598,6 +607,7 @@ impl KclError {
             | KclError::ValueAlreadyDefined { details: e }
             | KclError::UndefinedValue { details: e, .. }
             | KclError::InvalidExpression { details: e }
+            | KclError::MaxCallStack { details: e }
             | KclError::Engine { details: e }
             | KclError::Internal { details: e } => {
                 if let Some(item) = e.backtrace.last_mut() {

@@ -252,6 +252,12 @@ impl FunctionSource {
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
 
+        if exec_state.stack().len() >= 10_000 {
+            return Err(KclError::MaxCallStack {
+                details: KclErrorDetails::new("maximum call stack size exceeded".to_string(), vec![callsite]),
+            });
+        }
+
         // Don't early return until the stack frame is popped!
         self.body.prep_mem(exec_state);
 
