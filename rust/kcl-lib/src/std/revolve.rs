@@ -137,7 +137,7 @@ async fn inner_revolve(
         None => BodyType::default(),
         Some(other) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Unknown body type {other}, try useing `SOLID` or `SURFACE`"),
+                format!("Unknown body type {other}, try using `SOLID` or `SURFACE`"),
                 vec![args.source_range],
             )));
         }
