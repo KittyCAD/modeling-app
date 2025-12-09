@@ -190,7 +190,7 @@ jobs:
           cd rust/kcl-language-server
           npx vsce package --yarn -o ../build/kcl-language-server-no-server.vsix --pre-release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: release-${{ matrix.target }}
           path: ./rust/build
@@ -252,7 +252,7 @@ jobs:
           cd rust/kcl-language-server
           npx vsce package --yarn -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64 --pre-release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: release-x86_64-unknown-linux-musl
           path: ./rust/build
