@@ -772,6 +772,7 @@ export async function deleteDraftEntitiesPromise({
       segmentIds,
       await jsAppSettings()
     )
+    console.log('result', result)
 
     //
     return result || null

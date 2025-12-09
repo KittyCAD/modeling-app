@@ -3,7 +3,6 @@ import {
   assign,
   createMachine,
   sendParent,
-  sendTo,
   setup,
   fromPromise,
 } from 'xstate'
@@ -71,8 +70,18 @@ export const sketchSolveMachine = setup({
     setUpOnDragAndSelectionClickCallbacks,
     'clear hover callbacks': clearHoverCallbacks,
     'cleanup sketch solve group': cleanupSketchSolveGroup,
-    'send unequip to tool': sendTo(CHILD_TOOL_ID, { type: 'unequip' }),
-    'send escape to tool': sendTo(CHILD_TOOL_ID, { type: 'escape' }),
+    'send unequip to tool': ({ context, system }) => {
+      // Only send if a tool is actually equipped
+      if (context.sketchSolveToolName) {
+        system.get(CHILD_TOOL_ID)?.send({ type: 'unequip' })
+      }
+    },
+    'send escape to tool': ({ context, system }) => {
+      // Only send if a tool is actually equipped
+      if (context.sketchSolveToolName) {
+        system.get(CHILD_TOOL_ID)?.send({ type: 'escape' })
+      }
+    },
     'store pending tool': assign(({ event }) => {
       assertEvent(event, 'equip tool')
       return { pendingToolName: event.data.tool }
@@ -121,7 +130,7 @@ export const sketchSolveMachine = setup({
     ...equipTools,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAMwcAjAA4AdAHYALADYVC6WoCcshQCYANCACeiORxVK5BhWo4KVclTelGAvl7NpMuAQk5FQ09ACufBAAhhgUsGDEYFgYIqKcPEggAkKpYhJSCHIactJKegCsehyaVRUV0hoKZpYIALRqRrZyFUZGpcVVnpU+fujY+ERkFNS0dJExcXiw44GE4diEALZgGRI5wvlZhUYcGhxKagoVJerujSrSLYgdRmpKGkZ6JW86FdoaUYgfwTILTUJzBIYPAQABO0QAZtCwKJUqk4Hssgc8uJjlY9Co9OUSucmqUjNdnu1PrZruc1NIGmpmW8gSDAlMQrN6FgktFYTD4Ui8Ci0cwMdx9oJDrjQIUBmUjJ41Co+iqevoqW1pHp3oyul8SjViio2atJsEZmE6LQkks4YjkajhBLMvxpTiCogvtolDdHDrjBxpJ4tZ13p9vnJfoyAWaAhbwdyGLAsNE+LtJViPWkvQgjBU1BUlJ5ekYNAYugSVGGaqpnM4FKUVBpOiH46DOVa5lhCMxRFhmLRUZj3blc3iEMy5HIlEqODVvl9dXoqXoC0obE4KsZrNIeoDfMDzWCudaACLMWAYaIDzNu7I5o5ymStokEs6KVUDNcbrccHd+mDHoKg7DlLQhegAAV+WiYgkmIUdH3HZ9JBkXplBqCsGQAkMdTUX9i3-QC9xAsDEzPOYABl+zgABRABHcI4KolEoAwHAkOxCcXynfpZ30Cl1BDToukIzd1AA3dgJucjT27egADUwFhVI00QrMxxlPMnAMOxmyuQspIIixEHXIjJJImTDzGBN5MgugAAlCFhZgAC8xBvDSH241DCh1f45yLIt90+Dhqg0cTiOk-d6jkrsHIWWJ4kSZI4ggPAh1gLin1lNCig0JolCDasFF3VVV1M6keg+FQKmNdwDC0PR4og5NbUwFKkhSSAcpQvL-MJWdnBVBk5AZT45CiyyYoPVqkzCJQtkIEJbwyhJuowG0xDAJR+1IQh0CWlawAAFUIEg+u0ycCxsS5-gqexCQZR6TNaPQiULV6mmucbrlNI92QohTjtW0R1tSlIGFhWEXKUPhiFiBEXK2UGzou7ypX6vNbuUaMmpE7RnAqKlxo0Ow-gpddyyLOR5so3blrBiHNoYJjmD4PAMAxq7PUnclhuE9RmQJNQeipNUPmkR5vkZRd+gB2zOzaxamYoNblkhra4DTDNeZ4-L+gUC5y0Kws3Eer4qU+MoNGkHRdTqQwFHpkHwiEUQoC5jH5lEMB2c57nLs05Drt4voqhLGdehVPQZw4JUqUaYsQ0cBQK3ClrAZPBLuSUd3+y9oPiDZ8IOe94OfNynGCyJfcejeIa9ypK5Z0Kilen3dxNDUV3IPzj2i59nX03vLGw8N+xlALT5LYZWmSaq43lFcOPSh3XV9F77O7NzxamGET28AAd1YfBeTAW9Im2v29tEA6jo6uJzyFDA6OddFYAAeVEOiWHYEOvkBpWGNkYcoMtPAlH0GcRerQWzvEemVNeqdHp9zzgfVIR9T4cTwBfK+fBoaw1hPDRGGBkawlRk-MAL9HTvzFHAH+f9WD6z8iAhO4CdSQPGhFWBiB07KDKroCs9twr9GkGg-e-9C4nzPrgvkohr5UMFI6EUH9xTZUAdXfmoCOGVigTwtcjwgrGxVDSD6xQfBHlEGEeAWQgb2W5OPPmvEZyfHKLqFQLZow2EKlqdOfpCrG0jJNPo4id7KwWrQNGeANYbTSk4g28odzTxcPoFsxs9BlV4UUUoATSi6gUJk9QGgdwSKiQXI+xcEmsIKmcOcnjwqjQMDOJO9gSyfnLH0LohTCxlN2rAbBuBpFVOzNjG6FVNx9HUFUYS9saxVX0ESOq0Z6rpy+F0RkfSlAYOkdg8+8jIjVOAUUIC7iVReNOC2SKS9Gh+kUIUmcKC6bhPApE3aOzPZHJxhWWw6pejyA1I0Um1gPgAR9OGRQpwbLHl3ircpfsA58GGRjL54yvj6UZIZMsGyk4lICZ8achYdBhJ8EAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAMwBOAKwBGAHQA2eQHYALKo7rZ0gBwAmADQgAnomPTpyjscfSOik8Y3T5xgL7fzaTFwCEnIqGnoAVz4IAEMMClh0bHxCCOxCAFswTh4kEAEhDBFxPKkEYxN5NRNVEwNPDi1zKwQAWgqq6S0NeVlFRQ5bQ3lVX38koKIyCmpaOlhMPAgAJxiAMww8MFEiorgciQLhMQky4y0tOwHpc+M+jgd5ZsR24eUujV0TDg1FVWMfmMQAFksFpmE5lhiGAYsslqsNlsdsJ9txDoJjiVQGVFLJVFplACNDYLo1pP8zJYXu4qrpFPIyZpVNptECQZMQjNwnRaND4vD1pttrtmKjcvwMUUTqUZLoqoZ-lofqoFLjDNJnm0Ou9ur1+oMjCM2RN8FNQrN6HAsDE+Nk0XkjlKsZIZMZFHZfgDSRcGdpNe1ie9iTctK5updjYFTZyIfQsIRmKIsMxaDsDg7JcVTogGf9CY1DP0NIZfiNNQNLspKhUuqpnJp5JHQWauXMACLMWAYGJJu3i-KZ6XYnMAlQuQw-Gxujh48tkqvGLzqnT1npNjngi10AAKsJixGhxHTEsKWZlCHk0kUGkJF3xhq8WieVIQFbs1eXdY4DfX0c33IAGUTOAAFEAEcIn3ADtigDAcGPAdTyHF0EC0BVjGUHRPnJLQ+kuJoXzfBcl1rVdGz8YETTBc1uQANTAZYimtI97RPTFs1Q7QCQ4QxhgGFUNA0Po50rD9SO-NcKPZP8aLmAAJQhlmYAAvMRuxY-tHTPYdUK+QkATdS9cTuHoRPfRcaxXCTyPGKNqNbSJojiBIwGhLB4ggPAU1gBCtOQs4bBvekelJeRcKUAiWgDK5VHUCcJ0vf5RikqiW1jHlXMwFy3I83zB2dMoLi0DDvwUb9nB4iozOIyyvx-FK7LSi1lAyQhQh7TyFhynkxDAZRE1IQh0BatqwAAFUIEg8qQgqZHpQxMJuCpcSUeR5BLTU3QWu462Jd1i1kcrf3s2MRva0ROsy9yGGWZZFOUPhiDiNZFIyM7xsmjT0Rmjir16ZQK0URcGQZP5NvxZQDF1UMeiMDRAQa5sY2a1rzsu7qwAg5g+DwDBPum9jz1xQNGj6cldBVNDZE1Lo7CMdC-kGElFGOprwnevAOrwLqwGuq0bT7b7CZ0m5-tDfDYqfATNWLDg1EnNbDGK5xalZ5H2YiIRRCgXHProCJRExiJsd1qbWMQ4WUPcT5MLQxRQzuXMFE1bo5ZufElXK2p1rV-9aGUTXEx1vGSAYLGcZDr6Mx+89rdUW3CwdsqNE1db4-UHjvx0Hilt92S+sD7XTeIBhYGtW0CadDjHFDd5ZCVn5+lcYxYpl+uAfUS8FCGYYfERjd8+UJhhCLgB3Vh8ChGFRCiHrDf60RBuG3ksrbBEMBA5E9lgAB5UQQJYdhzb82aEHJRc1HW9btFi5UXaEwlC2JH4J2ZekbMoxr1f94eijHie8BTx7LPBid1lgPSehgF6yw3or3iGvQUm8RRwD3gfVgldtIoXPvHG4fRYrMkMH0YsqcDDKHWneYsT4DCxTzg5Ieh8g54HHnBQB0JgF8AynyCgKxBRImQT5Y++VfpK3jg8CystZCfG-JqPEcshLaELOSHisg3S+AoqIcI8A8jSROhaIWVciYqO4rhd0t9KaEJphhMM0hiwUj2sDWhp1UYUC5jzdy+jMEBTkISCkvR1SFlnC+Kc7wgb-BcBFXia1HHNULsHT6Hj-LWEXDeRcrgRiHXUM3F2Rh7CaE8PbHoRkP46LZv7WAzDcCMMjgk0+zgL6ELWnKWG7sSFVG0EDXC7gbATi0NE9mv9GHMMnmwmefAam-Q8CVC4NhGh6HOBqF8Hh44DDWvhfJ15ZB9J-gw7W4zzxKJvIQyotR-jDHWptZwkNwy6lzN0euWyC6G3DnwKp8To6WzKHUqo9c6x1npEtRQLtVAqEabcEYxUFSNDUd4IAA */
   context: ({ input }): SketchSolveContext => {
     return {
       sketchSolveToolName: null,
@@ -475,10 +484,8 @@ export const sketchSolveMachine = setup({
 
     'exiting with cleanup': {
       on: {
-        // We override the default `delete draft entities` action with a no-op here
-        // because the async invoke above is already performing that cleanup.
         'delete draft entities': {
-          actions: [],
+          description: `We override the default "delete draft entities" action with a no-op here because the async invoke above is already performing that cleanup.`,
         },
       },
       invoke: {
