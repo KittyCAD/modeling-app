@@ -1,5 +1,6 @@
 import { isArray } from '@src/lib/utils'
 import { type Object3D, type Group, BufferGeometry, Material } from 'three'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 /**
  * Dispose of all children (and grandchildren...) of a THREE.Group or Object3D.
@@ -21,6 +22,13 @@ function disposeObject(obj: Object3D): void {
   for (let i = obj.children.length - 1; i >= 0; i--) {
     disposeObject(obj.children[i])
     obj.remove(obj.children[i])
+  }
+
+  // CSS2DObject needs special handling: remove its DOM element from the DOM
+  // before removing it from the Three.js scene graph
+  if (obj instanceof CSS2DObject) {
+    console.log('did a thing?', obj.element)
+    obj.element.remove()
   }
 
   // Dispose geometry if present

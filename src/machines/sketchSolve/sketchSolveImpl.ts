@@ -350,7 +350,7 @@ export function updateSceneGraphFromDelta({
   // TODO ask Jon if there's a better way to determine what objects are part of the current sketch
   let skipBecauseBeforeCurrentSketch = true
   let skipBecauseAfterCurrentSketch = false
-  sceneGraphDelta.new_graph.objects.forEach((obj) => {
+  objects.forEach((obj) => {
     if (obj.kind.type === 'Sketch' && obj.id === context.sketchId) {
       skipBecauseBeforeCurrentSketch = false
     }
@@ -512,14 +512,6 @@ export function cleanupSketchSolveGroup({ context }: SolveActionArgs) {
     // no segments to clean
     return
   }
-  // We have to manually remove the CSS2DObjects
-  // as they don't get removed when the group is removed
-  sketchSegments.traverse((object) => {
-    if (object instanceof CSS2DObject) {
-      object.element.remove()
-      object.remove()
-    }
-  })
   disposeGroupChildren(sketchSegments)
 }
 
