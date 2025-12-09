@@ -688,6 +688,24 @@ function isNodeSafe(node: Expr): boolean {
 /**
  * Get an artifact from a code source range
  */
+export function getArtifactsAtCursor(
+  cursor: number,
+  artifactGraph: ArtifactGraph
+): Artifact[] | null {
+  const matches: Artifact[] = []
+  for (const artifact of artifactGraph.values()) {
+    const codeRef = getFaceCodeRef(artifact)
+    if (codeRef) {
+      const match = codeRef.range[0] <= cursor && codeRef.range[1] >= cursor
+      if (match) matches.push(artifact)
+    }
+  }
+  return matches.length ? matches : null
+}
+
+/**
+ * Get an artifact from a code source range
+ */
 export function getArtifactFromRange(
   range: SourceRange,
   artifactGraph: ArtifactGraph

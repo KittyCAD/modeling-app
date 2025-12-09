@@ -1,10 +1,14 @@
 import type { Extension, Range } from '@codemirror/state'
-import { StateEffect, StateField, Annotation } from '@codemirror/state'
+import { StateEffect, StateField, Annotation, Facet } from '@codemirror/state'
 import { Decoration, EditorView } from '@codemirror/view'
 
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
+import {
+  getArtifactFromRange,
+  getArtifactsAtCursor,
+  getCodeRefsByArtifactId,
+} from '@src/lang/std/artifactGraph'
 
 const artifactAnnotationsAnnotation = Annotation.define<boolean>()
 /** Transaction annotation to identify artifact annotation updates */
@@ -33,6 +37,59 @@ export const artifactGraphField = StateField.define<ArtifactGraph>({
     }
     return value
   },
+})
+
+/** A freestanding Facet that holds an artifact array */
+export const graphSelectionsFacet = Facet.define<Artifact[]>({
+  // combine(input) {
+  //   return Array.from(new Set(input))
+  // },
+  // /** Artifact graph selections match when all of constituent artifacts' IDs match */
+  // compare(a, b) {
+  //   const flatA = a.flat()
+  //   const flatB = b.flat()
+  //   return (
+  //     flatA.length === flatB.length &&
+  //     flatA.every((artifactA) =>
+  //       flatB.findIndex((artifactB) => artifactA.id === artifactB.id)
+  //     )
+  //   )
+  // },
+})
+
+/** A CodeMirror extension that computes an artifact array based on the current selection and artifactGraph */
+const deriveGraphSelections = graphSelectionsFacet.compute(
+  ['selection', artifactGraphField],
+  (state) => {
+    const graph = state.field(artifactGraphField)
+    const selection = state.selection
+    let graphSelections: Artifact[] = []
+
+    for (const range of selection.ranges) {
+      const artifacts = getArtifactsAtCursor(range.head, graph)
+      if (artifacts?.length) {
+        graphSelections = graphSelections.concat(artifacts.flat())
+      }
+    }
+
+    console.log('deriving some graph selections!', {
+      selection,
+      graph,
+      graphSelections,
+    })
+    return graphSelections
+  }
+)
+
+const graphSelectionsLogger = EditorView.updateListener.of((update) => {
+  if (!update.selectionSet) {
+    console.log('No selection change!')
+  } else {
+    console.log(
+      `selection updated, let's check out the graphSelections`,
+      update.state.facet(graphSelectionsFacet)
+    )
+  }
 })
 
 /** Decorations field that stores ranges annotated with artifact metadata */
@@ -96,5 +153,10 @@ function buildArtifactDecorations(
 }
 
 export function artifactAnnotationsExtension(): Extension {
-  return [artifactGraphField, artifactDecorationsField]
+  return [
+    artifactGraphField,
+    artifactDecorationsField,
+    deriveGraphSelections,
+    graphSelectionsLogger,
+  ]
 }
