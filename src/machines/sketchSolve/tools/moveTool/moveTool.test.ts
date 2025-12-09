@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { Group, Vector2, Vector3, Mesh, OrthographicCamera } from 'three'
+import { Group, Vector2, Vector3, Mesh } from 'three'
 import {
   createOnDragStartCallback,
   createOnDragEndCallback,
