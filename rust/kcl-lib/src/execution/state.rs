@@ -281,7 +281,9 @@ impl ExecState {
     /// Increment the user-level call stack size, returning an error if it
     /// exceeds the maximum.
     pub(super) fn inc_call_stack_size(&mut self, range: SourceRange) -> Result<(), KclError> {
-        if self.mod_local.call_stack_size >= 10_000 {
+        // If you change this, make sure to test in WebAssembly in the app since
+        // that's the limiting factor.
+        if self.mod_local.call_stack_size >= 50 {
             return Err(KclError::MaxCallStack {
                 details: KclErrorDetails::new("maximum call stack size exceeded".to_owned(), vec![range]),
             });
