@@ -457,11 +457,7 @@ export class KclManager extends EventTarget {
   private selectionEffectExtension = EditorView.updateListener.of(
     (update: ViewUpdate) => {
       if (update.transactions.some((tr) => tr.isUserEvent('select'))) {
-        this.handleOnViewUpdate(
-          update,
-          processCodeMirrorRanges,
-          this.sceneEntitiesManager
-        )
+        this.handleOnViewUpdate(update, processCodeMirrorRanges)
       }
     }
   )
@@ -1473,14 +1469,15 @@ export class KclManager extends EventTarget {
   // doing. (jess)
   handleOnViewUpdate(
     viewUpdate: ViewUpdate,
-    processCodeMirrorRanges: typeof processCodeMirrorRangesFn,
-    sceneEntitiesManager: SceneEntities
+    processCodeMirrorRanges: typeof processCodeMirrorRangesFn
   ): void {
+    const sceneEntitiesManager = this._sceneEntitiesManager
+    debugger
     const ranges = viewUpdate?.state?.selection?.ranges || []
     if (ranges.length === 0) {
       return
     }
-    if (!this._modelingState) {
+    if (!this._modelingState || !sceneEntitiesManager) {
       return
     }
     if (this._modelingState.matches({ Sketch: 'Change Tool' })) {
