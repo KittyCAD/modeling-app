@@ -724,10 +724,7 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
     await homePage.openProject('test-sample')
     await scene.settled(cmdBar)
     await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
-    const operationButton = await toolbar.getFeatureTreeOperation(
-      'Offset Plane',
-      1
-    )
+    const operationButton = await toolbar.getFeatureTreeOperation('plane002', 1)
 
     await test.step('Delete offset plane via feature tree selection', async () => {
       await expect(operationButton.last()).toBeVisible({ timeout: 10_000 })

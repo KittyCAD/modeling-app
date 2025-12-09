@@ -113,17 +113,17 @@ test.describe('Feature Tree pane', () => {
       }
 
       await testViewSource({
-        operationName: 'Offset Plane',
+        operationName: 'plane001',
         operationIndex: 0,
         expectedActiveLine: 'plane001 = offsetPlane(XY, offset = 10)',
       })
       await testViewSource({
-        operationName: 'Extrude',
+        operationName: 'extrude001',
         operationIndex: 1,
         expectedActiveLine: 'extrude001 = extrude(sketch002, length = 10)',
       })
       await testViewSource({
-        operationName: 'Revolve',
+        operationName: 'revolve001',
         operationIndex: 0,
         expectedActiveLine: 'revolve001 = revolve(sketch001, axis = X)',
       })
@@ -258,7 +258,7 @@ test.describe('Feature Tree pane', () => {
     })
 
     await test.step('Double click on the extrude operation', async () => {
-      await (await toolbar.getFeatureTreeOperation('Extrude', 0))
+      await (await toolbar.getFeatureTreeOperation('renamedExtrude', 0))
         .first()
         .dblclick()
       await editor.expectState({
@@ -386,9 +386,7 @@ test.describe('Feature Tree pane', () => {
     })
 
     await test.step('Double click on the offset plane operation', async () => {
-      await (await toolbar.getFeatureTreeOperation('Offset Plane', 0))
-        .first()
-        .dblclick()
+      await (await toolbar.getFeatureTreeOperation('p', 0)).first().dblclick()
       await editor.expectState({
         highlightedCode: '',
         diagnostics: [],
@@ -474,7 +472,7 @@ profile003 = startProfile(sketch001, at = [0, -4.93])
 
     await test.step(`Delete the remaining plane via feature tree`, async () => {
       const operationButton = await toolbar.getFeatureTreeOperation(
-        'Offset Plane',
+        'plane001',
         0
       )
       await operationButton.click({ button: 'left' })

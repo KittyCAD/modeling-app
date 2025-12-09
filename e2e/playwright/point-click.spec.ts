@@ -840,7 +840,7 @@ openSketch = startSketchOn(XY)
     await test.step('Delete offset plane via feature tree selection', async () => {
       await editor.closePane()
       const operationButton = await toolbar.getFeatureTreeOperation(
-        'Offset Plane',
+        'plane001',
         0
       )
       await operationButton.click({ button: 'left' })
@@ -2928,7 +2928,7 @@ solid001 = extrude(sketch001, length = 5)`
       await test.step('Open edit mode from feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const patternOperation = await toolbar.getFeatureTreeOperation(
-          'Circular Pattern',
+          'pattern001',
           0
         )
         await patternOperation.dblclick()
@@ -3174,7 +3174,7 @@ solid001 = extrude(sketch001, length = 5)`
     await test.step('Delete Pattern Circular 3D', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const patternOperation = await toolbar.getFeatureTreeOperation(
-        'Circular Pattern',
+        'pattern001',
         0
       )
       // Delete the pattern operation
@@ -3370,7 +3370,7 @@ solid001 = extrude(sketch001, length = 5)`
         await toolbar.closePane(DefaultLayoutPaneID.Code)
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const patternOperation = await toolbar.getFeatureTreeOperation(
-          'Linear Pattern',
+          'pattern001',
           0
         )
         await patternOperation.dblclick()
@@ -3516,7 +3516,7 @@ solid001 = extrude(sketch001, length = 5)`
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
 
       const patternOperation = await toolbar.getFeatureTreeOperation(
-        'Linear Pattern',
+        'pattern001',
         0
       )
       await patternOperation.click({ button: 'left' })
