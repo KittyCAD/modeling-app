@@ -6,5 +6,5 @@ rustflags = [
     "--cfg",
     "getrandom_backend=\"wasm_js\"",
     "-C",
-    "link-arg=--max-stack=2147483648",
+    "link-args=-z stack-size=3758096384",
 ]
