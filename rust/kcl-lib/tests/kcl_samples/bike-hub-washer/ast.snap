@@ -2177,6 +2177,18 @@ description: Result of parsing bike-hub-washer.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
+            "value": "Bike hub washer",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
             "value": "Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.",
             "style": "line"
           }
