@@ -143,6 +143,25 @@ code,
 
 #code-mirror-override {
   @apply text-xs;
+
+  /* Operation highlighting CSS. TODO: turn on when we have more rich debug behavior toggling */
+  /* .cm-operation-range { */
+  /* --base-color: oklch(60% .2 15 / .3); */
+
+  /* .dark & { */
+  /* --base-color: oklch(50% .2 15 / .5); */
+  /* } */
+
+  /* background-color: var(--base-color); */
+
+  /* &[data-operation-type="StdLibCall"] { */
+  /* background-color: oklch(from var(--base-color) l c calc(h + 120)); */
+  /* } */
+
+  /* &[data-operation-type="VariableDeclaration"] { */
+  /* background-color: oklch(from var(--base-color) l c calc(h + 240)); */
+  /* } */
+  /* } */
 }
 
 /*
