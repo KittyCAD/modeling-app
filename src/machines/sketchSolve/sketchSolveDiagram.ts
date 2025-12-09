@@ -243,6 +243,8 @@ export const sketchSolveMachine = setup({
             second?.kind?.type === 'Segment' &&
             second?.kind.segment?.type === 'Point'
           ) {
+            // the units of these points will have already been normalized to the user's default units
+            // even `at = [var -0.09in, var 0.19in]` will be unit: 'Mm' if the user's default is mm
             const point1 = {
               x: first.kind.segment.position.x,
               y: first.kind.segment.position.y,
