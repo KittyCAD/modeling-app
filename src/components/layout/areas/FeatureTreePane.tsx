@@ -799,7 +799,8 @@ const OperationItem = (props: OperationProps) => {
                 !(
                   (props.item.type === 'GroupBegin' &&
                     props.item.group.type === 'FunctionCall') ||
-                  stdLibMap[props.item.name]?.supportsAppearance
+                  (props.item.type === 'StdLibCall' &&
+                    stdLibMap[props.item.name]?.supportsAppearance)
                 )
               }
               onClick={enterAppearanceFlow}
