@@ -22,6 +22,7 @@ export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
           matchImportExportErrorCrash(event.message) ||
           matchUnreachableErrorCrash(event.message) ||
           matchStackSizeExceededErrorCrash(event.message) ||
+          matchMemoryAccessOutOfBoundsErrorCrash(event.message) ||
           matchGenericWasmRuntimeHeuristicErrorCrash(event)
         ) {
           // do global singleton cleanup
@@ -80,6 +81,13 @@ const matchUnreachableErrorCrash = (message: string): boolean => {
 
 function matchStackSizeExceededErrorCrash(message: string): boolean {
   const substringError = `Uncaught RangeError: Maximum call stack size exceeded`
+  return message.indexOf(substringError) !== -1
+}
+
+// This can happen when running out of stack memory, especially in debug builds
+// where extra memory allocations aren't optimized away.
+function matchMemoryAccessOutOfBoundsErrorCrash(message: string): boolean {
+  const substringError = `Uncaught RuntimeError: memory access out of bounds`
   return message.indexOf(substringError) !== -1
 }
 
