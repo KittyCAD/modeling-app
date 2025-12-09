@@ -6,7 +6,8 @@ use kcmc::{
     length_unit::LengthUnit,
     shared::{Angle, Opposite},
 };
-use kittycad_modeling_cmds::{self as kcmc, 
+use kittycad_modeling_cmds::{
+    self as kcmc,
     shared::{BodyType, Point3d},
 };
 
@@ -41,8 +42,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_angle: Option<TyF64> =
         args.get_kw_arg_opt("bidirectionalAngle", &RuntimeType::angle(), exec_state)?;
-    let body_type = 
-        args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
+    let body_type = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
 
     let value = inner_revolve(
         sketches,
