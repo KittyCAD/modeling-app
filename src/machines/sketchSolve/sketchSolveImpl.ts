@@ -107,8 +107,15 @@ export type SketchSolveMachineEvent =
   | { type: 'clear draft entities' }
   | { type: 'delete draft entities' }
 
+type ToolActorRef =
+  | ActorRefFrom<typeof dimensionTool>
+  | ActorRefFrom<typeof centerRectTool>
+  | ActorRefFrom<typeof pointTool>
+  | ActorRefFrom<typeof lineTool>
+
 export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
+  childTool?: ToolActorRef
   pendingToolName?: EquipTool
   selectedIds: Array<number>
   duringAreaSelectIds: Array<number>
@@ -807,8 +814,9 @@ export function spawnTool(
   }
   // this type-annotation informs spawn tool of the association between the EquipTools type and the machines in equipTools
   // It's not an type assertion. TS still checks that _spawn is assignable to SpawnToolActor.
-  spawn(nameOfToolToSpawn, {
+  const childTool = spawn(nameOfToolToSpawn, {
     id: CHILD_TOOL_ID,
+    // id: 'child tool',
     input: {
       sceneInfra: context.sceneInfra,
       rustContext: context.rustContext,
@@ -819,6 +827,7 @@ export function spawnTool(
 
   return {
     sketchSolveToolName: nameOfToolToSpawn,
+    childTool: childTool,
     pendingToolName: undefined, // Clear the pending tool after spawning
   }
 }

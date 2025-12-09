@@ -14,6 +14,7 @@ import {
 import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 
 export const TOOL_ID = 'Line tool'
 export const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
@@ -21,17 +22,8 @@ export const ADDING_POINT = `xstate.done.actor.0.${TOOL_ID}.Adding point`
 export const CONFIRMING_DIMENSIONS_EVENT = `xstate.done.actor.0.${TOOL_ID}.${CONFIRMING_DIMENSIONS}`
 
 export type ToolEvents =
-  | { type: 'unequip' }
-  // If the user has a draft line active, hitting escape should cancel it
-  // Otherwise, it should just unequip the tool
-  | { type: 'escape' }
-  | {
-      type: 'add point'
-      data: [x: number, y: number]
-      id?: number
-      // The behavior of the double click is to end the line segment chaining
-      isDoubleClick?: boolean
-    }
+  | BaseToolEvent
+
   // because the single click will still fire before the double click, we have to have a way of
   // doing the single click action (creating a new segment chained to the old one) but then catch this
   // and reverse it if a double click is detected

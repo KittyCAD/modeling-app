@@ -10,15 +10,14 @@ import type {
 import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type { KclManager } from '@src/lang/KclManager'
+import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 
 const TOOL_ID = 'Point tool'
 const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
 const CONFIRMING_DIMENSIONS_DONE = `xstate.done.actor.0.${TOOL_ID}.${CONFIRMING_DIMENSIONS}`
 
 type ToolEvents =
-  | { type: 'unequip' }
-  | { type: 'escape' }
-  | { type: 'add point'; data: [x: number, y: number] }
+  | BaseToolEvent
   | {
       type: `xstate.done.actor.0.${typeof TOOL_ID}.${typeof CONFIRMING_DIMENSIONS}`
       output: {

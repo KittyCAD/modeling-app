@@ -26,7 +26,6 @@ import {
   type SketchSolveMachineEvent,
   type SketchSolveContext,
   type SpawnToolActor,
-  CHILD_TOOL_ID,
   CHILD_TOOL_DONE_EVENT,
   equipTools,
   initializeIntersectionPlane,
@@ -70,19 +69,15 @@ export const sketchSolveMachine = setup({
     setUpOnDragAndSelectionClickCallbacks,
     'clear hover callbacks': clearHoverCallbacks,
     'cleanup sketch solve group': cleanupSketchSolveGroup,
-    'send unequip to tool': ({ context, system }) => {
-      // Only send if a tool is actually equipped
-      if (context.sketchSolveToolName) {
-        system.get(CHILD_TOOL_ID)?.send({ type: 'unequip' })
-      }
+    'send unequip to tool': ({ context }) => {
+      // Use the actor reference directly - optional chaining handles missing actor gracefully
+      context.childTool?.send({ type: 'unequip' })
     },
-    'send escape to tool': ({ context, system }) => {
-      // Only send if a tool is actually equipped
-      if (context.sketchSolveToolName) {
-        system.get(CHILD_TOOL_ID)?.send({ type: 'escape' })
-      }
+    'send escape to tool': ({ context }) => {
+      // Use the actor reference directly - optional chaining handles missing actor gracefully
+      context.childTool?.send({ type: 'escape' })
     },
-    'store pending tool': assign(({ event }) => {
+    'store pending tool': assign(({ event, system }) => {
       assertEvent(event, 'equip tool')
       return { pendingToolName: event.data.tool }
     }),
@@ -93,6 +88,10 @@ export const sketchSolveMachine = setup({
     'send tool unequipped to parent': sendParent({
       type: 'sketch solve tool changed',
       data: { tool: null },
+    }),
+    'clear child tool': assign({
+      sketchSolveToolName: null,
+      childTool: undefined,
     }),
     'update selected ids': assign(updateSelectedIds),
     'refresh selection styling': refreshSelectionStyling,
@@ -130,7 +129,7 @@ export const sketchSolveMachine = setup({
     ...equipTools,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAMwBOAKwBGAHQA2eQHYALKo7rZ0gBwAmADQgAnomPTpyjscfSOik8Y3T5xgL7fzaTFwCEnIqGnoAVz4IAEMMClh0bHxCCOxCAFswTh4kEAEhDBFxPKkEYxN5NRNVEwNPDi1zKwQAWgqq6S0NeVlFRQ5bQ3lVX38koKIyCmpaOlhMPAgAJxiAMww8MFEiorgciQLhMQky4y0tOwHpc+M+jgd5ZsR24eUujV0TDg1FVWMfmMQAFksFpmE5lhiGAYsslqsNlsdsJ9txDoJjiVQGVFLJVFplACNDYLo1pP8zJYXu4qrpFPIyZpVNptECQZMQjNwnRaND4vD1pttrtmKjcvwMUUTqUZLoqoZ-lofqoFLjDNJnm0Ou9ur1+oMjCM2RN8FNQrN6HAsDE+Nk0XkjlKsZIZMZFHZfgDSRcGdpNe1ie9iTctK5updjYFTZyIfQsIRmKIsMxaDsDg7JcVTogGf9CY1DP0NIZfiNNQNLspKhUuqpnJp5JHQWauXMACLMWAYGJJu3i-KZ6XYnMAlQuQw-Gxujh48tkqvGLzqnT1npNjngi10AAKsJixGhxHTEsKWZlCHk0kUGkJF3xhq8WieVIQFbs1eXdY4DfX0c33IAGUTOAAFEAEcIn3ADtigDAcGPAdTyHF0EC0BVjGUHRPnJLQ+kuJoXzfBcl1rVdGz8YETTBc1uQANTAZYimtI97RPTFs1Q7QCQ4QxhgGFUNA0Po50rD9SO-NcKPZP8aLmAAJQhlmYAAvMRuxY-tHTPYdUK+QkATdS9cTuHoRPfRcaxXCTyPGKNqNbSJojiBIwGhLB4ggPAU1gBCtOQs4bBvekelJeRcKUAiWgDK5VHUCcJ0vf5RikqiW1jHlXMwFy3I83zB2dMoLi0DDvwUb9nB4iozOIyyvx-FK7LSi1lAyQhQh7TyFhynkxDAZRE1IQh0BatqwAAFUIEg8qQgqZHpQxMJuCpcSUeR5BLTU3QWu462Jd1i1kcrf3s2MRva0ROsy9yGGWZZFOUPhiDiNZFIyM7xsmjT0Rmjir16ZQK0URcGQZP5NvxZQDF1UMeiMDRAQa5sY2a1rzsu7qwAg5g+DwDBPum9jz1xQNGj6cldBVNDZE1Lo7CMdC-kGElFGOprwnevAOrwLqwGuq0bT7b7CZ0m5-tDfDYqfATNWLDg1EnNbDGK5xalZ5H2YiIRRCgXHProCJRExiJsd1qbWMQ4WUPcT5MLQxRQzuXMFE1bo5ZufElXK2p1rV-9aGUTXEx1vGSAYLGcZDr6Mx+89rdUW3CwdsqNE1db4-UHjvx0Hilt92S+sD7XTeIBhYGtW0CadDjHFDd5ZCVn5+lcYxYpl+uAfUS8FCGYYfERjd8+UJhhCLgB3Vh8ChGFRCiHrDf60RBuG3ksrbBEMBA5E9lgAB5UQQJYdhzb82aEHJRc1HW9btFi5UXaEwlC2JH4J2ZekbMoxr1f94eijHie8BTx7LPBid1lgPSehgF6yw3or3iGvQUm8RRwD3gfVgldtIoXPvHG4fRYrMkMH0YsqcDDKHWneYsT4DCxTzg5Ieh8g54HHnBQB0JgF8AynyCgKxBRImQT5Y++VfpK3jg8CystZCfG-JqPEcshLaELOSHisg3S+AoqIcI8A8jSROhaIWVciYqO4rhd0t9KaEJphhMM0hiwUj2sDWhp1UYUC5jzdy+jMEBTkISCkvR1SFlnC+Kc7wgb-BcBFXia1HHNULsHT6Hj-LWEXDeRcrgRiHXUM3F2Rh7CaE8PbHoRkP46LZv7WAzDcCMMjgk0+zgL6ELWnKWG7sSFVG0EDXC7gbATi0NE9mv9GHMMnmwmefAam-Q8CVC4NhGh6HOBqF8Hh44DDWvhfJ15ZB9J-gw7W4zzxKJvIQyotR-jDHWptZwkNwy6lzN0euWyC6G3DnwKp8To6WzKHUqo9c6x1npEtRQLtVAqEabcEYxUFSNDUd4IAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAMwBOAKwBGAHQA2eQHYALKo7rZ0gBwAmADQgAnomPTpyjscfSOik8Y3T5xgL7fzaTFwCEnIqGnoAVz4IAEMMClh0bHxCCOxCAFswTh4kEAEhDBFxPKkEYxN5NRNVEwNPDi1zKwQAWgqq6S0NeVlFRQ5bQ3lVX38koKIyCmpaOlhMPAgAJxiAMww8MFEiorgciQLhMQky4y0tOwHpc+M+jgd5ZsR24eUujV0TDg1FVWMfmMQAFksFpmE5lhiGAYsslqsNlsdsJ9txDoJjiVQGVFLJVFplACNDYLo1pP8zJYXu4qrpFPIyZpVNptECQZMQjNwnRaND4vD1pttrtmKjcvwMUUTqUZLoqoZ-lofqoFLjDNJnm0Ou9ur1+oMjCM2RN8FNQrN6HAsDE+Nk0XkjlKsZIZMZFHZfgDSRcGdpNe1ie9iTctK5updjYFTZyIfQsIRmKIsMxaDsDg7JcVTogGf9CY1DP0NIZfiNNQNLspKhUuqpnJp5JHQWauXMACLMWAYGJJu3i-KZ6XYnMAlQuQw-Gxujh48tkqvGLzqnT1npNjngi10AAKsJixGhxHTEsKWZlCHk0kUGkJF3xhq8WieVIQFbs1eXdY4DfX0c33IAGUTOAAFEAEcIn3ADtigDAcGPAdTyHF0EC0BVjGUHRPnJLQ+kuJoXzfBcl1rVdGz8YETTBc1uQANTAZYimtI97RPTFs1Q7QCQ4QxhgGFUNA0Po50rD9SO-NcKPZP8aLmAAJQhlmYAAvMRuxY-tHTPYdUK+QkATdS9cTuHoRPfRcaxXCTyPGKNqNbSJojiBIwGhLB4ggPAU1gBCtOQs4bBvekelJeRcKUAiWgDK5VHUCcJ0vf5RikqiW1jHlXMwFy3I83zB2dMoLi0DDvwUb9nB4iozOIyyvx-FK7LSi1lAyQhQh7TyFhynkxDAZRE1IQh0BatqwAAFUIEg8qQgqZHpQxMJuCpcSUeR5BLTU3QWu462Jd1i1kcrf3s2MRva0ROsy9yGGWZZFOUPhiDiNZFIyM7xsmjT0Rmjir16ZQK0URcGQZP5NvxZQDF1UMeiMDRAQa5sY2a1rzsu7qwAg5g+DwDBPum9jz1xQNGj6cldBVNDZE1Lo7CMdC-kGElFGOprwnevAOrwLqwGuq0bT7b7CZ0m5-tDfDYqfATNWLDg1EnNbDGK5xalZ5H2YiIRRCgXHProCJRExiJsd1qbWMQ4WUPcT5MLQxRQzuXMFE1bo5ZufElXK2p1rV-9aGUTXEx1vGSAYLGcZDr6Mx+89rdUW3CwdsqNE1db4-UHjvx0Hilt92S+sD7XTeIBhYGtW0CadDjHFDd5ZCVn5+lcYxYpl+uAfUS8FCGYYfERjd8+UJhhCLgB3Vh8ChGFRCiHrDf60RBuG3ksrbBEMBA5E9lgAB5UQQJYdhzb82aEHJRc1HW9btFi5UXaEwlC2JH4J2ZekbMoxr1f94eijHie8BTx7LPBid1lgPSehgF6yw3or3iGvQUm8RRwD3gfVgldtIoXPvHG4fRYrMkMH0YsqcDDKHWneYsT4DCxTzg5Ieh8g54HHnBQB0JgF8AynyCgKxBRImQT5Y++VfpK3jg8CystZCfG-JqPEcshLaELOSHisg3S+AoqIcI8A8jSROhaIWVciYqO4rhd0t9KaEJphhMMRhGaFnVLILQtDTqowoFzHm7l9GYICnIQkFJejqkLLOF8U53hA3+C4CKvE1pOOaoXYOn1PH+WsIuG8i5XAjEOuoZuLsjD2E0J4e2PQjIfx0Wzf2sBmG4EYZHRJp9nAX0IWtOUsN3YkKqNoIGuF3A2AnI4-uMk6G-0YcwyebCZ58Fqb9DwJULg2EaHoc4GoXweHjgMNa+ECnXlkDE9mQztaTPPEom8hDKi1H+MMdam1nCQ3DLqXM3R647P9gbI22M+DVISdHS2ZR6lVHrnWOs9IlqKBdqoFQTTbgjGKgqRoajvBAA */
   context: ({ input }): SketchSolveContext => {
     return {
       sketchSolveToolName: null,
@@ -451,7 +450,7 @@ export const sketchSolveMachine = setup({
         },
         [CHILD_TOOL_DONE_EVENT]: {
           target: 'move and select',
-          actions: ['send tool unequipped to parent'],
+          actions: ['clear child tool', 'send tool unequipped to parent'],
         },
         escape: {
           // Forward escape to child tool only when tool is active
@@ -534,7 +533,7 @@ export const sketchSolveMachine = setup({
       on: {
         [CHILD_TOOL_DONE_EVENT]: {
           target: 'move and select',
-          actions: ['send tool unequipped to parent'],
+          actions: ['clear child tool', 'send tool unequipped to parent'],
         },
       },
 
