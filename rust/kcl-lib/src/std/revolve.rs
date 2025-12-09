@@ -6,7 +6,9 @@ use kcmc::{
     length_unit::LengthUnit,
     shared::{Angle, Opposite},
 };
-use kittycad_modeling_cmds::{self as kcmc, shared::Point3d};
+use kittycad_modeling_cmds::{self as kcmc, 
+    shared::{BodyType, Point3d},
+};
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
@@ -39,6 +41,8 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_angle: Option<TyF64> =
         args.get_kw_arg_opt("bidirectionalAngle", &RuntimeType::angle(), exec_state)?;
+    let body_type = 
+        args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
 
     let value = inner_revolve(
         sketches,
@@ -49,6 +53,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         tag_end,
         symmetric,
         bidirectional_angle.map(|t| t.n),
+        body_type,
         exec_state,
         args,
     )
@@ -66,6 +71,7 @@ async fn inner_revolve(
     tag_end: Option<TagNode>,
     symmetric: Option<bool>,
     bidirectional_angle: Option<f64>,
+    body_type: Option<String>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -125,6 +131,18 @@ async fn inner_revolve(
         (Some(false), Some(angle)) => Opposite::Other(angle),
     };
 
+    let body_type = match body_type.as_deref() {
+        Some("solid" | "SOLID") => BodyType::Solid,
+        Some("surface" | "SURFACE") => BodyType::Surface,
+        None => BodyType::default(),
+        Some(other) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("Unknown body type {other}, try useing `SOLID` or `SURFACE`"),
+                vec![args.source_range],
+            )));
+        }
+    };
+
     let mut solids = Vec::new();
     for sketch in &sketches {
         let new_solid_id = exec_state.next_uuid();
@@ -151,6 +169,7 @@ async fn inner_revolve(
                             tolerance: LengthUnit(tolerance),
                             axis_is_2d: true,
                             opposite: opposite.clone(),
+                            body_type,
                         }),
                     )
                     .await?;
@@ -167,6 +186,7 @@ async fn inner_revolve(
                             edge_id,
                             tolerance: LengthUnit(tolerance),
                             opposite: opposite.clone(),
+                            body_type,
                         }),
                     )
                     .await?;
