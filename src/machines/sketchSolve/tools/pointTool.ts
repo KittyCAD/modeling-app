@@ -19,7 +19,6 @@ type ToolEvents =
   | { type: 'unequip' }
   | { type: 'escape' }
   | { type: 'add point'; data: [x: number, y: number] }
-  | { type: 'update selection' }
   | {
       type: `xstate.done.actor.0.${typeof TOOL_ID}.${typeof CONFIRMING_DIMENSIONS}`
       output: {
@@ -145,9 +144,6 @@ export const machine = setup({
       target: `#Point tool.unequipping`,
       description:
         "can be requested from the outside, but we want this tool to have the final say on when it's done.",
-    },
-    'update selection': {
-      description: 'Handle selection updates from the sketch solve machine.',
     },
   },
   description: 'Creates a point',

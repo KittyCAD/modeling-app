@@ -73,12 +73,6 @@ export const sketchSolveMachine = setup({
     'cleanup sketch solve group': cleanupSketchSolveGroup,
     'send unequip to tool': sendTo(CHILD_TOOL_ID, { type: 'unequip' }),
     'send escape to tool': sendTo(CHILD_TOOL_ID, { type: 'escape' }),
-    'send update selection to equipped tool': sendTo(CHILD_TOOL_ID, {
-      type: 'update selection',
-    }),
-    'send updated selection to move tool': sendTo('moveTool', {
-      type: 'update selection',
-    }),
     'store pending tool': assign(({ event }) => {
       assertEvent(event, 'equip tool')
       return { pendingToolName: event.data.tool }
@@ -127,7 +121,7 @@ export const sketchSolveMachine = setup({
     ...equipTools,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZNXllRX1jDQM1A3lpA1lzKwQAWgNjA2U1aTVC+07jRQ0NNS8fdGx8IjIKalo6cKiYvFgx-0JQ7EIAWzA0iSzhXIz82sV241qNeW1L+X7nBsQWk2VDaXV1cp1tGxGQX3GAlNgrNQqIwABHULMPh4DCEEi7DL7HLiI6IbSKFRXAyKWRODTaDiFbQPZpGaTKIZvGzyGqlWTSbS-f7+SZBGb0LCEZiiLDMWiidjcPaCA6o0CNJpKSnGYyyGwExW6eqSRBGDjGVSaHR6QwmZkrCaBaYhOgAEWYsAwkV5O2FSNFKIkkulJjlCuunvkKvy6s16i0ulKeuMBr8RqBHLoAAVIgAnSLEBLERH8R0pZ2PV2y+UDT0E73mX0aDVawO6oyh7x-Q2A9mmgAyPLgAFFIYmG2BRFAMDhU5l04cJVmVG7c0qCz61SX-dqg-pK2GAWyTbMAGpgOPJLCJ-vIjMZF2jnMepWF1UIP1lnXBxfVlkR+uzAAShDjzAAXmJrSn7Wnsgew7NNm7p5meU6XjO17ziGS6ssawJhBE0SxPEiQxBAeD8rAe6DuKlgjjKoETsqRbTqWAY3gu+r3rWK6IXQtAJIscQJEkkC4QBQ4EcBx7EfmpEXlelEwXeozhnWq5gMomyEEENqYax6GMWI0k8qQhDoDJclgAAKvCv7pP+Yp5DIrRqMoTh1Nc3RaEoiikrSyiFGozjaAYXTGBwtxVuJy4IRy2nyaIiloUkDBxnGb7KHwxDRAAZm+mxBXpBmcSZaIILUcrKO4GLegYdQcO5aiku4KiEooHBDDi2iVQMcGPlJKV4ApSxhRgDCQtCsJpX+A5cfhxx2C8sj9MY8gVLcNilKSHkaKopReUM8iFacwy0RJ9GBaEQjdr1JBzGC3UwnCCL9fu3HHMVxQaF0eLqLI1VDCSPGBiUiiysY7naF0ajFY1kmIcou08lAB3EF1UKnX1RkDRloD5HKFKtNVdWTXKlSlTx3zFDNsgaAo1V5tIgPbSEyiwAA7qwuBgxDdCMFaKHKBAqnKJESTRelTqZZjqiykUxWfRwajGNjjRqLouW4kYOJDAoHlkwFFOghC0N8PTZ2Q0z1oxKz7Oc3CcbKDzgEXnY3zKIV5STTUZXnB0RMVFUuitLIXjVqIITwBkD5AxyIqDaZCBVKN42TdUcqYvIpJSnxhRDEU5zdPIyuRhTsnBaFbEYEHCMXoTsjW20sgeS4Dg4mVhjOatXmFSWVUe5t-kZ7QIN7eD2v57ziOICYKjVOS6jVDoDlvd5JR1JoWhj4o6dPtJ1O0zgWsGT35u+t9JRtK55yDCYbyklUxfowTnoGESVQL81TDCN2G9XTIugWd83TXLKThiyqjSyqolT6G+Jib6jg04t3gm3aSasTqa32t3B0wdMoXGLtIcWXQlDiw4F0UkmJtDOTkIoaQmIxqrUIZ7DwQA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAMwcAjAA4AdAHYALADYVC6WoCcshQCYANCACeiORxVK5BhWo4KVclTelGAvl7NpMuAQk5FQ09ACufBAAhhgUsGDEYFgYIqKcPEggAkKpYhJSCHIactJKegCsehyaVRUV0hoKZpYIALRqRrZyFUZGpcVVnpU+fujY+ERkFNS0dJExcXiw44GE4diEALZgGRI5wvlZhUYcGhxKagoVJerujSrSLYgdRmpKGkZ6JW86FdoaUYgfwTILTUJzBIYPAQABO0QAZtCwKJUqk4Hssgc8uJjlY9Co9OUSucmqUjNdnu1PrZruc1NIGmpmW8gSDAlMQrN6FgktFYTD4Ui8Ci0cwMdx9oJDrjQIUBmUjJ41Co+iqevoqW1pHp3oyul8SjViio2atJsEZmE6LQkks4YjkajhBLMvxpTiCogvtolDdHDrjBxpJ4tZ13p9vnJfoyAWaAhbwdyGLAsNE+LtJViPWkvQgjBU1BUlJ5ekYNAYugSVGGaqpnM4FKUVBpOiH46DOVa5lhCMxRFhmLRUZj3blc3iEMy5HIlEqODVvl9dXoqXoC0obE4KsZrNIeoDfMDzWCudaACLMWAYaIDzNu7I5o5ymStokEs6KVUDNcbrccHd+mDHoKg7DlLQhegAAV+WiYgkmIUdH3HZ9JBkXplBqCsGQAkMdTUX9i3-QC9xAsDEzPOYABl+zgABRABHcI4KolEoAwHAkOxCcXynfpZ30Cl1BDToukIzd1AA3dgJucjT27egADUwFhVI00QrMxxlPMnAMOxmyuQspIIixEHXIjJJImTDzGBN5MgugAAlCFhZgAC8xBvDSH241DCh1f45yLIt90+Dhqg0cTiOk-d6jkrsHIWWJ4kSZI4ggPAh1gLin1lNCig0JolCDasFF3VVV1M6keg+FQKmNdwDC0PR4og5NbUwFKkhSSAcpQvL-MJWdnBVBk5AZT45CiyyYoPVqkzCJQtkIEJbwyhJuowG0xDAJR+1IQh0CWlawAAFUIEg+u0ycCxsS5-gqexCQZR6TNaPQiULV6mmucbrlNI92QohTjtW0R1tSlIGFhWEXKUPhiFiBEXK2UGzou7ypX6vNbuUaMmpE7RnAqKlxo0Ow-gpddyyLOR5so3blrBiHNoYJjmD4PAMAxq7PUnclhuE9RmQJNQeipNUPmkR5vkZRd+gB2zOzaxamYoNblkhra4DTDNeZ4-L+gUC5y0Kws3Eer4qU+MoNGkHRdTqQwFHpkHwiEUQoC5jH5lEMB2c57nLs05Drt4voqhLGdehVPQZw4JUqUaYsQ0cBQK3ClrAZPBLuSUd3+y9oPiDZ8IOe94OfNynGCyJfcejeIa9ypK5Z0Kilen3dxNDUV3IPzj2i59nX03vLGw8N+xlALT5LYZWmSaq43lFcOPSh3XV9F77O7NzxamGET28AAd1YfBeTAW9Im2v29tEA6jo6uJzyFDA6OddFYAAeVEOiWHYEOvkBpWGNkYcoMtPAlH0GcRerQWzvEemVNeqdHp9zzgfVIR9T4cTwBfK+fBoaw1hPDRGGBkawlRk-MAL9HTvzFHAH+f9WD6z8iAhO4CdSQPGhFWBiB07KDKroCs9twr9GkGg-e-9C4nzPrgvkohr5UMFI6EUH9xTZUAdXfmoCOGVigTwtcjwgrGxVDSD6xQfBHlEGEeAWQgb2W5OPPmvEZyfHKLqFQLZow2EKlqdOfpCrG0jJNPo4id7KwWrQNGeANYbTSk4g28odzTxcPoFsxs9BlV4UUUoATSi6gUJk9QGgdwSKiQXI+xcEmsIKmcOcnjwqjQMDOJO9gSyfnLH0LohTCxlN2rAbBuBpFVOzNjG6FVNx9HUFUYS9saxVX0ESOq0Z6rpy+F0RkfSlAYOkdg8+8jIjVOAUUIC7iVReNOC2SKS9Gh+kUIUmcKC6bhPApE3aOzPZHJxhWWw6pejyA1I0Um1gPgAR9OGRQpwbLHl3ircpfsA58GGRjL54yvj6UZIZMsGyk4lICZ8achYdBhJ8EAA */
   context: ({ input }): SketchSolveContext => {
     return {
       sketchSolveToolName: null,
@@ -156,14 +150,6 @@ export const sketchSolveMachine = setup({
       description:
         'the outside world can request that sketch mode exit, but it needs to handle its own teardown first.',
     },
-    'update selection': {
-      actions: [
-        'send update selection to equipped tool',
-        'send updated selection to move tool',
-      ],
-      description:
-        'sketch mode consumes the current selection from its source of truth (currently modelingMachine). Whenever it receives',
-    },
     'update sketch outcome': {
       actions: 'update sketch outcome',
       description:
@@ -182,9 +168,6 @@ export const sketchSolveMachine = setup({
       actions: 'delete draft entities',
       description:
         'Deletes the currently tracked draft entities (e.g., when user cancels with escape)',
-    },
-    'unequip tool': {
-      actions: 'send unequip to tool',
     },
     escape: {
       // Only forward to tool if we're in 'using tool' state

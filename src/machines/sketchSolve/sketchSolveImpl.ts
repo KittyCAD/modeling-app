@@ -16,7 +16,6 @@ import type {
   ExtrudeFacePlane,
   OffsetPlane,
   Selections,
-  SetSelections,
 } from '@src/machines/modelingSharedTypes'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
@@ -66,7 +65,6 @@ export type SpawnToolActor = <K extends EquipTool>(
 export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'escape' }
-  | { type: 'update selection'; data?: SetSelections }
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
   | {

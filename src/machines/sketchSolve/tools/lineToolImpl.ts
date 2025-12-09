@@ -32,7 +32,6 @@ export type ToolEvents =
       // The behavior of the double click is to end the line segment chaining
       isDoubleClick?: boolean
     }
-  | { type: 'update selection' }
   // because the single click will still fire before the double click, we have to have a way of
   // doing the single click action (creating a new segment chained to the old one) but then catch this
   // and reverse it if a double click is detected

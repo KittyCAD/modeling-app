@@ -316,9 +316,6 @@ export const machine = setup({
       description:
         "can be requested from the outside, but we want this tool to have the final say on when it's done.",
     },
-    'update selection': {
-      description: 'Handle selection updates from the sketch solve machine.',
-    },
   },
   description: 'Creates a point',
   states: {
