@@ -131,6 +131,8 @@ export const MlEphantConversationPane2 = (props: {
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions2.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
+      conversationId:
+        props.mlEphantManagerActor.getSnapshot().context.conversationId,
     })
   }
 
