@@ -1,0 +1,17 @@
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+export frameWidth = 20
+export tubeDiameter = 1
+export height = 51
+export grateDepth = 10
+export grateThickness = 0.090
+export wheelDiameter = 10
+export color = "#c00c0c"
+export metalness = 40
+export roughness = 30
+
+// Calculate stock material bend radii
+export tubeBend = tubeDiameter * 2.5
+export bendRadius = grateThickness * 1.25
