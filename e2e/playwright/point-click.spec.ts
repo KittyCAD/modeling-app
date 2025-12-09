@@ -1663,8 +1663,8 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
       await test.step('Delete standalone assigned fillet via feature tree selection', async () => {
         await test.step('Delete standalone assigned fillet', async () => {
           const operationButton = await toolbar.getFeatureTreeOperation(
-            'Fillet',
-            1
+            'fillet03',
+            0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
@@ -1685,7 +1685,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
         await test.step('Delete standalone unassigned fillet', async () => {
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Fillet',
-            1
+            0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
@@ -2144,8 +2144,8 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
         await test.step('Delete standalone assigned chamfer', async () => {
           await toolbar.openFeatureTreePane()
           const operationButton = await toolbar.getFeatureTreeOperation(
-            'Chamfer',
-            1
+            'chamfer03',
+            0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
@@ -2167,7 +2167,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           await toolbar.openFeatureTreePane()
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Chamfer',
-            1
+            0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
