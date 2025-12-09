@@ -9,7 +9,11 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import { engineCommandManager, kclManager } from '@src/lib/singletons'
+import {
+  engineCommandManager,
+  kclManager,
+  sceneInfra,
+} from '@src/lib/singletons'
 import { useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { type IndexLoaderData } from '@src/lib/types'
@@ -112,7 +116,8 @@ export const ModelingPageProvider = ({
     settings,
     navigate,
     filePath,
-    engineCommandManager
+    engineCommandManager,
+    sceneInfra
   )
   useMenuListener(cb)
 

@@ -12,6 +12,7 @@ import {
   useState,
   type ReactNode,
   type ComponentProps,
+  useMemo,
 } from 'react'
 import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
@@ -322,8 +323,8 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 
   const itemsFilteredNulls = items.filter((x: ReactNode | null) => x !== null)
 
-  const deltasAggregatedMarkdown =
-    props.deltasAggregated !== '' ? (
+  const deltasAggregatedMarkdown = useMemo(() => {
+    return props.deltasAggregated !== '' ? (
       <span
         className="parsed-markdown whitespace-normal"
         dangerouslySetInnerHTML={{
@@ -334,6 +335,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
         }}
       ></span>
     ) : null
+  }, [props.deltasAggregated])
 
   return (
     <ChatBubble
@@ -358,7 +360,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
 
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
 
-  const cssCard = `flex flex-col p-2 gap-2 justify-between
+  const cssCard = `flex flex-col px-4 py-2 gap-2 justify-between
     transition-height duration-500 overflow-hidden text-sm
   `
 

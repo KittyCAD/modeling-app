@@ -76,7 +76,7 @@ jobs:
         with:
           cache: false # Configured below.
 
-      - uses: taiki-e/install-action@c5b1b6f479c32f356cc6f4ba672a47f63853b13b
+      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
@@ -368,7 +368,7 @@ jobs:
 
       - name: Authenticate to Google Cloud
         if: ${{ env.IS_STAGING == 'true' }}
-        uses: 'google-github-actions/auth@v2.1.10'
+        uses: 'google-github-actions/auth@v3.0.0'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 

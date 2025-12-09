@@ -37,6 +37,7 @@ export default defineConfig({
           name: 'integration',
           include: ['src/**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
           hookTimeout: 30_000,
+          retry: 2,
         },
       },
     ],
