@@ -123,8 +123,8 @@ async fn inner_extrude(
         None => BodyType::default(),
         Some(other) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                        format!("Unknown body type {other}, try useing `SOLID` or `SURFACE`"),
-                        vec![args.source_range],
+                format!("Unknown body type {other}, try useing `SOLID` or `SURFACE`"),
+                vec![args.source_range],
             )));
         }
     };
@@ -175,6 +175,7 @@ async fn inner_extrude(
                     total_rotation_angle,
                     angle_step_size,
                     tolerance,
+                    body_type,
                 })
             }
             (None, None, None, Some(length), None) => ModelingCmd::from(mcmd::Extrude {
@@ -197,6 +198,7 @@ async fn inner_extrude(
                     },
                     faces: Default::default(),
                     extrude_method,
+                    body_type,
                 }),
                 Point3dAxis3dOrGeometryReference::Axis { direction, origin } => {
                     ModelingCmd::from(mcmd::ExtrudeToReference {
@@ -215,6 +217,7 @@ async fn inner_extrude(
                         },
                         faces: Default::default(),
                         extrude_method,
+                        body_type,
                     })
                 }
                 Point3dAxis3dOrGeometryReference::Plane(plane) => {
@@ -240,6 +243,7 @@ async fn inner_extrude(
                         reference: ExtrudeReference::EntityReference { entity_id: plane_id },
                         faces: Default::default(),
                         extrude_method,
+                        body_type,
                     })
                 }
                 Point3dAxis3dOrGeometryReference::Edge(edge_ref) => {
@@ -249,6 +253,7 @@ async fn inner_extrude(
                         reference: ExtrudeReference::EntityReference { entity_id: edge_id },
                         faces: Default::default(),
                         extrude_method,
+                        body_type,
                     })
                 }
                 Point3dAxis3dOrGeometryReference::Face(face_tag) => {
@@ -258,6 +263,7 @@ async fn inner_extrude(
                         reference: ExtrudeReference::EntityReference { entity_id: face_id },
                         faces: Default::default(),
                         extrude_method,
+                        body_type,
                     })
                 }
                 Point3dAxis3dOrGeometryReference::Sketch(sketch_ref) => ModelingCmd::from(mcmd::ExtrudeToReference {
@@ -267,12 +273,14 @@ async fn inner_extrude(
                     },
                     faces: Default::default(),
                     extrude_method,
+                    body_type,
                 }),
                 Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(mcmd::ExtrudeToReference {
                     target: sketch.id.into(),
                     reference: ExtrudeReference::EntityReference { entity_id: solid.id },
                     faces: Default::default(),
                     extrude_method,
+                    body_type,
                 }),
                 Point3dAxis3dOrGeometryReference::TaggedEdgeOrFace(tag) => {
                     let tagged_edge_or_face = args.get_tag_engine_info(exec_state, tag)?;
@@ -284,6 +292,7 @@ async fn inner_extrude(
                         },
                         faces: Default::default(),
                         extrude_method,
+                        body_type,
                     })
                 }
             },
