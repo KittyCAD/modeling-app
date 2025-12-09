@@ -364,6 +364,16 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
     }
   )
 
+  const hasCards = exchangeCards !== undefined && exchangeCards.length > 0
+
+  useEffect(() => {
+    if (refScroll.current === null) return
+    refScroll.current.scrollTo({
+      top: refScroll.current.scrollHeight,
+      behavior: 'smooth',
+    })
+  }, [hasCards])
+
   return (
     <div className="relative">
       <div className="absolute inset-0">
