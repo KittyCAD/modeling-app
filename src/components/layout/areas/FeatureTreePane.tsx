@@ -856,11 +856,7 @@ const OperationItem = (props: OperationProps) => {
         : []),
       ...(props.item.type === 'SketchSolve'
         ? [
-            <ContextMenuItem
-              // TODO disabled
-              onClick={enterEditFlow}
-              hotkey="Double click"
-            >
+            <ContextMenuItem onClick={enterEditFlow} hotkey="Double click">
               Edit
             </ContextMenuItem>,
           ]
