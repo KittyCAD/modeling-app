@@ -29,7 +29,7 @@ test.describe('Point-and-click tests', () => {
     await scene.settled(cmdBar)
 
     await test.step(`Edit first extrude via feature tree`, async () => {
-      await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+      await (await toolbar.getFeatureTreeOperation('bracketBody', 0)).dblclick()
       await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
@@ -55,7 +55,9 @@ test.describe('Point-and-click tests', () => {
     })
 
     await test.step(`Edit second extrude via feature tree`, async () => {
-      await (await toolbar.getFeatureTreeOperation('Extrude', 1)).dblclick()
+      await (
+        await toolbar.getFeatureTreeOperation('shelfMountingHoles', 0)
+      ).dblclick()
       await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
@@ -83,7 +85,9 @@ test.describe('Point-and-click tests', () => {
     })
 
     await test.step(`Edit third extrude via feature tree`, async () => {
-      await (await toolbar.getFeatureTreeOperation('Extrude', 2)).dblclick()
+      await (
+        await toolbar.getFeatureTreeOperation('wallMountingHoles', 0)
+      ).dblclick()
       await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
