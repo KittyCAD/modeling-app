@@ -1,0 +1,73 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing array_range_units_default_count.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "moduleId": 0,
+            "name": "indices",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "endElement": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "3_",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 3.0,
+                "suffix": "Count"
+              }
+            },
+            "endInclusive": false,
+            "moduleId": 0,
+            "start": 0,
+            "startElement": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
+            },
+            "type": "ArrayRangeExpression",
+            "type": "ArrayRangeExpression"
+          },
+          "moduleId": 0,
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "moduleId": 0,
+    "start": 0
+  }
+}
