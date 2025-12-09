@@ -39,6 +39,7 @@ import {
   Themes,
   darkModeMatcher,
   getOppositeTheme,
+  getResolvedTheme,
   getSystemTheme,
   setThemeClass,
 } from '@src/lib/theme'
@@ -56,10 +57,6 @@ export const settingsMachine = setup({
     events: {} as (
       | WildcardSetEvent<SettingsPaths>
       | SetEventTypes
-      | {
-          type: 'set.app.theme'
-          data: { level: SettingsLevel; value: Themes }
-        }
       | {
           type: 'set.modeling.units'
           data: { level: SettingsLevel; value: BaseUnit }
@@ -212,13 +209,16 @@ export const settingsMachine = setup({
       const rootContext = self.system.get('root')?.getSnapshot().context
       const sceneInfra = rootContext?.sceneInfra
       const sceneEntitiesManager = rootContext?.sceneEntitiesManager
+      const kclManager = rootContext?.kclManager
 
-      if (!sceneInfra || !sceneEntitiesManager) {
+      if (!sceneInfra || !sceneEntitiesManager || !kclManager) {
         return
       }
+      const resolvedTheme = getResolvedTheme(context.app.theme.current)
       const opposingTheme = getOppositeTheme(context.app.theme.current)
       sceneInfra.theme = opposingTheme
       sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+      kclManager.setEditorTheme(resolvedTheme)
     },
     setAllowOrbitInSketchMode: ({ context, self }) => {
       const rootContext = self.system.get('root')?.getSnapshot().context
@@ -500,12 +500,6 @@ export const settingsMachine = setup({
           target: 'persisting settings',
 
           actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
-        },
-
-        'set.meta.enableZookeeper': {
-          target: 'persisting settings',
-
-          actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
         'Reset settings': {

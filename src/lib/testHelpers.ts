@@ -17,6 +17,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
 import { err } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { expect } from 'vitest'
 
 export async function enginelessExecutor(
   ast: Node<Program>,
@@ -124,11 +125,11 @@ export async function getKclCommandValue(
   instance: ModuleType,
   rustContext: RustContext
 ) {
+  const allowArrays = value.trim().startsWith('[')
   const result = await stringToKclExpression(
     value,
-    undefined,
-    instance,
-    rustContext
+    rustContext,
+    allowArrays ? { allowArrays: true } : undefined
   )
   if (err(result) || 'errors' in result) {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw

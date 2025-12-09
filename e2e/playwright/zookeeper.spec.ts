@@ -8,7 +8,7 @@ import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 
-test.describe('Text-to-CAD tests', () => {
+test.describe('Zookeeper tests', () => {
   async function runCopilotHappyPathTest({
     page,
     editor,
@@ -39,7 +39,11 @@ test.describe('Text-to-CAD tests', () => {
       await copilot.submitButton.click()
       await expect(copilot.placeHolderResponse).toBeVisible()
       await expect(copilot.placeHolderResponse).not.toBeVisible({
-        timeout: 120_000,
+        timeout: 60_000,
+      })
+      await expect(copilot.thinkingView).toBeVisible()
+      await expect(copilot.thinkingView).not.toBeVisible({
+        timeout: 60_000,
       })
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain('startSketchOn')

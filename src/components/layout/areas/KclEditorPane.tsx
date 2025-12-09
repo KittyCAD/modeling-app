@@ -3,7 +3,11 @@ import type { PropsWithChildren } from 'react'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { commandBarActor, settingsActor } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  getSettings,
+  settingsActor,
+} from '@src/lib/singletons'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
@@ -51,9 +55,10 @@ import { lineHighlightField } from '@src/editor/highlightextension'
 import { modelingMachineEvent } from '@src/lang/KclManager'
 import { kclManager } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
-import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection, trap } from '@src/lib/trap'
 import { onMouseDragMakeANewNumber, onMouseDragRegex } from '@src/lib/utils'
+import { artifactAnnotationsExtension } from '@src/editor/plugins/artifacts'
+import { getArtifactAnnotationsAtCursor } from '@src/lib/getArtifactAnnotationsAtCursor'
 import {
   editorIsMountedSelector,
   kclEditorActor,
@@ -61,8 +66,9 @@ import {
 } from '@src/machines/kclEditorMachine'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { kclSyntaxHighlightingExtension } from '@src/lib/codeEditor'
+import { editorTheme, themeCompartment } from '@src/lib/codeEditor'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { getResolvedTheme } from '@src/lib/theme'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -97,10 +103,6 @@ export const KclEditorPaneContents = () => {
   const context = useSettings()
   const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const editorIsMounted = useSelector(kclEditorActor, editorIsMountedSelector)
-  const theme =
-    context.app.theme.current === Themes.System
-      ? getSystemTheme()
-      : context.app.theme.current
   const { copilotLSP, kclLSP } = useLspContext()
 
   // When this component unmounts, we need to tell the machine that the editor
@@ -147,10 +149,14 @@ export const KclEditorPaneContents = () => {
 
   const editorExtensions = useMemo(() => {
     const extensions = [
+      themeCompartment.of(
+        editorTheme[getResolvedTheme(getSettings().app.theme.current)]
+      ),
       drawSelection({
         cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
       }),
       lineHighlightField,
+      artifactAnnotationsExtension(),
       historyCompartment.of(initialHistory),
       closeBrackets(),
       codeFolding(),
@@ -188,7 +194,6 @@ export const KclEditorPaneContents = () => {
       closeBrackets(),
       highlightActiveLine(),
       highlightSelectionMatches(),
-      kclSyntaxHighlightingExtension,
       rectangularSelection(),
       dropCursor(),
       interact({
@@ -209,6 +214,25 @@ export const KclEditorPaneContents = () => {
     )
     if (textWrapping.current) extensions.push(EditorView.lineWrapping)
 
+    if (context.app.showDebugPanel.current) {
+      extensions.push(
+        keymap.of([
+          {
+            key: 'Mod-Shift-d',
+            preventDefault: true,
+            run: () => {
+              const view = kclManager.getEditorView()
+              if (!view) return false
+              const data = getArtifactAnnotationsAtCursor(view.state)
+              // eslint-disable-next-line no-console
+              console.log('Artifact annotations at cursor:', data)
+              return true
+            },
+          },
+        ])
+      )
+    }
+
     return extensions
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])
@@ -226,7 +250,6 @@ export const KclEditorPaneContents = () => {
         <CodeEditor
           initialDocValue={initialCode.current}
           extensions={editorExtensions}
-          theme={theme}
           onCreateEditor={(_editorView) => {
             kclManager.setEditorView(_editorView)
 
@@ -253,7 +276,7 @@ export const KclEditorPaneContents = () => {
 }
 
 function copyKclCodeToClipboard() {
-  if (!kclManager.code) {
+  if (!kclManager.codeSignal.value) {
     toast.error('No code available to copy')
     return
   }
@@ -264,7 +287,7 @@ function copyKclCodeToClipboard() {
   }
 
   navigator.clipboard
-    .writeText(kclManager.code)
+    .writeText(kclManager.codeSignal.value)
     .then(() => toast.success(`Copied current file's code to clipboard`))
     .catch((e) =>
       trap(new Error(`Failed to copy code to clipboard: ${e.message}`))
@@ -273,7 +296,7 @@ function copyKclCodeToClipboard() {
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
-    useConvertToVariable()
+    useConvertToVariable(kclManager)
 
   return (
     <Menu>

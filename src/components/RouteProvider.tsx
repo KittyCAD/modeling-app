@@ -15,7 +15,7 @@ import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import { kclManager, settingsActor } from '@src/lib/singletons'
+import { kclManager, sceneInfra, settingsActor } from '@src/lib/singletons'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
@@ -102,10 +102,10 @@ export function RouteProvider({ children }: { children: ReactNode }) {
 
           // Don't fire a re-execution if the kclManager already knows about this change,
           // which would be evident if we already have matching code there.
-          if (!isCodeTheSame(code, kclManager.code)) {
+          if (!isCodeTheSame(code, kclManager.codeSignal.value)) {
             kclManager.updateCodeStateEditor(code)
             await kclManager.executeCode()
-            await resetCameraPosition()
+            await resetCameraPosition({ sceneInfra })
           }
         }
       } else if (

@@ -7,7 +7,9 @@ import { KclManager } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { Connection } from '@src/network/connection'
-import { vi } from 'vitest'
+import { expect, vi, describe, test } from 'vitest'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 const tick = () => {
   return new Promise((resolve, reject) => {
@@ -17,26 +19,24 @@ const tick = () => {
 
 describe('useOnFileRoute', () => {
   describe('after mount', () => {
-    test('should call unmount', () => {
+    test('should call unmount', async () => {
       const file: FileEntry = {
         path: '/application/project-001/main.kcl',
         name: 'main.kcl',
         children: null,
       }
-      const engineCommandManager = new ConnectionManager()
-      const rustContext = new RustContext(engineCommandManager)
-      const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, {
-        rustContext,
-        sceneInfra,
-      })
+      const { engineCommandManager, sceneInfra, kclManager } =
+        await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() => {
         useOnFileRoute({
           file,
           isStreamAcceptingInput: false,
-          engineCommandManager,
-          kclManager,
           resetCameraPosition,
+          systemDeps: {
+            engineCommandManager,
+            kclManager,
+            sceneInfra,
+          },
         })
       })
       unmount()
@@ -58,9 +58,10 @@ describe('useOnFileRoute', () => {
         callbackOnUnitTestingConnection: () => {},
         handleMessage: () => {},
       })
-      const rustContext = new RustContext(engineCommandManager)
+      const initWasmMock = Promise.resolve({} as ModuleType)
+      const rustContext = new RustContext(engineCommandManager, initWasmMock)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, {
+      const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
       })
@@ -69,9 +70,12 @@ describe('useOnFileRoute', () => {
         useOnFileRoute({
           file,
           isStreamAcceptingInput: true,
-          engineCommandManager,
-          kclManager,
           resetCameraPosition: callback,
+          systemDeps: {
+            engineCommandManager,
+            kclManager,
+            sceneInfra,
+          },
         })
       })
       unmount()
@@ -99,9 +103,10 @@ describe('useOnFileRoute', () => {
         callbackOnUnitTestingConnection: () => {},
         handleMessage: () => {},
       })
-      const rustContext = new RustContext(engineCommandManager)
+      const initWasmMock = Promise.resolve({} as ModuleType)
+      const rustContext = new RustContext(engineCommandManager, initWasmMock)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, {
+      const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
       })
@@ -117,9 +122,12 @@ describe('useOnFileRoute', () => {
           useOnFileRoute({
             file,
             isStreamAcceptingInput: true,
-            engineCommandManager,
-            kclManager,
             resetCameraPosition: callback,
+            systemDeps: {
+              engineCommandManager,
+              kclManager,
+              sceneInfra,
+            },
           })
         },
         { initialProps: { file } }
@@ -152,9 +160,10 @@ describe('useOnFileRoute', () => {
         callbackOnUnitTestingConnection: () => {},
         handleMessage: () => {},
       })
-      const rustContext = new RustContext(engineCommandManager)
+      const initWasmMock = Promise.resolve({} as ModuleType)
+      const rustContext = new RustContext(engineCommandManager, initWasmMock)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, {
+      const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
       })
@@ -170,9 +179,12 @@ describe('useOnFileRoute', () => {
           useOnFileRoute({
             file,
             isStreamAcceptingInput: true,
-            engineCommandManager,
-            kclManager,
             resetCameraPosition: callback,
+            systemDeps: {
+              engineCommandManager,
+              kclManager,
+              sceneInfra,
+            },
           })
         },
         { initialProps: { file } }
@@ -207,9 +219,10 @@ describe('useOnFileRoute', () => {
         callbackOnUnitTestingConnection: () => {},
         handleMessage: () => {},
       })
-      const rustContext = new RustContext(engineCommandManager)
+      const initWasmMock = Promise.resolve({} as ModuleType)
+      const rustContext = new RustContext(engineCommandManager, initWasmMock)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, {
+      const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
       })
@@ -225,9 +238,12 @@ describe('useOnFileRoute', () => {
           useOnFileRoute({
             file,
             isStreamAcceptingInput: false,
-            engineCommandManager,
-            kclManager,
             resetCameraPosition: callback,
+            systemDeps: {
+              engineCommandManager,
+              kclManager,
+              sceneInfra,
+            },
           })
         },
         { initialProps: { file } }
