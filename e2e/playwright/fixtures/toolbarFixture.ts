@@ -311,7 +311,9 @@ export class ToolbarFixture {
     await this.openFeatureTreePane()
     await expect(this.featureTreePane).toBeVisible()
     return this.featureTreePane
-      .getByTestId(`operation-${operationName}`)
+      .getByRole('button', {
+        name: operationName,
+      })
       .nth(operationIndex)
   }
 
