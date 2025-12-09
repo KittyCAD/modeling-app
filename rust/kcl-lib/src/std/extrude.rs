@@ -12,10 +12,9 @@ use kcmc::{
     shared::{ExtrudeReference, ExtrusionFaceCapType, Opposite},
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
 };
-use kittycad_modeling_cmds::shared::BodyType;
 use kittycad_modeling_cmds::{
     self as kcmc,
-    shared::{Angle, ExtrudeMethod, Point2d},
+    shared::{Angle, BodyType, ExtrudeMethod, Point2d},
 };
 use uuid::Uuid;
 

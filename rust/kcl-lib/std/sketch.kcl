@@ -612,7 +612,7 @@ export fn extrude(
   twistCenter?: Point2d,
   /// The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`.
   method?: string,
-  /// The type of the resultnig body, either `SOLID` or `SURFACE`. `SOLID` will create caps on the top and bottom of the extruded walls, `SURFACE` will not create the caps.
+  /// The type of the resulting body, either `SOLID` or `SURFACE`. `SOLID` will create caps on the top and bottom of the extruded walls, `SURFACE` will not create the caps.
   bodyType?: string,
 ): [Solid; 1+] {}
 
