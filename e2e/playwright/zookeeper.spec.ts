@@ -39,7 +39,11 @@ test.describe('Zookeeper tests', () => {
       await copilot.submitButton.click()
       await expect(copilot.placeHolderResponse).toBeVisible()
       await expect(copilot.placeHolderResponse).not.toBeVisible({
-        timeout: 120_000,
+        timeout: 60_000,
+      })
+      await expect(copilot.thinkingView).toBeVisible()
+      await expect(copilot.thinkingView).not.toBeVisible({
+        timeout: 60_000,
       })
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain('startSketchOn')
