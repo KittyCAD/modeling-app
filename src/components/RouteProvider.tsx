@@ -21,6 +21,7 @@ import type { IndexLoaderData } from '@src/lib/types'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import { useSelector } from '@xstate/react'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { wasUpdatedFromDisk } from '@src/editor'
 
 export const RouteProviderContext = createContext({})
 
@@ -103,8 +104,12 @@ export function RouteProvider({ children }: { children: ReactNode }) {
           // Don't fire a re-execution if the kclManager already knows about this change,
           // which would be evident if we already have matching code there.
           if (!isCodeTheSame(code, kclManager.codeSignal.value)) {
-            kclManager.updateCodeStateEditor(code)
-            await kclManager.executeCode()
+            kclManager.updateCodeEditor(code, false, {
+              // Mark this transaction as originating from the disk so listeners can ignore or act accordingly
+              // Note: disincluding our typical "addToHistory(false)" annotation here
+              // would make these updates undoable. Maybe a good thing!
+              annotations: [wasUpdatedFromDisk.of(true)],
+            })
             await resetCameraPosition({ sceneInfra })
           }
         }
