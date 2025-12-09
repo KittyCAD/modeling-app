@@ -9,6 +9,10 @@ import {
 import type { KclExpression } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
 import type RustContext from '@src/lib/rustContext'
+import { forceSuffix } from '@src/lang/util'
+import { roundOff } from '@src/lib/utils'
+import type { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { Vector2 } from 'three'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 
@@ -160,4 +164,50 @@ export async function stringToKclExpression(
 
 export function getStringValue(code: string, range: SourceRange): string {
   return code.slice(range[0], range[1]).replaceAll(`'`, ``).replaceAll(`"`, ``)
+}
+
+/**
+ * Helper function to apply a drag vector to a Point2D Expr.
+ * Returns a new Expr with the vector applied.
+ */
+export function applyVectorToPoint2D(
+  point: { x: Expr; y: Expr },
+  vector: Vector2
+): { x: Expr; y: Expr } {
+  const xValue = extractNumericValue(point.x)
+  const yValue = extractNumericValue(point.y)
+
+  if (!xValue || !yValue) {
+    // If we can't extract values, return original
+    return point
+  }
+
+  return {
+    x: {
+      type: 'Var',
+      value: roundOff(xValue.value + vector.x),
+      units: forceSuffix(xValue.units),
+    },
+    y: {
+      type: 'Var',
+      value: roundOff(yValue.value + vector.y),
+      units: forceSuffix(yValue.units),
+    },
+  }
+}
+
+/**
+ * Helper function to extract numeric value from an Expr.
+ * Returns the value and units, or null if the Expr doesn't contain a numeric value.
+ */
+function extractNumericValue(
+  expr: Expr
+): { value: number; units: string } | null {
+  if (expr.type === 'Number' || expr.type === 'Var') {
+    return {
+      value: expr.value,
+      units: expr.units,
+    }
+  }
+  return null
 }
