@@ -406,7 +406,7 @@ export class KclManager extends EventTarget {
    * and fires off engine commands to highlight the corresponding engine entities.
    * It is not debounced.
    */
-  private selectionEffectExtension = EditorView.updateListener.of(
+  private highlightEngineEntitiesEffect = EditorView.updateListener.of(
     (update: ViewUpdate) => {
       if (update.transactions.some((tr) => tr.isUserEvent('select'))) {
         this.handleOnViewUpdate(update, processCodeMirrorRanges)
@@ -419,7 +419,7 @@ export class KclManager extends EventTarget {
    * discerns if the change is a kind that we want to re-execute on,
    * then fires (and forgets) an execution with a debounce.
    */
-  private executionEffectExtension = EditorView.updateListener.of((update) => {
+  private executeKclEffect = EditorView.updateListener.of((update) => {
     const shouldExecute =
       update.docChanged &&
       update.transactions.some((tr) => {
@@ -460,8 +460,8 @@ export class KclManager extends EventTarget {
     return [
       baseEditorExtensions(),
       keymapCompartment.of(keymap.of(this.getCodemirrorHotkeys())),
-      this.selectionEffectExtension,
-      this.executionEffectExtension,
+      this.highlightEngineEntitiesEffect,
+      this.executeKclEffect,
     ]
   }
   private createEditorView() {
