@@ -32,6 +32,28 @@ description: Operations executed sketch_block_basic_fixed_constraints.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "SketchSolve",
+      "sketchId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "SketchBlock"
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "std::math": [

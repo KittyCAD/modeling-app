@@ -46,6 +46,15 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Function)
     }
 
+    pub fn segment() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Segment)
+    }
+
+    /// `[Segment; 1+]`
+    pub fn segments() -> Self {
+        RuntimeType::Array(Box::new(Self::segment()), ArrayLen::Minimum(1))
+    }
+
     pub fn sketch() -> Self {
         RuntimeType::Primitive(PrimitiveType::Sketch)
     }
@@ -407,7 +416,9 @@ pub enum PrimitiveType {
     TaggedFace,
     TagDecl,
     GdtAnnotation,
+    Segment,
     Sketch,
+    Constraint,
     Solid,
     Plane,
     Helix,
@@ -429,7 +440,9 @@ impl PrimitiveType {
             PrimitiveType::String => "strings".to_owned(),
             PrimitiveType::Boolean => "bools".to_owned(),
             PrimitiveType::GdtAnnotation => "GD&T Annotations".to_owned(),
+            PrimitiveType::Segment => "Segments".to_owned(),
             PrimitiveType::Sketch => "Sketches".to_owned(),
+            PrimitiveType::Constraint => "Constraints".to_owned(),
             PrimitiveType::Solid => "Solids".to_owned(),
             PrimitiveType::Plane => "Planes".to_owned(),
             PrimitiveType::Helix => "Helices".to_owned(),
@@ -471,7 +484,9 @@ impl std::fmt::Display for PrimitiveType {
             PrimitiveType::TaggedEdge => write!(f, "tagged edge"),
             PrimitiveType::TaggedFace => write!(f, "tagged face"),
             PrimitiveType::GdtAnnotation => write!(f, "GD&T Annotation"),
+            PrimitiveType::Segment => write!(f, "Segment"),
             PrimitiveType::Sketch => write!(f, "Sketch"),
+            PrimitiveType::Constraint => write!(f, "Constraint"),
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),
             PrimitiveType::Face => write!(f, "Face"),
@@ -896,8 +911,13 @@ impl NumericType {
     }
 
     fn coerce(&self, val: &KclValue) -> Result<KclValue, CoercionError> {
-        let KclValue::Number { value, ty, meta } = val else {
-            return Err(val.into());
+        let (value, ty, meta) = match val {
+            KclValue::Number { value, ty, meta } => (value, ty, meta),
+            // For coercion purposes, sketch vars pass through unchanged since
+            // they will be resolved later to a number. We need the sketch var
+            // ID.
+            KclValue::SketchVar { .. } => return Ok(val.clone()),
+            _ => return Err(val.into()),
         };
 
         if ty.subtype(self) {
@@ -1011,6 +1031,32 @@ impl From<Option<UnitLength>> for NumericType {
 impl From<UnitAngle> for NumericType {
     fn from(value: UnitAngle) -> Self {
         NumericType::Known(UnitType::Angle(value))
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
+pub struct NumericSuffixTypeConvertError;
+
+impl TryFrom<NumericType> for NumericSuffix {
+    type Error = NumericSuffixTypeConvertError;
+
+    fn try_from(value: NumericType) -> Result<Self, Self::Error> {
+        match value {
+            NumericType::Known(UnitType::Count) => Ok(NumericSuffix::Count),
+            NumericType::Known(UnitType::Length(UnitLength::Millimeters)) => Ok(NumericSuffix::Mm),
+            NumericType::Known(UnitType::Length(UnitLength::Centimeters)) => Ok(NumericSuffix::Cm),
+            NumericType::Known(UnitType::Length(UnitLength::Meters)) => Ok(NumericSuffix::M),
+            NumericType::Known(UnitType::Length(UnitLength::Inches)) => Ok(NumericSuffix::Inch),
+            NumericType::Known(UnitType::Length(UnitLength::Feet)) => Ok(NumericSuffix::Ft),
+            NumericType::Known(UnitType::Length(UnitLength::Yards)) => Ok(NumericSuffix::Yd),
+            NumericType::Known(UnitType::GenericLength) => Ok(NumericSuffix::Length),
+            NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => Ok(NumericSuffix::Deg),
+            NumericType::Known(UnitType::Angle(UnitAngle::Radians)) => Ok(NumericSuffix::Rad),
+            NumericType::Known(UnitType::GenericAngle) => Ok(NumericSuffix::Angle),
+            NumericType::Default { .. } => Ok(NumericSuffix::None),
+            NumericType::Unknown => Ok(NumericSuffix::Unknown),
+            NumericType::Any => Err(NumericSuffixTypeConvertError),
+        }
     }
 }
 
@@ -1244,8 +1290,16 @@ impl KclValue {
                 KclValue::GdtAnnotation { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::Segment => match self {
+                KclValue::Segment { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::Sketch => match self {
                 KclValue::Sketch { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
+            PrimitiveType::Constraint => match self {
+                KclValue::SketchConstraint { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
             PrimitiveType::Solid => match self {
@@ -1288,6 +1342,7 @@ impl KclValue {
                         let id = exec_state.mod_local.id_generator.next_uuid();
                         let plane = Plane {
                             id,
+                            object_id: None,
                             artifact_id: id.into(),
                             info: PlaneInfo {
                                 origin,
@@ -1605,6 +1660,7 @@ impl KclValue {
             KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(*ty))),
             KclValue::String { .. } => Some(RuntimeType::Primitive(PrimitiveType::String)),
             KclValue::SketchVar { value, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(value.ty))),
+            KclValue::SketchConstraint { .. } => Some(RuntimeType::Primitive(PrimitiveType::Constraint)),
             KclValue::Object {
                 value, constrainable, ..
             } => {
@@ -1619,6 +1675,7 @@ impl KclValue {
             KclValue::Sketch { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sketch)),
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),
             KclValue::Face { .. } => Some(RuntimeType::Primitive(PrimitiveType::Face)),
+            KclValue::Segment { .. } => Some(RuntimeType::Primitive(PrimitiveType::Segment)),
             KclValue::Helix { .. } => Some(RuntimeType::Primitive(PrimitiveType::Helix)),
             KclValue::ImportedGeometry(..) => Some(RuntimeType::Primitive(PrimitiveType::ImportedGeometry)),
             KclValue::Tuple { value, .. } => Some(RuntimeType::Tuple(

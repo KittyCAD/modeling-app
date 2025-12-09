@@ -1,15 +1,20 @@
 //! The executor for the AST.
 
+#[cfg(feature = "artifact-graph")]
+use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, CodeRef, StartSketchOnFace, StartSketchOnPlane};
+pub use artifact::{
+    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, SketchBlock, StartSketchOnFace, StartSketchOnPlane,
+};
 use cache::GlobalState;
 pub use cache::{bust_cache, clear_mem_cache};
 #[cfg(feature = "artifact-graph")]
 pub use cad_op::Group;
 pub use cad_op::Operation;
+pub(crate) use exec_ast::normalize_to_solver_unit;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
@@ -40,6 +45,11 @@ use crate::{
     fs::FileManager,
     modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
+};
+#[cfg(feature = "artifact-graph")]
+use crate::{
+    collections::AhashIndexSet,
+    front::{Number, Object, ObjectId},
 };
 
 pub(crate) mod annotations;
@@ -79,12 +89,44 @@ pub struct ExecOutcome {
     /// Output artifact graph.
     #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
+    /// Objects in the scene, created from execution.
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub scene_objects: Vec<Object>,
+    /// Map from source range to object ID for lookup of objects by their source
+    /// range.
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub var_solutions: Vec<(SourceRange, Number)>,
     /// Non-fatal errors and warnings.
     pub errors: Vec<CompilationError>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
+}
+
+/// Configuration for mock execution.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MockConfig {
+    pub use_prev_memory: bool,
+    /// The segments that were edited that triggered this execution.
+    #[cfg(feature = "artifact-graph")]
+    pub segment_ids_edited: AhashIndexSet<ObjectId>,
+}
+
+impl Default for MockConfig {
+    fn default() -> Self {
+        Self {
+            // By default, use previous memory. This is usually what you want.
+            use_prev_memory: true,
+            #[cfg(feature = "artifact-graph")]
+            segment_ids_edited: AhashIndexSet::default(),
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -241,6 +283,20 @@ impl From<&Expr> for Metadata {
     fn from(expr: &Expr) -> Self {
         Self {
             source_range: SourceRange::from(expr),
+        }
+    }
+}
+
+impl Metadata {
+    pub fn to_source_ref(meta: &[Metadata]) -> crate::front::SourceRef {
+        if meta.len() == 1 {
+            let meta = &meta[0];
+            return crate::front::SourceRef::Simple {
+                range: meta.source_range,
+            };
+        }
+        crate::front::SourceRef::BackTrace {
+            ranges: meta.iter().map(|m| m.source_range).collect(),
         }
     }
 }
@@ -554,15 +610,18 @@ impl ExecutorContext {
     pub async fn run_mock(
         &self,
         program: &crate::Program,
-        use_prev_memory: bool,
+        mock_config: &MockConfig,
     ) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(
             self.is_mock(),
             "To use mock execution, instantiate via ExecutorContext::new_mock, not ::new"
         );
 
+        #[cfg(not(feature = "artifact-graph"))]
         let mut exec_state = ExecState::new(self);
-        if use_prev_memory {
+        #[cfg(feature = "artifact-graph")]
+        let mut exec_state = ExecState::new_sketch_mode(self, mock_config.segment_ids_edited.clone());
+        if mock_config.use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => {
                     *exec_state.mut_stack() = mem.0;
@@ -1371,12 +1430,23 @@ impl ExecutorContext {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
 pub struct ArtifactId(Uuid);
 
 impl ArtifactId {
     pub fn new(uuid: Uuid) -> Self {
         Self(uuid)
+    }
+
+    /// A placeholder artifact ID that will be filled in later.
+    pub fn placeholder() -> Self {
+        Self(Uuid::nil())
+    }
+
+    /// The constraint artifact ID is a special. They don't need to be
+    /// represented in the artifact graph.
+    pub fn constraint() -> Self {
+        Self(Uuid::nil())
     }
 }
 
@@ -2484,7 +2554,7 @@ w = f() + f()
 
         let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
-        let result = ctx2.run_mock(&program2, true).await.unwrap();
+        let result = ctx2.run_mock(&program2, &MockConfig::default()).await.unwrap();
         assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
 
         ctx.close().await;
@@ -2495,16 +2565,20 @@ w = f() + f()
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_has_stable_ids() {
         let ctx = ExecutorContext::new_mock(None).await;
+        let mock_config = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
         let code = "sk = startSketchOn(XY)
         |> startProfile(at = [0, 0])";
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let result = ctx.run_mock(&program, false).await.unwrap();
+        let result = ctx.run_mock(&program, &mock_config).await.unwrap();
         let ids = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
         assert!(!ids.is_empty(), "IDs should not be empty");
 
         let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs(code).unwrap();
-        let result = ctx2.run_mock(&program2, false).await.unwrap();
+        let result = ctx2.run_mock(&program2, &mock_config).await.unwrap();
         let ids2 = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
 
         assert_eq!(ids, ids2, "Generated IDs should match");
@@ -2530,7 +2604,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let mock_program = crate::Program::parse_no_errs(code).unwrap();
-        let mock_result = mock_ctx.run_mock(&mock_program, true).await.unwrap();
+        let mock_result = mock_ctx.run_mock(&mock_program, &MockConfig::default()).await.unwrap();
         assert_eq!(mock_result.operations.len(), 1);
 
         let code2 = code.to_owned()
