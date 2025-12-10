@@ -387,8 +387,11 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
                   <StarterCard />
                 )
               ) : (
-                <div className="text-center p-4 text-3 text-md animate-pulse">
-                  <Loading></Loading>
+                <div className="text-center p-4">
+                  <Loading
+                    isDummy={true}
+                    className="text-ml-green dark:text-ml-green"
+                  ></Loading>
                 </div>
               )}
             </div>
