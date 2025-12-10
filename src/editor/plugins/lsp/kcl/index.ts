@@ -162,7 +162,7 @@ async function hackExecutionForSketchSolve(
   try {
     const modelingState = kclManager.modelingState
     if (modelingState?.matches('sketchSolveMode')) {
-      await kclManager.executeCode(newCode)
+      await kclManager.executeCode()
       const { sceneGraph, execOutcome } = await kclManager.hackSetProgram(
         await jsAppSettings()
       )
