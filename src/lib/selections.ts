@@ -49,12 +49,10 @@ import type {
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import {
-  engineCommandManager,
-  rustContext,
-  sceneEntitiesManager,
-  sceneInfra,
-} from '@src/lib/singletons'
+import type RustContext from '@src/lib/rustContext'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { err } from '@src/lib/trap'
 import {
   getModuleId,
@@ -81,7 +79,13 @@ export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
 export async function getEventForSelectWithPoint(
   { data }: Extract<OkModelingCmdResponse, { type: 'select_with_point' }>,
-  artifactGraph: ArtifactGraph
+  {
+    artifactGraph,
+    rustContext,
+  }: {
+    artifactGraph: ArtifactGraph
+    rustContext: RustContext
+  }
 ): Promise<ModelingMachineEvent | null> {
   if (!data?.entity_id) {
     return {
@@ -218,11 +222,16 @@ export function handleSelectionBatch({
   artifactGraph,
   code,
   ast,
+  systemDeps,
 }: {
   selections: Selections
   artifactGraph: ArtifactGraph
   code: string
   ast: Node<Program>
+  systemDeps: {
+    sceneEntitiesManager: SceneEntities
+    engineCommandManager: ConnectionManager
+  }
 }): {
   engineEvents: WebSocketRequest[]
   codeMirrorSelection: EditorSelection
@@ -240,8 +249,10 @@ export function handleSelectionBatch({
           defaultSourceRange(),
       })
   })
-  const engineEvents: WebSocketRequest[] =
-    resetAndSetEngineEntitySelectionCmds(selectionToEngine)
+  const engineEvents: WebSocketRequest[] = resetAndSetEngineEntitySelectionCmds(
+    selectionToEngine,
+    systemDeps
+  )
   selections.graphSelections.forEach(({ codeRef }) => {
     if (codeRef.range?.[1]) {
       const safeEnd = Math.min(codeRef.range[1], code.length)
@@ -256,7 +267,7 @@ export function handleSelectionBatch({
         selections.graphSelections.length - 1
       ),
       updateSceneObjectColors: () =>
-        updateSceneObjectColors(selections.graphSelections, ast),
+        updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
     }
 
   return {
@@ -266,7 +277,7 @@ export function handleSelectionBatch({
     ),
     engineEvents,
     updateSceneObjectColors: () =>
-      updateSceneObjectColors(selections.graphSelections, ast),
+      updateSceneObjectColors(selections.graphSelections, ast, systemDeps),
   }
 }
 
@@ -282,6 +293,7 @@ export function processCodeMirrorRanges({
   ast,
   artifactGraph,
   artifactIndex,
+  systemDeps,
 }: {
   codeMirrorRanges: readonly SelectionRange[]
   selectionRanges: Selections
@@ -289,6 +301,10 @@ export function processCodeMirrorRanges({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   artifactIndex: ArtifactIndex
+  systemDeps: {
+    sceneEntitiesManager: SceneEntities
+    engineCommandManager: ConnectionManager
+  }
 }): null | {
   modelingEvent: ModelingMachineEvent
   engineEvents: WebSocketRequest[]
@@ -351,7 +367,7 @@ export function processCodeMirrorRanges({
   }
 
   if (!selectionRanges) return null
-  updateSceneObjectColors(codeBasedSelections, ast)
+  updateSceneObjectColors(codeBasedSelections, ast, systemDeps)
   return {
     modelingEvent: {
       type: 'Set selection',
@@ -364,14 +380,20 @@ export function processCodeMirrorRanges({
       },
     },
     engineEvents: resetAndSetEngineEntitySelectionCmds(
-      idBasedSelections.filter(({ id }) => !!id)
+      idBasedSelections.filter(({ id }) => !!id),
+      systemDeps
     ),
   }
 }
 
 function updateSceneObjectColors(
   codeBasedSelections: Selection[],
-  ast: Node<Program>
+  ast: Node<Program>,
+  {
+    sceneEntitiesManager,
+  }: {
+    sceneEntitiesManager: SceneEntities
+  }
 ) {
   const updated = ast
 
@@ -425,9 +447,14 @@ export function updateExtraSegments(
 }
 
 function resetAndSetEngineEntitySelectionCmds(
-  selections: SelectionToEngine[]
+  selections: SelectionToEngine[],
+  systemDeps: {
+    engineCommandManager: ConnectionManager
+  }
 ): WebSocketRequest[] {
-  if (engineCommandManager.connection?.pingIntervalId === undefined) {
+  if (
+    systemDeps.engineCommandManager.connection?.pingIntervalId === undefined
+  ) {
     return []
   }
   return [
@@ -674,7 +701,11 @@ function getBestCandidate(
     }
 
     // Other valid artifact types
-    if (['plane', 'cap', 'wall', 'sweep'].includes(entry.artifact.type)) {
+    if (
+      ['plane', 'cap', 'wall', 'sweep', 'sketchBlock'].includes(
+        entry.artifact.type
+      )
+    ) {
       return entry
     }
   }
@@ -731,14 +762,17 @@ export function codeToIdSelections(
 
 export async function sendSelectEventToEngine(
   e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  videoRef: HTMLVideoElement
+  videoRef: HTMLVideoElement,
+  systemDeps: {
+    engineCommandManager: ConnectionManager
+  }
 ) {
   const { x, y } = getNormalisedCoordinates(
     e,
     videoRef,
-    engineCommandManager.streamDimensions
+    systemDeps.engineCommandManager.streamDimensions
   )
-  let res = await engineCommandManager.sendSceneCommand({
+  let res = await systemDeps.engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'select_with_point',
@@ -850,8 +884,13 @@ export function getSemanticSelectionType(selectionType: Artifact['type'][]) {
 }
 
 export function getDefaultSketchPlaneData(
-  defaultPlaneId: string
+  defaultPlaneId: string,
+  systemDeps: {
+    rustContext: RustContext
+    sceneInfra: SceneInfra
+  }
 ): Error | false | DefaultPlane {
+  const { sceneInfra, rustContext } = systemDeps
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) {
     return new Error('No default planes defined in rustContext')
@@ -921,10 +960,54 @@ export function getDefaultSketchPlaneData(
     yAxis,
   }
 }
+export async function getPlaneDataFromSketchBlock(
+  sketchBlock: Extract<Artifact, { type: 'sketchBlock' }>,
+  artifactGraph: ArtifactGraph,
+  systemDeps: {
+    rustContext: RustContext
+    sceneInfra: SceneInfra
+  }
+): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane | null> {
+  // TODO this function is stubbed out for now since sketchBlocks really only work on default planes
+  // and I don't think we have enough info or the sketchBlock.planeId is wrong, so it just default to the
+  // XY no matter what for now
+
+  // Similar logic to selectSketchPlane but for a sketchBlock artifact
+  if (!sketchBlock.planeId) {
+    return null
+  }
+
+  // Try to get the artifact from the graph
+  const artifact = artifactGraph.get(sketchBlock.planeId)
+
+  // If artifact doesn't exist in the graph, fallback to default XY plane
+  // This is a temporary solution while we determine the proper approach for default planes
+  if (!artifact) {
+    const defaultPlanes = systemDeps.rustContext.defaultPlanes
+    if (defaultPlanes?.xy) {
+      const defaultResult = getDefaultSketchPlaneData(
+        defaultPlanes.xy,
+        systemDeps
+      )
+      if (!err(defaultResult) && defaultResult) {
+        return defaultResult
+      }
+    }
+    return null
+  }
+
+  return null
+}
+
 export function selectDefaultSketchPlane(
-  defaultPlaneId: string
+  defaultPlaneId: string,
+  systemDeps: {
+    sceneInfra: SceneInfra
+    rustContext: RustContext
+  }
 ): Error | boolean {
-  const result = getDefaultSketchPlaneData(defaultPlaneId)
+  const { sceneInfra } = systemDeps
+  const result = getDefaultSketchPlaneData(defaultPlaneId, systemDeps)
   if (err(result) || result === false) return result
   sceneInfra.modelingSend({
     type: 'Select sketch plane',
@@ -934,8 +1017,13 @@ export function selectDefaultSketchPlane(
 }
 
 export async function getOffsetSketchPlaneData(
-  artifact: Artifact | undefined
+  artifact: Artifact | undefined,
+  systemDeps: {
+    sceneInfra: SceneInfra
+    sceneEntitiesManager: SceneEntities
+  }
 ): Promise<Error | false | OffsetPlane> {
+  const { sceneInfra } = systemDeps
   if (artifact?.type !== 'plane') {
     return new Error(
       `Invalid artifact type for offset sketch plane selection: ${artifact?.type}`
@@ -943,7 +1031,8 @@ export async function getOffsetSketchPlaneData(
   }
   const planeId = artifact.id
   try {
-    const planeInfo = await sceneEntitiesManager.getFaceDetails(planeId)
+    const planeInfo =
+      await systemDeps.sceneEntitiesManager.getFaceDetails(planeId)
 
     // Apply camera-based orientation logic similar to default planes
     let zAxis: [number, number, number] = [
@@ -1004,9 +1093,14 @@ export async function getOffsetSketchPlaneData(
 }
 
 export async function selectOffsetSketchPlane(
-  artifact: Artifact | undefined
+  artifact: Artifact | undefined,
+  systemDeps: {
+    sceneInfra: SceneInfra
+    sceneEntitiesManager: SceneEntities
+  }
 ): Promise<Error | boolean> {
-  const result = await getOffsetSketchPlaneData(artifact)
+  const { sceneInfra } = systemDeps
+  const result = await getOffsetSketchPlaneData(artifact, systemDeps)
   if (err(result) || result === false) return result
 
   try {
@@ -1025,15 +1119,27 @@ export async function selectionBodyFace(
   planeOrFaceId: ArtifactId,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
-  execState: ExecState
+  execState: ExecState,
+  systemDeps: {
+    sceneInfra: SceneInfra
+    rustContext: RustContext
+    sceneEntitiesManager: SceneEntities
+  }
 ): Promise<ExtrudeFacePlane | undefined> {
-  const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId)
+  const { sceneInfra } = systemDeps
+  const defaultSketchPlaneSelected = selectDefaultSketchPlane(
+    planeOrFaceId,
+    systemDeps
+  )
   if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
     return
   }
 
   const artifact = artifactGraph.get(planeOrFaceId)
-  const offsetPlaneSelected = await selectOffsetSketchPlane(artifact)
+  const offsetPlaneSelected = await selectOffsetSketchPlane(
+    artifact,
+    systemDeps
+  )
   if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
     return
   }
@@ -1081,7 +1187,7 @@ export async function selectionBodyFace(
         ? getWallCodeRef(artifact, artifactGraph)
         : artifact.codeRef
 
-  const faceInfo = await sceneEntitiesManager.getFaceDetails(faceId)
+  const faceInfo = await systemDeps.sceneEntitiesManager.getFaceDetails(faceId)
   if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
   const { z_axis, y_axis, origin } = faceInfo
   const sketchPathToNode = err(codeRef) ? [] : codeRef.pathToNode
@@ -1130,24 +1236,30 @@ export async function selectionBodyFace(
 }
 
 export function selectAllInCurrentSketch(
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  systemDeps: {
+    sceneEntitiesManager: SceneEntities
+  }
 ): Selections {
   const graphSelections: Selection[] = []
 
-  Object.keys(sceneEntitiesManager.activeSegments).forEach((pathToNode) => {
-    const artifact = artifactGraph
-      .values()
-      .find(
-        (g) =>
-          'codeRef' in g && JSON.stringify(g.codeRef.pathToNode) === pathToNode
-      )
-    if (artifact && ['path', 'segment'].includes(artifact.type)) {
-      const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
-      if (codeRefs?.length) {
-        graphSelections.push({ artifact, codeRef: codeRefs[0] })
+  Object.keys(systemDeps.sceneEntitiesManager.activeSegments).forEach(
+    (pathToNode) => {
+      const artifact = artifactGraph
+        .values()
+        .find(
+          (g) =>
+            'codeRef' in g &&
+            JSON.stringify(g.codeRef.pathToNode) === pathToNode
+        )
+      if (artifact && ['path', 'segment'].includes(artifact.type)) {
+        const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+        if (codeRefs?.length) {
+          graphSelections.push({ artifact, codeRef: codeRefs[0] })
+        }
       }
     }
-  })
+  )
 
   return {
     graphSelections,

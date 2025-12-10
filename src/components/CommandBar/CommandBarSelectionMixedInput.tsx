@@ -8,7 +8,11 @@ import {
   getSelectionTypeDisplayText,
   handleSelectionBatch,
 } from '@src/lib/selections'
-import { kclManager, engineCommandManager } from '@src/lib/singletons'
+import {
+  kclManager,
+  engineCommandManager,
+  sceneEntitiesManager,
+} from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
 import { err } from '@src/lib/trap'
@@ -132,23 +136,25 @@ export default function CommandBarSelectionMixedInput({
     if (arg.selectionFilter && hasCoercedSelections) {
       // Batch the filter change with selection restoration
       // This is critical for body-only commands where we've coerced face/edge selections to bodies
-      setSelectionFilter(
-        arg.selectionFilter,
+      setSelectionFilter({
+        filter: arg.selectionFilter,
         engineCommandManager,
         kclManager,
-        selection,
-        handleSelectionBatch
-      )
+        sceneEntitiesManager,
+        selectionsToRestore: selection,
+        handleSelectionBatchFn: handleSelectionBatch,
+      })
     }
     return () => {
       if (arg.selectionFilter && hasCoercedSelections) {
         // Restore default filter with selections on cleanup
-        setSelectionFilterToDefault(
+        setSelectionFilterToDefault({
           engineCommandManager,
           kclManager,
-          selection,
-          handleSelectionBatch
-        )
+          sceneEntitiesManager,
+          selectionsToRestore: selection,
+          handleSelectionBatchFn: handleSelectionBatch,
+        })
       }
     }
   }, [arg.selectionFilter, selection, hasCoercedSelections])

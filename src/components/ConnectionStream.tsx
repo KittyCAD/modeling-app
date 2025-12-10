@@ -36,9 +36,17 @@ import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnl
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { EngineDebugger } from '@src/lib/debugger'
+import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { DEFAULT_BACKFACE_COLOR } from '@src/lib/constants'
 
 const TIME_TO_CONNECT = 30_000
+
+// Object defined outside of React to prevent rerenders
+const systemDeps = {
+  engineCommandManager,
+  kclManager,
+  sceneInfra,
+}
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -92,7 +100,9 @@ export const ConnectionStream = (props: {
     if (sceneInfra.camControls.wasDragging === true) return
 
     if (btnName(e.nativeEvent).left) {
-      sendSelectEventToEngine(e, videoRef.current).catch(reportRejection)
+      sendSelectEventToEngine(e, videoRef.current, {
+        engineCommandManager,
+      }).catch(reportRejection)
     }
   }
 
@@ -113,7 +123,9 @@ export const ConnectionStream = (props: {
       return
     }
 
-    sendSelectEventToEngine(e, videoRef.current)
+    sendSelectEventToEngine(e, videoRef.current, {
+      engineCommandManager,
+    })
       .then((result) => {
         if (!result) {
           return
@@ -151,6 +163,7 @@ export const ConnectionStream = (props: {
         timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       })
         .then(() => {
           // Take a screen shot after the page mounts and zoom to fit runs
@@ -201,6 +214,7 @@ export const ConnectionStream = (props: {
         timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -224,6 +238,7 @@ export const ConnectionStream = (props: {
         timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -249,6 +264,7 @@ export const ConnectionStream = (props: {
         timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -269,6 +285,7 @@ export const ConnectionStream = (props: {
         timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -298,6 +315,7 @@ export const ConnectionStream = (props: {
         timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -307,9 +325,8 @@ export const ConnectionStream = (props: {
   useOnFileRoute({
     file,
     isStreamAcceptingInput,
-    engineCommandManager,
-    kclManager,
     resetCameraPosition,
+    systemDeps,
   })
 
   useOnOfflineToExitSketchMode({
@@ -319,11 +336,18 @@ export const ConnectionStream = (props: {
     engineCommandManager,
   })
 
+  // Hardcoded engine background color based on theme
+  const backgroundColor =
+    getResolvedTheme(settings.app.theme.current) === Themes.Light
+      ? 'rgb(250, 250, 250)'
+      : 'rgb(30, 30, 30)'
+
   return (
     <div
       role="presentation"
       ref={videoWrapperRef}
       className="absolute inset-[-4px] z-0"
+      style={{ backgroundColor }}
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}
@@ -381,6 +405,7 @@ export const ConnectionStream = (props: {
               timeToConnect: TIME_TO_CONNECT,
               settings: settingsEngine,
               setShowManualConnect,
+              sceneInfra,
             }).catch((e) => {
               console.warn(e)
               setShowManualConnect(true)

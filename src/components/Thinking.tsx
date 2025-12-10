@@ -632,6 +632,7 @@ export const Thinking = (props: {
 
   const ViewFull = (
     <div
+      data-testid="ml-response-thinking-view"
       ref={refViewFull}
       style={{ maxHeight: '20lh' }}
       className="select-text overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"

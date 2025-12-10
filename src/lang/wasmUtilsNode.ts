@@ -60,7 +60,7 @@ export const loadAndInitialiseWasmInstance = async (path: string) => {
   const instanceOfWasmLibImport = await import(
     `@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`
   )
-  // Tell the instance to load the was buffer
+  // Tell the instance to load the wasm buffer
   await instanceOfWasmLibImport.default({ module_or_path: wasmBuffer })
   return instanceOfWasmLibImport
 }

@@ -35,6 +35,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![bench](screenshots/bench.png)](bench/main.kcl)
 #### [bench-for-kids](bench-for-kids/main.kcl) ([screenshot](screenshots/bench-for-kids.png))
 [![bench-for-kids](screenshots/bench-for-kids.png)](bench-for-kids/main.kcl)
+#### [bike-hub-washer](bike-hub-washer/main.kcl) ([screenshot](screenshots/bike-hub-washer.png))
+[![bike-hub-washer](screenshots/bike-hub-washer.png)](bike-hub-washer/main.kcl)
 #### [bone-plate](bone-plate/main.kcl) ([screenshot](screenshots/bone-plate.png))
 [![bone-plate](screenshots/bone-plate.png)](bone-plate/main.kcl)
 #### [bottle](bottle/main.kcl) ([screenshot](screenshots/bottle.png))

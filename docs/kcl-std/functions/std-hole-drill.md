@@ -5,8 +5,6 @@ excerpt: "End the hole in an angle, like the end of a drill."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 End the hole in an angle, like the end of a drill.
 
 ```kcl
@@ -25,9 +23,6 @@ hole::drill(pointAngle: number(Angle))
 ### Examples
 
 ```kcl
-// `hole` module is still experimental, so enable experimental features here.
-@settings(experimentalFeatures = allow)
-
 // Sketch a cube, so we have something to drill into.
 cubeLen = 20
 bigCube = startSketchOn(XY)

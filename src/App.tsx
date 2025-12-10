@@ -143,7 +143,7 @@ export function App() {
     kclManager
   )
 
-  useEngineConnectionSubscriptions(kclManager)
+  useEngineConnectionSubscriptions()
 
   useEffect(() => {
     // Not too useful for regular flows but on modeling view refresh,

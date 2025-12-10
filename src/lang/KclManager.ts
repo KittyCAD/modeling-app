@@ -20,6 +20,10 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { emptyExecState, getKclVersion, parse, recast } from '@src/lang/wasm'
+import {
+  setArtifactGraphEffect,
+  artifactAnnotationsEvent,
+} from '@src/editor/plugins/artifacts'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
@@ -90,6 +94,13 @@ import { bracket } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
 import toast from 'react-hot-toast'
 import { signal } from '@preact/signals-core'
+import {
+  editorTheme,
+  themeCompartment,
+  appSettingsThemeEffect,
+  settingsUpdateAnnotation,
+} from '@src/lib/codeEditor'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -191,6 +202,7 @@ export class KclManager extends EventTarget {
   private _switchedFiles = false
   private _fileSettings: KclSettingsAnnotation = {}
   private _kclVersion: string | undefined = undefined
+  private _sceneEntitiesManager?: SceneEntities
   private singletons: Singletons
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
@@ -342,11 +354,15 @@ export class KclManager extends EventTarget {
     return this._isExecuting
   }
 
+  set sceneEntitiesManager(s: SceneEntities) {
+    this._sceneEntitiesManager = s
+  }
+
   set isExecuting(isExecuting) {
     this._isExecuting.value = isExecuting
     // If we have finished executing, but the execute is stale, we should
     // execute again.
-    if (!isExecuting && this.executeIsStale) {
+    if (!isExecuting && this.executeIsStale && this._sceneEntitiesManager) {
       const args = this.executeIsStale
       this.executeIsStale = null
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -477,6 +493,18 @@ export class KclManager extends EventTarget {
   ) {
     this.artifactGraph = execStateArtifactGraph
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
+
+    // Push the artifact graph into the editor state so annotations/decorations update
+    const editorView = this.getEditorView()
+    if (editorView) {
+      editorView.dispatch({
+        effects: [setArtifactGraphEffect.of(this.artifactGraph)],
+        annotations: [
+          artifactAnnotationsEvent,
+          Transaction.addToHistory.of(false),
+        ],
+      })
+    }
     if (this.artifactGraph.size) {
       // TODO: we wanna remove this logic from xstate, it is racey
       // This defer is bullshit but playwright wants it
@@ -598,7 +626,13 @@ export class KclManager extends EventTarget {
           instance: this.singletons.rustContext.getRustInstance(),
         })
       )
-      await setSelectionFilterToDefault(this.engineCommandManager, this)
+      if (this._sceneEntitiesManager) {
+        await setSelectionFilterToDefault({
+          engineCommandManager: this.engineCommandManager,
+          kclManager: this,
+          sceneEntitiesManager: this._sceneEntitiesManager,
+        })
+      }
     }
 
     this.isExecuting = false
@@ -722,7 +756,7 @@ export class KclManager extends EventTarget {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(clearSelections = false): Promise<void> {
+  async executeCode(): Promise<void> {
     const ast = await this.safeParse(this.code)
 
     if (!ast) {
@@ -742,13 +776,6 @@ export class KclManager extends EventTarget {
 
       this.dispatchEvent(new CustomEvent(KclManagerEvents.LongExecution, {}))
     }, this.longExecutionTimeMs)
-
-    if (clearSelections) {
-      this._modelingSend({
-        type: 'Set selection',
-        data: { selection: undefined, selectionType: 'singleCodeCursor' },
-      })
-    }
 
     return this.executeAst({ ast })
   }
@@ -919,29 +946,33 @@ export class KclManager extends EventTarget {
 
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilterToDefault(
+    sceneEntitiesManager: SceneEntities,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
-    setSelectionFilterToDefault(
-      this.engineCommandManager,
-      this,
+    setSelectionFilterToDefault({
+      engineCommandManager: this.engineCommandManager,
+      kclManager: this,
+      sceneEntitiesManager,
       selectionsToRestore,
-      handleSelectionBatch
-    )
+      handleSelectionBatchFn: handleSelectionBatch,
+    })
   }
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilter(
     filter: EntityType[],
+    sceneEntitiesManager: SceneEntities,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
-    setSelectionFilter(
+    setSelectionFilter({
       filter,
-      this.engineCommandManager,
-      this,
+      engineCommandManager: this.engineCommandManager,
+      kclManager: this,
+      sceneEntitiesManager,
       selectionsToRestore,
-      handleSelectionBatch
-    )
+      handleSelectionBatchFn: handleSelectionBatch,
+    })
   }
 
   // Determines if there is no KCL code which means it is executing a blank KCL file
@@ -1067,6 +1098,20 @@ export class KclManager extends EventTarget {
   set modelingSend(send: (eventInfo: ModelingMachineEvent) => void) {
     this._modelingSend = send
   }
+  /**
+   * Send an event to the modeling machine.
+   * Returns false if the modeling machine is not available.
+   */
+  sendModelingEvent(event: ModelingMachineEvent): boolean {
+    if (this._modelingSend) {
+      this._modelingSend(event)
+      return true
+    }
+    return false
+  }
+  get modelingState(): StateFrom<typeof modelingMachine> | null {
+    return this._modelingState
+  }
   set modelingState(state: StateFrom<typeof modelingMachine>) {
     this._modelingState = state
   }
@@ -1088,6 +1133,20 @@ export class KclManager extends EventTarget {
         annotations: [
           updateOutsideEditorEvent,
           addLineHighlightEvent,
+          Transaction.addToHistory.of(false),
+        ],
+      })
+    }
+  }
+  setEditorTheme(theme: 'light' | 'dark') {
+    if (this._editorView) {
+      this._editorView.dispatch({
+        effects: [
+          appSettingsThemeEffect.of(theme),
+          themeCompartment.reconfigure(editorTheme[theme]),
+        ],
+        annotations: [
+          settingsUpdateAnnotation.of(null),
           Transaction.addToHistory.of(false),
         ],
       })
@@ -1269,7 +1328,8 @@ export class KclManager extends EventTarget {
   // doing. (jess)
   handleOnViewUpdate(
     viewUpdate: ViewUpdate,
-    processCodeMirrorRanges: typeof processCodeMirrorRangesFn
+    processCodeMirrorRanges: typeof processCodeMirrorRangesFn,
+    sceneEntitiesManager: SceneEntities
   ): void {
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
@@ -1300,6 +1360,10 @@ export class KclManager extends EventTarget {
       ast: this.ast,
       artifactGraph: this.artifactGraph,
       artifactIndex: this.artifactIndex,
+      systemDeps: {
+        engineCommandManager: this.engineCommandManager,
+        sceneEntitiesManager,
+      },
     })
     if (!eventInfo) {
       return
