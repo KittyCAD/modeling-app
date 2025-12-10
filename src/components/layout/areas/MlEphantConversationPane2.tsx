@@ -299,7 +299,7 @@ export const MlEphantConversationPane2 = (props: {
       onInterrupt={onInterrupt}
       disabled={isProcessing || needsReconnect}
       needsReconnect={needsReconnect}
-      hasPromptCompleted={isProcessing}
+      hasPromptCompleted={!isProcessing}
       userAvatarSrc={props.user?.image}
       defaultPrompt={defaultPrompt}
     />
