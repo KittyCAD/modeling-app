@@ -359,7 +359,8 @@ test.describe('Feature Tree pane', () => {
     toolbar,
     cmdBar,
   }) => {
-    const testCode = (value: string) => `p = offsetPlane(XY, offset = ${value})`
+    const testCode = (value: string) =>
+      `p1 = offsetPlane(XY, offset = ${value})`
     const initialInput = '10'
     const initialCode = testCode(initialInput)
     const newInput = '5 + 10'
@@ -386,7 +387,8 @@ test.describe('Feature Tree pane', () => {
     })
 
     await test.step('Double click on the offset plane operation', async () => {
-      await (await toolbar.getFeatureTreeOperation('p', 0)).first().dblclick()
+      const opButton = await toolbar.getFeatureTreeOperation('p1', 0)
+      await opButton.dblclick()
       await editor.expectState({
         highlightedCode: '',
         diagnostics: [],
