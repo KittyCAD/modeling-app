@@ -5,8 +5,6 @@ excerpt: "Cut an angled countersink at the top of the hole. Typically used when 
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Cut an angled countersink at the top of the hole. Typically used when a conical screw head has to sit flush with the surface being cut into.
 
 ```kcl
@@ -29,9 +27,6 @@ hole::countersink(
 ### Examples
 
 ```kcl
-// `hole` module is still experimental, so enable experimental features here.
-@settings(experimentalFeatures = allow)
-
 // Model a cube
 cubeLen = 20
 bigCube = startSketchOn(XY)

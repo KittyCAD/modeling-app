@@ -25,12 +25,26 @@ description: Variables in memory after executing holes_cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 176,
-            "end": 178,
+            "commentStart": 135,
+            "end": 137,
             "moduleId": 0,
-            "start": 176,
+            "start": 135,
             "type": "TagDeclarator",
             "value": "a"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 175,
+            "end": 177,
+            "moduleId": 0,
+            "start": 175,
+            "type": "TagDeclarator",
+            "value": "b"
           },
           "type": "extrudePlane"
         },
@@ -44,7 +58,7 @@ description: Variables in memory after executing holes_cube.kcl
             "moduleId": 0,
             "start": 216,
             "type": "TagDeclarator",
-            "value": "b"
+            "value": "c"
           },
           "type": "extrudePlane"
         },
@@ -57,20 +71,6 @@ description: Variables in memory after executing holes_cube.kcl
             "end": 259,
             "moduleId": 0,
             "start": 257,
-            "type": "TagDeclarator",
-            "value": "c"
-          },
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [],
-          "tag": {
-            "commentStart": 298,
-            "end": 300,
-            "moduleId": 0,
-            "start": 298,
             "type": "TagDeclarator",
             "value": "d"
           },
@@ -91,10 +91,10 @@ description: Variables in memory after executing holes_cube.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 176,
-              "end": 178,
+              "commentStart": 135,
+              "end": 137,
               "moduleId": 0,
-              "start": 176,
+              "start": 135,
               "type": "TagDeclarator",
               "value": "a"
             },
@@ -115,10 +115,10 @@ description: Variables in memory after executing holes_cube.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 216,
-              "end": 218,
+              "commentStart": 175,
+              "end": 177,
               "moduleId": 0,
-              "start": 216,
+              "start": 175,
               "type": "TagDeclarator",
               "value": "b"
             },
@@ -139,10 +139,10 @@ description: Variables in memory after executing holes_cube.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 257,
-              "end": 259,
+              "commentStart": 216,
+              "end": 218,
               "moduleId": 0,
-              "start": 257,
+              "start": 216,
               "type": "TagDeclarator",
               "value": "c"
             },
@@ -163,10 +163,10 @@ description: Variables in memory after executing holes_cube.kcl
               20.0
             ],
             "tag": {
-              "commentStart": 298,
-              "end": 300,
+              "commentStart": 257,
+              "end": 259,
               "moduleId": 0,
-              "start": 298,
+              "start": 257,
               "type": "TagDeclarator",
               "value": "d"
             },

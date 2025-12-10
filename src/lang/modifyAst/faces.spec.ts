@@ -405,9 +405,6 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)`)
   })
 
   describe('Testing addHole', () => {
-    const cylinderWithFlag = `@settings(experimentalFeatures = allow)
-
-${cylinder}`
     const simpleHole = `hole001 = hole::hole(
   extrude001,
   face = END,
@@ -419,7 +416,7 @@ ${cylinder}`
 
     it('should add a simple hole call on cylinder end cap', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
-        cylinderWithFlag,
+        cylinder,
         instanceInThisFile,
         kclManagerInThisFile
       )
@@ -454,7 +451,7 @@ ${cylinder}`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
-      expect(newCode).toBe(`${cylinderWithFlag}
+      expect(newCode).toBe(`${cylinder}
 ${simpleHole}
 `)
       await enginelessExecutor(
@@ -589,7 +586,7 @@ hole002 = hole::hole(
 
     it('should edit a simple hole call into a countersink hole call on cylinder end cap with drill end', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
-        `${cylinderWithFlag}
+        `${cylinder}
 ${simpleHole}`,
         instanceInThisFile,
         kclManagerInThisFile
@@ -642,7 +639,7 @@ ${simpleHole}`,
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `${cylinderWithFlag}
+        `${cylinder}
 hole001 = hole::hole(
   extrude001,
   face = END,
@@ -662,8 +659,7 @@ hole001 = hole::hole(
   })
 
   // Hole utils test
-  const cylinderForHole = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XZ)
+  const cylinderForHole = `sketch001 = startSketchOn(XZ)
 profile001 = circle(sketch001, center = [0, 0], diameter = 10)
 extrude001 = extrude(profile001, length = 10)`
   const flatSimpleHole = `${cylinderForHole}
