@@ -194,7 +194,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
             hoverOnly
             wrapperClassName="ui-open:!hidden"
           >
-            Text-to-CAD credits
+            Zookeeper credits
           </Tooltip>
         )}
       </Popover.Button>
@@ -238,7 +238,11 @@ export const MlEphantConversationInput = (
   return (
     <div className="flex flex-col p-4 gap-2">
       <div className="flex flex-row justify-between">
-        <div></div>
+        <div>
+          <div className="text-3 text-xs">
+            Zookeeper can make mistakes. Always verify information.
+          </div>
+        </div>
         <BillingStatusBarItem billingContext={props.billingContext} />
       </div>
       <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
@@ -294,9 +298,6 @@ export const MlEphantConversationInput = (
           </div>
         </div>
       </div>
-      <div className="text-3 text-xs">
-        Zookeeper can make mistakes. Always verify information.
-      </div>
     </div>
   )
 }
@@ -336,28 +337,6 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
     if (autoScroll === false) {
       return
     }
-    if (refScroll.current === null) {
-      return
-    }
-    if (props.conversation?.exchanges.length === 0) {
-      return
-    }
-
-    setTimeout(() => {
-      if (refScroll.current == null) {
-        return
-      }
-      refScroll.current.scrollTo({
-        top: refScroll.current.scrollHeight,
-        behavior: 'smooth',
-      })
-    })
-  }, [props.conversation?.exchanges, autoScroll])
-
-  useEffect(() => {
-    if (autoScroll === false) {
-      return
-    }
     if (refScroll.current == null) {
       return
     }
@@ -385,21 +364,31 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
     }
   )
 
+  const hasCards = exchangeCards !== undefined && exchangeCards.length > 0
+
+  useEffect(() => {
+    if (refScroll.current === null) return
+    refScroll.current.scrollTo({
+      top: refScroll.current.scrollHeight,
+      behavior: 'smooth',
+    })
+  }, [hasCards])
+
   return (
     <div className="relative">
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
-              {props.isLoading === false ? (
+              {props.isLoading === false || props.needsReconnect ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
                   exchangeCards
                 ) : (
                   <StarterCard />
                 )
               ) : (
-                <div className="text-center p-4 text-3 text-md animate-pulse">
-                  <Loading></Loading>
+                <div className="text-center p-4">
+                  <Loading isDummy={true} className="!text-ml-green"></Loading>
                 </div>
               )}
             </div>

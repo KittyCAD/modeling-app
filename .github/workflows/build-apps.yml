@@ -76,7 +76,7 @@ jobs:
         with:
           cache: false # Configured below.
 
-      - uses: taiki-e/install-action@c5b1b6f479c32f356cc6f4ba672a47f63853b13b
+      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
@@ -112,7 +112,7 @@ jobs:
           npm run files:set-version
           npm run files:set-windows-codesign-config
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: prepared-files
           path: |
@@ -227,7 +227,7 @@ jobs:
       - name: List artifacts in out/
         run: ls -R out
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: out-arm64-${{ matrix.platform }}
           # first two will pick both Zoo Design Studio-$VERSION-arm64-win.exe and Zoo Design Studio-$VERSION-win.exe
@@ -237,7 +237,7 @@ jobs:
             out/*-arm64-mac.*
             out/*-arm64-linux.*
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: out-x64-${{ matrix.platform }}
           path: |
@@ -245,7 +245,7 @@ jobs:
             out/*-x64-mac.*
             out/*-x86_64-linux.*
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: ${{ env.IS_RELEASE == 'true' || env.IS_STAGING == 'true' }}
         with:
           name: out-yml-${{ matrix.platform }}
@@ -358,7 +358,7 @@ jobs:
             }' > out/last_download.json
             cat out/last_download.json
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: out-download-json
           path: out/last_download.json
@@ -368,13 +368,13 @@ jobs:
 
       - name: Authenticate to Google Cloud
         if: ${{ env.IS_STAGING == 'true' }}
-        uses: 'google-github-actions/auth@v2.1.10'
+        uses: 'google-github-actions/auth@v3.0.0'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
       - name: Set up Google Cloud SDK
         if: ${{ env.IS_STAGING == 'true' }}
-        uses: google-github-actions/setup-gcloud@v2.1.4
+        uses: google-github-actions/setup-gcloud@v3.0.1
         with:
           project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
 

@@ -3,7 +3,7 @@ import { NIL as uuidNIL } from 'uuid'
 import type { settings } from '@src/lib/settings/initialSettings'
 import type { KclManager } from '@src/lang/KclManager'
 import type { SystemIOActor } from '@src/lib/singletons'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
 import type { MlEphantManagerActor2 } from '@src/machines/mlEphantManagerMachine2'
@@ -36,18 +36,24 @@ export const MlEphantConversationPane2 = (props: {
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
+  const timeoutReconnect = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  )
 
   let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
   })
 
-  if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
-    conversation = undefined
-  }
-
   const abruptlyClosed = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.abruptlyClosed
   })
+
+  if (
+    props.mlEphantManagerActor.getSnapshot().matches(S.Await) &&
+    !abruptlyClosed
+  ) {
+    conversation = undefined
+  }
 
   const billingContext = useSelector(props.billingActor, (actor) => {
     return actor.context
@@ -131,7 +137,16 @@ export const MlEphantConversationPane2 = (props: {
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions2.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
+      conversationId:
+        props.mlEphantManagerActor.getSnapshot().context.conversationId,
     })
+  }
+
+  if (needsReconnect && timeoutReconnect.current === undefined) {
+    timeoutReconnect.current = setTimeout(() => {
+      onReconnect()
+      timeoutReconnect.current = undefined
+    }, 3000)
   }
 
   const onClickClearChat = () => {

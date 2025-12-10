@@ -5,8 +5,6 @@ excerpt: "End the hole flat."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 End the hole flat.
 
 ```kcl
@@ -20,9 +18,6 @@ hole::flat()
 ### Examples
 
 ```kcl
-// `hole` module is still experimental, so enable experimental features here.
-@settings(experimentalFeatures = allow)
-
 // Sketch a cube, so we have something to drill into.
 cubeLen = 20
 bigCube = startSketchOn(XY)

@@ -6,7 +6,7 @@ import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type { ToolbarModeName } from '@src/lib/toolbar'
-import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveMode'
+import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -15,6 +15,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { kclEditorMachine } from '@src/machines/kclEditorMachine'
 import type { ActorRefFrom } from 'xstate'
 import type RustContext from '@src/lib/rustContext'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -197,14 +198,25 @@ export type SketchTool =
 
 export type MoveDesc = { line: number; snippet: string }
 
-export interface ModelingMachineContext {
+/** Input into the Modeling machine consists of its external dependencies */
+export type ModelingMachineInput = {
+  kclManager: KclManager
+  engineCommandManager: ConnectionManager
+  sceneInfra: SceneInfra
+  sceneEntitiesManager: SceneEntities
+  rustContext: RustContext
+  machineManager: MachineManager
+  wasmInstance?: ModuleType
+  store?: Store
+}
+export type ModelingMachineInternalContext = {
   currentMode: ToolbarModeName
   currentTool: SketchTool
   toastId: string | null
-  machineManager: MachineManager
   selection: string[]
   selectionRanges: Selections
   sketchDetails: SketchDetails | null
+  // Data returned by 'animate-to-sketch-solve' to initialize sketch solve
   sketchPlaneId: string
   sketchEnginePathId: string
   moveDescs: MoveDesc[]
@@ -215,16 +227,17 @@ export interface ModelingMachineContext {
   defaultPlaneVisibility: PlaneVisibilityMap
   savedDefaultPlaneVisibility: PlaneVisibilityMap
   planesInitialized: boolean
+  // sketch solve context
+  sketchSolveInit?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
+  sketchSolveId?: number
+  initialSceneGraphDelta: SceneGraphDelta
+  // TODO are these both used?
   sketchSolveTool: EquipTool | null
-  kclManager: KclManager
-  engineCommandManager?: ConnectionManager
-  sceneInfra?: SceneInfra
-  sceneEntitiesManager?: SceneEntities
-  wasmInstance?: ModuleType
   kclEditorMachine?: ActorRefFrom<typeof kclEditorMachine>
-  rustContext?: RustContext
   sketchSolveToolName: EquipTool | null
 }
+export type ModelingMachineContext = ModelingMachineInput &
+  ModelingMachineInternalContext
 
 export type PlaneVisibilityMap = {
   xy: boolean

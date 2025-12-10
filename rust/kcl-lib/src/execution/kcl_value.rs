@@ -9,8 +9,9 @@ use crate::{
     CompilationError, KclError, ModuleId, SourceRange,
     errors::KclErrorDetails,
     execution::{
-        EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry, GeometryWithImportedGeometry, Helix,
-        ImportedGeometry, Metadata, Plane, Sketch, SketchVar, SketchVarId, Solid, TagIdentifier,
+        AbstractSegment, EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry, GeometryWithImportedGeometry, Helix,
+        ImportedGeometry, Metadata, Plane, Sketch, SketchConstraint, SketchVar, SketchVarId, Solid, TagIdentifier,
+        UnsolvedExpr,
         annotations::{self, FnAttrs, SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
@@ -52,6 +53,9 @@ pub enum KclValue {
     SketchVar {
         value: Box<SketchVar>,
     },
+    SketchConstraint {
+        value: Box<SketchConstraint>,
+    },
     Tuple {
         value: Vec<KclValue>,
         #[serde(skip)]
@@ -80,6 +84,9 @@ pub enum KclValue {
     },
     Face {
         value: Box<Face>,
+    },
+    Segment {
+        value: Box<AbstractSegment>,
     },
     Sketch {
         value: Box<Sketch>,
@@ -292,10 +299,12 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Function { meta, .. } => to_vec_sr(&meta),
             KclValue::Plane { value } => to_vec_sr(&value.meta),
             KclValue::Face { value } => to_vec_sr(&value.meta),
+            KclValue::Segment { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(&meta),
             KclValue::Number { meta, .. } => to_vec_sr(&meta),
             KclValue::String { meta, .. } => to_vec_sr(&meta),
             KclValue::SketchVar { value, .. } => to_vec_sr(&value.meta),
+            KclValue::SketchConstraint { value, .. } => to_vec_sr(&value.meta),
             KclValue::Tuple { meta, .. } => to_vec_sr(&meta),
             KclValue::HomArray { value, .. } => value.iter().flat_map(Into::<Vec<SourceRange>>::into).collect(),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
@@ -324,10 +333,12 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Function { meta, .. } => to_vec_sr(meta),
             KclValue::Plane { value } => to_vec_sr(&value.meta),
             KclValue::Face { value } => to_vec_sr(&value.meta),
+            KclValue::Segment { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(meta),
             KclValue::Number { meta, .. } => to_vec_sr(meta),
             KclValue::String { meta, .. } => to_vec_sr(meta),
             KclValue::SketchVar { value, .. } => to_vec_sr(&value.meta),
+            KclValue::SketchConstraint { value, .. } => to_vec_sr(&value.meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
             KclValue::Tuple { meta, .. } => to_vec_sr(meta),
             KclValue::HomArray { value, .. } => value.iter().flat_map(Into::<Vec<SourceRange>>::into).collect(),
@@ -354,6 +365,7 @@ impl KclValue {
             KclValue::Number { meta, .. } => meta.clone(),
             KclValue::String { value: _, meta } => meta.clone(),
             KclValue::SketchVar { value, .. } => value.meta.clone(),
+            KclValue::SketchConstraint { value, .. } => value.meta.clone(),
             KclValue::Tuple { value: _, meta } => meta.clone(),
             KclValue::HomArray { value, .. } => value.iter().flat_map(|v| v.metadata()).collect(),
             KclValue::Object { meta, .. } => meta.clone(),
@@ -362,6 +374,7 @@ impl KclValue {
             KclValue::GdtAnnotation { value } => value.meta.clone(),
             KclValue::Plane { value } => value.meta.clone(),
             KclValue::Face { value } => value.meta.clone(),
+            KclValue::Segment { value } => value.meta.clone(),
             KclValue::Sketch { value } => value.meta.clone(),
             KclValue::Solid { value } => value.meta.clone(),
             KclValue::Helix { value } => value.meta.clone(),
@@ -389,6 +402,7 @@ impl KclValue {
             KclValue::Uuid { .. } => false,
             KclValue::Bool { .. } | KclValue::Number { .. } | KclValue::String { .. } => true,
             KclValue::SketchVar { .. }
+            | KclValue::SketchConstraint { .. }
             | KclValue::Tuple { .. }
             | KclValue::HomArray { .. }
             | KclValue::Object { .. }
@@ -397,6 +411,7 @@ impl KclValue {
             | KclValue::GdtAnnotation { .. }
             | KclValue::Plane { .. }
             | KclValue::Face { .. }
+            | KclValue::Segment { .. }
             | KclValue::Sketch { .. }
             | KclValue::Solid { .. }
             | KclValue::Helix { .. }
@@ -423,6 +438,7 @@ impl KclValue {
             KclValue::Function { .. } => "a function".to_owned(),
             KclValue::Plane { .. } => "a plane".to_owned(),
             KclValue::Face { .. } => "a face".to_owned(),
+            KclValue::Segment { .. } => "a segment".to_owned(),
             KclValue::Bool { .. } => "a boolean (`true` or `false`)".to_owned(),
             KclValue::Number {
                 ty: NumericType::Unknown,
@@ -435,6 +451,7 @@ impl KclValue {
             KclValue::Number { .. } => "a number".to_owned(),
             KclValue::String { .. } => "a string".to_owned(),
             KclValue::SketchVar { .. } => "a sketch variable".to_owned(),
+            KclValue::SketchConstraint { .. } => "a sketch constraint".to_owned(),
             KclValue::Object { .. } => "an object".to_owned(),
             KclValue::Module { .. } => "a module".to_owned(),
             KclValue::Type { .. } => "a type".to_owned(),
@@ -588,6 +605,22 @@ impl KclValue {
     }
 
     /// Put the point into a KCL point.
+    pub(crate) fn array_from_point2d(p: [f64; 2], ty: NumericType, meta: Vec<Metadata>) -> Self {
+        let [x, y] = p;
+        Self::HomArray {
+            value: vec![
+                Self::Number {
+                    value: x,
+                    meta: meta.clone(),
+                    ty,
+                },
+                Self::Number { value: y, meta, ty },
+            ],
+            ty: ty.into(),
+        }
+    }
+
+    /// Put the point into a KCL point.
     pub fn array_from_point3d(p: [f64; 3], ty: NumericType, meta: Vec<Metadata>) -> Self {
         let [x, y, z] = p;
         Self::HomArray {
@@ -605,6 +638,25 @@ impl KclValue {
                 Self::Number { value: z, meta, ty },
             ],
             ty: ty.into(),
+        }
+    }
+
+    pub(crate) fn from_unsolved_expr(expr: UnsolvedExpr, meta: Vec<Metadata>) -> Self {
+        match expr {
+            UnsolvedExpr::Known(v) => crate::execution::KclValue::Number {
+                value: v.n,
+                ty: v.ty,
+                meta,
+            },
+            UnsolvedExpr::Unknown(var_id) => crate::execution::KclValue::SketchVar {
+                value: Box::new(SketchVar {
+                    id: var_id,
+                    initial_value: Default::default(),
+                    // TODO: Should this be the solver units?
+                    ty: Default::default(),
+                    meta,
+                }),
+            },
         }
     }
 
@@ -639,6 +691,28 @@ impl KclValue {
     pub fn into_object(self) -> Option<KclObjectFields> {
         match self {
             KclValue::Object { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
+    pub fn as_unsolved_expr(&self) -> Option<UnsolvedExpr> {
+        match self {
+            KclValue::Number { value, ty, .. } => Some(UnsolvedExpr::Known(TyF64::new(*value, *ty))),
+            KclValue::SketchVar { value, .. } => Some(UnsolvedExpr::Unknown(value.id)),
+            _ => None,
+        }
+    }
+
+    pub fn to_sketch_expr(&self) -> Option<crate::front::Expr> {
+        match self {
+            KclValue::Number { value, ty, .. } => Some(crate::front::Expr::Number(crate::front::Number {
+                value: *value,
+                units: (*ty).try_into().ok()?,
+            })),
+            KclValue::SketchVar { value, .. } => Some(crate::front::Expr::Var(crate::front::Number {
+                value: value.initial_value,
+                units: value.ty.try_into().ok()?,
+            })),
             _ => None,
         }
     }
@@ -821,6 +895,7 @@ impl KclValue {
             KclValue::Object { .. } => Some("{ ... }".to_owned()),
             KclValue::Module { .. }
             | KclValue::GdtAnnotation { .. }
+            | KclValue::SketchConstraint { .. }
             | KclValue::Solid { .. }
             | KclValue::Sketch { .. }
             | KclValue::Helix { .. }
@@ -828,6 +903,7 @@ impl KclValue {
             | KclValue::Function { .. }
             | KclValue::Plane { .. }
             | KclValue::Face { .. }
+            | KclValue::Segment { .. }
             | KclValue::KclNone { .. }
             | KclValue::Type { .. } => None,
         }
