@@ -205,7 +205,6 @@ async fn inner_revolve(
                     end: tag_end.as_ref(),
                 },
                 kittycad_modeling_cmds::shared::ExtrudeMethod::New,
-                None, // TODO: Add bodyType parameter when revolve supports it
                 exec_state,
                 &args,
                 edge_id,

@@ -29,13 +29,6 @@ use crate::{
     std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference},
 };
 
-/// The type of body to create from an extrusion.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ExtrudeBodyType {
-    Solid,
-    Surface,
-}
-
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
@@ -65,7 +58,6 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let twist_center: Option<[TyF64; 2]> = args.get_kw_arg_opt("twistCenter", &RuntimeType::point2d(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let method: Option<String> = args.get_kw_arg_opt("method", &RuntimeType::string(), exec_state)?;
-    let body_type: Option<String> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
 
     let result = inner_extrude(
         sketches,
@@ -80,7 +72,6 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         twist_center,
         tolerance,
         method,
-        body_type,
         exec_state,
         args,
     )
@@ -103,7 +94,6 @@ async fn inner_extrude(
     twist_center: Option<[TyF64; 2]>,
     tolerance: Option<TyF64>,
     method: Option<String>,
-    body_type: Option<String>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -118,18 +108,6 @@ async fn inner_extrude(
         Some(other) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Unknown merge method {other}, try using `MERGE` or `NEW`"),
-                vec![args.source_range],
-            )));
-        }
-    };
-
-    let body_type = match body_type.as_deref() {
-        Some("solid" | "SOLID") => Some(ExtrudeBodyType::Solid),
-        Some("surface" | "SURFACE") => Some(ExtrudeBodyType::Surface),
-        None => None,
-        Some(other) => {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Unknown body type {other}, try using `SOLID` or `SURFACE`"),
                 vec![args.source_range],
             )));
         }
@@ -332,7 +310,6 @@ async fn inner_extrude(
                     end: tag_end.as_ref(),
                 },
                 extrude_method,
-                body_type,
                 exec_state,
                 &args,
                 None,
@@ -358,7 +335,6 @@ pub(crate) async fn do_post_extrude<'a>(
     sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
     extrude_method: ExtrudeMethod,
-    body_type: Option<ExtrudeBodyType>,
     exec_state: &mut ExecState,
     args: &Args,
     edge_id: Option<Uuid>,
@@ -404,19 +380,7 @@ pub(crate) async fn do_post_extrude<'a>(
     }
 
     let mut sketch = sketch.clone();
-
-    // Validate sketch closure against bodyType.
-    // SOLID (default): Only works with closed profiles (solid2d, face2d, regions)
-    // SURFACE: Works with all of the above plus open profiles (segments)
-    match body_type {
-        Some(ExtrudeBodyType::Solid) | None if !sketch.is_closed => {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Solid extrusion requires a closed profile. Use bodyType: 'SURFACE' for open profiles.".to_owned(),
-                vec![args.source_range],
-            )));
-        }
-        _ => {} // SURFACE - no additional validation needed
-    }
+    sketch.is_closed = true;
 
     // If we were sketching on a face, we need the original face id.
     if let SketchSurface::Face(ref face) = sketch.on {

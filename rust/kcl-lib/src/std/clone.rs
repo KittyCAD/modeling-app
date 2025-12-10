@@ -164,7 +164,6 @@ async fn fix_tags_and_references(
                     end: end_tag.as_ref(),
                 },
                 kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
-                None, // Clone doesn't use bodyType - just copies existing geometry
                 exec_state,
                 args,
                 None,

@@ -101,7 +101,6 @@ async fn inner_loft(
                 end: tag_end.as_ref(),
             },
             kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
-            None, // TODO: Add bodyType parameter when loft supports it
             exec_state,
             &args,
             None,

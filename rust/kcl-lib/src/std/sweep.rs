@@ -105,7 +105,6 @@ async fn inner_sweep(
                     end: tag_end.as_ref(),
                 },
                 kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
-                None, // TODO: Add bodyType parameter when sweep supports it
                 exec_state,
                 &args,
                 None,
