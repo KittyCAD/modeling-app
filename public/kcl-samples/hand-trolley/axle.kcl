@@ -6,8 +6,6 @@
 // Import parameters
 import * from "parameters.kcl"
 
-
-
 // Model the lifting grate as a sheet metal part
 grate = startSketchOn(-YZ)
   |> startProfile(at = [-grateDepth, 0])

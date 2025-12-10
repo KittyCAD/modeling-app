@@ -7,7 +7,6 @@
 // Import parameters
 import * from "parameters.kcl"
 
-
 // Model the lifting grate as a sheet metal part
 grate = startSketchOn(-YZ)
   |> startProfile(at = [-grateDepth, 0])
@@ -122,18 +121,13 @@ a = patternLinear3d(
   axis = [-1, 0, 0],
 )
 
-
-  [
-    grate,
-    brackets,
-    axlebearing,
-    outerRailThicken,
-    centerRailThicken,
-    rib,
-    a
-  ]
-  |> appearance(
-  color,
-  metalness = 40,
-  roughness,
-)
+[
+       grate,
+       brackets,
+       axlebearing,
+       outerRailThicken,
+       centerRailThicken,
+       rib,
+       a
+     ]
+  |> appearance(color, metalness = 40, roughness)
