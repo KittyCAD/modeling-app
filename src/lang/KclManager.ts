@@ -107,10 +107,8 @@ import {
   baseEditorExtensions,
   cursorBlinkingCompartment,
   lineWrappingCompartment,
-  shouldResetCamera,
 } from '@src/editor'
 import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -513,31 +511,14 @@ export class KclManager extends EventTarget {
 
     if (shouldExecute) {
       const newCode = update.state.doc.toString()
-      const shouldRequestCameraUpdate =
-        update.docChanged &&
-        update.transactions.some((tr) => tr.annotation(shouldResetCamera))
-      this.deferredExecution({
-        newCode,
-        cameraResetRequested: shouldRequestCameraUpdate,
-      })
+      this.deferredExecution(newCode)
     }
   })
 
-  private deferredExecution = deferredCallback(
-    async ({
-      newCode,
-      cameraResetRequested,
-    }: { newCode: string; cameraResetRequested: boolean }) => {
-      void this.writeToFile(newCode)
-      await this.executeCode(newCode)
-      if (cameraResetRequested) {
-        resetCameraPosition({ sceneInfra: this.singletons.sceneInfra }).catch(
-          reportRejection
-        )
-      }
-    },
-    300
-  )
+  private deferredExecution = deferredCallback(async (newCode: string) => {
+    void this.writeToFile(newCode)
+    await this.executeCode(newCode)
+  }, 300)
 
   private createEditorExtensions() {
     return [

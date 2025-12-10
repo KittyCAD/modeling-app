@@ -49,8 +49,6 @@ export const kclLspCompartment = new Compartment()
 /** Compartment wrapping KCL autocompletion "copilot" plugin, allowing for runtime reconfiguration */
 export const kclAutocompleteCompartment = new Compartment()
 
-export const shouldResetCamera = Annotation.define<boolean>()
-
 export function baseEditorExtensions() {
   const extensions: Extension = [
     // These two extensions are empty to begin with, then reconfigured when the LSP becomes available

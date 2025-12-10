@@ -33,7 +33,6 @@ import type {
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { shouldResetCamera } from '@src/editor'
 
 export const fileLoader =
   (kclManager: KclManager): LoaderFunction =>
@@ -126,9 +125,7 @@ export const fileLoader =
         kclManager.updateCurrentFilePath(currentFilePath)
         // We pass true on the end here to clear the code editor history.
         // This way undo and redo are not super weird when opening new files.
-        kclManager.updateCodeEditor(code, true, {
-          annotations: [shouldResetCamera.of(true)],
-        })
+        kclManager.updateCodeEditor(code, true)
       }
 
       // Set the file system manager to the project path
