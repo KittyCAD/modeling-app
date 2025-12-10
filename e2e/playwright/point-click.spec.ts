@@ -4677,9 +4677,6 @@ extrude001 = extrude(profile001, length = 10)`
       await scene.settled(cmdBar)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(
-        `@settings(experimentalFeatures = allow)`
-      )
-      await editor.expectEditor.toContain(
         `hole001 = hole::hole(
   extrude001,
   face = END,
