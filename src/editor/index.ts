@@ -23,6 +23,7 @@ import {
   EditorState,
   type Extension,
   Prec,
+  Annotation,
 } from '@codemirror/state'
 import {
   drawSelection,
@@ -47,6 +48,8 @@ export const cursorBlinkingCompartment = new Compartment()
 export const kclLspCompartment = new Compartment()
 /** Compartment wrapping KCL autocompletion "copilot" plugin, allowing for runtime reconfiguration */
 export const kclAutocompleteCompartment = new Compartment()
+
+export const shouldResetCamera = Annotation.define<boolean>()
 
 export function baseEditorExtensions() {
   const extensions: Extension = [

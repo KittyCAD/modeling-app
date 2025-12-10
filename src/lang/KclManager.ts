@@ -107,8 +107,10 @@ import {
   baseEditorExtensions,
   cursorBlinkingCompartment,
   lineWrappingCompartment,
+  shouldResetCamera,
 } from '@src/editor'
 import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -495,14 +497,31 @@ export class KclManager extends EventTarget {
 
     if (shouldExecute) {
       const newCode = update.state.doc.toString()
-      this.deferredExecution(newCode)
+      const shouldRequestCameraUpdate =
+        update.docChanged &&
+        update.transactions.some((tr) => tr.annotation(shouldResetCamera))
+      this.deferredExecution({
+        newCode,
+        cameraResetRequested: shouldRequestCameraUpdate,
+      })
     }
   })
 
-  private deferredExecution = deferredCallback(async (newCode: string) => {
-    void this.writeToFile(newCode)
-    void this.executeCode(newCode)
-  }, 300)
+  private deferredExecution = deferredCallback(
+    async ({
+      newCode,
+      cameraResetRequested,
+    }: { newCode: string; cameraResetRequested: boolean }) => {
+      void this.writeToFile(newCode)
+      await this.executeCode(newCode)
+      if (cameraResetRequested) {
+        resetCameraPosition({ sceneInfra: this.singletons.sceneInfra }).catch(
+          reportRejection
+        )
+      }
+    },
+    300
+  )
 
   private createEditorExtensions() {
     return [
@@ -1472,7 +1491,6 @@ export class KclManager extends EventTarget {
     processCodeMirrorRanges: typeof processCodeMirrorRangesFn
   ): void {
     const sceneEntitiesManager = this._sceneEntitiesManager
-    debugger
     const ranges = viewUpdate?.state?.selection?.ranges || []
     if (ranges.length === 0) {
       return
@@ -1564,7 +1582,11 @@ export class KclManager extends EventTarget {
    * Update the code in the editor.
    * This is invoked when a segment is being dragged on the canvas, among other things.
    */
-  updateCodeEditor(code: string, clearHistory?: boolean): void {
+  updateCodeEditor(
+    code: string,
+    clearHistory?: boolean,
+    spec?: Omit<TransactionSpec, 'changes'>
+  ): void {
     this.code = code
     if (clearHistory) {
       clearCodeMirrorHistory(this)
@@ -1575,10 +1597,12 @@ export class KclManager extends EventTarget {
         to: this.editorState.doc.length || 0,
         insert: code,
       },
-      annotations: [
-        editorCodeUpdateEvent,
-        Transaction.addToHistory.of(!clearHistory),
-      ],
+      ...(spec ?? {
+        annotations: [
+          editorCodeUpdateEvent,
+          Transaction.addToHistory.of(!clearHistory),
+        ],
+      }),
     })
   }
   /**
