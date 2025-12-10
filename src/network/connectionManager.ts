@@ -151,6 +151,7 @@ export class ConnectionManager extends EventTarget {
         showScaleGrid: false,
         cameraProjection: 'perspective',
         cameraOrbit: 'spherical',
+        backfaceColor: DEFAULT_BACKFACE_COLOR,
       }
     }
   }
