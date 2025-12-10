@@ -40,6 +40,7 @@ import openWindow from '@src/lib/openWindow'
 import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
+import { distance2d } from '@src/lib/utils2d'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   base64_decode,
@@ -647,9 +648,9 @@ export function distanceBetweenPoint2DExpr(
   }
 
   // Calculate distance
-  const dx = x2Converted[0] - x1Converted[0]
-  const dy = y2Converted[0] - y1Converted[0]
-  const distance = Math.hypot(dx, dy)
+  const coord1: Coords2d = [x1Converted[0], y1Converted[0]]
+  const coord2: Coords2d = [x2Converted[0], y2Converted[0]]
+  const distance = distance2d(coord1, coord2)
 
   return { distance, units: targetSuffix }
 }

@@ -16,21 +16,97 @@ import { BufferGeometry, Line, LineBasicMaterial, Vector3 } from 'three'
 
 const TOOL_ID = 'Trim tool'
 
+// Epsilon constants for geometric calculations
+const EPSILON_PARALLEL = 1e-10 // For checking if lines are parallel or segments are degenerate
+const EPSILON_POINT_ON_SEGMENT = 1e-6 // For checking if a point is on a segment
+
+// Helper to project a point onto a line segment and get its parametric position
+// Returns t where t=0 at start, t=1 at end, t<0 before start, t>1 after end
+function projectPointOntoSegment(
+  point: [number, number],
+  segmentStart: [number, number],
+  segmentEnd: [number, number]
+): number {
+  const dx = segmentEnd[0] - segmentStart[0]
+  const dy = segmentEnd[1] - segmentStart[1]
+  const segmentLengthSq = dx * dx + dy * dy
+
+  if (segmentLengthSq < EPSILON_PARALLEL) {
+    // Segment is degenerate (start and end are the same)
+    return 0
+  }
+
+  const pointDx = point[0] - segmentStart[0]
+  const pointDy = point[1] - segmentStart[1]
+  const t = (pointDx * dx + pointDy * dy) / segmentLengthSq
+
+  return t
+}
+
+// Helper to check if a point is on a line segment (within epsilon distance)
+// Returns the point if it's on the segment, null otherwise
+function isPointOnSegment(
+  point: [number, number],
+  segmentStart: [number, number],
+  segmentEnd: [number, number],
+  epsilon = EPSILON_POINT_ON_SEGMENT
+): [number, number] | null {
+  const t = projectPointOntoSegment(point, segmentStart, segmentEnd)
+
+  // Check if point projects onto the segment (t between 0 and 1)
+  if (t < 0 || t > 1) {
+    return null
+  }
+
+  // Calculate the projected point on the segment
+  const projectedPoint: [number, number] = [
+    segmentStart[0] + t * (segmentEnd[0] - segmentStart[0]),
+    segmentStart[1] + t * (segmentEnd[1] - segmentStart[1]),
+  ]
+
+  // Check if the distance from point to projected point is within epsilon
+  const dx = point[0] - projectedPoint[0]
+  const dy = point[1] - projectedPoint[1]
+  const distanceSq = dx * dx + dy * dy
+
+  if (distanceSq <= epsilon * epsilon) {
+    return point // Return the actual point, not the projected one
+  }
+
+  return null
+}
+
 // Helper to calculate intersection point of two line segments
+// Also checks if endpoints are on the other segment (within epsilon)
 // Returns null if they don't intersect, or the intersection point [x, y]
 function lineSegmentIntersection(
   p1: [number, number],
   p2: [number, number],
   p3: [number, number],
-  p4: [number, number]
+  p4: [number, number],
+  epsilon = EPSILON_POINT_ON_SEGMENT
 ): [number, number] | null {
+  // First check if any endpoints are on the other segment
+  const p1OnSegment2 = isPointOnSegment(p1, p3, p4, epsilon)
+  if (p1OnSegment2) return p1OnSegment2
+
+  const p2OnSegment2 = isPointOnSegment(p2, p3, p4, epsilon)
+  if (p2OnSegment2) return p2OnSegment2
+
+  const p3OnSegment1 = isPointOnSegment(p3, p1, p2, epsilon)
+  if (p3OnSegment1) return p3OnSegment1
+
+  const p4OnSegment1 = isPointOnSegment(p4, p1, p2, epsilon)
+  if (p4OnSegment1) return p4OnSegment1
+
+  // Then check for actual line segment intersection
   const [x1, y1] = p1
   const [x2, y2] = p2
   const [x3, y3] = p3
   const [x4, y4] = p4
 
   const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
-  if (Math.abs(denom) < 1e-10) {
+  if (Math.abs(denom) < EPSILON_PARALLEL) {
     // Lines are parallel
     return null
   }
@@ -182,6 +258,190 @@ export function findSegmentsThatIntersect(
   return segmentIntersections
 }
 
+type IntersectionOrEndPoint =
+  | {
+      point: [number, number]
+      type: 'endpoint'
+    }
+  | {
+      point: [number, number]
+      type: 'intersection'
+      segmentId: number
+    }
+
+interface SegmentTrimSides {
+  startSide: IntersectionOrEndPoint
+  endSide: IntersectionOrEndPoint
+}
+
+// Pure function: Finds the first point encountered in each direction along the segment
+// from the intersection point where the drawn line intersects the segment
+// Returns the two sides of the segment (startSide and endSide) or an Error
+export function findTwoClosestPointsToIntersection(
+  intersectionPoint: [number, number],
+  segmentId: number,
+  segmentIntersections: Array<{
+    location: [number, number]
+    segmentId: number
+  }>,
+  objects: SceneGraphDelta['new_graph']['objects']
+): SegmentTrimSides | Error {
+  const segmentObj = objects[segmentId]
+  if (
+    segmentObj?.kind?.type !== 'Segment' ||
+    segmentObj.kind.segment.type !== 'Line'
+  ) {
+    return new Error('Segment is not a line segment')
+  }
+
+  const startPoint = getPointCoords(segmentObj.kind.segment.start, objects)
+  const endPoint = getPointCoords(segmentObj.kind.segment.end, objects)
+
+  if (!startPoint || !endPoint) {
+    return new Error('Could not get segment endpoint coordinates')
+  }
+
+  // Project the intersection point onto the segment to get its parametric position
+  const intersectionT = projectPointOntoSegment(
+    intersectionPoint,
+    startPoint,
+    endPoint
+  )
+
+  // Collect all candidate points: endpoints and intersections
+  // Exclude points that are too close to the intersection point itself
+  const allCandidates: Array<
+    | {
+        point: [number, number]
+        type: 'endpoint'
+        which: 'start' | 'end'
+        t: number
+      }
+    | {
+        point: [number, number]
+        type: 'intersection'
+        segmentId: number
+        t: number
+      }
+  > = [
+    {
+      point: startPoint,
+      type: 'endpoint' as const,
+      which: 'start' as const,
+      t: 0,
+    },
+    { point: endPoint, type: 'endpoint' as const, which: 'end' as const, t: 1 },
+    ...segmentIntersections.map((si) => ({
+      point: si.location,
+      type: 'intersection' as const,
+      segmentId: si.segmentId,
+      t: projectPointOntoSegment(si.location, startPoint, endPoint),
+    })),
+  ]
+  const candidatePoints = allCandidates.filter(
+    (cp) => Math.abs(cp.t - intersectionT) > EPSILON_POINT_ON_SEGMENT
+  ) // Exclude the intersection point itself
+
+  // Find the first point encountered when traveling towards the start (t < intersectionT)
+  // Prioritize intersections over endpoints when both exist
+  const pointsBefore = candidatePoints
+    .filter((cp) => cp.t < intersectionT - EPSILON_POINT_ON_SEGMENT)
+    .sort((a, b) => {
+      // First sort by type: intersections come before endpoints
+      if (a.type !== b.type) {
+        return a.type === 'intersection' ? -1 : 1
+      }
+      // Then by distance from intersection (descending - closest first)
+      return b.t - a.t
+    })
+  const pointBefore = pointsBefore[0]
+
+  // Find the first point encountered when traveling towards the end (t > intersectionT)
+  // Prioritize intersections over endpoints when both exist
+  const pointsAfter = candidatePoints
+    .filter((cp) => cp.t > intersectionT + EPSILON_POINT_ON_SEGMENT)
+    .sort((a, b) => {
+      // First sort by type: intersections come before endpoints
+      if (a.type !== b.type) {
+        return a.type === 'intersection' ? -1 : 1
+      }
+      // Then by distance from intersection (ascending - closest first)
+      return a.t - b.t
+    })
+  const pointAfter = pointsAfter[0]
+
+  // Debug logging
+  console.log('findTwoClosestPointsToIntersection debug:', {
+    intersectionT,
+    candidatePoints: candidatePoints.map((cp) => ({
+      type: cp.type,
+      t: cp.t,
+      point: cp.point,
+      ...(cp.type === 'endpoint'
+        ? { which: cp.which }
+        : { segmentId: cp.segmentId }),
+    })),
+    pointBefore: pointBefore
+      ? {
+          type: pointBefore.type,
+          t: pointBefore.t,
+          point: pointBefore.point,
+          ...(pointBefore.type === 'endpoint'
+            ? { which: pointBefore.which }
+            : { segmentId: pointBefore.segmentId }),
+        }
+      : null,
+    pointAfter: pointAfter
+      ? {
+          type: pointAfter.type,
+          t: pointAfter.t,
+          point: pointAfter.point,
+          ...(pointAfter.type === 'endpoint'
+            ? { which: pointAfter.which }
+            : { segmentId: pointAfter.segmentId }),
+        }
+      : null,
+  })
+
+  // Validate that we have points on both sides
+  if (!pointBefore || !pointAfter) {
+    return new Error(
+      'Could not find points on both sides of the intersection point'
+    )
+  }
+
+  // Build the startSide (point before intersection, traveling towards start)
+  const startSide: IntersectionOrEndPoint =
+    pointBefore.type === 'endpoint'
+      ? {
+          point: pointBefore.point,
+          type: 'endpoint',
+        }
+      : {
+          point: pointBefore.point,
+          type: 'intersection',
+          segmentId: pointBefore.segmentId,
+        }
+
+  // Build the endSide (point after intersection, traveling towards end)
+  const endSide: IntersectionOrEndPoint =
+    pointAfter.type === 'endpoint'
+      ? {
+          point: pointAfter.point,
+          type: 'endpoint',
+        }
+      : {
+          point: pointAfter.point,
+          type: 'intersection',
+          segmentId: pointAfter.segmentId,
+        }
+
+  return {
+    startSide,
+    endSide,
+  }
+}
+
 type ToolEvents = BaseToolEvent
 
 export const machine = setup({
@@ -285,8 +545,19 @@ export const machine = setup({
               objects
             )
 
+            const trimSides = findTwoClosestPointsToIntersection(
+              foundIntersection.location,
+              foundIntersection.segmentId,
+              segmentIntersections,
+              objects
+            )
+
             // Only delete if segment has no intersections with other segments
-            if (segmentIntersections.length === 0) {
+            if (
+              !(trimSides instanceof Error) &&
+              trimSides.startSide.type === 'endpoint' &&
+              trimSides.endSide.type === 'endpoint'
+            ) {
               try {
                 const result = await context.rustContext.deleteObjects(
                   0,
@@ -304,6 +575,207 @@ export const machine = setup({
                 console.error('Failed to delete segment:', error)
                 // Stop on error
                 break
+              }
+            } else if (
+              !(trimSides instanceof Error) &&
+              ((trimSides.startSide.type === 'endpoint' &&
+                trimSides.endSide.type === 'intersection') ||
+                (trimSides.endSide.type === 'endpoint' &&
+                  trimSides.startSide.type === 'intersection'))
+            ) {
+              // because the start is an endpoint and the end is an intersection we need to update the segments endpoint
+              // to be where the intersection is
+              const segment = objects[foundIntersection.segmentId]
+              if (
+                segment.kind.type === 'Segment' &&
+                segment.kind.segment.type === 'Line'
+              ) {
+                const endPointId =
+                  trimSides.startSide.type === 'endpoint'
+                    ? segment.kind.segment.start
+                    : segment.kind.segment.end
+                const intersectionLocation =
+                  trimSides.startSide.type === 'endpoint'
+                    ? trimSides.endSide.point
+                    : trimSides.startSide.point
+                const endPoint = objects[endPointId]
+                if (
+                  endPoint.kind.type === 'Segment' &&
+                  endPoint.kind.segment.type === 'Point'
+                ) {
+                  // Get the current point's position to extract units
+                  const currentPosition = endPoint.kind.segment.position
+                  const units = currentPosition.x.units
+
+                  // use rustContext to update the point position
+                  try {
+                    const result = await context.rustContext.editSegments(
+                      0,
+                      context.sketchId,
+                      [
+                        {
+                          id: endPointId,
+                          ctor: {
+                            type: 'Point',
+                            position: {
+                              x: {
+                                type: 'Var',
+                                value: intersectionLocation[0],
+                                units,
+                              },
+                              y: {
+                                type: 'Var',
+                                value: intersectionLocation[1],
+                                units,
+                              },
+                            },
+                          },
+                        },
+                      ],
+                      await jsAppSettings()
+                    )
+
+                    lastDeleteResult = result
+                    currentSceneGraph = result.sceneGraphDelta
+                  } catch (error) {
+                    console.error('Failed to update point position:', error)
+                    // Stop on error
+                    break
+                  }
+                }
+              }
+            } else if (
+              !(trimSides instanceof Error) &&
+              trimSides.startSide.type === 'intersection' &&
+              trimSides.endSide.type === 'intersection'
+            ) {
+              const startIntersection = trimSides.startSide.point
+              const endIntersection = trimSides.endSide.point
+              // this is the trickiest case, we need to edit the end of the line to startIntersection
+              // Then we need to create a new segment that goes from endIntersection to the original end of the line
+              const segment = objects[foundIntersection.segmentId]
+              if (
+                segment?.kind?.type === 'Segment' &&
+                segment.kind.segment.type === 'Line'
+              ) {
+                const originalStartPoint = getPointCoords(
+                  segment.kind.segment.start,
+                  objects
+                )
+                const originalEndPoint = getPointCoords(
+                  segment.kind.segment.end,
+                  objects
+                )
+
+                if (!originalStartPoint || !originalEndPoint) {
+                  console.error('Could not get original line endpoints')
+                  lastPointIndex = foundIntersection.pointIndex + 1
+                  continue
+                }
+
+                // Get units from the original line's end point
+                const endPointObj = objects[segment.kind.segment.end]
+                if (
+                  endPointObj?.kind?.type !== 'Segment' ||
+                  endPointObj.kind.segment.type !== 'Point'
+                ) {
+                  console.error('Could not get end point object for units')
+                  lastPointIndex = foundIntersection.pointIndex + 1
+                  continue
+                }
+
+                const units = endPointObj.kind.segment.position.x.units
+
+                try {
+                  // Step 1: Edit the existing line to end at startIntersection
+                  const editResult = await context.rustContext.editSegments(
+                    0,
+                    context.sketchId,
+                    [
+                      {
+                        id: foundIntersection.segmentId,
+                        ctor: {
+                          type: 'Line',
+                          start: {
+                            x: {
+                              type: 'Var',
+                              value: originalStartPoint[0],
+                              units,
+                            },
+                            y: {
+                              type: 'Var',
+                              value: originalStartPoint[1],
+                              units,
+                            },
+                          },
+                          end: {
+                            x: {
+                              type: 'Var',
+                              value: startIntersection[0],
+                              units,
+                            },
+                            y: {
+                              type: 'Var',
+                              value: startIntersection[1],
+                              units,
+                            },
+                          },
+                        },
+                      },
+                    ],
+                    await jsAppSettings()
+                  )
+
+                  // Update scene graph after edit (needed for consistency, even though addSegment uses internal state)
+                  currentSceneGraph = editResult.sceneGraphDelta
+                  // editResult is used above to update currentSceneGraph
+
+                  // Step 2: Create a new line segment from endIntersection to the original end point
+                  const addResult = await context.rustContext.addSegment(
+                    0,
+                    context.sketchId,
+                    {
+                      type: 'Line',
+                      start: {
+                        x: {
+                          type: 'Var',
+                          value: endIntersection[0],
+                          units,
+                        },
+                        y: {
+                          type: 'Var',
+                          value: endIntersection[1],
+                          units,
+                        },
+                      },
+                      end: {
+                        x: {
+                          type: 'Var',
+                          value: originalEndPoint[0],
+                          units,
+                        },
+                        y: {
+                          type: 'Var',
+                          value: originalEndPoint[1],
+                          units,
+                        },
+                      },
+                    },
+                    undefined, // label
+                    await jsAppSettings()
+                  )
+
+                  // Use the addResult as it contains the final scene graph state
+                  lastDeleteResult = addResult
+                  currentSceneGraph = addResult.sceneGraphDelta
+                  lastPointIndex = foundIntersection.pointIndex + 1
+                } catch (error) {
+                  console.error('Failed to split line segment:', error)
+                  // Stop on error
+                  break
+                }
+              } else {
+                lastPointIndex = foundIntersection.pointIndex + 1
               }
             } else {
               // Segment has intersections with other segments, can't delete
