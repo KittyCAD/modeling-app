@@ -158,6 +158,22 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 export const hotkeyRegisteredAnnotation = Annotation.define<string>()
 
+const createEmptyAst = (): Node<Program> => ({
+  body: [],
+  shebang: null,
+  start: 0,
+  end: 0,
+  moduleId: 0,
+  nonCodeMeta: {
+    nonCodeNodes: {},
+    startNodes: [],
+  },
+  innerAttrs: [],
+  outerAttrs: [],
+  preComments: [],
+  commentStart: 0,
+})
+
 export class KclManager extends EventTarget {
   // SYSTEM DEPENDENCIES
 
