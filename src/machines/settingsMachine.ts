@@ -189,6 +189,9 @@ export const settingsMachine = setup({
     setAllowOrbitInSketchMode: () => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
+    setLineWrapping: () => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
+    },
     toastSuccess: ({ event }) => {
       if (!('data' in event)) {
         return
@@ -386,6 +389,7 @@ export const settingsMachine = setup({
             'setThemeClass',
             'setEngineTheme',
             'setClientTheme',
+            'setLineWrapping',
             'sendThemeToWatcher',
           ],
         },
@@ -435,6 +439,7 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setLineWrapping',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -453,6 +458,7 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setLineWrapping',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -532,6 +538,7 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setLineWrapping',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -567,6 +574,7 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setLineWrapping',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({

@@ -192,6 +192,9 @@ const appMachineActors = {
           .setTheme(context.app.theme.current)
           .catch(reportRejection)
       },
+      setEditorLineWrapping: ({ context }) => {
+        kclManager.setEditorLineWrapping(context.textEditor.textWrapping)
+      },
       setEngineHighlightEdges: ({ context }) => {
         engineCommandManager
           .setHighlightEdges(context.modeling.highlightEdges.current)
