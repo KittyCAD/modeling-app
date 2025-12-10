@@ -101,6 +101,11 @@ import {
   settingsUpdateAnnotation,
 } from '@src/lib/codeEditor'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import {
+  createEmptyAst,
+  setAstEffect,
+  updateAstAnnotation,
+} from '@src/editor/plugins/ast'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -143,22 +148,6 @@ export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 
 const setDiagnosticsAnnotation = Annotation.define<boolean>()
 export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
-
-const createEmptyAst = (): Node<Program> => ({
-  body: [],
-  shebang: null,
-  start: 0,
-  end: 0,
-  moduleId: 0,
-  nonCodeMeta: {
-    nonCodeNodes: {},
-    startNodes: [],
-  },
-  innerAttrs: [],
-  outerAttrs: [],
-  preComments: [],
-  commentStart: 0,
-})
 
 export class KclManager extends EventTarget {
   // SYSTEM DEPENDENCIES
@@ -216,6 +205,7 @@ export class KclManager extends EventTarget {
       this._lastAst = structuredClone(this._ast.value)
     }
     this._ast.value = ast
+    this.dispatchUpdateAst(ast)
   }
 
   private _execState: ExecState = emptyExecState()
@@ -470,7 +460,7 @@ export class KclManager extends EventTarget {
   }
 
   clearAst() {
-    this._ast.value = {
+    this.ast = {
       body: [],
       shebang: null,
       start: 0,
@@ -505,6 +495,27 @@ export class KclManager extends EventTarget {
     } else if (this._switchedFiles) {
       // Reset the switched files boolean.
       this._switchedFiles = false
+    }
+  }
+
+  /**
+   * Dispatches a CodeMirror state effect to update the AST
+   * stored on the current EditorView.
+   *
+   * TODO: not used yet. Wire up the system to look to this version of the AST
+   * when we consolidate all editor state within CodeMirror.
+   */
+  private dispatchUpdateAst(newAst: Node<Program>) {
+    // Push the artifact graph into the editor state so annotations/decorations update
+    const editorView = this.getEditorView()
+    if (editorView) {
+      editorView.dispatch({
+        effects: [setAstEffect.of(newAst)],
+        annotations: [
+          updateAstAnnotation.of(true),
+          Transaction.addToHistory.of(false),
+        ],
+      })
     }
   }
 
@@ -750,7 +761,7 @@ export class KclManager extends EventTarget {
       this.clearAst()
       return new Error('failed to re-parse')
     }
-    this._ast.value = { ...newAst }
+    this.ast = { ...newAst }
 
     const codeThatExecuted = this.code
     const { logs, errors, execState } = await executeAstMock({
