@@ -6,6 +6,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type {
   SegmentCtor,
   SourceDelta,
+  SceneGraphDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
@@ -39,6 +40,7 @@ export const machine = setup({
       rustContext: RustContext
       kclManager: KclManager
       sketchId: number
+      sceneGraphDelta?: SceneGraphDelta
     },
   },
   actions: {

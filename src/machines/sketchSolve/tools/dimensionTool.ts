@@ -1,5 +1,9 @@
 import { createMachine, setup } from 'xstate'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type RustContext from '@src/lib/rustContext'
+import type { KclManager } from '@src/lang/KclManager'
 
 type DimensionToolEvent = BaseToolEvent
 
@@ -7,6 +11,13 @@ export const machine = setup({
   types: {
     context: {} as Record<string, unknown>,
     events: {} as DimensionToolEvent,
+    input: {} as {
+      sceneInfra: SceneInfra
+      rustContext: RustContext
+      kclManager: KclManager
+      sketchId: number
+      sceneGraphDelta?: SceneGraphDelta
+    },
   },
   actions: {
     'add point listener': () => {

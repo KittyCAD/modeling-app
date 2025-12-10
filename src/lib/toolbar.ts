@@ -1286,6 +1286,24 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           state.matches('sketchSolveMode') &&
           state.context.sketchSolveToolName === 'pointTool',
       },
+      {
+        id: 'trim',
+        onClick: ({ modelingSend, isActive }) =>
+          isActive
+            ? modelingSend({ type: 'unequip tool' })
+            : modelingSend({
+                type: 'equip tool',
+                data: { tool: 'trimTool' },
+              }),
+        icon: 'trimTool',
+        status: 'available',
+        title: 'Trim',
+        description: 'Trim sketch lines',
+        links: [],
+        isActive: (state) =>
+          state.matches('sketchSolveMode') &&
+          state.context.sketchSolveToolName === 'trimTool',
+      },
       'break',
       {
         id: 'coincident',
