@@ -380,7 +380,7 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
-              {props.isLoading === false ? (
+              {props.isLoading === false || props.needsReconnect ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
                   exchangeCards
                 ) : (
