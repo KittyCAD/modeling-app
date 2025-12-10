@@ -149,22 +149,6 @@ export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 const setDiagnosticsAnnotation = Annotation.define<boolean>()
 export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
-const createEmptyAst = (): Node<Program> => ({
-  body: [],
-  shebang: null,
-  start: 0,
-  end: 0,
-  moduleId: 0,
-  nonCodeMeta: {
-    nonCodeNodes: {},
-    startNodes: [],
-  },
-  innerAttrs: [],
-  outerAttrs: [],
-  preComments: [],
-  commentStart: 0,
-})
-
 export class KclManager extends EventTarget {
   // SYSTEM DEPENDENCIES
 
