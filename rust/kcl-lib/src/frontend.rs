@@ -884,6 +884,7 @@ impl FrontendState {
         // Execute.
         let mock_config = MockConfig {
             use_prev_memory: !is_delete,
+            freedom_analysis: is_delete,
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited,
         };
@@ -1425,16 +1426,17 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx
-            .run_mock(&new_program, &MockConfig::default())
-            .await
-            .map_err(|err| {
-                // TODO: sketch-api: Yeah, this needs to change. We need to
-                // return the full error.
-                Error {
-                    msg: err.error.message().to_owned(),
-                }
-            })?;
+        let mock_config = MockConfig {
+            freedom_analysis: true,
+            ..Default::default()
+        };
+        let outcome = ctx.run_mock(&new_program, &mock_config).await.map_err(|err| {
+            // TODO: sketch-api: Yeah, this needs to change. We need to
+            // return the full error.
+            Error {
+                msg: err.error.message().to_owned(),
+            }
+        })?;
 
         let src_delta = SourceDelta { text: new_source };
         let outcome = self.update_state_after_exec(outcome);
