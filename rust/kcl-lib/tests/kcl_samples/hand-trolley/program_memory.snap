@@ -1,0 +1,152 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing hand-trolley.kcl
+---
+{
+  "__mod_axle": {
+    "type": "Module",
+    "value": 4
+  },
+  "__mod_weldment": {
+    "type": "Module",
+    "value": 3
+  },
+  "__mod_wheel": {
+    "type": "Module",
+    "value": 2
+  },
+  "bendRadius": {
+    "type": "Number",
+    "value": 0.11249999999999999,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "color": {
+    "type": "String",
+    "value": "#c00c0c"
+  },
+  "frameWidth": {
+    "type": "Number",
+    "value": 20.0,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "grateDepth": {
+    "type": "Number",
+    "value": 10.0,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "grateThickness": {
+    "type": "Number",
+    "value": 0.09,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "height": {
+    "type": "Number",
+    "value": 51.0,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "metalness": {
+    "type": "Number",
+    "value": 40.0,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "roughness": {
+    "type": "Number",
+    "value": 30.0,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "seg12": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg12"
+  },
+  "seg13": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg13"
+  },
+  "seg21": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg21"
+  },
+  "seg22": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg22"
+  },
+  "seg23": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg23"
+  },
+  "seg24": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg24"
+  },
+  "seg25": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg25"
+  },
+  "seg26": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg26"
+  },
+  "tubeBend": {
+    "type": "Number",
+    "value": 2.5,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "tubeDiameter": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "wheelDiameter": {
+    "type": "Number",
+    "value": 10.0,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  }
+}
