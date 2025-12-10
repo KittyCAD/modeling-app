@@ -139,6 +139,7 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   if (sceneInfra.camControls.oldCameraState) {
     await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
   } else {
+    await new Promise((resolve) => setTimeout(resolve, 1_000))
     await resetCameraPosition({ sceneInfra })
   }
 

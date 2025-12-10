@@ -88,7 +88,7 @@ export function Toolbar({
       modelingState: state,
       modelingSend: send,
       sketchPathId,
-      editorHasFocus: kclManager.getEditorView()?.hasFocus,
+      editorHasFocus: kclManager.editorView.hasFocus,
       isActive: false, // Default value - individual items will override this
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -98,7 +98,7 @@ export function Toolbar({
       commandBarActor.send,
       sketchPathId,
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-      kclManager.getEditorView()?.hasFocus,
+      kclManager.editorView.hasFocus,
     ]
   )
 

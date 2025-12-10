@@ -220,6 +220,15 @@ export const settingsMachine = setup({
       sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
       kclManager.setEditorTheme(resolvedTheme)
     },
+    setLineWrapping: ({ context, self }) => {
+      const rootContext = self.system.get('root')?.getSnapshot().context
+      const kclManager = rootContext?.kclManager
+
+      if (!kclManager) {
+        return
+      }
+      kclManager.setEditorLineWrapping(context.textEditor.textWrapping.current)
+    },
     setAllowOrbitInSketchMode: ({ context, self }) => {
       const rootContext = self.system.get('root')?.getSnapshot().context
       const sceneInfra = rootContext?.sceneInfra
@@ -301,11 +310,18 @@ export const settingsMachine = setup({
      * Update the --cursor-color CSS variable
      * based on the setting textEditor.blinkingCursor.current
      */
-    setCursorColor: ({ context }) => {
+    setCursorBlinking: ({ context, self }) => {
       document.documentElement.style.setProperty(
         `--cursor-color`,
         context.textEditor.blinkingCursor.current ? 'auto' : 'transparent'
       )
+      const rootContext = self.system.get('root')?.getSnapshot().context
+      const kclManager = rootContext?.kclManager
+
+      if (!kclManager) {
+        return
+      }
+      kclManager.setCursorBlinking(context.textEditor.blinkingCursor.current)
     },
     /** Unload the project-level setting values from memory */
     clearProjectSettings: assign(({ context }) => {
@@ -417,7 +433,7 @@ export const settingsMachine = setup({
                   ({ event }) => event.type === 'set.textEditor.blinkingCursor'
                 )
               ) {
-                enqueue('setCursorColor')
+                enqueue('setCursorBlinking')
               }
             }),
           ],
@@ -470,6 +486,16 @@ export const settingsMachine = setup({
             'sendThemeToWatcher',
           ],
         },
+        'set.textEditor.textWrapping': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel', 'setLineWrapping'],
+        },
+        'set.textEditor.blinkingCursor': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel', 'setCursorBlinking'],
+        },
 
         'set.app.streamIdleMode': {
           target: 'persisting settings',
@@ -511,6 +537,8 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setLineWrapping',
+            'setCursorBlinking',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo(
@@ -530,6 +558,8 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setLineWrapping',
+            'setCursorBlinking',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo(
@@ -613,6 +643,8 @@ export const settingsMachine = setup({
             'setThemeClass',
             'setEngineTheme',
             'setClientTheme',
+            'setLineWrapping',
+            'setCursorBlinking',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo(
@@ -649,6 +681,8 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setLineWrapping',
+            'setCursorBlinking',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo(
