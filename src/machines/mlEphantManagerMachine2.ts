@@ -738,7 +738,7 @@ export const mlEphantManagerMachine2 = setup({
           (args) => {
             // We want to keep the context around to recover.
             if (args.context.abruptlyClosed) {
-              return
+              return assign({})
             }
             return assign({
               abruptlyClosed: false,
