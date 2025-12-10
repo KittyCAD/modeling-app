@@ -110,17 +110,9 @@ jobs:
     name: e2e:snapshots
 
     steps:
-      - uses: actions/create-github-app-token@v2
-        id: app-token
-        with:
-          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
-          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-
       - uses: actions/checkout@v5
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
-          token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
         with:
@@ -232,17 +224,9 @@ jobs:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
     steps:
-      - uses: actions/create-github-app-token@v2
-        id: app-token
-        with:
-          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
-          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-
       - uses: actions/checkout@v5
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
-          token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
         with:
