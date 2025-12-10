@@ -1,4 +1,6 @@
 import type { MachineManager } from '@src/components/MachineManagerProvider'
+import { commitPatchEdit, patchEdit } from '@src/editor/plugins/patch'
+import type { KclManager } from '@src/lang/KclManager'
 import type {
   Command,
   CommandArgument,
@@ -17,6 +19,7 @@ export type CommandBarContext = {
   argumentsToSubmit: { [x: string]: unknown }
   reviewValidationError?: string
   machineManager: MachineManager
+  kclManager: KclManager
 }
 
 export type CommandBarMachineEvent =
@@ -89,7 +92,7 @@ export type CommandBarMachineEvent =
 export const commandBarMachine = setup({
   types: {
     context: {} as CommandBarContext,
-    input: {} as { commands: Command[] },
+    input: {} as { commands: Command[]; kclManager: KclManager },
     events: {} as CommandBarMachineEvent,
   },
   actions: {
@@ -129,6 +132,13 @@ export const commandBarMachine = setup({
       } else {
         selectedCommand?.onSubmit({ context, event })
       }
+      console.log(
+        `WOAH I'M ABOUT TO COMMIT A PATCH`,
+        context.kclManager.getEditorView()?.state.field(patchEdit)
+      )
+      context.kclManager.dispatch({
+        effects: [commitPatchEdit.of(null)],
+      })
     },
     'Set review validation error': assign({
       reviewValidationError: ({ context, event }) => {
@@ -511,6 +521,7 @@ export const commandBarMachine = setup({
       setCurrentMachine: () => {},
       noMachinesReason: () => undefined,
     },
+    kclManager: input.kclManager,
   }),
   id: 'Command Bar',
   initial: 'Closed',

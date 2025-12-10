@@ -61,6 +61,7 @@ import {
   type Layout,
 } from '@src/lib/layout'
 import { processEnv } from '@src/env'
+import { patchEdit, updatePatchEdit } from '@src/editor/plugins/patch'
 
 initPromise
   .then(() => {
@@ -164,6 +165,7 @@ const appMachine = setup({
       systemId: COMMAND_BAR,
       input: {
         commands: [],
+        kclManager,
       },
     }),
     spawnChild(appMachineActors[BILLING], {
@@ -242,6 +244,26 @@ export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
 export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
   (typeof appMachineActors)[typeof COMMAND_BAR]
 >
+
+commandBarActor.subscribe((snapshot) => {
+  const cmd = snapshot.context.selectedCommand
+  if (!snapshot.matches('Closed') && cmd?.groupId === 'modeling') {
+    kclManager.dispatch({
+      effects: [
+        updatePatchEdit.of({
+          from: kclManager.code.length,
+          insert: `// ${JSON.stringify(snapshot.context.argumentsToSubmit)}`,
+        }),
+      ],
+    })
+
+    const field = kclManager.getEditorView()?.state.field(patchEdit)
+    console.log(
+      `Hey look we're editing the ${cmd.name} command, and our patchEdit is`,
+      field
+    )
+  }
+})
 
 // TODO: proper dependency management
 sceneEntitiesManager.commandBarActor = commandBarActor
