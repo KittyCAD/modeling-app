@@ -13,17 +13,17 @@ description: Lints bike-hub-washer.kcl
     },
     "description": "found 'radius_inner'",
     "pos": [
-      156,
-      168,
+      175,
+      187,
       0
     ],
     "overridden": false,
     "suggestion": {
       "title": "rename 'radius_inner' to 'radiusInner'",
-      "insert": "// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradiusInner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
+      "insert": "// Bike hub washer\n// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradiusInner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
       "source_range": [
         0,
-        1242,
+        1261,
         0
       ]
     }
@@ -38,17 +38,17 @@ description: Lints bike-hub-washer.kcl
     },
     "description": "found 'ring_width'",
     "pos": [
-      174,
-      184,
+      193,
+      203,
       0
     ],
     "overridden": false,
     "suggestion": {
       "title": "rename 'ring_width' to 'ringWidth'",
-      "insert": "// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nringWidth = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ringWidth)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
+      "insert": "// Bike hub washer\n// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nringWidth = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ringWidth)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
       "source_range": [
         0,
-        1242,
+        1261,
         0
       ]
     }
@@ -63,17 +63,17 @@ description: Lints bike-hub-washer.kcl
     },
     "description": "found 'ring_height'",
     "pos": [
-      189,
-      200,
+      208,
+      219,
       0
     ],
     "overridden": false,
     "suggestion": {
       "title": "rename 'ring_height' to 'ringHeight'",
-      "insert": "// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nringHeight = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ringHeight])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
+      "insert": "// Bike hub washer\n// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nringHeight = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ringHeight])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
       "source_range": [
         0,
-        1242,
+        1261,
         0
       ]
     }
@@ -88,17 +88,17 @@ description: Lints bike-hub-washer.kcl
     },
     "description": "found 'top_height'",
     "pos": [
-      208,
-      218,
+      227,
+      237,
       0
     ],
     "overridden": false,
     "suggestion": {
       "title": "rename 'top_height' to 'topHeight'",
-      "insert": "// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntopHeight = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
+      "insert": "// Bike hub washer\n// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntopHeight = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
       "source_range": [
         0,
-        1242,
+        1261,
         0
       ]
     }
@@ -113,17 +113,17 @@ description: Lints bike-hub-washer.kcl
     },
     "description": "found 'top_rim_width'",
     "pos": [
-      223,
-      236,
+      242,
+      255,
       0
     ],
     "overridden": false,
     "suggestion": {
       "title": "rename 'top_rim_width' to 'topRimWidth'",
-      "insert": "// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntopRimWidth = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -topRimWidth)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
+      "insert": "// Bike hub washer\n// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntopRimWidth = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -topRimWidth)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
       "source_range": [
         0,
-        1242,
+        1261,
         0
       ]
     }
@@ -138,17 +138,17 @@ description: Lints bike-hub-washer.kcl
     },
     "description": "found 'top_inset'",
     "pos": [
-      243,
-      252,
+      262,
+      271,
       0
     ],
     "overridden": false,
     "suggestion": {
       "title": "rename 'top_inset' to 'topInset'",
-      "insert": "// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntopInset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -topInset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
+      "insert": "// Bike hub washer\n// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntopInset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -topInset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
       "source_range": [
         0,
-        1242,
+        1261,
         0
       ]
     }
@@ -163,17 +163,17 @@ description: Lints bike-hub-washer.kcl
     },
     "description": "found 'bottom_inner_rim_width'",
     "pos": [
-      258,
-      280,
+      277,
+      299,
       0
     ],
     "overridden": false,
     "suggestion": {
       "title": "rename 'bottom_inner_rim_width' to 'bottomInnerRimWidth'",
-      "insert": "// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottomInnerRimWidth = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottomInnerRimWidth + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottomInnerRimWidth)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
+      "insert": "// Bike hub washer\n// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottomInnerRimWidth = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottomInnerRimWidth + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottomInnerRimWidth)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
       "source_range": [
         0,
-        1242,
+        1261,
         0
       ]
     }
@@ -188,17 +188,17 @@ description: Lints bike-hub-washer.kcl
     },
     "description": "found 'bottom_outer_rim_width'",
     "pos": [
-      285,
-      307,
+      304,
+      326,
       0
     ],
     "overridden": false,
     "suggestion": {
       "title": "rename 'bottom_outer_rim_width' to 'bottomOuterRimWidth'",
-      "insert": "// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottomOuterRimWidth = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottomOuterRimWidth + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottomOuterRimWidth - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
+      "insert": "// Bike hub washer\n// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottomOuterRimWidth = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottomOuterRimWidth + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottomOuterRimWidth - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
       "source_range": [
         0,
-        1242,
+        1261,
         0
       ]
     }
@@ -213,17 +213,17 @@ description: Lints bike-hub-washer.kcl
     },
     "description": "found 'bottom_edge'",
     "pos": [
-      312,
-      323,
+      331,
+      342,
       0
     ],
     "overridden": false,
     "suggestion": {
       "title": "rename 'bottom_edge' to 'bottomEdge'",
-      "insert": "// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottomEdge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottomEdge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
+      "insert": "// Bike hub washer\n// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottomEdge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottomEdge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
       "source_range": [
         0,
-        1242,
+        1261,
         0
       ]
     }
@@ -238,17 +238,17 @@ description: Lints bike-hub-washer.kcl
     },
     "description": "found 'bottom_height'",
     "pos": [
-      328,
-      341,
+      347,
+      360,
       0
     ],
     "overridden": false,
     "suggestion": {
       "title": "rename 'bottom_height' to 'bottomHeight'",
-      "insert": "// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottomHeight = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottomHeight)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottomHeight)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
+      "insert": "// Bike hub washer\n// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottomHeight = 2\nbottom_extrusion_width = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottomHeight)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottomHeight)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
       "source_range": [
         0,
-        1242,
+        1261,
         0
       ]
     }
@@ -263,17 +263,17 @@ description: Lints bike-hub-washer.kcl
     },
     "description": "found 'bottom_extrusion_width'",
     "pos": [
-      346,
-      368,
+      365,
+      387,
       0
     ],
     "overridden": false,
     "suggestion": {
       "title": "rename 'bottom_extrusion_width' to 'bottomExtrusionWidth'",
-      "insert": "// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottomExtrusionWidth = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottomExtrusionWidth, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottomExtrusionWidth)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
+      "insert": "// Bike hub washer\n// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottomExtrusionWidth = 2\n\ninside_ring_width = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottomExtrusionWidth, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottomExtrusionWidth)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = inside_ring_width)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
       "source_range": [
         0,
-        1242,
+        1261,
         0
       ]
     }
@@ -288,17 +288,17 @@ description: Lints bike-hub-washer.kcl
     },
     "description": "found 'inside_ring_width'",
     "pos": [
-      374,
-      391,
+      393,
+      410,
       0
     ],
     "overridden": false,
     "suggestion": {
       "title": "rename 'inside_ring_width' to 'insideRingWidth'",
-      "insert": "// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninsideRingWidth = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = insideRingWidth)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
+      "insert": "// Bike hub washer\n// Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.\n\n@settings(defaultLengthUnit = mm)\n\nradius = 29\nradius_inner = 22\nring_width = 7\nring_height = 7.5\n\ntop_height = 7\ntop_rim_width = 1.2\ntop_inset = 3\n\nbottom_inner_rim_width = 2\nbottom_outer_rim_width = 3\nbottom_edge = 1\nbottom_height = 2\nbottom_extrusion_width = 2\n\ninsideRingWidth = 3\n\nassert(bottom_inner_rim_width + bottom_outer_rim_width + bottom_extrusion_width, isEqualTo = ring_width)\n\nsketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [(15 + 0.3 * 2) / 2, 0])\n  |> xLine(length = bottom_inner_rim_width)\n  |> yLine(length = -bottom_height)\n  |> xLine(length = bottom_extrusion_width)\n  |> yLine(length = bottom_height)\n  |> xLine(length = bottom_outer_rim_width - 0.3)\n  |> yLine(length = bottom_edge)\n  |> arc(interiorAbsolute = [12.5, 4], endAbsolute = [22 / 2, ring_height])\n  |> xLine(length = -top_rim_width)\n  |> yLine(length = -top_inset)\n  |> xLine(length = -2)\n  |> yLine(endAbsolute = 0)\n  |> xLine(length = insideRingWidth)\n  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])\n  |> close()\nrevolve001 = revolve(profile001, angle = 360deg, axis = Y)\nsketch002 = startSketchOn(-XZ)\n",
       "source_range": [
         0,
-        1242,
+        1261,
         0
       ]
     }

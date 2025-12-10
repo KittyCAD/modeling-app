@@ -16,7 +16,9 @@ import {
   editorCodeUpdateEvent,
   type KclManager,
 } from '@src/lang/KclManager'
+import { kclManager, rustContext } from '@src/lib/singletons'
 import { deferExecution } from '@src/lib/utils'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import type { UpdateCanExecuteParams } from '@rust/kcl-lib/bindings/UpdateCanExecuteParams'
 import type { UpdateCanExecuteResponse } from '@rust/kcl-lib/bindings/UpdateCanExecuteResponse'
@@ -25,6 +27,10 @@ import type { UpdateUnitsResponse } from '@rust/kcl-lib/bindings/UpdateUnitsResp
 
 import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
 import { processCodeMirrorRanges } from '@src/lib/selections'
+import type {
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 const changesDelay = 600
@@ -150,25 +156,66 @@ export class KclPlugin implements PluginValue {
   scheduleUpdateDoc() {
     if (this.sendScheduledInput != null)
       window.clearTimeout(this.sendScheduledInput)
-    this.sendScheduledInput = window.setTimeout(
-      () => this.updateDoc(),
-      changesDelay
-    )
+    this.sendScheduledInput = window.setTimeout(() => {
+      void this.updateDoc()
+    }, changesDelay)
   }
 
-  updateDoc() {
+  async updateDoc() {
     if (this.sendScheduledInput != null) {
       window.clearTimeout(this.sendScheduledInput)
       this.sendScheduledInput = null
     }
 
-    if (!this.client.ready) return
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.kclManager.executeCode()
+    if (!this.client.ready) {
+      return
+    }
+
+    // If we're in sketchSolveMode, update Rust state with the latest AST
+    // This handles the case where the user directly edits in the CodeMirror editor
+    // these are short term hacks while in rapid development for sketch revamp
+    // should be clean up.
+    try {
+      const modelingState = kclManager.modelingState
+      if (modelingState?.matches('sketchSolveMode')) {
+        await kclManager.executeCode()
+        const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
+          kclManager.ast,
+          await jsAppSettings()
+        )
+
+        // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
+        const sceneGraphDelta: SceneGraphDelta = {
+          new_graph: sceneGraph,
+          new_objects: [],
+          invalidates_ids: false,
+          exec_outcome: execOutcome,
+        }
+
+        const kclSource: SourceDelta = {
+          text: kclManager.code,
+        }
+
+        // Send event to sketch solve machine via modeling machine
+        kclManager.sendModelingEvent({
+          type: 'update sketch outcome',
+          data: {
+            kclSource,
+            sceneGraphDelta,
+          },
+        })
+      } else {
+        await kclManager.executeCode()
+      }
+    } catch (error) {
+      console.error('Error when updating Rust state after user edit:', error)
+    }
   }
 
   ensureDocUpdated() {
-    if (this.sendScheduledInput != null) this.updateDoc()
+    if (this.sendScheduledInput != null) {
+      void this.updateDoc()
+    }
   }
 
   async updateUnits(

@@ -23,6 +23,7 @@ Types can (optionally) be used to describe a function's arguments and returned v
 * [`Plane`](/docs/kcl-std/types/std-types-Plane)
 * [`Point2d`](/docs/kcl-std/types/std-types-Point2d)
 * [`Point3d`](/docs/kcl-std/types/std-types-Point3d)
+* [`Segment`](/docs/kcl-std/types/std-types-Segment)
 * [`Sketch`](/docs/kcl-std/types/std-types-Sketch)
 * [`Solid`](/docs/kcl-std/types/std-types-Solid)
 * [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl)

@@ -24,9 +24,13 @@ pub(crate) fn point_to_mm(p: [TyF64; 2]) -> [f64; 2] {
 }
 
 pub(crate) fn untyped_point_to_mm(p: [f64; 2], units: UnitLength) -> [f64; 2] {
+    untyped_point_to_unit(p, units, UnitLength::Millimeters)
+}
+
+pub fn untyped_point_to_unit(point: [f64; 2], from_len_unit: UnitLength, to_len_unit: UnitLength) -> [f64; 2] {
     [
-        crate::execution::types::adjust_length(units, p[0], UnitLength::Millimeters).0,
-        crate::execution::types::adjust_length(units, p[1], UnitLength::Millimeters).0,
+        crate::execution::types::adjust_length(from_len_unit, point[0], to_len_unit).0,
+        crate::execution::types::adjust_length(from_len_unit, point[1], to_len_unit).0,
     ]
 }
 

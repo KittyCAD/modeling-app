@@ -149,6 +149,22 @@ export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 const setDiagnosticsAnnotation = Annotation.define<boolean>()
 export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
+const createEmptyAst = (): Node<Program> => ({
+  body: [],
+  shebang: null,
+  start: 0,
+  end: 0,
+  moduleId: 0,
+  nonCodeMeta: {
+    nonCodeNodes: {},
+    startNodes: [],
+  },
+  innerAttrs: [],
+  outerAttrs: [],
+  preComments: [],
+  commentStart: 0,
+})
+
 export class KclManager extends EventTarget {
   // SYSTEM DEPENDENCIES
 
@@ -1129,6 +1145,20 @@ export class KclManager extends EventTarget {
   }
   set modelingSend(send: (eventInfo: ModelingMachineEvent) => void) {
     this._modelingSend = send
+  }
+  /**
+   * Send an event to the modeling machine.
+   * Returns false if the modeling machine is not available.
+   */
+  sendModelingEvent(event: ModelingMachineEvent): boolean {
+    if (this._modelingSend) {
+      this._modelingSend(event)
+      return true
+    }
+    return false
+  }
+  get modelingState(): StateFrom<typeof modelingMachine> | null {
+    return this._modelingState
   }
   set modelingState(state: StateFrom<typeof modelingMachine>) {
     this._modelingState = state
