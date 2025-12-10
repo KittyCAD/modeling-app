@@ -401,10 +401,7 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
                 )
               ) : (
                 <div className="text-center p-4">
-                  <Loading
-                    isDummy={true}
-                    className="text-ml-green dark:text-ml-green"
-                  ></Loading>
+                  <Loading isDummy={true} className="!text-ml-green"></Loading>
                 </div>
               )}
             </div>
