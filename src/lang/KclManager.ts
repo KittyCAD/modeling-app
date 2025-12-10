@@ -14,6 +14,7 @@ import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
+  Configuration,
   ExecState,
   PathToNode,
   Program,
@@ -106,6 +107,7 @@ import {
   setAstEffect,
   updateAstAnnotation,
 } from '@src/editor/plugins/ast'
+import type { DeepPartial } from '@src/lib/types'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -786,7 +788,6 @@ export class KclManager extends EventTarget {
     })
   }
   async executeCode(newCode = this.code): Promise<void> {
-    this.code = newCode
     const ast = await this.safeParse(newCode)
 
     if (!ast) {
@@ -1540,6 +1541,11 @@ export class KclManager extends EventTarget {
     this.writeToFile().catch(reportRejection)
   }
   /** End merged in code from EditorManager and CodeManager classes */
+
+  /** Convenience function for temporary execution hack function for sketch solve mode */
+  hackSetProgram(settings: DeepPartial<Configuration>) {
+    return this.singletons.rustContext.hackSetProgram(this.ast, settings)
+  }
 }
 
 function safeLSGetItem(key: string) {
