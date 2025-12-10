@@ -69,8 +69,8 @@ export function kclPlugin(
       if (modelingState?.matches('sketchSolveMode')) {
         await hackExecutionForSketchSolve(newCode, systemDeps.kclManager)
       } else {
-        systemDeps.kclManager.code = newCode
         await systemDeps.kclManager.executeCode()
+        systemDeps.kclManager.code = newCode
       }
     },
     changesDelay
