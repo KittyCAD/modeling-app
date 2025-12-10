@@ -1,6 +1,14 @@
 import type { Extension } from '@codemirror/state'
-import { EditorView } from '@codemirror/view'
-import type { LanguageServerOptions } from '@kittycad/codemirror-lsp-client'
+import {
+  EditorView,
+  PluginValue,
+  ViewPlugin,
+  ViewUpdate,
+} from '@codemirror/view'
+import type {
+  LanguageServerClient,
+  LanguageServerOptions,
+} from '@kittycad/codemirror-lsp-client'
 import { lspPlugin } from '@kittycad/codemirror-lsp-client'
 import {
   updateOutsideEditorEvent,
@@ -16,50 +24,69 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { kclManager } from '@src/lib/singletons'
 
 /** Debounce for execution in ms */
 const changesDelay = 600
 
-export function kclPlugin(
-  options: LanguageServerOptions,
-  systemDeps: {
-    kclManager: KclManager
+type KclPluginDeps = {
+  client: LanguageServerClient
+  kclManager: KclManager
+}
+
+class KclPlugin {
+  private kclManager: KclManager
+
+  constructor(view: EditorView, systemDeps: KclPluginDeps) {
+    this.kclManager = systemDeps.kclManager
+    /**
+     * TODO: Until we wrangle all the ways we destroy and recreate the EditorView,
+     * we need this block of code to set the document value when the LSP is ready.
+     */
+    hackSetInitialCodeOnLspClientLoad(
+      view.state.doc.toString(),
+      systemDeps.client,
+      systemDeps.kclManager
+    )
   }
-): Extension {
+
+  update(viewUpdate: ViewUpdate) {
+    /** THIS IS A HACK. TODO: NEVER OVERWRITE THE EDITORVIEW */
+    this.kclManager.setEditorView(viewUpdate.view)
+
+    this.highlightEngineEntitiesEffect(viewUpdate)
+    this.executeKclEffect(viewUpdate)
+  }
+
   /**
    * This is a CodeMirror extension that listens for selection events
    * and fires off engine commands to highlight the corresponding engine entities.
    * It is not debounced.
    */
-  const highlightEngineEntitiesEffect = EditorView.updateListener.of(
-    (update) => {
-      if (update.transactions.some((tr) => tr.isUserEvent('select'))) {
-        systemDeps.kclManager.handleOnViewUpdate(
-          update,
-          processCodeMirrorRanges
-        )
-      }
+  highlightEngineEntitiesEffect = (update: ViewUpdate) => {
+    if (update.transactions.some((tr) => tr.isUserEvent('select'))) {
+      this.kclManager.handleOnViewUpdate(update, processCodeMirrorRanges)
     }
-  )
-
-  const executeKclDeferred = deferExecution(
-    async ({ newCode }: { newCode: string }) => {
-      const modelingState = systemDeps.kclManager.modelingState
-      if (modelingState?.matches('sketchSolveMode')) {
-        await hackExecutionForSketchSolve(newCode, systemDeps.kclManager)
-      } else {
-        await systemDeps.kclManager.executeCode(newCode)
-      }
-    },
-    changesDelay
-  )
+  }
 
   /**
    * This is a CodeMirror extension that watches for updates to the document,
    * discerns if the change is a kind that we want to re-execute on,
    * then fires (and forgets) an execution with a debounce.
    */
-  const executeKclEffect = EditorView.updateListener.of((update) => {
+  executeKclEffect = (update: ViewUpdate) => {
+    const executeKclDeferred = deferExecution(
+      async ({ newCode }: { newCode: string }) => {
+        const modelingState = this.kclManager.modelingState
+        if (modelingState?.matches('sketchSolveMode')) {
+          await hackExecutionForSketchSolve(newCode, this.kclManager)
+        } else {
+          await this.kclManager.executeCode()
+        }
+      },
+      changesDelay
+    )
+
     const shouldExecute =
       update.docChanged &&
       update.transactions.some((tr) => {
@@ -95,13 +122,46 @@ export function kclPlugin(
         anotherCode,
       })
 
-      void systemDeps.kclManager.writeToFile(newCode).then(() => {
+      this.kclManager.code = newCode
+      void this.kclManager.writeToFile(newCode).then(() => {
         executeKclDeferred({ newCode })
       })
     }
-  })
+  }
+}
 
-  return [lspPlugin(options), highlightEngineEntitiesEffect, executeKclEffect]
+export function kclPlugin(
+  options: LanguageServerOptions,
+  systemDeps: {
+    kclManager: KclManager
+  }
+): Extension {
+  return [
+    lspPlugin(options),
+    ViewPlugin.fromClass(KclPlugin).of({
+      client: options.client,
+      kclManager: systemDeps.kclManager,
+    }),
+  ]
+}
+
+/**
+ * Gotcha: Code can be written into the CodeMirror editor but not propagated to kclManager.code
+ * because the update function has not run. We need to initialize the kclManager.code when lsp initializes
+ * because new code could have been written into the editor before the update callback is initialized.
+ * There appears to be limited ways to safely get the current doc content. This appears to be sync and safe.
+ */
+function hackSetInitialCodeOnLspClientLoad(
+  code: string,
+  client: LanguageServerClient,
+  kclManager: KclManager
+) {
+  const kclLspPlugin = client.plugins.find((plugin) => {
+    return plugin.client.name === 'kcl'
+  })
+  if (kclLspPlugin) {
+    kclManager.code = code
+  }
 }
 
 /**

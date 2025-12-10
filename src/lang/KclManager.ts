@@ -787,8 +787,8 @@ export class KclManager extends EventTarget {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(newCode = this.code): Promise<void> {
-    const ast = await this.safeParse(newCode)
+  async executeCode(): Promise<void> {
+    const ast = await this.safeParse(this.code)
 
     if (!ast) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
