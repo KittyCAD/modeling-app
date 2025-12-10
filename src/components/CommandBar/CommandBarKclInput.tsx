@@ -34,7 +34,7 @@ import { varMentions } from '@src/lib/varCompletionExtension'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import styles from './CommandBarKclInput.module.css'
-import { editorTheme } from '@src/lib/codeEditor'
+import { editorTheme } from '@src/editor/plugins/theme'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
