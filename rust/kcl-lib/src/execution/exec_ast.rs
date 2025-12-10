@@ -999,6 +999,7 @@ impl Node<SketchBlock> {
                     },
                     segments: Default::default(),
                     constraints: Default::default(),
+                    is_underconstrained: None,
                 }),
                 label: Default::default(),
                 comments: Default::default(),
@@ -1105,7 +1106,13 @@ impl Node<SketchBlock> {
             max_iterations: 50,
             ..Default::default()
         };
-        let solve_outcome = match kcl_ezpz::solve_with_priority(&constraints, initial_guesses.clone(), config) {
+        let solve_result = if exec_state.mod_local.freedom_analysis {
+            kcl_ezpz::solve_with_priority_analysis(&constraints, initial_guesses.clone(), config)
+                .map(|outcome| (outcome.outcome, Some(outcome.analysis)))
+        } else {
+            kcl_ezpz::solve_with_priority(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
+        };
+        let (solve_outcome, solve_analysis) = match solve_result {
             Ok(o) => o,
             Err(failure) => {
                 if let kcl_ezpz::Error::Solver(_) = &failure.error {
@@ -1116,13 +1123,16 @@ impl Node<SketchBlock> {
                         annotations::WARN_SOLVER,
                     );
                     let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
-                    kcl_ezpz::SolveOutcome {
-                        final_values,
-                        iterations: Default::default(),
-                        warnings: failure.warnings,
-                        unsatisfied: Default::default(),
-                        priority_solved: Default::default(),
-                    }
+                    (
+                        kcl_ezpz::SolveOutcome {
+                            final_values,
+                            iterations: Default::default(),
+                            warnings: failure.warnings,
+                            unsatisfied: Default::default(),
+                            priority_solved: Default::default(),
+                        },
+                        None,
+                    )
                 } else {
                     return Err(KclError::new_internal(KclErrorDetails::new(
                         format!("Error from constraint solver: {}", &failure.error),
@@ -1131,6 +1141,8 @@ impl Node<SketchBlock> {
                 }
             }
         };
+        #[cfg(not(feature = "artifact-graph"))]
+        let _ = solve_analysis;
         // Propagate warnings.
         for warning in &solve_outcome.warnings {
             let message = if let Some(index) = warning.about_constraint.as_ref() {
@@ -1197,6 +1209,8 @@ impl Node<SketchBlock> {
             sketch
                 .constraints
                 .extend(std::mem::take(&mut sketch_block_state.sketch_constraints));
+            // Update the sketch object with freedom.
+            sketch.is_underconstrained = solve_analysis.map(|analysis| analysis.is_underconstrained);
 
             // Push sketch solve operation
             exec_state.push_op(Operation::SketchSolve {
