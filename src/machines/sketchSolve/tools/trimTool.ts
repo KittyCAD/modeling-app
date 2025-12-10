@@ -4,7 +4,11 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { BufferGeometry, Line, LineBasicMaterial, Vector3 } from 'three'
 
 // Trim tool draws an ephemeral polyline during an area-select drag.
@@ -67,14 +71,15 @@ function getPointCoords(
 // Returns null if no intersection is found
 export function findFirstIntersectionWithPolylineSegment(
   points: Vector3[],
-  objects: SceneGraphDelta['new_graph']['objects']
+  objects: SceneGraphDelta['new_graph']['objects'],
+  startIndex = 0
 ): {
   location: [number, number]
   segmentId: number
   pointIndex: number
 } | null {
   // Loop over polyline segments
-  for (let i = 0; i < points.length - 1; i++) {
+  for (let i = startIndex; i < points.length - 1; i++) {
     const p1: [number, number] = [points[i].x, points[i].y]
     const p2: [number, number] = [points[i + 1].x, points[i + 1].y]
 
@@ -185,6 +190,7 @@ export const machine = setup({
       sceneInfra: SceneInfra
       rustContext: RustContext
       kclManager: KclManager
+      sketchId: number
       sceneGraphDelta?: SceneGraphDelta
     },
     events: {} as ToolEvents,
@@ -192,15 +198,17 @@ export const machine = setup({
       sceneInfra: SceneInfra
       rustContext: RustContext
       kclManager: KclManager
+      sketchId: number
       sceneGraphDelta?: SceneGraphDelta
     },
   },
   actions: {
-    'add area select listener': ({ context }) => {
+    'add area select listener': ({ context, self }) => {
       const scene = context.sceneInfra.scene
       let currentLine: Line | null = null
       let points: Vector3[] = []
       let lastPoint2D: [number, number] | null = null
+      let lastPointIndex = 0
 
       const pxThreshold = 5
 
@@ -216,6 +224,7 @@ export const machine = setup({
             new Vector3(startPoint.twoD.x, startPoint.twoD.y, 0),
           ] as Vector3[]
           lastPoint2D = [startPoint.twoD.x, startPoint.twoD.y]
+          lastPointIndex = 0 // Reset for new drag
         },
         onAreaSelect: ({ currentPoint }) => {
           if (!currentPoint?.twoD || !lastPoint2D) return
@@ -243,43 +252,75 @@ export const machine = setup({
             lastPoint2D = [x, y]
           }
         },
-        onAreaSelectEnd: () => {
-          // Find intersections with existing line segments
-          let firstIntersection: {
-            location: [number, number]
-            segmentId: number
-            segmentIntersections: Array<{
-              location: [number, number]
-              segmentId: number
-            }>
+        onAreaSelectEnd: async () => {
+          let currentSceneGraph = context.sceneGraphDelta
+          let lastDeleteResult: {
+            kclSource: SourceDelta
+            sceneGraphDelta: SceneGraphDelta
           } | null = null
 
-          if (context.sceneGraphDelta && points.length >= 2) {
-            const objects = context.sceneGraphDelta.new_graph.objects
+          // Loop until we've processed all polyline segments
+          while (
+            currentSceneGraph &&
+            points.length >= 2 &&
+            lastPointIndex < points.length - 1
+          ) {
+            const objects = currentSceneGraph.new_graph.objects
 
-            // First pass: Find first intersection between polyline and any scene segment
+            // Find first intersection starting from lastPointIndex
             const foundIntersection = findFirstIntersectionWithPolylineSegment(
               points,
+              objects,
+              lastPointIndex
+            )
+
+            if (!foundIntersection) {
+              // No more intersections found, we're done
+              break
+            }
+
+            // Second pass: Find all segments that intersect with the intersected segment
+            const segmentIntersections = findSegmentsThatIntersect(
+              foundIntersection.segmentId,
               objects
             )
 
-            if (foundIntersection) {
-              // Second pass: Find all segments that intersect with the intersected segment
-              const segmentIntersections = findSegmentsThatIntersect(
-                foundIntersection.segmentId,
-                objects
-              )
+            // Only delete if segment has no intersections with other segments
+            if (segmentIntersections.length === 0) {
+              try {
+                const result = await context.rustContext.deleteObjects(
+                  0,
+                  context.sketchId,
+                  [], // constraintIds - empty, we're only deleting the segment
+                  [foundIntersection.segmentId], // segmentIds
+                  await jsAppSettings()
+                )
 
-              firstIntersection = {
-                location: foundIntersection.location,
-                segmentId: foundIntersection.segmentId,
-                segmentIntersections,
+                lastDeleteResult = result
+                currentSceneGraph = result.sceneGraphDelta
+                // Update lastPointIndex to continue from after this intersection
+                lastPointIndex = foundIntersection.pointIndex + 1
+              } catch (error) {
+                console.error('Failed to delete segment:', error)
+                // Stop on error
+                break
               }
+            } else {
+              // Segment has intersections with other segments, can't delete
+              // Move past this intersection point
+              lastPointIndex = foundIntersection.pointIndex + 1
             }
+          }
 
-            console.log('Intersections:', firstIntersection)
-          } else {
-            console.log('Intersections:', firstIntersection)
+          // Send the last delete result to parent to update sketch outcome
+          if (lastDeleteResult) {
+            self._parent?.send({
+              type: 'update sketch outcome',
+              data: {
+                kclSource: lastDeleteResult.kclSource,
+                sceneGraphDelta: lastDeleteResult.sceneGraphDelta,
+              },
+            })
           }
 
           if (currentLine) {
@@ -306,6 +347,7 @@ export const machine = setup({
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
     kclManager: input.kclManager,
+    sketchId: input.sketchId,
     sceneGraphDelta: input.sceneGraphDelta,
   }),
   id: TOOL_ID,
