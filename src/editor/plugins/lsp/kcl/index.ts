@@ -69,6 +69,7 @@ export function kclPlugin(
       if (modelingState?.matches('sketchSolveMode')) {
         await hackExecutionForSketchSolve(newCode, systemDeps.kclManager)
       } else {
+        systemDeps.kclManager.code = newCode
         await systemDeps.kclManager.executeCode()
       }
     },
@@ -107,14 +108,6 @@ export function kclPlugin(
 
     if (shouldExecute) {
       const newCode = update.view.state.doc.toString()
-      const oldCode = update.startState.doc.toString()
-      const anotherCode = update.state.doc.toString()
-
-      console.log('from Execution', {
-        newCode,
-        oldCode,
-        anotherCode,
-      })
 
       void systemDeps.kclManager.writeToFile(newCode).then(() => {
         executeKclDeferred({ newCode })
