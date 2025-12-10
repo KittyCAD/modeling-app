@@ -119,7 +119,7 @@ test.describe('Feature Tree pane', () => {
       })
       await testViewSource({
         operationName: 'extrude001',
-        operationIndex: 1,
+        operationIndex: 0,
         expectedActiveLine: 'extrude001 = extrude(sketch002, length = 10)',
       })
       await testViewSource({
