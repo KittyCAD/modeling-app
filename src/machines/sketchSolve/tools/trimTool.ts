@@ -62,6 +62,121 @@ function getPointCoords(
   ]
 }
 
+// Pure function: Finds the first intersection between the polyline and any scene segment
+// Loops over polyline segments and checks each against all scene segments
+// Returns null if no intersection is found
+export function findFirstIntersectionWithPolylineSegment(
+  points: Vector3[],
+  objects: SceneGraphDelta['new_graph']['objects']
+): {
+  location: [number, number]
+  segmentId: number
+  pointIndex: number
+} | null {
+  // Loop over polyline segments
+  for (let i = 0; i < points.length - 1; i++) {
+    const p1: [number, number] = [points[i].x, points[i].y]
+    const p2: [number, number] = [points[i + 1].x, points[i + 1].y]
+
+    // Check this polyline segment against all scene segments
+    for (let segmentId = 0; segmentId < objects.length; segmentId++) {
+      const obj = objects[segmentId]
+      if (obj?.kind?.type !== 'Segment' || obj.kind.segment.type !== 'Line') {
+        continue
+      }
+
+      const startPoint = getPointCoords(obj.kind.segment.start, objects)
+      const endPoint = getPointCoords(obj.kind.segment.end, objects)
+
+      if (!startPoint || !endPoint) {
+        continue
+      }
+
+      const intersection = lineSegmentIntersection(p1, p2, startPoint, endPoint)
+
+      if (intersection) {
+        return {
+          location: intersection,
+          segmentId,
+          pointIndex: i,
+        }
+      }
+    }
+  }
+
+  return null
+}
+
+// Pure function: Finds all segments that intersect with a given segment
+export function findSegmentsThatIntersect(
+  segmentId: number,
+  objects: SceneGraphDelta['new_graph']['objects']
+): Array<{ location: [number, number]; segmentId: number }> {
+  const intersectedObj = objects[segmentId]
+
+  if (
+    intersectedObj?.kind?.type !== 'Segment' ||
+    intersectedObj.kind.segment.type !== 'Line'
+  ) {
+    return []
+  }
+
+  const intersectedStart = getPointCoords(
+    intersectedObj.kind.segment.start,
+    objects
+  )
+  const intersectedEnd = getPointCoords(
+    intersectedObj.kind.segment.end,
+    objects
+  )
+
+  if (!intersectedStart || !intersectedEnd) {
+    return []
+  }
+
+  const segmentIntersections: Array<{
+    location: [number, number]
+    segmentId: number
+  }> = []
+
+  // Check this segment against all other segments
+  for (
+    let otherSegmentId = 0;
+    otherSegmentId < objects.length;
+    otherSegmentId++
+  ) {
+    // Skip itself
+    if (otherSegmentId === segmentId) continue
+
+    const otherObj = objects[otherSegmentId]
+    if (
+      otherObj?.kind?.type === 'Segment' &&
+      otherObj.kind.segment.type === 'Line'
+    ) {
+      const otherStart = getPointCoords(otherObj.kind.segment.start, objects)
+      const otherEnd = getPointCoords(otherObj.kind.segment.end, objects)
+
+      if (otherStart && otherEnd) {
+        const segmentIntersection = lineSegmentIntersection(
+          intersectedStart,
+          intersectedEnd,
+          otherStart,
+          otherEnd
+        )
+
+        if (segmentIntersection) {
+          segmentIntersections.push({
+            location: segmentIntersection,
+            segmentId: otherSegmentId,
+          })
+        }
+      }
+    }
+  }
+
+  return segmentIntersections
+}
+
 type ToolEvents = BaseToolEvent
 
 export const machine = setup({
@@ -130,56 +245,42 @@ export const machine = setup({
         },
         onAreaSelectEnd: () => {
           // Find intersections with existing line segments
-          const intersections: Array<{
+          let firstIntersection: {
             location: [number, number]
             segmentId: number
-          }> = []
+            segmentIntersections: Array<{
+              location: [number, number]
+              segmentId: number
+            }>
+          } | null = null
 
           if (context.sceneGraphDelta && points.length >= 2) {
             const objects = context.sceneGraphDelta.new_graph.objects
 
-            // Find all line segments in the sceneGraph
-            for (let segmentId = 0; segmentId < objects.length; segmentId++) {
-              const obj = objects[segmentId]
-              if (
-                obj?.kind?.type === 'Segment' &&
-                obj.kind.segment.type === 'Line'
-              ) {
-                const startPoint = getPointCoords(
-                  obj.kind.segment.start,
-                  objects
-                )
-                const endPoint = getPointCoords(obj.kind.segment.end, objects)
+            // First pass: Find first intersection between polyline and any scene segment
+            const foundIntersection = findFirstIntersectionWithPolylineSegment(
+              points,
+              objects
+            )
 
-                if (startPoint && endPoint) {
-                  // Check each segment of the drawn polyline against this line
-                  for (let i = 0; i < points.length - 1; i++) {
-                    const p1: [number, number] = [points[i].x, points[i].y]
-                    const p2: [number, number] = [
-                      points[i + 1].x,
-                      points[i + 1].y,
-                    ]
+            if (foundIntersection) {
+              // Second pass: Find all segments that intersect with the intersected segment
+              const segmentIntersections = findSegmentsThatIntersect(
+                foundIntersection.segmentId,
+                objects
+              )
 
-                    const intersection = lineSegmentIntersection(
-                      p1,
-                      p2,
-                      startPoint,
-                      endPoint
-                    )
-
-                    if (intersection) {
-                      intersections.push({
-                        location: intersection,
-                        segmentId,
-                      })
-                    }
-                  }
-                }
+              firstIntersection = {
+                location: foundIntersection.location,
+                segmentId: foundIntersection.segmentId,
+                segmentIntersections,
               }
             }
-          }
 
-          console.log('Intersections:', intersections)
+            console.log('Intersections:', firstIntersection)
+          } else {
+            console.log('Intersections:', firstIntersection)
+          }
 
           if (currentLine) {
             scene.remove(currentLine)
