@@ -101,145 +101,23 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
 }
 
 export const KclEditorPaneContents = () => {
+  const editorParent = useRef<HTMLDivElement>(null)
   const context = useSettings()
-  const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
-  const editorIsMounted = useSelector(kclEditorActor, editorIsMountedSelector)
-  const { copilotLSP, kclLSP } = useLspContext()
-
-  // When this component unmounts, we need to tell the machine that the editor
-  useEffect(() => {
-    return () => {
-      kclEditorActor.send({ type: 'setKclEditorMounted', data: false })
-      kclEditorActor.send({ type: 'setLastSelectionEvent', data: undefined })
-      kclManager.diagnostics = []
-    }
-  }, [])
-
-  useEffect(() => {
-    const editorView = kclManager.getEditorView()
-    if (!editorIsMounted || !lastSelectionEvent || !editorView) {
-      return
-    }
-
-    try {
-      editorView.dispatch({
-        selection: lastSelectionEvent.codeMirrorSelection,
-        annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
-        scrollIntoView: lastSelectionEvent.scrollIntoView,
-      })
-    } catch (e) {
-      console.error('Error setting selection', e)
-    }
-  }, [editorIsMounted, lastSelectionEvent])
-
-  const textWrapping = context.textEditor.textWrapping
+  // const textWrapping = context.textEditor.textWrapping
   const cursorBlinking = context.textEditor.blinkingCursor
   // DO NOT ADD THE CODEMIRROR HOTKEYS HERE TO THE DEPENDENCY ARRAY
   // It reloads the editor every time we do _anything_ in the editor
   // I have no idea why.
   // Instead, hot load hotkeys via code mirror native.
-  const codeMirrorHotkeys = kclManager.getCodemirrorHotkeys()
+  // const codeMirrorHotkeys = kclManager.getCodemirrorHotkeys()
 
-  // When opening the editor, use the existing history in kclManager.
-  // This is needed to ensure users can undo beyond when the editor has been openeed.
-  // (Another solution would be to reuse the same state instead of creating a new one in CodeEditor.)
-  const existingHistory = kclManager.editorState.field(historyField)
-  const initialHistory = existingHistory
-    ? historyField.init(() => existingHistory)
-    : history()
+  // if (kclLSP) extensions.push(Prec.highest(kclLSP))
+  // if (copilotLSP) extensions.push(copilotLSP)
+  // if (textWrapping.current) extensions.push(EditorView.lineWrapping)
 
-  const editorExtensions = useMemo(() => {
-    const extensions = [
-      themeCompartment.of(
-        editorTheme[getResolvedTheme(getSettings().app.theme.current)]
-      ),
-      drawSelection({
-        cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
-      }),
-      lineHighlightField,
-      artifactAnnotationsExtension(),
-      kclAstExtension(),
-      historyCompartment.of(initialHistory),
-      closeBrackets(),
-      codeFolding(),
-      keymap.of([
-        ...closeBracketsKeymap,
-        ...defaultKeymap,
-        ...searchKeymap,
-        ...historyKeymap,
-        ...foldKeymap,
-        ...completionKeymap,
-        ...lintKeymap,
-        indentWithTab,
-        ...codeMirrorHotkeys,
-        {
-          key: editorShortcutMeta.convertToVariable.codeMirror,
-          run: () => {
-            return kclManager.convertToVariable()
-          },
-        },
-      ]),
-    ] as Extension[]
-
-    if (kclLSP) extensions.push(Prec.highest(kclLSP))
-    if (copilotLSP) extensions.push(copilotLSP)
-
-    extensions.push(
-      lintGutter(),
-      lineNumbers(),
-      highlightActiveLineGutter(),
-      highlightSpecialChars(),
-      foldGutter(),
-      EditorState.allowMultipleSelections.of(true),
-      indentOnInput(),
-      bracketMatching(),
-      closeBrackets(),
-      highlightActiveLine(),
-      highlightSelectionMatches(),
-      rectangularSelection(),
-      dropCursor(),
-      interact({
-        rules: [
-          // a rule for a number dragger
-          {
-            // the regexp matching the value
-            regexp: onMouseDragRegex,
-            // set cursor to "ew-resize" on hover
-            cursor: 'ew-resize',
-            // change number value based on mouse X movement on drag
-            onDrag: (text, setText, e) => {
-              onMouseDragMakeANewNumber(text, setText, e)
-            },
-          },
-        ],
-      })
-    )
-    if (textWrapping.current) extensions.push(EditorView.lineWrapping)
-
-    if (context.app.showDebugPanel.current) {
-      extensions.push(
-        keymap.of([
-          {
-            key: 'Mod-Shift-d',
-            preventDefault: true,
-            run: () => {
-              const view = kclManager.getEditorView()
-              if (!view) return false
-              const data = getArtifactAnnotationsAtCursor(view.state)
-              // eslint-disable-next-line no-console
-              console.log('Artifact annotations at cursor:', data)
-              return true
-            },
-          },
-        ])
-      )
-    }
-
-    return extensions
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclLSP, copilotLSP, textWrapping.current, cursorBlinking.current])
-
-  const initialCode = useRef(kclManager.code)
+  useEffect(() => {
+    editorParent.current?.appendChild(kclManager.editorView.dom)
+  }, [])
 
   return (
     <div className="relative">
@@ -248,35 +126,8 @@ export const KclEditorPaneContents = () => {
         className={
           'absolute inset-0 pr-1 ' + (cursorBlinking.current ? 'blink' : '')
         }
-      >
-        <CodeEditor
-          initialDocValue={initialCode.current}
-          extensions={editorExtensions}
-          onCreateEditor={(_editorView) => {
-            kclManager.setEditorView(_editorView)
-
-            if (!_editorView) return
-
-            // Update diagnostics as they are cleared when the editor is unmounted.
-            // Without this, errors would not be shown when closing and reopening the editor.
-            kclManager.wasmInstancePromise
-              .then((wasmInstance) =>
-                kclManager
-                  .safeParse(kclManager.code, wasmInstance)
-                  .then(() => {
-                    // On first load of this component, ensure we show the current errors
-                    // in the editor.
-                    // Make sure we don't add them twice.
-                    if (diagnosticCount(_editorView.state) === 0) {
-                      kclManager.setDiagnosticsForCurrentErrors()
-                    }
-                  })
-                  .catch(reportRejection)
-              )
-              .catch(reportRejection)
-          }}
-        />
-      </div>
+        ref={editorParent}
+      />
     </div>
   )
 }
