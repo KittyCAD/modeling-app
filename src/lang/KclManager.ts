@@ -1098,6 +1098,20 @@ export class KclManager extends EventTarget {
   set modelingSend(send: (eventInfo: ModelingMachineEvent) => void) {
     this._modelingSend = send
   }
+  /**
+   * Send an event to the modeling machine.
+   * Returns false if the modeling machine is not available.
+   */
+  sendModelingEvent(event: ModelingMachineEvent): boolean {
+    if (this._modelingSend) {
+      this._modelingSend(event)
+      return true
+    }
+    return false
+  }
+  get modelingState(): StateFrom<typeof modelingMachine> | null {
+    return this._modelingState
+  }
   set modelingState(state: StateFrom<typeof modelingMachine>) {
     this._modelingState = state
   }

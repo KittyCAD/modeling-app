@@ -231,6 +231,15 @@ export const mlEphantManagerMachine2 = setup({
       }
     },
     cacheSetup: assign({
+      conversationId: ({ event }) => {
+        assertEvent(event, MlEphantManagerTransitions2.CacheSetupAndConnect)
+
+        if (event.conversationId) {
+          return event.conversationId
+        }
+
+        return undefined
+      },
       cachedSetup: ({ event }) => {
         assertEvent(event, MlEphantManagerTransitions2.CacheSetupAndConnect)
         return {

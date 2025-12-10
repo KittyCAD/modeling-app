@@ -5,7 +5,8 @@
 use kcl_error::SourceRange;
 use serde::{Deserialize, Serialize};
 
-pub mod sketch;
+pub use crate::ExecutorSettings as Settings;
+use crate::{ExecOutcome, engine::PlaneName, execution::ArtifactId, pretty::NumericSuffix};
 
 pub trait LifecycleApi {
     async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<()>;
@@ -18,7 +19,7 @@ pub trait LifecycleApi {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct SceneGraph {
     pub project: ProjectId,
     pub file: FileId,
@@ -36,132 +37,172 @@ impl SceneGraph {
             file,
             version,
             objects: Vec::new(),
-            settings: Settings {},
+            settings: Default::default(),
             sketch_mode: None,
         }
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct SceneGraphDelta {
     pub new_graph: SceneGraph,
     pub new_objects: Vec<ObjectId>,
     pub invalidates_ids: bool,
+    pub exec_outcome: ExecOutcome,
 }
 
 impl SceneGraphDelta {
-    pub fn new(new_graph: SceneGraph, new_objects: Vec<ObjectId>, invalidates_ids: bool) -> Self {
+    pub fn new(
+        new_graph: SceneGraph,
+        new_objects: Vec<ObjectId>,
+        invalidates_ids: bool,
+        exec_outcome: ExecOutcome,
+    ) -> Self {
         SceneGraphDelta {
             new_graph,
             new_objects,
             invalidates_ids,
+            exec_outcome,
         }
     }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
-pub struct SourceDelta {}
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct SourceDelta {
+    pub text: String,
+}
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiObjectId")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
 pub struct ObjectId(pub usize);
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Ord, PartialOrd, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiVersion")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiVersion")]
 pub struct Version(pub usize);
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiProjectId")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiProjectId")]
 pub struct ProjectId(pub usize);
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiFileId")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiFileId")]
 pub struct FileId(pub usize);
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiFile")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiFile")]
 pub struct File {
     pub id: FileId,
     pub path: String,
     pub text: String,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiSettings")]
-pub struct Settings {}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiObject")]
 pub struct Object {
     pub id: ObjectId,
     pub kind: ObjectKind,
     pub label: String,
     pub comments: String,
-    pub artifact_id: usize,
+    pub artifact_id: ArtifactId,
     pub source: SourceRef,
 }
 
-#[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-pub enum ObjectKind {
-    Sketch(crate::sketch::Sketch),
-    Segment(crate::sketch::Segment),
-    Constraint(crate::sketch::Constraint),
-    // TODO
-    Region,
-    Sweep,
+impl Object {
+    pub fn placeholder(id: ObjectId, range: SourceRange) -> Self {
+        Object {
+            id,
+            kind: ObjectKind::Nil,
+            label: Default::default(),
+            comments: Default::default(),
+            artifact_id: ArtifactId::placeholder(),
+            source: SourceRef::Simple { range },
+        }
+    }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectKind")]
+#[serde(tag = "type")]
+pub enum ObjectKind {
+    /// A placeholder for an object that will be solved and replaced later.
+    Nil,
+    Plane(Plane),
+    Sketch(crate::frontend::sketch::Sketch),
+    // These need to be named since the nested types are also enums. ts-rs needs
+    // a place to put the type tag.
+    Segment {
+        segment: crate::frontend::sketch::Segment,
+    },
+    Constraint {
+        constraint: crate::frontend::sketch::Constraint,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiPlane")]
+#[serde(rename_all = "camelCase")]
 pub enum Plane {
     Object(ObjectId),
-    Default,
+    Default(PlaneName),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiSourceRef")]
+#[serde(tag = "type")]
 pub enum SourceRef {
-    Simple(SourceRange),
-    BackTrace(Vec<SourceRange>),
+    Simple { range: SourceRange },
+    BackTrace { ranges: Vec<SourceRange> },
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+impl From<SourceRange> for SourceRef {
+    fn from(value: SourceRange) -> Self {
+        Self::Simple { range: value }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct Number {
-    value: f64,
-    units: NumericSuffix,
+    pub value: f64,
+    pub units: NumericSuffix,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+impl TryFrom<crate::std::args::TyF64> for Number {
+    type Error = crate::execution::types::NumericSuffixTypeConvertError;
+
+    fn try_from(value: crate::std::args::TyF64) -> std::result::Result<Self, Self::Error> {
+        Ok(Number {
+            value: value.n,
+            units: value.ty.try_into()?,
+        })
+    }
+}
+
+impl Number {
+    pub fn round(&self, digits: u8) -> Self {
+        let factor = 10f64.powi(digits as i32);
+        let rounded_value = (self.value * factor).round() / factor;
+        Number {
+            value: rounded_value,
+            units: self.units,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(tag = "type")]
 pub enum Expr {
     Number(Number),
     Var(Number),
     Variable(String),
 }
 
-// TODO share with kcl-lib
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
-#[repr(u32)]
-#[ts(export)]
-pub enum NumericSuffix {
-    None,
-    Count,
-    Length,
-    Angle,
-    Mm,
-    Cm,
-    M,
-    Inch,
-    Ft,
-    Yd,
-    Deg,
-    Rad,
-    Unknown,
-}
-
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct Error {
     pub msg: String,
 }

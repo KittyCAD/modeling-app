@@ -701,7 +701,11 @@ function getBestCandidate(
     }
 
     // Other valid artifact types
-    if (['plane', 'cap', 'wall', 'sweep'].includes(entry.artifact.type)) {
+    if (
+      ['plane', 'cap', 'wall', 'sweep', 'sketchBlock'].includes(
+        entry.artifact.type
+      )
+    ) {
       return entry
     }
   }
@@ -956,6 +960,45 @@ export function getDefaultSketchPlaneData(
     yAxis,
   }
 }
+export async function getPlaneDataFromSketchBlock(
+  sketchBlock: Extract<Artifact, { type: 'sketchBlock' }>,
+  artifactGraph: ArtifactGraph,
+  systemDeps: {
+    rustContext: RustContext
+    sceneInfra: SceneInfra
+  }
+): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane | null> {
+  // TODO this function is stubbed out for now since sketchBlocks really only work on default planes
+  // and I don't think we have enough info or the sketchBlock.planeId is wrong, so it just default to the
+  // XY no matter what for now
+
+  // Similar logic to selectSketchPlane but for a sketchBlock artifact
+  if (!sketchBlock.planeId) {
+    return null
+  }
+
+  // Try to get the artifact from the graph
+  const artifact = artifactGraph.get(sketchBlock.planeId)
+
+  // If artifact doesn't exist in the graph, fallback to default XY plane
+  // This is a temporary solution while we determine the proper approach for default planes
+  if (!artifact) {
+    const defaultPlanes = systemDeps.rustContext.defaultPlanes
+    if (defaultPlanes?.xy) {
+      const defaultResult = getDefaultSketchPlaneData(
+        defaultPlanes.xy,
+        systemDeps
+      )
+      if (!err(defaultResult) && defaultResult) {
+        return defaultResult
+      }
+    }
+    return null
+  }
+
+  return null
+}
+
 export function selectDefaultSketchPlane(
   defaultPlaneId: string,
   systemDeps: {
