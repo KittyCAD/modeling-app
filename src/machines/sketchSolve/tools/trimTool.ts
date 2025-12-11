@@ -38,17 +38,6 @@ export async function processTrimOperations({
   sceneGraphDelta: SceneGraphDelta
   invalidates_ids: boolean
 } | null> {
-  // Log input as RAW JSON for test case generation
-  console.log(
-    'TRIM_TOOL_INPUT:',
-    JSON.stringify({
-      points: points.map((p) => [p.x, p.y, p.z]),
-      // initialSceneGraph,
-      sketchId,
-      lastPointIndex,
-    })
-  )
-
   let currentSceneGraph = initialSceneGraph
   let invalidates_ids = false
   let lastDeleteResult: {
@@ -476,16 +465,8 @@ export async function processTrimOperations({
       },
       invalidates_ids,
     }
-
-    // Log output as RAW JSON for test case generation
-    console.log('TRIM_TOOL_OUTPUT:', JSON.stringify(result))
-
     return result
   }
-
-  // Log output as RAW JSON for test case generation (null case)
-  console.log('TRIM_TOOL_OUTPUT:', JSON.stringify(null))
-
   return null
 }
 
@@ -854,42 +835,6 @@ export function findTwoClosestPointsToIntersection(
       return a.t - b.t
     })
   const pointAfter = pointsAfter[0]
-
-  // Debug logging
-  console.log('findTwoClosestPointsToIntersection debug:', {
-    intersectionT,
-    candidatePoints: candidatePoints.map((cp) => ({
-      type: cp.type,
-      t: cp.t,
-      point: cp.point,
-      ...(cp.type === 'endpoint'
-        ? { which: cp.which }
-        : { segmentId: cp.segmentId, subType: cp.subType }),
-    })),
-    pointBefore: pointBefore
-      ? {
-          type: pointBefore.type,
-          t: pointBefore.t,
-          point: pointBefore.point,
-          ...(pointBefore.type === 'endpoint'
-            ? { which: pointBefore.which }
-            : {
-                segmentId: pointBefore.segmentId,
-                subType: pointBefore.subType,
-              }),
-        }
-      : null,
-    pointAfter: pointAfter
-      ? {
-          type: pointAfter.type,
-          t: pointAfter.t,
-          point: pointAfter.point,
-          ...(pointAfter.type === 'endpoint'
-            ? { which: pointAfter.which }
-            : { segmentId: pointAfter.segmentId, subType: pointAfter.subType }),
-        }
-      : null,
-  })
 
   // Validate that we have points on both sides
   if (!pointBefore || !pointAfter) {
