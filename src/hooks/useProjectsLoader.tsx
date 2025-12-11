@@ -36,7 +36,11 @@ export const useProjectsLoader = (deps?: [number]) => {
       setProjectsDir(_projectsDir)
 
       if (projectsDir) {
-        const _projectPaths = await listProjects(electron, configuration)
+        const _projectPaths = await listProjects(
+          electron,
+          kclManager.wasmInstancePromise,
+          configuration
+        )
         setProjectPaths(_projectPaths)
       }
     })().catch(trap)
