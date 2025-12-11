@@ -4,7 +4,6 @@ use std::{
 };
 
 use indexmap::IndexMap;
-use insta::rounded_redaction;
 
 use crate::{
     ExecOutcome, ExecState, ExecutorContext, ModuleId,
@@ -377,8 +376,7 @@ fn assert_common_snapshots(test: &Test, variables: IndexMap<String, KclValue>) {
     let mem_result = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Variables in memory after executing", || {
             insta::assert_json_snapshot!("program_memory", variables, {
-                ".**.n" => rounded_redaction(3),
-                ".**.sourceRange" => Vec::new(),
+                 ".**.sourceRange" => Vec::new(),
             })
         })
     }));
