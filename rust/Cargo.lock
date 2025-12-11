@@ -29,6 +29,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "ahash"
+version = "0.8.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a15f179cd60c4584b8a8c596927aadc462e27f2ca70c04e0071964a73ba7a75"
+dependencies = [
+ "cfg-if",
+ "getrandom 0.3.1",
+ "once_cell",
+ "version_check",
+ "zerocopy",
+]
+
+[[package]]
 name = "aho-corasick"
 version = "1.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -978,16 +991,6 @@ checksum = "33d852cb9b869c2a9b3df2f71a3074817f01e1844f839a144f5fcef059a4eb5d"
 dependencies = [
  "libc",
  "windows-sys 0.59.0",
-]
-
-[[package]]
-name = "error-stack"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe413319145d1063f080f27556fd30b1d70b01e2ba10c2a6e40d4be982ffc5d1"
-dependencies = [
- "anyhow",
- "rustc_version",
 ]
 
 [[package]]
@@ -2114,17 +2117,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "kcl-api"
-version = "0.1.115"
-dependencies = [
- "indexmap 2.12.1",
- "kcl-error",
- "serde",
- "ts-rs",
- "wasm-bindgen",
-]
-
-[[package]]
 name = "kcl-bumper"
 version = "0.1.115"
 dependencies = [
@@ -2166,15 +2158,14 @@ dependencies = [
 
 [[package]]
 name = "kcl-ezpz"
-version = "0.1.5"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae79e38dd74d57483135a0c29e9be71cd445e6381a2fb99ea683b637cc0934d8"
+checksum = "990cb34e933e0ee5fdfe3c919500419fe5aa49e13bb14ca96ba4bb2bdc6d2f7b"
 dependencies = [
  "faer",
  "getrandom 0.2.16",
  "indexmap 2.12.1",
  "libm",
- "newtonls_faer",
  "thiserror 2.0.17",
  "winnow",
 ]
@@ -2224,6 +2215,7 @@ dependencies = [
 name = "kcl-lib"
 version = "0.2.115"
 dependencies = [
+ "ahash",
  "anyhow",
  "approx 0.5.1",
  "async-recursion",
@@ -2251,7 +2243,6 @@ dependencies = [
  "insta",
  "itertools 0.14.0",
  "js-sys",
- "kcl-api",
  "kcl-derive-docs",
  "kcl-directory-test-macro",
  "kcl-error",
@@ -2357,7 +2348,6 @@ dependencies = [
  "getrandom 0.3.1",
  "gloo-utils",
  "js-sys",
- "kcl-api",
  "kcl-lib",
  "kittycad",
  "kittycad-modeling-cmds",
@@ -2870,21 +2860,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "47b6b097ecb1cbfed438542d16e84fd7ad9b0c76c8a65b7f9039212a3d14dc7f"
 dependencies = [
  "unicode-segmentation",
-]
-
-[[package]]
-name = "newtonls_faer"
-version = "0.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8245825be07ab6cd8121fc12aa8bbfe7d8fe94512298382a222f0104105e3cfe"
-dependencies = [
- "dyn-stack",
- "error-stack",
- "faer",
- "faer-traits",
- "num-complex",
- "num-traits 0.2.19",
- "rayon",
 ]
 
 [[package]]
@@ -3949,15 +3924,6 @@ name = "rustc-hash"
 version = "2.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "357703d41365b4b27c590e3ed91eabb1b663f07c4c084095e60cbed4362dff0d"
-
-[[package]]
-name = "rustc_version"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cfcb3a22ef46e85b45de6ee7e79d063319ebb6594faafcf1c225ea92ab6e9b92"
-dependencies = [
- "semver",
-]
 
 [[package]]
 name = "rustix"
@@ -5789,18 +5755,18 @@ dependencies = [
 
 [[package]]
 name = "zerocopy"
-version = "0.8.23"
+version = "0.8.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd97444d05a4328b90e75e503a34bad781f14e28a823ad3557f0750df1ebcbc6"
+checksum = "fd74ec98b9250adb3ca554bdde269adf631549f51d8a8f8f0a10b50f1cb298c3"
 dependencies = [
  "zerocopy-derive",
 ]
 
 [[package]]
 name = "zerocopy-derive"
-version = "0.8.23"
+version = "0.8.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6352c01d0edd5db859a63e2605f4ea3183ddbd15e2c4a9e7d32184df75e4f154"
+checksum = "d8a8d209fdf45cf5138cbb5a506f6b52522a25afccc534d1475dad8e31105c6a"
 dependencies = [
  "proc-macro2",
  "quote",

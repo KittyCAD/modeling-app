@@ -1,0 +1,46 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing sprocket.kcl
+---
+{
+  "chainPitch": {
+    "type": "Number",
+    "value": 0.25,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "pinDiameter": {
+    "type": "Number",
+    "value": 0.09375,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "rollerDiameter": {
+    "type": "Number",
+    "value": 0.13,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "rollerWidth": {
+    "type": "Number",
+    "value": 0.125,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "sprocket": {
+    "type": "Function",
+    "value": null
+  }
+}
