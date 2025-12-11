@@ -1,7 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-  "kcl-api",
   "kcl-bumper",
   "kcl-derive-docs",
   "kcl-directory-test-macro",
@@ -16,6 +15,7 @@ members = [
 ]
 
 [workspace.dependencies]
+ahash = "0.8.11"
 anyhow = { version = "1" }
 async-trait = "0.1.89"
 clap = { version = "4.5.53", features = ["derive"] }
@@ -23,7 +23,7 @@ console_error_panic_hook = "0.1.7"
 dashmap = { version = "6.1.0" }
 http = "1"
 indexmap = "2.12.1"
-kcl-ezpz = "0.1.5"
+kcl-ezpz = "0.2.2"
 kittycad = { version = "0.4.2", default-features = false, features = [
   "js",
   "requests",
@@ -85,6 +85,7 @@ debug = "line-tables-only"
 
 #Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
 # [patch.crates-io]
-# kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "ben/surface_extrude" }
+# kcl-ezpz = { path = "../../ezpz/kcl-ezpz" }
+# kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "ben/chamfer_angle" }
 # kittycad-modeling-session = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "ben/chamfer_angle" }
 # #kittycad-modeling-session = { path = "../../modeling-api/modeling-session" }

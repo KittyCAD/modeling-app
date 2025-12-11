@@ -54,6 +54,16 @@ sketch003 = startSketchOn(plane001)
   |> circle(center = [0, 0], radius = 5)
 `
 
+const FEATURE_TREE_FUNCTION_BODY_APPEARANCE_CODE = `export fn cylinder(d, l) {
+  sketch001 = startSketchOn(XY)
+  profile001 = circle(sketch001, center = [0, 0], diameter = d)
+  extrude001 = extrude(profile001, length = l)
+  return extrude001
+}
+
+test = cylinder(d = 2, l = 10)
+`
+
 test.describe('Feature Tree pane', () => {
   test(
     'User can go to definition and go to function definition',
@@ -113,17 +123,17 @@ test.describe('Feature Tree pane', () => {
       }
 
       await testViewSource({
-        operationName: 'Offset Plane',
+        operationName: 'plane001',
         operationIndex: 0,
         expectedActiveLine: 'plane001 = offsetPlane(XY, offset = 10)',
       })
       await testViewSource({
-        operationName: 'Extrude',
-        operationIndex: 1,
+        operationName: 'extrude001',
+        operationIndex: 0,
         expectedActiveLine: 'extrude001 = extrude(sketch002, length = 10)',
       })
       await testViewSource({
-        operationName: 'Revolve',
+        operationName: 'revolve001',
         operationIndex: 0,
         expectedActiveLine: 'revolve001 = revolve(sketch001, axis = X)',
       })
@@ -145,6 +155,88 @@ test.describe('Feature Tree pane', () => {
           'Triangle function definition should be scrolled into view'
         ).toBeVisible()
       })
+    }
+  )
+
+  test(
+    'Set appearance menu works on function-created bodies',
+    { tag: '@desktop' },
+    async ({ context, homePage, scene, toolbar, cmdBar, page, editor }) => {
+      await context.folderSetupFn(async (dir) => {
+        const sampleDir = join(dir, 'test-sample')
+        await fsp.mkdir(sampleDir, { recursive: true })
+        await fsp.writeFile(
+          join(sampleDir, 'main.kcl'),
+          FEATURE_TREE_FUNCTION_BODY_APPEARANCE_CODE,
+          'utf-8'
+        )
+      })
+
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: 'test-sample',
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+      await homePage.openProject('test-sample')
+      await scene.settled(cmdBar)
+      await toolbar.openFeatureTreePane()
+
+      const cylinderOperation = toolbar.featureTreePane
+        .getByRole('button', { name: /test/i })
+        .first()
+      await expect(cylinderOperation).toBeVisible()
+      await cylinderOperation.click({ button: 'right' })
+
+      const setAppearanceMenuItem = page.getByTestId(
+        'context-menu-set-appearance'
+      )
+      await expect(setAppearanceMenuItem).toBeVisible()
+      await expect(setAppearanceMenuItem).toBeEnabled()
+      await setAppearanceMenuItem.click()
+
+      await cmdBar.expectState({
+        commandName: 'Appearance',
+        currentArgKey: 'objects',
+        currentArgValue: '',
+        headerArguments: {
+          Objects: '',
+          Color: '',
+        },
+        highlightedHeaderArg: 'objects',
+        stage: 'arguments',
+      })
+
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Appearance',
+        currentArgKey: 'color',
+        currentArgValue: '',
+        headerArguments: {
+          Objects: '1 other',
+          Color: '',
+        },
+        highlightedHeaderArg: 'color',
+        stage: 'arguments',
+      })
+
+      // Fill color, submit, and verify code updated
+      await cmdBar.currentArgumentInput.fill('#00ff00')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Appearance',
+        headerArguments: {
+          Objects: '1 other',
+          Color: '#00ff00',
+        },
+        stage: 'review',
+      })
+      await cmdBar.submit()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.toContain('appearance(test, color = "#00ff00")')
     }
   )
 
@@ -258,7 +350,7 @@ test.describe('Feature Tree pane', () => {
     })
 
     await test.step('Double click on the extrude operation', async () => {
-      await (await toolbar.getFeatureTreeOperation('Extrude', 0))
+      await (await toolbar.getFeatureTreeOperation('renamedExtrude', 0))
         .first()
         .dblclick()
       await editor.expectState({
@@ -359,7 +451,8 @@ test.describe('Feature Tree pane', () => {
     toolbar,
     cmdBar,
   }) => {
-    const testCode = (value: string) => `p = offsetPlane(XY, offset = ${value})`
+    const testCode = (value: string) =>
+      `p1 = offsetPlane(XY, offset = ${value})`
     const initialInput = '10'
     const initialCode = testCode(initialInput)
     const newInput = '5 + 10'
@@ -386,9 +479,8 @@ test.describe('Feature Tree pane', () => {
     })
 
     await test.step('Double click on the offset plane operation', async () => {
-      await (await toolbar.getFeatureTreeOperation('Offset Plane', 0))
-        .first()
-        .dblclick()
+      const opButton = await toolbar.getFeatureTreeOperation('p1', 0)
+      await opButton.dblclick()
       await editor.expectState({
         highlightedCode: '',
         diagnostics: [],
@@ -474,7 +566,7 @@ profile003 = startProfile(sketch001, at = [0, -4.93])
 
     await test.step(`Delete the remaining plane via feature tree`, async () => {
       const operationButton = await toolbar.getFeatureTreeOperation(
-        'Offset Plane',
+        'plane001',
         0
       )
       await operationButton.click({ button: 'left' })

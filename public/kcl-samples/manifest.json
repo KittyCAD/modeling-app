@@ -68,8 +68,8 @@
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "bike-hub-washer/main.kcl",
     "multipleFiles": false,
-    "title": "Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.",
-    "description": "",
+    "title": "Bike hub washer",
+    "description": "Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.",
     "files": [
       "main.kcl"
     ]
@@ -148,6 +148,16 @@
       "lug-nut.kcl",
       "main.kcl",
       "parameters.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "cassette/main.kcl",
+    "multipleFiles": false,
+    "title": "Sprocket Cassette",
+    "description": "A sprocket cassette is a stack of individual sprockets that mount together on a splined hub to provide multiple gear ratios",
+    "files": [
+      "main.kcl"
     ]
   },
   {
@@ -500,6 +510,20 @@
     "description": "Often used in construction, a claw hammer is a levered metal hand tool that is used to strike and extract nails",
     "files": [
       "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "hand-trolley/main.kcl",
+    "multipleFiles": true,
+    "title": "Hand Trolley",
+    "description": "A hand trolley, also known as a hand truck, is a small, wheeled cart with a weldment frame, used to move heavy or bulky items over short distances. It's essentially a simple lever system that makes lifting and moving objects much easier",
+    "files": [
+      "axle.kcl",
+      "main.kcl",
+      "parameters.kcl",
+      "weldment.kcl",
+      "wheel.kcl"
     ]
   },
   {
@@ -1043,6 +1067,16 @@
     "multipleFiles": false,
     "title": "Spool",
     "description": "A spool is a winding device for storing large batches of filament, wire, tape, etc",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "sprocket/main.kcl",
+    "multipleFiles": false,
+    "title": "Sprocket",
+    "description": "A standard hub sprocket is a toothed wheel that engages with a roller chain to transmit rotary motion and torque between shafts",
     "files": [
       "main.kcl"
     ]

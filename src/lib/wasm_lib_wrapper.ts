@@ -21,6 +21,7 @@ import type {
   import_file_extensions as ImportFileExtensions,
   is_kcl_empty_or_only_settings as IsKclEmptyOrOnlySettings,
   is_points_ccw as IsPointsCcw,
+  point_to_unit as PointToUnit,
   kcl_lint as KclLint,
   kcl_settings as KclSettings,
   node_path_from_range as NodePathFromRange,
@@ -75,6 +76,9 @@ export const node_path_from_range: typeof NodePathFromRange = (...args) => {
 }
 export const is_points_ccw: typeof IsPointsCcw = (...args) => {
   return getModule().is_points_ccw(...args)
+}
+export const point_to_unit: typeof PointToUnit = (...args) => {
+  return getModule().point_to_unit(...args)
 }
 export const get_tangential_arc_to_info: typeof GetTangentialArcToInfo = (
   ...args
