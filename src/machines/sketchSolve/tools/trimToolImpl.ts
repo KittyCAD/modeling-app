@@ -16,6 +16,50 @@ import type { Vector3 } from 'three'
 const EPSILON_PARALLEL = 1e-10 // For checking if lines are parallel or segments are degenerate
 const EPSILON_POINT_ON_SEGMENT = 1e-6 // For checking if a point is on a segment
 
+// Pure helper: deletes a segment that has no intersections and returns updated state (never throws)
+export async function deleteSegmentWithNoIntersections({
+  rustContext,
+  sketchId,
+  segmentId,
+  invalidates_ids,
+}: {
+  rustContext: RustContext
+  sketchId: number
+  segmentId: number
+  invalidates_ids: boolean
+}): Promise<{
+  error?: unknown
+  invalidates_ids: boolean
+  lastDeleteResult: {
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  } | null
+  currentSceneGraph: SceneGraphDelta | null
+}> {
+  try {
+    const result = await rustContext.deleteObjects(
+      0,
+      sketchId,
+      [],
+      [segmentId],
+      await jsAppSettings()
+    )
+    return {
+      invalidates_ids:
+        result.sceneGraphDelta.invalidates_ids || invalidates_ids,
+      lastDeleteResult: result,
+      currentSceneGraph: result.sceneGraphDelta,
+    }
+  } catch (error) {
+    return {
+      error,
+      invalidates_ids,
+      lastDeleteResult: null,
+      currentSceneGraph: null,
+    }
+  }
+}
+
 // Helper to project a point onto a line segment and get its parametric position
 // Returns t where t=0 at start, t=1 at end, t<0 before start, t>1 after end
 function projectPointOntoSegment(
@@ -81,19 +125,23 @@ function lineSegmentIntersection(
   p3: [number, number],
   p4: [number, number],
   epsilon = EPSILON_POINT_ON_SEGMENT
-): { point: [number, number]; isCoincident: boolean } | null {
+): { point: [number, number]; isCoincident: boolean; isStart: boolean } | null {
   // First check if any endpoints are on the other segment (coincident case)
   const p1OnSegment2 = isPointOnSegment(p1, p3, p4, epsilon)
-  if (p1OnSegment2) return { point: p1OnSegment2, isCoincident: true }
+  if (p1OnSegment2)
+    return { point: p1OnSegment2, isCoincident: true, isStart: true }
 
   const p2OnSegment2 = isPointOnSegment(p2, p3, p4, epsilon)
-  if (p2OnSegment2) return { point: p2OnSegment2, isCoincident: true }
+  if (p2OnSegment2)
+    return { point: p2OnSegment2, isCoincident: true, isStart: false }
 
   const p3OnSegment1 = isPointOnSegment(p3, p1, p2, epsilon)
-  if (p3OnSegment1) return { point: p3OnSegment1, isCoincident: true }
+  if (p3OnSegment1)
+    return { point: p3OnSegment1, isCoincident: true, isStart: true }
 
   const p4OnSegment1 = isPointOnSegment(p4, p1, p2, epsilon)
-  if (p4OnSegment1) return { point: p4OnSegment1, isCoincident: true }
+  if (p4OnSegment1)
+    return { point: p4OnSegment1, isCoincident: true, isStart: false }
 
   // Then check for actual line segment intersection (true intersection)
   const [x1, y1] = p1
@@ -114,7 +162,7 @@ function lineSegmentIntersection(
   if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
     const x = x1 + t * (x2 - x1)
     const y = y1 + t * (y2 - y1)
-    return { point: [x, y], isCoincident: false }
+    return { point: [x, y], isCoincident: false, isStart: false }
   }
 
   return null
@@ -208,26 +256,23 @@ export async function processTrimOperations({
       trimSides.startSide.type === 'endpoint' &&
       trimSides.endSide.type === 'endpoint'
     ) {
-      try {
-        const result = await rustContext.deleteObjects(
-          0,
-          sketchId,
-          [], // constraintIds - empty, we're only deleting the segment
-          [foundIntersection.segmentId], // segmentIds
-          await jsAppSettings()
-        )
+      const deleteResult = await deleteSegmentWithNoIntersections({
+        rustContext,
+        sketchId,
+        segmentId: foundIntersection.segmentId,
+        invalidates_ids,
+      })
 
-        invalidates_ids =
-          result.sceneGraphDelta.invalidates_ids || invalidates_ids
-        lastDeleteResult = result
-        currentSceneGraph = result.sceneGraphDelta
-        // Update lastPointIndex to continue from after this intersection
-        lastPointIndex = foundIntersection.pointIndex + 1
-      } catch (error) {
-        console.error('Failed to delete segment:', error)
-        // Stop on error
-        break
+      if (deleteResult.error) {
+        console.error('Failed to delete segment:', deleteResult.error)
+        break // break the while loop on error
       }
+
+      // Update state from deleteResult
+      invalidates_ids = deleteResult.invalidates_ids
+      lastDeleteResult = deleteResult.lastDeleteResult
+      currentSceneGraph = deleteResult.currentSceneGraph || currentSceneGraph
+      lastPointIndex = foundIntersection.pointIndex + 1
       continue
     }
 
@@ -247,15 +292,11 @@ export async function processTrimOperations({
         continue
       }
 
-      const endPointId =
+      // const [endPointId, intersectionLocation, intersectionSide] =
+      const [endPointId, intersectionSide] =
         trimSides.startSide.type === 'endpoint'
-          ? segment.kind.segment.start
-          : segment.kind.segment.end
-      const intersectionLocation =
-        trimSides.startSide.type === 'endpoint'
-          ? trimSides.endSide.point
-          : trimSides.startSide.point
-
+          ? [segment.kind.segment.start, trimSides.endSide]
+          : [segment.kind.segment.end, trimSides.startSide]
       const endPoint = objects[endPointId]
       if (
         endPoint.kind.type !== 'Segment' ||
@@ -281,12 +322,12 @@ export async function processTrimOperations({
                 position: {
                   x: {
                     type: 'Var',
-                    value: intersectionLocation[0],
+                    value: intersectionSide.point[0],
                     units,
                   },
                   y: {
                     type: 'Var',
-                    value: intersectionLocation[1],
+                    value: intersectionSide.point[1],
                     units,
                   },
                 },
@@ -303,71 +344,34 @@ export async function processTrimOperations({
         lastDeleteResult = result
         currentSceneGraph = result.sceneGraphDelta
 
-        // If the intersection is coincident, try to add a coincident constraint
-        const intersectionSide =
-          trimSides.startSide.type === 'endpoint'
-            ? trimSides.endSide
-            : trimSides.startSide
-
         if (
-          intersectionSide.type === 'intersection' &&
-          intersectionSide.subType === 'coincident'
+          intersectionSide.type !== 'intersection' ||
+          intersectionSide.subType !== 'coincident'
         ) {
-          const otherSegment = objects[intersectionSide.segmentId]
-          if (
-            otherSegment?.kind?.type === 'Segment' &&
-            otherSegment.kind.segment.type === 'Line'
-          ) {
-            const otherStart = getPointCoords(
-              otherSegment.kind.segment.start,
-              objects
-            )
-            const otherEnd = getPointCoords(
-              otherSegment.kind.segment.end,
-              objects
-            )
+          continue
+        }
+        let otherPointId = intersectionSide.coincidentWithPointId
 
-            // Find which endpoint of the other segment is at the intersection location
-            let otherPointId: number | null = null
-            if (
-              otherStart &&
-              distance2d(otherStart, intersectionSide.point) <
-                EPSILON_POINT_ON_SEGMENT
-            ) {
-              otherPointId = otherSegment.kind.segment.start
-            } else if (
-              otherEnd &&
-              distance2d(otherEnd, intersectionSide.point) <
-                EPSILON_POINT_ON_SEGMENT
-            ) {
-              otherPointId = otherSegment.kind.segment.end
-            }
+        try {
+          const constraintResult = await rustContext.addConstraint(
+            0,
+            sketchId,
+            {
+              type: 'Coincident',
+              points: [endPointId, otherPointId],
+            },
+            await jsAppSettings()
+          )
 
-            if (otherPointId !== null) {
-              try {
-                const constraintResult = await rustContext.addConstraint(
-                  0,
-                  sketchId,
-                  {
-                    type: 'Coincident',
-                    points: [endPointId, otherPointId],
-                  },
-                  await jsAppSettings()
-                )
+          invalidates_ids =
+            constraintResult.sceneGraphDelta.invalidates_ids || invalidates_ids
 
-                invalidates_ids =
-                  constraintResult.sceneGraphDelta.invalidates_ids ||
-                  invalidates_ids
-
-                // Use the constraint result as it contains the final scene graph state
-                lastDeleteResult = constraintResult
-                currentSceneGraph = constraintResult.sceneGraphDelta
-              } catch (error) {
-                console.error('Failed to add coincident constraint:', error)
-                // Continue even if constraint fails - the point was already moved
-              }
-            }
-          }
+          // Use the constraint result as it contains the final scene graph state
+          lastDeleteResult = constraintResult
+          currentSceneGraph = constraintResult.sceneGraphDelta
+        } catch (error) {
+          console.error('Failed to add coincident constraint:', error)
+          // Continue even if constraint fails - the point was already moved
         }
       } catch (error) {
         console.error('Failed to update point position:', error)
@@ -642,11 +646,19 @@ export function findFirstIntersectionWithPolylineSegment(
 export function findSegmentsThatIntersect(
   segmentId: number,
   objects: SceneGraphDelta['new_graph']['objects']
-): Array<{
-  location: [number, number]
-  segmentId: number
-  subType: 'trueIntersect' | 'coincident'
-}> {
+): Array<
+  | {
+      location: [number, number]
+      segmentId: number
+      subType: 'trueIntersect'
+    }
+  | {
+      location: [number, number]
+      segmentId: number
+      subType: 'coincident'
+      coincidentWithPointId: number
+    }
+> {
   const intersectedObj = objects[segmentId]
 
   if (
@@ -669,11 +681,19 @@ export function findSegmentsThatIntersect(
     return []
   }
 
-  const segmentIntersections: Array<{
-    location: [number, number]
-    segmentId: number
-    subType: 'trueIntersect' | 'coincident'
-  }> = []
+  const segmentIntersections: Array<
+    | {
+        location: [number, number]
+        segmentId: number
+        subType: 'trueIntersect'
+      }
+    | {
+        location: [number, number]
+        segmentId: number
+        subType: 'coincident'
+        coincidentWithPointId: number
+      }
+  > = []
 
   // Check this segment against all other segments
   for (
@@ -700,13 +720,20 @@ export function findSegmentsThatIntersect(
           otherEnd
         )
 
-        if (segmentIntersection) {
+        if (segmentIntersection && !segmentIntersection.isCoincident) {
           segmentIntersections.push({
             location: segmentIntersection.point,
             segmentId: otherSegmentId,
-            subType: segmentIntersection.isCoincident
-              ? 'coincident'
-              : 'trueIntersect',
+            subType: 'trueIntersect',
+          })
+        } else if (segmentIntersection) {
+          segmentIntersections.push({
+            location: segmentIntersection.point,
+            segmentId: otherSegmentId,
+            subType: 'coincident',
+            coincidentWithPointId: segmentIntersection.isStart
+              ? otherObj.kind.segment.start
+              : otherObj.kind.segment.end,
           })
         }
       }
@@ -725,7 +752,14 @@ type IntersectionOrEndPoint =
       point: [number, number]
       type: 'intersection'
       segmentId: number
-      subType: 'trueIntersect' | 'coincident'
+      subType: 'trueIntersect'
+    }
+  | {
+      point: [number, number]
+      type: 'intersection'
+      segmentId: number
+      subType: 'coincident'
+      coincidentWithPointId: number
     }
 
 interface SegmentTrimSides {
@@ -739,11 +773,19 @@ interface SegmentTrimSides {
 export function findTwoClosestPointsToIntersection(
   intersectionPoint: [number, number],
   segmentId: number,
-  segmentIntersections: Array<{
-    location: [number, number]
-    segmentId: number
-    subType: 'trueIntersect' | 'coincident'
-  }>,
+  segmentIntersections: Array<
+    | {
+        location: [number, number]
+        segmentId: number
+        subType: 'trueIntersect'
+      }
+    | {
+        location: [number, number]
+        segmentId: number
+        subType: 'coincident'
+        coincidentWithPointId: number
+      }
+  >,
   objects: SceneGraphDelta['new_graph']['objects']
 ): SegmentTrimSides | Error {
   const segmentObj = objects[segmentId]
@@ -781,7 +823,15 @@ export function findTwoClosestPointsToIntersection(
         point: [number, number]
         type: 'intersection'
         segmentId: number
-        subType: 'trueIntersect' | 'coincident'
+        subType: 'trueIntersect'
+        t: number
+      }
+    | {
+        point: [number, number]
+        type: 'intersection'
+        segmentId: number
+        subType: 'coincident'
+        coincidentWithPointId: number
         t: number
       }
   > = [
@@ -796,7 +846,12 @@ export function findTwoClosestPointsToIntersection(
       point: si.location,
       type: 'intersection' as const,
       segmentId: si.segmentId,
-      subType: si.subType,
+      ...(si.subType === 'coincident'
+        ? {
+            subType: si.subType,
+            coincidentWithPointId: si.coincidentWithPointId,
+          }
+        : { subType: si.subType }),
       t: projectPointOntoSegment(si.location, startPoint, endPoint),
     })),
   ]
@@ -850,7 +905,14 @@ export function findTwoClosestPointsToIntersection(
           point: pointBefore.point,
           type: 'intersection',
           segmentId: pointBefore.segmentId,
-          subType: pointBefore.subType,
+          ...(pointBefore.subType === 'coincident'
+            ? {
+                subType: pointBefore.subType,
+                coincidentWithPointId: pointBefore.coincidentWithPointId,
+              }
+            : {
+                subType: pointBefore.subType,
+              }),
         }
 
   // Build the endSide (point after intersection, traveling towards end)
@@ -864,7 +926,14 @@ export function findTwoClosestPointsToIntersection(
           point: pointAfter.point,
           type: 'intersection',
           segmentId: pointAfter.segmentId,
-          subType: pointAfter.subType,
+          ...(pointAfter.subType === 'coincident'
+            ? {
+                subType: pointAfter.subType,
+                coincidentWithPointId: pointAfter.coincidentWithPointId,
+              }
+            : {
+                subType: pointAfter.subType,
+              }),
         }
 
   return {
