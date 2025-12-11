@@ -1503,11 +1503,10 @@ export class KclManager extends EventTarget {
   }
   async updateEditorWithAstAndWriteToFile(
     ast: Program,
-    options?: Partial<{ isDeleting: boolean }>,
-    providedWasmInstance?: ModuleType
+    options?: Partial<{ isDeleting: boolean }>
   ) {
-    const wasmInstance =
-      providedWasmInstance || (await this.wasmInstancePromise)
+    const wasmInstance = await this.wasmInstancePromise
+
     // We clear the AST when it cannot be parsed. If we are trying to write an
     // empty AST, it's probably because of an earlier error. That's a bad state
     // to be in, and it's not going to be pretty, but at the least, let's not

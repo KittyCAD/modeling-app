@@ -1,6 +1,6 @@
 import { useMachine, useSelector } from '@xstate/react'
 import type React from 'react'
-import { createContext, useContext, useEffect, useRef } from 'react'
+import { createContext, use, useContext, useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -152,6 +152,7 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const {
     app: { allowOrbitInSketchMode },
     modeling: {
@@ -1448,6 +1449,8 @@ export const ModelingMachineProvider = ({
         sceneInfra,
         rustContext,
         sceneEntitiesManager,
+        // React Suspense will await this
+        wasmInstance,
         store: {
           useNewSketchMode,
           cameraProjection,

@@ -87,8 +87,7 @@ export async function buildTheWorldAndConnectToEngine() {
     engineCommandManager,
     sceneInfra,
     kclManager,
-    rustContext,
-    await instancePromise
+    rustContext
   )
   sceneEntitiesManager.commandBarActor = commandBarActor
   kclManager.sceneEntitiesManager = sceneEntitiesManager
