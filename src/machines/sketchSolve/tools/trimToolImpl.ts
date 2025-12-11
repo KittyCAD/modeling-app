@@ -15,41 +15,36 @@ import type { Vector3 } from 'three'
 const EPSILON_PARALLEL = 1e-10 // For checking if lines are parallel or segments are degenerate
 const EPSILON_POINT_ON_SEGMENT = 1e-6 // For checking if a point is on a segment
 
-type SegmentIntersectionTrue = {
-  location: [number, number]
-  segmentId: number
-  subType: 'trueIntersect'
-}
-
-type SegmentIntersectionCoincident = {
-  location: [number, number]
-  segmentId: number
-  subType: 'coincident'
-  coincidentWithPointId: number
-}
-
-export type SegmentIntersection =
-  | SegmentIntersectionTrue
-  | SegmentIntersectionCoincident
-
 type SegmentIntersectionPoint = {
   point: [number, number]
   type: 'intersection'
   segmentId: number
-} & (
-  | { subType: 'trueIntersect' }
-  | { subType: 'coincident'; coincidentWithPointId: number }
-)
+}
+
+type CoincidentWithOtherLineEndPoint = {
+  point: [number, number]
+  type: 'coincidentWithOtherLineEnd'
+  segmentId: number
+  coincidentWithPointId: number
+}
+
+export type SegmentConverge =
+  | SegmentIntersectionPoint
+  | CoincidentWithOtherLineEndPoint
 
 type EndpointPoint = {
   point: [number, number]
   type: 'endpoint'
 }
 
-type IntersectionOrEndPoint = EndpointPoint | SegmentIntersectionPoint
+type ConvergeOrEndPoint =
+  | EndpointPoint
+  | SegmentIntersectionPoint
+  | CoincidentWithOtherLineEndPoint
 
 type CandidatePoint =
   | (SegmentIntersectionPoint & { t: number })
+  | (CoincidentWithOtherLineEndPoint & { t: number })
   | {
       point: [number, number]
       type: 'endpoint'
@@ -113,8 +108,8 @@ export async function applyCoincidentConstraintForIntersection({
   sketchId: number
   endPointId: number
   intersectionSide: Extract<
-    IntersectionOrEndPoint,
-    { type: 'intersection'; subType: 'coincident' }
+    ConvergeOrEndPoint,
+    { type: 'coincidentWithOtherLineEnd' }
   >
   invalidates_ids: boolean
 }): Promise<
@@ -510,9 +505,9 @@ export async function processTrimOperations({
       trimSides.endSide.type === 'endpoint'
     const trimSegmentHasIntersectionWithOtherSegmentOnOneSideOnly =
       (trimSides.startSide.type === 'endpoint' &&
-        trimSides.endSide.type === 'intersection') ||
+        trimSides.endSide.type !== 'endpoint') ||
       (trimSides.endSide.type === 'endpoint' &&
-        trimSides.startSide.type === 'intersection')
+        trimSides.startSide.type !== 'endpoint')
 
     // Only delete if segment has no intersections with other segments
     if (trimSegmentDoseNotIntersectWithOtherSegments) {
@@ -605,8 +600,7 @@ export async function processTrimOperations({
         // in which case instead of just adding the coincident constraint to the two segment's endpoint, first the existing
         // line-to-point coincident constraint will be removed
         const isIntersectionCoincident =
-          intersectionSide.type === 'intersection' &&
-          intersectionSide.subType === 'coincident'
+          intersectionSide.type === 'coincidentWithOtherLineEnd'
         if (!isIntersectionCoincident) {
           continue
         }
@@ -791,7 +785,7 @@ export function findFirstIntersectionWithPolylineSegment(
 export function findSegmentsThatIntersect(
   segmentId: number,
   objects: SceneGraphDelta['new_graph']['objects']
-): SegmentIntersection[] {
+): SegmentConverge[] {
   const intersectedObj = objects[segmentId]
 
   if (
@@ -814,7 +808,7 @@ export function findSegmentsThatIntersect(
     return []
   }
 
-  const segmentIntersections: SegmentIntersection[] = []
+  const segmentIntersections: SegmentConverge[] = []
 
   // Check this segment against all other segments
   for (
@@ -843,15 +837,15 @@ export function findSegmentsThatIntersect(
 
         if (segmentIntersection && !segmentIntersection.isCoincident) {
           segmentIntersections.push({
-            location: segmentIntersection.point,
+            point: segmentIntersection.point,
             segmentId: otherSegmentId,
-            subType: 'trueIntersect',
+            type: 'intersection',
           })
         } else if (segmentIntersection) {
           segmentIntersections.push({
-            location: segmentIntersection.point,
+            point: segmentIntersection.point,
             segmentId: otherSegmentId,
-            subType: 'coincident',
+            type: 'coincidentWithOtherLineEnd',
             coincidentWithPointId: segmentIntersection.isStart
               ? otherObj.kind.segment.start
               : otherObj.kind.segment.end,
@@ -865,8 +859,8 @@ export function findSegmentsThatIntersect(
 }
 
 interface SegmentTrimSides {
-  startSide: IntersectionOrEndPoint
-  endSide: IntersectionOrEndPoint
+  startSide: ConvergeOrEndPoint
+  endSide: ConvergeOrEndPoint
 }
 
 // Pure function: Finds the first point encountered in each direction along the segment
@@ -875,7 +869,7 @@ interface SegmentTrimSides {
 export function findTwoClosestPointsToIntersection(
   intersectionPoint: [number, number],
   segmentId: number,
-  segmentIntersections: SegmentIntersection[],
+  segmentIntersections: SegmentConverge[],
   objects: SceneGraphDelta['new_graph']['objects']
 ): SegmentTrimSides | Error {
   const segmentObj = objects[segmentId]
@@ -911,18 +905,21 @@ export function findTwoClosestPointsToIntersection(
     },
     { point: endPoint, type: 'endpoint', which: 'end', t: 1 },
     ...segmentIntersections.map(
-      (si): CandidatePoint => ({
-        point: si.location,
-        type: 'intersection',
-        segmentId: si.segmentId,
-        ...(si.subType === 'coincident'
+      (si): CandidatePoint =>
+        si.type === 'coincidentWithOtherLineEnd'
           ? {
-              subType: si.subType,
+              point: si.point,
+              type: 'coincidentWithOtherLineEnd',
+              segmentId: si.segmentId,
               coincidentWithPointId: si.coincidentWithPointId,
+              t: projectPointOntoSegment(si.point, startPoint, endPoint),
             }
-          : { subType: si.subType }),
-        t: projectPointOntoSegment(si.location, startPoint, endPoint),
-      })
+          : {
+              point: si.point,
+              type: 'intersection',
+              segmentId: si.segmentId,
+              t: projectPointOntoSegment(si.point, startPoint, endPoint),
+            }
     ),
   ]
   const candidatePoints = allCandidates.filter(
@@ -934,9 +931,11 @@ export function findTwoClosestPointsToIntersection(
   const pointsBefore = candidatePoints
     .filter((cp) => cp.t < intersectionT - EPSILON_POINT_ON_SEGMENT)
     .sort((a, b) => {
-      // First sort by type: intersections come before endpoints
-      if (a.type !== b.type) {
-        return a.type === 'intersection' ? -1 : 1
+      const aIsIntersection = a.type !== 'endpoint'
+      const bIsIntersection = b.type !== 'endpoint'
+      // Intersections (including coincident) come before endpoints
+      if (aIsIntersection !== bIsIntersection) {
+        return aIsIntersection ? -1 : 1
       }
       // Then by distance from intersection (descending - closest first)
       return b.t - a.t
@@ -948,9 +947,11 @@ export function findTwoClosestPointsToIntersection(
   const pointsAfter = candidatePoints
     .filter((cp) => cp.t > intersectionT + EPSILON_POINT_ON_SEGMENT)
     .sort((a, b) => {
-      // First sort by type: intersections come before endpoints
-      if (a.type !== b.type) {
-        return a.type === 'intersection' ? -1 : 1
+      const aIsIntersection = a.type !== 'endpoint'
+      const bIsIntersection = b.type !== 'endpoint'
+      // Intersections (including coincident) come before endpoints
+      if (aIsIntersection !== bIsIntersection) {
+        return aIsIntersection ? -1 : 1
       }
       // Then by distance from intersection (ascending - closest first)
       return a.t - b.t
@@ -965,46 +966,44 @@ export function findTwoClosestPointsToIntersection(
   }
 
   // Build the startSide (point before intersection, traveling towards start)
-  const startSide: IntersectionOrEndPoint =
+  const startSide: ConvergeOrEndPoint =
     pointBefore.type === 'endpoint'
       ? {
           point: pointBefore.point,
           type: 'endpoint',
         }
-      : {
-          point: pointBefore.point,
-          type: 'intersection',
-          segmentId: pointBefore.segmentId,
-          ...(pointBefore.subType === 'coincident'
-            ? {
-                subType: pointBefore.subType,
-                coincidentWithPointId: pointBefore.coincidentWithPointId,
-              }
-            : {
-                subType: pointBefore.subType,
-              }),
-        }
+      : pointBefore.type === 'coincidentWithOtherLineEnd'
+        ? {
+            point: pointBefore.point,
+            type: 'coincidentWithOtherLineEnd',
+            segmentId: pointBefore.segmentId,
+            coincidentWithPointId: pointBefore.coincidentWithPointId,
+          }
+        : {
+            point: pointBefore.point,
+            type: 'intersection',
+            segmentId: pointBefore.segmentId,
+          }
 
   // Build the endSide (point after intersection, traveling towards end)
-  const endSide: IntersectionOrEndPoint =
+  const endSide: ConvergeOrEndPoint =
     pointAfter.type === 'endpoint'
       ? {
           point: pointAfter.point,
           type: 'endpoint',
         }
-      : {
-          point: pointAfter.point,
-          type: 'intersection',
-          segmentId: pointAfter.segmentId,
-          ...(pointAfter.subType === 'coincident'
-            ? {
-                subType: pointAfter.subType,
-                coincidentWithPointId: pointAfter.coincidentWithPointId,
-              }
-            : {
-                subType: pointAfter.subType,
-              }),
-        }
+      : pointAfter.type === 'coincidentWithOtherLineEnd'
+        ? {
+            point: pointAfter.point,
+            type: 'coincidentWithOtherLineEnd',
+            segmentId: pointAfter.segmentId,
+            coincidentWithPointId: pointAfter.coincidentWithPointId,
+          }
+        : {
+            point: pointAfter.point,
+            type: 'intersection',
+            segmentId: pointAfter.segmentId,
+          }
 
   return {
     startSide,
