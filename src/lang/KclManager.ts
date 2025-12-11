@@ -254,7 +254,7 @@ export class KclManager extends EventTarget {
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
-  // The last code written by the app, used to compare againts external changes to the current file
+  // The last code written by the app, used to compare against external changes to the current file
   public lastWrite: {
     code: string // last code written by ZDS
     time: number // Unix epoch time in milliseconds
