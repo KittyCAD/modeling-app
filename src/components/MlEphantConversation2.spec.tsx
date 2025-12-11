@@ -40,7 +40,7 @@ describe('MlEphantConversation2', () => {
 
     const renderConversation = (
       conversation?: Conversation,
-      hasPromptCompleted = false
+      hasPromptCompleted = true
     ) => {
       return (
         <MlEphantConversation2
