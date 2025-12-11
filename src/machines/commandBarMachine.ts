@@ -1,5 +1,5 @@
 import type { MachineManager } from '@src/components/MachineManagerProvider'
-import { commitPatchEdit, patchEdit } from '@src/editor/plugins/patch'
+import { commandDoc } from '@src/editor/plugins/patch'
 import type { KclManager } from '@src/lang/KclManager'
 import type {
   Command,
@@ -134,10 +134,10 @@ export const commandBarMachine = setup({
       }
       console.log(
         `WOAH I'M ABOUT TO COMMIT A PATCH`,
-        context.kclManager.getEditorView()?.state.field(patchEdit)
+        context.kclManager.getEditorView()?.state.field(commandDoc.field)
       )
       context.kclManager.dispatch({
-        effects: [commitPatchEdit.of(null)],
+        effects: [commandDoc.commitEffect.of(null)],
       })
     },
     'Set review validation error': assign({

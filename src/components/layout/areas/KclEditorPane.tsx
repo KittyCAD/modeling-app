@@ -69,7 +69,7 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { editorTheme, themeCompartment } from '@src/lib/codeEditor'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { getResolvedTheme } from '@src/lib/theme'
-import { patchEditor } from '@src/editor/plugins/patch'
+import { commandDoc } from '@src/editor/plugins/patch'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -159,7 +159,7 @@ export const KclEditorPaneContents = () => {
       lineHighlightField,
       artifactAnnotationsExtension(),
       historyCompartment.of(initialHistory),
-      patchEditor(),
+      commandDoc.extension,
       closeBrackets(),
       codeFolding(),
       keymap.of([

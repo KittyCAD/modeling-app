@@ -61,7 +61,7 @@ import {
   type Layout,
 } from '@src/lib/layout'
 import { processEnv } from '@src/env'
-import { patchEdit, updatePatchEdit } from '@src/editor/plugins/patch'
+import { commandDoc } from '@src/editor/plugins/patch'
 
 initPromise
   .then(() => {
@@ -250,14 +250,14 @@ commandBarActor.subscribe((snapshot) => {
   if (!snapshot.matches('Closed') && cmd?.groupId === 'modeling') {
     kclManager.dispatch({
       effects: [
-        updatePatchEdit.of({
+        commandDoc.updateEffect.of({
           from: kclManager.code.length,
           insert: `// ${JSON.stringify(snapshot.context.argumentsToSubmit)}`,
         }),
       ],
     })
 
-    const field = kclManager.getEditorView()?.state.field(patchEdit)
+    const field = kclManager.getEditorView()?.state.field(commandDoc.field)
     console.log(
       `Hey look we're editing the ${cmd.name} command, and our patchEdit is`,
       field

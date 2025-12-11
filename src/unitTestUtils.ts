@@ -71,7 +71,7 @@ export async function buildTheWorldAndConnectToEngine() {
   engineCommandManager.rustContext = rustContext
 
   const commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [] },
+    input: { commands: [], kclManager },
   }).start()
 
   const sceneEntitiesManager = new SceneEntities(
