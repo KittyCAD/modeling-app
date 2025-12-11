@@ -2158,7 +2158,9 @@ dependencies = [
 
 [[package]]
 name = "kcl-ezpz"
-version = "0.2.1"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "990cb34e933e0ee5fdfe3c919500419fe5aa49e13bb14ca96ba4bb2bdc6d2f7b"
 dependencies = [
  "faer",
  "getrandom 0.2.16",
