@@ -117,19 +117,16 @@ pub enum Freedom {
 }
 
 impl Freedom {
+    /// Merges two Freedom values. For example, a point has a solver variable
+    /// for each dimension, x and y. If one dimension is `Free` and the other is
+    /// `Fixed`, the point overall is `Free` since it isn't fully constrained.
+    /// `Conflict` infects the most, followed by `Free`. An object must be fully
+    /// `Fixed` to be `Fixed` overall.
     pub fn merge(self, other: Self) -> Self {
-        match self {
-            Self::Free => match other {
-                Self::Free => Self::Free,
-                Self::Fixed => Self::Free,
-                Self::Conflict => Self::Conflict,
-            },
-            Self::Fixed => match other {
-                Self::Free => Self::Free,
-                Self::Fixed => Self::Fixed,
-                Self::Conflict => Self::Conflict,
-            },
-            Self::Conflict => Self::Conflict,
+        match (self, other) {
+            (Self::Conflict, _) | (_, Self::Conflict) => Self::Conflict,
+            (Self::Free, _) | (_, Self::Free) => Self::Free,
+            (Self::Fixed, Self::Fixed) => Self::Fixed,
         }
     }
 }
