@@ -63,7 +63,9 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   useFileSystemWatcher(
     async (eventType: string, path: string) => {
       // Only reload if there are changes. Ignore everything else.
-      if (eventType !== 'change') return
+      if (eventType !== 'change') {
+        return
+      }
 
       // Try to detect file changes and overwrite the editor
       if (kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
@@ -93,7 +95,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       })
 
       const isCurrentFile = loadedProject?.file?.path === path
-      if (isCurrentFile && eventType === 'change') {
+      if (isCurrentFile) {
         if (window.electron) {
           // Your current file is changed, read it from disk and write it into the code manager and execute the AST
           const code = await window.electron.readFile(path, {
@@ -108,10 +110,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
             await resetCameraPosition({ sceneInfra })
           }
         }
-      } else if (
-        (isImportedInCurrentFile || isInExecStateFilenames) &&
-        eventType === 'change'
-      ) {
+      } else if (isImportedInCurrentFile || isInExecStateFilenames) {
         // Re execute the file you are in because an imported file was changed
         await kclManager.executeAst()
       }
