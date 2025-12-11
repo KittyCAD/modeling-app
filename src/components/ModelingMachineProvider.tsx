@@ -1,6 +1,6 @@
 import { useMachine, useSelector } from '@xstate/react'
 import type React from 'react'
-import { createContext, useContext, useEffect, useRef } from 'react'
+import { createContext, use, useContext, useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -51,7 +51,6 @@ import {
   useCommandBarState,
   setLayout,
   settingsActor,
-  getSettings,
 } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { getDeleteKeys, uuidv4 } from '@src/lib/utils'
@@ -152,6 +151,7 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const {
     app: { allowOrbitInSketchMode },
     modeling: {
@@ -807,7 +807,10 @@ export const ModelingMachineProvider = ({
                 constraint: 'setHorzDistance',
                 selectionRanges,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst),
+              await kclManager.wasmInstancePromise
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -867,7 +870,10 @@ export const ModelingMachineProvider = ({
                 constraint: 'setVertDistance',
                 selectionRanges,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst),
+              await kclManager.wasmInstancePromise
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -934,7 +940,10 @@ export const ModelingMachineProvider = ({
                     selectionRanges,
                     angleOrLength: 'setAngle',
                   }))
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst),
+              await kclManager.wasmInstancePromise
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -1001,7 +1010,10 @@ export const ModelingMachineProvider = ({
             if (err(constraintResult)) return Promise.reject(constraintResult)
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               constraintResult
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst),
+              await kclManager.wasmInstancePromise
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -1058,7 +1070,10 @@ export const ModelingMachineProvider = ({
               await applyConstraintIntersect({
                 selectionRanges,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst),
+              await kclManager.wasmInstancePromise
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -1116,7 +1131,10 @@ export const ModelingMachineProvider = ({
                 constraint: 'xAbs',
                 selectionRanges,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst),
+              await kclManager.wasmInstancePromise
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -1174,7 +1192,10 @@ export const ModelingMachineProvider = ({
                 constraint: 'yAbs',
                 selectionRanges,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst),
+              await kclManager.wasmInstancePromise
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -1448,6 +1469,8 @@ export const ModelingMachineProvider = ({
         sceneInfra,
         rustContext,
         sceneEntitiesManager,
+        // React Suspense will await this
+        wasmInstance,
         store: {
           useNewSketchMode,
           cameraProjection,

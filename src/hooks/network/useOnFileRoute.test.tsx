@@ -13,6 +13,7 @@ import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { createActor } from 'xstate'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { createSettings } from '@src/lib/settings/initialSettings'
+import { commandBarMachine } from '@src/machines/commandBarMachine'
 
 const tick = () => {
   return new Promise((resolve, reject) => {
@@ -62,8 +63,11 @@ describe('useOnFileRoute', () => {
         handleMessage: () => {},
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
+      const commandBarActor = createActor(commandBarMachine, {
+        input: { commands: [] },
+      }).start()
       const settingsActor = createActor(settingsMachine, {
-        input: createSettings(),
+        input: { commandBarActor, ...createSettings() },
       })
       const rustContext = new RustContext(
         engineCommandManager,
@@ -114,8 +118,11 @@ describe('useOnFileRoute', () => {
         handleMessage: () => {},
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
+      const commandBarActor = createActor(commandBarMachine, {
+        input: { commands: [] },
+      }).start()
       const settingsActor = createActor(settingsMachine, {
-        input: createSettings(),
+        input: { commandBarActor, ...createSettings() },
       })
       const rustContext = new RustContext(
         engineCommandManager,
@@ -178,8 +185,11 @@ describe('useOnFileRoute', () => {
         handleMessage: () => {},
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
+      const commandBarActor = createActor(commandBarMachine, {
+        input: { commands: [] },
+      }).start()
       const settingsActor = createActor(settingsMachine, {
-        input: createSettings(),
+        input: { commandBarActor, ...createSettings() },
       })
       const rustContext = new RustContext(
         engineCommandManager,
@@ -244,8 +254,11 @@ describe('useOnFileRoute', () => {
         handleMessage: () => {},
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
+      const commandBarActor = createActor(commandBarMachine, {
+        input: { commands: [] },
+      }).start()
       const settingsActor = createActor(settingsMachine, {
-        input: createSettings(),
+        input: { commandBarActor, ...createSettings() },
       })
       const rustContext = new RustContext(
         engineCommandManager,

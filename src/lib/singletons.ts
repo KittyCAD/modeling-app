@@ -26,9 +26,11 @@ import {
 } from '@src/machines/billingMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import {
+  getOnlySettingsFromContext,
   settingsMachine,
   type SettingsMachineContext,
 } from '@src/machines/settingsMachine'
+import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -39,9 +41,20 @@ import { initialiseWasm } from '@src/lang/wasmUtils'
 import { saveSettings } from '@src/lib/settings/settingsUtils'
 import { getResolvedTheme, getOppositeTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
+import { AppMachineEventType } from '@src/lib/types'
+import {
+  defaultLayout,
+  defaultLayoutConfig,
+  saveLayout,
+  type Layout,
+} from '@src/lib/layout'
+import type { Project } from '@src/lib/project'
 
+export const commandBarActor = createActor(commandBarMachine, {
+  input: { commands: [] },
+}).start()
 const dummySettingsActor = createActor(settingsMachine, {
-  input: createSettings(),
+  input: { commandBarActor, ...createSettings() },
 })
 
 /**
@@ -78,32 +91,6 @@ export const kclManager = new KclManager(engineCommandManager, initPromise, {
   rustContext,
   sceneInfra,
 })
-
-// Initialize KCL version
-import { setKclVersion } from '@src/lib/kclVersion'
-import { AppMachineEventType } from '@src/lib/types'
-import {
-  defaultLayout,
-  defaultLayoutConfig,
-  saveLayout,
-  type Layout,
-} from '@src/lib/layout'
-import { processEnv } from '@src/env'
-
-initPromise
-  .then(() => {
-    if (processEnv()?.VITEST) {
-      const message =
-        'singletons is trying to call initPromise and setKclVersion. This will be blocked in VITEST runtimes.'
-      console.log(message)
-      return
-    }
-
-    setKclVersion(kclManager.kclVersion)
-  })
-  .catch((e) => {
-    console.error(e)
-  })
 
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
@@ -169,19 +156,44 @@ const appMachineActors = {
 
         // This flag is not used by the settings file watcher in RouteProvider so it doesn't do anything..
         kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-        const { currentProject, ...settings } = input.context
+        const {
+          currentProject,
+          commandBarActor: _c,
+          ...settings
+        } = input.context
 
-        await saveSettings(settings, currentProject?.path)
+        await saveSettings(initPromise, settings, currentProject?.path)
 
         if (input.toastCallback) {
           input.toastCallback()
         }
+      }),
+      loadUserSettings: fromPromise<SettingsType, SettingsType>(async () => {
+        const { settings } = await loadAndValidateSettings(
+          kclManager.wasmInstancePromise
+        )
+        return settings
+      }),
+      loadProjectSettings: fromPromise<
+        SettingsType,
+        { project?: Project; settings: SettingsType }
+      >(async ({ input }) => {
+        const { settings } = await loadAndValidateSettings(
+          kclManager.wasmInstancePromise,
+          input.project?.path
+        )
+        return settings
       }),
     },
     actions: {
       setEngineTheme: ({ context }) => {
         engineCommandManager
           .setTheme(context.app.theme.current)
+          .catch(reportRejection)
+      },
+      setEngineHighlightEdges: ({ context }) => {
+        engineCommandManager
+          .setHighlightEdges(context.modeling.highlightEdges.current)
           .catch(reportRejection)
       },
       setClientTheme: ({ context }) => {
@@ -257,6 +269,7 @@ const appMachine = setup({
     engineCommandManager: engineCommandManager,
     sceneInfra: sceneInfra,
     sceneEntitiesManager: sceneEntitiesManager,
+    commandBarActor,
     layout: defaultLayout,
   },
   entry: [
@@ -269,7 +282,10 @@ const appMachine = setup({
     spawnChild(appMachineActors[AUTH], { systemId: AUTH }),
     spawnChild(appMachineActors[SETTINGS], {
       systemId: SETTINGS,
-      input: { ...createSettings(), kclManager },
+      input: {
+        ...createSettings(),
+        commandBarActor: commandBarActor,
+      },
     }),
     spawnChild(appMachineActors[SYSTEM_IO], {
       systemId: SYSTEM_IO,
@@ -347,8 +363,7 @@ sceneEntitiesManager.getSettings = getSettings
 export const useSettings = () =>
   useSelector(settingsActor, (state) => {
     // We have to peel everything that isn't settings off
-    const { currentProject, ...settings } = state.context
-    return settings
+    return getOnlySettingsFromContext(state.context)
   })
 
 export type SystemIOActor = ActorRefFrom<
@@ -356,10 +371,6 @@ export type SystemIOActor = ActorRefFrom<
 >
 
 export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
-
-export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
-  (typeof appMachineActors)[typeof COMMAND_BAR]
->
 
 // TODO: proper dependency management
 sceneEntitiesManager.commandBarActor = commandBarActor
