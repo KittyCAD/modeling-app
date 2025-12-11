@@ -10,6 +10,7 @@ import { assign, fromPromise } from 'xstate'
 
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
@@ -47,11 +48,12 @@ import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import {
   commandBarActor,
   getLayout,
+  useCommandBarState,
   setLayout,
   settingsActor,
 } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
-import { platform, uuidv4 } from '@src/lib/utils'
+import { getDeleteKeys, uuidv4 } from '@src/lib/utils'
 
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
@@ -91,6 +93,7 @@ import {
   updateSelections,
   getEventForSegmentSelection,
   updateExtraSegments,
+  getPlaneDataFromSketchBlock,
 } from '@src/lib/selections'
 import {
   engineCommandManager,
@@ -117,6 +120,9 @@ import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
+import type { SketchArgs } from '@rust/kcl-lib/bindings/FrontendApi'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { toPlaneName } from '@src/lib/planes'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -526,7 +532,10 @@ export const ModelingMachineProvider = ({
         'animate-to-sketch-solve': fromPromise(
           async ({
             input: artifactOrPlaneId,
-          }): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane> => {
+          }): Promise<{
+            plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+            sketchSolveId: number
+          }> => {
             if (!artifactOrPlaneId) {
               const errorMessage = 'No artifact or plane ID provided'
               toast.error(errorMessage)
@@ -542,7 +551,6 @@ export const ModelingMachineProvider = ({
             if (!err(defaultResult) && defaultResult) {
               result = defaultResult
             }
-            console.log('result', result)
 
             // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
             if (!result) {
@@ -555,7 +563,6 @@ export const ModelingMachineProvider = ({
                 result = offsetResult
               }
             }
-            console.log('result', result)
             if (!result) {
               const sweepFaceSelected = await selectionBodyFace(
                 artifactOrPlaneId,
@@ -578,8 +585,146 @@ export const ModelingMachineProvider = ({
               result.type === 'extrudeFace' ? result.faceId : result.planeId
             await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
             sceneInfra.camControls.syncDirection = 'clientToEngine'
-            console.log('result', result)
-            return result
+
+            // Call newSketch API
+            let sketchId: number | undefined
+            try {
+              const project = theProject.current
+              if (!project) {
+                console.warn('No project available for newSketch call')
+              } else {
+                // Construct SketchArgs based on the result
+                let sketchArgs: SketchArgs
+
+                // Determine the plane type from the result
+                if (result.type === 'defaultPlane') {
+                  sketchArgs = {
+                    on: { default: toPlaneName(result.plane) },
+                  }
+                } else {
+                  sketchArgs = { on: { default: 'xy' } }
+                }
+
+                await rustContext.hackSetProgram(
+                  kclManager.ast,
+                  await jsAppSettings()
+                )
+                const newSketchResult = await rustContext.newSketch(
+                  0, // projectId - using 0 as placeholder
+                  0, // fileId - using 0 as placeholder
+                  0, // version - using 0 as placeholder
+                  sketchArgs,
+                  { settings: { modeling: { base_unit: defaultUnit.current } } }
+                )
+                kclManager.updateCodeEditor(newSketchResult.kclSource.text)
+                sketchId = newSketchResult.sketchId
+              }
+            } catch (error) {
+              console.error('Error calling newSketch:', error)
+            }
+
+            if (sketchId === undefined) {
+              const errorMessage = 'Failed to create sketch'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            return {
+              plane: result,
+              sketchSolveId: sketchId,
+            }
+          }
+        ),
+        'animate-to-existing-sketch-solve': fromPromise(
+          async ({
+            input: artifactId,
+          }): Promise<{
+            plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+            sketchSolveId: number
+            initialSceneGraphDelta: SceneGraphDelta
+          }> => {
+            if (!artifactId) {
+              const errorMessage = 'No artifact ID provided'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            // Get the sketchBlock artifact from the artifact graph
+            const artifact = kclManager.artifactGraph.get(artifactId)
+            if (!artifact || artifact.type !== 'sketchBlock') {
+              const errorMessage = 'Invalid sketchBlock artifact'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            if (typeof artifact.sketchId !== 'number') {
+              const errorMessage = 'SketchBlock does not have a sketchId'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            // Get plane/face data from the sketchBlock
+            const planeData = await getPlaneDataFromSketchBlock(
+              artifact,
+              kclManager.artifactGraph,
+              systemDeps
+            )
+            if (!planeData) {
+              console.trace('yo!!')
+
+              const errorMessage = 'Could not determine plane/face information'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            const sketchId = artifact.sketchId
+
+            const id =
+              planeData.type === 'extrudeFace'
+                ? planeData.faceId
+                : planeData.planeId
+            await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+            // Call editSketch API
+            let editSketchSceneGraph: SceneGraphDelta | undefined
+            try {
+              const project = theProject.current
+              if (!project) {
+                console.warn('No project available for editSketch call')
+              } else {
+                await rustContext.hackSetProgram(
+                  kclManager.ast,
+                  await jsAppSettings()
+                )
+                editSketchSceneGraph = await rustContext.editSketch(
+                  0, // projectId
+                  0, // fileId
+                  0, // version
+                  sketchId,
+                  { settings: { modeling: { base_unit: defaultUnit.current } } }
+                )
+                // Note: editSketch doesn't return kclSource, so we don't update the editor
+              }
+              if (!editSketchSceneGraph) {
+                const errorMessage = 'Failed to edit sketch'
+                toast.error(errorMessage)
+                return reject(new Error(errorMessage))
+              }
+            } catch (error) {
+              console.error('Error calling editSketch:', error)
+              return reject(
+                error instanceof Error
+                  ? error
+                  : new Error('Failed to edit sketch')
+              )
+            }
+
+            return {
+              plane: planeData,
+              sketchSolveId: sketchId,
+              initialSceneGraphDelta: editSketchSceneGraph,
+            }
           }
         ),
         'animate-to-face': fromPromise(async ({ input }) => {
@@ -1500,10 +1645,18 @@ export const ModelingMachineProvider = ({
 
   // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
   // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
-  const deleteKeys =
-    platform() === 'macos' ? ['backspace', 'delete', 'del'] : ['delete', 'del']
+  const deleteKeys = getDeleteKeys()
 
   useHotkeys(deleteKeys, () => {
+    // Check if we're in sketch solve mode
+    const inSketchSolveMode = modelingState.matches('sketchSolveMode')
+    if (inSketchSolveMode) {
+      // Forward delete event to sketch solve mode
+      // it's probably save to send this regardless of inSketchSolveMode, but still
+      modelingSend({ type: 'delete selected' })
+      return
+    }
+
     // When the current selection is a segment, delete that directly ('Delete selection' doesn't support it)
     const segmentNodePaths = Object.keys(modelingState.context.segmentOverlays)
     const selections =
@@ -1569,6 +1722,27 @@ export const ModelingMachineProvider = ({
     {
       enableOnContentEditable: false,
     }
+  )
+
+  const commandBarState = useCommandBarState()
+
+  // Global Esc handler for sketch solve mode when command bar is closed
+  useHotkeys(
+    'esc',
+    () => {
+      // Only handle Esc if we're in sketch solve mode and command bar is closed
+      if (
+        modelingState.matches('sketchSolveMode') &&
+        commandBarState.matches('Closed')
+      ) {
+        modelingSend({ type: 'Cancel' })
+      }
+    },
+    {
+      enableOnFormTags: false,
+      enableOnContentEditable: false,
+    },
+    [modelingState, commandBarState, modelingSend]
   )
 
   useModelingMachineCommands({

@@ -30,10 +30,8 @@ import {
 import { stripQuotes } from '@src/lib/utils'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import {
-  selectDefaultSketchPlane,
-  selectOffsetSketchPlane,
-} from '@src/lib/selections'
+import { selectOffsetSketchPlane } from '@src/lib/selections'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import {
   commandBarActor,
   engineCommandManager,
@@ -70,6 +68,7 @@ import { Disclosure } from '@headlessui/react'
 // Defined outside of React to prevent rerenders
 // TODO: get all system dependencies into React via global context
 const systemDeps = {
+  kclManager,
   sceneInfra,
   sceneEntitiesManager,
   rustContext,
@@ -463,7 +462,7 @@ const OperationItemWrapper = ({
               </code>
             </>
           ) : (
-            <span className="text-sm">{name}</span>
+            <span className="text-sm">{variableName ?? name}</span>
           )}
           {customSuffix && customSuffix}
         </div>
@@ -581,7 +580,8 @@ const OperationItem = (props: OperationProps) => {
   function enterEditFlow() {
     if (
       props.item.type === 'StdLibCall' ||
-      props.item.type === 'VariableDeclaration'
+      props.item.type === 'VariableDeclaration' ||
+      props.item.type === 'SketchSolve'
     ) {
       props.send({
         type: 'enterEditFlow',
@@ -594,7 +594,11 @@ const OperationItem = (props: OperationProps) => {
   }
 
   function enterAppearanceFlow() {
-    if (props.item.type === 'StdLibCall') {
+    if (
+      props.item.type === 'StdLibCall' ||
+      (props.item.type === 'GroupBegin' &&
+        props.item.group.type === 'FunctionCall')
+    ) {
       props.send({
         type: 'enterAppearanceFlow',
         data: {
@@ -786,10 +790,19 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall'
+      ...(props.item.type === 'StdLibCall' ||
+      (props.item.type === 'GroupBegin' &&
+        props.item.group.type === 'FunctionCall')
         ? [
             <ContextMenuItem
-              disabled={!stdLibMap[props.item.name]?.supportsAppearance}
+              disabled={
+                !(
+                  (props.item.type === 'GroupBegin' &&
+                    props.item.group.type === 'FunctionCall') ||
+                  (props.item.type === 'StdLibCall' &&
+                    stdLibMap[props.item.name]?.supportsAppearance)
+                )
+              }
               onClick={enterAppearanceFlow}
               data-testid="context-menu-set-appearance"
             >
@@ -854,6 +867,13 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
+      ...(props.item.type === 'SketchSolve'
+        ? [
+            <ContextMenuItem onClick={enterEditFlow} hotkey="Double click">
+              Edit
+            </ContextMenuItem>,
+          ]
+        : []),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [props.item, props.send]
@@ -887,7 +907,11 @@ const DefaultPlanes = () => {
   const onClickPlane = useCallback(
     (planeId: string) => {
       if (sketchNoFace) {
-        selectDefaultSketchPlane(planeId, systemDeps)
+        void selectSketchPlane(
+          planeId,
+          modelingState.context.store.useNewSketchMode?.current,
+          systemDeps
+        )
       } else {
         const foundDefaultPlane =
           rustContext.defaultPlanes !== null &&
@@ -909,17 +933,24 @@ const DefaultPlanes = () => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [sketchNoFace]
+    [sketchNoFace, modelingState.context.store.useNewSketchMode]
   )
 
-  const startSketchOnDefaultPlane = useCallback((planeId: string) => {
-    sceneInfra.modelingSend({
-      type: 'Enter sketch',
-      data: { forceNewSketch: true },
-    })
+  const startSketchOnDefaultPlane = useCallback(
+    (planeId: string) => {
+      sceneInfra.modelingSend({
+        type: 'Enter sketch',
+        data: { forceNewSketch: true },
+      })
 
-    selectDefaultSketchPlane(planeId, systemDeps)
-  }, [])
+      void selectSketchPlane(
+        planeId,
+        modelingState.context.store.useNewSketchMode?.current,
+        systemDeps
+      )
+    },
+    [modelingState.context.store.useNewSketchMode]
+  )
 
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) return null

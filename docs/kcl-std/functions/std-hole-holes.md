@@ -5,8 +5,6 @@ excerpt: "From the hole's parts (bottom, middle, top), cut the hole into the giv
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 From the hole's parts (bottom, middle, top), cut the hole into the given solid, at each of the given 2D positions on the given face. Basically like function `hole` but it takes multiple 2D positions in `cutsAt`.
 
 ```kcl
@@ -37,8 +35,6 @@ hole::holes(
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 // Sketch a solid
 sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [-3.89, 1.95])

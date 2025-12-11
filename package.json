@@ -28,7 +28,7 @@
     "@csstools/postcss-oklab-function": "^4.0.12",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.2",
-    "@kittycad/lib": "^3.1.7",
+    "@kittycad/lib": "^3.1.17",
     "@kittycad/react-shared": "^0.1.10",
     "@lezer/highlight": "^1.2.1",
     "@lezer/lr": "^1.4.1",
@@ -130,8 +130,8 @@
     "tronb:package:prod": "npm run tronb:vite:prod && electron-builder --config electron-builder.yml --publish always",
     "test-setup": "npm install && npm run build:wasm",
     "test": "vitest --mode=development",
-    "test:unit": "vitest run --mode=development --project=unit",
-    "test:integration": "vitest run --mode=development --project=integration",
+    "test:unit": "vitest run --mode=development --project=unit --sequence.shuffle",
+    "test:integration": "vitest run --mode=development --project=integration --sequence.shuffle",
     "test:snapshots": "cross-env TARGET=web NODE_ENV=development playwright test --config=playwright.config.ts --grep=@snapshot",
     "test:e2e:kcl": "(cd rust && just test && just lint)",
     "test:e2e:web": "cross-env TARGET=web NODE_ENV=development playwright test --config=playwright.config.ts --project=\"Google Chrome\" --grep=@web",
@@ -222,7 +222,7 @@
     "vite-plugin-package-version": "^1.1.0",
     "vite-plugin-top-level-await": "^1.5.0",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^3.2.4",
+    "vitest": "^4.0.14",
     "vitest-webgl-canvas-mock": "^1.1.0",
     "ws": "^8.18.3"
   }

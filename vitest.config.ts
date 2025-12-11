@@ -15,9 +15,11 @@ export default defineConfig({
       '**/cypress/**',
       '**/.{idea,git,cache,output,temp}/**',
     ],
-    deps: {
-      external: [/playwright/],
-      inline: [/e2e/, /packages/],
+    server: {
+      deps: {
+        external: [/playwright/],
+        inline: [/e2e/, /packages/],
+      },
     },
     reporters: ['default', 'junit'],
     outputFile: {
