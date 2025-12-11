@@ -73,27 +73,6 @@ export function RouteProvider({ children }: { children: ReactNode }) {
         return
       }
 
-      const fileNameWithExtension = getStringAfterLastSeparator(path)
-      // Is the file from the change event type imported into the currently opened file
-      const isImportedInCurrentFile = kclManager.ast.body.some(
-        (n) =>
-          n.type === 'ImportStatement' &&
-          ((n.path.type === 'Kcl' &&
-            n.path.filename.includes(fileNameWithExtension)) ||
-            (n.path.type === 'Foreign' &&
-              n.path.path.includes(fileNameWithExtension)))
-      )
-
-      const isInExecStateFilenames = Object.values(
-        kclManager.execState.filenames
-      ).some((filename) => {
-        if (filename && filename.type === 'Local' && filename.value === path) {
-          return true
-        }
-
-        return false
-      })
-
       const isCurrentFile = loadedProject?.file?.path === path
       if (isCurrentFile) {
         if (window.electron) {
@@ -110,9 +89,35 @@ export function RouteProvider({ children }: { children: ReactNode }) {
             await resetCameraPosition({ sceneInfra })
           }
         }
-      } else if (isImportedInCurrentFile || isInExecStateFilenames) {
-        // Re execute the file you are in because an imported file was changed
-        await kclManager.executeAst()
+      } else {
+        const fileNameWithExtension = getStringAfterLastSeparator(path)
+        // Is the file from the change event type imported into the currently opened file
+        const isImportedInCurrentFile = kclManager.ast.body.some(
+          (n) =>
+            n.type === 'ImportStatement' &&
+            ((n.path.type === 'Kcl' &&
+              n.path.filename.includes(fileNameWithExtension)) ||
+              (n.path.type === 'Foreign' &&
+                n.path.path.includes(fileNameWithExtension)))
+        )
+
+        const isInExecStateFilenames = Object.values(
+          kclManager.execState.filenames
+        ).some((filename) => {
+          if (
+            filename &&
+            filename.type === 'Local' &&
+            filename.value === path
+          ) {
+            return true
+          }
+
+          return false
+        })
+        if (isImportedInCurrentFile || isInExecStateFilenames) {
+          // Re execute the file you are in because an imported file was changed
+          await kclManager.executeAst()
+        }
       }
     },
     // This will build up for as many files you select and never remove until you exit the project to unmount the file watcher hook
