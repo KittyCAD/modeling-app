@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { processTrimOperations } from '@src/machines/sketchSolve/tools/trimTool'
+import { processTrimOperations } from '@src/machines/sketchSolve/tools/trimToolImpl'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { assertParse } from '@src/lang/wasm'

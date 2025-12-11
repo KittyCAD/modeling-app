@@ -1,9 +1,4 @@
-import { setup } from 'xstate'
-
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
-import type { KclManager } from '@src/lang/KclManager'
-import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type {
   ExistingSegmentCtor,
   SceneGraphDelta,
@@ -12,12 +7,136 @@ import type {
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
-import { BufferGeometry, Line, LineBasicMaterial, Vector3 } from 'three'
+import type { Vector3 } from 'three'
 
 // Trim tool draws an ephemeral polyline during an area-select drag.
 // At drag end the preview is removed – no sketch entities are created (yet).
 
-const TOOL_ID = 'Trim tool'
+// Epsilon constants for geometric calculations
+const EPSILON_PARALLEL = 1e-10 // For checking if lines are parallel or segments are degenerate
+const EPSILON_POINT_ON_SEGMENT = 1e-6 // For checking if a point is on a segment
+
+// Helper to project a point onto a line segment and get its parametric position
+// Returns t where t=0 at start, t=1 at end, t<0 before start, t>1 after end
+function projectPointOntoSegment(
+  point: [number, number],
+  segmentStart: [number, number],
+  segmentEnd: [number, number]
+): number {
+  const dx = segmentEnd[0] - segmentStart[0]
+  const dy = segmentEnd[1] - segmentStart[1]
+  const segmentLengthSq = dx * dx + dy * dy
+
+  if (segmentLengthSq < EPSILON_PARALLEL) {
+    // Segment is degenerate (start and end are the same)
+    return 0
+  }
+
+  const pointDx = point[0] - segmentStart[0]
+  const pointDy = point[1] - segmentStart[1]
+  const t = (pointDx * dx + pointDy * dy) / segmentLengthSq
+
+  return t
+}
+
+// Helper to check if a point is on a line segment (within epsilon distance)
+// Returns the point if it's on the segment, null otherwise
+function isPointOnSegment(
+  point: [number, number],
+  segmentStart: [number, number],
+  segmentEnd: [number, number],
+  epsilon = EPSILON_POINT_ON_SEGMENT
+): [number, number] | null {
+  const t = projectPointOntoSegment(point, segmentStart, segmentEnd)
+
+  // Check if point projects onto the segment (t between 0 and 1)
+  if (t < 0 || t > 1) {
+    return null
+  }
+
+  // Calculate the projected point on the segment
+  const projectedPoint: [number, number] = [
+    segmentStart[0] + t * (segmentEnd[0] - segmentStart[0]),
+    segmentStart[1] + t * (segmentEnd[1] - segmentStart[1]),
+  ]
+
+  // Check if the distance from point to projected point is within epsilon
+  const dx = point[0] - projectedPoint[0]
+  const dy = point[1] - projectedPoint[1]
+  const distanceSq = dx * dx + dy * dy
+
+  if (distanceSq <= epsilon * epsilon) {
+    return point // Return the actual point, not the projected one
+  }
+
+  return null
+}
+
+// Helper to calculate intersection point of two line segments
+// Also checks if endpoints are on the other segment (within epsilon)
+// Returns null if they don't intersect, or an object with the intersection point and whether it's coincident
+function lineSegmentIntersection(
+  p1: [number, number],
+  p2: [number, number],
+  p3: [number, number],
+  p4: [number, number],
+  epsilon = EPSILON_POINT_ON_SEGMENT
+): { point: [number, number]; isCoincident: boolean } | null {
+  // First check if any endpoints are on the other segment (coincident case)
+  const p1OnSegment2 = isPointOnSegment(p1, p3, p4, epsilon)
+  if (p1OnSegment2) return { point: p1OnSegment2, isCoincident: true }
+
+  const p2OnSegment2 = isPointOnSegment(p2, p3, p4, epsilon)
+  if (p2OnSegment2) return { point: p2OnSegment2, isCoincident: true }
+
+  const p3OnSegment1 = isPointOnSegment(p3, p1, p2, epsilon)
+  if (p3OnSegment1) return { point: p3OnSegment1, isCoincident: true }
+
+  const p4OnSegment1 = isPointOnSegment(p4, p1, p2, epsilon)
+  if (p4OnSegment1) return { point: p4OnSegment1, isCoincident: true }
+
+  // Then check for actual line segment intersection (true intersection)
+  const [x1, y1] = p1
+  const [x2, y2] = p2
+  const [x3, y3] = p3
+  const [x4, y4] = p4
+
+  const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+  if (Math.abs(denom) < EPSILON_PARALLEL) {
+    // Lines are parallel
+    return null
+  }
+
+  const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom
+  const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom
+
+  // Check if intersection is within both segments
+  if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+    const x = x1 + t * (x2 - x1)
+    const y = y1 + t * (y2 - y1)
+    return { point: [x, y], isCoincident: false }
+  }
+
+  return null
+}
+
+// Helper to get point coordinates from sceneGraph
+function getPointCoords(
+  pointId: number,
+  objects: Array<any>
+): [number, number] | null {
+  const point = objects[pointId]
+  if (
+    point?.kind?.type !== 'Segment' ||
+    point?.kind?.segment?.type !== 'Point'
+  ) {
+    return null
+  }
+  return [
+    point.kind.segment.position.x.value,
+    point.kind.segment.position.y.value,
+  ]
+}
 
 // Pure function that processes trim operations on a polyline
 // Returns the final scene graph delta and source delta
@@ -473,132 +592,6 @@ export async function processTrimOperations({
   return null
 }
 
-// Epsilon constants for geometric calculations
-const EPSILON_PARALLEL = 1e-10 // For checking if lines are parallel or segments are degenerate
-const EPSILON_POINT_ON_SEGMENT = 1e-6 // For checking if a point is on a segment
-
-// Helper to project a point onto a line segment and get its parametric position
-// Returns t where t=0 at start, t=1 at end, t<0 before start, t>1 after end
-function projectPointOntoSegment(
-  point: [number, number],
-  segmentStart: [number, number],
-  segmentEnd: [number, number]
-): number {
-  const dx = segmentEnd[0] - segmentStart[0]
-  const dy = segmentEnd[1] - segmentStart[1]
-  const segmentLengthSq = dx * dx + dy * dy
-
-  if (segmentLengthSq < EPSILON_PARALLEL) {
-    // Segment is degenerate (start and end are the same)
-    return 0
-  }
-
-  const pointDx = point[0] - segmentStart[0]
-  const pointDy = point[1] - segmentStart[1]
-  const t = (pointDx * dx + pointDy * dy) / segmentLengthSq
-
-  return t
-}
-
-// Helper to check if a point is on a line segment (within epsilon distance)
-// Returns the point if it's on the segment, null otherwise
-function isPointOnSegment(
-  point: [number, number],
-  segmentStart: [number, number],
-  segmentEnd: [number, number],
-  epsilon = EPSILON_POINT_ON_SEGMENT
-): [number, number] | null {
-  const t = projectPointOntoSegment(point, segmentStart, segmentEnd)
-
-  // Check if point projects onto the segment (t between 0 and 1)
-  if (t < 0 || t > 1) {
-    return null
-  }
-
-  // Calculate the projected point on the segment
-  const projectedPoint: [number, number] = [
-    segmentStart[0] + t * (segmentEnd[0] - segmentStart[0]),
-    segmentStart[1] + t * (segmentEnd[1] - segmentStart[1]),
-  ]
-
-  // Check if the distance from point to projected point is within epsilon
-  const dx = point[0] - projectedPoint[0]
-  const dy = point[1] - projectedPoint[1]
-  const distanceSq = dx * dx + dy * dy
-
-  if (distanceSq <= epsilon * epsilon) {
-    return point // Return the actual point, not the projected one
-  }
-
-  return null
-}
-
-// Helper to calculate intersection point of two line segments
-// Also checks if endpoints are on the other segment (within epsilon)
-// Returns null if they don't intersect, or an object with the intersection point and whether it's coincident
-function lineSegmentIntersection(
-  p1: [number, number],
-  p2: [number, number],
-  p3: [number, number],
-  p4: [number, number],
-  epsilon = EPSILON_POINT_ON_SEGMENT
-): { point: [number, number]; isCoincident: boolean } | null {
-  // First check if any endpoints are on the other segment (coincident case)
-  const p1OnSegment2 = isPointOnSegment(p1, p3, p4, epsilon)
-  if (p1OnSegment2) return { point: p1OnSegment2, isCoincident: true }
-
-  const p2OnSegment2 = isPointOnSegment(p2, p3, p4, epsilon)
-  if (p2OnSegment2) return { point: p2OnSegment2, isCoincident: true }
-
-  const p3OnSegment1 = isPointOnSegment(p3, p1, p2, epsilon)
-  if (p3OnSegment1) return { point: p3OnSegment1, isCoincident: true }
-
-  const p4OnSegment1 = isPointOnSegment(p4, p1, p2, epsilon)
-  if (p4OnSegment1) return { point: p4OnSegment1, isCoincident: true }
-
-  // Then check for actual line segment intersection (true intersection)
-  const [x1, y1] = p1
-  const [x2, y2] = p2
-  const [x3, y3] = p3
-  const [x4, y4] = p4
-
-  const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
-  if (Math.abs(denom) < EPSILON_PARALLEL) {
-    // Lines are parallel
-    return null
-  }
-
-  const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom
-  const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom
-
-  // Check if intersection is within both segments
-  if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
-    const x = x1 + t * (x2 - x1)
-    const y = y1 + t * (y2 - y1)
-    return { point: [x, y], isCoincident: false }
-  }
-
-  return null
-}
-
-// Helper to get point coordinates from sceneGraph
-function getPointCoords(
-  pointId: number,
-  objects: Array<any>
-): [number, number] | null {
-  const point = objects[pointId]
-  if (
-    point?.kind?.type !== 'Segment' ||
-    point?.kind?.segment?.type !== 'Point'
-  ) {
-    return null
-  }
-  return [
-    point.kind.segment.position.x.value,
-    point.kind.segment.position.y.value,
-  ]
-}
-
 // Pure function: Finds the first intersection between the polyline and any scene segment
 // Loops over polyline segments and checks each against all scene segments
 // Returns null if no intersection is found
@@ -879,146 +872,3 @@ export function findTwoClosestPointsToIntersection(
     endSide,
   }
 }
-
-type ToolEvents = BaseToolEvent
-
-export const machine = setup({
-  types: {
-    context: {} as {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-      sceneGraphDelta?: SceneGraphDelta
-    },
-    events: {} as ToolEvents,
-    input: {} as {
-      sceneInfra: SceneInfra
-      rustContext: RustContext
-      kclManager: KclManager
-      sketchId: number
-      sceneGraphDelta?: SceneGraphDelta
-    },
-  },
-  actions: {
-    'add area select listener': ({ context, self }) => {
-      const scene = context.sceneInfra.scene
-      let currentLine: Line | null = null
-      let points: Vector3[] = []
-      let lastPoint2D: [number, number] | null = null
-      let lastPointIndex = 0
-
-      const pxThreshold = 5
-
-      // Helper to get pixel distance between two world-space points
-      const distancePx = (a: [number, number], b: [number, number]) =>
-        context.sceneInfra.screenSpaceDistance(a, b)
-
-      context.sceneInfra.setCallbacks({
-        onAreaSelectStart: ({ startPoint }) => {
-          if (!startPoint?.twoD) return
-          // Store the starting point but don't create the Line yet (needs at least 2 points)
-          points = [
-            new Vector3(startPoint.twoD.x, startPoint.twoD.y, 0),
-          ] as Vector3[]
-          lastPoint2D = [startPoint.twoD.x, startPoint.twoD.y]
-          lastPointIndex = 0 // Reset for new drag
-        },
-        onAreaSelect: ({ currentPoint }) => {
-          if (!currentPoint?.twoD || !lastPoint2D) return
-          const { x, y } = currentPoint.twoD
-          const distance = distancePx(lastPoint2D, [x, y])
-          if (distance >= pxThreshold) {
-            points.push(new Vector3(x, y, 0))
-
-            // Create the Line when we have at least 2 points
-            if (!currentLine && points.length >= 2) {
-              const geom = new BufferGeometry().setFromPoints(points)
-              const mat = new LineBasicMaterial({ color: 0xff8800 })
-              currentLine = new Line(geom, mat)
-              currentLine.name = 'trim-tool-preview'
-              scene.add(currentLine)
-            } else if (currentLine) {
-              // Update existing line: dispose old geometry and create new one
-              // (setFromPoints doesn't resize buffers, so we need a fresh geometry)
-              const oldGeom = currentLine.geometry
-              const newGeom = new BufferGeometry().setFromPoints(points)
-              currentLine.geometry = newGeom
-              oldGeom.dispose()
-            }
-
-            lastPoint2D = [x, y]
-          }
-        },
-        onAreaSelectEnd: async () => {
-          if (!context.sceneGraphDelta) {
-            return
-          }
-
-          const initialSceneGraph = context.sceneGraphDelta
-          const result = await processTrimOperations({
-            points,
-            initialSceneGraph,
-            rustContext: context.rustContext,
-            sketchId: context.sketchId,
-            lastPointIndex,
-          })
-
-          if (result) {
-            // Send the final result to parent to update sketch outcome
-            self._parent?.send({
-              type: 'update sketch outcome',
-              data: {
-                kclSource: result.kclSource,
-                sceneGraphDelta: result.sceneGraphDelta,
-              },
-            })
-          }
-
-          if (currentLine) {
-            scene.remove(currentLine)
-            currentLine.geometry.dispose()
-            ;(currentLine.material as LineBasicMaterial).dispose()
-            currentLine = null
-            points = []
-            lastPoint2D = null
-          }
-        },
-      })
-    },
-    'remove area select listener': ({ context }) => {
-      context.sceneInfra.setCallbacks({
-        onAreaSelectStart: () => {},
-        onAreaSelect: () => {},
-        onAreaSelectEnd: () => {},
-      })
-    },
-  },
-}).createMachine({
-  context: ({ input }) => ({
-    sceneInfra: input.sceneInfra,
-    rustContext: input.rustContext,
-    kclManager: input.kclManager,
-    sketchId: input.sketchId,
-    sceneGraphDelta: input.sceneGraphDelta,
-  }),
-  id: TOOL_ID,
-  initial: 'active',
-  on: {
-    unequip: {
-      target: '#Trim tool.unequipping',
-    },
-    escape: {
-      target: '#Trim tool.unequipping',
-    },
-  },
-  states: {
-    active: {
-      entry: 'add area select listener',
-    },
-    unequipping: {
-      type: 'final',
-      entry: 'remove area select listener',
-    },
-  },
-})
