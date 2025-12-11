@@ -93,6 +93,13 @@ export async function buildTheWorldAndConnectToEngine() {
   sceneEntitiesManager.commandBarActor = commandBarActor
   kclManager.sceneEntitiesManager = sceneEntitiesManager
 
+  const settingsActor = createActor(settingsMachine, {
+    input: { ...createSettings(), kclManager, commandBarActor },
+  }).start()
+  const getSettings = () => getSettingsFromActorRef(settingsActor)
+  sceneInfra.camControls.getSettings = getSettings
+  sceneEntitiesManager.getSettings = getSettings
+
   await new Promise((resolve) => {
     engineCommandManager
       .start({
@@ -117,6 +124,7 @@ export async function buildTheWorldAndConnectToEngine() {
     kclManager,
     sceneEntitiesManager,
     commandBarActor,
+    settingsActor,
   }
 }
 
@@ -153,6 +161,18 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     kclManager,
     rustContext
   )
+
+  const commandBarActor = createActor(commandBarMachine, {
+    input: { commands: [] },
+  }).start()
+  const settingsActor = createActor(settingsMachine, {
+    input: { ...createSettings(), kclManager, commandBarActor },
+  }).start()
+  settingsActor.start()
+  const getSettings = () => getSettingsFromActorRef(settingsActor)
+  sceneInfra.camControls.getSettings = getSettings
+  sceneEntitiesManager.getSettings = getSettings
+
   kclManager.sceneEntitiesManager = sceneEntitiesManager
   return {
     instance: await instancePromise,
@@ -161,5 +181,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     sceneInfra,
     kclManager,
     sceneEntitiesManager,
+    commandBarActor,
+    settingsActor,
   }
 }

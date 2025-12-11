@@ -40,12 +40,13 @@ import {
   getSystemTheme,
   setThemeClass,
 } from '@src/lib/theme'
-import { ACTOR_IDS } from '@src/machines/machineConstants'
 import type { KclManager } from '@src/lang/KclManager'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 
 export type SettingsActorDepsType = {
   currentProject?: Project
   kclManager: KclManager
+  commandBarActor: ActorRefFrom<typeof commandBarMachine>
 }
 export type SettingsMachineContext = SettingsType & SettingsActorDepsType
 
@@ -134,11 +135,13 @@ export const settingsMachine = setup({
       return () => darkModeMatcher?.removeEventListener('change', listener)
     }),
     registerCommands: fromCallback<
-      { type: 'update'; settings: SettingsType },
+      {
+        type: 'update'
+        settings: SettingsType
+        commandBarActor: ActorRefFrom<typeof commandBarMachine>
+      },
       { settings: SettingsType; actor: AnyActorRef }
-    >(({ input, receive, system }) => {
-      // This assumes this actor is running in a system with a command palette
-      const commandBarActor = system.get(ACTOR_IDS.COMMAND_BAR)
+    >(({ input, receive }) => {
       // If the user wants to hide the settings commands
       //from the command bar don't add them.
       if (input.settings.commandBar.includeSettings.current === false) {
@@ -155,41 +158,32 @@ export const settingsMachine = setup({
             })
           )
           .filter((c) => c !== null)
-      if (commandBarActor === undefined) {
-        console.warn(
-          'Tried to register commands, but no command bar actor was found'
-        )
-      }
-      const addCommands = () =>
-        commandBarActor?.send({
+
+      const addCommands = (actor: ActorRefFrom<typeof commandBarMachine>) =>
+        actor.send({
           type: 'Add commands',
           data: { commands: commands },
         })
 
-      const removeCommands = () =>
-        commandBarActor?.send({
+      const removeCommands = (actor: ActorRefFrom<typeof commandBarMachine>) =>
+        actor.send({
           type: 'Remove commands',
           data: { commands: commands },
         })
 
-      receive(({ type, settings: newSettings }) => {
+      receive(({ type, settings: newSettings, commandBarActor }) => {
         if (type !== 'update') {
           return
         }
-        removeCommands()
+        removeCommands(commandBarActor)
         commands =
           newSettings.commandBar.includeSettings.current === false
             ? []
             : updateCommands(newSettings)
-        addCommands()
+        addCommands(commandBarActor)
       })
 
       commands = updateCommands(input.settings)
-      addCommands()
-
-      return () => {
-        removeCommands()
-      }
     }),
   },
   actions: {
@@ -375,6 +369,7 @@ export const settingsMachine = setup({
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
               settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
             })),
           ],
         },
@@ -443,6 +438,7 @@ export const settingsMachine = setup({
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
               settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
             })),
           ],
         },
@@ -459,6 +455,7 @@ export const settingsMachine = setup({
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
               settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
             })),
           ],
         },
@@ -481,6 +478,7 @@ export const settingsMachine = setup({
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
               settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
             })),
           ],
         },
@@ -535,6 +533,7 @@ export const settingsMachine = setup({
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
               settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
             })),
           ],
         },
@@ -568,6 +567,7 @@ export const settingsMachine = setup({
             sendTo('registerCommands', ({ context }) => ({
               type: 'update',
               settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
             })),
           ],
         },
@@ -584,6 +584,11 @@ export const settingsMachine = setup({
 })
 
 function getOnlySettingsFromContext(s: SettingsMachineContext): SettingsType {
-  const { currentProject: _c, kclManager: _k, ...settings } = s
+  const {
+    currentProject: _c,
+    kclManager: _k,
+    commandBarActor: _cba,
+    ...settings
+  } = s
   return settings
 }

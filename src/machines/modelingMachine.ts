@@ -151,7 +151,6 @@ import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 
@@ -2241,8 +2240,7 @@ export const modelingMachine = setup({
           selectionRanges,
           sceneInfra,
           sceneEntitiesManager,
-          kclManager: providedKclManager,
-          wasmInstance,
+          kclManager,
         },
       }: {
         input: {
@@ -2251,7 +2249,6 @@ export const modelingMachine = setup({
           sceneInfra: SceneInfra
           sceneEntitiesManager: SceneEntities
           kclManager: KclManager
-          wasmInstance?: ModuleType
         }
       }) => {
         if (!sketchDetails) {
@@ -2265,13 +2262,14 @@ export const modelingMachine = setup({
           return
         }
         sceneInfra.resetMouseListeners()
+        const wasmInstance = await kclManager.wasmInstancePromise
         await sceneEntitiesManager.setupSketch({
           sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
           sketchNodePaths: sketchDetails.sketchNodePaths,
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
           position: sketchDetails.origin,
-          maybeModdedAst: providedKclManager.ast,
+          maybeModdedAst: kclManager.ast,
           selectionRanges,
           wasmInstance,
         })
@@ -3957,7 +3955,6 @@ export const modelingMachine = setup({
                     sceneInfra: providedSeneInfra,
                     sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
-                    wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
@@ -3965,7 +3962,6 @@ export const modelingMachine = setup({
                   sceneInfra: providedSeneInfra,
                   sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
-                  wasmInstance,
                 }),
                 onDone: [
                   {
