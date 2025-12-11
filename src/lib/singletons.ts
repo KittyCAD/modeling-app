@@ -29,8 +29,16 @@ import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
-import { initPromise } from '@src/lang/wasmUtils'
+import { initialiseWasm } from '@src/lang/wasmUtils'
 
+/**
+ * THE bundle of WASM, a cornerstone of our app. We use this for:
+ * - settings parse/unparse
+ * - KCL parsing, execution, linting, and LSP
+ *
+ * Access this through `kclManager.wasmInstance`, not directly.
+ */
+const initPromise = initialiseWasm()
 export const engineCommandManager = new ConnectionManager()
 export const rustContext = new RustContext(engineCommandManager, initPromise)
 

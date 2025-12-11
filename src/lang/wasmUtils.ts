@@ -25,7 +25,7 @@ export const wasmUrl = () => {
   return fullUrl
 }
 // Initialise the wasm module.
-const initialiseWasm = async (): Promise<ModuleType> => {
+export const initialiseWasm = async (): Promise<ModuleType> => {
   try {
     await reloadModule()
     const fullUrl = wasmUrl()
@@ -38,8 +38,6 @@ const initialiseWasm = async (): Promise<ModuleType> => {
     return Promise.reject(e)
   }
 }
-
-export const initPromise = initialiseWasm()
 
 export function importFileExtensions(wasmInstance?: ModuleType): string[] {
   const the_import_file_extensions = wasmInstance
