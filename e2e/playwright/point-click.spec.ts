@@ -115,7 +115,7 @@ test.describe('Point-and-click tests', () => {
     })
   })
 
-  test('Create an Extrude operation with a tag and edit it via Feature Tree', async ({
+  test('Extrude point-and-click', async ({
     context,
     editor,
     homePage,
@@ -234,6 +234,181 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
         await editor.expectEditor.toContain(
           'extrude(profile001, length = 3, tagEnd = $myEndTag)'
         )
+      })
+    })
+
+    await test.step(`Test twist parameters`, async () => {
+      await test.step('Open extrude, add twist parameters, submit and verify', async () => {
+        await test.step('Open extrude from feature tree', async () => {
+          await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+        })
+        await test.step('Add twistAngle parameter', async () => {
+          await cmdBar.clickOptionalArgument('twistAngle')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'twistAngle',
+            currentArgValue: '',
+            headerArguments: {
+              Length: '3',
+              TagEnd: 'myEndTag',
+              TwistAngle: '',
+            },
+            highlightedHeaderArg: 'twistAngle',
+            commandName: 'Extrude',
+          })
+          await page.keyboard.insertText('90')
+          await cmdBar.progressCmdBar()
+        })
+        await test.step('Add twistAngleStep parameter', async () => {
+          await cmdBar.clickOptionalArgument('twistAngleStep')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'twistAngleStep',
+            currentArgValue: '',
+            headerArguments: {
+              Length: '3',
+              TagEnd: 'myEndTag',
+              TwistAngle: '90',
+              TwistAngleStep: '',
+            },
+            highlightedHeaderArg: 'twistAngleStep',
+            commandName: 'Extrude',
+          })
+          await page.keyboard.insertText('10')
+          await cmdBar.progressCmdBar()
+        })
+        await test.step('Add twistCenter parameter', async () => {
+          await cmdBar.clickOptionalArgument('twistCenter')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'twistCenter',
+            currentArgValue: '[0, 0]',
+            headerArguments: {
+              Length: '3',
+              TagEnd: 'myEndTag',
+              TwistAngle: '90',
+              TwistAngleStep: '10',
+              TwistCenter: '',
+            },
+            highlightedHeaderArg: 'twistCenter',
+            commandName: 'Extrude',
+          })
+          // Vector2D input - fill coordinates
+          await page.getByTestId('vector2d-x-input').fill('1')
+          await page.getByTestId('vector2d-y-input').fill('2')
+          await page.waitForTimeout(100)
+          await cmdBar.progressCmdBar()
+        })
+        await test.step('Verify review state', async () => {
+          await page.waitForTimeout(100)
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: {
+              Length: '3',
+              TagEnd: 'myEndTag',
+              TwistAngle: '90',
+              TwistAngleStep: '10',
+              TwistCenter: '[1, 2]',
+            },
+            commandName: 'Extrude',
+          })
+        })
+        await test.step('Submit', async () => {
+          await cmdBar.submit()
+        })
+        await test.step('Verify', async () => {
+          await editor.expectEditor.toContain(
+            'extrude(profile001, length = 3, tagEnd = $myEndTag, twistAngle = 90, twistAngleStep = 10, twistCenter = [1, 2],)',
+            { shouldNormalise: true }
+          )
+        })
+      })
+      await test.step('Open extrude, remove twist parameters, submit and verify', async () => {
+        await test.step('Open extrude from feature tree', async () => {
+          await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: {
+              Length: '3',
+              TagEnd: 'myEndTag',
+              TwistAngle: '90',
+              TwistAngleStep: '10',
+              TwistCenter: '[1, 2]',
+            },
+            commandName: 'Extrude',
+          })
+        })
+        await test.step('Remove twistAngle parameter', async () => {
+          await page.getByTestId('arg-name-twistangle').click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'twistAngle',
+            currentArgValue: '90',
+            headerArguments: {
+              Length: '3',
+              TagEnd: 'myEndTag',
+              TwistAngle: '90',
+              TwistAngleStep: '10',
+              TwistCenter: '[1, 2]',
+            },
+            highlightedHeaderArg: 'twistAngle',
+            commandName: 'Extrude',
+          })
+          await cmdBar.clearNonRequiredButton.click()
+        })
+        await test.step('Remove twistAngleStep parameter', async () => {
+          await page.getByTestId('arg-name-twistanglestep').click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'twistAngleStep',
+            currentArgValue: '10',
+            headerArguments: {
+              Length: '3',
+              TagEnd: 'myEndTag',
+              TwistAngleStep: '10',
+              TwistCenter: '[1, 2]',
+            },
+            highlightedHeaderArg: 'twistAngleStep',
+            commandName: 'Extrude',
+          })
+          await cmdBar.clearNonRequiredButton.click()
+        })
+        await test.step('Remove twistCenter parameter', async () => {
+          await page.getByTestId('arg-name-twistcenter').click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'twistCenter',
+            currentArgValue: '[1, 2]',
+            headerArguments: {
+              Length: '3',
+              TagEnd: 'myEndTag',
+              TwistCenter: '[1, 2]',
+            },
+            highlightedHeaderArg: 'twistCenter',
+            commandName: 'Extrude',
+          })
+          await cmdBar.clearNonRequiredButton.click()
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: {
+              Length: '3',
+              TagEnd: 'myEndTag',
+            },
+            commandName: 'Extrude',
+          })
+        })
+        await test.step('Submit', async () => {
+          await cmdBar.submit()
+        })
+        await test.step('Verify twist parameters removed', async () => {
+          await editor.expectEditor.toContain(
+            'extrude(profile001, length = 3, tagEnd = $myEndTag)',
+            { shouldNormalise: true }
+          )
+          await editor.expectEditor.not.toContain('twistAngle')
+          await editor.expectEditor.not.toContain('twistAngleStep')
+          await editor.expectEditor.not.toContain('twistCenter')
+        })
       })
     })
   })
