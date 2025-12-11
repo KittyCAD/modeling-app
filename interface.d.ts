@@ -1,6 +1,7 @@
 import type { MachinesListing } from 'components/MachineManagerProvider'
 import 'electron'
 import type fs from 'node:fs/promises'
+import type { Stats } from 'fs'
 import type path from 'path'
 import type { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
@@ -53,8 +54,7 @@ export interface IElectronAPI {
   exists: (path: string) => boolean
   getPath: (name: string) => Promise<string>
   rm: typeof fs.rm
-  // TODO: Use a real return type.
-  stat: (path: string) => Promise<any>
+  stat: (path: string) => Promise<Stats>
   statIsDirectory: (path: string) => Promise<boolean>
   canReadWriteDirectory: (
     path: string

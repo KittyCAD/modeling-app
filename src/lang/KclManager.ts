@@ -254,6 +254,11 @@ export class KclManager extends EventTarget {
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+  // The last code written by the app, used to compare againts external changes to the current file
+  public lastWrite: {
+    code: string // last code written by ZDS
+    time: number // Unix epoch time in milliseconds
+  } | null = null
   public isBufferMode = false
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
   /** Values merged in from former EditorManager and CodeManager classes */
@@ -1442,7 +1447,10 @@ export class KclManager extends EventTarget {
     return this._currentFilePath
   }
   updateCurrentFilePath(path: string) {
-    this._currentFilePath = path
+    if (this._currentFilePath !== path) {
+      this._currentFilePath = path
+      this.lastWrite = null
+    }
   }
   /**
    * Update the code in the editor.
@@ -1489,6 +1497,10 @@ export class KclManager extends EventTarget {
             return reject(new Error('currentFilePath not set'))
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
+          this.lastWrite = {
+            code: this.code ?? '',
+            time: Date.now(),
+          }
           electron
             .writeFile(this._currentFilePath, this.code ?? '')
             .then(resolve)

@@ -67,10 +67,32 @@ export function RouteProvider({ children }: { children: ReactNode }) {
         return
       }
 
+      // Earlier method, this doesn't hurt but it's not needed anymore..
       // Try to detect file changes and overwrite the editor
       if (kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
         kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
         return
+      }
+
+      if (window.electron) {
+        try {
+          const stat = await window.electron.stat(path)
+          const lastUpdatedMs = stat?.mtimeMs
+          if (kclManager.lastWrite && typeof lastUpdatedMs === 'number') {
+            // If last write happened shortly before the file was updated, it means the file was updated by us
+            // Typically the delay is 2-4 ms, so we allow a 50ms margin after the write and a 2ms margin
+            // before the write (just for inaccuracies for the timestamp).
+            if (
+              kclManager.lastWrite.time - 2 < lastUpdatedMs &&
+              lastUpdatedMs < kclManager.lastWrite.time + 50
+            ) {
+              // Ignore this change event, last update of the file was likely caused by us
+              return
+            }
+          }
+        } catch (e) {
+          console.warn('stat failed for change event', e)
+        }
       }
 
       const isCurrentFile = loadedProject?.file?.path === path
@@ -141,6 +163,9 @@ export function RouteProvider({ children }: { children: ReactNode }) {
 
       // Only reload if there are changes. Ignore everything else.
       if (eventType !== 'change') return
+
+      // Note: currently settings are watched, reloaded even if it was initiated by us (e.g. by a user changing some settings),
+      // writeCausedByAppCheckedInFileTreeFileSystemWatcher is not used here.
       const data = await loadAndValidateSettings(loadedProject?.project?.path)
       settingsActor.send({
         type: 'Set all settings',
