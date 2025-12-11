@@ -38,6 +38,10 @@ import { appThemeToTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import {
+  getSettingsFromActorRef,
+  type SettingsActorType,
+} from '@src/machines/settingsMachine'
 
 type OmitNull<T> = T extends null ? undefined : T
 const toUndefinedIfNull = (a: any): OmitNull<any> =>
@@ -699,14 +703,11 @@ export function getSettingInputType(setting: Setting) {
   return typeof setting.default as 'string' | 'boolean' | 'number'
 }
 
-export const jsAppSettings = async (): Promise<DeepPartial<Configuration>> => {
-  let jsAppSettings = default_app_settings()
-  // TODO: https://github.com/KittyCAD/modeling-app/issues/6445
-  const settings = await import('@src/lib/singletons').then((module) =>
-    module.getSettings()
-  )
-  if (settings) {
-    jsAppSettings = getAllCurrentSettings(settings)
-  }
+export const jsAppSettings = async (
+  settingsActor?: SettingsActorType
+): Promise<DeepPartial<Configuration>> => {
+  let jsAppSettings = settingsActor
+    ? getAllCurrentSettings(getSettingsFromActorRef(settingsActor))
+    : default_app_settings()
   return settingsPayloadToConfiguration(jsAppSettings)
 }

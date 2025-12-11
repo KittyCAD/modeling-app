@@ -1,6 +1,6 @@
 import decamelize from 'decamelize'
 import toast from 'react-hot-toast'
-import type { AnyActorRef } from 'xstate'
+import type { ActorRefFrom, AnyActorRef } from 'xstate'
 import {
   assign,
   enqueueActions,
@@ -47,6 +47,7 @@ import { reportRejection } from '@src/lib/trap'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import type { KclManager } from '@src/lang/KclManager'
 
+export type SettingsActorType = ActorRefFrom<typeof settingsMachine>
 type SettingsMachineContext = SettingsType & {
   currentProject?: Project
   kclManager: KclManager
@@ -683,3 +684,13 @@ export const settingsMachine = setup({
     },
   },
 })
+
+/** Utility to get the settings off an ActorRefFrom settingsMachine */
+export const getSettingsFromActorRef = (actor: SettingsActorType) => {
+  const {
+    currentProject: _c,
+    kclManager: _k,
+    ...settings
+  } = actor.getSnapshot().context
+  return settings
+}

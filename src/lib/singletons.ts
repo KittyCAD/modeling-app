@@ -22,7 +22,10 @@ import {
   billingMachine,
 } from '@src/machines/billingMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
-import { settingsMachine } from '@src/machines/settingsMachine'
+import {
+  settingsMachine,
+  getSettingsFromActorRef,
+} from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -224,10 +227,7 @@ export const useUser = () =>
 export const settingsActor = appActor.system.get(SETTINGS) as ActorRefFrom<
   (typeof appMachineActors)[typeof SETTINGS]
 >
-export const getSettings = () => {
-  const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
-  return settings
-}
+export const getSettings = () => getSettingsFromActorRef(settingsActor)
 
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
