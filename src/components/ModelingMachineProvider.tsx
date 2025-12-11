@@ -524,8 +524,8 @@ export const ModelingMachineProvider = ({
               await kclManager.updateEditorWithAstAndWriteToFile(newAst)
             }
             sceneInfra.setCallbacks({
-              onClick: () => { },
-              onDrag: () => { },
+              onClick: () => {},
+              onDrag: () => {},
             })
             return undefined
           }
@@ -735,17 +735,17 @@ export const ModelingMachineProvider = ({
             const sketched =
               input.type === 'extrudeFace'
                 ? sketchOnExtrudedFace(
-                  kclManager.ast,
-                  input.sketchPathToNode,
-                  input.extrudePathToNode,
-                  addTagForSketchOnFace,
-                  input.faceInfo
-                )
+                    kclManager.ast,
+                    input.sketchPathToNode,
+                    input.extrudePathToNode,
+                    addTagForSketchOnFace,
+                    input.faceInfo
+                  )
                 : sketchOnOffsetPlane(
-                  kclManager.ast,
-                  input.pathToNode,
-                  input.negated
-                )
+                    kclManager.ast,
+                    input.pathToNode,
+                    input.negated
+                  )
             if (err(sketched)) {
               const sketchedError = new Error(
                 'Incompatible face, please try another'
@@ -928,12 +928,12 @@ export const ModelingMachineProvider = ({
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await (info.enabled
                 ? applyConstraintAngleBetween({
-                  selectionRanges,
-                })
+                    selectionRanges,
+                  })
                 : applyConstraintAngleLength({
-                  selectionRanges,
-                  angleOrLength: 'setAngle',
-                }))
+                    selectionRanges,
+                    angleOrLength: 'setAngle',
+                  }))
             const pResult = parse(recast(modifiedAst), kclManager.wasmInstance)
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
@@ -1437,7 +1437,7 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
-        'submit-prompt-edit': fromPromise(async ({ input }) => { }),
+        'submit-prompt-edit': fromPromise(async ({ input }) => {}),
       },
     }),
     {
@@ -1628,7 +1628,7 @@ export const ModelingMachineProvider = ({
       const targetId = modelingState.context.sketchDetails?.animateTargetId
       if (inSketchMode && targetId) {
         letEngineAnimateAndSyncCamAfter(engineCommandManager, targetId)
-          .then(() => { })
+          .then(() => {})
           .catch((e) => {
             console.error(
               'failed to sync engine and client scene after disabling allow orbit in sketch mode'

@@ -41,8 +41,7 @@ import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import Loading from './components/Loading'
-import { Spinner } from './components/Spinner'
+import { Spinner } from '@src/components/Spinner'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -150,12 +149,12 @@ const router = createRouter([
       },
       ...(IS_STAGING_OR_DEBUG
         ? [
-          {
-            path: '/layout',
-            errorElement: <ErrorPage />,
-            element: <TestLayout />,
-          },
-        ]
+            {
+              path: '/layout',
+              errorElement: <ErrorPage />,
+              element: <TestLayout />,
+            },
+          ]
         : []),
     ],
   },

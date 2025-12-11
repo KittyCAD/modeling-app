@@ -230,8 +230,12 @@ export class SceneEntities {
     this.sketchSolveGroup = SceneEntities.createSketchSolveGroup(
       this.sceneInfra
     )
-    this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
-    this.sceneInfra.baseUnitChange.add(this.onCamChange)
+    this.sceneInfra.camControls.cameraChange.add(() => {
+      this.onCamChange().catch(reportRejection)
+    })
+    this.sceneInfra.baseUnitChange.add(() => {
+      this.onCamChange().catch(reportRejection)
+    })
   }
 
   /**
