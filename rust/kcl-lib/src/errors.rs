@@ -392,14 +392,18 @@ impl miette::Diagnostic for Report {
     }
 }
 
+#[allow(unused_assignments, reason = "Used in TS")]
 #[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq, thiserror::Error, miette::Diagnostic)]
 #[serde(rename_all = "camelCase")]
 #[error("{message}")]
 #[ts(export)]
 pub struct KclErrorDetails {
+    #[allow(unused_assignments, reason = "Used in TS")]
     #[label(collection, "Errors")]
     pub source_ranges: Vec<SourceRange>,
+    #[allow(unused_assignments, reason = "Used in TS")]
     pub backtrace: Vec<BacktraceItem>,
+    #[allow(unused_assignments, reason = "Used in TS")]
     #[serde(rename = "msg")]
     pub message: String,
 }
