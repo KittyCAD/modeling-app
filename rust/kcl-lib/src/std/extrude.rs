@@ -72,6 +72,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let twist_center: Option<[TyF64; 2]> = args.get_kw_arg_opt("twistCenter", &RuntimeType::point2d(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let method: Option<String> = args.get_kw_arg_opt("method", &RuntimeType::string(), exec_state)?;
+    let show_seams: Option<bool> = args.get_kw_arg_opt("showSeams", &RuntimeType::bool(), exec_state)?;
 
     let result = inner_extrude(
         sketches,
@@ -86,6 +87,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         twist_center,
         tolerance,
         method,
+        show_seams,
         exec_state,
         args,
     )
@@ -108,6 +110,7 @@ async fn inner_extrude(
     twist_center: Option<[TyF64; 2]>,
     tolerance: Option<TyF64>,
     method: Option<String>,
+        show_seams: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -182,6 +185,7 @@ async fn inner_extrude(
                 faces: Default::default(),
                 opposite: opposite.clone(),
                 extrude_method,
+                show_seams,
             }),
             (None, None, None, None, Some(to)) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(mcmd::ExtrudeToReference {
