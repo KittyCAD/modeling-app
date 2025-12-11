@@ -186,7 +186,7 @@ test.describe('Feature Tree pane', () => {
       await toolbar.openFeatureTreePane()
 
       const cylinderOperation = toolbar.featureTreePane
-        .getByRole('button', { name: /cylinder/i })
+        .getByRole('button', { name: /test/i })
         .first()
       await expect(cylinderOperation).toBeVisible()
       await cylinderOperation.click({ button: 'right' })
