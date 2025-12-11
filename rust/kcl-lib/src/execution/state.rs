@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, SourceRange,
+    CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, MockConfig, SourceRange,
     collections::AhashIndexSet,
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
@@ -128,6 +128,9 @@ pub(super) struct ModuleState {
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
+    /// True to do more costly analysis of whether the sketch block segments are
+    /// under-constrained.
+    pub freedom_analysis: bool,
     pub(super) explicit_length_units: bool,
     pub(super) path: ModulePath,
     /// Artifacts for only this module.
@@ -151,14 +154,24 @@ impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
             global: GlobalState::new(&exec_context.settings, Default::default()),
-            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), 0),
+            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), 0, false),
         }
     }
 
-    pub fn new_sketch_mode(exec_context: &super::ExecutorContext, segment_ids_edited: AhashIndexSet<ObjectId>) -> Self {
+    pub fn new_sketch_mode(exec_context: &super::ExecutorContext, mock_config: &MockConfig) -> Self {
+        #[cfg(feature = "artifact-graph")]
+        let segment_ids_edited = mock_config.segment_ids_edited.clone();
+        #[cfg(not(feature = "artifact-graph"))]
+        let segment_ids_edited = Default::default();
         ExecState {
             global: GlobalState::new(&exec_context.settings, segment_ids_edited),
-            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), 0),
+            mod_local: ModuleState::new(
+                ModulePath::Main,
+                ProgramMemory::new(),
+                Default::default(),
+                0,
+                mock_config.freedom_analysis,
+            ),
         }
     }
 
@@ -167,7 +180,13 @@ impl ExecState {
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(self.mod_local.path.clone(), ProgramMemory::new(), Default::default(), 0),
+            mod_local: ModuleState::new(
+                self.mod_local.path.clone(),
+                ProgramMemory::new(),
+                Default::default(),
+                0,
+                false,
+            ),
         };
     }
 
@@ -639,6 +658,7 @@ impl ModuleState {
         memory: Arc<ProgramMemory>,
         module_id: Option<ModuleId>,
         next_object_id: usize,
+        freedom_analysis: bool,
     ) -> Self {
         #[cfg(not(feature = "artifact-graph"))]
         let _ = next_object_id;
@@ -653,6 +673,7 @@ impl ModuleState {
             explicit_length_units: false,
             path,
             settings: Default::default(),
+            freedom_analysis,
             #[cfg(not(feature = "artifact-graph"))]
             artifacts: Default::default(),
             #[cfg(feature = "artifact-graph")]
