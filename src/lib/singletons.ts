@@ -27,7 +27,7 @@ import {
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import {
   settingsMachine,
-  type SettingsMachineContext,
+  getSettingsFromActorRef,
 } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
