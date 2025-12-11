@@ -153,31 +153,10 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 export class KclManager extends EventTarget {
   // SYSTEM DEPENDENCIES
 
-  private _wasmInstancePromise: Promise<ModuleType>
-  private _wasmInstance: ModuleType | null = null
+  private _wasmInstance: Promise<ModuleType>
   /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
-  get wasmInstancePromise() {
-    return this._wasmInstancePromise
-  }
   set wasmInstancePromise(newInstancePromise: Promise<ModuleType>) {
-    this._wasmInstancePromise = newInstancePromise
-    void this._wasmInstancePromise.then((instance) => {
-      this._wasmInstance = instance
-    })
-  }
-  /**
-   * You probably should use `wasmInstancePromise` instead.
-   *
-   * This is for when you need the wasm instance in synchronous time,
-   * you can't make it asynchronous,
-   * and for some reason you can absolutely guarantee WASM will be done initializing.
-   */
-  get wasmInstance(): ModuleType {
-    if (this._wasmInstance === null) {
-      // eslint-disable-next-line  suggest-no-throw/suggest-no-throw
-      throw new Error('Attempted to get wasmInstance before initialization')
-    }
-    return this._wasmInstance
+    this._wasmInstance = newInstancePromise
   }
   private _sceneEntitiesManager?: SceneEntities
   readonly singletons: Singletons
