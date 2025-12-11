@@ -303,7 +303,7 @@ export const MlEphantConversationInput = (
               <button
                 data-testid="ml-ephant-conversation-input-button"
                 onClick={props.onInterrupt}
-                className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
+                className="w-10 flex-none bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110 p-2 flex justify-center"
               >
                 <CustomIcon name="close" className="w-5 h-5 animate-pulse" />
               </button>
