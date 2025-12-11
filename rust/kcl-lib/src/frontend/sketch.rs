@@ -112,8 +112,8 @@ pub struct Point {
 #[ts(export, export_to = "FrontendApi.ts")]
 pub enum Freedom {
     Free,
-    Partial,
     Fixed,
+    Conflict,
 }
 
 impl Freedom {
@@ -121,15 +121,15 @@ impl Freedom {
         match self {
             Self::Free => match other {
                 Self::Free => Self::Free,
-                Self::Partial => Self::Partial,
-                Self::Fixed => Self::Partial,
+                Self::Fixed => Self::Free,
+                Self::Conflict => Self::Conflict,
             },
-            Self::Partial => Self::Partial,
             Self::Fixed => match other {
-                Self::Free => Self::Partial,
-                Self::Partial => Self::Partial,
+                Self::Free => Self::Free,
                 Self::Fixed => Self::Fixed,
+                Self::Conflict => Self::Conflict,
             },
+            Self::Conflict => Self::Conflict,
         }
     }
 }
