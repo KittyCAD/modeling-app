@@ -574,7 +574,7 @@ export const modelingMachine = setup({
       if (event.type !== 'Constrain with named value') return false
       if (!event.data) return false
 
-      const wasmInstance = context.wasmInstance
+      const wasmInstance = context.kclManager.wasmInstance
 
       const ast = parse(
         recast(context.kclManager.ast, wasmInstance),
@@ -1154,7 +1154,6 @@ export const modelingMachine = setup({
         sketchDetails,
         dependencies: {
           kclManager,
-          wasmInstance,
           rustContext,
           sceneEntitiesManager,
           sceneInfra,
@@ -2034,7 +2033,6 @@ export const modelingMachine = setup({
           selectionRanges,
           sketchDetails,
           kclManager,
-          wasmInstance,
           sceneEntitiesManager,
         },
       }: {
@@ -2043,7 +2041,6 @@ export const modelingMachine = setup({
           | 'selectionRanges'
           | 'sketchDetails'
           | 'kclManager'
-          | 'wasmInstance'
           | 'sceneEntitiesManager'
         >
       }) => {
@@ -2057,6 +2054,7 @@ export const modelingMachine = setup({
           trap(new Error('No sketch details'))
           return
         }
+        const wasmInstance = kclManager.wasmInstance
         const recastAst = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (err(recastAst) || !resultIsOk(recastAst)) return
 
@@ -2430,7 +2428,6 @@ export const modelingMachine = setup({
           ModelingMachineContext,
           | 'sketchDetails'
           | 'selectionRanges'
-          | 'wasmInstance'
           | 'kclManager'
           | 'sceneEntitiesManager'
         > & {
@@ -2444,9 +2441,10 @@ export const modelingMachine = setup({
         if (!data) {
           return Promise.reject(new Error('No data from command flow'))
         }
+        const wasmInstance = input.kclManager.wasmInstance
         let pResult = parse(
-          recast(input.kclManager.ast, input.wasmInstance),
-          input.wasmInstance
+          recast(input.kclManager.ast, wasmInstance),
+          wasmInstance
         )
         if (trap(pResult) || !resultIsOk(pResult))
           return Promise.reject(new Error('Unexpected compilation error'))
@@ -2479,9 +2477,9 @@ export const modelingMachine = setup({
                 node: astAfterReplacement.modifiedAst,
                 newExpression: data.namedValue,
               }),
-              input.wasmInstance
+              wasmInstance
             ),
-            input.wasmInstance
+            wasmInstance
           )
           result.exprInsertIndex = data.namedValue.insertIndex
 
@@ -2515,10 +2513,7 @@ export const modelingMachine = setup({
           result = astAfterReplacement
         }
 
-        pResult = parse(
-          recast(result.modifiedAst, input.wasmInstance),
-          input.wasmInstance
-        )
+        pResult = parse(recast(result.modifiedAst, wasmInstance), wasmInstance)
         if (trap(pResult) || !resultIsOk(pResult))
           return Promise.reject(new Error('Unexpected compilation error'))
         parsed = pResult.program
@@ -2549,14 +2544,14 @@ export const modelingMachine = setup({
             sketchDetails.origin,
             getEventForSegmentSelection,
             updateExtraSegments,
-            input.wasmInstance
+            wasmInstance
           )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
         await input.kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
           undefined,
-          input.wasmInstance
+          wasmInstance
         )
 
         const selection = updateSelections(
@@ -3289,9 +3284,13 @@ export const modelingMachine = setup({
         if (
           input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
         ) {
-          const ast = setExperimentalFeatures(input.kclManager.code, {
-            type: 'Allow',
-          })
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            input.kclManager.wasmInstance
+          )
           if (err(ast)) {
             return Promise.reject(ast)
           }
@@ -3342,9 +3341,13 @@ export const modelingMachine = setup({
         if (
           input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
         ) {
-          const ast = setExperimentalFeatures(input.kclManager.code, {
-            type: 'Allow',
-          })
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            input.kclManager.wasmInstance
+          )
           if (err(ast)) {
             return Promise.reject(ast)
           }

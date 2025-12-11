@@ -70,7 +70,9 @@ export default class RustContext {
     this.engineCommandManager = engineCommandManager
     this._settingsActor = dummySettingsActor
 
-    instance.then(this.createFromInstance).catch(reportRejection)
+    instance
+      .then((instance) => this.createFromInstance(instance))
+      .catch(reportRejection)
   }
 
   /** Create a new context instance */
@@ -86,7 +88,11 @@ export default class RustContext {
   }
 
   getRustInstance() {
-    return this.rustInstance || undefined
+    if (this.rustInstance === null) {
+      // eslint-disable-next-line  suggest-no-throw/suggest-no-throw
+      throw new Error('attempted to access rustInstance before it was ready')
+    }
+    return this.rustInstance
   }
 
   private createFromInstance(instance: ModuleType) {

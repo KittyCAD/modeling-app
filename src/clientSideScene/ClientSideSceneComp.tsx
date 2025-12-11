@@ -572,7 +572,10 @@ const ConstraintSymbol = ({
             })
           } else if (isConstrained) {
             try {
-              const pResult = parse(recast(kclManager.ast))
+              const pResult = parse(
+                recast(kclManager.ast),
+                kclManager.wasmInstance
+              )
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
 

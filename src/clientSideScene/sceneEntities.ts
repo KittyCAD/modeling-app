@@ -115,7 +115,7 @@ import type { ToolTip } from '@src/lang/langHelpers'
 import { executeAstMock } from '@src/lang/langHelpers'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
-  createNodeFromExprSnippet,
+  buildSnippetParser,
   getInsertIndex,
   insertNewStartProfileAt,
   mutateKwArgOnly,
@@ -856,7 +856,11 @@ export class SceneEntities {
     truncatedAst: Node<Program>
     variableDeclarationName: string
   }> {
-    const prepared = this.prepareTruncatedAst(sketchNodePaths, maybeModdedAst)
+    const prepared = this.prepareTruncatedAst(
+      sketchNodePaths,
+      await this.kclManager.wasmInstancePromise,
+      maybeModdedAst
+    )
     if (err(prepared)) {
       this.tearDownSketch({ removeAxis: false })
       return Promise.reject(prepared)
@@ -1176,7 +1180,7 @@ export class SceneEntities {
       pathToNode: sketchEntryNodePath,
     })
     if (trap(mod)) return Promise.reject(mod)
-    const pResult = parse(recast(mod.modifiedAst))
+    const pResult = parse(recast(mod.modifiedAst), this.kclManager.wasmInstance)
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     const modifiedAst = pResult.program
 
@@ -1462,7 +1466,7 @@ export class SceneEntities {
         sketchNodePaths,
       })
 
-    const pResult = parse(recast(_ast))
+    const pResult = parse(recast(_ast), this.kclManager.wasmInstance)
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     _ast = pResult.program
 
@@ -1486,7 +1490,7 @@ export class SceneEntities {
     ])
 
     const code = recast(_ast)
-    const _recastAst = parse(code)
+    const _recastAst = parse(code, this.kclManager.wasmInstance)
     if (trap(_recastAst) || !resultIsOk(_recastAst))
       return Promise.reject(_recastAst)
     _ast = _recastAst.program
@@ -1588,7 +1592,7 @@ export class SceneEntities {
         updateRectangleSketch(sketchInit, x, y, tag)
 
         const newCode = recast(_ast)
-        const pResult = parse(newCode)
+        const pResult = parse(newCode, this.kclManager.wasmInstance)
         if (trap(pResult) || !resultIsOk(pResult))
           return Promise.reject(pResult)
         _ast = pResult.program
@@ -1661,7 +1665,7 @@ export class SceneEntities {
         sketchNodePaths,
       })
 
-    let __recastAst = parse(recast(_ast))
+    let __recastAst = parse(recast(_ast), this.kclManager.wasmInstance)
     if (trap(__recastAst) || !resultIsOk(__recastAst))
       return Promise.reject(__recastAst)
     _ast = __recastAst.program
@@ -1684,7 +1688,7 @@ export class SceneEntities {
       ...getRectangleCallExpressions(tag),
     ])
     const code = recast(_ast)
-    __recastAst = parse(code)
+    __recastAst = parse(code, this.kclManager.wasmInstance)
     if (trap(__recastAst) || !resultIsOk(__recastAst))
       return Promise.reject(__recastAst)
     _ast = __recastAst.program
@@ -1801,7 +1805,7 @@ export class SceneEntities {
             return Promise.reject(maybeError)
           }
 
-          const pResult = parse(recast(_ast))
+          const pResult = parse(recast(_ast), this.kclManager.wasmInstance)
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           _ast = pResult.program
@@ -1851,6 +1855,9 @@ export class SceneEntities {
       point2[0] + 0.1,
       2
     )}, ${roundOff(point2[1] + 0.1, 2)}]`
+    const createNodeFromExprSnippet = buildSnippetParser(
+      this.kclManager.wasmInstance
+    )
     const newExpression = createNodeFromExprSnippet`${varName} = circleThreePoint(
   ${varDec.node.id.name},
   p1 = [${roundOff(point1[0], 2)}, ${roundOff(point1[1], 2)}],
@@ -1868,7 +1875,7 @@ export class SceneEntities {
         sketchNodePaths,
       })
 
-    const pResult = parse(recast(_ast))
+    const pResult = parse(recast(_ast), this.kclManager.wasmInstance)
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     _ast = pResult.program
 
@@ -1991,7 +1998,7 @@ export class SceneEntities {
 
           const newCode = recast(modded)
           if (err(newCode)) return
-          const pResult = parse(newCode)
+          const pResult = parse(newCode, this.kclManager.wasmInstance)
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           _ast = pResult.program
@@ -2065,7 +2072,7 @@ export class SceneEntities {
     })
 
     if (trap(mod)) return Promise.reject(mod)
-    const pResult = parse(recast(mod.modifiedAst))
+    const pResult = parse(recast(mod.modifiedAst), this.kclManager.wasmInstance)
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     _ast = pResult.program
 
@@ -2212,7 +2219,7 @@ export class SceneEntities {
 
           const newCode = recast(modded)
           if (err(newCode)) return
-          const pResult = parse(newCode)
+          const pResult = parse(newCode, this.kclManager.wasmInstance)
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           _ast = pResult.program
@@ -2276,7 +2283,7 @@ export class SceneEntities {
     })
 
     if (trap(mod)) return Promise.reject(mod)
-    const pResult = parse(recast(mod.modifiedAst))
+    const pResult = parse(recast(mod.modifiedAst), this.kclManager.wasmInstance)
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     _ast = pResult.program
 
@@ -2454,7 +2461,7 @@ export class SceneEntities {
 
           const newCode = recast(modded)
           if (err(newCode)) return
-          const pResult = parse(newCode)
+          const pResult = parse(newCode, this.kclManager.wasmInstance)
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           _ast = pResult.program
@@ -2526,7 +2533,7 @@ export class SceneEntities {
         sketchNodePaths,
       })
 
-    const pResult = parse(recast(_ast))
+    const pResult = parse(recast(_ast), this.kclManager.wasmInstance)
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     _ast = pResult.program
 
@@ -2653,7 +2660,7 @@ export class SceneEntities {
 
           const newCode = recast(modded)
           if (err(newCode)) return
-          const pResult = parse(newCode)
+          const pResult = parse(newCode, this.kclManager.wasmInstance)
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           _ast = pResult.program
@@ -2836,6 +2843,7 @@ export class SceneEntities {
   }
   prepareTruncatedAst = (
     sketchNodePaths: PathToNode[],
+    wasmInstance: ModuleType,
     ast?: Node<Program>,
     draftSegment?: DraftSegment
   ) => {
@@ -2843,6 +2851,7 @@ export class SceneEntities {
       sketchNodePaths,
       ast || this.kclManager.ast,
       this.kclManager.lastSuccessfulVariables,
+      wasmInstance,
       draftSegment
     )
   }
@@ -3288,7 +3297,11 @@ export class SceneEntities {
     modifiedAst = modded.modifiedAst
     const info = draftInfo
       ? draftInfo
-      : this.prepareTruncatedAst(sketchNodePaths || [], modifiedAst)
+      : this.prepareTruncatedAst(
+          sketchNodePaths || [],
+          await this.kclManager.wasmInstancePromise,
+          modifiedAst
+        )
     if (trap(info, { suppress: true })) return
     const { truncatedAst } = info
     try {
@@ -3549,7 +3562,10 @@ export class SceneEntities {
           SEGMENT_BODIES_PLUS_PROFILE_START
         )
         if (parent?.userData?.pathToNode) {
-          const pResult = parse(recast(this.kclManager.ast))
+          const pResult = parse(
+            recast(this.kclManager.ast),
+            this.kclManager.wasmInstance
+          )
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           const updatedAst = pResult.program
@@ -3909,6 +3925,7 @@ function prepareTruncatedAst(
   sketchNodePaths: PathToNode[],
   ast: Node<Program>,
   variables: VariableMap,
+  wasmInstance: ModuleType,
   draftSegment?: DraftSegment
 ):
   | {
@@ -3970,7 +3987,7 @@ function prepareTruncatedAst(
     ).body.push(newSegment)
     // update source ranges to section we just added.
     // hacks like this wouldn't be needed if the AST put pathToNode info in memory/sketch segments
-    const pResult = parse(recast(_ast)) // get source ranges correct since unfortunately we still rely on them
+    const pResult = parse(recast(_ast), wasmInstance) // get source ranges correct since unfortunately we still rely on them
     if (trap(pResult) || !resultIsOk(pResult))
       return Error('Unexpected compilation error')
     const updatedSrcRangeAst = pResult.program

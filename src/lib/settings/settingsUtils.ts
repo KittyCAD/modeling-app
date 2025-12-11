@@ -27,7 +27,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
 import {
   createSettings,
-  type settings,
+  type SettingsType,
 } from '@src/lib/settings/initialSettings'
 import type {
   SaveSettingsPayload,
@@ -508,7 +508,7 @@ export async function loadAndValidateSettings(
  */
 export async function saveSettings(
   initPromise: Promise<ModuleType>,
-  allSettings: typeof settings,
+  allSettings: SettingsType,
   projectPath?: string
 ) {
   // Make sure we have wasm initialized.
@@ -553,15 +553,15 @@ export async function saveSettings(
 }
 
 export function getChangedSettingsAtLevel(
-  allSettings: typeof settings,
+  allSettings: SettingsType,
   level: SettingsLevel
 ): Partial<SaveSettingsPayload> {
   const changedSettings = {} as Record<
-    keyof typeof settings,
+    keyof SettingsType,
     Record<string, unknown>
   >
   Object.entries(allSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof typeof settings
+    const categoryKey = category as keyof SettingsType
     Object.entries(settingsCategory).forEach(
       ([setting, settingValue]: [string, Setting]) => {
         // If setting is different its ancestors' non-undefined values,
@@ -587,15 +587,14 @@ export function getChangedSettingsAtLevel(
 }
 
 export function getAllCurrentSettings(
-  allSettings: typeof settings
+  allSettings: SettingsType
 ): SaveSettingsPayload {
   const currentSettings = {} as SaveSettingsPayload
   Object.entries(allSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof typeof settings
+    const categoryKey = category as keyof SettingsType
     Object.entries(settingsCategory).forEach(
       ([setting, settingValue]: [string, Setting]) => {
-        const settingKey =
-          setting as keyof (typeof settings)[typeof categoryKey]
+        const settingKey = setting as keyof SettingsType[typeof categoryKey]
         currentSettings[categoryKey] = {
           ...currentSettings[categoryKey],
           [settingKey]: settingValue.current,
@@ -608,7 +607,7 @@ export function getAllCurrentSettings(
 }
 
 export function clearSettingsAtLevel(
-  allSettings: typeof settings,
+  allSettings: SettingsType,
   level: SettingsLevel
 ) {
   Object.entries(allSettings).forEach(([_category, settingsCategory]) => {
@@ -623,12 +622,12 @@ export function clearSettingsAtLevel(
 }
 
 export function setSettingsAtLevel(
-  allSettings: typeof settings,
+  allSettings: SettingsType,
   level: SettingsLevel,
   newSettings: Partial<SaveSettingsPayload>
 ) {
   Object.entries(newSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof typeof settings
+    const categoryKey = category as keyof SettingsType
     if (!allSettings[categoryKey]) return // ignore unrecognized categories
     Object.entries(settingsCategory).forEach(([settingKey, settingValue]) => {
       // TODO: How do you get a valid type for allSettings[categoryKey][settingKey]?

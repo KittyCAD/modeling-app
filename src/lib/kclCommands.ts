@@ -140,9 +140,13 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'level' in data) {
-          const newAst = setExperimentalFeatures(commandProps.kclManager.code, {
-            type: data.level,
-          })
+          const newAst = setExperimentalFeatures(
+            commandProps.kclManager.code,
+            {
+              type: data.level,
+            },
+            commandProps.kclManager.wasmInstance
+          )
           if (err(newAst)) {
             toast.error(
               `Failed to set file experimental features level: ${newAst.message}`

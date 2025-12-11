@@ -69,12 +69,7 @@ async function getAstAndArtifactGraphEngineless(
   const ast = assertParse(code, instance)
   if (err(ast)) throw ast
 
-  const { artifactGraph } = await enginelessExecutor(
-    ast,
-    undefined,
-    undefined,
-    rustContext
-  )
+  const { artifactGraph } = await enginelessExecutor(ast, rustContext)
   return { ast, artifactGraph }
 }
 
@@ -1006,8 +1001,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
         const ast = assertParse(helixCode, instanceInThisFile)
         const { artifactGraph, operations } = await enginelessExecutor(
           ast,
-          undefined,
-          undefined,
           rustContextInThisFile
         )
         const op = operations.find(
@@ -1041,8 +1034,6 @@ helix001 = helix(
       const ast = assertParse(helixCode, instanceInThisFile)
       const { artifactGraph, operations } = await enginelessExecutor(
         ast,
-        undefined,
-        undefined,
         rustContextInThisFile
       )
       const op = operations.find(

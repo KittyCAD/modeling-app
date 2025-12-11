@@ -9,7 +9,6 @@ import {
   type Program,
 } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { rustContext } from '@src/lib/singletons'
 import type RustContext from '@src/lib/rustContext'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
@@ -21,9 +20,9 @@ import { expect } from 'vitest'
 
 export async function enginelessExecutor(
   ast: Node<Program>,
+  rustContext: RustContext,
   usePrevMemory?: boolean,
-  path?: string,
-  providedRustContext?: RustContext
+  path?: string
 ): Promise<ExecState> {
   const theRustContext = providedRustContext ? providedRustContext : rustContext
   const settings = await jsAppSettings(theRustContext.settingsActor)
@@ -143,12 +142,7 @@ export async function runNewAstAndCheckForSweep(
   ast: Node<Program>,
   rustContext: RustContext
 ) {
-  const { artifactGraph } = await enginelessExecutor(
-    ast,
-    undefined,
-    undefined,
-    rustContext
-  )
+  const { artifactGraph } = await enginelessExecutor(ast, rustContext)
   const sweepArtifact = artifactGraph.values().find((a) => a.type === 'sweep')
   expect(sweepArtifact).toBeDefined()
 }
