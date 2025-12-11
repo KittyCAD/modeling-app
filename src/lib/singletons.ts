@@ -142,7 +142,7 @@ const appMachineActors = {
 
 export const commandBarActor = createActor(commandBarMachine, {
   input: { commands: [] },
-})
+}).start()
 
 const appMachine = setup({
   types: {} as {
