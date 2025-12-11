@@ -1440,11 +1440,10 @@ fn substitute_sketch_var_in_unsolved_expr(
                     source_ranges.to_vec(),
                 )));
             };
-            // TODO: sketch-api: This isn't implemented properly yet.
-            // solve_outcome.unsatisfied.contains means "Fixed or over-constrained"
             let freedom = if solve_outcome.unsatisfied.contains(&var_id.0) {
-                Freedom::Free
+                Freedom::Conflict
             } else {
+                // TODO: sketch-api: This isn't implemented properly yet.
                 Freedom::Fixed
             };
             Ok((TyF64::new(*solution, solution_ty), freedom))
