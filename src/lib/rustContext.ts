@@ -51,19 +51,11 @@ export default class RustContext {
 
   constructor(
     engineCommandManager: ConnectionManager,
-    instance: Promise<ModuleType | string>
+    instance: Promise<ModuleType>
   ) {
     this.engineCommandManager = engineCommandManager
 
-    instance
-      .then((wasmInstance) => {
-        if (typeof wasmInstance !== 'string') {
-          this.createFromInstance(wasmInstance)
-        } else {
-          return new Error(wasmInstance)
-        }
-      })
-      .catch(reportRejection)
+    instance.then(this.createFromInstance).catch(reportRejection)
   }
 
   /** Create a new context instance */
