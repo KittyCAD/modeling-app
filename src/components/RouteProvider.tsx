@@ -74,30 +74,28 @@ export function RouteProvider({ children }: { children: ReactNode }) {
         return
       }
 
-      if (window.electron) {
-        try {
-          const stat = await window.electron.stat(path)
-          const lastUpdatedMs = stat?.mtimeMs
-          if (kclManager.lastWrite && typeof lastUpdatedMs === 'number') {
-            // If last write happened shortly before the file was updated, it means the file was updated by us
-            // Typically the delay is 2-4 ms, so we allow a 50ms margin after the write and a 2ms margin
-            // before the write (just for inaccuracies for the timestamp).
-            if (
-              kclManager.lastWrite.time - 2 < lastUpdatedMs &&
-              lastUpdatedMs < kclManager.lastWrite.time + 50
-            ) {
-              // Ignore this change event, last update of the file was likely caused by us
-              return
-            }
-          }
-        } catch (e) {
-          console.warn('stat failed for change event', e)
-        }
-      }
-
       const isCurrentFile = loadedProject?.file?.path === path
       if (isCurrentFile) {
         if (window.electron) {
+          try {
+            const stat = await window.electron.stat(path)
+            const lastUpdatedMs = stat?.mtimeMs
+            if (kclManager.lastWrite && typeof lastUpdatedMs === 'number') {
+              // If last write happened shortly before the file was updated, it means the file was updated by us
+              // Typically the delay is 2-4 ms, so we allow a 50ms margin after the write and a 2ms margin
+              // before the write (just for inaccuracies for the timestamp).
+              if (
+                kclManager.lastWrite.time - 2 < lastUpdatedMs &&
+                lastUpdatedMs < kclManager.lastWrite.time + 50
+              ) {
+                // Ignore this change event, last update of the file was likely caused by us
+                return
+              }
+            }
+          } catch (e) {
+            console.warn('stat failed for change event', e)
+          }
+
           // Your current file is changed, read it from disk and write it into the code manager and execute the AST
           const code = await window.electron.readFile(path, {
             encoding: 'utf-8',
