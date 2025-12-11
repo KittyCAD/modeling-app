@@ -17,23 +17,13 @@ export fn line(
   midpoint?: Point2d,
 ): Segment {}
 
-@(impl = std_constrainable, experimental = true, feature_tree = false)
-export type Arc = {
-  start: Point2d,
-  end: Point2d,
-  center: Point2d | none,
-  interior: Point2d | none,
-}
-
-@(impl = std_constrainable, experimental = true, feature_tree = false)
+/// A circular arc.
+@(impl = std_rust_constrainable, experimental = true, feature_tree = false)
 export fn arc(
   start: Point2d,
   end: Point2d,
-  center?: Point2d,
-  interior?: Point2d,
-): Arc {
-  { start, end, center, interior }
-}
+  center: Point2d,
+): Segment {}
 
 /// Constrain points to be coincident.
 ///

@@ -1420,6 +1420,47 @@ fn substitute_sketch_var_in_segment(
                 meta: segment.meta,
             })
         }
+        UnsolvedSegmentKind::Arc {
+            start,
+            end,
+            center,
+            ctor,
+            start_object_id,
+            end_object_id,
+            center_object_id,
+        } => {
+            let (start_x, start_x_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, &srs)?;
+            let (start_y, start_y_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&start[1], solve_outcome, solution_ty, &srs)?;
+            let (end_x, end_x_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&end[0], solve_outcome, solution_ty, &srs)?;
+            let (end_y, end_y_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&end[1], solve_outcome, solution_ty, &srs)?;
+            let (center_x, center_x_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&center[0], solve_outcome, solution_ty, &srs)?;
+            let (center_y, center_y_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&center[1], solve_outcome, solution_ty, &srs)?;
+            let start = [start_x, start_y];
+            let end = [end_x, end_y];
+            let center = [center_x, center_y];
+            Ok(Segment {
+                object_id: segment.object_id,
+                kind: SegmentKind::Arc {
+                    start,
+                    end,
+                    center,
+                    ctor: ctor.clone(),
+                    start_object_id: *start_object_id,
+                    end_object_id: *end_object_id,
+                    center_object_id: *center_object_id,
+                    start_freedom: start_x_freedom.merge(start_y_freedom),
+                    end_freedom: end_x_freedom.merge(end_y_freedom),
+                    center_freedom: center_x_freedom.merge(center_y_freedom),
+                },
+                meta: segment.meta,
+            })
+        }
     }
 }
 
@@ -1578,6 +1619,115 @@ fn create_segment_scene_objects(
                     label: Default::default(),
                     comments: Default::default(),
                     artifact_id: line_artifact_id,
+                    source,
+                };
+                scene_objects.push(segment_object);
+            }
+            SegmentKind::Arc {
+                start,
+                end,
+                center,
+                ctor,
+                start_object_id,
+                end_object_id,
+                center_object_id,
+                start_freedom,
+                end_freedom,
+                center_freedom,
+            } => {
+                let start_point2d = TyF64::to_point2d(start).map_err(|_| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("Error converting start point runtime type to API value: {:?}", start),
+                        vec![sketch_block_range],
+                    ))
+                })?;
+                let start_artifact_id = exec_state.next_artifact_id();
+                let start_point_object = Object {
+                    id: *start_object_id,
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Point(crate::front::Point {
+                            position: start_point2d.clone(),
+                            ctor: None,
+                            owner: Some(segment.object_id),
+                            freedom: *start_freedom,
+                            constraints: Vec::new(),
+                        }),
+                    },
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: start_artifact_id,
+                    source: source.clone(),
+                };
+                let start_point_object_id = start_point_object.id;
+                scene_objects.push(start_point_object);
+
+                let end_point2d = TyF64::to_point2d(end).map_err(|_| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("Error converting end point runtime type to API value: {:?}", end),
+                        vec![sketch_block_range],
+                    ))
+                })?;
+                let end_artifact_id = exec_state.next_artifact_id();
+                let end_point_object = Object {
+                    id: *end_object_id,
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Point(crate::front::Point {
+                            position: end_point2d.clone(),
+                            ctor: None,
+                            owner: Some(segment.object_id),
+                            freedom: *end_freedom,
+                            constraints: Vec::new(),
+                        }),
+                    },
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: end_artifact_id,
+                    source: source.clone(),
+                };
+                let end_point_object_id = end_point_object.id;
+                scene_objects.push(end_point_object);
+
+                let center_point2d = TyF64::to_point2d(center).map_err(|_| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("Error converting center point runtime type to API value: {:?}", center),
+                        vec![sketch_block_range],
+                    ))
+                })?;
+                let center_artifact_id = exec_state.next_artifact_id();
+                let center_point_object = Object {
+                    id: *center_object_id,
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Point(crate::front::Point {
+                            position: center_point2d.clone(),
+                            ctor: None,
+                            owner: Some(segment.object_id),
+                            freedom: *center_freedom,
+                            constraints: Vec::new(),
+                        }),
+                    },
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: center_artifact_id,
+                    source: source.clone(),
+                };
+                let center_point_object_id = center_point_object.id;
+                scene_objects.push(center_point_object);
+
+                let arc_artifact_id = exec_state.next_artifact_id();
+                let segment_object = Object {
+                    id: segment.object_id,
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Arc(crate::front::Arc {
+                            start: start_point_object_id,
+                            end: end_point_object_id,
+                            center: center_point_object_id,
+                            ctor: crate::front::SegmentCtor::Arc(ctor.as_ref().clone()),
+                            ctor_applicable: true,
+                        }),
+                    },
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: arc_artifact_id,
                     source,
                 };
                 scene_objects.push(segment_object);
@@ -1832,7 +1982,7 @@ impl Node<MemberExpression> {
                                     ty: RuntimeType::any(),
                                 })
                             }
-                            UnsolvedSegmentKind::Line { .. } => Err(KclError::new_undefined_value(
+                            _ => Err(KclError::new_undefined_value(
                                 KclErrorDetails::new(
                                     format!("Property '{property}' not found in segment"),
                                     vec![self.clone().into()],
@@ -1851,7 +2001,7 @@ impl Node<MemberExpression> {
                                     segment.meta.clone(),
                                 ))
                             }
-                            SegmentKind::Line { .. } => Err(KclError::new_undefined_value(
+                            _ => Err(KclError::new_undefined_value(
                                 KclErrorDetails::new(
                                     format!("Property '{property}' not found in segment"),
                                     vec![self.clone().into()],
@@ -1892,6 +2042,28 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }),
+                        UnsolvedSegmentKind::Arc {
+                            start,
+                            ctor,
+                            start_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        object_id: *start_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
                     },
                     SegmentRepr::Solved { segment } => match &segment.kind {
                         SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
@@ -1902,6 +2074,30 @@ impl Node<MemberExpression> {
                             None,
                         )),
                         SegmentKind::Line {
+                            start,
+                            ctor,
+                            start_object_id,
+                            start_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        object_id: *start_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                            freedom: *start_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                        SegmentKind::Arc {
                             start,
                             ctor,
                             start_object_id,
@@ -1958,6 +2154,28 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }),
+                        UnsolvedSegmentKind::Arc {
+                            end,
+                            ctor,
+                            end_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        object_id: *end_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: end.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.end.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
                     },
                     SegmentRepr::Solved { segment } => match &segment.kind {
                         SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
@@ -1991,6 +2209,96 @@ impl Node<MemberExpression> {
                                 meta: segment.meta.clone(),
                             }),
                         }),
+                        SegmentKind::Arc {
+                            end,
+                            ctor,
+                            end_object_id,
+                            end_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        object_id: *end_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: end.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.end.clone(),
+                                            }),
+                                            freedom: *end_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                    },
+                },
+                "center" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => match &segment.kind {
+                        UnsolvedSegmentKind::Arc {
+                            center,
+                            ctor,
+                            center_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        object_id: *center_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: center.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.center.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                    SegmentRepr::Solved { segment } => match &segment.kind {
+                        SegmentKind::Arc {
+                            center,
+                            ctor,
+                            center_object_id,
+                            center_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        object_id: *center_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: center.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.center.clone(),
+                                            }),
+                                            freedom: *center_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
                     },
                 },
                 other => Err(KclError::new_undefined_value(
