@@ -596,13 +596,3 @@ export const settingsMachine = setup({
     },
   },
 })
-
-/** Utility to get the settings off an ActorRefFrom settingsMachine */
-export const getSettingsFromActorRef = (actor: SettingsActorType) => {
-  const {
-    currentProject: _c,
-    kclManager: _k,
-    ...settings
-  } = actor.getSnapshot().context
-  return settings
-}
