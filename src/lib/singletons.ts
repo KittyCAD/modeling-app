@@ -140,6 +140,10 @@ const appMachineActors = {
   [BILLING]: billingMachine,
 } as const
 
+export const commandBarActor = createActor(commandBarMachine, {
+  input: { commands: [] },
+})
+
 const appMachine = setup({
   types: {} as {
     events: AppMachineEvent
@@ -152,6 +156,7 @@ const appMachine = setup({
     engineCommandManager: engineCommandManager,
     sceneInfra: sceneInfra,
     sceneEntitiesManager: sceneEntitiesManager,
+    commandBarActor,
     layout: defaultLayout,
   },
   entry: [
@@ -164,7 +169,11 @@ const appMachine = setup({
     spawnChild(appMachineActors[AUTH], { systemId: AUTH }),
     spawnChild(appMachineActors[SETTINGS], {
       systemId: SETTINGS,
-      input: { ...createSettings(), kclManager },
+      input: {
+        ...createSettings(),
+        kclManager,
+        commandBarActor: commandBarActor,
+      },
     }),
     spawnChild(appMachineActors[SYSTEM_IO], {
       systemId: SYSTEM_IO,
@@ -244,10 +253,6 @@ export type SystemIOActor = ActorRefFrom<
 >
 
 export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
-
-export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
-  (typeof appMachineActors)[typeof COMMAND_BAR]
->
 
 // TODO: proper dependency management
 sceneEntitiesManager.commandBarActor = commandBarActor

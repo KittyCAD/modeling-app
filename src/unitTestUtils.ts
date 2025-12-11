@@ -21,6 +21,10 @@ import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createActor } from 'xstate'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { settingsMachine } from './machines/settingsMachine'
+import { openExternalBrowserIfDesktop } from './lib/openWindow'
+import { createSettings } from './lib/settings/initialSettings'
+import { getSettingsFromActorRef } from './lib/settings/settingsUtils'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -84,6 +88,13 @@ export async function buildTheWorldAndConnectToEngine() {
   sceneEntitiesManager.commandBarActor = commandBarActor
   kclManager.sceneEntitiesManager = sceneEntitiesManager
 
+  const settingsActor = createActor(settingsMachine, {
+    input: { ...createSettings(), kclManager, commandBarActor },
+  }).start()
+  const getSettings = () => getSettingsFromActorRef(settingsActor)
+  sceneInfra.camControls.getSettings = getSettings
+  sceneEntitiesManager.getSettings = getSettings
+
   await new Promise((resolve) => {
     engineCommandManager
       .start({
@@ -108,6 +119,7 @@ export async function buildTheWorldAndConnectToEngine() {
     kclManager,
     sceneEntitiesManager,
     commandBarActor,
+    settingsActor,
   }
 }
 
@@ -138,6 +150,18 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     kclManager,
     rustContext
   )
+
+  const commandBarActor = createActor(commandBarMachine, {
+    input: { commands: [] },
+  }).start()
+  const settingsActor = createActor(settingsMachine, {
+    input: { ...createSettings(), kclManager, commandBarActor },
+  }).start()
+  settingsActor.start()
+  const getSettings = () => getSettingsFromActorRef(settingsActor)
+  sceneInfra.camControls.getSettings = getSettings
+  sceneEntitiesManager.getSettings = getSettings
+
   kclManager.sceneEntitiesManager = sceneEntitiesManager
   return {
     instance: await instancePromise,
@@ -146,5 +170,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     sceneInfra,
     kclManager,
     sceneEntitiesManager,
+    commandBarActor,
+    settingsActor,
   }
 }

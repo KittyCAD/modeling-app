@@ -332,7 +332,7 @@ export function readLocalStorageProjectSettingsFile():
 }
 
 export interface AppSettings {
-  settings: ReturnType<typeof createSettings>
+  settings: SettingsType
   configuration: DeepPartial<Configuration>
 }
 

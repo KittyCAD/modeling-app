@@ -19,7 +19,10 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import {
+  buildTheWorldAndConnectToEngine,
+  buildTheWorldAndNoEngineConnection,
+} from '@src/unitTestUtils'
 import { kclEditorMachine } from '@src/machines/kclEditorMachine'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { ConnectionManager } from '@src/network/connectionManager'

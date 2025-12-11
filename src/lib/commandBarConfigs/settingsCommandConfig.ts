@@ -63,7 +63,7 @@ interface CreateSettingsArgs {
 // Takes a Setting with a commandConfig and creates a Command
 // that can be used in the CommandBar component.
 export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
-  type S = PathValue<ReturnType<typeof createSettings>, typeof type>
+  type S = PathValue<SettingsType, typeof type>
 
   const context = actor.getSnapshot().context
   const isProjectAvailable = context.currentProject !== undefined
