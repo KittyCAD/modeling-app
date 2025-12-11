@@ -37,8 +37,12 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
 import type { Stats } from 'fs'
 
-const convertStatsToFileMetadata = (stats: Stats | null): FileMetadata | null => {
-  if (!stats) return null
+const convertStatsToFileMetadata = (
+  stats: Stats | null
+): FileMetadata | null => {
+  if (!stats) {
+    return null
+  }
   return {
     modified: stats.mtimeMs,
     accessed: stats.atimeMs,
