@@ -5,10 +5,13 @@ import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type {
+  ExistingSegmentCtor,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { roundOff } from '@src/lib/utils'
+import { distance2d } from '@src/lib/utils2d'
 import { BufferGeometry, Line, LineBasicMaterial, Vector3 } from 'three'
 
 // Trim tool draws an ephemeral polyline during an area-select drag.
@@ -78,28 +81,28 @@ function isPointOnSegment(
 
 // Helper to calculate intersection point of two line segments
 // Also checks if endpoints are on the other segment (within epsilon)
-// Returns null if they don't intersect, or the intersection point [x, y]
+// Returns null if they don't intersect, or an object with the intersection point and whether it's coincident
 function lineSegmentIntersection(
   p1: [number, number],
   p2: [number, number],
   p3: [number, number],
   p4: [number, number],
   epsilon = EPSILON_POINT_ON_SEGMENT
-): [number, number] | null {
-  // First check if any endpoints are on the other segment
+): { point: [number, number]; isCoincident: boolean } | null {
+  // First check if any endpoints are on the other segment (coincident case)
   const p1OnSegment2 = isPointOnSegment(p1, p3, p4, epsilon)
-  if (p1OnSegment2) return p1OnSegment2
+  if (p1OnSegment2) return { point: p1OnSegment2, isCoincident: true }
 
   const p2OnSegment2 = isPointOnSegment(p2, p3, p4, epsilon)
-  if (p2OnSegment2) return p2OnSegment2
+  if (p2OnSegment2) return { point: p2OnSegment2, isCoincident: true }
 
   const p3OnSegment1 = isPointOnSegment(p3, p1, p2, epsilon)
-  if (p3OnSegment1) return p3OnSegment1
+  if (p3OnSegment1) return { point: p3OnSegment1, isCoincident: true }
 
   const p4OnSegment1 = isPointOnSegment(p4, p1, p2, epsilon)
-  if (p4OnSegment1) return p4OnSegment1
+  if (p4OnSegment1) return { point: p4OnSegment1, isCoincident: true }
 
-  // Then check for actual line segment intersection
+  // Then check for actual line segment intersection (true intersection)
   const [x1, y1] = p1
   const [x2, y2] = p2
   const [x3, y3] = p3
@@ -118,7 +121,7 @@ function lineSegmentIntersection(
   if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
     const x = x1 + t * (x2 - x1)
     const y = y1 + t * (y2 - y1)
-    return [x, y]
+    return { point: [x, y], isCoincident: false }
   }
 
   return null
@@ -177,7 +180,7 @@ export function findFirstIntersectionWithPolylineSegment(
 
       if (intersection) {
         return {
-          location: intersection,
+          location: intersection.point,
           segmentId,
           pointIndex: i,
         }
@@ -192,7 +195,11 @@ export function findFirstIntersectionWithPolylineSegment(
 export function findSegmentsThatIntersect(
   segmentId: number,
   objects: SceneGraphDelta['new_graph']['objects']
-): Array<{ location: [number, number]; segmentId: number }> {
+): Array<{
+  location: [number, number]
+  segmentId: number
+  subType: 'trueIntersect' | 'coincident'
+}> {
   const intersectedObj = objects[segmentId]
 
   if (
@@ -218,6 +225,7 @@ export function findSegmentsThatIntersect(
   const segmentIntersections: Array<{
     location: [number, number]
     segmentId: number
+    subType: 'trueIntersect' | 'coincident'
   }> = []
 
   // Check this segment against all other segments
@@ -247,8 +255,11 @@ export function findSegmentsThatIntersect(
 
         if (segmentIntersection) {
           segmentIntersections.push({
-            location: segmentIntersection,
+            location: segmentIntersection.point,
             segmentId: otherSegmentId,
+            subType: segmentIntersection.isCoincident
+              ? 'coincident'
+              : 'trueIntersect',
           })
         }
       }
@@ -267,6 +278,7 @@ type IntersectionOrEndPoint =
       point: [number, number]
       type: 'intersection'
       segmentId: number
+      subType: 'trueIntersect' | 'coincident'
     }
 
 interface SegmentTrimSides {
@@ -283,6 +295,7 @@ export function findTwoClosestPointsToIntersection(
   segmentIntersections: Array<{
     location: [number, number]
     segmentId: number
+    subType: 'trueIntersect' | 'coincident'
   }>,
   objects: SceneGraphDelta['new_graph']['objects']
 ): SegmentTrimSides | Error {
@@ -321,6 +334,7 @@ export function findTwoClosestPointsToIntersection(
         point: [number, number]
         type: 'intersection'
         segmentId: number
+        subType: 'trueIntersect' | 'coincident'
         t: number
       }
   > = [
@@ -335,6 +349,7 @@ export function findTwoClosestPointsToIntersection(
       point: si.location,
       type: 'intersection' as const,
       segmentId: si.segmentId,
+      subType: si.subType,
       t: projectPointOntoSegment(si.location, startPoint, endPoint),
     })),
   ]
@@ -379,7 +394,7 @@ export function findTwoClosestPointsToIntersection(
       point: cp.point,
       ...(cp.type === 'endpoint'
         ? { which: cp.which }
-        : { segmentId: cp.segmentId }),
+        : { segmentId: cp.segmentId, subType: cp.subType }),
     })),
     pointBefore: pointBefore
       ? {
@@ -388,7 +403,10 @@ export function findTwoClosestPointsToIntersection(
           point: pointBefore.point,
           ...(pointBefore.type === 'endpoint'
             ? { which: pointBefore.which }
-            : { segmentId: pointBefore.segmentId }),
+            : {
+                segmentId: pointBefore.segmentId,
+                subType: pointBefore.subType,
+              }),
         }
       : null,
     pointAfter: pointAfter
@@ -398,7 +416,7 @@ export function findTwoClosestPointsToIntersection(
           point: pointAfter.point,
           ...(pointAfter.type === 'endpoint'
             ? { which: pointAfter.which }
-            : { segmentId: pointAfter.segmentId }),
+            : { segmentId: pointAfter.segmentId, subType: pointAfter.subType }),
         }
       : null,
   })
@@ -421,6 +439,7 @@ export function findTwoClosestPointsToIntersection(
           point: pointBefore.point,
           type: 'intersection',
           segmentId: pointBefore.segmentId,
+          subType: pointBefore.subType,
         }
 
   // Build the endSide (point after intersection, traveling towards end)
@@ -434,6 +453,7 @@ export function findTwoClosestPointsToIntersection(
           point: pointAfter.point,
           type: 'intersection',
           segmentId: pointAfter.segmentId,
+          subType: pointAfter.subType,
         }
 
   return {
@@ -514,6 +534,7 @@ export const machine = setup({
         },
         onAreaSelectEnd: async () => {
           let currentSceneGraph = context.sceneGraphDelta
+          let invalidates_ids = false
           let lastDeleteResult: {
             kclSource: SourceDelta
             sceneGraphDelta: SceneGraphDelta
@@ -567,6 +588,8 @@ export const machine = setup({
                   await jsAppSettings()
                 )
 
+                invalidates_ids =
+                  result.sceneGraphDelta.invalidates_ids || invalidates_ids
                 lastDeleteResult = result
                 currentSceneGraph = result.sceneGraphDelta
                 // Update lastPointIndex to continue from after this intersection
@@ -635,8 +658,92 @@ export const machine = setup({
                       await jsAppSettings()
                     )
 
-                    lastDeleteResult = result
-                    currentSceneGraph = result.sceneGraphDelta
+                    invalidates_ids =
+                      result.sceneGraphDelta.invalidates_ids || invalidates_ids
+
+                    // If the intersection is coincident, add a coincident constraint
+                    const intersectionSide =
+                      trimSides.startSide.type === 'endpoint'
+                        ? trimSides.endSide
+                        : trimSides.startSide
+
+                    if (
+                      intersectionSide.type === 'intersection' &&
+                      intersectionSide.subType === 'coincident'
+                    ) {
+                      // Find the point ID from the other segment that corresponds to the intersection
+                      // The intersection is where an endpoint of the other segment is on our segment
+                      const otherSegment = objects[intersectionSide.segmentId]
+                      if (
+                        otherSegment?.kind?.type === 'Segment' &&
+                        otherSegment.kind.segment.type === 'Line'
+                      ) {
+                        const otherStart = getPointCoords(
+                          otherSegment.kind.segment.start,
+                          objects
+                        )
+                        const otherEnd = getPointCoords(
+                          otherSegment.kind.segment.end,
+                          objects
+                        )
+
+                        // Check which endpoint of the other segment is at the intersection location
+                        let otherPointId: number | null = null
+                        if (
+                          otherStart &&
+                          distance2d(otherStart, intersectionSide.point) <
+                            EPSILON_POINT_ON_SEGMENT
+                        ) {
+                          otherPointId = otherSegment.kind.segment.start
+                        } else if (
+                          otherEnd &&
+                          distance2d(otherEnd, intersectionSide.point) <
+                            EPSILON_POINT_ON_SEGMENT
+                        ) {
+                          otherPointId = otherSegment.kind.segment.end
+                        }
+
+                        if (otherPointId !== null) {
+                          try {
+                            const constraintResult =
+                              await context.rustContext.addConstraint(
+                                0,
+                                context.sketchId,
+                                {
+                                  type: 'Coincident',
+                                  points: [endPointId, otherPointId],
+                                },
+                                await jsAppSettings()
+                              )
+
+                            invalidates_ids =
+                              constraintResult.sceneGraphDelta
+                                .invalidates_ids || invalidates_ids
+
+                            // Use the constraint result as it contains the final scene graph state
+                            lastDeleteResult = constraintResult
+                            currentSceneGraph = constraintResult.sceneGraphDelta
+                          } catch (error) {
+                            console.error(
+                              'Failed to add coincident constraint:',
+                              error
+                            )
+                            // Continue even if constraint fails - the point was already moved
+                            lastDeleteResult = result
+                            currentSceneGraph = result.sceneGraphDelta
+                          }
+                        } else {
+                          lastDeleteResult = result
+                          currentSceneGraph = result.sceneGraphDelta
+                        }
+                      } else {
+                        lastDeleteResult = result
+                        currentSceneGraph = result.sceneGraphDelta
+                      }
+                    } else {
+                      lastDeleteResult = result
+                      currentSceneGraph = result.sceneGraphDelta
+                    }
                   } catch (error) {
                     console.error('Failed to update point position:', error)
                     // Stop on error
@@ -726,6 +833,10 @@ export const machine = setup({
                     await jsAppSettings()
                   )
 
+                  invalidates_ids =
+                    editResult.sceneGraphDelta.invalidates_ids ||
+                    invalidates_ids
+
                   // Update scene graph after edit (needed for consistency, even though addSegment uses internal state)
                   currentSceneGraph = editResult.sceneGraphDelta
                   // editResult is used above to update currentSceneGraph
@@ -765,6 +876,9 @@ export const machine = setup({
                     await jsAppSettings()
                   )
 
+                  invalidates_ids =
+                    addResult.sceneGraphDelta.invalidates_ids || invalidates_ids
+
                   // Use the addResult as it contains the final scene graph state
                   lastDeleteResult = addResult
                   currentSceneGraph = addResult.sceneGraphDelta
@@ -784,13 +898,81 @@ export const machine = setup({
             }
           }
 
-          // Send the last delete result to parent to update sketch outcome
+          // Round all point coordinates before sending to parent
           if (lastDeleteResult) {
+            const objects = lastDeleteResult.sceneGraphDelta.new_graph.objects
+            const pointSegmentsToRound: ExistingSegmentCtor[] = []
+
+            // Collect all Point segments and round their coordinates
+            for (let i = 0; i < objects.length; i++) {
+              const obj = objects[i]
+              if (
+                obj?.kind?.type === 'Segment' &&
+                obj.kind.segment.type === 'Point'
+              ) {
+                const position = obj.kind.segment.position
+                const roundedX = roundOff(position.x.value)
+                const roundedY = roundOff(position.y.value)
+
+                // Only add if rounding changed the values
+                if (
+                  roundedX !== position.x.value ||
+                  roundedY !== position.y.value
+                ) {
+                  pointSegmentsToRound.push({
+                    id: i,
+                    ctor: {
+                      type: 'Point',
+                      position: {
+                        x: {
+                          type: 'Var',
+                          value: roundedX,
+                          units: position.x.units,
+                        },
+                        y: {
+                          type: 'Var',
+                          value: roundedY,
+                          units: position.y.units,
+                        },
+                      },
+                    },
+                  })
+                }
+              }
+            }
+
+            // Apply rounding to all points if any need rounding
+            let finalResult = lastDeleteResult
+            if (pointSegmentsToRound.length > 0) {
+              try {
+                const roundingResult = await context.rustContext.editSegments(
+                  0,
+                  context.sketchId,
+                  pointSegmentsToRound,
+                  await jsAppSettings()
+                )
+                invalidates_ids =
+                  roundingResult.sceneGraphDelta.invalidates_ids ||
+                  invalidates_ids
+                finalResult = {
+                  kclSource: roundingResult.kclSource,
+                  sceneGraphDelta: roundingResult.sceneGraphDelta,
+                }
+              } catch (error) {
+                console.error('Failed to round point coordinates:', error)
+                // Continue with unrounded result if rounding fails
+              }
+            }
+
+            // Send the final result to parent to update sketch outcome
             self._parent?.send({
               type: 'update sketch outcome',
               data: {
-                kclSource: lastDeleteResult.kclSource,
-                sceneGraphDelta: lastDeleteResult.sceneGraphDelta,
+                kclSource: finalResult.kclSource,
+                sceneGraphDelta: {
+                  ...finalResult.sceneGraphDelta,
+                  invalidates_ids,
+                },
               },
             })
           }
