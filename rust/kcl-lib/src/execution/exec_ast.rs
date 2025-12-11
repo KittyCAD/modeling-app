@@ -1154,13 +1154,14 @@ impl Node<SketchBlock> {
         }
         // Substitute solutions back into sketch variables.
         let solution_ty = solver_numeric_type(exec_state);
-        let variables = substitute_sketch_vars(variables, &solve_outcome, solution_ty)?;
+        let variables = substitute_sketch_vars(variables, &solve_outcome, solution_ty, solve_analysis.as_ref())?;
         let mut solved_segments = Vec::with_capacity(sketch_block_state.needed_by_engine.len());
         for unsolved_segment in &sketch_block_state.needed_by_engine {
             solved_segments.push(substitute_sketch_var_in_segment(
                 unsolved_segment.clone(),
                 &solve_outcome,
                 solver_numeric_type(exec_state),
+                solve_analysis.as_ref(),
             )?);
         }
         #[cfg(feature = "artifact-graph")]
@@ -1267,10 +1268,11 @@ fn substitute_sketch_vars(
     variables: IndexMap<String, KclValue>,
     solve_outcome: &SolveOutcome,
     solution_ty: NumericType,
+    analysis: Option<&kcl_ezpz::FreedomAnalysis>,
 ) -> Result<HashMap<String, KclValue>, KclError> {
     let mut subbed = HashMap::with_capacity(variables.len());
     for (name, value) in variables {
-        let subbed_value = substitute_sketch_var(value, solve_outcome, solution_ty)?;
+        let subbed_value = substitute_sketch_var(value, solve_outcome, solution_ty, analysis)?;
         subbed.insert(name, subbed_value);
     }
     Ok(subbed)
@@ -1280,6 +1282,7 @@ fn substitute_sketch_var(
     value: KclValue,
     solve_outcome: &SolveOutcome,
     solution_ty: NumericType,
+    analysis: Option<&kcl_ezpz::FreedomAnalysis>,
 ) -> Result<KclValue, KclError> {
     match value {
         KclValue::Uuid { .. } => Ok(value),
@@ -1308,14 +1311,14 @@ fn substitute_sketch_var(
         KclValue::Tuple { value, meta } => {
             let subbed = value
                 .into_iter()
-                .map(|v| substitute_sketch_var(v, solve_outcome, solution_ty))
+                .map(|v| substitute_sketch_var(v, solve_outcome, solution_ty, analysis))
                 .collect::<Result<Vec<_>, KclError>>()?;
             Ok(KclValue::Tuple { value: subbed, meta })
         }
         KclValue::HomArray { value, ty } => {
             let subbed = value
                 .into_iter()
-                .map(|v| substitute_sketch_var(v, solve_outcome, solution_ty))
+                .map(|v| substitute_sketch_var(v, solve_outcome, solution_ty, analysis))
                 .collect::<Result<Vec<_>, KclError>>()?;
             Ok(KclValue::HomArray { value: subbed, ty })
         }
@@ -1326,7 +1329,7 @@ fn substitute_sketch_var(
         } => {
             let subbed = value
                 .into_iter()
-                .map(|(k, v)| substitute_sketch_var(v, solve_outcome, solution_ty).map(|v| (k, v)))
+                .map(|(k, v)| substitute_sketch_var(v, solve_outcome, solution_ty, analysis).map(|v| (k, v)))
                 .collect::<Result<HashMap<_, _>, KclError>>()?;
             Ok(KclValue::Object {
                 value: subbed,
@@ -1343,7 +1346,7 @@ fn substitute_sketch_var(
             value: abstract_segment,
         } => match abstract_segment.repr {
             SegmentRepr::Unsolved { segment } => {
-                let subbed = substitute_sketch_var_in_segment(segment, solve_outcome, solution_ty)?;
+                let subbed = substitute_sketch_var_in_segment(segment, solve_outcome, solution_ty, analysis)?;
                 Ok(KclValue::Segment {
                     value: Box::new(AbstractSegment {
                         repr: SegmentRepr::Solved { segment: subbed },
@@ -1370,14 +1373,15 @@ fn substitute_sketch_var_in_segment(
     segment: UnsolvedSegment,
     solve_outcome: &SolveOutcome,
     solution_ty: NumericType,
+    analysis: Option<&kcl_ezpz::FreedomAnalysis>,
 ) -> Result<Segment, KclError> {
     let srs = segment.meta.iter().map(|m| m.source_range).collect::<Vec<_>>();
     match &segment.kind {
         UnsolvedSegmentKind::Point { position, ctor } => {
             let (position_x, position_x_freedom) =
-                substitute_sketch_var_in_unsolved_expr(&position[0], solve_outcome, solution_ty, &srs)?;
+                substitute_sketch_var_in_unsolved_expr(&position[0], solve_outcome, solution_ty, analysis, &srs)?;
             let (position_y, position_y_freedom) =
-                substitute_sketch_var_in_unsolved_expr(&position[1], solve_outcome, solution_ty, &srs)?;
+                substitute_sketch_var_in_unsolved_expr(&position[1], solve_outcome, solution_ty, analysis, &srs)?;
             let position = [position_x, position_y];
             Ok(Segment {
                 object_id: segment.object_id,
@@ -1397,13 +1401,13 @@ fn substitute_sketch_var_in_segment(
             end_object_id,
         } => {
             let (start_x, start_x_freedom) =
-                substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, &srs)?;
+                substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, analysis, &srs)?;
             let (start_y, start_y_freedom) =
-                substitute_sketch_var_in_unsolved_expr(&start[1], solve_outcome, solution_ty, &srs)?;
+                substitute_sketch_var_in_unsolved_expr(&start[1], solve_outcome, solution_ty, analysis, &srs)?;
             let (end_x, end_x_freedom) =
-                substitute_sketch_var_in_unsolved_expr(&end[0], solve_outcome, solution_ty, &srs)?;
+                substitute_sketch_var_in_unsolved_expr(&end[0], solve_outcome, solution_ty, analysis, &srs)?;
             let (end_y, end_y_freedom) =
-                substitute_sketch_var_in_unsolved_expr(&end[1], solve_outcome, solution_ty, &srs)?;
+                substitute_sketch_var_in_unsolved_expr(&end[1], solve_outcome, solution_ty, analysis, &srs)?;
             let start = [start_x, start_y];
             let end = [end_x, end_y];
             Ok(Segment {
@@ -1427,6 +1431,7 @@ fn substitute_sketch_var_in_unsolved_expr(
     unsolved_expr: &UnsolvedExpr,
     solve_outcome: &SolveOutcome,
     solution_ty: NumericType,
+    analysis: Option<&kcl_ezpz::FreedomAnalysis>,
     source_ranges: &[SourceRange],
 ) -> Result<(TyF64, Freedom), KclError> {
     match unsolved_expr {
@@ -1440,11 +1445,20 @@ fn substitute_sketch_var_in_unsolved_expr(
                     source_ranges.to_vec(),
                 )));
             };
+            let solver_var_id = var_id.to_constraint_id(source_ranges.first().copied().unwrap_or_default())?;
             let freedom = if solve_outcome.unsatisfied.contains(&var_id.0) {
                 Freedom::Conflict
+            } else if let Some(analysis) = analysis {
+                if analysis.underconstrained.contains(&solver_var_id) {
+                    Freedom::Free
+                } else {
+                    Freedom::Fixed
+                }
             } else {
-                // TODO: sketch-api: This isn't implemented properly yet.
-                Freedom::Fixed
+                // We didn't do the freedom analysis, so use free as the
+                // default. We don't want to accidentally communicate that
+                // something is well-constrained when it may not be.
+                Freedom::Free
             };
             Ok((TyF64::new(*solution, solution_ty), freedom))
         }
