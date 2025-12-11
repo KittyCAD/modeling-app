@@ -29,15 +29,54 @@ sketch(on = YZ) {
 }
 `
 
+// Helper function to run trim operations with common setup
+async function runTrimTest({
+  points,
+  sketchId,
+  lastPointIndex = 0,
+}: {
+  points: Array<[number, number, number]>
+  sketchId: number
+  lastPointIndex?: number
+}): Promise<{
+  kclSource: { text: string }
+  sceneGraphDelta: SceneGraphDelta
+  invalidates_ids: boolean
+} | null> {
+  const { rustContext, instance } = await buildTheWorldAndConnectToEngine()
+
+  // Parse the KCL code to get AST
+  const ast = assertParse(sketchBlockCode, instance)
+
+  // Execute the code to get the scene graph
+  const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
+    ast,
+    await jsAppSettings()
+  )
+
+  // Convert SceneGraph to SceneGraphDelta
+  const initialSceneGraphDelta: SceneGraphDelta = {
+    new_graph: sceneGraph,
+    new_objects: [],
+    invalidates_ids: false,
+    exec_outcome: execOutcome,
+  }
+
+  // Convert input points to Vector3 array
+  const vectorPoints = points.map((p) => new Vector3(p[0], p[1], p[2]))
+
+  // Call processTrimOperations
+  return await processTrimOperations({
+    points: vectorPoints,
+    initialSceneGraph: initialSceneGraphDelta,
+    rustContext,
+    sketchId,
+    lastPointIndex,
+  })
+}
+
 describe('processTrimOperations', () => {
   it('should handle basic deletion case', async () => {
-    const inputData = {
-      points: [
-        [-2.51384800194825, -4.214581766012367, 0],
-        [-1.126138983414963, -3.761015570302876, 0],
-      ],
-      sketchId: 0,
-    }
     const expectedCodeOutput = `@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
 
 sketch(on = YZ) {
@@ -59,54 +98,24 @@ sketch(on = YZ) {
   line17 = sketch2::line(start = [var -2.48mm, var 8.49mm], end = [var -1.93mm, var 4.85mm])
 }
 `
-    const { rustContext, instance } = await buildTheWorldAndConnectToEngine()
 
-    // Parse the KCL code to get AST
-    const ast = assertParse(sketchBlockCode, instance)
-
-    // Execute the code to get the scene graph
-    const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
-      ast,
-      await jsAppSettings()
-    )
-
-    // Convert SceneGraph to SceneGraphDelta
-    const initialSceneGraphDelta: SceneGraphDelta = {
-      new_graph: sceneGraph,
-      new_objects: [],
-      invalidates_ids: false,
-      exec_outcome: execOutcome,
-    }
-
-    // Convert input points to Vector3 array
-    const points = inputData.points.map((p) => new Vector3(p[0], p[1], p[2]))
-
-    // Call processTrimOperations
-    const result = await processTrimOperations({
-      points,
-      initialSceneGraph: initialSceneGraphDelta,
-      rustContext,
-      sketchId: inputData.sketchId,
-      lastPointIndex: 0,
+    const result = await runTrimTest({
+      points: [
+        [-2.51384800194825, -4.214581766012367, 0],
+        [-1.126138983414963, -3.761015570302876, 0],
+      ],
+      sketchId: 0,
     })
 
     expect(result).not.toBeNull()
     if (result) {
-      // Assert the output code matches expected
       expect(result.kclSource.text).toBe(expectedCodeOutput)
       expect(result.kclSource.text).not.toContain('line3')
     }
   })
 
   it("should handle a case where two segments intersect, and we're looking to trim one of the tails", async () => {
-    const inputData = {
-      points: [
-        [-1.163679889006146, -7.719446800128466, 0],
-        [-1.6595876378748984, -7.496341391441752, 0],
-      ],
-      sketchId: 0,
-    }
-    const expectedCodeOutput2 = `@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
+    const expectedCodeOutput = `@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
 
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var -6.32mm, var 6.22mm], end = [var 6.76mm, var -0.51mm])
@@ -129,52 +138,21 @@ sketch(on = YZ) {
 }
 `
 
-    const { rustContext, instance } = await buildTheWorldAndConnectToEngine()
-
-    // Parse the KCL code to get AST
-    const ast = assertParse(sketchBlockCode, instance)
-
-    // Execute the code to get the scene graph
-    const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
-      ast,
-      await jsAppSettings()
-    )
-    // Convert SceneGraph to SceneGraphDelta
-    const initialSceneGraphDelta: SceneGraphDelta = {
-      new_graph: sceneGraph,
-      new_objects: [],
-      invalidates_ids: false,
-      exec_outcome: execOutcome,
-    }
-
-    // Convert input points to Vector3 array
-    const points = inputData.points.map((p) => new Vector3(p[0], p[1], p[2]))
-
-    // Call processTrimOperations
-    const result = await processTrimOperations({
-      points,
-      initialSceneGraph: initialSceneGraphDelta,
-      rustContext,
-      sketchId: inputData.sketchId,
-      lastPointIndex: 0,
+    const result = await runTrimTest({
+      points: [
+        [-1.163679889006146, -7.719446800128466, 0],
+        [-1.6595876378748984, -7.496341391441752, 0],
+      ],
+      sketchId: 0,
     })
 
     expect(result).not.toBeNull()
     if (result) {
-      expect(result.kclSource.text).toBe(expectedCodeOutput2)
+      expect(result.kclSource.text).toBe(expectedCodeOutput)
     }
   })
   it("should handle a case where two segments intersect, and we're trying to trim the tails of both, the end of the segments should become coincident in the process", async () => {
-    const inputData = {
-      points: [
-        [-3.2216970468114705, -7.967341698669259, 0],
-        [-1.2628614387798955, -7.570709861003989, 0],
-      ],
-      sketchId: 0,
-      lastPointIndex: 0,
-    }
-
-    const expectedCodeOutput2 = `@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
+    const expectedCodeOutput = `@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
 
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var -6.32mm, var 6.22mm], end = [var 6.76mm, var -0.51mm])
@@ -198,55 +176,24 @@ sketch(on = YZ) {
 }
 `
 
-    const { rustContext, instance } = await buildTheWorldAndConnectToEngine()
-
-    // Parse the KCL code to get AST
-    const ast = assertParse(sketchBlockCode, instance)
-
-    // Execute the code to get the scene graph
-    const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
-      ast,
-      await jsAppSettings()
-    )
-    // Convert SceneGraph to SceneGraphDelta
-    const initialSceneGraphDelta: SceneGraphDelta = {
-      new_graph: sceneGraph,
-      new_objects: [],
-      invalidates_ids: false,
-      exec_outcome: execOutcome,
-    }
-
-    // Convert input points to Vector3 array
-    const points = inputData.points.map((p) => new Vector3(p[0], p[1], p[2]))
-
-    // Call processTrimOperations
-    const result = await processTrimOperations({
-      points,
-      initialSceneGraph: initialSceneGraphDelta,
-      rustContext,
-      sketchId: inputData.sketchId,
-      lastPointIndex: 0,
+    const result = await runTrimTest({
+      points: [
+        [-3.2216970468114705, -7.967341698669259, 0],
+        [-1.2628614387798955, -7.570709861003989, 0],
+      ],
+      sketchId: 0,
     })
 
     expect(result).not.toBeNull()
     if (result) {
-      expect(result.kclSource.text).toBe(expectedCodeOutput2)
+      expect(result.kclSource.text).toBe(expectedCodeOutput)
       expect(result.kclSource.text).toContain(
         'sketch2::coincident([line7.start, line6.start])'
       )
     }
   })
   it('Should handle the case where segmentA intersects with two separate segments, and we trim segmentA between the two other segment. This should create a new segment because it has to divide the segment in two', async () => {
-    const inputData = {
-      points: [
-        [4.16732841133295, -1.1750214786515234, 0],
-        [4.78721309741889, -1.1998109685056033, 0],
-      ],
-      sketchId: 0,
-      lastPointIndex: 0,
-    }
-
-    const expectedCodeOutput2 = `@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
+    const expectedCodeOutput = `@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
 
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var -6.32mm, var 6.22mm], end = [var 6.76mm, var -0.51mm])
@@ -270,54 +217,21 @@ sketch(on = YZ) {
 }
 `
 
-    const { rustContext, instance } = await buildTheWorldAndConnectToEngine()
-
-    // Parse the KCL code to get AST
-    const ast = assertParse(sketchBlockCode, instance)
-
-    // Execute the code to get the scene graph
-    const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
-      ast,
-      await jsAppSettings()
-    )
-    // Convert SceneGraph to SceneGraphDelta
-    const initialSceneGraphDelta: SceneGraphDelta = {
-      new_graph: sceneGraph,
-      new_objects: [],
-      invalidates_ids: false,
-      exec_outcome: execOutcome,
-    }
-
-    // Convert input points to Vector3 array
-    const points = inputData.points.map((p) => new Vector3(p[0], p[1], p[2]))
-
-    // Call processTrimOperations
-    const result = await processTrimOperations({
-      points,
-      initialSceneGraph: initialSceneGraphDelta,
-      rustContext,
-      sketchId: inputData.sketchId,
-      lastPointIndex: 0,
+    const result = await runTrimTest({
+      points: [
+        [4.16732841133295, -1.1750214786515234, 0],
+        [4.78721309741889, -1.1998109685056033, 0],
+      ],
+      sketchId: 0,
     })
 
     expect(result).not.toBeNull()
     if (result) {
-      expect(result.kclSource.text).toBe(expectedCodeOutput2)
+      expect(result.kclSource.text).toBe(expectedCodeOutput)
     }
   })
   it('Should handle the case where segmentA intersects with 4 separate segments, and we trim segmentA between the first and second, and then the third and fourth other segments such to divide segmentA into three', async () => {
-    const inputData = {
-      points: [
-        [3.9689653117854484, 5.567719761658053, 0],
-        [2.555628227509503, 5.666877721074371, 0],
-        [2.8283774893873166, 7.724405378962956, 0],
-        [4.78721309741889, 7.6500369094007175, 0],
-      ],
-      sketchId: 0,
-      lastPointIndex: 0,
-    }
-
-    const expectedCodeOutput2 = `@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
+    const expectedCodeOutput = `@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
 
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var -6.32mm, var 6.22mm], end = [var 6.76mm, var -0.51mm])
@@ -342,66 +256,23 @@ sketch(on = YZ) {
 }
 `
 
-    const { rustContext, instance } = await buildTheWorldAndConnectToEngine()
-
-    // Parse the KCL code to get AST
-    const ast = assertParse(sketchBlockCode, instance)
-
-    // Execute the code to get the scene graph
-    const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
-      ast,
-      await jsAppSettings()
-    )
-    // Convert SceneGraph to SceneGraphDelta
-    const initialSceneGraphDelta: SceneGraphDelta = {
-      new_graph: sceneGraph,
-      new_objects: [],
-      invalidates_ids: false,
-      exec_outcome: execOutcome,
-    }
-
-    // Convert input points to Vector3 array
-    const points = inputData.points.map((p) => new Vector3(p[0], p[1], p[2]))
-
-    // Call processTrimOperations
-    const result = await processTrimOperations({
-      points,
-      initialSceneGraph: initialSceneGraphDelta,
-      rustContext,
-      sketchId: inputData.sketchId,
-      lastPointIndex: 0,
+    const result = await runTrimTest({
+      points: [
+        [3.9689653117854484, 5.567719761658053, 0],
+        [2.555628227509503, 5.666877721074371, 0],
+        [2.8283774893873166, 7.724405378962956, 0],
+        [4.78721309741889, 7.6500369094007175, 0],
+      ],
+      sketchId: 0,
     })
 
     expect(result).not.toBeNull()
     if (result) {
-      expect(result.kclSource.text).toBe(expectedCodeOutput2)
+      expect(result.kclSource.text).toBe(expectedCodeOutput)
     }
   })
   it('Should handle the case where segmentA intersects with 4 separate segments, and we trim segmentA between the first and second, and then the third and fourth other segments such to divide segmentA into three', async () => {
-    const inputData = {
-      points: [
-        [-1.6595876378748984, 8.195405686190462, 0],
-        [-1.4116337634405216, 7.674826399254797, 0],
-        [-1.4364291508839597, 6.608878335529386, 0],
-        [-1.4116337634405216, 5.617298741366213, 0],
-        [-2.924152397490219, 5.815614660198847, 0],
-        [-3.7176047956802236, 6.336193947134513, 0],
-        [-4.238307931992414, 6.906352213778337, 0],
-        [-4.560647968757103, 7.278194561589528, 0],
-        [-4.6846249059742915, 7.476510480422163, 0],
-        [-4.8581926180783555, 7.6500369094007175, 0],
-        [-5.006964942738981, 7.8483528282333515, 0],
-        [-4.535852581313666, 7.947510787649669, 0],
-        [-4.039944832444913, 7.997089767357829, 0],
-        [-3.172106271924595, 7.997089767357829, 0],
-        [-2.676198523055842, 8.021879257211907, 0],
-        [-2.180290774187089, 8.071458236920066, 0],
-      ],
-      sketchId: 0,
-      lastPointIndex: 0,
-    }
-
-    const expectedCodeOutput2 = `@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
+    const expectedCodeOutput = `@settings(experimentalFeatures = allow, defaultLengthUnit = mm)
 
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var -6.32mm, var 6.22mm], end = [var 6.76mm, var -0.51mm])
@@ -427,40 +298,31 @@ sketch(on = YZ) {
 }
 `
 
-    const { rustContext, instance } = await buildTheWorldAndConnectToEngine()
-
-    // Parse the KCL code to get AST
-    const ast = assertParse(sketchBlockCode, instance)
-
-    // Execute the code to get the scene graph
-    const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
-      ast,
-      await jsAppSettings()
-    )
-    // Convert SceneGraph to SceneGraphDelta
-    const initialSceneGraphDelta: SceneGraphDelta = {
-      new_graph: sceneGraph,
-      new_objects: [],
-      invalidates_ids: false,
-      exec_outcome: execOutcome,
-    }
-
-    // Convert input points to Vector3 array
-    const points = inputData.points.map((p) => new Vector3(p[0], p[1], p[2]))
-
-    // Call processTrimOperations
-    const result = await processTrimOperations({
-      points,
-      initialSceneGraph: initialSceneGraphDelta,
-      rustContext,
-      sketchId: inputData.sketchId,
-      lastPointIndex: 0,
+    const result = await runTrimTest({
+      points: [
+        [-1.6595876378748984, 8.195405686190462, 0],
+        [-1.4116337634405216, 7.674826399254797, 0],
+        [-1.4364291508839597, 6.608878335529386, 0],
+        [-1.4116337634405216, 5.617298741366213, 0],
+        [-2.924152397490219, 5.815614660198847, 0],
+        [-3.7176047956802236, 6.336193947134513, 0],
+        [-4.238307931992414, 6.906352213778337, 0],
+        [-4.560647968757103, 7.278194561589528, 0],
+        [-4.6846249059742915, 7.476510480422163, 0],
+        [-4.8581926180783555, 7.6500369094007175, 0],
+        [-5.006964942738981, 7.8483528282333515, 0],
+        [-4.535852581313666, 7.947510787649669, 0],
+        [-4.039944832444913, 7.997089767357829, 0],
+        [-3.172106271924595, 7.997089767357829, 0],
+        [-2.676198523055842, 8.021879257211907, 0],
+        [-2.180290774187089, 8.071458236920066, 0],
+      ],
+      sketchId: 0,
     })
 
     expect(result).not.toBeNull()
     if (result) {
-      expect(result.kclSource.text).toBe(expectedCodeOutput2)
-      // expect to find "sketch2::coincident(" three times
+      expect(result.kclSource.text).toBe(expectedCodeOutput)
       expect(
         (result.kclSource.text.match(/sketch2::coincident\(/g) || []).length
       ).toBe(3)
