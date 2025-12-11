@@ -11,7 +11,6 @@ import {
   serializeConfiguration,
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import {
   cameraSystemToMouseControl,
   mouseControlsToCameraSystem,
@@ -38,6 +37,7 @@ import { appThemeToTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type OmitNull<T> = T extends null ? undefined : T
 const toUndefinedIfNull = (a: any): OmitNull<any> =>
@@ -335,7 +335,15 @@ export interface AppSettings {
   configuration: DeepPartial<Configuration>
 }
 
+/**
+ * Finds the TOML settings files for user-level (and project-level if projectPath is provided)
+ * settings, deserialize them and validate them, serialize and write the validated TOML back to the locations,
+ * and return the settings object and the raw "configuration" object returned from WASM.
+ *
+ * Relies on WASM for TOML de/serialization.
+ */
 export async function loadAndValidateSettings(
+  initPromise: Promise<ModuleType>,
   projectPath?: string
 ): Promise<AppSettings> {
   // Make sure we have wasm initialized.
@@ -491,7 +499,14 @@ export async function loadAndValidateSettings(
   }
 }
 
+/**
+ * Given a settings object, serialize it to TOML
+ * and write it to the appropriate location.
+ *
+ * Relies on WASM for TOML serialization.
+ */
 export async function saveSettings(
+  initPromise: Promise<ModuleType>,
   allSettings: typeof settings,
   projectPath?: string
 ) {

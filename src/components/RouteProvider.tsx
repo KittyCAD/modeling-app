@@ -137,7 +137,10 @@ export function RouteProvider({ children }: { children: ReactNode }) {
 
       // Only reload if there are changes. Ignore everything else.
       if (eventType !== 'change') return
-      const data = await loadAndValidateSettings(loadedProject?.project?.path)
+      const data = await loadAndValidateSettings(
+        kclManager.wasmInstancePromise,
+        loadedProject?.project?.path
+      )
       settingsActor.send({
         type: 'Set all settings',
         settings: data.settings,

@@ -41,9 +41,11 @@ import {
   setThemeClass,
 } from '@src/lib/theme'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
+import type { KclManager } from '@src/lang/KclManager'
 
 export type SettingsMachineContext = SettingsType & {
   currentProject?: Project
+  kclManager: KclManager
 }
 
 export type SettingsActorType = ActorRefFrom<typeof settingsMachine>
@@ -87,17 +89,22 @@ export const settingsMachine = setup({
     >(async () => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     }),
-    loadUserSettings: fromPromise<SettingsMachineContext, undefined>(
-      async () => {
-        const { settings } = await loadAndValidateSettings()
+    loadUserSettings: fromPromise<SettingsType, { kclManager: KclManager }>(
+      async ({ input }) => {
+        const { settings } = await loadAndValidateSettings(
+          input.kclManager.wasmInstancePromise
+        )
         return settings
       }
     ),
     loadProjectSettings: fromPromise<
-      SettingsMachineContext,
-      { project?: Project }
+      SettingsType,
+      { project?: Project; kclManager: KclManager }
     >(async ({ input }) => {
-      const { settings } = await loadAndValidateSettings(input.project?.path)
+      const { settings } = await loadAndValidateSettings(
+        input.kclManager.wasmInstancePromise,
+        input.project?.path
+      )
       return settings
     }),
     watchSystemTheme: fromCallback<{
@@ -500,7 +507,7 @@ export const settingsMachine = setup({
             console.error('Error persisting settings')
           },
         },
-        input: ({ context, event, self }) => {
+        input: ({ context, event }) => {
           if (
             event.type === 'set.app.namedViews' &&
             'toastCallback' in event.data
@@ -523,6 +530,7 @@ export const settingsMachine = setup({
     loadingUser: {
       invoke: {
         src: 'loadUserSettings',
+        input: ({ context: { kclManager } }) => ({ kclManager }),
         onDone: {
           target: 'idle',
           actions: [
@@ -578,8 +586,9 @@ export const settingsMachine = setup({
           ],
         },
         onError: 'idle',
-        input: ({ event }) => {
+        input: ({ event, context: { kclManager } }) => {
           return {
+            kclManager,
             project: event.type === 'load.project' ? event.project : undefined,
           }
         },
