@@ -152,9 +152,9 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 export class KclManager extends EventTarget {
   // SYSTEM DEPENDENCIES
 
-  private _wasmInstance: Promise<ModuleType | string>
+  private _wasmInstance: Promise<ModuleType>
   /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
-  set wasmInstancePromise(newInstancePromise: Promise<ModuleType | string>) {
+  set wasmInstancePromise(newInstancePromise: Promise<ModuleType>) {
     this._wasmInstance = newInstancePromise
   }
   private _sceneEntitiesManager?: SceneEntities
@@ -406,7 +406,7 @@ export class KclManager extends EventTarget {
 
   constructor(
     engineCommandManager: ConnectionManager,
-    wasmInstance: Promise<ModuleType | string>,
+    wasmInstance: Promise<ModuleType>,
     singletons: Singletons
   ) {
     super()
