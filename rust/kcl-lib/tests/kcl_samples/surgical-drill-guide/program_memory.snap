@@ -293,7 +293,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "type": "chamfer",
                 "id": "[uuid]",
                 "length": {
-                  "n": 0.667,
+                  "n": 0.6666666666666666,
                   "ty": {
                     "type": "Default",
                     "len": "mm",
@@ -616,7 +616,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                 "type": "chamfer",
                 "id": "[uuid]",
                 "length": {
-                  "n": 1.067,
+                  "n": 1.0666666666666667,
                   "ty": {
                     "type": "Default",
                     "len": "mm",
@@ -2721,7 +2721,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "chamfer",
           "id": "[uuid]",
           "length": {
-            "n": 0.667,
+            "n": 0.6666666666666666,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -2959,7 +2959,7 @@ description: Variables in memory after executing surgical-drill-guide.kcl
           "type": "chamfer",
           "id": "[uuid]",
           "length": {
-            "n": 1.067,
+            "n": 1.0666666666666667,
             "ty": {
               "type": "Default",
               "len": "mm",

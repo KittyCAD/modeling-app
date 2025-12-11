@@ -123,7 +123,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
                         }
                       },
                       {
-                        "n": 152.4,
+                        "n": 152.39999999999998,
                         "ty": {
                           "mm": null,
                           "type": "Known",
