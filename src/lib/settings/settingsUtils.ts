@@ -38,7 +38,6 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type OmitNull<T> = T extends null ? undefined : T
 const toUndefinedIfNull = (a: any): OmitNull<any> =>

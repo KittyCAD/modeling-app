@@ -51,7 +51,6 @@ import {
   useCommandBarState,
   setLayout,
   settingsActor,
-  getSettings,
 } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { getDeleteKeys, uuidv4 } from '@src/lib/utils'

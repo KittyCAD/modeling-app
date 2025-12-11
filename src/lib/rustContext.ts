@@ -72,7 +72,9 @@ export default class RustContext {
     this._wasmInstancePromise = wasmInstancePromise
     this._settingsActor = dummySettingsActor
 
-    instance.then(this.createFromInstance).catch(reportRejection)
+    wasmInstancePromise
+      .then((instance) => this.createFromInstance(instance))
+      .catch(reportRejection)
   }
 
   /** Create a new context instance */
