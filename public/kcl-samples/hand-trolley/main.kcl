@@ -1,0 +1,14 @@
+// Hand Trolley
+// A hand trolley, also known as a hand truck, is a small, wheeled cart with a weldment frame, used to move heavy or bulky items over short distances. It's essentially a simple lever system that makes lifting and moving objects much easier
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import parameters
+import * from "parameters.kcl"
+import "wheel.kcl" as wheel
+import "weldment.kcl" as weldment
+
+import "axle.kcl" as axle
+wheel
+  |> patternCircular3d(instances = 2, axis = [0, 0, 1], center = [0, -3.67, 0])

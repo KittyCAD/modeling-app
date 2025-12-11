@@ -253,10 +253,17 @@ impl Backend {
                 }),
                 deprecated: None,
                 preselect: None,
-                sort_text: None,
-                filter_text: None,
-                insert_text: None,
-                insert_text_format: None,
+                sort_text: Some(arg_name.to_owned()),
+                filter_text: Some(arg_name.to_owned()),
+                insert_text: {
+                    // let snippet = "${0:x}";
+                    if let Some(snippet) = arg_data.props.get_autocomplete_snippet(0).map(|(_i, snippet)| snippet) {
+                        Some(snippet)
+                    } else {
+                        Some(format!("{arg_name} = "))
+                    }
+                },
+                insert_text_format: Some(InsertTextFormat::SNIPPET),
                 insert_text_mode: None,
                 text_edit: None,
                 additional_text_edits: None,

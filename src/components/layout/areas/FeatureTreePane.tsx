@@ -462,7 +462,7 @@ const OperationItemWrapper = ({
               </code>
             </>
           ) : (
-            <span className="text-sm">{name}</span>
+            <span className="text-sm">{variableName ?? name}</span>
           )}
           {customSuffix && customSuffix}
         </div>

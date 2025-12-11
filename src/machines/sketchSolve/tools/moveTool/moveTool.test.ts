@@ -1217,6 +1217,7 @@ describe('createOnDragCallback', () => {
         args: { on: { default: 'xy' } },
         segments: [],
         constraints: [],
+        is_underconstrained: null,
       },
       label: '',
       comments: '',
