@@ -57,16 +57,6 @@ const toolOutput = (): Extract<
   }
 }
 
-const error = (): MlCopilotServerMessage & { error: any } => {
-  return {
-    error: {
-      detail:
-        'aosteuhsaotu [Some markdown link](https://discord.com) and a bunch of text' +
-        stringRand(ALPHA, Math.trunc(Math.random() * 80) + 10),
-    },
-  }
-}
-
 const info = (): MlCopilotServerMessage & { info: any } => {
   return {
     info: {
