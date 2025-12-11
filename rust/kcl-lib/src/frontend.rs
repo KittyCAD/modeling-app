@@ -228,17 +228,19 @@ impl SketchApi for FrontendState {
         // Enter sketch mode by setting the sketch_mode.
         self.scene_graph.sketch_mode = Some(sketch);
 
-        // Execute in mock mode to ensure state is up to date.
-        let outcome = ctx
-            .run_mock(&self.program, &MockConfig::default())
-            .await
-            .map_err(|err| {
-                // TODO: sketch-api: Yeah, this needs to change. We need to
-                // return the full error.
-                Error {
-                    msg: err.error.message().to_owned(),
-                }
-            })?;
+        // Execute in mock mode to ensure state is up to date. The caller will
+        // want freedom analysis to display segments correctly.
+        let mock_config = MockConfig {
+            freedom_analysis: true,
+            ..Default::default()
+        };
+        let outcome = ctx.run_mock(&self.program, &mock_config).await.map_err(|err| {
+            // TODO: sketch-api: Yeah, this needs to change. We need to
+            // return the full error.
+            Error {
+                msg: err.error.message().to_owned(),
+            }
+        })?;
 
         let outcome = self.update_state_after_exec(outcome);
         let scene_graph_delta = SceneGraphDelta {
