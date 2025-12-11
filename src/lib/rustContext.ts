@@ -70,15 +70,7 @@ export default class RustContext {
     this.engineCommandManager = engineCommandManager
     this._settingsActor = dummySettingsActor
 
-    instance
-      .then((wasmInstance) => {
-        if (typeof wasmInstance !== 'string') {
-          this.createFromInstance(wasmInstance)
-        } else {
-          return new Error(wasmInstance)
-        }
-      })
-      .catch(reportRejection)
+    instance.then(this.createFromInstance).catch(reportRejection)
   }
 
   /** Create a new context instance */
