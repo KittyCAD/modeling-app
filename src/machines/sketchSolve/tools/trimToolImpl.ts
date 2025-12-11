@@ -101,6 +101,55 @@ export async function deleteSegmentWithNoIntersections({
   }
 }
 
+// Pure helper: add coincident constraint between two endpoints after a coincident intersection
+export async function applyCoincidentConstraintForIntersection({
+  rustContext,
+  sketchId,
+  endPointId,
+  intersectionSide,
+  invalidates_ids,
+}: {
+  rustContext: RustContext
+  sketchId: number
+  endPointId: number
+  intersectionSide: Extract<
+    IntersectionOrEndPoint,
+    { type: 'intersection'; subType: 'coincident' }
+  >
+  invalidates_ids: boolean
+}): Promise<
+  | {
+      invalidates_ids: boolean
+      lastDeleteResult: {
+        kclSource: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+      } | null
+      currentSceneGraph: SceneGraphDelta | null
+    }
+  | Error
+> {
+  try {
+    const constraintResult = await rustContext.addConstraint(
+      0,
+      sketchId,
+      {
+        type: 'Coincident',
+        points: [endPointId, intersectionSide.coincidentWithPointId],
+      },
+      await jsAppSettings()
+    )
+
+    return {
+      invalidates_ids:
+        constraintResult.sceneGraphDelta.invalidates_ids || invalidates_ids,
+      lastDeleteResult: constraintResult,
+      currentSceneGraph: constraintResult.sceneGraphDelta,
+    }
+  } catch (error) {
+    return new Error(`Failed to add coincident constraint: ${error}`)
+  }
+}
+
 // Helper to project a point onto a line segment and get its parametric position
 // Returns t where t=0 at start, t=1 at end, t<0 before start, t>1 after end
 function projectPointOntoSegment(
@@ -385,35 +434,42 @@ export async function processTrimOperations({
         lastDeleteResult = result
         currentSceneGraph = result.sceneGraphDelta
 
+        // handle the case where one of the intersections was coincident, therefore the endpoints will now be together
+        // and so should be made coincident
+        // TODO: because we don't have line-to-point coincident constraint (i.e. perpDistance == 0) we're just detecting proximity
+        // Once we have this constraint we will check for this as well
+        // in which case instead of just adding the coincident constraint to the two segment's endpoint, first the existing
+        // line-to-point coincident constraint will be removed
         if (
           intersectionSide.type !== 'intersection' ||
           intersectionSide.subType !== 'coincident'
         ) {
           continue
         }
-        let otherPointId = intersectionSide.coincidentWithPointId
 
-        try {
-          const constraintResult = await rustContext.addConstraint(
-            0,
+        const constraintResult = await applyCoincidentConstraintForIntersection(
+          {
+            rustContext,
             sketchId,
-            {
-              type: 'Coincident',
-              points: [endPointId, otherPointId],
-            },
-            await jsAppSettings()
+            endPointId,
+            intersectionSide,
+            invalidates_ids,
+          }
+        )
+
+        if (constraintResult instanceof Error) {
+          console.error(
+            `Failed to add coincident constraint:${constraintResult.message}`
           )
-
-          invalidates_ids =
-            constraintResult.sceneGraphDelta.invalidates_ids || invalidates_ids
-
-          // Use the constraint result as it contains the final scene graph state
-          lastDeleteResult = constraintResult
-          currentSceneGraph = constraintResult.sceneGraphDelta
-        } catch (error) {
-          console.error('Failed to add coincident constraint:', error)
-          // Continue even if constraint fails - the point was already moved
+          break
         }
+
+        invalidates_ids = constraintResult.invalidates_ids
+        if (constraintResult.lastDeleteResult !== null) {
+          lastDeleteResult = constraintResult.lastDeleteResult
+        }
+        currentSceneGraph =
+          constraintResult.currentSceneGraph || currentSceneGraph
       } catch (error) {
         console.error('Failed to update point position:', error)
         // Stop on error
