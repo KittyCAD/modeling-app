@@ -135,13 +135,13 @@ describe('desktop utilities', () => {
     it('does not list .git directories', async () => {
       const { instance } = await buildTheWorldAndNoEngineConnection()
       if (!window.electron) throw new Error('Electron not found')
-      const projects = await listProjects(window.electron, mockConfig, instance)
+      const projects = await listProjects(window.electron, instance, mockConfig)
       expect(projects.map((p) => p.name)).not.toContain('.git')
     })
     it('lists projects excluding hidden and without .kcl files', async () => {
       const { instance } = await buildTheWorldAndNoEngineConnection()
       if (!window.electron) throw new Error('Electron not found')
-      const projects = await listProjects(window.electron, mockConfig, instance)
+      const projects = await listProjects(window.electron, instance, mockConfig)
 
       // Verify only non-dot projects with .kcl files were included
       expect(projects.map((p) => p.name)).toEqual([
@@ -166,7 +166,7 @@ describe('desktop utilities', () => {
     it('correctly counts directories and files', async () => {
       const { instance } = await buildTheWorldAndNoEngineConnection()
       if (!window.electron) throw new Error('Electron not found')
-      const projects = await listProjects(window.electron, mockConfig, instance)
+      const projects = await listProjects(window.electron, instance, mockConfig)
       // Verify that directories and files are counted correctly
       expect(projects[0].directory_count).toEqual(1)
       expect(projects[0].kcl_file_count).toEqual(2)
@@ -180,7 +180,7 @@ describe('desktop utilities', () => {
       // Adjust mockFileSystem to simulate empty directory
       mockFileSystem['/test/projects'] = TEST_PROJECTS_CLEARED
 
-      const projects = await listProjects(window.electron, mockConfig, instance)
+      const projects = await listProjects(window.electron, instance, mockConfig)
 
       // Restore for future tests!
       mockFileSystem['/test/projects'] = TEST_PROJECTS_DEFAULT
