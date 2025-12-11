@@ -204,7 +204,6 @@ export class SceneEntities {
   readonly sceneInfra: SceneInfra
   readonly kclManager: KclManager
   readonly rustContext: RustContext
-  readonly wasmInstance?: ModuleType
   commandBarActor?: ActorRefFrom<typeof commandBarMachine>
   activeSegments: { [key: string]: Group } = {}
   readonly intersectionPlane: Mesh
@@ -219,8 +218,7 @@ export class SceneEntities {
     engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
     kclManager: KclManager,
-    rustContext: RustContext,
-    wasmInstance?: ModuleType
+    rustContext: RustContext
   ) {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
@@ -232,7 +230,6 @@ export class SceneEntities {
     this.sketchSolveGroup = SceneEntities.createSketchSolveGroup(
       this.sceneInfra
     )
-    this.wasmInstance = wasmInstance
     this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
     this.sceneInfra.baseUnitChange.add(this.onCamChange)
   }
@@ -263,7 +260,8 @@ export class SceneEntities {
     this.sketchSolveGroup.position.copy(new Vector3(...origin))
   }
 
-  onCamChange = () => {
+  onCamChange = async () => {
+    const wasmInstance = await this.kclManager.wasmInstancePromise
     const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
     Object.values(this.activeSegments).forEach((segment, _index) => {
@@ -365,7 +363,7 @@ export class SceneEntities {
         group: segment,
         scale: factor,
         sceneInfra: this.sceneInfra,
-        wasmInstance: this.wasmInstance,
+        wasmInstance,
       })
       callBack && !err(callBack) && callbacks.push(callBack)
       if (segment.name === PROFILE_START) {
@@ -841,7 +839,6 @@ export class SceneEntities {
     maybeModdedAst,
     draftExpressionsIndices,
     selectionRanges,
-    wasmInstance,
   }: {
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
@@ -851,14 +848,14 @@ export class SceneEntities {
     up: [number, number, number]
     position?: [number, number, number]
     selectionRanges?: Selections
-    wasmInstance?: ModuleType
   }): Promise<{
     truncatedAst: Node<Program>
     variableDeclarationName: string
   }> {
+    const wasmInstance = await this.kclManager.wasmInstancePromise
     const prepared = this.prepareTruncatedAst(
       sketchNodePaths,
-      await this.kclManager.wasmInstancePromise,
+      wasmInstance,
       maybeModdedAst
     )
     if (err(prepared)) {
@@ -1180,7 +1177,10 @@ export class SceneEntities {
       pathToNode: sketchEntryNodePath,
     })
     if (trap(mod)) return Promise.reject(mod)
-    const pResult = parse(recast(mod.modifiedAst), this.kclManager.wasmInstance)
+    const pResult = parse(
+      recast(mod.modifiedAst),
+      await this.kclManager.wasmInstancePromise
+    )
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     const modifiedAst = pResult.program
 
@@ -1466,7 +1466,10 @@ export class SceneEntities {
         sketchNodePaths,
       })
 
-    const pResult = parse(recast(_ast), this.kclManager.wasmInstance)
+    const pResult = parse(
+      recast(_ast),
+      await this.kclManager.wasmInstancePromise
+    )
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     _ast = pResult.program
 
@@ -1490,7 +1493,7 @@ export class SceneEntities {
     ])
 
     const code = recast(_ast)
-    const _recastAst = parse(code, this.kclManager.wasmInstance)
+    const _recastAst = parse(code, await this.kclManager.wasmInstancePromise)
     if (trap(_recastAst) || !resultIsOk(_recastAst))
       return Promise.reject(_recastAst)
     _ast = _recastAst.program
@@ -1592,7 +1595,10 @@ export class SceneEntities {
         updateRectangleSketch(sketchInit, x, y, tag)
 
         const newCode = recast(_ast)
-        const pResult = parse(newCode, this.kclManager.wasmInstance)
+        const pResult = parse(
+          newCode,
+          await this.kclManager.wasmInstancePromise
+        )
         if (trap(pResult) || !resultIsOk(pResult))
           return Promise.reject(pResult)
         _ast = pResult.program
@@ -1665,7 +1671,10 @@ export class SceneEntities {
         sketchNodePaths,
       })
 
-    let __recastAst = parse(recast(_ast), this.kclManager.wasmInstance)
+    let __recastAst = parse(
+      recast(_ast),
+      await this.kclManager.wasmInstancePromise
+    )
     if (trap(__recastAst) || !resultIsOk(__recastAst))
       return Promise.reject(__recastAst)
     _ast = __recastAst.program
@@ -1688,7 +1697,7 @@ export class SceneEntities {
       ...getRectangleCallExpressions(tag),
     ])
     const code = recast(_ast)
-    __recastAst = parse(code, this.kclManager.wasmInstance)
+    __recastAst = parse(code, await this.kclManager.wasmInstancePromise)
     if (trap(__recastAst) || !resultIsOk(__recastAst))
       return Promise.reject(__recastAst)
     _ast = __recastAst.program
@@ -1805,7 +1814,10 @@ export class SceneEntities {
             return Promise.reject(maybeError)
           }
 
-          const pResult = parse(recast(_ast), this.kclManager.wasmInstance)
+          const pResult = parse(
+            recast(_ast),
+            await this.kclManager.wasmInstancePromise
+          )
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           _ast = pResult.program
@@ -1856,7 +1868,7 @@ export class SceneEntities {
       2
     )}, ${roundOff(point2[1] + 0.1, 2)}]`
     const createNodeFromExprSnippet = buildSnippetParser(
-      this.kclManager.wasmInstance
+      await this.kclManager.wasmInstancePromise
     )
     const newExpression = createNodeFromExprSnippet`${varName} = circleThreePoint(
   ${varDec.node.id.name},
@@ -1875,7 +1887,10 @@ export class SceneEntities {
         sketchNodePaths,
       })
 
-    const pResult = parse(recast(_ast), this.kclManager.wasmInstance)
+    const pResult = parse(
+      recast(_ast),
+      await this.kclManager.wasmInstancePromise
+    )
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     _ast = pResult.program
 
@@ -1998,7 +2013,10 @@ export class SceneEntities {
 
           const newCode = recast(modded)
           if (err(newCode)) return
-          const pResult = parse(newCode, this.kclManager.wasmInstance)
+          const pResult = parse(
+            newCode,
+            await this.kclManager.wasmInstancePromise
+          )
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           _ast = pResult.program
@@ -2072,7 +2090,10 @@ export class SceneEntities {
     })
 
     if (trap(mod)) return Promise.reject(mod)
-    const pResult = parse(recast(mod.modifiedAst), this.kclManager.wasmInstance)
+    const pResult = parse(
+      recast(mod.modifiedAst),
+      await this.kclManager.wasmInstancePromise
+    )
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     _ast = pResult.program
 
@@ -2219,7 +2240,10 @@ export class SceneEntities {
 
           const newCode = recast(modded)
           if (err(newCode)) return
-          const pResult = parse(newCode, this.kclManager.wasmInstance)
+          const pResult = parse(
+            newCode,
+            await this.kclManager.wasmInstancePromise
+          )
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           _ast = pResult.program
@@ -2283,7 +2307,10 @@ export class SceneEntities {
     })
 
     if (trap(mod)) return Promise.reject(mod)
-    const pResult = parse(recast(mod.modifiedAst), this.kclManager.wasmInstance)
+    const pResult = parse(
+      recast(mod.modifiedAst),
+      await this.kclManager.wasmInstancePromise
+    )
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     _ast = pResult.program
 
@@ -2461,7 +2488,10 @@ export class SceneEntities {
 
           const newCode = recast(modded)
           if (err(newCode)) return
-          const pResult = parse(newCode, this.kclManager.wasmInstance)
+          const pResult = parse(
+            newCode,
+            await this.kclManager.wasmInstancePromise
+          )
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           _ast = pResult.program
@@ -2533,7 +2563,10 @@ export class SceneEntities {
         sketchNodePaths,
       })
 
-    const pResult = parse(recast(_ast), this.kclManager.wasmInstance)
+    const pResult = parse(
+      recast(_ast),
+      await this.kclManager.wasmInstancePromise
+    )
     if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
     _ast = pResult.program
 
@@ -2660,7 +2693,10 @@ export class SceneEntities {
 
           const newCode = recast(modded)
           if (err(newCode)) return
-          const pResult = parse(newCode, this.kclManager.wasmInstance)
+          const pResult = parse(
+            newCode,
+            await this.kclManager.wasmInstancePromise
+          )
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           _ast = pResult.program
@@ -2703,8 +2739,7 @@ export class SceneEntities {
     this.sceneInfra.setCallbacks({
       onDragEnd: async () => {
         if (addingNewSegmentStatus !== 'nothing') {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          this.setupSketch({
+          await this.setupSketch({
             sketchEntryNodePath,
             sketchNodePaths,
             maybeModdedAst: this.kclManager.ast,
@@ -3550,7 +3585,7 @@ export class SceneEntities {
 
   mouseEnterLeaveCallbacks(updateExtraSegments: typeof updateExtraSegmentsFn) {
     return {
-      onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
+      onMouseEnter: async ({ selected }: OnMouseEnterLeaveArgs) => {
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
           const obj = selected as Mesh
           const mat = obj.material as MeshBasicMaterial
@@ -3564,7 +3599,7 @@ export class SceneEntities {
         if (parent?.userData?.pathToNode) {
           const pResult = parse(
             recast(this.kclManager.ast),
-            this.kclManager.wasmInstance
+            await this.kclManager.wasmInstancePromise
           )
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)

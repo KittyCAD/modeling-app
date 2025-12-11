@@ -75,8 +75,9 @@ export async function deleteSegmentsOrProfiles({
     return Promise.reject(modifiedAst)
   }
 
-  const newCode = recast(modifiedAst, dependencies.kclManager.wasmInstance)
-  const pResult = parse(newCode, dependencies.kclManager.wasmInstance)
+  const wasmInstance = await dependencies.kclManager.wasmInstancePromise
+  const newCode = recast(modifiedAst, wasmInstance)
+  const pResult = parse(newCode, wasmInstance)
   if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
   modifiedAst = pResult.program
 
@@ -110,7 +111,7 @@ export async function deleteSegmentsOrProfiles({
     sketchDetails.origin,
     getEventForSegmentSelection,
     updateExtraSegments,
-    dependencies.kclManager.wasmInstance
+    await dependencies.kclManager.wasmInstancePromise
   )
 
   // Update the machine context.sketchDetails so subsequent interactions use fresh paths

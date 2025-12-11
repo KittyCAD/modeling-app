@@ -206,7 +206,7 @@ export type ModelingMachineInput = {
   sceneEntitiesManager: SceneEntities
   rustContext: RustContext
   machineManager: MachineManager
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
   store?: Store
 }
 export type ModelingMachineInternalContext = {
