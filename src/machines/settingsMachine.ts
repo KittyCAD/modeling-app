@@ -45,7 +45,7 @@ import {
 } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import type { KclManager } from '@src/lang/KclManager'
-import type { commandBarMachine } from './commandBarMachine'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 
 export type SettingsActorType = ActorRefFrom<typeof settingsMachine>
 export type SettingsActorDepsType = {

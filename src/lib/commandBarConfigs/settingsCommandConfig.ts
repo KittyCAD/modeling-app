@@ -9,11 +9,7 @@ import type {
 import { buildCommandArgument } from '@src/lib/createMachineCommand'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getPropertyByPath } from '@src/lib/objectPropertyByPath'
-import type {
-  Setting,
-  SettingsType,
-  createSettings,
-} from '@src/lib/settings/initialSettings'
+import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
 import type {
   SetEventTypes,
   SettingProps,

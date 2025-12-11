@@ -21,10 +21,9 @@ import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createActor } from 'xstate'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { settingsMachine } from './machines/settingsMachine'
-import { openExternalBrowserIfDesktop } from './lib/openWindow'
-import { createSettings } from './lib/settings/initialSettings'
-import { getSettingsFromActorRef } from './lib/settings/settingsUtils'
+import { settingsMachine } from '@src/machines/settingsMachine'
+import { createSettings } from '@src/lib/settings/initialSettings'
+import { getSettingsFromActorRef } from '@src/lib/settings/settingsUtils'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
