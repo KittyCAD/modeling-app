@@ -6,7 +6,6 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
-import { distance2d } from '@src/lib/utils2d'
 import type { Vector3 } from 'three'
 
 // Trim tool draws an ephemeral polyline during an area-select drag.
@@ -15,6 +14,48 @@ import type { Vector3 } from 'three'
 // Epsilon constants for geometric calculations
 const EPSILON_PARALLEL = 1e-10 // For checking if lines are parallel or segments are degenerate
 const EPSILON_POINT_ON_SEGMENT = 1e-6 // For checking if a point is on a segment
+
+type SegmentIntersectionTrue = {
+  location: [number, number]
+  segmentId: number
+  subType: 'trueIntersect'
+}
+
+type SegmentIntersectionCoincident = {
+  location: [number, number]
+  segmentId: number
+  subType: 'coincident'
+  coincidentWithPointId: number
+}
+
+export type SegmentIntersection =
+  | SegmentIntersectionTrue
+  | SegmentIntersectionCoincident
+
+type SegmentIntersectionPoint = {
+  point: [number, number]
+  type: 'intersection'
+  segmentId: number
+} & (
+  | { subType: 'trueIntersect' }
+  | { subType: 'coincident'; coincidentWithPointId: number }
+)
+
+type EndpointPoint = {
+  point: [number, number]
+  type: 'endpoint'
+}
+
+type IntersectionOrEndPoint = EndpointPoint | SegmentIntersectionPoint
+
+type CandidatePoint =
+  | (SegmentIntersectionPoint & { t: number })
+  | {
+      point: [number, number]
+      type: 'endpoint'
+      which: 'start' | 'end'
+      t: number
+    }
 
 // Pure helper: deletes a segment that has no intersections and returns updated state (never throws)
 export async function deleteSegmentWithNoIntersections({
@@ -646,19 +687,7 @@ export function findFirstIntersectionWithPolylineSegment(
 export function findSegmentsThatIntersect(
   segmentId: number,
   objects: SceneGraphDelta['new_graph']['objects']
-): Array<
-  | {
-      location: [number, number]
-      segmentId: number
-      subType: 'trueIntersect'
-    }
-  | {
-      location: [number, number]
-      segmentId: number
-      subType: 'coincident'
-      coincidentWithPointId: number
-    }
-> {
+): SegmentIntersection[] {
   const intersectedObj = objects[segmentId]
 
   if (
@@ -681,19 +710,7 @@ export function findSegmentsThatIntersect(
     return []
   }
 
-  const segmentIntersections: Array<
-    | {
-        location: [number, number]
-        segmentId: number
-        subType: 'trueIntersect'
-      }
-    | {
-        location: [number, number]
-        segmentId: number
-        subType: 'coincident'
-        coincidentWithPointId: number
-      }
-  > = []
+  const segmentIntersections: SegmentIntersection[] = []
 
   // Check this segment against all other segments
   for (
@@ -743,25 +760,6 @@ export function findSegmentsThatIntersect(
   return segmentIntersections
 }
 
-type IntersectionOrEndPoint =
-  | {
-      point: [number, number]
-      type: 'endpoint'
-    }
-  | {
-      point: [number, number]
-      type: 'intersection'
-      segmentId: number
-      subType: 'trueIntersect'
-    }
-  | {
-      point: [number, number]
-      type: 'intersection'
-      segmentId: number
-      subType: 'coincident'
-      coincidentWithPointId: number
-    }
-
 interface SegmentTrimSides {
   startSide: IntersectionOrEndPoint
   endSide: IntersectionOrEndPoint
@@ -773,19 +771,7 @@ interface SegmentTrimSides {
 export function findTwoClosestPointsToIntersection(
   intersectionPoint: [number, number],
   segmentId: number,
-  segmentIntersections: Array<
-    | {
-        location: [number, number]
-        segmentId: number
-        subType: 'trueIntersect'
-      }
-    | {
-        location: [number, number]
-        segmentId: number
-        subType: 'coincident'
-        coincidentWithPointId: number
-      }
-  >,
+  segmentIntersections: SegmentIntersection[],
   objects: SceneGraphDelta['new_graph']['objects']
 ): SegmentTrimSides | Error {
   const segmentObj = objects[segmentId]
@@ -812,48 +798,28 @@ export function findTwoClosestPointsToIntersection(
 
   // Collect all candidate points: endpoints and intersections
   // Exclude points that are too close to the intersection point itself
-  const allCandidates: Array<
-    | {
-        point: [number, number]
-        type: 'endpoint'
-        which: 'start' | 'end'
-        t: number
-      }
-    | {
-        point: [number, number]
-        type: 'intersection'
-        segmentId: number
-        subType: 'trueIntersect'
-        t: number
-      }
-    | {
-        point: [number, number]
-        type: 'intersection'
-        segmentId: number
-        subType: 'coincident'
-        coincidentWithPointId: number
-        t: number
-      }
-  > = [
+  const allCandidates: CandidatePoint[] = [
     {
       point: startPoint,
-      type: 'endpoint' as const,
-      which: 'start' as const,
+      type: 'endpoint',
+      which: 'start',
       t: 0,
     },
-    { point: endPoint, type: 'endpoint' as const, which: 'end' as const, t: 1 },
-    ...segmentIntersections.map((si) => ({
-      point: si.location,
-      type: 'intersection' as const,
-      segmentId: si.segmentId,
-      ...(si.subType === 'coincident'
-        ? {
-            subType: si.subType,
-            coincidentWithPointId: si.coincidentWithPointId,
-          }
-        : { subType: si.subType }),
-      t: projectPointOntoSegment(si.location, startPoint, endPoint),
-    })),
+    { point: endPoint, type: 'endpoint', which: 'end', t: 1 },
+    ...segmentIntersections.map(
+      (si): CandidatePoint => ({
+        point: si.location,
+        type: 'intersection',
+        segmentId: si.segmentId,
+        ...(si.subType === 'coincident'
+          ? {
+              subType: si.subType,
+              coincidentWithPointId: si.coincidentWithPointId,
+            }
+          : { subType: si.subType }),
+        t: projectPointOntoSegment(si.location, startPoint, endPoint),
+      })
+    ),
   ]
   const candidatePoints = allCandidates.filter(
     (cp) => Math.abs(cp.t - intersectionT) > EPSILON_POINT_ON_SEGMENT
