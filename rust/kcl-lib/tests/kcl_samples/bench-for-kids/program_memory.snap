@@ -794,7 +794,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           "type": "fillet",
           "id": "[uuid]",
           "radius": {
-            "n": 3.8880000000000003,
+            "n": 3.888,
             "ty": {
               "type": "Default",
               "len": "cm",
@@ -1153,7 +1153,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "fillet",
               "id": "[uuid]",
               "radius": {
-                "n": 3.8880000000000003,
+                "n": 3.888,
                 "ty": {
                   "type": "Default",
                   "len": "cm",
@@ -1306,7 +1306,7 @@ description: Variables in memory after executing bench-for-kids.kcl
               "type": "fillet",
               "id": "[uuid]",
               "radius": {
-                "n": 3.8880000000000003,
+                "n": 3.888,
                 "ty": {
                   "type": "Default",
                   "len": "cm",
@@ -2395,7 +2395,7 @@ description: Variables in memory after executing bench-for-kids.kcl
           "type": "fillet",
           "id": "[uuid]",
           "radius": {
-            "n": 3.4992000000000005,
+            "n": 3.499,
             "ty": {
               "type": "Default",
               "len": "cm",

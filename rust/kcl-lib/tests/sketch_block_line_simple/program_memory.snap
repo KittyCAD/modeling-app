@@ -17,7 +17,7 @@ description: Variables in memory after executing sketch_block_line_simple.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.0000000040000003,
+                        "n": 1.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -25,7 +25,7 @@ description: Variables in memory after executing sketch_block_line_simple.kcl
                         }
                       },
                       {
-                        "n": 1.9999999979999998,
+                        "n": 2.0,
                         "ty": {
                           "mm": null,
                           "type": "Known",

@@ -314,7 +314,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "type": "fillet",
           "id": "[uuid]",
           "radius": {
-            "n": 0.5707134902949093,
+            "n": 0.571,
             "ty": {
               "type": "Default",
               "len": "mm",
@@ -788,7 +788,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 "type": "fillet",
                 "id": "[uuid]",
                 "radius": {
-                  "n": 0.5707134902949093,
+                  "n": 0.571,
                   "ty": {
                     "type": "Default",
                     "len": "mm",

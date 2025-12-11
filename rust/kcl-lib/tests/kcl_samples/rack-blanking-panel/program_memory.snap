@@ -539,7 +539,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "fillet",
           "id": "[uuid]",
           "radius": {
-            "n": 0.0299,
+            "n": 0.03,
             "ty": {
               "type": "Default",
               "len": "in",
@@ -553,7 +553,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "fillet",
           "id": "[uuid]",
           "radius": {
-            "n": 0.0299,
+            "n": 0.03,
             "ty": {
               "type": "Default",
               "len": "in",
@@ -1644,7 +1644,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 "type": "fillet",
                 "id": "[uuid]",
                 "radius": {
-                  "n": 0.0299,
+                  "n": 0.03,
                   "ty": {
                     "type": "Default",
                     "len": "in",
@@ -1658,7 +1658,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 "type": "fillet",
                 "id": "[uuid]",
                 "radius": {
-                  "n": 0.0299,
+                  "n": 0.03,
                   "ty": {
                     "type": "Default",
                     "len": "in",
@@ -2326,7 +2326,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "type": "fillet",
               "id": "[uuid]",
               "radius": {
-                "n": 0.0299,
+                "n": 0.03,
                 "ty": {
                   "type": "Default",
                   "len": "in",
@@ -2340,7 +2340,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "type": "fillet",
               "id": "[uuid]",
               "radius": {
-                "n": 0.0299,
+                "n": 0.03,
                 "ty": {
                   "type": "Default",
                   "len": "in",
@@ -3088,7 +3088,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 "type": "fillet",
                 "id": "[uuid]",
                 "radius": {
-                  "n": 0.0299,
+                  "n": 0.03,
                   "ty": {
                     "type": "Default",
                     "len": "in",
@@ -3102,7 +3102,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 "type": "fillet",
                 "id": "[uuid]",
                 "radius": {
-                  "n": 0.0299,
+                  "n": 0.03,
                   "ty": {
                     "type": "Default",
                     "len": "in",
@@ -3770,7 +3770,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "type": "fillet",
               "id": "[uuid]",
               "radius": {
-                "n": 0.0299,
+                "n": 0.03,
                 "ty": {
                   "type": "Default",
                   "len": "in",
@@ -3784,7 +3784,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "type": "fillet",
               "id": "[uuid]",
               "radius": {
-                "n": 0.0299,
+                "n": 0.03,
                 "ty": {
                   "type": "Default",
                   "len": "in",
@@ -4409,7 +4409,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "type": "fillet",
             "id": "[uuid]",
             "radius": {
-              "n": 0.0299,
+              "n": 0.03,
               "ty": {
                 "type": "Default",
                 "len": "in",
@@ -4423,7 +4423,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "type": "fillet",
             "id": "[uuid]",
             "radius": {
-              "n": 0.0299,
+              "n": 0.03,
               "ty": {
                 "type": "Default",
                 "len": "in",
