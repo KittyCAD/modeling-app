@@ -113,6 +113,9 @@ pub struct ExecOutcome {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
+    /// True to do more costly analysis of whether the sketch block segments are
+    /// under-constrained.
+    pub freedom_analysis: bool,
     /// The segments that were edited that triggered this execution.
     #[cfg(feature = "artifact-graph")]
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
@@ -123,6 +126,7 @@ impl Default for MockConfig {
         Self {
             // By default, use previous memory. This is usually what you want.
             use_prev_memory: true,
+            freedom_analysis: false,
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited: AhashIndexSet::default(),
         }
@@ -617,11 +621,12 @@ impl ExecutorContext {
             "To use mock execution, instantiate via ExecutorContext::new_mock, not ::new"
         );
 
+        let use_prev_memory = mock_config.use_prev_memory;
         #[cfg(not(feature = "artifact-graph"))]
         let mut exec_state = ExecState::new(self);
         #[cfg(feature = "artifact-graph")]
-        let mut exec_state = ExecState::new_sketch_mode(self, mock_config.segment_ids_edited.clone());
-        if mock_config.use_prev_memory {
+        let mut exec_state = ExecState::new_sketch_mode(self, mock_config);
+        if use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => {
                     *exec_state.mut_stack() = mem.0;
