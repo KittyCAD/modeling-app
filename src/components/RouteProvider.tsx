@@ -164,7 +164,10 @@ export function RouteProvider({ children }: { children: ReactNode }) {
 
       // Note: currently settings are watched, reloaded even if it was initiated by us (e.g. by a user changing some settings),
       // writeCausedByAppCheckedInFileTreeFileSystemWatcher is not used here.
-      const data = await loadAndValidateSettings(loadedProject?.project?.path)
+      const data = await loadAndValidateSettings(
+        kclManager.wasmInstancePromise,
+        loadedProject?.project?.path
+      )
       settingsActor.send({
         type: 'Set all settings',
         settings: data.settings,

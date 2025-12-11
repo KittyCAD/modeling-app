@@ -261,7 +261,7 @@ const appMachine = setup({
     spawnChild(appMachineActors[AUTH], { systemId: AUTH }),
     spawnChild(appMachineActors[SETTINGS], {
       systemId: SETTINGS,
-      input: createSettings(),
+      input: { ...createSettings(), kclManager },
     }),
     spawnChild(appMachineActors[SYSTEM_IO], {
       systemId: SYSTEM_IO,
