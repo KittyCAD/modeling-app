@@ -999,7 +999,6 @@ impl Node<SketchBlock> {
                     },
                     segments: Default::default(),
                     constraints: Default::default(),
-                    is_underconstrained: None,
                 }),
                 label: Default::default(),
                 comments: Default::default(),
@@ -1210,8 +1209,6 @@ impl Node<SketchBlock> {
             sketch
                 .constraints
                 .extend(std::mem::take(&mut sketch_block_state.sketch_constraints));
-            // Update the sketch object with freedom.
-            sketch.is_underconstrained = solve_analysis.map(|analysis| analysis.is_underconstrained);
 
             // Push sketch solve operation
             exec_state.push_op(Operation::SketchSolve {
