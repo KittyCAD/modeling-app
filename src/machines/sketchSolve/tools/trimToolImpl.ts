@@ -150,6 +150,170 @@ export async function applyCoincidentConstraintForIntersection({
   }
 }
 
+// Pure helper: split a line segment when both sides are intersections (returns updated state or Error)
+export async function splitSegmentAtIntersections({
+  rustContext,
+  sketchId,
+  foundIntersection,
+  trimSides,
+  objects,
+  invalidates_ids,
+}: {
+  rustContext: RustContext
+  sketchId: number
+  foundIntersection: {
+    segmentId: number
+    pointIndex: number
+  }
+  trimSides: SegmentTrimSides
+  objects: SceneGraphDelta['new_graph']['objects']
+  invalidates_ids: boolean
+}): Promise<
+  | {
+      invalidates_ids: boolean
+      lastDeleteResult: {
+        kclSource: SourceDelta
+        sceneGraphDelta: SceneGraphDelta
+      } | null
+      currentSceneGraph: SceneGraphDelta | null
+      lastPointIndex: number
+    }
+  | Error
+> {
+  const startIntersection = trimSides.startSide.point
+  const endIntersection = trimSides.endSide.point
+  const segment = objects[foundIntersection.segmentId]
+
+  if (
+    segment?.kind?.type !== 'Segment' ||
+    segment.kind.segment.type !== 'Line'
+  ) {
+    return {
+      invalidates_ids,
+      lastDeleteResult: null,
+      currentSceneGraph: null,
+      lastPointIndex: foundIntersection.pointIndex + 1,
+    }
+  }
+
+  const originalStartPoint = getPointCoords(segment.kind.segment.start, objects)
+  const originalEndPoint = getPointCoords(segment.kind.segment.end, objects)
+
+  if (!originalStartPoint || !originalEndPoint) {
+    console.error('Could not get original line endpoints')
+    return {
+      invalidates_ids,
+      lastDeleteResult: null,
+      currentSceneGraph: null,
+      lastPointIndex: foundIntersection.pointIndex + 1,
+    }
+  }
+
+  const endPointObj = objects[segment.kind.segment.end]
+  if (
+    endPointObj?.kind?.type !== 'Segment' ||
+    endPointObj.kind.segment.type !== 'Point'
+  ) {
+    console.error('Could not get end point object for units')
+    return {
+      invalidates_ids,
+      lastDeleteResult: null,
+      currentSceneGraph: null,
+      lastPointIndex: foundIntersection.pointIndex + 1,
+    }
+  }
+
+  const units = endPointObj.kind.segment.position.x.units
+
+  try {
+    const editResult = await rustContext.editSegments(
+      0,
+      sketchId,
+      [
+        {
+          id: foundIntersection.segmentId,
+          ctor: {
+            type: 'Line',
+            start: {
+              x: {
+                type: 'Var',
+                value: originalStartPoint[0],
+                units,
+              },
+              y: {
+                type: 'Var',
+                value: originalStartPoint[1],
+                units,
+              },
+            },
+            end: {
+              x: {
+                type: 'Var',
+                value: startIntersection[0],
+                units,
+              },
+              y: {
+                type: 'Var',
+                value: startIntersection[1],
+                units,
+              },
+            },
+          },
+        },
+      ],
+      await jsAppSettings()
+    )
+
+    let nextInvalidatesIds =
+      editResult.sceneGraphDelta.invalidates_ids || invalidates_ids
+    const addResult = await rustContext.addSegment(
+      0,
+      sketchId,
+      {
+        type: 'Line',
+        start: {
+          x: {
+            type: 'Var',
+            value: endIntersection[0],
+            units,
+          },
+          y: {
+            type: 'Var',
+            value: endIntersection[1],
+            units,
+          },
+        },
+        end: {
+          x: {
+            type: 'Var',
+            value: originalEndPoint[0],
+            units,
+          },
+          y: {
+            type: 'Var',
+            value: originalEndPoint[1],
+            units,
+          },
+        },
+      },
+      undefined,
+      await jsAppSettings()
+    )
+
+    nextInvalidatesIds =
+      addResult.sceneGraphDelta.invalidates_ids || nextInvalidatesIds
+
+    return {
+      invalidates_ids: nextInvalidatesIds,
+      lastDeleteResult: addResult,
+      currentSceneGraph: addResult.sceneGraphDelta,
+      lastPointIndex: foundIntersection.pointIndex + 1,
+    }
+  } catch (error) {
+    return new Error(`Failed to split line segment: ${error}`)
+  }
+}
+
 // Helper to project a point onto a line segment and get its parametric position
 // Returns t where t=0 at start, t=1 at end, t<0 before start, t>1 after end
 function projectPointOntoSegment(
@@ -478,147 +642,31 @@ export async function processTrimOperations({
       continue
     }
 
-    // Handle intersection-to-intersection case (split segment)
+    // Handle intersection-to-intersection either side of the trim i.e. splitting the segment
     if (
-      trimSides.startSide.type === 'intersection' &&
-      trimSides.endSide.type === 'intersection'
+      trimSides.startSide.type !== 'intersection' &&
+      trimSides.endSide.type !== 'intersection'
     ) {
-      const startIntersection = trimSides.startSide.point
-      const endIntersection = trimSides.endSide.point
-      const segment = objects[foundIntersection.segmentId]
-
-      if (
-        segment?.kind?.type !== 'Segment' ||
-        segment.kind.segment.type !== 'Line'
-      ) {
-        lastPointIndex = foundIntersection.pointIndex + 1
-        continue
-      }
-
-      const originalStartPoint = getPointCoords(
-        segment.kind.segment.start,
-        objects
-      )
-      const originalEndPoint = getPointCoords(segment.kind.segment.end, objects)
-
-      if (!originalStartPoint || !originalEndPoint) {
-        console.error('Could not get original line endpoints')
-        lastPointIndex = foundIntersection.pointIndex + 1
-        continue
-      }
-
-      // Get units from the original line's end point
-      const endPointObj = objects[segment.kind.segment.end]
-      if (
-        endPointObj?.kind?.type !== 'Segment' ||
-        endPointObj.kind.segment.type !== 'Point'
-      ) {
-        console.error('Could not get end point object for units')
-        lastPointIndex = foundIntersection.pointIndex + 1
-        continue
-      }
-
-      const units = endPointObj.kind.segment.position.x.units
-
-      try {
-        // Step 1: Edit the existing line to end at startIntersection
-        const editResult = await rustContext.editSegments(
-          0,
-          sketchId,
-          [
-            {
-              id: foundIntersection.segmentId,
-              ctor: {
-                type: 'Line',
-                start: {
-                  x: {
-                    type: 'Var',
-                    value: originalStartPoint[0],
-                    units,
-                  },
-                  y: {
-                    type: 'Var',
-                    value: originalStartPoint[1],
-                    units,
-                  },
-                },
-                end: {
-                  x: {
-                    type: 'Var',
-                    value: startIntersection[0],
-                    units,
-                  },
-                  y: {
-                    type: 'Var',
-                    value: startIntersection[1],
-                    units,
-                  },
-                },
-              },
-            },
-          ],
-          await jsAppSettings()
-        )
-
-        invalidates_ids =
-          editResult.sceneGraphDelta.invalidates_ids || invalidates_ids
-
-        // Update scene graph after edit (needed for consistency, even though addSegment uses internal state)
-        currentSceneGraph = editResult.sceneGraphDelta
-
-        // Step 2: Create a new line segment from endIntersection to the original end point
-        const addResult = await rustContext.addSegment(
-          0,
-          sketchId,
-          {
-            type: 'Line',
-            start: {
-              x: {
-                type: 'Var',
-                value: endIntersection[0],
-                units,
-              },
-              y: {
-                type: 'Var',
-                value: endIntersection[1],
-                units,
-              },
-            },
-            end: {
-              x: {
-                type: 'Var',
-                value: originalEndPoint[0],
-                units,
-              },
-              y: {
-                type: 'Var',
-                value: originalEndPoint[1],
-                units,
-              },
-            },
-          },
-          undefined, // label
-          await jsAppSettings()
-        )
-
-        invalidates_ids =
-          addResult.sceneGraphDelta.invalidates_ids || invalidates_ids
-
-        // Use the addResult as it contains the final scene graph state
-        lastDeleteResult = addResult
-        currentSceneGraph = addResult.sceneGraphDelta
-        lastPointIndex = foundIntersection.pointIndex + 1
-      } catch (error) {
-        console.error('Failed to split line segment:', error)
-        // Stop on error
-        break
-      }
       continue
     }
+    const splitResult = await splitSegmentAtIntersections({
+      rustContext,
+      sketchId,
+      foundIntersection,
+      trimSides,
+      objects,
+      invalidates_ids,
+    })
 
-    // Default case: Segment has intersections with other segments, can't delete
-    // Move past this intersection point
-    lastPointIndex = foundIntersection.pointIndex + 1
+    if (splitResult instanceof Error) {
+      console.error(splitResult.message)
+      break
+    }
+
+    invalidates_ids = splitResult.invalidates_ids
+    lastDeleteResult = splitResult.lastDeleteResult
+    currentSceneGraph = splitResult.currentSceneGraph || currentSceneGraph
+    lastPointIndex = splitResult.lastPointIndex
   }
 
   // Round all point coordinates before returning
