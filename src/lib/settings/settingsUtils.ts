@@ -38,10 +38,7 @@ import { appThemeToTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import {
-  getSettingsFromActorRef,
-  type SettingsActorType,
-} from '@src/machines/settingsMachine'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 type OmitNull<T> = T extends null ? undefined : T
 const toUndefinedIfNull = (a: any): OmitNull<any> =>
@@ -701,6 +698,16 @@ export function getSettingInputType(setting: Setting) {
       | 'boolean'
       | 'number'
   return typeof setting.default as 'string' | 'boolean' | 'number'
+}
+
+/** Utility to get the settings off an ActorRefFrom settingsMachine */
+export const getSettingsFromActorRef = (actor: SettingsActorType) => {
+  const {
+    currentProject: _c,
+    kclManager: _k,
+    ...settings
+  } = actor.getSnapshot().context
+  return settings
 }
 
 export const jsAppSettings = async (
