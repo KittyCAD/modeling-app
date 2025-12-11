@@ -2555,31 +2555,31 @@ sketch(on = XY) {
 
         let arc_ctor = ArcCtor {
             start: Point2d {
-                x: Expr::Number(Number {
+                x: Expr::Var(Number {
                     value: 1.0,
                     units: NumericSuffix::Mm,
                 }),
-                y: Expr::Number(Number {
+                y: Expr::Var(Number {
                     value: 2.0,
                     units: NumericSuffix::Mm,
                 }),
             },
             end: Point2d {
-                x: Expr::Number(Number {
+                x: Expr::Var(Number {
                     value: 13.0,
                     units: NumericSuffix::Mm,
                 }),
-                y: Expr::Number(Number {
+                y: Expr::Var(Number {
                     value: 14.0,
                     units: NumericSuffix::Mm,
                 }),
             },
             center: Point2d {
-                x: Expr::Number(Number {
+                x: Expr::Var(Number {
                     value: 13.0,
                     units: NumericSuffix::Mm,
                 }),
-                y: Expr::Number(Number {
+                y: Expr::Var(Number {
                     value: 2.0,
                     units: NumericSuffix::Mm,
                 }),
@@ -2598,7 +2598,7 @@ sketch(on = XY) {
             "@settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::arc(start = [1mm, 2mm], end = [13mm, 14mm], center = [13mm, 2mm])
+  sketch2::arc(start = [var 1mm, var 2mm], end = [var 13mm, var 14mm], center = [var 13mm, var 2mm])
 }
 "
         );

@@ -312,39 +312,39 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         ))
     })?;
 
-    let Some(start_x) = start_x_value.as_unsolved_expr() else {
+    let Some(UnsolvedExpr::Unknown(start_x)) = start_x_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "start x must be a number or sketch var".to_owned(),
+            "start x must be a sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
-    let Some(start_y) = start_y_value.as_unsolved_expr() else {
+    let Some(UnsolvedExpr::Unknown(start_y)) = start_y_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "start y must be a number or sketch var".to_owned(),
+            "start y must be a sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
-    let Some(end_x) = end_x_value.as_unsolved_expr() else {
+    let Some(UnsolvedExpr::Unknown(end_x)) = end_x_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "end x must be a number or sketch var".to_owned(),
+            "end x must be a sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
-    let Some(end_y) = end_y_value.as_unsolved_expr() else {
+    let Some(UnsolvedExpr::Unknown(end_y)) = end_y_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "end y must be a number or sketch var".to_owned(),
+            "end y must be a sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
-    let Some(center_x) = center_x_value.as_unsolved_expr() else {
+    let Some(UnsolvedExpr::Unknown(center_x)) = center_x_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "center x must be a number or sketch var".to_owned(),
+            "center x must be a sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
-    let Some(center_y) = center_y_value.as_unsolved_expr() else {
+    let Some(UnsolvedExpr::Unknown(center_y)) = center_y_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "center y must be a number or sketch var".to_owned(),
+            "center y must be a sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
@@ -402,9 +402,9 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let segment = UnsolvedSegment {
         object_id: arc_object_id,
         kind: UnsolvedSegmentKind::Arc {
-            start: [start_x, start_y],
-            end: [end_x, end_y],
-            center: [center_x, center_y],
+            start: [UnsolvedExpr::Unknown(start_x), UnsolvedExpr::Unknown(start_y)],
+            end: [UnsolvedExpr::Unknown(end_x), UnsolvedExpr::Unknown(end_y)],
+            center: [UnsolvedExpr::Unknown(center_x), UnsolvedExpr::Unknown(center_y)],
             ctor: Box::new(ctor),
             start_object_id,
             end_object_id,
@@ -501,14 +501,29 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         optional_constraints
     };
 
-    // Save the segment to be sent to the engine after solving.
+    // Build the implicit arc constraint.
+    let range = args.source_range;
+    let constraint = kcl_ezpz::Constraint::Arc(kcl_ezpz::datatypes::CircularArc {
+        center: kcl_ezpz::datatypes::DatumPoint::new_xy(
+            center_x.to_constraint_id(range)?,
+            center_y.to_constraint_id(range)?,
+        ),
+        a: kcl_ezpz::datatypes::DatumPoint::new_xy(start_x.to_constraint_id(range)?, start_y.to_constraint_id(range)?),
+        b: kcl_ezpz::datatypes::DatumPoint::new_xy(end_x.to_constraint_id(range)?, end_y.to_constraint_id(range)?),
+    });
+
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "arc() can only be used inside a sketch block".to_owned(),
             vec![args.source_range],
         )));
     };
+    // Save the segment to be sent to the engine after solving.
     sketch_state.needed_by_engine.push(segment.clone());
+    // Save the constraint to be used for solving.
+    sketch_state.solver_constraints.push(constraint);
+    // The constraint isn't added to scene objects since it's implicit in the
+    // arc segment. You cannot have an arc without it.
 
     #[cfg(feature = "artifact-graph")]
     sketch_state.solver_optional_constraints.extend(optional_constraints);
