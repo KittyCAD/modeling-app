@@ -505,11 +505,17 @@ export async function processTrimOperations({
       continue
     }
 
-    // Only delete if segment has no intersections with other segments
-    if (
+    const trimSegmentDoseNotIntersectWithOtherSegments =
       trimSides.startSide.type === 'endpoint' &&
       trimSides.endSide.type === 'endpoint'
-    ) {
+    const trimSegmentHasIntersectionWithOtherSegmentOnOneSideOnly =
+      (trimSides.startSide.type === 'endpoint' &&
+        trimSides.endSide.type === 'intersection') ||
+      (trimSides.endSide.type === 'endpoint' &&
+        trimSides.startSide.type === 'intersection')
+
+    // Only delete if segment has no intersections with other segments
+    if (trimSegmentDoseNotIntersectWithOtherSegments) {
       const deleteResult = await deleteSegmentWithNoIntersections({
         rustContext,
         sketchId,
@@ -531,12 +537,7 @@ export async function processTrimOperations({
     }
 
     // Handle endpoint-to-intersection case (move endpoint to intersection)
-    if (
-      (trimSides.startSide.type === 'endpoint' &&
-        trimSides.endSide.type === 'intersection') ||
-      (trimSides.endSide.type === 'endpoint' &&
-        trimSides.startSide.type === 'intersection')
-    ) {
+    if (trimSegmentHasIntersectionWithOtherSegmentOnOneSideOnly) {
       const segment = objects[foundIntersection.segmentId]
       if (
         segment.kind.type !== 'Segment' ||
@@ -546,7 +547,6 @@ export async function processTrimOperations({
         continue
       }
 
-      // const [endPointId, intersectionLocation, intersectionSide] =
       const [endPointId, intersectionSide] =
         trimSides.startSide.type === 'endpoint'
           ? [segment.kind.segment.start, trimSides.endSide]
@@ -604,10 +604,10 @@ export async function processTrimOperations({
         // Once we have this constraint we will check for this as well
         // in which case instead of just adding the coincident constraint to the two segment's endpoint, first the existing
         // line-to-point coincident constraint will be removed
-        if (
-          intersectionSide.type !== 'intersection' ||
-          intersectionSide.subType !== 'coincident'
-        ) {
+        const isIntersectionCoincident =
+          intersectionSide.type === 'intersection' &&
+          intersectionSide.subType === 'coincident'
+        if (!isIntersectionCoincident) {
           continue
         }
 
