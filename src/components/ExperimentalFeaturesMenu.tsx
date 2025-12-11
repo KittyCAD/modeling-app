@@ -47,7 +47,8 @@ export function ExperimentalFeaturesMenu() {
                       onClick={() => {
                         const newAst = setExperimentalFeatures(
                           kclManager.code,
-                          level
+                          level,
+                          kclManager.wasmInstance
                         )
                         if (err(newAst)) {
                           toast.error(

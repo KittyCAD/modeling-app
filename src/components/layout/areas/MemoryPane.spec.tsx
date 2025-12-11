@@ -62,12 +62,7 @@ describe('processMemory', () => {
     |> line(endAbsolute = [2.15, 4.32])
     // |> rx(90)`
     const ast = assertParse(code, instanceInThisFile)
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const output = processMemory(execState.variables, instanceInThisFile)
     expect(output.nFeet).toEqual('2: number(ft)')
     expect(output.nInches).toEqual('2: number(in)')

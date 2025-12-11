@@ -259,16 +259,20 @@ export const KclEditorPaneContents = () => {
 
             // Update diagnostics as they are cleared when the editor is unmounted.
             // Without this, errors would not be shown when closing and reopening the editor.
-            kclManager
-              .safeParse(kclManager.code)
-              .then(() => {
-                // On first load of this component, ensure we show the current errors
-                // in the editor.
-                // Make sure we don't add them twice.
-                if (diagnosticCount(_editorView.state) === 0) {
-                  kclManager.setDiagnosticsForCurrentErrors()
-                }
-              })
+            kclManager.wasmInstancePromise
+              .then((wasmInstance) =>
+                kclManager
+                  .safeParse(kclManager.code, wasmInstance)
+                  .then(() => {
+                    // On first load of this component, ensure we show the current errors
+                    // in the editor.
+                    // Make sure we don't add them twice.
+                    if (diagnosticCount(_editorView.state) === 0) {
+                      kclManager.setDiagnosticsForCurrentErrors()
+                    }
+                  })
+                  .catch(reportRejection)
+              )
               .catch(reportRejection)
           }}
         />

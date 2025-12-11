@@ -806,7 +806,7 @@ export const ModelingMachineProvider = ({
                 constraint: 'setHorzDistance',
                 selectionRanges,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(recast(modifiedAst), kclManager.wasmInstance)
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -866,7 +866,7 @@ export const ModelingMachineProvider = ({
                 constraint: 'setVertDistance',
                 selectionRanges,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(recast(modifiedAst), kclManager.wasmInstance)
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -933,7 +933,7 @@ export const ModelingMachineProvider = ({
                     selectionRanges,
                     angleOrLength: 'setAngle',
                   }))
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(recast(modifiedAst), kclManager.wasmInstance)
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -1000,7 +1000,7 @@ export const ModelingMachineProvider = ({
             if (err(constraintResult)) return Promise.reject(constraintResult)
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               constraintResult
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(recast(modifiedAst), kclManager.wasmInstance)
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -1057,7 +1057,7 @@ export const ModelingMachineProvider = ({
               await applyConstraintIntersect({
                 selectionRanges,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(recast(modifiedAst), kclManager.wasmInstance)
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -1115,7 +1115,7 @@ export const ModelingMachineProvider = ({
                 constraint: 'xAbs',
                 selectionRanges,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(recast(modifiedAst), kclManager.wasmInstance)
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -1173,7 +1173,7 @@ export const ModelingMachineProvider = ({
                 constraint: 'yAbs',
                 selectionRanges,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(recast(modifiedAst), kclManager.wasmInstance)
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program

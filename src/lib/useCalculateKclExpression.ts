@@ -81,7 +81,7 @@ export function useCalculateKclExpression({
   // async method.
   // If we pass in numeric literals, we should instantly parse them, they have nothing to do with application memory
   const _code_value = `const __result__ = ${value}`
-  const codeValueParseResult = parse(_code_value)
+  const codeValueParseResult = parse(_code_value, rustContext.getRustInstance())
   let isValueParsable = true
   if (err(codeValueParseResult) || !resultIsOk(codeValueParseResult)) {
     isValueParsable = false

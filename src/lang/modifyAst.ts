@@ -938,19 +938,21 @@ export function splitPipedProfile(
   }
 }
 
-export function createNodeFromExprSnippet(
-  strings: TemplateStringsArray,
-  ...expressions: any[]
-): Node<BodyItem> | Error {
-  const code = strings.reduce(
-    (acc, str, i) => acc + str + (expressions[i] || ''),
-    ''
-  )
-  let program = parse(code)
-  if (err(program)) return program
-  const node = program.program?.body[0]
-  if (!node) return new Error('No node found')
-  return node
+export function buildSnippetParser(wasmInstance: ModuleType) {
+  return function createNodeFromExprSnippet(
+    strings: TemplateStringsArray,
+    ...expressions: any[]
+  ): Node<BodyItem> | Error {
+    const code = strings.reduce(
+      (acc, str, i) => acc + str + (expressions[i] || ''),
+      ''
+    )
+    let program = parse(code, wasmInstance)
+    if (err(program)) return program
+    const node = program.program?.body[0]
+    if (!node) return new Error('No node found')
+    return node
+  }
 }
 
 export function insertVariableAndOffsetPathToNode(
