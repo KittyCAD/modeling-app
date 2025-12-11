@@ -45,9 +45,11 @@ import {
 } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
+import type { KclManager } from '@src/lang/KclManager'
 
 type SettingsMachineContext = SettingsType & {
   currentProject?: Project
+  kclManager: KclManager
 }
 
 export const settingsMachine = setup({
@@ -85,33 +87,42 @@ export const settingsMachine = setup({
         doNotPersist: boolean
         context: SettingsMachineContext
         toastCallback?: () => void
-        rootContext: any
+        kclManager: KclManager
       }
     >(async ({ input }) => {
       // Without this, when a user changes the file, it'd
       // create a detection loop with the file-system watcher.
-      if (input.doNotPersist || !input.rootContext) return
+      if (input.doNotPersist) return
 
-      input.rootContext.kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+      input.kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       const { currentProject, ...settings } = input.context
 
-      await saveSettings(settings, currentProject?.path)
+      await saveSettings(
+        input.kclManager.wasmInstancePromise,
+        settings,
+        currentProject?.path
+      )
 
       if (input.toastCallback) {
         input.toastCallback()
       }
     }),
-    loadUserSettings: fromPromise<SettingsMachineContext, undefined>(
-      async () => {
-        const { settings } = await loadAndValidateSettings()
+    loadUserSettings: fromPromise<SettingsType, { kclManager: KclManager }>(
+      async ({ input }) => {
+        const { settings } = await loadAndValidateSettings(
+          input.kclManager.wasmInstancePromise
+        )
         return settings
       }
     ),
     loadProjectSettings: fromPromise<
-      SettingsMachineContext,
-      { project?: Project }
+      SettingsType,
+      { project?: Project; kclManager: KclManager }
     >(async ({ input }) => {
-      const { settings } = await loadAndValidateSettings(input.project?.path)
+      const { settings } = await loadAndValidateSettings(
+        input.kclManager.wasmInstancePromise,
+        input.project?.path
+      )
       return settings
     }),
     watchSystemTheme: fromCallback<{
@@ -581,7 +592,7 @@ export const settingsMachine = setup({
             console.error('Error persisting settings')
           },
         },
-        input: ({ context, event, self }) => {
+        input: ({ context, event }) => {
           if (
             event.type === 'set.app.namedViews' &&
             'toastCallback' in event.data
@@ -590,14 +601,14 @@ export const settingsMachine = setup({
               doNotPersist: event.doNotPersist ?? false,
               context,
               toastCallback: event.data.toastCallback,
-              rootContext: self.system.get('root')?.getSnapshot().context,
+              kclManager: context.kclManager,
             }
           }
 
           return {
             doNotPersist: event.doNotPersist ?? false,
             context,
-            rootContext: self.system.get('root')?.getSnapshot().context,
+            kclManager: context.kclManager,
           }
         },
       },
@@ -606,6 +617,7 @@ export const settingsMachine = setup({
     loadingUser: {
       invoke: {
         src: 'loadUserSettings',
+        input: ({ context: { kclManager } }) => ({ kclManager }),
         onDone: {
           target: 'idle',
           actions: [
@@ -661,8 +673,9 @@ export const settingsMachine = setup({
           ],
         },
         onError: 'idle',
-        input: ({ event }) => {
+        input: ({ event, context: { kclManager } }) => {
           return {
+            kclManager,
             project: event.type === 'load.project' ? event.project : undefined,
           }
         },
