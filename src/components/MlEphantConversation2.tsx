@@ -69,11 +69,11 @@ export interface MlCopilotModesProps {
 
 const MlCopilotModes = (props: MlCopilotModesProps) => {
   return (
-    <div className="flex-none">
+    <>
       <Popover className="relative">
         <Popover.Button
           data-testid="ml-copilot-efforts-button"
-          className="h-7 bg-default flex flex-row items-center gap-1 pl-1 pr-2"
+          className="h-7 bg-default flex flex-row items-center gap-1 m-0 pl-1 pr-2 rounded-sm"
         >
           {props.children}
           <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
@@ -103,7 +103,7 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
           )}
         </Popover.Panel>
       </Popover>
-    </div>
+    </>
   )
 }
 
@@ -117,7 +117,7 @@ export interface MlEphantExtraInputsProps {
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
   return (
     <div className="flex-1 flex min-w-0 items-end">
-      <div className="flex flex-row w-fit-content items-end">
+      <div className="flex flex-row w-fit-content items-end gap-1">
         {/* TODO: Generalize to a MlCopilotContexts component */}
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
@@ -157,7 +157,7 @@ const MlCopilotSelectionsContext = (props: {
     props.selections.data
   )
   return selectionText ? (
-    <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 pl-1 pr-2">
+    <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 m-0 pl-1 pr-2 rounded-sm">
       <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
       {selectionText}
     </button>
@@ -295,17 +295,17 @@ export const MlEphantConversationInput = (
                 data-testid="ml-ephant-conversation-input-button"
                 disabled={props.disabled}
                 onClick={onClick}
-                className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
+                className="m-0 p-1 rounded-sm border-none bg-ml-green hover:bg-ml-green text-chalkboard-100"
               >
-                <CustomIcon name="caretUp" className="w-5 h-5 animate-bounce" />
+                <CustomIcon name="arrowUp" className="w-5 h-5" />
               </button>
             ) : (
               <button
                 data-testid="ml-ephant-conversation-input-button"
                 onClick={props.onInterrupt}
-                className="w-10 flex-none bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110 p-2 flex justify-center"
+                className="m-0 p-1 rounded-sm border-none bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
               >
-                <CustomIcon name="close" className="w-5 h-5 animate-pulse" />
+                <CustomIcon name="close" className="w-5 h-5" />
               </button>
             )}
           </div>
