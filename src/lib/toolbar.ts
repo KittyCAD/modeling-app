@@ -1296,9 +1296,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 data: { tool: 'trimTool' },
               }),
         icon: 'trimTool',
-        status: 'available',
+        status: 'experimental',
         title: 'Trim',
-        description: 'Trim sketch lines',
+        description: 'Experimental trim tool. Arcs not supported. Some operations require point-to-line coincident constraints which can not be added yet.',
         links: [],
         isActive: (state) =>
           state.matches('sketchSolveMode') &&
