@@ -972,73 +972,82 @@ impl FrontendState {
         }
         let sketch_id = sketch;
 
-        // Map the runtime objects back to variable names.
+        // Get AST reference for first object (point or segment)
         let pt0_id = coincident.points[0];
         let pt0_object = self.scene_graph.objects.get(pt0_id.0).ok_or_else(|| Error {
-            msg: format!("Point not found: {pt0_id:?}"),
+            msg: format!("Object not found: {pt0_id:?}"),
         })?;
         let ObjectKind::Segment { segment: pt0_segment } = &pt0_object.kind else {
             return Err(Error {
                 msg: format!("Object is not a segment: {pt0_object:?}"),
             });
         };
-        let Segment::Point(pt0) = pt0_segment else {
-            return Err(Error {
-                msg: format!("Only points are currently supported: {pt0_object:?}"),
-            });
-        };
-        // If the point is part of a line, refer to the line instead.
-        let pt0_ast = if let Some(line_id) = pt0.owner {
-            let line = self.expect_line(line_id)?;
-            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-            let property = if line.start == pt0_id {
-                LINE_PROPERTY_START
-            } else if line.end == pt0_id {
-                LINE_PROPERTY_END
-            } else {
-                return Err(Error {
-                    msg: format!(
-                        "Internal: Point is not part of owner's line segment: point={pt0_id:?}, line={line_id:?}"
-                    ),
-                });
-            };
-            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-        } else {
-            get_or_insert_ast_reference(new_ast, &pt0_object.source, "point", None)?
+        let pt0_ast = match pt0_segment {
+            Segment::Point(point) => {
+                // If the point is part of a line, refer to the line's start/end property
+                if let Some(line_id) = point.owner {
+                    let line = self.expect_line(line_id)?;
+                    let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
+                    let property = if line.start == pt0_id {
+                        LINE_PROPERTY_START
+                    } else if line.end == pt0_id {
+                        LINE_PROPERTY_END
+                    } else {
+                        return Err(Error {
+                            msg: format!(
+                                "Internal: Point is not part of owner's line segment: point={pt0_id:?}, line={line_id:?}"
+                            ),
+                        });
+                    };
+                    get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
+                } else {
+                    // Standalone point
+                    get_or_insert_ast_reference(new_ast, &pt0_object.source, "point", None)?
+                }
+            }
+            Segment::Line(_) | Segment::Arc(_) | Segment::Circle(_) => {
+                // Reference the segment directly (for point-segment coincident)
+                get_or_insert_ast_reference(new_ast, &pt0_object.source, "line", None)?
+            }
         };
 
+        // Get AST reference for second object (point or segment)
         let pt1_id = coincident.points[1];
         let pt1_object = self.scene_graph.objects.get(pt1_id.0).ok_or_else(|| Error {
-            msg: format!("Point not found: {pt1_id:?}"),
+            msg: format!("Object not found: {pt1_id:?}"),
         })?;
         let ObjectKind::Segment { segment: pt1_segment } = &pt1_object.kind else {
             return Err(Error {
                 msg: format!("Object is not a segment: {pt1_object:?}"),
             });
         };
-        let Segment::Point(pt1) = pt1_segment else {
-            return Err(Error {
-                msg: format!("Only points are currently supported: {pt1_object:?}"),
-            });
-        };
-        // If the point is part of a line, refer to the line instead.
-        let pt1_ast = if let Some(line_id) = pt1.owner {
-            let line = self.expect_line(line_id)?;
-            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-            let property = if line.start == pt1_id {
-                LINE_PROPERTY_START
-            } else if line.end == pt1_id {
-                LINE_PROPERTY_END
-            } else {
-                return Err(Error {
-                    msg: format!(
-                        "Internal: Point is not part of owner's line segment: point={pt1_id:?}, line={line_id:?}"
-                    ),
-                });
-            };
-            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-        } else {
-            get_or_insert_ast_reference(new_ast, &pt1_object.source, "point", None)?
+        let pt1_ast = match pt1_segment {
+            Segment::Point(point) => {
+                // If the point is part of a line, refer to the line's start/end property
+                if let Some(line_id) = point.owner {
+                    let line = self.expect_line(line_id)?;
+                    let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
+                    let property = if line.start == pt1_id {
+                        LINE_PROPERTY_START
+                    } else if line.end == pt1_id {
+                        LINE_PROPERTY_END
+                    } else {
+                        return Err(Error {
+                            msg: format!(
+                                "Internal: Point is not part of owner's line segment: point={pt1_id:?}, line={line_id:?}"
+                            ),
+                        });
+                    };
+                    get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
+                } else {
+                    // Standalone point
+                    get_or_insert_ast_reference(new_ast, &pt1_object.source, "point", None)?
+                }
+            }
+            Segment::Line(_) | Segment::Arc(_) | Segment::Circle(_) => {
+                // Reference the segment directly (for point-segment coincident)
+                get_or_insert_ast_reference(new_ast, &pt1_object.source, "line", None)?
+            }
         };
 
         // Create the coincident() call.
