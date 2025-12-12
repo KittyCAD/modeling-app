@@ -13,7 +13,7 @@ import type { AreaType, AreaTypeDefinition } from '@src/lib/layout/types'
 import { isDesktop } from '@src/lib/isDesktop'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import type { MouseEventHandler } from 'react'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
@@ -23,6 +23,7 @@ import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
 import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
+import { Draggable } from '@src/components/Draggable'
 
 const onCodeNotificationClick: MouseEventHandler = (e) => {
   e.preventDefault()
