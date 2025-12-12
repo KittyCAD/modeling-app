@@ -139,9 +139,9 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         },
       },
       onSubmit: (data) => {
-        awaitWasmAndSumbit().catch(reportRejection)
+        awaitWasmAndSubmit().catch(reportRejection)
 
-        async function awaitWasmAndSumbit() {
+        async function awaitWasmAndSubmit() {
           if (typeof data === 'object' && 'level' in data) {
             const newAst = setExperimentalFeatures(
               commandProps.kclManager.code,
