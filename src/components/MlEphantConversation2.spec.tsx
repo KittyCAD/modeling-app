@@ -40,7 +40,7 @@ describe('MlEphantConversation2', () => {
 
     const renderConversation = (
       conversation?: Conversation,
-      hasPromptCompleted = false
+      hasPromptCompleted = true
     ) => {
       return (
         <MlEphantConversation2
@@ -50,6 +50,7 @@ describe('MlEphantConversation2', () => {
           onProcess={handleProcess}
           onClickClearChat={() => {}}
           onReconnect={() => {}}
+          onInterrupt={() => {}}
           needsReconnect={false}
           contexts={[]}
           disabled={false}
@@ -169,6 +170,7 @@ describe('MlEphantConversation2', () => {
         onProcess={vi.fn()}
         onClickClearChat={() => {}}
         onReconnect={() => {}}
+        onInterrupt={() => {}}
         needsReconnect={false}
         disabled={false}
         hasPromptCompleted={true}

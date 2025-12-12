@@ -378,7 +378,8 @@ description: Artifact commands shepherds-hook-bolt.kcl
         "distance": 6.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1768,7 +1769,8 @@ description: Artifact commands shepherds-hook-bolt.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {

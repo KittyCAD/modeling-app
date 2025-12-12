@@ -536,7 +536,8 @@ description: Artifact commands t-slot-shelf.kcl
         "distance": 2438.3999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1251,7 +1252,8 @@ description: Artifact commands t-slot-shelf.kcl
         "distance": 533.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1939,7 +1941,8 @@ description: Artifact commands t-slot-shelf.kcl
         "distance": -838.1999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2654,7 +2657,8 @@ description: Artifact commands t-slot-shelf.kcl
         "distance": 533.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3289,7 +3293,8 @@ description: Artifact commands t-slot-shelf.kcl
         "distance": -838.1999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

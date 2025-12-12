@@ -612,6 +612,9 @@ export fn extrude(
   twistCenter?: Point2d,
   /// The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`.
   method?: string,
+  /// What type of body to produce (solid or surface).
+  /// Defaults to "solid".
+  bodyType?: string = "solid",
 ): [Solid; 1+] {}
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
@@ -851,6 +854,9 @@ export fn revolve(
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the revolve.
   tagEnd?: TagDecl,
+  /// What type of body to produce (solid or surface).
+  /// Defaults to "solid".
+  bodyType?: string = "solid",
 ): [Solid; 1+] {}
 
 /// Just like `patternTransform`, but works on 2D sketches not 3D solids.
