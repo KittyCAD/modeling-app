@@ -45,6 +45,22 @@ const isFileExplorerEntryOpened = (
   return rows[entry.key]
 }
 
+const getDropTargetPath = (
+  target: FileExplorerEntry | null,
+  projectPath: string
+): string => {
+  if (!target) {
+    // If dropping on the root, use the project root
+    return projectPath
+  }
+  if (target.children !== null) {
+    // If dropping on a folder, use that folder
+    return target.path
+  }
+  // If dropping on a file, use its parent directory
+  return getParentAbsolutePath(target.path)
+}
+
 /**
  * Wrap the header and the tree into a single component
  * This is important because the action header buttons need to know
@@ -224,28 +240,6 @@ export const ProjectExplorer = ({
     return isExtensionARelevantExtension(extension, supportedExtensions)
   }, [])
 
-  /**
-   * Get the target directory path for a drop
-   * If dropping on a file, use its parent directory
-   * If dropping on a folder, use that folder
-   * If dropping on the root, use the project root
-   */
-  const getDropTargetPath = useCallback(
-    (target: FileExplorerEntry | null): string => {
-      if (!target) {
-        // Dropping on root
-        return project.path
-      }
-      if (target.children !== null) {
-        // Target is a folder
-        return target.path
-      }
-      // Target is a file, use its parent directory
-      return getParentAbsolutePath(target.path)
-    },
-    [project.path]
-  )
-
   const handleExternalFileDrop = useCallback(
     async (files: FileList, target: FileExplorerEntry | null) => {
       if (readOnly || !window.electron) return
@@ -271,7 +265,7 @@ export const ProjectExplorer = ({
 
       // Copy supported files to the target directory
       if (supportedFiles.length > 0) {
-        const targetPath = getDropTargetPath(target)
+        const targetPath = getDropTargetPath(target, project.path)
 
         for (const file of supportedFiles) {
           try {
@@ -304,7 +298,7 @@ export const ProjectExplorer = ({
         )
       }
     },
-    [readOnly, isFileSupportedForImport, getDropTargetPath]
+    [readOnly, isFileSupportedForImport, project.path]
   )
 
   const handleDragOverTarget = useCallback(
