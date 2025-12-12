@@ -372,25 +372,15 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
   }
 
   // twistCenter argument from a Point2d to two KCL expression
-  let twistCenter: KclCommandValue | undefined
-  if (
-    'twistCenter' in operation.labeledArgs &&
-    operation.labeledArgs.twistCenter
-  ) {
-    const result = await stringToKclExpression(
-      code.slice(
-        operation.labeledArgs.twistCenter.sourceRange[0],
-        operation.labeledArgs.twistCenter.sourceRange[1]
-      ),
-      rustContext,
-      { allowArrays: true }
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve twistCenter argument" }
-    }
-
-    twistCenter = result
-  }
+  const twistCenterResult = await extractKclArgument(
+    code,
+    operation,
+    'twistCenter',
+    rustContext,
+    true
+  )
+  const twistCenter: KclCommandValue | undefined =
+    'error' in twistCenterResult ? undefined : twistCenterResult
 
   // method argument from a string to boolean
   let method: string | undefined
