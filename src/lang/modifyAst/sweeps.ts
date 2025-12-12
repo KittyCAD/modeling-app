@@ -13,6 +13,7 @@ import {
   createVariableExpressionsArray,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
+  createPoint2dExpression,
 } from '@src/lang/modifyAst'
 import {
   modifyAstWithTagsForSelection,
@@ -132,9 +133,12 @@ export function addExtrude({
   const twistAngleStepExpr = twistAngleStep
     ? [createLabeledArg('twistAngleStep', valueOrVariable(twistAngleStep))]
     : []
-  const twistCenterExpr = twistCenter
-    ? [createLabeledArg('twistCenter', valueOrVariable(twistCenter))]
-    : []
+  let twistCenterExpr: LabeledArg[] = []
+  if (twistCenter) {
+    const twistCenterExpression = createPoint2dExpression(twistCenter)
+    if (err(twistCenterExpression)) return twistCenterExpression
+    twistCenterExpr = [createLabeledArg('twistCenter', twistCenterExpression)]
+  }
   const methodExpr = method
     ? [createLabeledArg('method', createLocalName(method))]
     : []
