@@ -1411,6 +1411,54 @@ description: Operations executed manhole-cover.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "SOLID",
+      "value": {
+        "type": "String",
+        "value": "solid"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 24
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "SURFACE",
+      "value": {
+        "type": "String",
+        "value": "surface"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 25
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ]
 }
