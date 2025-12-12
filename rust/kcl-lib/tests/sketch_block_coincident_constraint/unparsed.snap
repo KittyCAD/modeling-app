@@ -1,35 +1,33 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_coincident_constraint.kcl
+---
 @settings(experimentalFeatures = allow)
 
 // Test point-segment coincident constraint
 // This tests the syntax: coincident([line5.start, line4]) where one is a point and one is a segment
 s1 = sketch(on = XY) {
   // Create a line segment
-  line4 = sketch2::line(
-    start = [var, var],
-    end = [var, var]
-  )
-  
+  line4 = sketch2::line(start = [var, var], end = [var, var])
+
   // Constrain the line segment endpoints
-  line4.start.at[0] == 0
-  line4.start.at[1] == 0
-  line4.end.at[0] == 10
-  line4.end.at[1] == 0
-  
+line4.start.at[0] == 0
+line4.start.at[1] == 0
+line4.end.at[0] == 10
+line4.end.at[1] == 0
+
   // Create another line with a start point
-  line5 = sketch2::line(
-    start = [var, var],
-    end = [var, var]
-  )
-  
+  line5 = sketch2::line(start = [var, var], end = [var, var])
+
   // Constrain line5 endpoints
-  line5.start.at[0] == 5
-  line5.end.at[0] == 15
-  line5.end.at[1] == 0
-  
+line5.start.at[0] == 5
+line5.end.at[0] == 15
+line5.end.at[1] == 0
+
   // Make line5.start coincident with line4 (point-segment)
   // This matches the user's example syntax: coincident([line5.start, line4])
   sketch2::coincident([line5.start, line4])
-  
+
   // Since line5.start.at[0] == 5 and line4 goes from (0,0) to (10,0),
   // line5.start should be at (5, 0) to be on line4
 }
@@ -40,4 +38,3 @@ assert(s1.line4.end.at[0], isEqualTo = 10)
 assert(s1.line4.end.at[1], isEqualTo = 0)
 assert(s1.line5.start.at[0], isEqualTo = 5)
 assert(s1.line5.start.at[1], isEqualTo = 0)
-
