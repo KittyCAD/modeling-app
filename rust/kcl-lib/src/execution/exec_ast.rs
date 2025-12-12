@@ -19,6 +19,7 @@ use crate::{
         fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
         memory,
+        sketch_solve::FreedomAnalysis,
         state::{ModuleState, SketchBlockState},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
@@ -1107,7 +1108,7 @@ impl Node<SketchBlock> {
         };
         let solve_result = if exec_state.mod_local.freedom_analysis {
             kcl_ezpz::solve_with_priority_analysis(&constraints, initial_guesses.clone(), config)
-                .map(|outcome| (outcome.outcome, Some(outcome.analysis)))
+                .map(|outcome| (outcome.outcome, Some(FreedomAnalysis::from(outcome.analysis))))
         } else {
             kcl_ezpz::solve_with_priority(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
         };
@@ -1265,7 +1266,7 @@ fn substitute_sketch_vars(
     variables: IndexMap<String, KclValue>,
     solve_outcome: &SolveOutcome,
     solution_ty: NumericType,
-    analysis: Option<&kcl_ezpz::FreedomAnalysis>,
+    analysis: Option<&FreedomAnalysis>,
 ) -> Result<HashMap<String, KclValue>, KclError> {
     let mut subbed = HashMap::with_capacity(variables.len());
     for (name, value) in variables {
@@ -1279,7 +1280,7 @@ fn substitute_sketch_var(
     value: KclValue,
     solve_outcome: &SolveOutcome,
     solution_ty: NumericType,
-    analysis: Option<&kcl_ezpz::FreedomAnalysis>,
+    analysis: Option<&FreedomAnalysis>,
 ) -> Result<KclValue, KclError> {
     match value {
         KclValue::Uuid { .. } => Ok(value),
@@ -1370,7 +1371,7 @@ fn substitute_sketch_var_in_segment(
     segment: UnsolvedSegment,
     solve_outcome: &SolveOutcome,
     solution_ty: NumericType,
-    analysis: Option<&kcl_ezpz::FreedomAnalysis>,
+    analysis: Option<&FreedomAnalysis>,
 ) -> Result<Segment, KclError> {
     let srs = segment.meta.iter().map(|m| m.source_range).collect::<Vec<_>>();
     match &segment.kind {
@@ -1428,7 +1429,7 @@ fn substitute_sketch_var_in_unsolved_expr(
     unsolved_expr: &UnsolvedExpr,
     solve_outcome: &SolveOutcome,
     solution_ty: NumericType,
-    analysis: Option<&kcl_ezpz::FreedomAnalysis>,
+    analysis: Option<&FreedomAnalysis>,
     source_ranges: &[SourceRange],
 ) -> Result<(TyF64, Freedom), KclError> {
     match unsolved_expr {
