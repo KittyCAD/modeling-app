@@ -540,7 +540,8 @@ profile003 = startProfile(sketch001, at = [0, -4.93])
       await fsp.writeFile(join(testProject, 'main.kcl'), beforeKclCode, 'utf-8')
     })
     // One dumb hardcoded screen pixel value
-    const testPoint = { x: 650, y: 250 }
+    const pointOnSketch = { x: 650, y: 250 }
+    const pointOnPlane = { x: 650, y: 350 }
     const sketchColor: [number, number, number] = [149, 149, 149]
     const planeColor: [number, number, number] = [74, 74, 74]
 
@@ -548,14 +549,14 @@ profile003 = startProfile(sketch001, at = [0, -4.93])
     await scene.settled(cmdBar)
 
     await test.step(`Verify we see the sketch`, async () => {
-      await scene.expectPixelColor(sketchColor, testPoint, 10)
+      await scene.expectPixelColor(sketchColor, pointOnSketch, 10)
     })
 
     await test.step('Delete sketch via feature tree selection', async () => {
       const operationButton = await toolbar.getFeatureTreeOperation('Sketch', 0)
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await scene.expectPixelColor(planeColor, testPoint, 10)
+      await scene.expectPixelColor(planeColor, pointOnPlane, 10)
     })
 
     await test.step(`Verify the code changed`, async () => {
