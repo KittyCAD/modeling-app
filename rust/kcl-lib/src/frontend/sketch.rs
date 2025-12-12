@@ -90,7 +90,6 @@ pub struct Sketch {
     pub args: SketchArgs,
     pub segments: Vec<ObjectId>,
     pub constraints: Vec<ObjectId>,
-    pub is_underconstrained: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

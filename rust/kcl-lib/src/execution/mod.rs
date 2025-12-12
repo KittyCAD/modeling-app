@@ -66,6 +66,7 @@ mod import_graph;
 pub(crate) mod kcl_value;
 mod memory;
 mod modeling;
+mod sketch_solve;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
