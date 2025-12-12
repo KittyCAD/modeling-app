@@ -303,6 +303,14 @@ impl Program {
     }
 }
 
+/// TODO: Replace this with the type from modeling-api once it's released.
+#[derive(Debug, Eq, PartialEq, Clone, Copy, Default)]
+enum BodyType {
+    #[default]
+    Solid,
+    Surface,
+}
+
 #[inline]
 fn try_f64_to_usize(f: f64) -> Option<usize> {
     let i = f as usize;
