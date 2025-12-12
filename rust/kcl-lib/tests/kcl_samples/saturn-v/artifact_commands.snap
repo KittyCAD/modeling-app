@@ -153,7 +153,8 @@ description: Artifact commands saturn-v.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -606,7 +607,8 @@ description: Artifact commands saturn-v.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -1130,7 +1132,8 @@ description: Artifact commands saturn-v.kcl
         "distance": 100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1577,7 +1580,8 @@ description: Artifact commands saturn-v.kcl
         "distance": 14000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1754,7 +1758,8 @@ description: Artifact commands saturn-v.kcl
         "distance": 14000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1956,7 +1961,8 @@ description: Artifact commands saturn-v.kcl
         "distance": 18000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2172,7 +2178,8 @@ description: Artifact commands saturn-v.kcl
         "distance": 9000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2349,7 +2356,8 @@ description: Artifact commands saturn-v.kcl
         "distance": 9000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2551,7 +2559,8 @@ description: Artifact commands saturn-v.kcl
         "distance": 2000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2753,7 +2762,8 @@ description: Artifact commands saturn-v.kcl
         "distance": 15000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2972,7 +2982,8 @@ description: Artifact commands saturn-v.kcl
           "value": 180.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -3159,7 +3170,8 @@ description: Artifact commands saturn-v.kcl
           "value": -180.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -3371,7 +3383,8 @@ description: Artifact commands saturn-v.kcl
           "value": 180.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -3558,7 +3571,8 @@ description: Artifact commands saturn-v.kcl
           "value": -180.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -3753,7 +3767,8 @@ description: Artifact commands saturn-v.kcl
         "distance": 9000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3955,7 +3970,8 @@ description: Artifact commands saturn-v.kcl
         "distance": 2000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4225,7 +4241,8 @@ description: Artifact commands saturn-v.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {

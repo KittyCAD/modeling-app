@@ -1552,7 +1552,8 @@ description: Artifact commands manhole-cover.kcl
         "opposite": {
           "Other": 22.224999999999998
         },
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1763,7 +1764,8 @@ description: Artifact commands manhole-cover.kcl
         "distance": -25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

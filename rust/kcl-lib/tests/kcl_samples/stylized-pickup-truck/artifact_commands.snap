@@ -235,7 +235,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -2000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -491,7 +492,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -405.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -757,7 +759,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -405.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1023,7 +1026,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -405.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1316,7 +1320,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -405.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1593,7 +1598,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -1800.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1782,7 +1788,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -320.00000000000006,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1971,7 +1978,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -1800.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2177,7 +2185,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -1800.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2450,7 +2459,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2604,7 +2614,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2931,7 +2942,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3085,7 +3097,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3412,7 +3425,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3566,7 +3580,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3947,7 +3962,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4101,7 +4117,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4451,7 +4468,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4512,7 +4530,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": -50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4814,7 +4833,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": 50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4875,7 +4895,8 @@ description: Artifact commands stylized-pickup-truck.kcl
         "distance": 50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

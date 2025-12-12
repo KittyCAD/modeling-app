@@ -239,7 +239,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 533.4,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1276,7 +1277,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1835,7 +1837,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 19.049999999999997,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2123,7 +2126,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2365,7 +2369,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 609.5999999999999,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2940,7 +2945,8 @@ description: Artifact commands hand-trolley.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -3256,7 +3262,8 @@ description: Artifact commands hand-trolley.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -3778,7 +3785,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 533.4,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4815,7 +4823,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5374,7 +5383,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 19.049999999999997,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5662,7 +5672,8 @@ description: Artifact commands hand-trolley.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -6523,7 +6534,8 @@ description: Artifact commands hand-trolley.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -6856,7 +6868,8 @@ description: Artifact commands hand-trolley.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
