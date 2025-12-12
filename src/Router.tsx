@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { Suspense, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import {
   Outlet,
@@ -41,6 +41,7 @@ import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { Spinner } from '@src/components/Spinner'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -77,12 +78,14 @@ const router = createRouter([
         errorElement: <ErrorPage />,
         element: (
           <ModelingPageProvider>
-            <ModelingMachineProvider>
-              <CoreDump />
-              <Outlet />
-              <App />
-              <CommandBar />
-            </ModelingMachineProvider>
+            <Suspense fallback={<Spinner className="w-8 h-8" />}>
+              <ModelingMachineProvider>
+                <CoreDump />
+                <Outlet />
+                <App />
+                <CommandBar />
+              </ModelingMachineProvider>
+            </Suspense>
           </ModelingPageProvider>
         ),
         children: [

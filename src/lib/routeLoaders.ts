@@ -49,7 +49,10 @@ export const fileLoader =
             .join(window.electron.sep)
         : undefined
 
-    let settings = await loadAndValidateSettings(heuristicProjectFilePath)
+    let settings = await loadAndValidateSettings(
+      kclManager.wasmInstancePromise,
+      heuristicProjectFilePath
+    )
 
     const projectPathData = await getProjectMetaByRouteId(
       readAppSettingsFile,

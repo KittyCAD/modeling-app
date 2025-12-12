@@ -151,7 +151,6 @@ import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 
@@ -574,11 +573,9 @@ export const modelingMachine = setup({
       if (event.type !== 'Constrain with named value') return false
       if (!event.data) return false
 
-      const wasmInstance = context.wasmInstance
-
       const ast = parse(
-        recast(context.kclManager.ast, wasmInstance),
-        wasmInstance
+        recast(context.kclManager.ast, context.wasmInstance),
+        context.wasmInstance
       )
       if (err(ast) || !ast.program || ast.errors.length > 0) return false
       const isSafeRetVal = isNodeSafeToReplacePath(
@@ -726,8 +723,7 @@ export const modelingMachine = setup({
           .then(() => {
             return kclManager.updateEditorWithAstAndWriteToFile(
               kclManager.ast,
-              undefined,
-              wasmInstance
+              undefined
             )
           })
         return {
@@ -766,8 +762,7 @@ export const modelingMachine = setup({
           .then(() => {
             return kclManager.updateEditorWithAstAndWriteToFile(
               kclManager.ast,
-              undefined,
-              wasmInstance
+              undefined
             )
           })
         return {
@@ -1108,11 +1103,7 @@ export const modelingMachine = setup({
       )
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      kclManager.updateEditorWithAstAndWriteToFile(
-        kclManager.ast,
-        undefined,
-        wasmInstance
-      )
+      kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, undefined)
     },
     'reset client scene mouse handlers': ({ context }) => {
       // when not in sketch mode we don't need any mouse listeners
@@ -1154,7 +1145,6 @@ export const modelingMachine = setup({
         sketchDetails,
         dependencies: {
           kclManager,
-          wasmInstance,
           rustContext,
           sceneEntitiesManager,
           sceneInfra,
@@ -1163,8 +1153,7 @@ export const modelingMachine = setup({
         .then(() => {
           return kclManager.updateEditorWithAstAndWriteToFile(
             kclManager.ast,
-            undefined,
-            wasmInstance
+            undefined
           )
         })
         .catch((e) => {
@@ -1669,8 +1658,7 @@ export const modelingMachine = setup({
 
         await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
-          undefined,
-          wasmInstance
+          undefined
         )
 
         return {
@@ -1728,8 +1716,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
-          undefined,
-          wasmInstance
+          undefined
         )
         return {
           selectionType: 'completeSelection',
@@ -1786,8 +1773,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
-          undefined,
-          wasmInstance
+          undefined
         )
         return {
           selectionType: 'completeSelection',
@@ -1842,8 +1828,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
-          undefined,
-          wasmInstance
+          undefined
         )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
@@ -1899,8 +1884,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
-          undefined,
-          wasmInstance
+          undefined
         )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
@@ -1956,8 +1940,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
-          undefined,
-          wasmInstance
+          undefined
         )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
@@ -2013,8 +1996,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
-          undefined,
-          wasmInstance
+          undefined
         )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
@@ -2034,7 +2016,6 @@ export const modelingMachine = setup({
           selectionRanges,
           sketchDetails,
           kclManager,
-          wasmInstance,
           sceneEntitiesManager,
         },
       }: {
@@ -2043,7 +2024,6 @@ export const modelingMachine = setup({
           | 'selectionRanges'
           | 'sketchDetails'
           | 'kclManager'
-          | 'wasmInstance'
           | 'sceneEntitiesManager'
         >
       }) => {
@@ -2057,6 +2037,7 @@ export const modelingMachine = setup({
           trap(new Error('No sketch details'))
           return
         }
+        const wasmInstance = await kclManager.wasmInstancePromise
         const recastAst = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (err(recastAst) || !resultIsOk(recastAst)) return
 
@@ -2076,8 +2057,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
-          undefined,
-          wasmInstance
+          undefined
         )
 
         const updatedSelectionRanges = updateSelections(
@@ -2133,8 +2113,7 @@ export const modelingMachine = setup({
         if (!updatedAst) return
         await kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
-          undefined,
-          wasmInstance
+          undefined
         )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
@@ -2243,8 +2222,7 @@ export const modelingMachine = setup({
           selectionRanges,
           sceneInfra,
           sceneEntitiesManager,
-          kclManager: providedKclManager,
-          wasmInstance,
+          kclManager,
         },
       }: {
         input: {
@@ -2253,7 +2231,6 @@ export const modelingMachine = setup({
           sceneInfra: SceneInfra
           sceneEntitiesManager: SceneEntities
           kclManager: KclManager
-          wasmInstance?: ModuleType
         }
       }) => {
         if (!sketchDetails) {
@@ -2273,9 +2250,8 @@ export const modelingMachine = setup({
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
           position: sketchDetails.origin,
-          maybeModdedAst: providedKclManager.ast,
+          maybeModdedAst: kclManager.ast,
           selectionRanges,
-          wasmInstance,
         })
         sceneInfra.resetMouseListeners()
 
@@ -2430,8 +2406,8 @@ export const modelingMachine = setup({
           ModelingMachineContext,
           | 'sketchDetails'
           | 'selectionRanges'
-          | 'wasmInstance'
           | 'kclManager'
+          | 'wasmInstance'
           | 'sceneEntitiesManager'
         > & {
           data?: ModelingCommandSchema['Constrain with named value']
@@ -2444,9 +2420,10 @@ export const modelingMachine = setup({
         if (!data) {
           return Promise.reject(new Error('No data from command flow'))
         }
+        const wasmInstance = input.wasmInstance
         let pResult = parse(
-          recast(input.kclManager.ast, input.wasmInstance),
-          input.wasmInstance
+          recast(input.kclManager.ast, wasmInstance),
+          wasmInstance
         )
         if (trap(pResult) || !resultIsOk(pResult))
           return Promise.reject(new Error('Unexpected compilation error'))
@@ -2479,9 +2456,9 @@ export const modelingMachine = setup({
                 node: astAfterReplacement.modifiedAst,
                 newExpression: data.namedValue,
               }),
-              input.wasmInstance
+              wasmInstance
             ),
-            input.wasmInstance
+            wasmInstance
           )
           result.exprInsertIndex = data.namedValue.insertIndex
 
@@ -2515,10 +2492,7 @@ export const modelingMachine = setup({
           result = astAfterReplacement
         }
 
-        pResult = parse(
-          recast(result.modifiedAst, input.wasmInstance),
-          input.wasmInstance
-        )
+        pResult = parse(recast(result.modifiedAst, wasmInstance), wasmInstance)
         if (trap(pResult) || !resultIsOk(pResult))
           return Promise.reject(new Error('Unexpected compilation error'))
         parsed = pResult.program
@@ -2549,14 +2523,13 @@ export const modelingMachine = setup({
             sketchDetails.origin,
             getEventForSegmentSelection,
             updateExtraSegments,
-            input.wasmInstance
+            wasmInstance
           )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
         await input.kclManager.updateEditorWithAstAndWriteToFile(
           updatedAst.newAst,
-          undefined,
-          input.wasmInstance
+          undefined
         )
 
         const selection = updateSelections(
@@ -3289,9 +3262,13 @@ export const modelingMachine = setup({
         if (
           input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
         ) {
-          const ast = setExperimentalFeatures(input.kclManager.code, {
-            type: 'Allow',
-          })
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
           if (err(ast)) {
             return Promise.reject(ast)
           }
@@ -3342,9 +3319,13 @@ export const modelingMachine = setup({
         if (
           input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
         ) {
-          const ast = setExperimentalFeatures(input.kclManager.code, {
-            type: 'Allow',
-          })
+          const ast = setExperimentalFeatures(
+            input.kclManager.code,
+            {
+              type: 'Allow',
+            },
+            await input.kclManager.wasmInstancePromise
+          )
           if (err(ast)) {
             return Promise.reject(ast)
           }
@@ -3954,7 +3935,6 @@ export const modelingMachine = setup({
                     sceneInfra: providedSeneInfra,
                     sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
-                    wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
@@ -3962,7 +3942,6 @@ export const modelingMachine = setup({
                   sceneInfra: providedSeneInfra,
                   sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
-                  wasmInstance,
                 }),
                 onDone: [
                   {

@@ -42,6 +42,7 @@ import { Signal } from '@src/lib/signal'
 import type { ExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
 
 export default class RustContext {
+  private readonly _wasmInstancePromise: Promise<ModuleType>
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
@@ -51,18 +52,13 @@ export default class RustContext {
 
   constructor(
     engineCommandManager: ConnectionManager,
-    instance: Promise<ModuleType | string>
+    wasmInstancePromise: Promise<ModuleType>
   ) {
     this.engineCommandManager = engineCommandManager
+    this._wasmInstancePromise = wasmInstancePromise
 
-    instance
-      .then((wasmInstance) => {
-        if (typeof wasmInstance !== 'string') {
-          this.createFromInstance(wasmInstance)
-        } else {
-          return new Error(wasmInstance)
-        }
-      })
+    wasmInstancePromise
+      .then((instance) => this.createFromInstance(instance))
       .catch(reportRejection)
   }
 
@@ -78,8 +74,8 @@ export default class RustContext {
     return ctxInstance
   }
 
-  getRustInstance() {
-    return this.rustInstance || undefined
+  get wasmInstancePromise() {
+    return this._wasmInstancePromise
   }
 
   private createFromInstance(instance: ModuleType) {

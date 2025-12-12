@@ -64,8 +64,6 @@ it('can execute parsed AST', async () => {
   expect(pResult.program).not.toEqual(null)
   const execState = await enginelessExecutor(
     pResult.program as Node<Program>,
-    undefined,
-    undefined,
     rustContextInThisFile
   )
   expect(err(execState)).toEqual(false)

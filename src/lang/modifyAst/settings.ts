@@ -7,7 +7,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 export function setExperimentalFeatures(
   code: string,
   level: WarningLevel,
-  instance?: ModuleType
+  instance: ModuleType
 ): Node<Program> | Error {
   const newCode = changeExperimentalFeatures(code, level, instance)
   if (err(newCode)) {

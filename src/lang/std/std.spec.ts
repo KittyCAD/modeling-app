@@ -47,15 +47,11 @@ describe('testing angledLineThatIntersects', () => {
 intersect = segEndX(yo2)`
     const execState = await enginelessExecutor(
       assertParse(code('-1'), instanceInThisFile),
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     expect(execState.variables['intersect']?.value).toBe(1 + Math.sqrt(2))
     const noOffset = await enginelessExecutor(
       assertParse(code('0'), instanceInThisFile),
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     expect(noOffset.variables['intersect']?.value).toBeCloseTo(1)

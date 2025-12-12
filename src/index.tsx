@@ -7,7 +7,6 @@ import ModalContainer from 'react-modal-promise'
 import { Router } from '@src/Router'
 import { ToastUpdate } from '@src/components/ToastUpdate'
 import '@src/index.css'
-import { initPromise } from '@src/lang/wasmUtils'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
@@ -27,7 +26,7 @@ initializeWindowExceptionHandler(kclManager)
 
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.
-initPromise
+kclManager.wasmInstancePromise
   .then(() => {
     appActor.start()
     // Application commands must be created after the initPromise because

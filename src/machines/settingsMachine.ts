@@ -1,6 +1,6 @@
 import decamelize from 'decamelize'
 import toast from 'react-hot-toast'
-import type { AnyActorRef } from 'xstate'
+import type { ActorRefFrom, AnyActorRef } from 'xstate'
 import {
   assign,
   enqueueActions,
@@ -19,7 +19,7 @@ import {
 import type { Command } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { createSettings, settings } from '@src/lib/settings/initialSettings'
+import { createSettings } from '@src/lib/settings/initialSettings'
 import type {
   BaseUnit,
   SetEventTypes,
@@ -44,11 +44,16 @@ import {
   setThemeClass,
 } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { ACTOR_IDS } from '@src/machines/machineConstants'
+import type { KclManager } from '@src/lang/KclManager'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 
-type SettingsMachineContext = SettingsType & {
+export type SettingsActorType = ActorRefFrom<typeof settingsMachine>
+export type SettingsActorDepsType = {
   currentProject?: Project
+  kclManager: KclManager
+  commandBarActor: ActorRefFrom<typeof commandBarMachine>
 }
+type SettingsMachineContext = SettingsType & SettingsActorDepsType
 
 export const settingsMachine = setup({
   types: {
@@ -65,7 +70,10 @@ export const settingsMachine = setup({
           type: 'Reset settings'
           level: SettingsLevel
         }
-      | { type: 'Set all settings'; settings: typeof settings }
+      | {
+          type: 'Set all settings'
+          settings: SettingsType
+        }
       | {
           type: 'set.app.namedViews'
           data: {
@@ -85,33 +93,42 @@ export const settingsMachine = setup({
         doNotPersist: boolean
         context: SettingsMachineContext
         toastCallback?: () => void
-        rootContext: any
+        kclManager: KclManager
       }
     >(async ({ input }) => {
       // Without this, when a user changes the file, it'd
       // create a detection loop with the file-system watcher.
-      if (input.doNotPersist || !input.rootContext) return
+      if (input.doNotPersist) return
 
-      input.rootContext.kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-      const { currentProject, ...settings } = input.context
+      input.kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+      const settings = getOnlySettingsFromContext(input.context)
 
-      await saveSettings(settings, currentProject?.path)
+      await saveSettings(
+        input.kclManager.wasmInstancePromise,
+        settings,
+        input.context.currentProject?.path
+      )
 
       if (input.toastCallback) {
         input.toastCallback()
       }
     }),
-    loadUserSettings: fromPromise<SettingsMachineContext, undefined>(
-      async () => {
-        const { settings } = await loadAndValidateSettings()
+    loadUserSettings: fromPromise<SettingsType, { kclManager: KclManager }>(
+      async ({ input }) => {
+        const { settings } = await loadAndValidateSettings(
+          input.kclManager.wasmInstancePromise
+        )
         return settings
       }
     ),
     loadProjectSettings: fromPromise<
-      SettingsMachineContext,
-      { project?: Project }
+      SettingsType,
+      { project?: Project; kclManager: KclManager }
     >(async ({ input }) => {
-      const { settings } = await loadAndValidateSettings(input.project?.path)
+      const { settings } = await loadAndValidateSettings(
+        input.kclManager.wasmInstancePromise,
+        input.project?.path
+      )
       return settings
     }),
     watchSystemTheme: fromCallback<{
@@ -137,14 +154,16 @@ export const settingsMachine = setup({
       return () => darkModeMatcher?.removeEventListener('change', listener)
     }),
     registerCommands: fromCallback<
-      { type: 'update'; settings: SettingsType },
+      {
+        type: 'update'
+        settings: SettingsType
+        commandBarActor: ActorRefFrom<typeof commandBarMachine>
+      },
       { settings: SettingsType; actor: AnyActorRef }
-    >(({ input, receive, system }) => {
-      // This assumes this actor is running in a system with a command palette
-      const commandBarActor = system.get(ACTOR_IDS.COMMAND_BAR)
+    >(({ input, receive }) => {
       // If the user wants to hide the settings commands
       //from the command bar don't add them.
-      if (settings.commandBar.includeSettings.current === false) {
+      if (input.settings.commandBar.includeSettings.current === false) {
         return
       }
       let commands: Command[] = []
@@ -158,58 +177,47 @@ export const settingsMachine = setup({
             })
           )
           .filter((c) => c !== null)
-      if (commandBarActor === undefined) {
-        console.warn(
-          'Tried to register commands, but no command bar actor was found'
-        )
-      }
-      const addCommands = () =>
-        commandBarActor?.send({
+
+      const addCommands = (actor: ActorRefFrom<typeof commandBarMachine>) =>
+        actor.send({
           type: 'Add commands',
           data: { commands: commands },
         })
 
-      const removeCommands = () =>
-        commandBarActor?.send({
+      const removeCommands = (actor: ActorRefFrom<typeof commandBarMachine>) =>
+        actor.send({
           type: 'Remove commands',
           data: { commands: commands },
         })
 
-      receive(({ type, settings: newSettings }) => {
+      receive(({ type, settings: newSettings, commandBarActor }) => {
         if (type !== 'update') {
           return
         }
-        removeCommands()
+        removeCommands(commandBarActor)
         commands =
           newSettings.commandBar.includeSettings.current === false
             ? []
             : updateCommands(newSettings)
-        addCommands()
+        addCommands(commandBarActor)
       })
 
-      commands = updateCommands(settings)
-      addCommands()
-
-      return () => {
-        removeCommands()
-      }
+      commands = updateCommands(input.settings)
     }),
   },
   actions: {
-    setEngineTheme: ({ context, self }) => {
-      const rootContext = self.system.get('root')?.getSnapshot().context
-      const engineCommandManager = rootContext?.engineCommandManager
+    setEngineTheme: ({ context }) => {
+      const engineCommandManager = context.kclManager.engineCommandManager
       if (engineCommandManager && context.app.theme.current) {
         engineCommandManager
           .setTheme(context.app.theme.current)
           .catch(reportRejection)
       }
     },
-    setClientTheme: ({ context, self }) => {
-      const rootContext = self.system.get('root')?.getSnapshot().context
-      const sceneInfra = rootContext?.sceneInfra
-      const sceneEntitiesManager = rootContext?.sceneEntitiesManager
-      const kclManager = rootContext?.kclManager
+    setClientTheme: ({ context }) => {
+      const kclManager = context.kclManager
+      const sceneInfra = kclManager.singletons.sceneInfra
+      const sceneEntitiesManager = kclManager.sceneEntitiesManager
 
       if (!sceneInfra || !sceneEntitiesManager || !kclManager) {
         return
@@ -220,9 +228,8 @@ export const settingsMachine = setup({
       sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
       kclManager.setEditorTheme(resolvedTheme)
     },
-    setAllowOrbitInSketchMode: ({ context, self }) => {
-      const rootContext = self.system.get('root')?.getSnapshot().context
-      const sceneInfra = rootContext?.sceneInfra
+    setAllowOrbitInSketchMode: ({ context }) => {
+      const sceneInfra = context.kclManager.singletons.sceneInfra
       if (!sceneInfra?.camControls) {
         return
       }
@@ -235,7 +242,7 @@ export const settingsMachine = setup({
         return
       }
       const eventParts = event.type.replace(/^set./, '').split('.') as [
-        keyof typeof settings,
+        keyof SettingsType,
         string,
       ]
       const truncatedNewValue = event.data.value?.toString().slice(0, 28)
@@ -255,32 +262,27 @@ export const settingsMachine = setup({
         id: `${event.type}.success`,
       })
     },
-    'Execute AST': ({ context, event, self }) => {
-      const rootContext = self.system.get('root')?.getSnapshot().context
-      const kclManager = rootContext?.kclManager
+    'Execute AST': ({ context, event }) => {
+      const settingsFromContext = getOnlySettingsFromContext(context)
+      const kclManager = context.kclManager
       try {
-        const relevantSetting = (s: typeof settings) => {
+        const relevantSetting = (s: SettingsType) => {
           return (
             s.modeling?.defaultUnit?.current !==
-              context.modeling.defaultUnit.current ||
-            s.modeling.showScaleGrid.current !==
-              context.modeling.showScaleGrid.current ||
-            s.modeling?.highlightEdges.current !==
-              context.modeling.highlightEdges.current
+            context.modeling.defaultUnit.current
           )
         }
 
         const allSettingsIncludesUnitChange =
           event.type === 'Set all settings' &&
-          relevantSetting(event.settings || context)
+          relevantSetting(event.settings || settingsFromContext)
         const resetSettingsIncludesUnitChange =
-          event.type === 'Reset settings' && relevantSetting(settings)
+          event.type === 'Reset settings' &&
+          relevantSetting(settingsFromContext)
 
         const shouldExecute =
           kclManager !== undefined &&
           (event.type === 'set.modeling.defaultUnit' ||
-            event.type === 'set.modeling.showScaleGrid' ||
-            event.type === 'set.modeling.highlightEdges' ||
             allSettingsIncludesUnitChange ||
             resetSettingsIncludesUnitChange)
 
@@ -310,8 +312,8 @@ export const settingsMachine = setup({
     /** Unload the project-level setting values from memory */
     clearProjectSettings: assign(({ context }) => {
       // Peel off all non-settings context
-      const { currentProject: _, ...settings } = context
-      const newSettings = clearSettingsAtLevel(settings, 'project')
+      const currentSettings = getOnlySettingsFromContext(context)
+      const newSettings = clearSettingsAtLevel(currentSettings, 'project')
       return newSettings
     }),
     /** Unload the current project's info from memory */
@@ -344,7 +346,7 @@ export const settingsMachine = setup({
       const { level, value } = event.data
       const [category, setting] = event.type
         .replace(/^set./, '')
-        .split('.') as [keyof typeof settings, string]
+        .split('.') as [keyof SettingsType, string]
 
       // @ts-ignore
       context[category][setting][level] = value
@@ -372,6 +374,14 @@ export const settingsMachine = setup({
       const sceneInfra = rootContext?.sceneInfra
       sceneInfra?.camControls?.setEngineCameraProjection(newCurrentProjection)
     },
+    setEngineHighlightEdges: ({ context }) => {
+      const engineCommandManager = context.kclManager.engineCommandManager
+      if (engineCommandManager) {
+        engineCommandManager
+          .setHighlightEdges(context.modeling.highlightEdges.current)
+          .catch(reportRejection)
+      }
+    },
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
       type: 'update.themeWatcher',
       theme: context.app.theme.current,
@@ -395,8 +405,8 @@ export const settingsMachine = setup({
       src: 'registerCommands',
       id: 'registerCommands',
       // Peel off the non-settings context
-      input: ({ context: { currentProject, ...settings }, self }) => ({
-        settings,
+      input: ({ context, self }) => ({
+        settings: getOnlySettingsFromContext(context),
         actor: self,
       }),
     },
@@ -442,13 +452,11 @@ export const settingsMachine = setup({
           actions: [
             'setSettingAtLevel',
             'toastSuccess',
-            sendTo(
-              'registerCommands',
-              ({ context: { currentProject: _, ...settings } }) => ({
-                type: 'update',
-                settings,
-              })
-            ),
+            sendTo('registerCommands', ({ context }) => ({
+              type: 'update',
+              settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
+            })),
           ],
         },
 
@@ -499,7 +507,11 @@ export const settingsMachine = setup({
         'set.modeling.highlightEdges': {
           target: 'persisting settings',
 
-          actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
+          actions: [
+            'setSettingAtLevel',
+            'toastSuccess',
+            'setEngineHighlightEdges',
+          ],
         },
 
         'Reset settings': {
@@ -511,15 +523,14 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setEngineHighlightEdges',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
-            sendTo(
-              'registerCommands',
-              ({ context: { currentProject: _, ...settings } }) => ({
-                type: 'update',
-                settings,
-              })
-            ),
+            sendTo('registerCommands', ({ context }) => ({
+              type: 'update',
+              settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
+            })),
           ],
         },
 
@@ -530,15 +541,14 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setEngineHighlightEdges',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
-            sendTo(
-              'registerCommands',
-              ({ context: { currentProject: _, ...settings } }) => ({
-                type: 'update',
-                settings,
-              })
-            ),
+            sendTo('registerCommands', ({ context }) => ({
+              type: 'update',
+              settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
+            })),
           ],
         },
 
@@ -557,13 +567,11 @@ export const settingsMachine = setup({
           actions: [
             'clearProjectSettings',
             'clearCurrentProject',
-            sendTo(
-              'registerCommands',
-              ({ context: { currentProject: _, ...settings } }) => ({
-                type: 'update',
-                settings,
-              })
-            ),
+            sendTo('registerCommands', ({ context }) => ({
+              type: 'update',
+              settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
+            })),
           ],
         },
       },
@@ -581,7 +589,7 @@ export const settingsMachine = setup({
             console.error('Error persisting settings')
           },
         },
-        input: ({ context, event, self }) => {
+        input: ({ context, event }) => {
           if (
             event.type === 'set.app.namedViews' &&
             'toastCallback' in event.data
@@ -590,14 +598,14 @@ export const settingsMachine = setup({
               doNotPersist: event.doNotPersist ?? false,
               context,
               toastCallback: event.data.toastCallback,
-              rootContext: self.system.get('root')?.getSnapshot().context,
+              kclManager: context.kclManager,
             }
           }
 
           return {
             doNotPersist: event.doNotPersist ?? false,
             context,
-            rootContext: self.system.get('root')?.getSnapshot().context,
+            kclManager: context.kclManager,
           }
         },
       },
@@ -606,6 +614,7 @@ export const settingsMachine = setup({
     loadingUser: {
       invoke: {
         src: 'loadUserSettings',
+        input: ({ context: { kclManager } }) => ({ kclManager }),
         onDone: {
           target: 'idle',
           actions: [
@@ -613,15 +622,14 @@ export const settingsMachine = setup({
             'setThemeClass',
             'setEngineTheme',
             'setClientTheme',
+            'setEngineHighlightEdges',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
-            sendTo(
-              'registerCommands',
-              ({ context: { currentProject: _, ...settings } }) => ({
-                type: 'update',
-                settings,
-              })
-            ),
+            sendTo('registerCommands', ({ context }) => ({
+              type: 'update',
+              settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
+            })),
           ],
         },
         onError: {
@@ -649,20 +657,20 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setEngineHighlightEdges',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
-            sendTo(
-              'registerCommands',
-              ({ context: { currentProject: _, ...settings } }) => ({
-                type: 'update',
-                settings,
-              })
-            ),
+            sendTo('registerCommands', ({ context }) => ({
+              type: 'update',
+              settings: getOnlySettingsFromContext(context),
+              commandBarActor: context.commandBarActor,
+            })),
           ],
         },
         onError: 'idle',
-        input: ({ event }) => {
+        input: ({ event, context: { kclManager } }) => {
           return {
+            kclManager,
             project: event.type === 'load.project' ? event.project : undefined,
           }
         },
@@ -670,3 +678,15 @@ export const settingsMachine = setup({
     },
   },
 })
+
+export function getOnlySettingsFromContext(
+  s: SettingsMachineContext
+): SettingsType {
+  const {
+    currentProject: _c,
+    kclManager: _k,
+    commandBarActor: _cba,
+    ...settings
+  } = s
+  return settings
+}

@@ -27,7 +27,6 @@ import {
 
 import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
 import type { KclManager } from '@src/lang/KclManager'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -41,7 +40,6 @@ export async function deleteSegmentsOrProfiles({
   sketchDetails: SketchDetails | null
   dependencies: {
     kclManager: KclManager
-    wasmInstance?: ModuleType
     rustContext: RustContext
     sceneEntitiesManager: SceneEntities
     sceneInfra: SceneInfra
@@ -77,8 +75,9 @@ export async function deleteSegmentsOrProfiles({
     return Promise.reject(modifiedAst)
   }
 
-  const newCode = recast(modifiedAst, dependencies.wasmInstance)
-  const pResult = parse(newCode, dependencies.wasmInstance)
+  const wasmInstance = await dependencies.kclManager.wasmInstancePromise
+  const newCode = recast(modifiedAst, wasmInstance)
+  const pResult = parse(newCode, wasmInstance)
   if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
   modifiedAst = pResult.program
 
@@ -112,7 +111,7 @@ export async function deleteSegmentsOrProfiles({
     sketchDetails.origin,
     getEventForSegmentSelection,
     updateExtraSegments,
-    dependencies.wasmInstance
+    await dependencies.kclManager.wasmInstancePromise
   )
 
   // Update the machine context.sketchDetails so subsequent interactions use fresh paths

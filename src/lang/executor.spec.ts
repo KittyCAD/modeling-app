@@ -506,11 +506,6 @@ theExtrude = startSketchOn(XY)
 async function exe(code: string) {
   const ast = assertParse(code, instanceInThisFile)
 
-  const execState = await enginelessExecutor(
-    ast,
-    true,
-    undefined,
-    rustContextInThisFile
-  )
+  const execState = await enginelessExecutor(ast, rustContextInThisFile, true)
   return execState.variables
 }

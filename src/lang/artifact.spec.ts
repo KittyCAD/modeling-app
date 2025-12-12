@@ -43,8 +43,6 @@ mySketch001 = startSketchOn(XY)
   // |> rx(45)`
     const execState = await enginelessExecutor(
       assertParse(code, instanceInThisFile),
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const sketch001 = execState.variables['mySketch001']
@@ -106,8 +104,6 @@ mySketch001 = startSketchOn(XY)
   |> extrude(length = 2)`
     const execState = await enginelessExecutor(
       assertParse(code, instanceInThisFile),
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const sketch001 = execState.variables['mySketch001']
@@ -198,8 +194,6 @@ sk2 = startSketchOn(XY)
 `
     const execState = await enginelessExecutor(
       assertParse(code, instanceInThisFile),
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const variables = execState.variables

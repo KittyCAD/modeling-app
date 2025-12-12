@@ -13,7 +13,7 @@ import {
   parseAppSettings,
   parseProjectSettings,
 } from '@src/lang/wasm'
-import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -32,7 +32,6 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import { processEnv } from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
 
@@ -184,28 +183,11 @@ export async function createNewProjectDirectory(
 
 export async function listProjects(
   electron: IElectronAPI,
-  configuration?: DeepPartial<Configuration> | Error,
-  wasmInstance?: ModuleType
+  initPromise: Promise<ModuleType> | ModuleType,
+  configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
   // Make sure we have wasm initialized.
-  const initializedResult = await initPromise
-
-  // Bypass if vitest!
-  if (!processEnv()?.VITEST) {
-    // Hack: This is required because of the initialise module load and vitest unit tests spamming this
-    // since it is a global dependency that is spam loaded. This function should never return a string.
-    // If it does during application code something is wrong.
-    if (typeof initializedResult === 'string') {
-      console.error(
-        'TODO: Stop globally importing and spamming lang/wasmUtils/initialise. You should not see this message in the application.'
-      )
-      return Promise.reject(new Error(initializedResult))
-    }
-
-    if (err(initializedResult)) {
-      return Promise.reject(initializedResult)
-    }
-  }
+  await initPromise
 
   if (configuration === undefined) {
     configuration = await readAppSettingsFile(electron).catch((e) => {

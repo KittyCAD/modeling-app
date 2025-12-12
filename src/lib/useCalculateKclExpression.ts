@@ -9,7 +9,7 @@ import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import { getInVariableCase } from '@src/lib/utils'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type RustContext from '@src/lib/rustContext'
 
 const isValidVariableName = (name: string) =>
@@ -73,6 +73,7 @@ export function useCalculateKclExpression({
     insertIndex: 0,
     bodyPath: [],
   })
+  const wasmInstance = use(rustContext.wasmInstancePromise)
   const [insertIndex, setInsertIndex] = useState(0)
   const [valueNode, setValueNode] = useState<Expr | null>(null)
   // Gotcha: If we do not attempt to parse numeric literals instantly it means that there is an async action to verify
@@ -81,7 +82,7 @@ export function useCalculateKclExpression({
   // async method.
   // If we pass in numeric literals, we should instantly parse them, they have nothing to do with application memory
   const _code_value = `const __result__ = ${value}`
-  const codeValueParseResult = parse(_code_value)
+  const codeValueParseResult = parse(_code_value, wasmInstance)
   let isValueParsable = true
   if (err(codeValueParseResult) || !resultIsOk(codeValueParseResult)) {
     isValueParsable = false

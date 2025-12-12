@@ -139,37 +139,45 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         },
       },
       onSubmit: (data) => {
-        if (typeof data === 'object' && 'level' in data) {
-          const newAst = setExperimentalFeatures(commandProps.kclManager.code, {
-            type: data.level,
-          })
-          if (err(newAst)) {
-            toast.error(
-              `Failed to set file experimental features level: ${newAst.message}`
-            )
-            return
-          }
-          updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-            kclManager: commandProps.kclManager,
-            rustContext,
-          })
-            .then((result) => {
-              if (err(result)) {
-                toast.error(
-                  `Failed to set file experimental features level: ${result.message}`
-                )
-                return
-              }
+        awaitWasmAndSubmit().catch(reportRejection)
 
-              toast.success(
-                `Updated file experimental features level to ${data.level}`
+        async function awaitWasmAndSubmit() {
+          if (typeof data === 'object' && 'level' in data) {
+            const newAst = setExperimentalFeatures(
+              commandProps.kclManager.code,
+              {
+                type: data.level,
+              },
+              await commandProps.kclManager.wasmInstancePromise
+            )
+            if (err(newAst)) {
+              toast.error(
+                `Failed to set file experimental features level: ${newAst.message}`
               )
+              return
+            }
+            updateModelingState(newAst, EXECUTION_TYPE_REAL, {
+              kclManager: commandProps.kclManager,
+              rustContext,
             })
-            .catch(reportRejection)
-        } else {
-          toast.error(
-            'Failed to set experimental features level: no value provided to submit function. This is a bug.'
-          )
+              .then((result) => {
+                if (err(result)) {
+                  toast.error(
+                    `Failed to set file experimental features level: ${result.message}`
+                  )
+                  return
+                }
+
+                toast.success(
+                  `Updated file experimental features level to ${data.level}`
+                )
+              })
+              .catch(reportRejection)
+          } else {
+            toast.error(
+              'Failed to set experimental features level: no value provided to submit function. This is a bug.'
+            )
+          }
         }
       },
     },

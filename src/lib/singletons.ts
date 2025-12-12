@@ -22,15 +22,34 @@ import {
   billingMachine,
 } from '@src/machines/billingMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
-import { settingsMachine } from '@src/machines/settingsMachine'
+import {
+  getOnlySettingsFromContext,
+  settingsMachine,
+} from '@src/machines/settingsMachine'
+import { getSettingsFromActorRef } from '@src/lib/settings/settingsUtils'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
-import { initPromise } from '@src/lang/wasmUtils'
+import { initialiseWasm } from '@src/lang/wasmUtils'
+import { AppMachineEventType } from '@src/lib/types'
+import {
+  defaultLayout,
+  defaultLayoutConfig,
+  saveLayout,
+  type Layout,
+} from '@src/lib/layout'
 
+/**
+ * THE bundle of WASM, a cornerstone of our app. We use this for:
+ * - settings parse/unparse
+ * - KCL parsing, execution, linting, and LSP
+ *
+ * Access this through `kclManager.wasmInstance`, not directly.
+ */
+const initPromise = initialiseWasm()
 export const engineCommandManager = new ConnectionManager()
 export const rustContext = new RustContext(engineCommandManager, initPromise)
 
@@ -50,32 +69,6 @@ export const kclManager = new KclManager(engineCommandManager, initPromise, {
   rustContext,
   sceneInfra,
 })
-
-// Initialize KCL version
-import { setKclVersion } from '@src/lib/kclVersion'
-import { AppMachineEventType } from '@src/lib/types'
-import {
-  defaultLayout,
-  defaultLayoutConfig,
-  saveLayout,
-  type Layout,
-} from '@src/lib/layout'
-import { processEnv } from '@src/env'
-
-initPromise
-  .then(() => {
-    if (processEnv()?.VITEST) {
-      const message =
-        'singletons is trying to call initPromise and setKclVersion. This will be blocked in VITEST runtimes.'
-      console.log(message)
-      return
-    }
-
-    setKclVersion(kclManager.kclVersion)
-  })
-  .catch((e) => {
-    console.error(e)
-  })
 
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
@@ -131,6 +124,10 @@ const appMachineActors = {
   [BILLING]: billingMachine,
 } as const
 
+export const commandBarActor = createActor(commandBarMachine, {
+  input: { commands: [] },
+}).start()
+
 const appMachine = setup({
   types: {} as {
     events: AppMachineEvent
@@ -143,6 +140,7 @@ const appMachine = setup({
     engineCommandManager: engineCommandManager,
     sceneInfra: sceneInfra,
     sceneEntitiesManager: sceneEntitiesManager,
+    commandBarActor,
     layout: defaultLayout,
   },
   entry: [
@@ -155,7 +153,11 @@ const appMachine = setup({
     spawnChild(appMachineActors[AUTH], { systemId: AUTH }),
     spawnChild(appMachineActors[SETTINGS], {
       systemId: SETTINGS,
-      input: createSettings(),
+      input: {
+        ...createSettings(),
+        kclManager,
+        commandBarActor: commandBarActor,
+      },
     }),
     spawnChild(appMachineActors[SYSTEM_IO], {
       systemId: SYSTEM_IO,
@@ -216,10 +218,7 @@ export const useUser = () =>
 export const settingsActor = appActor.system.get(SETTINGS) as ActorRefFrom<
   (typeof appMachineActors)[typeof SETTINGS]
 >
-export const getSettings = () => {
-  const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
-  return settings
-}
+export const getSettings = () => getSettingsFromActorRef(settingsActor)
 
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
@@ -229,8 +228,7 @@ sceneEntitiesManager.getSettings = getSettings
 export const useSettings = () =>
   useSelector(settingsActor, (state) => {
     // We have to peel everything that isn't settings off
-    const { currentProject, ...settings } = state.context
-    return settings
+    return getOnlySettingsFromContext(state.context)
   })
 
 export type SystemIOActor = ActorRefFrom<
@@ -238,10 +236,6 @@ export type SystemIOActor = ActorRefFrom<
 >
 
 export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
-
-export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
-  (typeof appMachineActors)[typeof COMMAND_BAR]
->
 
 // TODO: proper dependency management
 sceneEntitiesManager.commandBarActor = commandBarActor
