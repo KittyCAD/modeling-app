@@ -8,7 +8,7 @@ use crate::{
         normalize_to_solver_unit,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
-    front::{LineCtor, Point2d, PointCtor},
+    front::{ArcCtor, LineCtor, Point2d, PointCtor},
     std::Args,
 };
 #[cfg(feature = "artifact-graph")]
@@ -277,6 +277,257 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         )));
     };
     sketch_state.needed_by_engine.push(segment.clone());
+
+    #[cfg(feature = "artifact-graph")]
+    sketch_state.solver_optional_constraints.extend(optional_constraints);
+
+    let meta = segment.meta.clone();
+    let abstract_segment = AbstractSegment {
+        repr: SegmentRepr::Unsolved { segment },
+        meta,
+    };
+    Ok(KclValue::Segment {
+        value: Box::new(abstract_segment),
+    })
+}
+
+pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let start: Vec<KclValue> = args.get_kw_arg("start", &RuntimeType::point2d(), exec_state)?;
+    let end: Vec<KclValue> = args.get_kw_arg("end", &RuntimeType::point2d(), exec_state)?;
+    // TODO: make this optional and add interior.
+    let center: Vec<KclValue> = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+
+    let [start_x_value, start_y_value]: [KclValue; 2] = start.try_into().map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
+            "start must be a 2D point".to_owned(),
+            vec![args.source_range],
+        ))
+    })?;
+    let [end_x_value, end_y_value]: [KclValue; 2] = end.try_into().map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
+            "end must be a 2D point".to_owned(),
+            vec![args.source_range],
+        ))
+    })?;
+    let [center_x_value, center_y_value]: [KclValue; 2] = center.try_into().map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
+            "center must be a 2D point".to_owned(),
+            vec![args.source_range],
+        ))
+    })?;
+
+    let Some(UnsolvedExpr::Unknown(start_x)) = start_x_value.as_unsolved_expr() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "start x must be a sketch var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let Some(UnsolvedExpr::Unknown(start_y)) = start_y_value.as_unsolved_expr() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "start y must be a sketch var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let Some(UnsolvedExpr::Unknown(end_x)) = end_x_value.as_unsolved_expr() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "end x must be a sketch var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let Some(UnsolvedExpr::Unknown(end_y)) = end_y_value.as_unsolved_expr() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "end y must be a sketch var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let Some(UnsolvedExpr::Unknown(center_x)) = center_x_value.as_unsolved_expr() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "center x must be a sketch var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let Some(UnsolvedExpr::Unknown(center_y)) = center_y_value.as_unsolved_expr() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "center y must be a sketch var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+
+    let ctor = ArcCtor {
+        start: Point2d {
+            x: start_x_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+            y: start_y_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+        },
+        end: Point2d {
+            x: end_x_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+            y: end_y_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+        },
+        center: Point2d {
+            x: center_x_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+            y: center_y_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+        },
+    };
+
+    // Order of ID generation is important.
+    let start_object_id = exec_state.next_object_id();
+    let end_object_id = exec_state.next_object_id();
+    let center_object_id = exec_state.next_object_id();
+    let arc_object_id = exec_state.next_object_id();
+    let segment = UnsolvedSegment {
+        object_id: arc_object_id,
+        kind: UnsolvedSegmentKind::Arc {
+            start: [UnsolvedExpr::Unknown(start_x), UnsolvedExpr::Unknown(start_y)],
+            end: [UnsolvedExpr::Unknown(end_x), UnsolvedExpr::Unknown(end_y)],
+            center: [UnsolvedExpr::Unknown(center_x), UnsolvedExpr::Unknown(center_y)],
+            ctor: Box::new(ctor),
+            start_object_id,
+            end_object_id,
+            center_object_id,
+        },
+        meta: vec![args.source_range.into()],
+    };
+    #[cfg(feature = "artifact-graph")]
+    let optional_constraints = {
+        let start_object_id = exec_state.add_placeholder_scene_object(start_object_id, args.source_range);
+        let end_object_id = exec_state.add_placeholder_scene_object(end_object_id, args.source_range);
+        let center_object_id = exec_state.add_placeholder_scene_object(center_object_id, args.source_range);
+        let arc_object_id = exec_state.add_placeholder_scene_object(arc_object_id, args.source_range);
+
+        let mut optional_constraints = Vec::new();
+        if exec_state.segment_ids_edited_contains(&start_object_id)
+            || exec_state.segment_ids_edited_contains(&arc_object_id)
+        {
+            if let Some(start_x_var) = start_x_value.as_sketch_var() {
+                let x_initial_value = start_x_var.initial_value_to_solver_units(
+                    exec_state,
+                    args.source_range,
+                    "edited segment fixed constraint value",
+                )?;
+                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                    start_x_var.id.to_constraint_id(args.source_range)?,
+                    x_initial_value.n,
+                ));
+            }
+            if let Some(start_y_var) = start_y_value.as_sketch_var() {
+                let y_initial_value = start_y_var.initial_value_to_solver_units(
+                    exec_state,
+                    args.source_range,
+                    "edited segment fixed constraint value",
+                )?;
+                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                    start_y_var.id.to_constraint_id(args.source_range)?,
+                    y_initial_value.n,
+                ));
+            }
+        }
+        if exec_state.segment_ids_edited_contains(&end_object_id)
+            || exec_state.segment_ids_edited_contains(&arc_object_id)
+        {
+            if let Some(end_x_var) = end_x_value.as_sketch_var() {
+                let x_initial_value = end_x_var.initial_value_to_solver_units(
+                    exec_state,
+                    args.source_range,
+                    "edited segment fixed constraint value",
+                )?;
+                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                    end_x_var.id.to_constraint_id(args.source_range)?,
+                    x_initial_value.n,
+                ));
+            }
+            if let Some(end_y_var) = end_y_value.as_sketch_var() {
+                let y_initial_value = end_y_var.initial_value_to_solver_units(
+                    exec_state,
+                    args.source_range,
+                    "edited segment fixed constraint value",
+                )?;
+                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                    end_y_var.id.to_constraint_id(args.source_range)?,
+                    y_initial_value.n,
+                ));
+            }
+        }
+        if exec_state.segment_ids_edited_contains(&center_object_id)
+            || exec_state.segment_ids_edited_contains(&arc_object_id)
+        {
+            if let Some(center_x_var) = center_x_value.as_sketch_var() {
+                let x_initial_value = center_x_var.initial_value_to_solver_units(
+                    exec_state,
+                    args.source_range,
+                    "edited segment fixed constraint value",
+                )?;
+                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                    center_x_var.id.to_constraint_id(args.source_range)?,
+                    x_initial_value.n,
+                ));
+            }
+            if let Some(center_y_var) = center_y_value.as_sketch_var() {
+                let y_initial_value = center_y_var.initial_value_to_solver_units(
+                    exec_state,
+                    args.source_range,
+                    "edited segment fixed constraint value",
+                )?;
+                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                    center_y_var.id.to_constraint_id(args.source_range)?,
+                    y_initial_value.n,
+                ));
+            }
+        }
+        optional_constraints
+    };
+
+    // Build the implicit arc constraint.
+    let range = args.source_range;
+    let constraint = kcl_ezpz::Constraint::Arc(kcl_ezpz::datatypes::CircularArc {
+        center: kcl_ezpz::datatypes::DatumPoint::new_xy(
+            center_x.to_constraint_id(range)?,
+            center_y.to_constraint_id(range)?,
+        ),
+        a: kcl_ezpz::datatypes::DatumPoint::new_xy(start_x.to_constraint_id(range)?, start_y.to_constraint_id(range)?),
+        b: kcl_ezpz::datatypes::DatumPoint::new_xy(end_x.to_constraint_id(range)?, end_y.to_constraint_id(range)?),
+    });
+
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "arc() can only be used inside a sketch block".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    // Save the segment to be sent to the engine after solving.
+    sketch_state.needed_by_engine.push(segment.clone());
+    // Save the constraint to be used for solving.
+    sketch_state.solver_constraints.push(constraint);
+    // The constraint isn't added to scene objects since it's implicit in the
+    // arc segment. You cannot have an arc without it.
 
     #[cfg(feature = "artifact-graph")]
     sketch_state.solver_optional_constraints.extend(optional_constraints);
