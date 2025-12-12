@@ -49,6 +49,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
+  DEFAULT_BACKFACE_COLOR,
 } from '@src/lib/constants'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
@@ -106,6 +107,8 @@ export class ConnectionManager extends EventTarget {
     showScaleGrid: false,
     cameraProjection: 'orthographic', // Gotcha: was perspective now is orthographic
     cameraOrbit: 'spherical',
+    //TODO: get this from user land
+    backfaceColor: DEFAULT_BACKFACE_COLOR,
   }
 
   subscriptions: {
@@ -148,6 +151,7 @@ export class ConnectionManager extends EventTarget {
         showScaleGrid: false,
         cameraProjection: 'perspective',
         cameraOrbit: 'spherical',
+        backfaceColor: DEFAULT_BACKFACE_COLOR,
       }
     }
   }

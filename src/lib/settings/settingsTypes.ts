@@ -17,6 +17,12 @@ export interface SettingsViaQueryString {
   showScaleGrid: boolean
   cameraProjection: CameraProjectionType
   cameraOrbit: CameraOrbitType
+  backfaceColor: {
+    a: number
+    b: number
+    g: number
+    r: number
+  }
 }
 
 export const baseUnits = {

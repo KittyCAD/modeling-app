@@ -140,6 +140,20 @@ export const createOnEngineConnectionOpened = ({
 
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
+      message: 'default_backface_set_color',
+    })
+
+    await sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'set_default_backface_color',
+        backface_color: settings.backfaceColor,
+      },
+    })
+
+    EngineDebugger.addLog({
+      label: 'onEngineConnectionOpened',
       message: 'Dispatching SceneReady',
     })
 

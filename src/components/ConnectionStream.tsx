@@ -37,6 +37,7 @@ import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToE
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { EngineDebugger } from '@src/lib/debugger'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
+import { DEFAULT_BACKFACE_COLOR } from '@src/lib/constants'
 
 const TIME_TO_CONNECT = 30_000
 
@@ -86,6 +87,7 @@ export const ConnectionStream = (props: {
     cameraProjection: settings.modeling.cameraProjection.current,
     cameraOrbit: settings.modeling.cameraOrbit.current,
     pool,
+    backfaceColor: DEFAULT_BACKFACE_COLOR,
   }
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
