@@ -173,7 +173,8 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "distance": -38.099999999999994,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -409,7 +410,8 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "distance": 60.324999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -598,7 +600,8 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "distance": 44.449999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -770,7 +773,8 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "distance": 9.524999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -989,7 +993,8 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "distance": 6.400799999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -1334,7 +1339,8 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "distance": -254.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -1391,7 +1397,8 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "distance": -254.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -1448,7 +1455,8 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "distance": -254.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -1505,7 +1513,8 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "distance": -254.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {

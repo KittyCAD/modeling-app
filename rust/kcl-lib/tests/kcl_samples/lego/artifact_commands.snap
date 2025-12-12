@@ -156,7 +156,8 @@ description: Artifact commands lego.kcl
         "distance": 81.28,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -311,7 +312,8 @@ description: Artifact commands lego.kcl
         "distance": -43.18,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -618,7 +620,8 @@ description: Artifact commands lego.kcl
         "distance": 45.72,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -675,7 +678,8 @@ description: Artifact commands lego.kcl
         "distance": 45.72,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -732,7 +736,8 @@ description: Artifact commands lego.kcl
         "distance": 45.72,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -789,7 +794,8 @@ description: Artifact commands lego.kcl
         "distance": 45.72,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -846,7 +852,8 @@ description: Artifact commands lego.kcl
         "distance": 45.72,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -903,7 +910,8 @@ description: Artifact commands lego.kcl
         "distance": 45.72,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1082,7 +1090,8 @@ description: Artifact commands lego.kcl
         "distance": 45.72,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1139,7 +1148,8 @@ description: Artifact commands lego.kcl
         "distance": 45.72,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
