@@ -40,6 +40,13 @@ pub trait SketchApi {
 
     async fn exit_sketch(&mut self, ctx: &ExecutorContext, version: Version, sketch: ObjectId) -> Result<SceneGraph>;
 
+    async fn delete_sketch(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+
     async fn add_segment(
         &mut self,
         ctx: &ExecutorContext,

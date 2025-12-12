@@ -287,6 +287,34 @@ impl SketchApi for FrontendState {
         Ok(self.scene_graph.clone())
     }
 
+    async fn delete_sketch(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+
+        let mut new_ast = self.program.ast.clone();
+
+        // Look up existing sketch.
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch:?}"),
+        })?;
+        let ObjectKind::Sketch(_) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+
+        // Modify the AST to remove the sketch.
+        self.mutate_ast(&mut new_ast, sketch_id, AstMutateCommand::DeleteNode)?;
+
+        self.execute_after_edit(ctx, Default::default(), true, &mut new_ast)
+            .await
+    }
+
     async fn add_segment(
         &mut self,
         ctx: &ExecutorContext,
@@ -327,7 +355,7 @@ impl SketchApi for FrontendState {
                 }
             }
         }
-        self.execute_after_edit(ctx, sketch, segment_ids_edited, false, &mut new_ast)
+        self.execute_after_edit(ctx, segment_ids_edited, false, &mut new_ast)
             .await
     }
 
@@ -355,7 +383,7 @@ impl SketchApi for FrontendState {
         for segment_id in segment_ids_set {
             self.delete_segment(&mut new_ast, sketch, segment_id)?;
         }
-        self.execute_after_edit(ctx, sketch, Default::default(), true, &mut new_ast)
+        self.execute_after_edit(ctx, Default::default(), true, &mut new_ast)
             .await
     }
 
@@ -857,7 +885,6 @@ impl FrontendState {
     async fn execute_after_edit(
         &mut self,
         ctx: &ExecutorContext,
-        _sketch_id: ObjectId,
         segment_ids_edited: AhashIndexSet<ObjectId>,
         is_delete: bool,
         new_ast: &mut ast::Node<ast::Program>,
@@ -2315,6 +2342,88 @@ s = sketch(on = XY) {
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
 
         ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_add_line_delete_sketch() {
+        let program = Program::empty();
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        let sketch_args = SketchArgs {
+            on: api::Plane::Default(PlaneName::Xy),
+        };
+        let (_src_delta, scene_delta, sketch_id) = frontend
+            .new_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+        assert_eq!(sketch_id, ObjectId(0));
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(0)]);
+        let sketch_object = &scene_delta.new_graph.objects[0];
+        assert_eq!(sketch_object.id, ObjectId(0));
+        assert_eq!(
+            sketch_object.kind,
+            ObjectKind::Sketch(Sketch {
+                args: SketchArgs {
+                    on: Plane::Default(PlaneName::Xy)
+                },
+                segments: vec![],
+                constraints: vec![],
+            })
+        );
+        assert_eq!(scene_delta.new_graph.objects.len(), 1);
+
+        let line_ctor = LineCtor {
+            start: Point2d {
+                x: Expr::Number(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Number(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+        };
+        let segment = SegmentCtor::Line(line_ctor);
+        let (src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, segment, None)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::line(start = [0mm, 0mm], end = [10mm, 10mm])
+}
+"
+        );
+        assert_eq!(scene_delta.new_graph.objects.len(), 4);
+
+        let (src_delta, scene_delta) = frontend.delete_sketch(&mock_ctx, version, sketch_id).await.unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+"
+        );
+        assert_eq!(scene_delta.new_graph.objects.len(), 0);
+
         mock_ctx.close().await;
     }
 
