@@ -35,7 +35,7 @@ export fn arc(
   { start, end, center, interior }
 }
 
-/// Constrain points to be coincident.
+/// Constrain points, or a point and a segment to be coincident.
 ///
 /// Supports two points, or one point and one segment (line/arc).
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)

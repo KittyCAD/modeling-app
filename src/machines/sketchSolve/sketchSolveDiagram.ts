@@ -192,7 +192,7 @@ export const sketchSolveMachine = setup({
           context.sketchId,
           {
             type: 'Coincident',
-            points: context.selectedIds,
+            segments: context.selectedIds,
           },
           await jsAppSettings()
         )
