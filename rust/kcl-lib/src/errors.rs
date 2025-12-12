@@ -14,6 +14,10 @@ use crate::{
     modules::{ModulePath, ModuleSource},
 };
 
+mod details;
+
+pub use details::KclErrorDetails;
+
 /// How did the KCL execution fail
 #[derive(thiserror::Error, Debug)]
 pub enum ExecError {
@@ -390,18 +394,6 @@ impl miette::Diagnostic for Report {
             .map(|span| miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span));
         Some(Box::new(iter))
     }
-}
-
-#[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq, thiserror::Error, miette::Diagnostic)]
-#[serde(rename_all = "camelCase")]
-#[error("{message}")]
-#[ts(export)]
-pub struct KclErrorDetails {
-    #[label(collection, "Errors")]
-    pub source_ranges: Vec<SourceRange>,
-    pub backtrace: Vec<BacktraceItem>,
-    #[serde(rename = "msg")]
-    pub message: String,
 }
 
 impl KclErrorDetails {
