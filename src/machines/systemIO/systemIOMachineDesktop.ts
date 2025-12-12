@@ -1,5 +1,6 @@
 import type { IElectronAPI } from '@root/interface'
 import fsZds from '@src/lib/fs-zds'
+import path from 'path'
 import {
   statIsDirectory,
   canReadWriteDirectory,
@@ -77,7 +78,7 @@ const sharedBulkCreateWorkflow = async ({
       )
     }
 
-    const baseDir = electron.path.join(
+    const baseDir = path.join(
       input.context.projectDirectoryPath,
       newProjectName
     )
@@ -86,7 +87,6 @@ const sharedBulkCreateWorkflow = async ({
       ? requestedFileName
       : (
           await getNextFileName({
-            electron,
             entryName: requestedFileName,
             baseDir,
             wasmInstance: input.wasmInstance,
@@ -125,7 +125,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
           return []
         }
-        await mkdirOrNOOP(window.electron, projectDirectoryPath)
+        await mkdirOrNOOP(projectDirectoryPath)
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
         const entries = await fsZds.readdir(projectDirectoryPath)
         const { value: canReadWriteProjectDirectory } =
@@ -136,10 +136,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           if (entry.startsWith('.')) {
             continue
           }
-          const projectPath = window.electron.path.join(
-            projectDirectoryPath,
-            entry
-          )
+          const projectPath = path.join(projectDirectoryPath, entry)
 
           // if it's not a directory ignore.
           // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
@@ -147,9 +144,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           if (!isDirectory) {
             continue
           }
-          const project: Project = await getProjectInfo(
-            window.electron,
-            projectPath,
+          const project: Project = await getProjectInfo(projectPath,
             await context.wasmInstancePromise
           )
           if (
@@ -214,11 +209,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
 
         await renameProjectDirectory(
-          window.electron,
-          window.electron.path.join(
-            input.context.projectDirectoryPath,
-            projectName
-          ),
+          path.join(input.context.projectDirectoryPath, projectName),
           newProjectName
         )
 
@@ -235,8 +226,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
       }) => {
-        await window.electron.rm(
-          window.electron.path.join(
+        await fsZds.rm(
+          path.join(
             input.context.projectDirectoryPath,
             input.requestedProjectName
           ),
@@ -292,25 +283,20 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
 
         const wasmInstance = await input.wasmInstancePromise
 
-        const baseDir = window.electron.join(
+        const baseDir = path.join(
           input.context.projectDirectoryPath,
           newProjectName
         )
         const { name: newFileName } = await getNextFileName({
-          electron: window.electron,
           entryName: requestedFileNameWithExtension,
           baseDir,
           wasmInstance,
         })
 
-        const configuration = await readAppSettingsFile(
-          window.electron,
-          wasmInstance
-        )
+        const configuration = await readAppSettingsFile(wasmInstance)
 
         // Create the project around the file if newProject
         await createNewProjectDirectory(
-          window.electron,
           newProjectName,
           await input.wasmInstancePromise,
           requestedCode,
@@ -354,12 +340,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedFileName: string
         }
       }) => {
-        const path = window.electron.path.join(
+        const path = path.join(
           input.context.projectDirectoryPath,
           input.requestedProjectName,
           input.requestedFileName
         )
-        await window.electron.rm(path)
+        await fsZds.rm(path)
         return {
           message: 'File deleted successfully',
           projectName: input.requestedProjectName,
@@ -381,7 +367,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         const { wasmInstancePromise, ...otherInput } = input
         const wasmInstance = await wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
-          electron: window.electron,
           input: {
             ...otherInput,
             wasmInstance,
@@ -410,7 +395,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         const { wasmInstancePromise, ...otherInput } = input
         const wasmInstance = await wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
-          electron: window.electron,
           input: {
             ...otherInput,
             wasmInstance,
@@ -440,7 +424,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
       }) => {
         const wasmInstance = await input.context.wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
-          electron: window.electron,
           input: {
             ...input,
             wasmInstance,
@@ -474,11 +457,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedFolderName,
           absolutePathToParentDirectory,
         } = input
-        const oldPath = window.electron.path.join(
-          absolutePathToParentDirectory,
-          folderName
-        )
-        const newPath = window.electron.path.join(
+        const oldPath = path.join(absolutePathToParentDirectory, folderName)
+        const newPath = path.join(
           absolutePathToParentDirectory,
           requestedFolderName
         )
@@ -499,9 +479,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
 
         // if there are any siblings with the same name, report error.
-        const entries = await fsZds.readdir(
-          window.electron.path.dirname(newPath)
-        )
+        const entries = await fsZds.readdir(path.dirname(newPath))
 
         for (let entry of entries) {
           if (entry === requestedFolderName) {
@@ -509,7 +487,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           }
         }
 
-        await window.electron.rename(oldPath, newPath)
+        await fsZds.rename(oldPath, newPath)
 
         return {
           message: `Successfully renamed folder "${folderName}" to "${requestedFolderName}"`,
@@ -538,11 +516,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           absolutePathToParentDirectory,
         } = input
 
-        const oldPath = window.electron.path.join(
+        const oldPath = path.join(
           absolutePathToParentDirectory,
           fileNameWithExtension
         )
-        const newPath = window.electron.path.join(
+        const newPath = path.join(
           absolutePathToParentDirectory,
           requestedFileNameWithExtension
         )
@@ -565,9 +543,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
 
         // if there are any siblings with the same name, report error.
-        const entries = await fsZds.readdir(
-          window.electron.path.dirname(newPath)
-        )
+        const entries = await fsZds.readdir(path.dirname(newPath))
 
         for (let entry of entries) {
           if (entry === requestedFileNameWithExtension) {
@@ -575,7 +551,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           }
         }
 
-        await window.electron.rename(oldPath, newPath)
+        await fsZds.rename(oldPath, newPath)
 
         return {
           message: `Successfully renamed file "${fileNameWithExtension}" to "${requestedFileNameWithExtension}"`,
@@ -595,7 +571,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedProjectName?: string | undefined
         }
       }) => {
-        await window.electron.rm(input.requestedPath, { recursive: true })
+        await fsZds.rm(input.requestedPath, { recursive: true })
         let response = {
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,
@@ -618,7 +594,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           input.requestedAbsolutePath
         )
         try {
-          const result = await window.electron.stat(input.requestedAbsolutePath)
+          const result = await fsZds.stat(input.requestedAbsolutePath)
           if (result) {
             return Promise.reject(
               new Error(`File ${fileNameWithExtension} already exists`)
@@ -627,7 +603,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         } catch (e) {
           console.error(e)
         }
-        await window.electron.writeFile(input.requestedAbsolutePath, '')
+        await fsZds.writeFile(input.requestedAbsolutePath, '')
         return {
           message: `File ${fileNameWithExtension} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
@@ -648,7 +624,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           input.requestedAbsolutePath
         )
         try {
-          const result = await window.electron.stat(input.requestedAbsolutePath)
+          const result = await fsZds.stat(input.requestedAbsolutePath)
           if (result) {
             return Promise.reject(
               new Error(`Folder ${folderName} already exists`)
@@ -664,7 +640,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
             console.error(e)
           }
         }
-        await window.electron.mkdir(input.requestedAbsolutePath, {
+        await fsZds.mkdir(input.requestedAbsolutePath, {
           recursive: true,
         })
         return {
@@ -700,11 +676,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
 
       // We need the settings path to find the sibling `ml-conversations.json`
       try {
-        const json = await window.electron?.readFile(
-          window.electron?.path.join(
-            window.electron?.path.dirname(
-              await getAppSettingsFilePath(window.electron)
-            ),
+        const json = await fsZds.readFile(
+          path.join(
+            path.dirname(await getAppSettingsFilePath()),
             ML_CONVERSATIONS_FILE_NAME
           ),
           'utf-8'
@@ -733,11 +707,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           args.input.event.data.conversationId
         )
         const json = mlConversationsToJson(next)
-        await window.electron?.writeFile(
-          window.electron?.path.join(
-            window.electron?.path.dirname(
-              await getAppSettingsFilePath(window.electron)
-            ),
+        await fsZds.writeFile(
+          path.join(
+            path.dirname(await getAppSettingsFilePath()),
             ML_CONVERSATIONS_FILE_NAME
           ),
           json

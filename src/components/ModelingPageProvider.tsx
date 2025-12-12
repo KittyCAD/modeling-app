@@ -20,6 +20,7 @@ import { useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { type IndexLoaderData } from '@src/lib/types'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
+import path from 'path'
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -126,7 +127,7 @@ export const ModelingPageProvider = ({
 
   const kclCommandMemo = useMemo(() => {
     const providedOptions = []
-    if (window.electron && project?.children && file?.path) {
+    if (project?.children && file?.path) {
       const projectPath = project.path
       const filePath = file.path
       let children = project.children
@@ -141,15 +142,12 @@ export const ModelingPageProvider = ({
           continue
         }
 
-        const relativeFilePath = v.path.replace(
-          projectPath + window.electron.sep,
-          ''
-        )
+        const relativeFilePath = v.path.replace(projectPath + path.sep, '')
         const isCurrentFile = v.path === filePath
         if (!isCurrentFile) {
           providedOptions.push({
-            name: relativeFilePath.replaceAll(window.electron.sep, '/'),
-            value: relativeFilePath.replaceAll(window.electron.sep, '/'),
+            name: relativeFilePath.replaceAll(path.sep, '/'),
+            value: relativeFilePath.replaceAll(path.sep, '/'),
           })
         }
       }

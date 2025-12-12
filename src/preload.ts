@@ -1,6 +1,5 @@
 import fsSync from 'node:fs'
 import fs from 'node:fs/promises'
-import path from 'path'
 import os from 'node:os'
 import packageJson from '@root/package.json'
 import type { MachinesListing } from '@src/components/MachineManagerProvider'
@@ -208,13 +207,13 @@ contextBridge.exposeInMainWorld('electron', {
   // exported.
   watchFileOn,
   watchFileOff,
+  access: fs.access,
   copyFile: fs.copyFile,
   readFile,
   writeFile,
   readdir,
   rename,
   rm: fs.rm,
-  path,
   stat,
   statIsDirectory,
   mkdir: fs.mkdir,
@@ -230,8 +229,6 @@ contextBridge.exposeInMainWorld('electron', {
   arch: process.arch,
   platform: process.platform,
   version: process.version,
-  join: path.join,
-  sep: path.sep,
   takeElectronWindowScreenshot,
   os: {
     isMac,

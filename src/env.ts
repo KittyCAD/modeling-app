@@ -95,6 +95,12 @@ export const processEnv = () => {
     // Web, no window.process or process
     return undefined
   }
+
+  // An empty process.env is effectively undefined
+  if (Object.keys(process.env).length === 0) {
+    return undefined
+  }
+
   return process.env
 }
 

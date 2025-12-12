@@ -1,3 +1,4 @@
+import fsZds from '@src/lib/fs-zds'
 import type { EntityType } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type RustContext from '@src/lib/rustContext'
@@ -460,10 +461,7 @@ export class KclManager extends EventTarget {
       ],
     })
 
-    if (isDesktop()) {
-      this.code = ''
-      return
-    }
+    this.code = ''
 
     const storedCode = safeLSGetItem(PERSIST_CODE_KEY)
     // TODO #819 remove zustand persistence logic in a few months
@@ -1512,37 +1510,32 @@ export class KclManager extends EventTarget {
   }
   async writeToFile() {
     if (this.isBufferMode) return
-    if (window.electron) {
-      const electron = window.electron
-      // Only write our buffer contents to file once per second. Any faster
-      // and file-system watchers which read, will receive empty data during
-      // writes.
-      clearTimeout(this.timeoutWriter)
-      this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-      return new Promise((resolve, reject) => {
-        this.timeoutWriter = setTimeout(() => {
-          if (!this._currentFilePath)
-            return reject(new Error('currentFilePath not set'))
-          // Wait one event loop to give a chance for params to be set
-          // Save the file to disk
-          this.lastWrite = {
-            code: this.code ?? '',
-            time: Date.now(),
-          }
-          electron
-            .writeFile(this._currentFilePath, this.code ?? '')
-            .then(resolve)
-            .catch((err: Error) => {
-              // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-              console.error('error saving file', err)
-              toast.error('Error saving file, please check file permissions')
-              reject(err)
-            })
-        }, 1000)
-      })
-    } else {
-      safeLSSetItem(PERSIST_CODE_KEY, this.code)
-    }
+    // Only write our buffer contents to file once per second. Any faster
+    // and file-system watchers which read, will receive empty data during
+    // writes.
+    clearTimeout(this.timeoutWriter)
+    this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+    return new Promise((resolve, reject) => {
+      this.timeoutWriter = setTimeout(() => {
+        if (!this._currentFilePath)
+          return reject(new Error('currentFilePath not set'))
+        // Wait one event loop to give a chance for params to be set
+        // Save the file to disk
+        this.lastWrite = {
+          code: this.code ?? '',
+          time: Date.now(),
+        }
+        fsZds
+          .writeFile(this._currentFilePath, this.code ?? '')
+          .then(resolve)
+          .catch((err: Error) => {
+            // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+            console.error('error saving file', err)
+            toast.error('Error saving file, please check file permissions')
+            reject(err)
+          })
+      }, 1000)
+    })
   }
   async updateEditorWithAstAndWriteToFile(
     ast: Program,

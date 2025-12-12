@@ -7,12 +7,13 @@ import { ActionButton } from '@src/components/ActionButton'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import { ProjectCardRenameForm } from '@src/components/ProjectCard/ProjectCardRenameForm'
 import Tooltip from '@src/components/Tooltip'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 import { FILE_EXT, PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
+import path from 'path'
+import fsZds from '@src/lib/fs-zds'
 
 function ProjectCard({
   project,
@@ -59,12 +60,10 @@ function ProjectCard({
     }
 
     async function setupImageUrl() {
-      const projectImagePath = fsManager.path.join(
-        project.path,
-        PROJECT_IMAGE_NAME
-      )
-      if (await fsManager.exists(projectImagePath)) {
-        const imageData = await fsManager.readFile(projectImagePath)
+      const projectImagePath = path.join(project.path, PROJECT_IMAGE_NAME)
+      try {
+        await fsZds.stat(projectImagePath)
+        const imageData = await fsZds.readFile(projectImagePath)
         const blob = new Blob([new Uint8Array(imageData)], {
           type: 'image/png',
         })
@@ -77,6 +76,8 @@ function ProjectCard({
            */
           setImageUrl(imageUrl)
         }
+      } catch (e) {
+        console.error(e)
       }
     }
 
