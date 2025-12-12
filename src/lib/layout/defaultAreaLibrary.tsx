@@ -5,7 +5,7 @@ import { Toolbar } from '@src/Toolbar'
 import type { AreaType, AreaTypeDefinition } from '@src/lib/layout/types'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import type { MouseEventHandler } from 'react'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
@@ -17,13 +17,17 @@ import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { useSignals } from '@preact/signals-react/runtime'
+import { Draggable } from '@src/components/Draggable'
 
 function ModelingArea() {
   const { auth } = useApp()
   const authToken = auth.useToken()
   return (
-    <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
+    <div  className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
       <Toolbar />
+      <Draggable elementProps={{className: 'bg-2 p-2 rounded shadow-md'}}>
+          HI!
+      </Draggable>
       <ConnectionStream authToken={authToken} />
       <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
         <Gizmo />
