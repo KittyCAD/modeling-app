@@ -415,6 +415,35 @@ export default class RustContext {
     }
   }
 
+  /** Delete a sketch. */
+  async deleteSketch(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SourceDelta, SceneGraphDelta] =
+        await instance.delete_sketch(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(settings)
+        )
+      return {
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
   /** Add a segment to a sketch. */
   async addSegment(
     version: ApiVersion,

@@ -211,10 +211,12 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let optional_constraints = {
         let start_object_id = exec_state.add_placeholder_scene_object(start_object_id, args.source_range);
         let end_object_id = exec_state.add_placeholder_scene_object(end_object_id, args.source_range);
-        exec_state.add_placeholder_scene_object(line_object_id, args.source_range);
+        let line_object_id = exec_state.add_placeholder_scene_object(line_object_id, args.source_range);
 
         let mut optional_constraints = Vec::new();
-        if exec_state.segment_ids_edited_contains(&start_object_id) {
+        if exec_state.segment_ids_edited_contains(&start_object_id)
+            || exec_state.segment_ids_edited_contains(&line_object_id)
+        {
             if let Some(start_x_var) = start_x_value.as_sketch_var() {
                 let x_initial_value = start_x_var.initial_value_to_solver_units(
                     exec_state,
@@ -238,7 +240,9 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
                 ));
             }
         }
-        if exec_state.segment_ids_edited_contains(&end_object_id) {
+        if exec_state.segment_ids_edited_contains(&end_object_id)
+            || exec_state.segment_ids_edited_contains(&line_object_id)
+        {
             if let Some(end_x_var) = end_x_value.as_sketch_var() {
                 let x_initial_value = end_x_var.initial_value_to_solver_units(
                     exec_state,

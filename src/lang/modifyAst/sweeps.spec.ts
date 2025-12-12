@@ -421,6 +421,54 @@ extrude002 = extrude(profile002, to = capEnd001)`)
       expect(error).not.toBeInstanceOf(Error)
     })
 
+    it('should add an extrude call with full twist parameters', async () => {
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
+        circleProfileCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const length = await getKclCommandValue(
+        '10',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const twistAngle = await getKclCommandValue(
+        '180deg',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const twistAngleStep = await getKclCommandValue(
+        '15',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const twistCenter = await getKclCommandValue(
+        '[0, 0]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        twistAngle,
+        twistAngleStep,
+        twistCenter,
+        artifactGraph,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(circleProfileCode)
+      expect(newCode).toContain(`extrude001 = extrude(
+  profile001,
+  length = 10,
+  twistAngle = 180deg,
+  twistAngleStep = 15,
+  twistCenter = [0, 0],
+)`)
+    })
+
     // TODO: this isn't producing the right results yet
     // https://github.com/KittyCAD/engine/issues/3855
     // and https://github.com/KittyCAD/modeling-app/issues/8831
