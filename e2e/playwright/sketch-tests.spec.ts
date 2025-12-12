@@ -2049,9 +2049,8 @@ profile001 = startProfile(sketch001, at = [-102.72, 237.44])
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     // Start a new sketch
-    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
     await toolbar.startSketchPlaneSelection()
-    await selectXZPlane()
+    await toolbar.selectDefaultPlane('Front plane')
     await page.waitForTimeout(2000) // wait for engine animation
 
     // Switch to a different tool (circle)
