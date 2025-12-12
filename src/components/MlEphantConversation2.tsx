@@ -297,7 +297,7 @@ export const MlEphantConversationInput = (
                 onClick={onClick}
                 className="m-0 p-1 rounded-sm border-none bg-ml-green hover:bg-ml-green text-chalkboard-100"
               >
-                <CustomIcon name="arrowUp" className="w-5 h-5" />
+                <CustomIcon name="arrowShortUp" className="w-5 h-5" />
               </button>
             ) : (
               <button
