@@ -2488,7 +2488,6 @@ sketch(on = XY) {
                 },
                 segments: vec![],
                 constraints: vec![],
-                is_underconstrained: None,
             })
         );
         assert_eq!(scene_delta.new_graph.objects.len(), 1);

@@ -1432,17 +1432,17 @@ fn substitute_sketch_var_in_segment(
             center_object_id,
         } => {
             let (start_x, start_x_freedom) =
-                substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, &srs)?;
+                substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, analysis, &srs)?;
             let (start_y, start_y_freedom) =
-                substitute_sketch_var_in_unsolved_expr(&start[1], solve_outcome, solution_ty, &srs)?;
+                substitute_sketch_var_in_unsolved_expr(&start[1], solve_outcome, solution_ty, analysis, &srs)?;
             let (end_x, end_x_freedom) =
-                substitute_sketch_var_in_unsolved_expr(&end[0], solve_outcome, solution_ty, &srs)?;
+                substitute_sketch_var_in_unsolved_expr(&end[0], solve_outcome, solution_ty, analysis, &srs)?;
             let (end_y, end_y_freedom) =
-                substitute_sketch_var_in_unsolved_expr(&end[1], solve_outcome, solution_ty, &srs)?;
+                substitute_sketch_var_in_unsolved_expr(&end[1], solve_outcome, solution_ty, analysis, &srs)?;
             let (center_x, center_x_freedom) =
-                substitute_sketch_var_in_unsolved_expr(&center[0], solve_outcome, solution_ty, &srs)?;
+                substitute_sketch_var_in_unsolved_expr(&center[0], solve_outcome, solution_ty, analysis, &srs)?;
             let (center_y, center_y_freedom) =
-                substitute_sketch_var_in_unsolved_expr(&center[1], solve_outcome, solution_ty, &srs)?;
+                substitute_sketch_var_in_unsolved_expr(&center[1], solve_outcome, solution_ty, analysis, &srs)?;
             let start = [start_x, start_y];
             let end = [end_x, end_y];
             let center = [center_x, center_y];
