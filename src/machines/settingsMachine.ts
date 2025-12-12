@@ -296,6 +296,14 @@ export const settingsMachine = setup({
     setEngineCameraProjection: () => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
+    setEngineHighlightEdges: ({ context }) => {
+      const engineCommandManager = context.kclManager.engineCommandManager
+      if (engineCommandManager) {
+        engineCommandManager
+          .setHighlightEdges(context.modeling.highlightEdges.current)
+          .catch(reportRejection)
+      }
+    },
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
       type: 'update.themeWatcher',
       theme: context.app.theme.current,
@@ -421,7 +429,11 @@ export const settingsMachine = setup({
         'set.modeling.highlightEdges': {
           target: 'persisting settings',
 
-          actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
+          actions: [
+            'setSettingAtLevel',
+            'toastSuccess',
+            'setEngineHighlightEdges',
+          ],
         },
 
         'Reset settings': {
@@ -433,6 +445,7 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setEngineHighlightEdges',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -450,6 +463,7 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setEngineHighlightEdges',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -528,6 +542,7 @@ export const settingsMachine = setup({
             'setThemeClass',
             'setEngineTheme',
             'setClientTheme',
+            'setEngineHighlightEdges',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -562,6 +577,7 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setEngineHighlightEdges',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
