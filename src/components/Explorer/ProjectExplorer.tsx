@@ -9,20 +9,24 @@ import {
   constructPath,
   copyPasteSourceAndTarget,
   flattenProject,
+  isExternalFileDrag,
 } from '@src/components/Explorer/utils'
 import type {
   FileExplorerEntry,
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
 import { kclErrorsByFilename } from '@src/lang/errors'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT } from '@src/lib/constants'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import {
   desktopSafePathJoin,
   desktopSafePathSplit,
   enforceFileEXT,
+  getEXTNoPeriod,
   getEXTWithPeriod,
   getParentAbsolutePath,
+  isExtensionARelevantExtension,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
@@ -31,7 +35,7 @@ import type { FileEntry, Project } from '@src/lib/project'
 import { kclManager, systemIOActor, useSettings } from '@src/lib/singletons'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 const isFileExplorerEntryOpened = (
@@ -113,6 +117,12 @@ export const ProjectExplorer = ({
 
   // Store a path to copy and paste! Works for folders and files
   const copyToClipBoard = useRef<FileEntry | null>(null)
+
+  // External file drag and drop state
+  const [isExternalDragOver, setIsExternalDragOver] = useState<boolean>(false)
+  const [dragOverTarget, setDragOverTarget] =
+    useState<FileExplorerEntry | null>(null)
+  const externalDragCounter = useRef<number>(0)
 
   const fileExplorerContainer = useRef<HTMLDivElement | null>(null)
   const projectExplorerRef = useRef<HTMLDivElement | null>(null)
@@ -206,6 +216,103 @@ export const ProjectExplorer = ({
     setSelectedRowWrapper(file)
     setActiveIndex(domIndex)
   }
+
+  const isFileSupportedForImport = useCallback((fileName: string): boolean => {
+    const extension = getEXTNoPeriod(fileName)
+    if (!extension) return false
+    const supportedExtensions = relevantFileExtensions()
+    return isExtensionARelevantExtension(extension, supportedExtensions)
+  }, [])
+
+  /**
+   * Get the target directory path for a drop
+   * If dropping on a file, use its parent directory
+   * If dropping on a folder, use that folder
+   * If dropping on the root, use the project root
+   */
+  const getDropTargetPath = useCallback(
+    (target: FileExplorerEntry | null): string => {
+      if (!target) {
+        // Dropping on root
+        return project.path
+      }
+      if (target.children !== null) {
+        // Target is a folder
+        return target.path
+      }
+      // Target is a file, use its parent directory
+      return getParentAbsolutePath(target.path)
+    },
+    [project.path]
+  )
+
+  const handleExternalFileDrop = useCallback(
+    async (files: FileList, target: FileExplorerEntry | null) => {
+      if (readOnly || !window.electron) return
+
+      const supportedFiles: File[] = []
+      const unsupportedFiles: string[] = []
+
+      for (const file of files) {
+        if (isFileSupportedForImport(file.name)) {
+          supportedFiles.push(file)
+        } else {
+          unsupportedFiles.push(file.name)
+        }
+      }
+
+      // Show error for unsupported files
+      if (unsupportedFiles.length > 0) {
+        toast.error(
+          `Unsupported file${unsupportedFiles.length > 1 ? 's' : ''}: ${unsupportedFiles.join(', ')}`,
+          { duration: 5000 }
+        )
+      }
+
+      // Copy supported files to the target directory
+      if (supportedFiles.length > 0) {
+        const targetPath = getDropTargetPath(target)
+
+        for (const file of supportedFiles) {
+          try {
+            const arrayBuffer = await file.arrayBuffer()
+            const destinationPath = joinOSPaths(targetPath, file.name)
+            await window.electron.writeFile(
+              destinationPath,
+              new Uint8Array(arrayBuffer)
+            )
+          } catch (e) {
+            console.error('Failed to copy file:', file.name, e)
+            toast.error(`Failed to import ${file.name}`)
+          }
+        }
+
+        // Open the target folder so the user can see the imported files
+        if (target?.children) {
+          const newOpenedRows = { ...openedRowsRef.current }
+          newOpenedRows[target.key] = true
+          setOpenedRows(newOpenedRows)
+        }
+
+        // Refresh the explorer to show the new files
+        systemIOActor.send({
+          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        })
+
+        toast.success(
+          `Imported ${supportedFiles.length} file${supportedFiles.length > 1 ? 's' : ''}`
+        )
+      }
+    },
+    [readOnly, isFileSupportedForImport, getDropTargetPath]
+  )
+
+  const handleDragOverTarget = useCallback(
+    (entry: FileExplorerEntry | null) => {
+      setDragOverTarget(entry)
+    },
+    []
+  )
 
   useEffect(() => {
     /**
@@ -781,13 +888,36 @@ export const ProjectExplorer = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
+  // Compute which entry should be highlighted for external drag
+  const getHighlightedEntry = useCallback((): FileExplorerEntry | null => {
+    if (!isExternalDragOver || !dragOverTarget) return null
+    // If dragging over a folder, highlight that folder
+    if (dragOverTarget.children !== null) {
+      return dragOverTarget
+    }
+    // If dragging over a file, highlight its parent folder
+    const parentPath = dragOverTarget.parentPath
+    const parentEntry = rowsToRender.find(
+      (row) => row.key === parentPath && row.children !== null
+    )
+    return parentEntry || null
+  }, [isExternalDragOver, dragOverTarget, rowsToRender])
+
+  const highlightedEntry = getHighlightedEntry()
+
   return (
     <div
       className="h-full relative overflow-y-auto overflow-x-hidden"
       ref={projectExplorerRef}
     >
       <div
-        className={`overflow-auto absolute pb-12 inset-0 ${activeIndex === -1 ? 'border-sky-500' : ''}`}
+        className={`overflow-auto absolute pb-12 inset-0 transition-all duration-150 ${
+          activeIndex === -1 ? 'border-sky-500' : ''
+        } ${
+          isExternalDragOver && !highlightedEntry
+            ? 'ring-2 ring-inset ring-blue-500 bg-blue-500/5'
+            : ''
+        }`}
         data-testid="file-pane-scroll-container"
         tabIndex={0}
         role="tree"
@@ -799,6 +929,46 @@ export const ProjectExplorer = ({
             setSelectedRowWrapper(null)
           }
         }}
+        onDragEnter={(e) => {
+          if (isExternalFileDrag(e)) {
+            e.preventDefault()
+            e.stopPropagation()
+            externalDragCounter.current++
+            setIsExternalDragOver(true)
+          }
+        }}
+        onDragOver={(e) => {
+          if (isExternalFileDrag(e)) {
+            e.preventDefault()
+            e.stopPropagation()
+            e.dataTransfer.dropEffect = 'copy'
+          }
+        }}
+        onDragLeave={(e) => {
+          if (isExternalFileDrag(e)) {
+            e.preventDefault()
+            e.stopPropagation()
+            externalDragCounter.current--
+            if (externalDragCounter.current <= 0) {
+              externalDragCounter.current = 0
+              setIsExternalDragOver(false)
+              setDragOverTarget(null)
+            }
+          }
+        }}
+        onDrop={(e) => {
+          if (isExternalFileDrag(e)) {
+            e.preventDefault()
+            e.stopPropagation()
+            externalDragCounter.current = 0
+            setIsExternalDragOver(false)
+            const files = e.dataTransfer.files
+            if (files.length > 0) {
+              void handleExternalFileDrop(files, dragOverTarget)
+            }
+            setDragOverTarget(null)
+          }
+        }}
       >
         {project && (
           <FileExplorer
@@ -807,7 +977,10 @@ export const ProjectExplorer = ({
             contextMenuRow={contextMenuRow}
             isRenaming={isRenaming}
             isCopying={isCopying}
-          ></FileExplorer>
+            isExternalDragOver={isExternalDragOver}
+            highlightedEntry={highlightedEntry}
+            onExternalDragOverRow={handleDragOverTarget}
+          />
         )}
       </div>
     </div>
