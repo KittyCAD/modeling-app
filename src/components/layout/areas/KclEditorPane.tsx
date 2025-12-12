@@ -70,6 +70,7 @@ import { editorTheme, themeCompartment } from '@src/lib/codeEditor'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { getResolvedTheme } from '@src/lib/theme'
 import { kclAstExtension } from '@src/editor/plugins/ast'
+import { operationsExtension } from '@src/editor/plugins/operations'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -159,6 +160,7 @@ export const KclEditorPaneContents = () => {
       lineHighlightField,
       artifactAnnotationsExtension(),
       kclAstExtension(),
+      operationsExtension(),
       historyCompartment.of(initialHistory),
       closeBrackets(),
       codeFolding(),

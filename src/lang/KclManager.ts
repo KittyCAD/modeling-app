@@ -106,6 +106,10 @@ import {
   setAstEffect,
   updateAstAnnotation,
 } from '@src/editor/plugins/ast'
+import {
+  operationsAnnotation,
+  setOperationsEffect,
+} from '@src/editor/plugins/operations'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -499,6 +503,21 @@ export class KclManager extends EventTarget {
   }
 
   /**
+   */
+  private dispatchUpdateOperations(newOperations: Operation[]) {
+    const editorView = this.getEditorView()
+    if (editorView) {
+      editorView.dispatch({
+        effects: [setOperationsEffect.of(newOperations)],
+        annotations: [
+          operationsAnnotation.of(true),
+          Transaction.addToHistory.of(false),
+        ],
+      })
+    }
+  }
+
+  /**
    * Dispatches a CodeMirror state effect to update the AST
    * stored on the current EditorView.
    *
@@ -703,6 +722,8 @@ export class KclManager extends EventTarget {
     this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
     await this.updateArtifactGraph(execState.artifactGraph)
+    this.dispatchUpdateOperations(execState.operations)
+
     if (!isInterrupted) {
       this.singletons.sceneInfra.modelingSend({
         type: 'code edit during sketch',
