@@ -389,7 +389,6 @@ export class ConnectionManager extends EventTarget {
 
   generateWebsocketURL() {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
-    debugger
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
     const pool = !this.settings.pool ? '' : `&pool=${this.settings.pool}`
