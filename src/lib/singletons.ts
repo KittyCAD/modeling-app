@@ -22,7 +22,10 @@ import {
   billingMachine,
 } from '@src/machines/billingMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
-import { settingsMachine } from '@src/machines/settingsMachine'
+import {
+  getOnlySettingsFromContext,
+  settingsMachine,
+} from '@src/machines/settingsMachine'
 import { getSettingsFromActorRef } from '@src/lib/settings/settingsUtils'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
@@ -225,8 +228,7 @@ sceneEntitiesManager.getSettings = getSettings
 export const useSettings = () =>
   useSelector(settingsActor, (state) => {
     // We have to peel everything that isn't settings off
-    const { currentProject, ...settings } = state.context
-    return settings
+    return getOnlySettingsFromContext(state.context)
   })
 
 export type SystemIOActor = ActorRefFrom<

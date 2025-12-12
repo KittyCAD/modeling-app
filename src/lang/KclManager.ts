@@ -107,7 +107,6 @@ import {
   updateAstAnnotation,
 } from '@src/editor/plugins/ast'
 import { setKclVersion } from '@src/lib/kclVersion'
-import { sceneEntitiesManager } from '@src/lib/singletons'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -166,6 +165,13 @@ export class KclManager extends EventTarget {
       this._wasmInstance = instance
     })
   }
+  /**
+   * You probably should use `wasmInstancePromise` instead.
+   *
+   * This is for when you need the wasm instance in synchronous time,
+   * you can't make it asynchronous,
+   * and for some reason you can absolutely guarantee WASM will be done initializing.
+   */
   get wasmInstance(): ModuleType {
     if (this._wasmInstance === null) {
       // eslint-disable-next-line  suggest-no-throw/suggest-no-throw
@@ -265,7 +271,7 @@ export class KclManager extends EventTarget {
   private _copilotEnabled: boolean = true
   private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
-  private _kclVersion: string
+  private _kclVersion: string = ''
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
@@ -384,8 +390,16 @@ export class KclManager extends EventTarget {
   set sceneEntitiesManager(s: SceneEntities) {
     this._sceneEntitiesManager = s
   }
+  /**
+   * You probably should provide the `sceneEntitiesManager` singleton instead.
+   *
+   * This is for when you need the sceneEntitiesManager guaranteed to be there,
+   * and you have KclManager available but not other singletons for some reason,
+   * and you can somehow absolutely guarantee that sceneEntities has been set.
+   */
   get sceneEntitiesManager() {
     if (!this._sceneEntitiesManager) {
+      // eslint-disable-next-line  suggest-no-throw/suggest-no-throw
       throw new Error('Requested SceneEntities too soon from within KclManager')
     }
     return this._sceneEntitiesManager

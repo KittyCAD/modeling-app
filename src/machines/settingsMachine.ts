@@ -219,7 +219,6 @@ export const settingsMachine = setup({
       const sceneInfra = kclManager.singletons.sceneInfra
       const sceneEntitiesManager = kclManager.sceneEntitiesManager
 
-      debugger
       if (!sceneInfra || !sceneEntitiesManager || !kclManager) {
         return
       }
@@ -670,7 +669,9 @@ export const settingsMachine = setup({
   },
 })
 
-function getOnlySettingsFromContext(s: SettingsMachineContext): SettingsType {
+export function getOnlySettingsFromContext(
+  s: SettingsMachineContext
+): SettingsType {
   const {
     currentProject: _c,
     kclManager: _k,

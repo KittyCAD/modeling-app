@@ -1013,21 +1013,16 @@ p3 = [342.51, 216.38],
             })
 
             // Wait for the state to change in response to the constraint
-            let stateDidChange = false
             await waitForCondition(() => {
               const snapshot = actor.getSnapshot()
               // Check if we've transitioned to a different state
-              stateDidChange =
+              return (
                 JSON.stringify(snapshot.value) !==
                 JSON.stringify({
                   Sketch: { SketchIdle: 'set up segments' },
                 })
-              return stateDidChange
+              )
             }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
-            expect(
-              stateDidChange,
-              `Machine did not transition, stuck at $[actor.getSnapshot().value]`
-            )
 
             const startTime = Date.now()
             while (
