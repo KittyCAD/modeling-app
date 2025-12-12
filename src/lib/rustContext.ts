@@ -43,6 +43,7 @@ import type { ExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export default class RustContext {
+  private readonly _wasmInstancePromise: Promise<ModuleType>
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
@@ -60,7 +61,7 @@ export default class RustContext {
 
   constructor(
     engineCommandManager: ConnectionManager,
-    instance: Promise<ModuleType | string>,
+    wasmInstancePromise: Promise<ModuleType>,
     /**
      * TODO: move settings system upstream of KclManager so this hack isn't necessary.
      * We pass in a dummy settingsActor, then assign our real one later in singletons.ts using the setter
@@ -68,9 +69,10 @@ export default class RustContext {
     dummySettingsActor: SettingsActorType
   ) {
     this.engineCommandManager = engineCommandManager
+    this._wasmInstancePromise = wasmInstancePromise
     this._settingsActor = dummySettingsActor
 
-    instance
+    wasmInstancePromise
       .then((instance) => this.createFromInstance(instance))
       .catch(reportRejection)
   }
@@ -87,12 +89,8 @@ export default class RustContext {
     return ctxInstance
   }
 
-  getRustInstance() {
-    if (this.rustInstance === null) {
-      // eslint-disable-next-line  suggest-no-throw/suggest-no-throw
-      throw new Error('attempted to access rustInstance before it was ready')
-    }
-    return this.rustInstance
+  get wasmInstancePromise() {
+    return this._wasmInstancePromise
   }
 
   private createFromInstance(instance: ModuleType) {

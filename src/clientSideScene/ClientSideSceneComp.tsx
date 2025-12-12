@@ -574,7 +574,7 @@ const ConstraintSymbol = ({
             try {
               const pResult = parse(
                 recast(kclManager.ast),
-                kclManager.wasmInstance
+                await kclManager.wasmInstancePromise
               )
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)

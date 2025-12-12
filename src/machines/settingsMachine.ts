@@ -583,7 +583,9 @@ export const settingsMachine = setup({
   },
 })
 
-function getOnlySettingsFromContext(s: SettingsMachineContext): SettingsType {
+export function getOnlySettingsFromContext(
+  s: SettingsMachineContext
+): SettingsType {
   const {
     currentProject: _c,
     kclManager: _k,

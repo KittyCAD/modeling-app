@@ -2037,7 +2037,7 @@ export const modelingMachine = setup({
           trap(new Error('No sketch details'))
           return
         }
-        const wasmInstance = kclManager.wasmInstance
+        const wasmInstance = await kclManager.wasmInstancePromise
         const recastAst = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (err(recastAst) || !resultIsOk(recastAst)) return
 
@@ -2407,6 +2407,7 @@ export const modelingMachine = setup({
           | 'sketchDetails'
           | 'selectionRanges'
           | 'kclManager'
+          | 'wasmInstance'
           | 'sceneEntitiesManager'
         > & {
           data?: ModelingCommandSchema['Constrain with named value']
@@ -2419,7 +2420,7 @@ export const modelingMachine = setup({
         if (!data) {
           return Promise.reject(new Error('No data from command flow'))
         }
-        const wasmInstance = input.kclManager.wasmInstance
+        const wasmInstance = input.wasmInstance
         let pResult = parse(
           recast(input.kclManager.ast, wasmInstance),
           wasmInstance
@@ -3266,7 +3267,7 @@ export const modelingMachine = setup({
             {
               type: 'Allow',
             },
-            input.kclManager.wasmInstance
+            await input.kclManager.wasmInstancePromise
           )
           if (err(ast)) {
             return Promise.reject(ast)
@@ -3323,7 +3324,7 @@ export const modelingMachine = setup({
             {
               type: 'Allow',
             },
-            input.kclManager.wasmInstance
+            await input.kclManager.wasmInstancePromise
           )
           if (err(ast)) {
             return Promise.reject(ast)

@@ -25,7 +25,10 @@ import {
   billingMachine,
 } from '@src/machines/billingMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
-import { settingsMachine } from '@src/machines/settingsMachine'
+import {
+  getOnlySettingsFromContext,
+  settingsMachine,
+} from '@src/machines/settingsMachine'
 import { getSettingsFromActorRef } from '@src/lib/settings/settingsUtils'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
@@ -37,6 +40,13 @@ import { initialiseWasm } from '@src/lang/wasmUtils'
 import { saveSettings } from '@src/lib/settings/settingsUtils'
 import { getResolvedTheme, getOppositeTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
+import { AppMachineEventType } from '@src/lib/types'
+import {
+  defaultLayout,
+  defaultLayoutConfig,
+  saveLayout,
+  type Layout,
+} from '@src/lib/layout'
 
 const dummySettingsActor = createActor(settingsMachine, {
   input: createSettings(),
@@ -75,32 +85,6 @@ export const kclManager = new KclManager(engineCommandManager, initPromise, {
   rustContext,
   sceneInfra,
 })
-
-// Initialize KCL version
-import { setKclVersion } from '@src/lib/kclVersion'
-import { AppMachineEventType } from '@src/lib/types'
-import {
-  defaultLayout,
-  defaultLayoutConfig,
-  saveLayout,
-  type Layout,
-} from '@src/lib/layout'
-import { processEnv } from '@src/env'
-
-initPromise
-  .then(() => {
-    if (processEnv()?.VITEST) {
-      const message =
-        'singletons is trying to call initPromise and setKclVersion. This will be blocked in VITEST runtimes.'
-      console.log(message)
-      return
-    }
-
-    setKclVersion(kclManager.kclVersion)
-  })
-  .catch((e) => {
-    console.error(e)
-  })
 
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
@@ -352,8 +336,7 @@ sceneEntitiesManager.getSettings = getSettings
 export const useSettings = () =>
   useSelector(settingsActor, (state) => {
     // We have to peel everything that isn't settings off
-    const { currentProject, ...settings } = state.context
-    return settings
+    return getOnlySettingsFromContext(state.context)
   })
 
 export type SystemIOActor = ActorRefFrom<
