@@ -38,7 +38,7 @@ const ProjectSidebarMenu = ({
     window.electron && window.electron.os.isMac ? 'ml-20' : ''
   return (
     <div className={'!no-underline flex gap-2 ' + trafficLightsOffset}>
-      <div className='relative group/home cursor-pointer'>
+      <div className="relative group/home cursor-pointer">
         <AppLogoLink project={project} file={file} />
         <Tooltip position="bottom-left">Go home</Tooltip>
       </div>
@@ -129,8 +129,9 @@ function ProjectMenuPopover({
               <span className="flex-1" data-testid="project-settings">
                 Project settings
               </span>
-              <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${isDesktop() ? '' : '⬆'
-                },`}</kbd>
+              <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
+                isDesktop() ? '' : '⬆'
+              },`}</kbd>
             </>
           ),
           onClick: () => {
