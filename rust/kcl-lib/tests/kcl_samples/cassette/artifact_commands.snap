@@ -431,7 +431,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -650,7 +651,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -1130,7 +1132,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1349,7 +1352,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -1829,7 +1833,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2048,7 +2053,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -2528,7 +2534,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2747,7 +2754,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -3227,7 +3235,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3446,7 +3455,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -3926,7 +3936,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4145,7 +4156,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {
@@ -4625,7 +4637,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4844,7 +4857,8 @@ description: Artifact commands cassette.kcl
         "distance": 1.1906249999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "new"
+        "extrude_method": "new",
+        "body_type": "solid"
       }
     },
     {

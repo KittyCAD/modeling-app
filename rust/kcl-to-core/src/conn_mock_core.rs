@@ -197,6 +197,7 @@ impl EngineConnection {
                 faces: _, // Engine team: start using this once the frontend and engine both use it.
                 opposite: _,
                 extrude_method: _,
+                body_type: _, // Engine team please weigh in here
             }) => {
                 format!(
                     r#"
@@ -213,6 +214,7 @@ impl EngineConnection {
                 target,
                 tolerance,
                 opposite: _,
+                body_type: _, // Engine team please weigh in here
             }) => {
                 let ox = origin.x.0;
                 let oy = origin.y.0;

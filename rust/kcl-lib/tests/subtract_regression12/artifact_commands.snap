@@ -204,7 +204,8 @@ description: Artifact commands subtract_regression12.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -404,7 +405,8 @@ description: Artifact commands subtract_regression12.kcl
         "opposite": {
           "Other": 5.08
         },
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
