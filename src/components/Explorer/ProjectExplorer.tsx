@@ -61,6 +61,68 @@ const getDropTargetPath = (
   return getParentAbsolutePath(target.path)
 }
 
+const readAllDirectoryEntriesRecursively = async (
+  dirEntry: FileSystemDirectoryEntry
+): Promise<FileSystemEntry[]> => {
+  const directoryReader = dirEntry.createReader()
+  const entries: FileSystemEntry[] = []
+  let readEntries = await new Promise<FileSystemEntry[]>((resolve) =>
+    directoryReader.readEntries(resolve)
+  )
+  while (readEntries.length > 0) {
+    entries.push(...readEntries)
+    readEntries = await new Promise<FileSystemEntry[]>((resolve) =>
+      directoryReader.readEntries(resolve)
+    )
+  }
+  return entries
+}
+
+const isFileSupportedForImport = (fileName: string): boolean => {
+  const extension = getEXTNoPeriod(fileName)
+  if (!extension) return false
+  const supportedExtensions = relevantFileExtensions()
+  return isExtensionARelevantExtension(extension, supportedExtensions)
+}
+
+const collectDroppedFiles = async (
+  entry: FileSystemEntry,
+  basePath: string
+): Promise<{
+  supported: { file: File; relativePath: string }[]
+  unsupported: string[]
+}> => {
+  const supported: { file: File; relativePath: string }[] = []
+  const unsupported: string[] = []
+
+  if (entry.isFile) {
+    const fileEntry = entry as FileSystemFileEntry
+    const file = await new Promise<File>((resolve, reject) =>
+      fileEntry.file(resolve, reject)
+    )
+    if (isFileSupportedForImport(file.name)) {
+      supported.push({ file, relativePath: basePath })
+    } else {
+      unsupported.push(joinOSPaths(basePath, file.name))
+    }
+  } else if (entry.isDirectory) {
+    const entries = await readAllDirectoryEntriesRecursively(
+      entry as FileSystemDirectoryEntry
+    )
+    const newBasePath = basePath
+      ? joinOSPaths(basePath, entry.name)
+      : entry.name
+
+    for (const childEntry of entries) {
+      const result = await collectDroppedFiles(childEntry, newBasePath)
+      supported.push(...result.supported)
+      unsupported.push(...result.unsupported)
+    }
+  }
+
+  return { supported, unsupported }
+}
+
 /**
  * Wrap the header and the tree into a single component
  * This is important because the action header buttons need to know
@@ -233,23 +295,46 @@ export const ProjectExplorer = ({
     setActiveIndex(domIndex)
   }
 
-  const isFileSupportedForImport = useCallback((fileName: string): boolean => {
-    const extension = getEXTNoPeriod(fileName)
-    if (!extension) return false
-    const supportedExtensions = relevantFileExtensions()
-    return isExtensionARelevantExtension(extension, supportedExtensions)
-  }, [])
-
   const handleExternalFileDrop = useCallback(
-    async (files: FileList, target: FileExplorerEntry | null) => {
+    async (dataTransfer: DataTransfer, target: FileExplorerEntry | null) => {
       if (readOnly || !window.electron) return
 
-      const supportedFiles: File[] = []
+      const supportedFiles: { file: File; relativePath: string }[] = []
       const unsupportedFiles: string[] = []
 
-      for (const file of files) {
+      // Collect all entries/files synchronously first
+      // DataTransferItemList becomes invalid after async operations
+      const entries: FileSystemEntry[] = []
+      const fallbackFiles: File[] = []
+
+      const items = Array.from(dataTransfer.items)
+      for (const item of items) {
+        if (item.kind !== 'file') {
+          continue
+        }
+
+        const entry = item.webkitGetAsEntry?.()
+        if (entry) {
+          entries.push(entry)
+        } else {
+          const file = item.getAsFile()
+          if (file) {
+            fallbackFiles.push(file)
+          }
+        }
+      }
+
+      // Now process entries asynchronously
+      for (const entry of entries) {
+        const result = await collectDroppedFiles(entry, '')
+        supportedFiles.push(...result.supported)
+        unsupportedFiles.push(...result.unsupported)
+      }
+
+      // Process fallback files (browsers without webkitGetAsEntry support)
+      for (const file of fallbackFiles) {
         if (isFileSupportedForImport(file.name)) {
-          supportedFiles.push(file)
+          supportedFiles.push({ file, relativePath: '' })
         } else {
           unsupportedFiles.push(file.name)
         }
@@ -257,8 +342,13 @@ export const ProjectExplorer = ({
 
       // Show error for unsupported files
       if (unsupportedFiles.length > 0) {
+        const maxToShow = 5
+        const fileList = unsupportedFiles.slice(0, maxToShow).join(', ')
+        const remaining = unsupportedFiles.length - maxToShow
+        const message =
+          remaining > 0 ? `${fileList}, and ${remaining} more` : fileList
         toast.error(
-          `Unsupported file${unsupportedFiles.length > 1 ? 's' : ''}: ${unsupportedFiles.join(', ')}`,
+          `Unsupported file${unsupportedFiles.length > 1 ? 's' : ''}: ${message}`,
           { duration: 5000 }
         )
       }
@@ -266,11 +356,23 @@ export const ProjectExplorer = ({
       // Copy supported files to the target directory
       if (supportedFiles.length > 0) {
         const targetPath = getDropTargetPath(target, project.path)
+        const createdDirs = new Set<string>()
 
-        for (const file of supportedFiles) {
+        for (const { file, relativePath } of supportedFiles) {
           try {
+            // Create parent directories if needed
+            if (relativePath) {
+              const fullDirPath = joinOSPaths(targetPath, relativePath)
+              if (!createdDirs.has(fullDirPath)) {
+                await window.electron.mkdir(fullDirPath, { recursive: true })
+                createdDirs.add(fullDirPath)
+              }
+            }
+
             const arrayBuffer = await file.arrayBuffer()
-            const destinationPath = joinOSPaths(targetPath, file.name)
+            const destinationPath = relativePath
+              ? joinOSPaths(targetPath, relativePath, file.name)
+              : joinOSPaths(targetPath, file.name)
             await window.electron.writeFile(
               destinationPath,
               new Uint8Array(arrayBuffer)
@@ -298,7 +400,7 @@ export const ProjectExplorer = ({
         )
       }
     },
-    [readOnly, isFileSupportedForImport, project.path]
+    [readOnly, project.path]
   )
 
   const handleDragOverTarget = useCallback(
@@ -956,9 +1058,8 @@ export const ProjectExplorer = ({
             e.stopPropagation()
             externalDragCounter.current = 0
             setIsExternalDragOver(false)
-            const files = e.dataTransfer.files
-            if (files.length > 0) {
-              void handleExternalFileDrop(files, dragOverTarget)
+            if (e.dataTransfer.items.length > 0) {
+              void handleExternalFileDrop(e.dataTransfer, dragOverTarget)
             }
             setDragOverTarget(null)
           }
