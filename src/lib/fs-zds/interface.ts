@@ -17,9 +17,12 @@ export interface IStat {
   mtime: Date
   ctime: Date
   birthtime: Date
+  isDirectory: () => boolean
 }
 
 export interface IZooDesignStudioFS {
+  getPath: (type: 'appData' | 'documents' | 'userData') => Promise<string>
+  access: (path: string, bitflags: number) => Promise<undefined>
   cp: (
     src: string,
     dest: string,

@@ -1,6 +1,5 @@
 import { useLspContext } from '@src/components/LspProvider'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PROJECT_ENTRYPOINT,
@@ -43,6 +42,7 @@ import {
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
+import path from 'path'
 
 export function SystemIOMachineLogicListenerDesktop() {
   const requestedProjectName = useRequestedProjectName()
@@ -220,7 +220,7 @@ export function SystemIOMachineLogicListenerDesktop() {
 
         const folderName =
           systemIOActor.getSnapshot().context.lastProjectDeleteRequest.project
-        const folderPath = `${projectDirectoryPath}${fsManager.path.sep}${folderName}`
+        const folderPath = `${projectDirectoryPath}${path.sep}${folderName}`
         if (
           folderName !== NO_PROJECT_DIRECTORY &&
           (eventType === 'unlinkDir' || eventType === 'unlink') &&
@@ -252,16 +252,14 @@ export function SystemIOMachineLogicListenerDesktop() {
       if (promptMeta.type === PromptType.Create) {
         if (prompt.code === undefined) return
         // Strip the leading /
-        const indexFirstSlash = promptMeta.project.path.indexOf(
-          window.electron?.sep ?? ''
-        )
+        const indexFirstSlash = promptMeta.project.path.indexOf(path.sep)
         let requestedProjectName = promptMeta.project.path
         if (indexFirstSlash === 0) {
           requestedProjectName = requestedProjectName.slice(1)
         }
         requestedProjectName = requestedProjectName.slice(
           0,
-          requestedProjectName.indexOf(window.electron?.sep ?? '')
+          requestedProjectName.indexOf(path.sep)
         )
 
         systemIOActor.send({
@@ -286,7 +284,7 @@ export function SystemIOMachineLogicListenerDesktop() {
         const requestedFiles: RequestedKCLFile[] = Object.entries(
           outputsRecord
         ).map(([relativePath, fileContents]) => {
-          const lastSep = relativePath.lastIndexOf(window.electron?.sep ?? '')
+          const lastSep = relativePath.lastIndexOf(path.sep)
           let pathPart = relativePath.slice(0, lastSep)
           let filePart = relativePath.slice(lastSep)
           if (lastSep < 0) {
@@ -296,8 +294,7 @@ export function SystemIOMachineLogicListenerDesktop() {
           return {
             requestedCode: fileContents,
             requestedFileName: filePart,
-            requestedProjectName:
-              promptMeta.project.name + window.electron?.sep + pathPart,
+            requestedProjectName: promptMeta.project.name + path.sep + pathPart,
           }
         })
 
@@ -334,7 +331,7 @@ export function SystemIOMachineLogicListenerDesktop() {
       const requestedFiles: RequestedKCLFile[] = Object.entries(
         outputsRecord
       ).map(([relativePath, fileContents]) => {
-        const lastSep = relativePath.lastIndexOf(window.electron?.sep ?? '')
+        const lastSep = relativePath.lastIndexOf(path.sep)
         let pathPart = relativePath.slice(0, lastSep)
         let filePart = relativePath.slice(lastSep)
         if (lastSep < 0) {
@@ -345,7 +342,7 @@ export function SystemIOMachineLogicListenerDesktop() {
           requestedCode: fileContents,
           requestedFileName: filePart,
           requestedProjectName:
-            projectNameCurrentlyOpened + window.electron?.sep + pathPart,
+            projectNameCurrentlyOpened + path.sep + pathPart,
         }
       })
 

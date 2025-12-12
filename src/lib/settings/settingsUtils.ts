@@ -344,20 +344,13 @@ export async function loadAndValidateSettings(
   await initPromise
 
   // Load the app settings from the file system or localStorage.
-  const appSettingsPayload = window.electron
-    ? await readAppSettingsFile(window.electron)
-    : readLocalStorageAppSettingsFile()
+  const appSettingsPayload = await readAppSettingsFile()
 
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
   let settingsNext = createSettings()
 
-  // Because getting the default directory is async, we need to set it after
-  if (isDesktop() && window.electron) {
-    settingsNext.app.projectDirectory.default = await getInitialDefaultDir(
-      window.electron
-    )
-  }
+  settingsNext.app.projectDirectory.default = await getInitialDefaultDir()
 
   settingsNext = setSettingsAtLevel(
     settingsNext,
@@ -367,9 +360,7 @@ export async function loadAndValidateSettings(
 
   // Load the project settings if they exist
   if (projectPath) {
-    let projectSettings = window.electron
-      ? await readProjectSettingsFile(window.electron, projectPath)
-      : readLocalStorageProjectSettingsFile()
+    let projectSettings = await readProjectSettingsFile(projectPath)
 
     // An id was missing. Create one and write it to disk immediately.
     if (!err(projectSettings) && !projectSettings.settings?.meta?.id) {
@@ -384,18 +375,8 @@ export async function loadAndValidateSettings(
       const projectTomlString = serializeProjectConfiguration(projectSettings)
       if (err(projectTomlString))
         return Promise.reject(new Error('Failed to serialize project settings'))
-      if (window.electron) {
-        await writeProjectSettingsFile(
-          window.electron,
-          projectPath,
-          projectTomlString
-        )
-      } else {
-        localStorage.setItem(
-          localStorageProjectSettingsPath(),
-          projectTomlString
-        )
-      }
+
+      await writeProjectSettingsFile(projectPath, projectTomlString)
     }
 
     if (err(projectSettings))
@@ -416,22 +397,13 @@ export async function loadAndValidateSettings(
       const projectTomlString = serializeProjectConfiguration(
         settingsPayloadToProjectConfiguration(projectSettingsNew)
       )
+
       if (err(projectTomlString))
         return Promise.reject(
           new Error('Could not serialize project configuration')
         )
-      if (isDesktop() && window.electron) {
-        await writeProjectSettingsFile(
-          window.electron,
-          projectPath,
-          projectTomlString
-        )
-      } else {
-        localStorage.setItem(
-          localStorageProjectSettingsPath(),
-          projectTomlString
-        )
-      }
+
+      await writeProjectSettingsFile(projectPath, projectTomlString)
 
       projectSettings = {
         settings: projectSettingsNew,
@@ -461,18 +433,8 @@ export async function loadAndValidateSettings(
         return Promise.reject(
           new Error('Could not serialize project configuration')
         )
-      if (window.electron) {
-        await writeProjectSettingsFile(
-          window.electron,
-          projectPath,
-          projectTomlString
-        )
-      } else {
-        localStorage.setItem(
-          localStorageProjectSettingsPath(),
-          projectTomlString
-        )
-      }
+
+      await writeProjectSettingsFile(projectPath, projectTomlString)
 
       projectSettings =
         settingsPayloadToProjectConfiguration(projectSettingsNew)
@@ -508,11 +470,7 @@ export async function saveSettings(
   if (err(appTomlString)) return
 
   // Write the app settings.
-  if (window.electron) {
-    await writeAppSettingsFile(window.electron, appTomlString)
-  } else {
-    localStorage.setItem(localStorageAppSettingsPath(), appTomlString)
-  }
+  await writeAppSettingsFile(appTomlString)
 
   if (!projectPath) {
     // If we're not saving project settings, we're done.
@@ -527,15 +485,7 @@ export async function saveSettings(
   if (err(projectTomlString)) return
 
   // Write the project settings.
-  if (window.electron) {
-    await writeProjectSettingsFile(
-      window.electron,
-      projectPath,
-      projectTomlString
-    )
-  } else {
-    localStorage.setItem(localStorageProjectSettingsPath(), projectTomlString)
-  }
+  await writeProjectSettingsFile(projectPath, projectTomlString)
 }
 
 export function getChangedSettingsAtLevel(

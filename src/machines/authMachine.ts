@@ -291,11 +291,7 @@ async function getAndSyncStoredToken(input: {
     if (window.electron) {
       // has just logged in, update storage
       if (environmentName)
-        await writeEnvironmentConfigurationToken(
-          window.electron,
-          environmentName,
-          token
-        )
+        await writeEnvironmentConfigurationToken(environmentName, token)
     }
     return token
   }
@@ -358,9 +354,9 @@ async function logoutEnvironment(requestedDomain?: string) {
         }
 
         if (domain) {
-          await writeEnvironmentConfigurationToken(window.electron, domain, '')
+          await writeEnvironmentConfigurationToken(domain, '')
         }
-        await writeEnvironmentFile(window.electron, '')
+        await writeEnvironmentFile('')
         return Promise.resolve(null)
       }
     } catch (e) {

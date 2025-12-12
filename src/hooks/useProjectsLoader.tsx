@@ -15,10 +15,6 @@ export const useProjectsLoader = (deps?: [number]) => {
   const [projectsDir, setProjectsDir] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    // Useless on web, until we get fake filesystems over there.
-    if (!window.electron) return
-    const electron = window.electron
-
     if (deps && deps[0] === lastTs) return
 
     if (deps) {
@@ -33,7 +29,7 @@ export const useProjectsLoader = (deps?: [number]) => {
       setProjectsDir(_projectsDir)
 
       if (projectsDir) {
-        const _projectPaths = await listProjects(electron, configuration)
+        const _projectPaths = await listProjects(configuration)
         setProjectPaths(_projectPaths)
       }
     })().catch(trap)

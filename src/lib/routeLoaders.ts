@@ -1,5 +1,6 @@
 import type { LoaderFunction } from 'react-router-dom'
 import fsZds from '@src/lib/fs-zds'
+import path from 'path'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
@@ -41,13 +42,9 @@ export const fileLoader: LoaderFunction = async (
 
   const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
-  const heuristicProjectFilePath =
-    window.electron && params.id
-      ? params.id
-          .split(window.electron.sep)
-          .slice(0, -1)
-          .join(window.electron.sep)
-      : undefined
+  const heuristicProjectFilePath = params.id
+    ? params.id.split(path.sep).slice(0, -1).join(path.sep)
+    : undefined
 
   let settings = await loadAndValidateSettings(heuristicProjectFilePath)
 
@@ -66,13 +63,11 @@ export const fileLoader: LoaderFunction = async (
     const urlObj = new URL(routerData.request.url)
 
     if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = window.electron
-        ? (await getProjectInfo(window.electron, projectPath)).default_file
-        : ''
-      let fileExists = isDesktop()
-      if (currentFilePath && fileExists && window.electron) {
+      const fallbackFile = (await getProjectInfo(projectPath)).default_file
+      let fileExists = true
+      if (currentFilePath && fileExists) {
         try {
-          await window.electron.stat(currentFilePath)
+          await fsZds.stat(currentFilePath)
         } catch (e) {
           if (e === 'ENOENT') {
             fileExists = false
@@ -91,17 +86,9 @@ export const fileLoader: LoaderFunction = async (
         return redirect(requestUrlWithDefaultFile)
       }
 
-      if (
-        !fileExists ||
-        !currentFileName ||
-        !currentFilePath ||
-        !projectName ||
-        !window.electron
-      ) {
+      if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
         return redirect(
-          `${PATHS.FILE}/${encodeURIComponent(
-            isDesktop() ? fallbackFile : params.id + '/' + PROJECT_ENTRYPOINT
-          )}${new URL(routerData.request.url).search || ''}`
+          `${PATHS.FILE}/${encodeURIComponent(fallbackFile)}${new URL(routerData.request.url).search || ''}`
         )
       }
 
@@ -112,7 +99,7 @@ export const fileLoader: LoaderFunction = async (
 
       // If persistCode in localStorage is present, it'll persist that code
       // through *anything*. INTENDED FOR TESTS.
-      if (window.electron.process.env.NODE_ENV === 'test') {
+      if (window.electron?.process.env.NODE_ENV === 'test') {
         code = kclManager.localStoragePersistCode() || code
       }
 
@@ -140,9 +127,7 @@ export const fileLoader: LoaderFunction = async (
       readWriteAccess: true,
     }
 
-    const maybeProjectInfo = window.electron
-      ? await getProjectInfo(window.electron, projectPath)
-      : null
+    const maybeProjectInfo = await getProjectInfo(projectPath)
 
     const project = maybeProjectInfo ?? defaultProjectData
     await rustContext.sendOpenProject(project, currentFilePath)

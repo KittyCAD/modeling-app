@@ -107,15 +107,7 @@ export function EnvironmentDescription() {
                   onClick={() => {
                     const environment = env().VITE_ZOO_BASE_DOMAIN
                     if (environment) {
-                      if (!window.electron) {
-                        console.error("Can't access electron")
-                        return
-                      }
-                      writeEnvironmentConfigurationPool(
-                        window.electron,
-                        environment,
-                        ''
-                      )
+                      writeEnvironmentConfigurationPool(environment, '')
                         .then(() => {
                           window.location.reload()
                         })

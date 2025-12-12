@@ -3,7 +3,6 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
 import type { IElectronAPI } from '@root/interface'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
@@ -11,6 +10,7 @@ import {
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
+import path from 'path'
 
 const SETTINGS = '/settings'
 
@@ -36,9 +36,7 @@ export const PATHS = {
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 
 export async function getProjectMetaByRouteId(
-  readAppSettingsFile: (
-    electron: IElectronAPI
-  ) => Promise<DeepPartial<Configuration>>,
+  readAppSettingsFile: () => Promise<DeepPartial<Configuration>>,
   readLocalStorageAppSettingsFile: () => DeepPartial<Configuration> | Error,
   id?: string,
   configuration?: DeepPartial<Configuration> | Error
@@ -48,9 +46,7 @@ export async function getProjectMetaByRouteId(
   const isPlaywright = localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
   if (configuration === undefined || isPlaywright) {
-    configuration = window.electron
-      ? await readAppSettingsFile(window.electron)
-      : readLocalStorageAppSettingsFile()
+    configuration = await readAppSettingsFile()
   }
 
   if (err(configuration)) return Promise.reject(configuration)
@@ -60,7 +56,7 @@ export async function getProjectMetaByRouteId(
     return Promise.reject(new Error('No configuration found'))
   }
 
-  const route = parseProjectRoute(configuration, id, window?.electron?.path)
+  const route = parseProjectRoute(configuration, id, path)
 
   if (err(route)) return Promise.reject(route)
 
@@ -69,51 +65,39 @@ export async function getProjectMetaByRouteId(
 
 export function parseProjectRoute(
   configuration: DeepPartial<Configuration>,
-  id: string,
-  pathlib: PlatformPath | undefined
+  id: string
 ): ProjectRoute {
   let projectName = null
   let projectPath = ''
   let currentFileName = null
   let currentFilePath = null
   if (
-    pathlib &&
     configuration.settings?.project?.directory &&
     id.startsWith(configuration.settings.project.directory)
   ) {
-    const relativeToRoot = pathlib.relative(
+    const relativeToRoot = path.relative(
       configuration.settings.project.directory,
       id
     )
-    projectName = relativeToRoot.split(pathlib.sep)[0]
-    projectPath = pathlib.join(
+    projectName = relativeToRoot.split(path.sep)[0]
+    projectPath = path.join(
       configuration.settings.project.directory,
       projectName
     )
     projectName = projectName === '' ? null : projectName
   } else {
     projectPath = id
-    if (pathlib) {
-      if (pathlib.extname(id) === '.kcl') {
-        projectPath = pathlib.dirname(id)
-      }
-      projectName = pathlib.basename(projectPath)
-    } else {
-      if (id.endsWith('.kcl')) {
-        projectPath = '/browser'
-        projectName = 'browser'
-      }
+    if (path.extname(id) === '.kcl') {
+      projectPath = path.dirname(id)
     }
+    projectName = path.basename(projectPath)
   }
-  if (pathlib) {
-    if (projectPath !== id) {
-      currentFileName = pathlib.basename(id)
-      currentFilePath = id
-    }
-  } else {
-    currentFileName = 'main.kcl'
+
+  if (projectPath !== id) {
+    currentFileName = path.basename(id)
     currentFilePath = id
   }
+
   return {
     projectName: projectName,
     projectPath: projectPath,
@@ -148,7 +132,7 @@ export function joinRouterPaths(...parts: string[]): string {
  * or \dog\cat on POSIX
  */
 export function joinOSPaths(...parts: string[]): string {
-  const sep = window.electron?.sep || '/'
+  const sep = path.sep
   const regexSep = sep === '/' ? '/' : '\\'
   return (
     (sep === '\\' ? '' : sep) + // Windows absolute paths should not be prepended with a separator, they start with the drive name
@@ -170,8 +154,8 @@ export function safeEncodeForRouterPaths(dynamicValue: string): string {
  * \dog\cat\house.kcl gives you house.kcl
  * Works on all OS!
  */
-export function getStringAfterLastSeparator(path: string): string {
-  return path.split(fsManager.path.sep).pop() || ''
+export function getStringAfterLastSeparator(targetPath: string): string {
+  return targetPath.split(path.sep).pop() || ''
 }
 
 /**
@@ -184,10 +168,10 @@ export function getStringAfterLastSeparator(path: string): string {
  *
  */
 export function getProjectDirectoryFromKCLFilePath(
-  path: string,
+  targetPath: string,
   applicationProjectDirectory: string
 ): string {
-  const replacedPath = path.replace(applicationProjectDirectory, '')
+  const replacedPath = targetPath.replace(applicationProjectDirectory, '')
   const [iAmABlankString, projectDirectory] = desktopSafePathSplit(replacedPath)
   if (iAmABlankString === '') {
     return projectDirectory
@@ -224,9 +208,9 @@ export function parentPathRelativeToApplicationDirectory(
  * Use this for only web related paths not paths in OS or on disk
  * e.g. document.location.pathname
  */
-export function webSafePathSplit(path: string): string[] {
+export function webSafePathSplit(targetPath: string): string[] {
   const webSafeSep = '/'
-  return path.split(webSafeSep)
+  return targetPath.split(webSafeSep)
 }
 
 export function webSafeJoin(paths: string[]): string {
@@ -237,14 +221,12 @@ export function webSafeJoin(paths: string[]): string {
 /**
  * Splits any paths safely based on the runtime
  */
-export function desktopSafePathSplit(path: string): string[] {
-  return window.electron
-    ? path.split(window.electron.sep)
-    : webSafePathSplit(path)
+export function desktopSafePathSplit(targetPath: string): string[] {
+  return targetPath.split(path.sep)
 }
 
 export function desktopSafePathJoin(paths: string[]): string {
-  return window.electron ? paths.join(window.electron.sep) : webSafeJoin(paths)
+  return paths.join(path.sep)
 }
 
 /**
@@ -305,7 +287,7 @@ export const isExtensionARelevantExtension = (
 export function getFilePathRelativeToProject(
   absoluteFilePath: string,
   projectName: string,
-  sep = window.electron?.sep
+  sep = path.sep
 ) {
   // Gotcha: below we're gonna look for the index of the project name,
   // but what if the project name happens to be in the path earlier than the real one?

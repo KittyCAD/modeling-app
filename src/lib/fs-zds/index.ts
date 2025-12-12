@@ -9,6 +9,7 @@ function isAnFsBacking(x: unknown): x is IZooDesignStudioFS {
     x !== null &&
     'detach' in x &&
     'attach' in x &&
+    'getPath' in x &&
     'copyFile' in x &&
     'cp' in x &&
     'readFile' in x &&
@@ -68,6 +69,13 @@ export const useFsViaModuleImport = async (backing: StorageBacking) => {
 
   // Do not return the object to be potentially misused by consumers.
   // If you want it, use `useFsViaObject` instead.
+}
+
+export const fsZdsConstants = {
+  F_OK: 0,
+  X_OK: 1,
+  W_OK: 2,
+  R_OK: 3,
 }
 
 // This reference is modified by `useFsViaModuleImport`, to support using fs

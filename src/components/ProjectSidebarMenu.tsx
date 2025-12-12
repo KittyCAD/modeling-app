@@ -20,6 +20,8 @@ import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import type { IndexLoaderData } from '@src/lib/types'
 
+import path from 'path'
+
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
   project?: IndexLoaderData['project']
@@ -66,7 +68,7 @@ function AppLogoLink({
     "relative h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
-  return isDesktop() ? (
+  return (
     <Link
       data-testid="app-logo"
       onClick={() => {
@@ -79,11 +81,6 @@ function AppLogoLink({
       <Logo data-onboarding-id="app-logo" className={logoClassName} />
       <span className="sr-only">{APP_NAME}</span>
     </Link>
-  ) : (
-    <div className={wrapperClassName} data-testid="app-logo">
-      <Logo data-onboarding-id="app-logo" className={logoClassName} />
-      <span className="sr-only">{APP_NAME}</span>
-    </div>
   )
 }
 
@@ -241,10 +238,9 @@ function ProjectMenuPopover({
   const breadCrumb = {
     projectName: project?.name || '',
     sep: '/',
-    filename:
-      window.electron && file?.name
-        ? file.name.slice(file.name.lastIndexOf(window.electron.path.sep) + 1)
-        : APP_NAME,
+    filename: file?.name
+      ? file.name.slice(file.name.lastIndexOf(path.sep) + 1)
+      : APP_NAME,
   }
   const breadCrumbTooltip = `${breadCrumb.projectName}${breadCrumb.sep}${breadCrumb.filename}`
 
