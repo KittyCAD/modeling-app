@@ -229,6 +229,36 @@ impl Context {
             .map_err(|e| format!("Could not serialize exit sketch result. {TRUE_BUG} Details: {e}"))?)
     }
 
+    /// Delete sketch.
+    #[wasm_bindgen]
+    pub async fn delete_sketch(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
+
+        let ctx = self
+            .create_executor_ctx(settings, None, true)
+            .map_err(|e| format!("Could not create KCL executor context for delete sketch. {TRUE_BUG} Details: {e}"))?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let result = guard
+            .delete_sketch(&ctx, version, sketch)
+            .await
+            .map_err(|e| format!("Failed to delete sketch: {:?}", e))?;
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize delete sketch result. {TRUE_BUG} Details: {e}"))?)
+    }
+
     /// Add segment to sketch.
     #[wasm_bindgen]
     pub async fn add_segment(

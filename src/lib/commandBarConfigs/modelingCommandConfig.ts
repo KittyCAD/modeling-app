@@ -612,9 +612,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       twistCenter: {
-        inputType: 'kcl',
-        allowArrays: true,
+        inputType: 'vector2d',
         required: false,
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
       },
       method: {
         inputType: 'options',
