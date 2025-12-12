@@ -269,11 +269,7 @@ export const settingsMachine = setup({
         const relevantSetting = (s: SettingsType) => {
           return (
             s.modeling?.defaultUnit?.current !==
-              context.modeling.defaultUnit.current ||
-            s.modeling.showScaleGrid.current !==
-              context.modeling.showScaleGrid.current ||
-            s.modeling?.highlightEdges.current !==
-              context.modeling.highlightEdges.current
+            context.modeling.defaultUnit.current
           )
         }
 
@@ -287,8 +283,6 @@ export const settingsMachine = setup({
         const shouldExecute =
           kclManager !== undefined &&
           (event.type === 'set.modeling.defaultUnit' ||
-            event.type === 'set.modeling.showScaleGrid' ||
-            event.type === 'set.modeling.highlightEdges' ||
             allSettingsIncludesUnitChange ||
             resetSettingsIncludesUnitChange)
 
@@ -379,6 +373,14 @@ export const settingsMachine = setup({
       const rootContext = self.system.get('root')?.getSnapshot().context
       const sceneInfra = rootContext?.sceneInfra
       sceneInfra?.camControls?.setEngineCameraProjection(newCurrentProjection)
+    },
+    setEngineHighlightEdges: ({ context }) => {
+      const engineCommandManager = context.kclManager.engineCommandManager
+      if (engineCommandManager) {
+        engineCommandManager
+          .setHighlightEdges(context.modeling.highlightEdges.current)
+          .catch(reportRejection)
+      }
     },
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
       type: 'update.themeWatcher',
@@ -505,7 +507,11 @@ export const settingsMachine = setup({
         'set.modeling.highlightEdges': {
           target: 'persisting settings',
 
-          actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
+          actions: [
+            'setSettingAtLevel',
+            'toastSuccess',
+            'setEngineHighlightEdges',
+          ],
         },
 
         'Reset settings': {
@@ -517,6 +523,7 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setEngineHighlightEdges',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -534,6 +541,7 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setEngineHighlightEdges',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -614,6 +622,7 @@ export const settingsMachine = setup({
             'setThemeClass',
             'setEngineTheme',
             'setClientTheme',
+            'setEngineHighlightEdges',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -648,6 +657,7 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'Execute AST',
             'setClientTheme',
+            'setEngineHighlightEdges',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
