@@ -1443,10 +1443,10 @@ fn substitute_sketch_var_in_unsolved_expr(
                     source_ranges.to_vec(),
                 )));
             };
-            let solver_var_id = var_id.to_constraint_id(source_ranges.first().copied().unwrap_or_default())?;
             let freedom = if solve_outcome.unsatisfied.contains(&var_id.0) {
                 Freedom::Conflict
             } else if let Some(analysis) = analysis {
+                let solver_var_id = var_id.to_constraint_id(source_ranges.first().copied().unwrap_or_default())?;
                 if analysis.underconstrained.contains(&solver_var_id) {
                     Freedom::Free
                 } else {
