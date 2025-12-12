@@ -298,7 +298,7 @@ mod tests {
   twistAngleStep?: number(Angle),
   twistCenter?: Point2d,
   method?: string,
-  showSeams?: bool,
+  hideSeams?: bool,
 ): [Solid; 1+]"#
         );
     }

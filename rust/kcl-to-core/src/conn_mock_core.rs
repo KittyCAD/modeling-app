@@ -197,7 +197,8 @@ impl EngineConnection {
                 faces: _, // Engine team: start using this once the frontend and engine both use it.
                 opposite: _,
                 extrude_method: _,
-                show_seams: _,
+                body_type: _,
+                merge_coplanar_faces: _,
             }) => {
                 format!(
                     r#"
