@@ -8,6 +8,7 @@
   --_delay: 200ms;
   --_p-block: 4px;
   --_bg: var(--chalkboard-10);
+  --_border: var(--chalkboard-20);
   --_shadow-alpha: 8%;
   --_theme-alpha: 0.15;
 
@@ -29,14 +30,15 @@
   padding: var(--_p-block) calc(2 * var(--_p-block));
   margin: 0;
   background: var(--_bg);
+  border: var(--_border) 1px solid;
   @apply text-chalkboard-110;
   will-change: filter;
-  filter: drop-shadow(0 1px 2px hsl(0 0% 0% / var(--_shadow-alpha)))
-    drop-shadow(0 4px 6px hsl(0 0% 0% / calc(var(--_shadow-alpha) / 2)));
+  filter: drop-shadow(0 1px 2px hsl(0 0% 0% / var(--_shadow-alpha))) drop-shadow(0 4px 6px hsl(0 0% 0% / calc(var(--_shadow-alpha) / 2)));
 }
 
 :global(.dark) .tooltip {
   --_bg: var(--chalkboard-90);
+  --_border: var(--chalkboard-80);
   --_theme-alpha: 40%;
   --_shadow-alpha: 16%;
   @apply text-chalkboard-10;
@@ -51,14 +53,14 @@
   position: relative;
 }
 
-:is(:hover, :active) > .tooltipWrapper {
+:is(:hover, :active)>.tooltipWrapper {
   visibility: visible;
   opacity: 1;
   transition-delay: var(--_delay);
 }
 
-:is(:focus-visible) > .tooltipWrapper.withFocus,
-:focus-within > .tooltipWrapper.withFocus {
+:is(:focus-visible)>.tooltipWrapper.withFocus,
+:focus-within>.tooltipWrapper.withFocus {
   visibility: visible;
   opacity: 1;
 }
@@ -143,15 +145,11 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+
   /* TOP || BLOCK-START */
-  :has(
-      > :is(
-          .tooltipWrapper.top,
-          .tooltipWrapper.top-left,
-          .tooltipWrapper.top-right
-        )
-    ):not(:hover, :active)
-    .tooltipWrapper {
+  :has(> :is(.tooltipWrapper.top,
+      .tooltipWrapper.top-left,
+      .tooltipWrapper.top-right)):not(:hover, :active) .tooltipWrapper {
     --_y: 3px;
   }
 
@@ -161,14 +159,9 @@
   }
 
   /* BOTTOM || BLOCK-END */
-  :has(
-      > :is(
-          .tooltipWrapper.bottom,
-          .tooltipWrapper.bottom-left,
-          .tooltipWrapper.bottom-right
-        )
-    ):not(:hover, :active)
-    .tooltipWrapper {
+  :has(> :is(.tooltipWrapper.bottom,
+      .tooltipWrapper.bottom-left,
+      .tooltipWrapper.bottom-right)):not(:hover, :active) .tooltipWrapper {
     --_y: -3px;
   }
 
