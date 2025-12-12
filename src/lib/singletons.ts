@@ -31,6 +31,13 @@ import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { initialiseWasm } from '@src/lang/wasmUtils'
+import { AppMachineEventType } from '@src/lib/types'
+import {
+  defaultLayout,
+  defaultLayoutConfig,
+  saveLayout,
+  type Layout,
+} from '@src/lib/layout'
 
 /**
  * THE bundle of WASM, a cornerstone of our app. We use this for:
@@ -59,32 +66,6 @@ export const kclManager = new KclManager(engineCommandManager, initPromise, {
   rustContext,
   sceneInfra,
 })
-
-// Initialize KCL version
-import { setKclVersion } from '@src/lib/kclVersion'
-import { AppMachineEventType } from '@src/lib/types'
-import {
-  defaultLayout,
-  defaultLayoutConfig,
-  saveLayout,
-  type Layout,
-} from '@src/lib/layout'
-import { processEnv } from '@src/env'
-
-initPromise
-  .then(() => {
-    if (processEnv()?.VITEST) {
-      const message =
-        'singletons is trying to call initPromise and setKclVersion. This will be blocked in VITEST runtimes.'
-      console.log(message)
-      return
-    }
-
-    setKclVersion(kclManager.kclVersion)
-  })
-  .catch((e) => {
-    console.error(e)
-  })
 
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.

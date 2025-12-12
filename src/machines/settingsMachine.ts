@@ -219,6 +219,7 @@ export const settingsMachine = setup({
       const sceneInfra = kclManager.singletons.sceneInfra
       const sceneEntitiesManager = kclManager.sceneEntitiesManager
 
+      debugger
       if (!sceneInfra || !sceneEntitiesManager || !kclManager) {
         return
       }

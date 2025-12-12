@@ -106,6 +106,8 @@ import {
   setAstEffect,
   updateAstAnnotation,
 } from '@src/editor/plugins/ast'
+import { setKclVersion } from '@src/lib/kclVersion'
+import { sceneEntitiesManager } from '@src/lib/singletons'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -263,7 +265,7 @@ export class KclManager extends EventTarget {
   private _copilotEnabled: boolean = true
   private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
-  private _kclVersion: string | undefined = undefined
+  private _kclVersion: string
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
@@ -326,6 +328,7 @@ export class KclManager extends EventTarget {
   get kclVersion() {
     if (this._kclVersion === undefined) {
       this._kclVersion = getKclVersion()
+      setKclVersion(this.kclVersion)
     }
     return this._kclVersion
   }
@@ -380,6 +383,12 @@ export class KclManager extends EventTarget {
 
   set sceneEntitiesManager(s: SceneEntities) {
     this._sceneEntitiesManager = s
+  }
+  get sceneEntitiesManager() {
+    if (!this._sceneEntitiesManager) {
+      throw new Error('Requested SceneEntities too soon from within KclManager')
+    }
+    return this._sceneEntitiesManager
   }
 
   set isExecuting(isExecuting) {
@@ -455,6 +464,7 @@ export class KclManager extends EventTarget {
 
     this._wasmInstancePromise
       .then(async (wasmInstance) => {
+        this._kclVersion = getKclVersion()
         if (typeof wasmInstance === 'string') {
           this.wasmInitFailed = true
         } else {
@@ -660,7 +670,7 @@ export class KclManager extends EventTarget {
         await lintAst({
           ast,
           sourceCode: this.code,
-          instance: this.singletons.rustContext.getRustInstance(),
+          instance: await this._wasmInstancePromise,
         })
       )
       if (this._sceneEntitiesManager) {

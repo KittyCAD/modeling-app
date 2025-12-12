@@ -138,14 +138,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             }),
         },
       },
-      onSubmit: (data) => {
+      onSubmit: async (data) => {
         if (typeof data === 'object' && 'level' in data) {
           const newAst = setExperimentalFeatures(
             commandProps.kclManager.code,
             {
               type: data.level,
             },
-            commandProps.kclManager.wasmInstance
+            await commandProps.kclManager.wasmInstancePromise
           )
           if (err(newAst)) {
             toast.error(

@@ -505,6 +505,7 @@ export class SceneEntities {
     const camera = this.sceneInfra.camControls.camera
     if (camera instanceof OrthographicCamera) {
       const settings = this.getSettings?.()
+      console.log('update infinte grid says this is the settings', settings)
       if (settings) {
         const gridRenderer = this.sceneInfra.scene
           .getObjectByName(AXIS_GROUP)

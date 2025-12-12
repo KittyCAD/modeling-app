@@ -44,11 +44,11 @@ export function ExperimentalFeaturesMenu() {
                   <li key={level.type} className="contents">
                     <button
                       className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
-                      onClick={() => {
+                      onClick={async () => {
                         const newAst = setExperimentalFeatures(
                           kclManager.code,
                           level,
-                          kclManager.wasmInstance
+                          await kclManager.wasmInstancePromise
                         )
                         if (err(newAst)) {
                           toast.error(
