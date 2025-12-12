@@ -12,7 +12,6 @@ import toast from 'react-hot-toast'
 
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
@@ -59,8 +58,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   }, [first, navigation, location.pathname])
 
   useEffect(() => {
-    if (!window.electron) return
-    getAppSettingsFilePath(window.electron).then(setSettingsPath).catch(trap)
+    getAppSettingsFilePath().then(setSettingsPath).catch(trap)
   }, [])
 
   useFileSystemWatcher(
@@ -163,7 +161,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // wish to change the behavior in case anything else uses it.
       // Go home.
       if (loadedProject?.project?.path) {
-        if (!(await fsManager.exists(loadedProject?.project?.path))) {
+        if (!(await fsZds.stat(loadedProject?.project?.path))) {
           void navigate(PATHS.HOME)
           return
         }

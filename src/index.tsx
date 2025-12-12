@@ -1,4 +1,13 @@
 import { useFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+// Earliest as possible, configure the fs layer.
+// In the future we can have the user switch between them at run-time, but
+// for now, there is no intention.
+if (window.electron) {
+  useFsViaModuleImport({ type: StorageName.ElectronFS, options: {} })
+} else {
+  useFsViaModuleImport({ type: StorageName.OPFS, options: {} })
+}
+
 import { AppStreamProvider } from '@src/AppState'
 import ReactDOM from 'react-dom/client'
 import toast, { Toaster } from 'react-hot-toast'
@@ -54,15 +63,6 @@ if (!window.electron) {
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
-
-// Earliest as possible, configure the fs layer.
-// In the future we can have the user switch between them at run-time, but
-// for now, there is no intention.
-if (window.electron) {
-  useFsViaModuleImport({ type: StorageName.ElectronFS, options: {} })
-} else {
-  useFsViaModuleImport({ type: StorageName.OPFS, options: {} })
-}
 
 root.render(
   <HotkeysProvider>

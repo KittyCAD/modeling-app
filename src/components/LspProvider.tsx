@@ -27,7 +27,6 @@ import { LspWorker } from '@src/editor/plugins/lsp/types'
 import Worker from '@src/editor/plugins/lsp/worker.ts?worker'
 import { wasmUrl } from '@src/lang/wasmUtils'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import { kclManager } from '@src/lib/singletons'
@@ -122,19 +121,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     // We need a token for authenticating the server.
     token,
   ])
-
-  useMemo(() => {
-    if (!isDesktop() && isKclLspReady && kclLspClient && kclManager.code) {
-      kclLspClient.textDocumentDidOpen({
-        textDocument: {
-          uri: `file:///${PROJECT_ENTRYPOINT}`,
-          languageId: 'kcl',
-          version: 1,
-          text: kclManager.code,
-        },
-      })
-    }
-  }, [kclLspClient, isKclLspReady])
 
   // Here we initialize the plugin which will start the client.
   // Now that we have multi-file support the name of the file is a dep of

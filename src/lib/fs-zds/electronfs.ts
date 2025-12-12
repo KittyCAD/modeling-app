@@ -9,6 +9,8 @@ export type ElectronFSOptions = {}
 
 // trust me
 const impl: IZooDesignStudioFS = {
+  getPath: window.electron?.getPath,
+  access: window.electron?.access,
   cp: window.electron?.cp,
   readFile: window.electron?.readFile,
   rename: window.electron?.rename,

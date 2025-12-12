@@ -5,6 +5,8 @@ const noopAsync = async (..._args: any[]) => Promise.reject()
 export type NoopFSOptions = {}
 
 const impl: IZooDesignStudioFS = {
+  access: noopAsync,
+  getPath: noopAsync,
   cp: noopAsync,
   readFile: noopAsync,
   rename: noopAsync,

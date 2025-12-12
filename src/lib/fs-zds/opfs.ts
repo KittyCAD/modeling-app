@@ -1,24 +1,29 @@
 // The Origin Private File System. Used for browser environments.
 import { IZooDesignStudioFS, IStat } from './interface'
+import path from 'path'
 
-const noopAsync = async (..._args: any[]) => Promise.reject()
+const noopAsync = async (..._args: any[]) =>
+  Promise.reject(new Error('unimplemented'))
 export type OPFSOptions = {}
 
 // NOTE TO SELF OR ANYONE ELSE IN CASE: RETURN PROMISE.REJECT IN FAILURE CASES!
-// MOST OF THIS CODE IS USING NIL VALUES!
 
 const walk = async (
   targetPath: string,
   onTargetNode?: (part: string) => void
 ): Promise<undefined | FileSystemDirectoryHandle | FileSystemFileHandle> => {
   let current = await navigator.storage.getDirectory()
-  let cwd = '/'
+  let cwd = ''
+  let looped = true
+  let currentChanged = true
 
-  while (true) {
+  while (looped && currentChanged) {
     let entries = await current.entries()
+    looped = false
+    currentChanged = false
     for await (let [name, handle] of entries) {
-      const currentPath = cwd + name
-      console.log(currentPath)
+      looped = true
+      const currentPath = cwd + path.sep + name
       if (targetPath.startsWith(currentPath) === false) {
         continue
       }
@@ -27,19 +32,23 @@ const walk = async (
         onTargetNode(name)
       }
 
-      if (handle instanceof FileSystemDirectoryHandle) {
-        cwd = currentPath
-        current = handle
-        break
-      }
       if (targetPath === currentPath) {
         return handle
       }
+
+      if (handle instanceof FileSystemDirectoryHandle) {
+        cwd = currentPath
+        current = handle
+        currentChanged = true
+        break
+      }
+
       return undefined
     }
   }
 
-  return current
+  // We never found it. The result should be found in the loop.
+  return undefined
 }
 
 const stat = async (path: string): Promise<IStat> => {
@@ -69,6 +78,7 @@ const stat = async (path: string): Promise<IStat> => {
       mtime: new Date(file.lastModified),
       ctime: new Date(file.lastModified),
       birthtime: new Date(file.lastModified),
+      isDirectory: () => false,
     }
   }
 
@@ -92,6 +102,7 @@ const stat = async (path: string): Promise<IStat> => {
     mtime: new Date(),
     ctime: new Date(),
     birthtime: new Date(),
+    isDirectory: () => true,
   }
 }
 
@@ -112,31 +123,37 @@ type ReadFileReturn<T> = T extends 'utf8' | { encoding: 'utf-8' }
   : Uint8Array
 
 const readFile = async <T extends ReadFileOptions>(
-  path: string,
+  targetPath: string,
   options?: T
 ): Promise<ReadFileReturn<T>> => {
-  const handle = await walk(path)
+  const handle = await walk(targetPath)
   if (handle === undefined) return Promise.reject('ENOENT')
 
   if (handle instanceof FileSystemFileHandle) {
     const file = await handle.getFile()
-    if (options === 'utf8' || options?.encoding === 'utf-8') {
+    if (
+      options === 'utf8' ||
+      options === 'utf-8' ||
+      options?.encoding === 'utf-8'
+    ) {
       return (await file.text()) as ReadFileReturn<T>
     }
 
-    return (await file.bytes()) as ReadFileReturn<T>
+    return (await Uint8Array.from(file.arrayBuffer())) as ReadFileReturn<T>
   }
 
   return Promise.reject()
 }
 
-const mkdir = async (path: string, options?: { recursive: boolean }) => {
-  const parts = path.split('/')
+const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
+  const parts = targetPath.split(path.sep)
 
   if (options?.recursive === true) {
     let current = navigator.storage.getDirectory()
     for (const part of parts) {
-      current = (await current).getDirectoryHandle(part, { create: true })
+      // Indicative we're at /
+      if (part === '') continue
+      current = await (await current).getDirectoryHandle(part, { create: true })
     }
     return undefined
   }
@@ -150,13 +167,25 @@ const mkdir = async (path: string, options?: { recursive: boolean }) => {
   return undefined
 }
 
+const rm = async (targetPath: string, options?: { recursive: boolean }) => {
+  const dirName = path.dirname(targetPath)
+  const baseName = path.basename(targetPath)
+  const handle = await walk(dirName)
+  if (handle === undefined) return Promise.reject('ENOENT')
+  if (!(handle instanceof FileSystemDirectoryHandle))
+    return Promise.reject('EISNOTDIR')
+  return await handle.removeEntry(baseName, {
+    recursive: options?.recursive ?? false,
+  })
+}
+
 const writeFile = async (
-  path: string,
+  targetPath: string,
   data: Uint8Array<ArrayBuffer>,
   options?: any
 ) => {
-  const parts = path.split('/')
-  const parent = parts.slice(0, -1).join('/')
+  const parts = targetPath.split(path.sep)
+  const parent = parts.slice(0, -1).join(path.sep)
   const handle = await walk(parent)
   if (handle === undefined) return Promise.reject('ENOENT')
   if (handle instanceof FileSystemFileHandle) return Promise.reject('EISFILE')
@@ -169,7 +198,18 @@ const writeFile = async (
   return undefined
 }
 
+const getPath: IZooDesignStudioFS['getPath'] = (type) => {
+  return path.sep + type
+}
+
+// In OPFS the system always has read-write permissions.
+const access = async (_path: src, _bitflags: number): Promise<undefined> => {
+  return undefined
+}
+
 const impl: IZooDesignStudioFS = {
+  getPath,
+  access,
   cp: noopAsync,
   readFile,
   rename: noopAsync,
@@ -177,7 +217,7 @@ const impl: IZooDesignStudioFS = {
   readdir,
   stat,
   mkdir,
-  rm: noopAsync,
+  rm,
   detach: async () => {},
   attach: async () => {},
 }

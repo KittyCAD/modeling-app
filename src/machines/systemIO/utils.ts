@@ -11,6 +11,8 @@ import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapsh
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
+import path from 'path'
+import fsZds from '@src/lib/fs-zds'
 
 export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = 'read folders from project directory',
@@ -229,18 +231,16 @@ export const determineProjectFilePathFromPrompt = (
 
   let finalPath = promptNameAsDirectory
 
-  if (isDesktop()) {
-    // If it's not a new project, create a subdir in the current one.
-    if (args.existingProjectName) {
-      const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(context, {
-        projectFolderName: args.existingProjectName,
-      })
-      const uniqueSubDirectoryName = getUniqueProjectName(
-        promptNameAsDirectory,
-        firstLevelDirectories
-      )
-      finalPath = joinOSPaths(args.existingProjectName, uniqueSubDirectoryName)
-    }
+  // If it's not a new project, create a subdir in the current one.
+  if (args.existingProjectName) {
+    const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(context, {
+      projectFolderName: args.existingProjectName,
+    })
+    const uniqueSubDirectoryName = getUniqueProjectName(
+      promptNameAsDirectory,
+      firstLevelDirectories
+    )
+    finalPath = joinOSPaths(args.existingProjectName, uniqueSubDirectoryName)
   }
 
   return finalPath
@@ -267,7 +267,7 @@ export const collectProjectFiles = async (args: {
     }
   })
   let basePath = ''
-  if (isDesktop() && args.projectContext?.children) {
+  if (args.projectContext?.children) {
     // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
     basePath = args.projectContext?.path
     const filePromises: Promise<FileMeta | null>[] = []
@@ -284,19 +284,14 @@ export const collectProjectFiles = async (args: {
 
         const absolutePathToFileNameWithExtension = file.path
         const fileNameWithExtension =
-          window.electron?.path.relative(
-            basePath,
-            absolutePathToFileNameWithExtension
-          ) ?? ''
+          path.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
 
-        const filePromise = window.electron
-          ?.readFile(absolutePathToFileNameWithExtension)
+        const filePromise = fsZds
+          .readFile(absolutePathToFileNameWithExtension)
           .then((file): FileMeta => {
             uploadSize += file.byteLength
             const decoder = new TextDecoder('utf-8')
-            const fileType = window.electron?.path.extname(
-              absolutePathToFileNameWithExtension
-            )
+            const fileType = path.extname(absolutePathToFileNameWithExtension)
             if (fileType === FILE_EXT) {
               return {
                 type: 'kcl',

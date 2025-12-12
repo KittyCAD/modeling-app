@@ -33,13 +33,11 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   useEffect(() => {
     if (!didListEnvironments) {
       didListEnvironments = true
-      if (window.electron) {
-        listAllEnvironmentsWithTokens(window.electron)
-          .then((environmentsWithTokens) => {
-            setHasMultipleEnvironments(environmentsWithTokens.length > 1)
-          })
-          .catch(reportRejection)
-      }
+      listAllEnvironmentsWithTokens()
+        .then((environmentsWithTokens) => {
+          setHasMultipleEnvironments(environmentsWithTokens.length > 1)
+        })
+        .catch(reportRejection)
     }
   }, [])
 
