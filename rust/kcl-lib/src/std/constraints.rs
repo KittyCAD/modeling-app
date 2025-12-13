@@ -14,7 +14,10 @@ use crate::{
 #[cfg(feature = "artifact-graph")]
 use crate::{
     execution::ArtifactId,
-    front::{Coincident, Constraint, Horizontal, LinesEqualLength, Object, ObjectId, ObjectKind, Parallel, Vertical},
+    front::{
+        Coincident, Constraint, Horizontal, LinesEqualLength, Object, ObjectId, ObjectKind, Parallel, Perpendicular,
+        Vertical,
+    },
 };
 
 pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -1025,7 +1028,48 @@ pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclV
     Ok(KclValue::none())
 }
 
+#[derive(Debug, Clone, Copy)]
+pub(crate) enum LinesAtAngleKind {
+    Parallel,
+    Perpendicular,
+}
+
+impl LinesAtAngleKind {
+    pub fn to_function_name(self) -> &'static str {
+        match self {
+            LinesAtAngleKind::Parallel => "parallel",
+            LinesAtAngleKind::Perpendicular => "perpendicular",
+        }
+    }
+
+    fn to_solver_angle(self) -> kcl_ezpz::datatypes::AngleKind {
+        match self {
+            LinesAtAngleKind::Parallel => kcl_ezpz::datatypes::AngleKind::Parallel,
+            LinesAtAngleKind::Perpendicular => kcl_ezpz::datatypes::AngleKind::Perpendicular,
+        }
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    fn constraint(&self, lines: Vec<ObjectId>) -> Constraint {
+        match self {
+            LinesAtAngleKind::Parallel => Constraint::Parallel(Parallel { lines }),
+            LinesAtAngleKind::Perpendicular => Constraint::Perpendicular(Perpendicular { lines }),
+        }
+    }
+}
+
 pub async fn parallel(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    lines_at_angle(LinesAtAngleKind::Parallel, exec_state, args).await
+}
+pub async fn perpendicular(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    lines_at_angle(LinesAtAngleKind::Perpendicular, exec_state, args).await
+}
+
+async fn lines_at_angle(
+    angle_kind: LinesAtAngleKind,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<KclValue, KclError> {
     let lines: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "lines",
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
@@ -1152,23 +1196,23 @@ pub async fn parallel(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         line1_p1_y.to_constraint_id(range)?,
     );
     let solver_line1 = kcl_ezpz::datatypes::LineSegment::new(solver_line1_p0, solver_line1_p1);
-    let constraint =
-        kcl_ezpz::Constraint::LinesAtAngle(solver_line0, solver_line1, kcl_ezpz::datatypes::AngleKind::Parallel);
+    let constraint = kcl_ezpz::Constraint::LinesAtAngle(solver_line0, solver_line1, angle_kind.to_solver_angle());
     #[cfg(feature = "artifact-graph")]
     let constraint_id = exec_state.next_object_id();
     // Save the constraint to be used for solving.
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "equalLength() can only be used inside a sketch block".to_owned(),
+            format!(
+                "{}() can only be used inside a sketch block",
+                angle_kind.to_function_name()
+            ),
             vec![args.source_range],
         )));
     };
     sketch_state.solver_constraints.push(constraint);
     #[cfg(feature = "artifact-graph")]
     {
-        let constraint = crate::front::Constraint::Parallel(Parallel {
-            lines: vec![unsolved0.object_id, unsolved1.object_id],
-        });
+        let constraint = angle_kind.constraint(vec![unsolved0.object_id, unsolved1.object_id]);
         sketch_state.sketch_constraints.push(constraint_id);
         track_constraint(constraint_id, constraint, exec_state, &args);
     }
