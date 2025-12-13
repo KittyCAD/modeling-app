@@ -5,8 +5,8 @@
 s1 = sketch(on = XY) {
   // Create a line segment
   line4 = sketch2::line(
-    start = [var, var],
-    end = [var, var]
+    start = [var 1mm, var 2mm],
+    end = [var 3mm, var 4mm]
   )
   
   // Constrain the line segment endpoints
@@ -35,10 +35,11 @@ s1 = sketch(on = XY) {
   // which means its y-coordinate should be 0
 }
 
-assert(s1.line4.start.at[0], isEqualTo = 0)
-assert(s1.line4.start.at[1], isEqualTo = 0)
-assert(s1.line4.end.at[0], isEqualTo = 10)
-assert(s1.line4.end.at[1], isEqualTo = 0)
+// Use tolerance to account for floating-point precision in solver results
+assert(s1.line4.start.at[0], isEqualTo = 0, tolerance = 0.000001)
+assert(s1.line4.start.at[1], isEqualTo = 0, tolerance = 0.000001)
+assert(s1.line4.end.at[0], isEqualTo = 10, tolerance = 0.000001)
+assert(s1.line4.end.at[1], isEqualTo = 0, tolerance = 0.000001)
 // We don't assert the exact x-coordinate of line5.start
 // since the coincident constraint only ensures it's somewhere on line4
-assert(s1.line5.start.at[1], isEqualTo = 0)
+assert(s1.line5.start.at[1], isEqualTo = 0, tolerance = 0.000001)
