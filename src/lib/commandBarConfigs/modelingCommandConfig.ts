@@ -48,6 +48,8 @@ import {
   addLoft,
   addRevolve,
   addSweep,
+  BODY_TYPE_VALUES,
+  EXTRUDE_METHOD_VALUES,
   type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
@@ -75,6 +77,10 @@ import {
   addDatumGdt,
   getNextAvailableDatumName,
 } from '@src/lang/modifyAst/gdt'
+import type {
+  ExtrudeMethod,
+  BodyType,
+} from '@rust/kcl-lib/bindings/ModelingCmd'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -143,8 +149,8 @@ export type ModelingCommandSchema = {
     twistCenter?: KclCommandValue
     // TODO: figure out if we should expose `tolerance` or not
     // @pierremtb: I don't even think it should be in KCL
-    method?: string
-    bodyType?: string
+    method?: ExtrudeMethod
+    bodyType?: BodyType
   }
   Sweep: {
     // Enables editing workflow
@@ -619,10 +625,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       method: {
         inputType: 'options',
         required: false,
-        options: [
-          { name: 'New', value: 'NEW' },
-          { name: 'Merge', value: 'MERGE' },
-        ],
+        options: EXTRUDE_METHOD_VALUES.map((value) => ({
+          name: value.toUpperCase(),
+          value,
+        })),
+      },
+      bodyType: {
+        inputType: 'options',
+        required: false,
+        options: BODY_TYPE_VALUES.map((value) => ({
+          name: value.toUpperCase(),
+          value,
+        })),
       },
     },
   },
