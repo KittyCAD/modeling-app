@@ -101,12 +101,6 @@ async fn inner_extrude(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     let body_type = body_type.unwrap_or_default();
-    if matches!(body_type, BodyType::Surface) {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Surface extrude is not yet supported".to_owned(),
-            vec![args.source_range],
-        )));
-    }
 
     // Extrude the element(s).
     let mut solids = Vec::new();
