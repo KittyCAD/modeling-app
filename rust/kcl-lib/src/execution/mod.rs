@@ -14,7 +14,6 @@ pub use cache::{bust_cache, clear_mem_cache};
 #[cfg(feature = "artifact-graph")]
 pub use cad_op::Group;
 pub use cad_op::Operation;
-pub(crate) use exec_ast::normalize_to_solver_unit;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
@@ -29,6 +28,7 @@ use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::{Deserialize, Serialize};
+pub(crate) use sketch_solve::normalize_to_solver_unit;
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
