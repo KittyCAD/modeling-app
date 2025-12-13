@@ -1,3 +1,4 @@
+# This workflow is maintained by the security team. Please do not change or remove this file.
 on:
   push:
     branches:
@@ -5,12 +6,11 @@ on:
   workflow_dispatch:
 name: Security
 permissions:
-  # Permissions for Scorecard
   contents: read
   issues: read
   pull-requests: read
   checks: read
 jobs:
   security:
-    uses: KittyCAD/gha-workflows/.github/workflows/security-default-branch.yml@main
+    uses: KittyCAD/gha-workflows/.github/workflows/security-default-branch.yml@security
     secrets: inherit
