@@ -373,11 +373,14 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 /// Assert snapshots that should happen both when KCL execution succeeds and
 /// when it results in an error.
 fn assert_common_snapshots(test: &Test, variables: IndexMap<String, KclValue>) {
-    assert_snapshot(test, "Variables in memory after executing", || {
-        insta::assert_json_snapshot!("program_memory", variables, {
-             ".**.sourceRange" => Vec::new(),
+    let mem_result = catch_unwind(AssertUnwindSafe(|| {
+        assert_snapshot(test, "Variables in memory after executing", || {
+            insta::assert_json_snapshot!("program_memory", variables, {
+                 ".**.sourceRange" => Vec::new(),
+            })
         })
-    })
+    }));
+    mem_result.unwrap();
 }
 
 /// Assert snapshots for artifacts that should happen both when KCL execution
@@ -396,13 +399,15 @@ fn assert_artifact_snapshots(
         // doesn't generate a massive diff.
         .filter(|(_path, s)| !s.is_empty())
         .collect::<IndexMap<_, _>>();
-    assert_snapshot(test, "Operations executed", || {
-        insta::assert_json_snapshot!("ops", module_operations, {
-            ".**.sourceRange" => Vec::new(),
-            ".**.functionSourceRange" => Vec::new(),
-            ".**.moduleId" => 0,
-        });
-    });
+    let result1 = catch_unwind(AssertUnwindSafe(|| {
+        assert_snapshot(test, "Operations executed", || {
+            insta::assert_json_snapshot!("ops", module_operations, {
+                ".**.sourceRange" => Vec::new(),
+                ".**.functionSourceRange" => Vec::new(),
+                ".**.moduleId" => 0,
+            });
+        })
+    }));
     let module_commands = module_state
         .iter()
         .map(|(path, s)| (path, &s.commands))
@@ -411,26 +416,34 @@ fn assert_artifact_snapshots(
         // doesn't generate a massive diff.
         .filter(|(_path, s)| !s.is_empty())
         .collect::<IndexMap<_, _>>();
-    assert_snapshot(test, "Artifact commands", || {
-        insta::assert_json_snapshot!("artifact_commands", module_commands, {
-            ".**.range" => Vec::new(),
-        });
-    });
-    // If the user is explicitly writing, we always want to run so that they
-    // can save new expected output.  There's no way to reliably determine
-    // if insta will write, as far as I can tell, so we use our own
-    // environment variable.
-    let is_writing = is_writing();
-    if !test.skip_assert_artifact_graph || is_writing {
-        assert_snapshot(test, "Artifact graph flowchart", || {
-            let flowchart = artifact_graph
-                .to_mermaid_flowchart()
-                .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
-            // Change the snapshot suffix so that it is rendered as a Markdown file
-            // in GitHub.
-            insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
+    let result2 = catch_unwind(AssertUnwindSafe(|| {
+        assert_snapshot(test, "Artifact commands", || {
+            insta::assert_json_snapshot!("artifact_commands", module_commands, {
+                ".**.range" => Vec::new(),
+            });
         })
-    }
+    }));
+    let result3 = catch_unwind(AssertUnwindSafe(|| {
+        // If the user is explicitly writing, we always want to run so that they
+        // can save new expected output.  There's no way to reliably determine
+        // if insta will write, as far as I can tell, so we use our own
+        // environment variable.
+        let is_writing = is_writing();
+        if !test.skip_assert_artifact_graph || is_writing {
+            assert_snapshot(test, "Artifact graph flowchart", || {
+                let flowchart = artifact_graph
+                    .to_mermaid_flowchart()
+                    .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
+                // Change the snapshot suffix so that it is rendered as a Markdown file
+                // in GitHub.
+                insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
+            })
+        }
+    }));
+
+    result1.unwrap();
+    result2.unwrap();
+    result3.unwrap();
 }
 
 mod cube {
