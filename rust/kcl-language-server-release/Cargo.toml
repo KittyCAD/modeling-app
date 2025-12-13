@@ -16,7 +16,7 @@ anyhow = { workspace = true }
 clap = { workspace = true, features = ["cargo", "derive", "env", "unicode"] }
 flate2 = "1.1.5"
 lazy_static = { workspace = true }
-log = { version = "0.4.28", features = ["serde"] }
+log = { version = "0.4.29", features = ["serde"] }
 slog = { workspace = true }
 slog-async = { workspace = true }
 slog-json = { workspace = true }
