@@ -1,0 +1,44 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_arc_using_center_coincident.kcl
+---
+@settings(experimentalFeatures = allow)
+
+s = sketch() {
+  arc1 = sketch2::arc(start = [var 1.5mm, var], end = [var, var 2mm], center = [var, var])
+  // Point at the origin.
+  p0 = sketch2::point(at = [var, var])
+p0.at[0] == 0
+p0.at[1] == 0
+  // Constrain the center of the arc to be coincident with the point at the
+  // origin.
+  sketch2::coincident([arc1.center, p0])
+
+  lineX = sketch2::line(start = [var, var], end = [var, var])
+  sketch2::horizontal(lineX)
+  lineY = sketch2::line(start = [var, var], end = [var, var])
+  sketch2::vertical(lineY)
+  // Constrain the lines to start at the origin point.
+  sketch2::coincident([lineX.start, p0])
+  sketch2::coincident([lineY.start, p0])
+
+  // Point at (1,0).
+  p1 = sketch2::point(at = [var, var])
+p1.at[0] == 1mm
+p1.at[1] == 0
+  // We can't specify a line length yet, so constrain the line's end to a point.
+  sketch2::coincident([lineX.end, p1])
+  // Make the lines equal length.
+  sketch2::equalLength([lineX, lineY])
+
+  // Arc between the lines.
+  sketch2::coincident([arc1.start, lineX.end])
+  sketch2::coincident([arc1.end, lineY.end])
+}
+
+assert(s.arc1.center.at[0], isEqualTo = 0, tolerance = 0.00000001)
+assert(s.arc1.center.at[1], isEqualTo = 0, tolerance = 0.00000001)
+assert(s.arc1.start.at[0], isEqualTo = 1mm, tolerance = 0.00000001)
+assert(s.arc1.start.at[1], isEqualTo = 0, tolerance = 0.00000001)
+assert(s.arc1.end.at[0], isEqualTo = 0, tolerance = 0.00000001)
+assert(s.arc1.end.at[1], isEqualTo = 1mm, tolerance = 0.00000001)

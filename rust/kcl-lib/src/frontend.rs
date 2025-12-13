@@ -8,7 +8,7 @@ use crate::{
     exec::WarningLevel,
     execution::MockConfig,
     fmt::format_number_literal,
-    front::{Distance, Line, LinesEqualLength, Parallel, PointCtor},
+    front::{ArcCtor, Distance, Line, LinesEqualLength, Parallel, PointCtor},
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
@@ -35,6 +35,11 @@ const POINT_AT_PARAM: &str = "at";
 const LINE_FN: &str = "line";
 const LINE_START_PARAM: &str = "start";
 const LINE_END_PARAM: &str = "end";
+const ARC_FN: &str = "arc";
+const ARC_START_PARAM: &str = "start";
+const ARC_END_PARAM: &str = "end";
+const ARC_CENTER_PARAM: &str = "center";
+
 const COINCIDENT_FN: &str = "coincident";
 const DISTANCE_FN: &str = "distance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
@@ -327,6 +332,7 @@ impl SketchApi for FrontendState {
         match segment {
             SegmentCtor::Point(ctor) => self.add_point(ctx, sketch, ctor).await,
             SegmentCtor::Line(ctor) => self.add_line(ctx, sketch, ctor).await,
+            SegmentCtor::Arc(ctor) => self.add_arc(ctx, sketch, ctor).await,
             _ => Err(Error {
                 msg: format!("segment ctor not implemented yet: {segment:?}"),
             }),
@@ -348,6 +354,7 @@ impl SketchApi for FrontendState {
             match segment.ctor {
                 SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment.id, ctor)?,
                 SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment.id, ctor)?,
+                SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment.id, ctor)?,
                 _ => {
                     return Err(Error {
                         msg: format!("segment ctor not implemented yet: {segment:?}"),
@@ -683,6 +690,127 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta))
     }
 
+    async fn add_arc(
+        &mut self,
+        ctx: &ExecutorContext,
+        sketch: ObjectId,
+        ctor: ArcCtor,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        // Create updated KCL source from args.
+        let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
+        let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
+        let center_ast = to_ast_point2d(&ctor.center).map_err(|err| Error { msg: err.to_string() })?;
+        let arc_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
+            unlabeled: None,
+            arguments: vec![
+                ast::LabeledArg {
+                    label: Some(ast::Identifier::new(ARC_START_PARAM)),
+                    arg: start_ast,
+                },
+                ast::LabeledArg {
+                    label: Some(ast::Identifier::new(ARC_END_PARAM)),
+                    arg: end_ast,
+                },
+                ast::LabeledArg {
+                    label: Some(ast::Identifier::new(ARC_CENTER_PARAM)),
+                    arg: center_ast,
+                },
+            ],
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+
+        // Look up existing sketch.
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch:?}"),
+        })?;
+        let ObjectKind::Sketch(_) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        // Add the arc to the AST of the sketch block.
+        let mut new_ast = self.program.ast.clone();
+        let (sketch_block_range, _) = self.mutate_ast(
+            &mut new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: arc_ast },
+        )?;
+        // Convert to string source to create real source ranges.
+        let new_source = source_from_ast(&new_ast);
+        // Parse the new KCL source.
+        let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
+        if !errors.is_empty() {
+            return Err(Error {
+                msg: format!("Error parsing KCL source after adding arc: {errors:?}"),
+            });
+        }
+        let Some(new_program) = new_program else {
+            return Err(Error {
+                msg: "No AST produced after adding arc".to_string(),
+            });
+        };
+        let arc_source_range =
+            find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
+                msg: format!("Source range of arc not found in sketch block: {sketch_block_range:?}; {err:?}"),
+            })?;
+        #[cfg(not(feature = "artifact-graph"))]
+        let _ = arc_source_range;
+
+        // Make sure to only set this if there are no errors.
+        self.program = new_program.clone();
+
+        // Execute.
+        let outcome = ctx
+            .run_mock(&new_program, &MockConfig::default())
+            .await
+            .map_err(|err| {
+                // TODO: sketch-api: Yeah, this needs to change. We need to
+                // return the full error.
+                Error {
+                    msg: err.error.message().to_owned(),
+                }
+            })?;
+
+        #[cfg(not(feature = "artifact-graph"))]
+        let new_object_ids = Vec::new();
+        #[cfg(feature = "artifact-graph")]
+        let new_object_ids = {
+            let segment_id = outcome
+                .source_range_to_object
+                .get(&arc_source_range)
+                .copied()
+                .ok_or_else(|| Error {
+                    msg: format!("Source range of arc not found: {arc_source_range:?}"),
+                })?;
+            let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| Error {
+                msg: format!("Segment not found: {segment_id:?}"),
+            })?;
+            let ObjectKind::Segment { segment } = &segment_object.kind else {
+                return Err(Error {
+                    msg: format!("Object is not a segment: {segment_object:?}"),
+                });
+            };
+            let Segment::Arc(arc) = segment else {
+                return Err(Error {
+                    msg: format!("Segment is not an arc: {segment:?}"),
+                });
+            };
+            vec![arc.start, arc.end, arc.center, segment_id]
+        };
+        let src_delta = SourceDelta { text: new_source };
+        let outcome = self.update_state_after_exec(outcome);
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            invalidates_ids: false,
+            new_objects: new_object_ids,
+            exec_outcome: outcome,
+        };
+        Ok((src_delta, scene_graph_delta))
+    }
+
     fn edit_point(
         &mut self,
         new_ast: &mut ast::Node<ast::Program>,
@@ -801,6 +929,55 @@ impl FrontendState {
             AstMutateCommand::EditLine {
                 start: new_start_ast,
                 end: new_end_ast,
+            },
+        )?;
+        Ok(())
+    }
+
+    fn edit_arc(
+        &mut self,
+        new_ast: &mut ast::Node<ast::Program>,
+        sketch: ObjectId,
+        arc: ObjectId,
+        ctor: ArcCtor,
+    ) -> api::Result<()> {
+        // Create updated KCL source from args.
+        let new_start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
+        let new_end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
+        let new_center_ast = to_ast_point2d(&ctor.center).map_err(|err| Error { msg: err.to_string() })?;
+
+        // Look up existing sketch.
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch:?}"),
+        })?;
+        let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        sketch.segments.iter().find(|o| **o == arc).ok_or_else(|| Error {
+            msg: format!("Arc not found in sketch: arc={arc:?}, sketch={sketch:?}"),
+        })?;
+        // Look up existing arc.
+        let arc_id = arc;
+        let arc_object = self.scene_graph.objects.get(arc_id.0).ok_or_else(|| Error {
+            msg: format!("Arc not found in scene graph: arc={arc:?}"),
+        })?;
+        let ObjectKind::Segment { .. } = &arc_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {arc_object:?}"),
+            });
+        };
+
+        // Modify the arc AST.
+        self.mutate_ast(
+            new_ast,
+            arc_id,
+            AstMutateCommand::EditArc {
+                start: new_start_ast,
+                end: new_end_ast,
+                center: new_center_ast,
             },
         )?;
         Ok(())
@@ -1710,6 +1887,11 @@ enum AstMutateCommand {
         start: ast::Expr,
         end: ast::Expr,
     },
+    EditArc {
+        start: ast::Expr,
+        end: ast::Expr,
+        center: ast::Expr,
+    },
     #[cfg(feature = "artifact-graph")]
     EditVarInitialValue {
         value: Number,
@@ -1858,6 +2040,26 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     }
                     if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(LINE_END_PARAM) {
                         labeled_arg.arg = end.clone();
+                    }
+                }
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
+        AstMutateCommand::EditArc { start, end, center } => {
+            if let NodeMut::CallExpressionKw(call) = node {
+                if call.callee.name.name != ARC_FN {
+                    return TraversalReturn::new_continue(());
+                }
+                // Update the arguments.
+                for labeled_arg in &mut call.arguments {
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_START_PARAM) {
+                        labeled_arg.arg = start.clone();
+                    }
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_END_PARAM) {
+                        labeled_arg.arg = end.clone();
+                    }
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_CENTER_PARAM) {
+                        labeled_arg.arg = center.clone();
                     }
                 }
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
@@ -2299,6 +2501,152 @@ sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_add_arc_edit_arc() {
+        let program = Program::empty();
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        let sketch_args = SketchArgs {
+            on: api::Plane::Default(PlaneName::Xy),
+        };
+        let (_src_delta, scene_delta, sketch_id) = frontend
+            .new_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+        assert_eq!(sketch_id, ObjectId(0));
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(0)]);
+        let sketch_object = &scene_delta.new_graph.objects[0];
+        assert_eq!(sketch_object.id, ObjectId(0));
+        assert_eq!(
+            sketch_object.kind,
+            ObjectKind::Sketch(Sketch {
+                args: SketchArgs {
+                    on: Plane::Default(PlaneName::Xy)
+                },
+                segments: vec![],
+                constraints: vec![],
+            })
+        );
+        assert_eq!(scene_delta.new_graph.objects.len(), 1);
+
+        let arc_ctor = ArcCtor {
+            start: Point2d {
+                x: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Var(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            center: Point2d {
+                x: Expr::Var(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+        };
+        let segment = SegmentCtor::Arc(arc_ctor);
+        let (src_delta, scene_delta) = frontend
+            .add_segment(&mock_ctx, version, sketch_id, segment, None)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::arc(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm], center = [var 10mm, var 0mm])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_objects,
+            vec![ObjectId(1), ObjectId(2), ObjectId(3), ObjectId(4)]
+        );
+        for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
+            assert_eq!(scene_object.id.0, i);
+        }
+        assert_eq!(scene_delta.new_graph.objects.len(), 5);
+
+        // The new objects are the end points, the center, and then the arc.
+        let arc = *scene_delta.new_objects.last().unwrap();
+
+        let arc_ctor = ArcCtor {
+            start: Point2d {
+                x: Expr::Var(Number {
+                    value: 1.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 2.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Var(Number {
+                    value: 13.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 14.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            center: Point2d {
+                x: Expr::Var(Number {
+                    value: 13.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 2.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+        };
+        let segments = vec![ExistingSegmentCtor {
+            id: arc,
+            ctor: SegmentCtor::Arc(arc_ctor),
+        }];
+        let (src_delta, scene_delta) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::arc(start = [var 1mm, var 2mm], end = [var 13mm, var 14mm], center = [var 13mm, var 2mm])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
         mock_ctx.close().await;
     }

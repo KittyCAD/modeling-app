@@ -17,23 +17,15 @@ export fn line(
   midpoint?: Point2d,
 ): Segment {}
 
-@(impl = std_constrainable, experimental = true, feature_tree = false)
-export type Arc = {
-  start: Point2d,
-  end: Point2d,
-  center: Point2d | none,
-  interior: Point2d | none,
-}
-
-@(impl = std_constrainable, experimental = true, feature_tree = false)
+/// A circular arc. The arc segment always sweeps in a counterclockwise
+/// direction. If you have a 10-degree arc and you want the reverse 350-degree
+/// arc, swap the start and end points.
+@(impl = std_rust_constrainable, experimental = true, feature_tree = false)
 export fn arc(
   start: Point2d,
   end: Point2d,
-  center?: Point2d,
-  interior?: Point2d,
-): Arc {
-  { start, end, center, interior }
-}
+  center: Point2d,
+): Segment {}
 
 /// Constrain points, or a point and a segment to be coincident.
 ///
