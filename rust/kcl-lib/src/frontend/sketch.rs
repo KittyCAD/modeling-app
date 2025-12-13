@@ -268,7 +268,7 @@ pub enum Constraint {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Coincident {
-    pub points: Vec<ObjectId>,
+    pub segments: Vec<ObjectId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

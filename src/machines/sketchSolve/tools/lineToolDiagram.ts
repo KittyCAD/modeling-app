@@ -230,7 +230,7 @@ export const machine = setup({
                 sketchId,
                 {
                   type: 'Coincident',
-                  points: [id, newLineStartPointId],
+                  segments: [id, newLineStartPointId],
                 },
                 await jsAppSettings()
               )
