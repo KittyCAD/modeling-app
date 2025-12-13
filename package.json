@@ -189,7 +189,7 @@
     "@xstate/cli": "^0.5.17",
     "autoprefixer": "^10.4.21",
     "babel-preset-vite": "^1.1.3",
-    "cross-env": "^7.0.3",
+    "cross-env": "^10.1.0",
     "dpdm": "^3.14.0",
     "electron": "^39.2.6",
     "electron-builder": "^26.0.12",
