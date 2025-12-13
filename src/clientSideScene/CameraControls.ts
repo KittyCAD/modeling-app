@@ -657,7 +657,7 @@ export class CameraControls {
 
     return this.camera
   }
-  _usePerspectiveCamera = () => {
+  private _usePerspectiveCamera = () => {
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
     this.camera = this.createPerspectiveCamera()

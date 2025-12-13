@@ -92,6 +92,7 @@ export const settingsMachine = setup({
       // create a detection loop with the file-system watcher.
       if (input.doNotPersist || !input.rootContext) return
 
+      // This flag is not used by the settings file watcher in RouteProvider so it doesn't do anything..
       input.rootContext.kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       const { currentProject, ...settings } = input.context
 

@@ -35,6 +35,25 @@ import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { processEnv } from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
+import type { Stats } from 'fs'
+
+const convertStatsToFileMetadata = (
+  stats: Stats | null
+): FileMetadata | null => {
+  if (!stats) {
+    return null
+  }
+  return {
+    modified: stats.mtimeMs,
+    accessed: stats.atimeMs,
+    created: stats.ctimeMs,
+    // this is not used anywhere and we use statIsDirectory in other places
+    // that need to know if it's a file or directory.
+    type: null,
+    size: stats.size,
+    permission: null,
+  }
+}
 
 export async function renameProjectDirectory(
   electron: IElectronAPI,
@@ -159,7 +178,7 @@ export async function createNewProjectDirectory(
   await electron.writeFile(projectFile, codeToWrite)
   let metadata: FileMetadata | null = null
   try {
-    metadata = await electron.stat(projectFile)
+    metadata = convertStatsToFileMetadata(await electron.stat(projectFile))
   } catch (e) {
     if (e === 'ENOENT') {
       console.error('File does not exist')
@@ -432,9 +451,9 @@ export async function getProjectInfo(
   wasmInstance?: ModuleType
 ): Promise<Project> {
   // Check the directory.
-  let metadata
+  let stats: Stats | undefined
   try {
-    metadata = await electron.stat(projectPath)
+    stats = await electron.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(
@@ -474,17 +493,7 @@ export async function getProjectInfo(
 
   let project = {
     ...walked,
-    // We need to map from node fs.Stats to FileMetadata
-    metadata: {
-      modified: metadata.mtimeMs,
-      accessed: metadata.atimeMs,
-      created: metadata.ctimeMs,
-      // this is not used anywhere and we use statIsDirectory in other places
-      // that need to know if it's a file or directory.
-      type: null,
-      size: metadata.size,
-      permission: metadata.mode,
-    },
+    metadata: convertStatsToFileMetadata(stats ?? null),
     kcl_file_count: 0,
     directory_count: 0,
     default_file,
