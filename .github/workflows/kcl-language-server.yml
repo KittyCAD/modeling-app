@@ -50,7 +50,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
       - name: Install dependencies
@@ -119,7 +119,7 @@ jobs:
           components: rust-src
           target: ${{ matrix.target }}
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
       - name: Update apt repositories
@@ -271,7 +271,7 @@ jobs:
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Install Nodejs
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
       - run: echo "HEAD_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
