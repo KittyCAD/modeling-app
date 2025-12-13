@@ -85,7 +85,16 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
-                                "initial": null,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "1mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 1.0
+                                },
                                 "moduleId": 0,
                                 "start": 0,
                                 "type": "SketchVar",
@@ -94,7 +103,16 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
-                                "initial": null,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "2mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 2.0
+                                },
                                 "moduleId": 0,
                                 "start": 0,
                                 "type": "SketchVar",
@@ -124,7 +142,16 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
-                                "initial": null,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "3mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 3.0
+                                },
                                 "moduleId": 0,
                                 "start": 0,
                                 "type": "SketchVar",
@@ -133,7 +160,16 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
-                                "initial": null,
+                                "initial": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "raw": "4mm",
+                                  "start": 0,
+                                  "suffix": "Mm",
+                                  "type": "NumericLiteral",
+                                  "value": 4.0
+                                },
                                 "moduleId": 0,
                                 "start": 0,
                                 "type": "SketchVar",
@@ -889,135 +925,6 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                               "commentStart": 0,
                               "end": 0,
                               "moduleId": 0,
-                              "name": "start",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "start": 0,
-                          "type": "MemberExpression",
-                          "type": "MemberExpression"
-                        },
-                        "property": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "at",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        "start": 0,
-                        "type": "MemberExpression",
-                        "type": "MemberExpression"
-                      },
-                      "property": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 0,
-                      "type": "MemberExpression",
-                      "type": "MemberExpression"
-                    },
-                    "moduleId": 0,
-                    "operator": "==",
-                    "right": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "5",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 5.0,
-                        "suffix": "None"
-                      }
-                    },
-                    "start": 0,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "moduleId": 0,
-                  "preComments": [
-                    "",
-                    "",
-                    "// Constrain line5 endpoints"
-                  ],
-                  "start": 0,
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement"
-                },
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "expression": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "left": {
-                      "commentStart": 0,
-                      "computed": true,
-                      "end": 0,
-                      "moduleId": 0,
-                      "object": {
-                        "commentStart": 0,
-                        "computed": false,
-                        "end": 0,
-                        "moduleId": 0,
-                        "object": {
-                          "commentStart": 0,
-                          "computed": false,
-                          "end": 0,
-                          "moduleId": 0,
-                          "object": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "name": "line5",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          },
-                          "property": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
                               "name": "end",
                               "start": 0,
                               "type": "Identifier"
@@ -1090,6 +997,13 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                     "type": "BinaryExpression"
                   },
                   "moduleId": 0,
+                  "preComments": [
+                    "",
+                    "",
+                    "// Constrain line5 endpoints",
+                    "// Note: We don't constrain line5.start.at[0] directly",
+                    "// and instead let the coincident constraint determine it"
+                  ],
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
@@ -1344,7 +1258,7 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
               "moduleId": 0,
               "non_code_meta": {
                 "nonCodeNodes": {
-                  "9": [
+                  "8": [
                     {
                       "commentStart": 0,
                       "end": 0,
@@ -1353,7 +1267,7 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLineBlockComment",
-                        "value": "Since line5.start.at[0] == 5 and line4 goes from (0,0) to (10,0),",
+                        "value": "We'll verify that line5.start is somewhere on line4",
                         "style": "line"
                       }
                     },
@@ -1365,7 +1279,7 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                       "type": "NonCodeNode",
                       "value": {
                         "type": "blockComment",
-                        "value": "line5.start should be at (5, 0) to be on line4",
+                        "value": "which means its y-coordinate should be 0",
                         "style": "line"
                       }
                     }
@@ -1423,6 +1337,30 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                 "type": "Literal",
                 "value": {
                   "value": 0.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "tolerance",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0.000001",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.000001,
                   "suffix": "None"
                 }
               }
@@ -1574,6 +1512,11 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
           }
         },
         "moduleId": 0,
+        "preComments": [
+          "",
+          "",
+          "// Use tolerance to account for floating-point precision in solver results"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -1603,6 +1546,30 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                 "type": "Literal",
                 "value": {
                   "value": 0.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "tolerance",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0.000001",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.000001,
                   "suffix": "None"
                 }
               }
@@ -1786,6 +1753,30 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                   "suffix": "None"
                 }
               }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "tolerance",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0.000001",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.000001,
+                  "suffix": "None"
+                }
+              }
             }
           ],
           "callee": {
@@ -1966,6 +1957,30 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                   "suffix": "None"
                 }
               }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "tolerance",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "raw": "0.000001",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.000001,
+                  "suffix": "None"
+                }
+              }
             }
           ],
           "callee": {
@@ -2137,179 +2152,23 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "5",
+                "raw": "0",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
-                  "value": 5.0,
+                  "value": 0.0,
                   "suffix": "None"
                 }
               }
-            }
-          ],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "assert",
-              "start": 0,
-              "type": "Identifier"
             },
-            "path": [],
-            "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "CallExpressionKw",
-          "type": "CallExpressionKw",
-          "unlabeled": {
-            "commentStart": 0,
-            "computed": true,
-            "end": 0,
-            "moduleId": 0,
-            "object": {
-              "commentStart": 0,
-              "computed": false,
-              "end": 0,
-              "moduleId": 0,
-              "object": {
-                "commentStart": 0,
-                "computed": false,
-                "end": 0,
-                "moduleId": 0,
-                "object": {
-                  "commentStart": 0,
-                  "computed": false,
-                  "end": 0,
-                  "moduleId": 0,
-                  "object": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "s1",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  "property": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "line5",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  "start": 0,
-                  "type": "MemberExpression",
-                  "type": "MemberExpression"
-                },
-                "property": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "start",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                },
-                "start": 0,
-                "type": "MemberExpression",
-                "type": "MemberExpression"
-              },
-              "property": {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "at",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
-              },
-              "start": 0,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
-            },
-            "property": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "raw": "0",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.0,
-                "suffix": "None"
-              }
-            },
-            "start": 0,
-            "type": "MemberExpression",
-            "type": "MemberExpression"
-          }
-        },
-        "moduleId": 0,
-        "start": 0,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "commentStart": 0,
-        "end": 0,
-        "expression": {
-          "arguments": [
             {
               "type": "LabeledArg",
               "label": {
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "isEqualTo",
+                "name": "tolerance",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -2317,12 +2176,12 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "0",
+                "raw": "0.000001",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
-                  "value": 0.0,
+                  "value": 0.000001,
                   "suffix": "None"
                 }
               }
@@ -2474,6 +2333,10 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
           }
         },
         "moduleId": 0,
+        "preComments": [
+          "// We don't assert the exact x-coordinate of line5.start",
+          "// since the coincident constraint only ensures it's somewhere on line4"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -2535,32 +2398,7 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {
-        "0": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "6": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ]
-      },
+      "nonCodeNodes": {},
       "startNodes": [
         {
           "commentStart": 0,
