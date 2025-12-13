@@ -26,7 +26,7 @@ jobs:
     # TODO: Remove unit test dependency on Wasm binary
     needs: npm-build-wasm
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
@@ -70,7 +70,7 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     needs: npm-build-wasm
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
