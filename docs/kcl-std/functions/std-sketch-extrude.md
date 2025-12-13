@@ -287,4 +287,55 @@ cylinder4 = circle(sketch006, center = [2.5, 0.5], radius = 0.25)
 >
 </model-viewer>
 
+```kcl
+// Surface extrude of an open profile
+openProfile = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [4, 0])
+  |> arc(angleStart = 120deg, angleEnd = 0, radius = 5)
+  |> line(end = [5, 0])
+  |> line(end = [0, 10])
+// Surface extrude
+extrude(openProfile, length = 2, bodyType = SURFACE)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude7_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude7.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Surface extrude of a closed profile
+closedProfile = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> circle(center = [0, 0], diameter = 10)
+// Surface extrude
+extrude(closedProfile, length = 5, bodyType = SURFACE)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude8_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude8.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 
