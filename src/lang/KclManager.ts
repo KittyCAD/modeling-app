@@ -14,6 +14,7 @@ import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
+  Configuration,
   ExecState,
   PathToNode,
   Program,
@@ -106,6 +107,7 @@ import {
   setAstEffect,
   updateAstAnnotation,
 } from '@src/editor/plugins/ast'
+import type { DeepPartial } from '@src/lib/types'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -1360,9 +1362,9 @@ export class KclManager extends EventTarget {
   // doing. (jess)
   handleOnViewUpdate(
     viewUpdate: ViewUpdate,
-    processCodeMirrorRanges: typeof processCodeMirrorRangesFn,
-    sceneEntitiesManager: SceneEntities
+    processCodeMirrorRanges: typeof processCodeMirrorRangesFn
   ): void {
+    const sceneEntitiesManager = this._sceneEntitiesManager
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
     }
@@ -1371,6 +1373,9 @@ export class KclManager extends EventTarget {
       return
     }
     if (!this._modelingState) {
+      return
+    }
+    if (!sceneEntitiesManager) {
       return
     }
     if (this._modelingState.matches({ Sketch: 'Change Tool' })) {
@@ -1474,7 +1479,7 @@ export class KclManager extends EventTarget {
       this.updateCodeEditor(code, clearHistory)
     }
   }
-  async writeToFile() {
+  async writeToFile(newCode = this.code) {
     if (this.isBufferMode) return
     if (window.electron) {
       const electron = window.electron
@@ -1490,7 +1495,7 @@ export class KclManager extends EventTarget {
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           electron
-            .writeFile(this._currentFilePath, this.code ?? '')
+            .writeFile(this._currentFilePath, newCode ?? '')
             .then(resolve)
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
@@ -1501,7 +1506,7 @@ export class KclManager extends EventTarget {
         }, 1000)
       })
     } else {
-      safeLSSetItem(PERSIST_CODE_KEY, this.code)
+      safeLSSetItem(PERSIST_CODE_KEY, newCode)
     }
   }
   async updateEditorWithAstAndWriteToFile(
@@ -1536,6 +1541,11 @@ export class KclManager extends EventTarget {
     this.writeToFile().catch(reportRejection)
   }
   /** End merged in code from EditorManager and CodeManager classes */
+
+  /** Convenience function for temporary execution hack function for sketch solve mode */
+  hackSetProgram(settings: DeepPartial<Configuration>) {
+    return this.singletons.rustContext.hackSetProgram(this.ast, settings)
+  }
 }
 
 function safeLSGetItem(key: string) {
