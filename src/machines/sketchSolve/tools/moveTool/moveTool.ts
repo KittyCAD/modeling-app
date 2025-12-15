@@ -256,8 +256,8 @@ export function createOnDragEndCallback({
     sketch: number,
     settings: DeepPartial<Configuration>
   ) => Promise<{
-    sceneGraph: SceneGraph
-    execOutcome: ExecOutcome
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
   }>
   onNewSketchOutcome?: (outcome: {
     kclSource: SourceDelta
@@ -300,23 +300,10 @@ export function createOnDragEndCallback({
       )
 
       if (result) {
-        // Construct SceneGraphDelta from the result
-        const sceneGraphDelta: SceneGraphDelta = {
-          new_graph: result.sceneGraph,
-          invalidates_ids: false,
-          new_objects: [],
-          exec_outcome: result.execOutcome,
-        }
-
-        // Get kclSource from current context
-        const kclSource: SourceDelta = {
-          text: contextData.kclManager.code,
-        }
-
         // Send the event to update the sketch outcome
         onNewSketchOutcome({
-          kclSource,
-          sceneGraphDelta,
+          kclSource: result.kclSource,
+          sceneGraphDelta: result.sceneGraphDelta,
           writeToDisk: true,
         })
       }

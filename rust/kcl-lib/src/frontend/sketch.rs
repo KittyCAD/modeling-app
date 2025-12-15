@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ExecOutcome, ExecutorContext,
+    ExecutorContext,
     frontend::api::{
         Expr, FileId, Number, ObjectId, Plane, ProjectId, Result, SceneGraph, SceneGraphDelta, SourceDelta, Version,
     },
@@ -17,7 +17,7 @@ pub trait SketchApi {
         ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
-    ) -> Result<(SceneGraph, ExecOutcome)>;
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn new_sketch(
         &mut self,

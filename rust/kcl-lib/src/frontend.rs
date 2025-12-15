@@ -84,7 +84,7 @@ impl SketchApi for FrontendState {
         ctx: &ExecutorContext,
         _version: Version,
         _sketch: ObjectId,
-    ) -> api::Result<(SceneGraph, ExecOutcome)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Execute.
         let outcome = ctx
             .run_mock(&self.program, &MockConfig::default())
@@ -92,8 +92,16 @@ impl SketchApi for FrontendState {
             .map_err(|err| Error {
                 msg: err.error.message().to_owned(),
             })?;
+        let new_source = source_from_ast(&self.program.ast);
+        let src_delta = SourceDelta { text: new_source };
         let outcome = self.update_state_after_exec(outcome);
-        Ok((self.scene_graph.clone(), outcome))
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            new_objects: Default::default(),
+            invalidates_ids: false,
+            exec_outcome: outcome,
+        };
+        Ok((src_delta, scene_graph_delta))
     }
 
     async fn new_sketch(
