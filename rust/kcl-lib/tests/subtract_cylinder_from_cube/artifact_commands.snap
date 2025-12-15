@@ -156,7 +156,8 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -318,7 +319,8 @@ description: Artifact commands subtract_cylinder_from_cube.kcl
         "distance": 34.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

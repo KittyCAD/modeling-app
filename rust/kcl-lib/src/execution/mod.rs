@@ -14,7 +14,6 @@ pub use cache::{bust_cache, clear_mem_cache};
 #[cfg(feature = "artifact-graph")]
 pub use cad_op::Group;
 pub use cad_op::Operation;
-pub(crate) use exec_ast::normalize_to_solver_unit;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
@@ -29,6 +28,7 @@ use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::{Deserialize, Serialize};
+pub(crate) use sketch_solve::normalize_to_solver_unit;
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
@@ -66,6 +66,7 @@ mod import_graph;
 pub(crate) mod kcl_value;
 mod memory;
 mod modeling;
+mod sketch_solve;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
@@ -113,6 +114,9 @@ pub struct ExecOutcome {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
+    /// True to do more costly analysis of whether the sketch block segments are
+    /// under-constrained.
+    pub freedom_analysis: bool,
     /// The segments that were edited that triggered this execution.
     #[cfg(feature = "artifact-graph")]
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
@@ -123,6 +127,7 @@ impl Default for MockConfig {
         Self {
             // By default, use previous memory. This is usually what you want.
             use_prev_memory: true,
+            freedom_analysis: false,
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited: AhashIndexSet::default(),
         }
@@ -617,11 +622,12 @@ impl ExecutorContext {
             "To use mock execution, instantiate via ExecutorContext::new_mock, not ::new"
         );
 
+        let use_prev_memory = mock_config.use_prev_memory;
         #[cfg(not(feature = "artifact-graph"))]
         let mut exec_state = ExecState::new(self);
         #[cfg(feature = "artifact-graph")]
-        let mut exec_state = ExecState::new_sketch_mode(self, mock_config.segment_ids_edited.clone());
-        if mock_config.use_prev_memory {
+        let mut exec_state = ExecState::new_sketch_mode(self, mock_config);
+        if use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => {
                     *exec_state.mut_stack() = mem.0;

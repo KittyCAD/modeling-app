@@ -40,6 +40,13 @@ pub trait SketchApi {
 
     async fn exit_sketch(&mut self, ctx: &ExecutorContext, version: Version, sketch: ObjectId) -> Result<SceneGraph>;
 
+    async fn delete_sketch(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+
     async fn add_segment(
         &mut self,
         ctx: &ExecutorContext,
@@ -112,24 +119,21 @@ pub struct Point {
 #[ts(export, export_to = "FrontendApi.ts")]
 pub enum Freedom {
     Free,
-    Partial,
     Fixed,
+    Conflict,
 }
 
 impl Freedom {
+    /// Merges two Freedom values. For example, a point has a solver variable
+    /// for each dimension, x and y. If one dimension is `Free` and the other is
+    /// `Fixed`, the point overall is `Free` since it isn't fully constrained.
+    /// `Conflict` infects the most, followed by `Free`. An object must be fully
+    /// `Fixed` to be `Fixed` overall.
     pub fn merge(self, other: Self) -> Self {
-        match self {
-            Self::Free => match other {
-                Self::Free => Self::Free,
-                Self::Partial => Self::Partial,
-                Self::Fixed => Self::Partial,
-            },
-            Self::Partial => Self::Partial,
-            Self::Fixed => match other {
-                Self::Free => Self::Partial,
-                Self::Partial => Self::Partial,
-                Self::Fixed => Self::Fixed,
-            },
+        match (self, other) {
+            (Self::Conflict, _) | (_, Self::Conflict) => Self::Conflict,
+            (Self::Free, _) | (_, Self::Free) => Self::Free,
+            (Self::Fixed, Self::Fixed) => Self::Fixed,
         }
     }
 }
@@ -264,7 +268,7 @@ pub enum Constraint {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Coincident {
-    pub points: Vec<ObjectId>,
+    pub segments: Vec<ObjectId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

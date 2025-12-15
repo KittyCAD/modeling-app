@@ -1,0 +1,63 @@
+// Sprocket Cassette
+// A sprocket cassette is a stack of individual sprockets that mount together on a splined hub to provide multiple gear ratios
+
+// Set Units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+// #25 chain size
+chainPitch = 1 / 4
+rollerWidth = 3 / 32
+rollerDiameter = 0.13
+pinDiameter = 3 / 32
+shaftDiameter = 12mm
+
+// Define a function to create a sprocket with a specific number of teeth
+fn sprocket(@speed, nTeeth) {
+  pitchDiameter = chainPitch * 1 / sin(180deg / nTeeth)
+
+  // Sketch the central mounting spine to be cut from each sprocket profile
+  spline = startSketchOn(XZ)
+    |> startProfile(at = [shaftDiameter / 2, 0])
+    |> arc(angleStart = 0, angleEnd = 10, radius = shaftDiameter / 2)
+    |> line(endAbsolute = polar(angle = 10deg, length = shaftDiameter / 2 - 0.01))
+    |> arc(angleStart = 10, angleEnd = 20, radius = shaftDiameter / 2 - 0.01)
+    |> line(endAbsolute = polar(angle = 20deg, length = shaftDiameter / 2))
+    |> patternCircular2d(instances = 360 / 20, center = [0, 0])
+    |> close()
+
+  // build the sprocket
+  sprocket = startSketchOn(offsetPlane(XZ, offset = -speed * rollerWidth))
+    |> startProfile(at = [
+         (pitchDiameter - rollerDiameter) / 2,
+         0
+       ])
+    |> arc(angleStart = 180, angleEnd = 90 + 360 / nTeeth, diameter = rollerDiameter)
+    |> tangentialArc(angle = 28deg, radius = chainPitch - (rollerDiameter / 2))
+    |> arc(interiorAbsolute = polar(angle = 170 / nTeeth, length = sqrt(lastSegX() ^ 2 + lastSegY() ^ 2)), endAbsolute = polar(angle = 180 / nTeeth, length = sqrt(lastSegX() ^ 2 + lastSegY() ^ 2)))
+    |> mirror2d(axis = X)
+    |> patternCircular2d(instances = nTeeth, center = [0, 0])
+    |> close()
+    |> subtract2d(tool = spline)
+    |> extrude(length = rollerWidth / 2)
+
+  // Place a mounting spacer between each sprocket body
+  spacer = startSketchOn(sprocket, face = END)
+    |> circle(center = [0, 0], diameter = shaftDiameter * 1.3)
+    |> subtract2d(tool = circle(center = [0, 0], diameter = shaftDiameter))
+    |> extrude(length = rollerWidth / 2, method = NEW)
+    |> appearance(color = "#0f0f0f")
+
+  return sprocket
+}
+
+// Create a 7-speed cassette from 11 to 36 teeth
+reduce(
+  [11, 15, 19, 23, 27, 31, 36],
+  initial = 0_,
+  f = fn(@nTeeth, accum) {
+    // speed index is accum + 1 since accum starts at 0
+    sprocket(accum + 1, nTeeth = nTeeth)
+    return accum + 1
+  },
+)

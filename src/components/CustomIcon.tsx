@@ -121,6 +121,21 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  arrowShortUp: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow short up"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M14.7929 11.207L10.1464 6.56052V15.3535H9.14642V6.56052L4.49994 11.207L3.79291 10.5L9.64642 4.64645L15.4999 10.5L14.7929 11.207Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   arrowTurnLeft: (
     <svg
       viewBox="0 0 20 20"

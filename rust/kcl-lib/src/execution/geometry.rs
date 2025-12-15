@@ -18,7 +18,7 @@ use crate::{
         ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, normalize_to_solver_unit,
         types::{NumericType, adjust_length},
     },
-    front::{Freedom, LineCtor, ObjectId, PointCtor},
+    front::{ArcCtor, Freedom, LineCtor, ObjectId, PointCtor},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::{args::TyF64, sketch::PlaneData},
 };
@@ -1766,6 +1766,15 @@ pub enum UnsolvedSegmentKind {
         start_object_id: ObjectId,
         end_object_id: ObjectId,
     },
+    Arc {
+        start: UnsolvedPoint2dExpr,
+        end: UnsolvedPoint2dExpr,
+        center: UnsolvedPoint2dExpr,
+        ctor: Box<ArcCtor>,
+        start_object_id: ObjectId,
+        end_object_id: ObjectId,
+        center_object_id: ObjectId,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -1781,7 +1790,6 @@ pub struct Segment {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
-#[expect(clippy::large_enum_variant)]
 pub enum SegmentKind {
     Point {
         position: [TyF64; 2],
@@ -1796,6 +1804,18 @@ pub enum SegmentKind {
         end_object_id: ObjectId,
         start_freedom: Freedom,
         end_freedom: Freedom,
+    },
+    Arc {
+        start: [TyF64; 2],
+        end: [TyF64; 2],
+        center: [TyF64; 2],
+        ctor: Box<ArcCtor>,
+        start_object_id: ObjectId,
+        end_object_id: ObjectId,
+        center_object_id: ObjectId,
+        start_freedom: Freedom,
+        end_freedom: Freedom,
+        center_freedom: Freedom,
     },
 }
 

@@ -57,6 +57,7 @@ export enum MlEphantManagerTransitions2 {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
   ConversationClose = 'conversation-close',
+  Interrupt = 'interrupt',
   AbruptClose = 'abrupt-close',
   CacheSetupAndConnect = 'cache-setup-and-connect',
 }
@@ -99,6 +100,9 @@ export type MlEphantManagerEvents2 =
     }
   | {
       type: MlEphantManagerTransitions2.ConversationClose
+    }
+  | {
+      type: MlEphantManagerTransitions2.Interrupt
     }
   | {
       type: MlEphantManagerTransitions2.AbruptClose
@@ -495,6 +499,23 @@ export const mlEphantManagerMachine2 = setup({
         projectNameCurrentlyOpened: requestData.body.project_name,
       }
     }),
+    [MlEphantManagerTransitions2.Interrupt]: fromPromise(async function (
+      args: XSInput<MlEphantManagerTransitions2.Interrupt>
+    ): Promise<Partial<MlEphantManagerContext2>> {
+      const { context } = args.input
+      if (!isPresent<WebSocket>(context.ws))
+        return Promise.reject(new Error('WebSocket not present'))
+      if (!isPresent<Conversation>(context.conversation))
+        return Promise.reject(new Error('Conversation not present'))
+
+      const request: Extract<MlCopilotClientMessage, { type: 'system' }> = {
+        type: 'system',
+        command: 'interrupt',
+      }
+      context.ws.send(JSON.stringify(request))
+
+      return {}
+    }),
   },
 }).createMachine({
   initial: S.Await,
@@ -623,9 +644,11 @@ export const mlEphantManagerMachine2 = setup({
                       ),
                     }
 
-                    // Errors and information are considered their own
+                    // Errors are considered their own
                     // exchanges because they have no end_of_stream signal.
-                    if ('error' in event.response || 'info' in event.response) {
+                    // It is assumed `info` messages are followed up
+                    // with an end_of_stream signal.
+                    if ('error' in event.response) {
                       conversation.exchanges.push({
                         responses: [event.response],
                         deltasAggregated: '',
@@ -690,6 +713,7 @@ export const mlEphantManagerMachine2 = setup({
             [S.Await]: {
               on: transitions([
                 MlEphantManagerTransitions2.MessageSend,
+                MlEphantManagerTransitions2.Interrupt,
                 MlEphantManagerTransitions2.ConversationClose,
                 MlEphantManagerTransitions2.AbruptClose,
               ]),
@@ -715,6 +739,25 @@ export const mlEphantManagerMachine2 = setup({
                 onDone: {
                   target: S.Await,
                   actions: [assign(({ event }) => event.output)],
+                },
+                onError: { target: S.Await, actions: ['toastError'] },
+              },
+            },
+            [MlEphantManagerTransitions2.Interrupt]: {
+              invoke: {
+                input: (args) => {
+                  assertEvent(args.event, [
+                    MlEphantManagerTransitions2.Interrupt,
+                  ])
+                  return {
+                    event: args.event,
+                    context: args.context,
+                  }
+                },
+                src: MlEphantManagerTransitions2.Interrupt,
+                onDone: {
+                  target: S.Await,
+                  actions: [],
                 },
                 onError: { target: S.Await, actions: ['toastError'] },
               },

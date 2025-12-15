@@ -1,7 +1,11 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
+use kcmc::{
+    shared::BodyType,
+    units::{UnitAngle, UnitLength},
+};
+use kittycad_modeling_cmds as kcmc;
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
@@ -573,6 +577,17 @@ impl<'a> FromKclValue<'a> for crate::execution::PlaneType {
             _ => return None,
         };
         Some(plane_type)
+    }
+}
+
+impl<'a> FromKclValue<'a> for BodyType {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let body_type = match arg.as_str()? {
+            "solid" => Self::Solid,
+            "surface" => Self::Surface,
+            _ => return None,
+        };
+        Some(body_type)
     }
 }
 
