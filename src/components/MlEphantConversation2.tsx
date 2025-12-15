@@ -395,7 +395,9 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
               {props.userBlocked ? (
-                <StarterCard text="Unfortunately, your account is currently blocked. Check your [account page](https://zoo.dev/account/billing) for more information, or [contact support](https://zoo.dev/contact)." />
+                <StarterCard
+                  text={`Unfortunately, your account is currently blocked. Check your [account page](${withSiteBaseURL('/account/billing')}) for more information, or [contact support](${withSiteBaseURL('/contact')}).`}
+                />
               ) : props.isLoading === false || props.needsReconnect ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
                   exchangeCards
