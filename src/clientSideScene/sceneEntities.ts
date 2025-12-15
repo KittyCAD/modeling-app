@@ -2977,31 +2977,6 @@ export class SceneEntities {
       ))
 
       if (sketchEntryNodePath) {
-        // // Previous way calling raycastRing() again after snapping to Grid.
-        // // Convert baseunit to world space
-        // const worldPoint = new Vector3(
-        //   snappedPoint[0] * this.sceneInfra.baseUnitMultiplier,
-        //   snappedPoint[1] * this.sceneInfra.baseUnitMultiplier,
-        //   0
-        // )
-        // // Apply sketch plane rotation and position
-        // if (this.currentSketchQuaternion) {
-        //   worldPoint.applyQuaternion(this.currentSketchQuaternion)
-        // }
-        // worldPoint.add(this.intersectionPlane.position)
-        // // Now project to NDC
-        // const ndc = worldPoint.project(this.sceneInfra.camControls.camera)
-        //
-        // this.sceneInfra.currentMouseVector.copy(ndc)
-        // intersects = this.sceneInfra.raycastRing()
-        //
-        // const snappedToProfileStartResult =
-        // this.maybeSnapProfileStartIntersect2d({
-        //   sketchEntryNodePath,
-        //   intersects,
-        //   intersection2d: new Vector2(...snappedPoint),
-        // })
-
         const snappedToProfileStartResult = this.maybeSnapToProfileStart(
           snappedPoint,
           sketchEntryNodePath

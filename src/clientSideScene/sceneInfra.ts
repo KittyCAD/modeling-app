@@ -715,7 +715,6 @@ export class SceneInfra {
     }
 
     // Check the center point
-    console.log('raycastring', mouseDownVector)
     this.raycaster.setFromCamera(mouseDownVector, this.camControls.camera)
     updateIntersectionsMap(
       this.raycaster.intersectObjects(this.scene.children, true)
