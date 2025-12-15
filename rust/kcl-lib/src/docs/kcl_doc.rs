@@ -657,6 +657,8 @@ impl FnData {
             return "hole(${0:holeSketch}, ${1:%})".to_owned();
         } else if self.name == "extrude" {
             return "extrude(length = ${0:10})".to_owned();
+        } else if self.name == "translate" {
+            return "translate(x = ${0:0}, y = ${1:0}, z = ${2:0})".to_owned();
         }
         let mut args = Vec::new();
         let mut index = 0;
