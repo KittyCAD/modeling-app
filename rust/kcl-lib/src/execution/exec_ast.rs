@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
-use kcl_ezpz::Constraint;
+use kcl_ezpz::{Constraint, NonLinearSystemError};
 
 #[cfg(feature = "artifact-graph")]
 use crate::front::{Object, ObjectKind};
@@ -1116,29 +1116,52 @@ impl Node<SketchBlock> {
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok(o) => o,
             Err(failure) => {
-                if let kcl_ezpz::Error::Solver(_) = &failure.error {
-                    // Constraint solver failed to find a solution. Build a
-                    // solution that is the initial guesses.
-                    exec_state.warn(
-                        CompilationError::err(range, "Constraint solver failed to find a solution".to_owned()),
-                        annotations::WARN_SOLVER,
-                    );
-                    let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
-                    (
-                        kcl_ezpz::SolveOutcome {
-                            final_values,
-                            iterations: Default::default(),
-                            warnings: failure.warnings,
-                            unsatisfied: Default::default(),
-                            priority_solved: Default::default(),
-                        },
-                        None,
-                    )
-                } else {
-                    return Err(KclError::new_internal(KclErrorDetails::new(
-                        format!("Error from constraint solver: {}", &failure.error),
-                        vec![SourceRange::from(self)],
-                    )));
+                match &failure.error {
+                    NonLinearSystemError::FaerMatrix { .. }
+                    | NonLinearSystemError::Faer { .. }
+                    | NonLinearSystemError::FaerSolve { .. }
+                    | NonLinearSystemError::FaerSvd(..)
+                    | NonLinearSystemError::DidNotConverge => {
+                        // Constraint solver failed to find a solution. Build a
+                        // solution that is the initial guesses.
+                        exec_state.warn(
+                            CompilationError::err(range, "Constraint solver failed to find a solution".to_owned()),
+                            annotations::WARN_SOLVER,
+                        );
+                        let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
+                        (
+                            kcl_ezpz::SolveOutcome {
+                                final_values,
+                                iterations: Default::default(),
+                                warnings: failure.warnings,
+                                unsatisfied: Default::default(),
+                                priority_solved: Default::default(),
+                            },
+                            None,
+                        )
+                    }
+                    NonLinearSystemError::EmptySystemNotAllowed
+                    | NonLinearSystemError::WrongNumberGuesses { .. }
+                    | NonLinearSystemError::MissingGuess { .. }
+                    | NonLinearSystemError::NotFound(..) => {
+                        // These indicate something's gone wrong in KCL or ezpz,
+                        // it's not a user error. We should investigate this.
+                        #[cfg(target_arch = "wasm32")]
+                        web_sys::console::error_1(
+                            &format!("Internal error from constraint solver: {}", &failure.error).into(),
+                        );
+                        return Err(KclError::new_internal(KclErrorDetails::new(
+                            format!("Internal error from constraint solver: {}", &failure.error),
+                            vec![SourceRange::from(self)],
+                        )));
+                    }
+                    _ => {
+                        // Catch all error case so that it's not a breaking change to publish new errors.
+                        return Err(KclError::new_internal(KclErrorDetails::new(
+                            format!("Error from constraint solver: {}", &failure.error),
+                            vec![SourceRange::from(self)],
+                        )));
+                    }
                 }
             }
         };
