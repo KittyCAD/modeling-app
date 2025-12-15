@@ -320,6 +320,10 @@ impl ExecState {
         self.global.segment_ids_edited.contains(object_id)
     }
 
+    pub(super) fn is_in_sketch_block(&self) -> bool {
+        self.mod_local.sketch_block.is_some()
+    }
+
     pub(crate) fn sketch_block_mut(&mut self) -> Option<&mut SketchBlockState> {
         self.mod_local.sketch_block.as_mut()
     }
