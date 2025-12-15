@@ -1,5 +1,7 @@
 [package]
 name = "kcl-wasm-lib"
+description = "KittyCAD Language wasm bindings"
+license = "MIT"
 version = "0.1.116"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"

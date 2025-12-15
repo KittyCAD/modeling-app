@@ -1139,83 +1139,102 @@ impl FrontendState {
         coincident: Coincident,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        if coincident.points.len() != 2 {
+        if coincident.segments.len() != 2 {
             return Err(Error {
                 msg: format!(
-                    "Coincident constraint must have exactly 2 points, got {}",
-                    coincident.points.len()
+                    "Coincident constraint must have exactly 2 segments, got {}",
+                    coincident.segments.len()
                 ),
             });
         }
         let sketch_id = sketch;
 
-        // Map the runtime objects back to variable names.
-        let pt0_id = coincident.points[0];
-        let pt0_object = self.scene_graph.objects.get(pt0_id.0).ok_or_else(|| Error {
-            msg: format!("Point not found: {pt0_id:?}"),
+        // Get AST reference for first object (point or segment)
+        let seg0_id = coincident.segments[0];
+        let seg0_object = self.scene_graph.objects.get(seg0_id.0).ok_or_else(|| Error {
+            msg: format!("Object not found: {seg0_id:?}"),
         })?;
-        let ObjectKind::Segment { segment: pt0_segment } = &pt0_object.kind else {
+        let ObjectKind::Segment { segment: seg0_segment } = &seg0_object.kind else {
             return Err(Error {
-                msg: format!("Object is not a segment: {pt0_object:?}"),
+                msg: format!("Object is not a segment: {seg0_object:?}"),
             });
         };
-        let Segment::Point(pt0) = pt0_segment else {
-            return Err(Error {
-                msg: format!("Only points are currently supported: {pt0_object:?}"),
-            });
-        };
-        // If the point is part of a line, refer to the line instead.
-        let pt0_ast = if let Some(line_id) = pt0.owner {
-            let line = self.expect_line(line_id)?;
-            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-            let property = if line.start == pt0_id {
-                LINE_PROPERTY_START
-            } else if line.end == pt0_id {
-                LINE_PROPERTY_END
-            } else {
+        let seg0_ast = match seg0_segment {
+            Segment::Point(point) => {
+                // If the point is part of a line, refer to the line's start/end property
+                if let Some(line_id) = point.owner {
+                    let line = self.expect_line(line_id)?;
+                    let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
+                    let property = if line.start == seg0_id {
+                        LINE_PROPERTY_START
+                    } else if line.end == seg0_id {
+                        LINE_PROPERTY_END
+                    } else {
+                        return Err(Error {
+                            msg: format!(
+                                "Internal: Point is not part of owner's line segment: point={seg0_id:?}, line={line_id:?}"
+                            ),
+                        });
+                    };
+                    get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
+                } else {
+                    // Standalone point
+                    get_or_insert_ast_reference(new_ast, &seg0_object.source, "point", None)?
+                }
+            }
+            Segment::Line(_) => {
+                // Reference the segment directly (for point-segment coincident)
+                get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?
+            }
+            Segment::Arc(_) | Segment::Circle(_) => {
                 return Err(Error {
-                    msg: format!(
-                        "Internal: Point is not part of owner's line segment: point={pt0_id:?}, line={line_id:?}"
-                    ),
+                    msg: "Coincident constraint with arcs or circles is not supported. Only points and line segments are.".to_owned(),
                 });
-            };
-            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-        } else {
-            get_or_insert_ast_reference(new_ast, &pt0_object.source, "point", None)?
+            }
         };
 
-        let pt1_id = coincident.points[1];
-        let pt1_object = self.scene_graph.objects.get(pt1_id.0).ok_or_else(|| Error {
-            msg: format!("Point not found: {pt1_id:?}"),
+        // Get AST reference for second object (point or segment)
+        let seg1_id = coincident.segments[1];
+        let seg1_object = self.scene_graph.objects.get(seg1_id.0).ok_or_else(|| Error {
+            msg: format!("Object not found: {seg1_id:?}"),
         })?;
-        let ObjectKind::Segment { segment: pt1_segment } = &pt1_object.kind else {
+        let ObjectKind::Segment { segment: seg1_segment } = &seg1_object.kind else {
             return Err(Error {
-                msg: format!("Object is not a segment: {pt1_object:?}"),
+                msg: format!("Object is not a segment: {seg1_object:?}"),
             });
         };
-        let Segment::Point(pt1) = pt1_segment else {
-            return Err(Error {
-                msg: format!("Only points are currently supported: {pt1_object:?}"),
-            });
-        };
-        // If the point is part of a line, refer to the line instead.
-        let pt1_ast = if let Some(line_id) = pt1.owner {
-            let line = self.expect_line(line_id)?;
-            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-            let property = if line.start == pt1_id {
-                LINE_PROPERTY_START
-            } else if line.end == pt1_id {
-                LINE_PROPERTY_END
-            } else {
+        let seg1_ast = match seg1_segment {
+            Segment::Point(point) => {
+                // If the point is part of a line, refer to the line's start/end property
+                if let Some(line_id) = point.owner {
+                    let line = self.expect_line(line_id)?;
+                    let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
+                    let property = if line.start == seg1_id {
+                        LINE_PROPERTY_START
+                    } else if line.end == seg1_id {
+                        LINE_PROPERTY_END
+                    } else {
+                        return Err(Error {
+                            msg: format!(
+                                "Internal: Point is not part of owner's line segment: point={seg1_id:?}, line={line_id:?}"
+                            ),
+                        });
+                    };
+                    get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
+                } else {
+                    // Standalone point
+                    get_or_insert_ast_reference(new_ast, &seg1_object.source, "point", None)?
+                }
+            }
+            Segment::Line(_) => {
+                // Reference the segment directly (for point-segment coincident)
+                get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?
+            }
+            Segment::Arc(_) | Segment::Circle(_) => {
                 return Err(Error {
-                    msg: format!(
-                        "Internal: Point is not part of owner's line segment: point={pt1_id:?}, line={line_id:?}"
-                    ),
+                    msg: "Coincident constraint with arcs or circles is not supported. Only points and line segments are.".to_owned(),
                 });
-            };
-            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-        } else {
-            get_or_insert_ast_reference(new_ast, &pt1_object.source, "point", None)?
+            }
         };
 
         // Create the coincident() call.
@@ -1223,7 +1242,7 @@ impl FrontendState {
             callee: ast::Node::no_src(ast_sketch2_name(COINCIDENT_FN)),
             unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
                 ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
+                    elements: vec![seg0_ast, seg1_ast],
                     digest: None,
                     non_code_meta: Default::default(),
                 },
@@ -1682,7 +1701,7 @@ impl FrontendState {
                 });
             };
             let depends_on_segment = match constraint {
-                Constraint::Coincident(c) => c.points.iter().any(|pt_id| {
+                Constraint::Coincident(c) => c.segments.iter().any(|pt_id| {
                     if segment_ids_set.contains(pt_id) {
                         return true;
                     }
@@ -3310,7 +3329,7 @@ sketch(on = XY) {
         let point1_id = frontend.scene_graph.objects.get(2).unwrap().id;
 
         let constraint = Constraint::Coincident(Coincident {
-            points: vec![point0_id, point1_id],
+            segments: vec![point0_id, point1_id],
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
@@ -3364,7 +3383,7 @@ sketch(on = XY) {
         let point1_id = frontend.scene_graph.objects.get(4).unwrap().id;
 
         let constraint = Constraint::Coincident(Coincident {
-            points: vec![point0_id, point1_id],
+            segments: vec![point0_id, point1_id],
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)

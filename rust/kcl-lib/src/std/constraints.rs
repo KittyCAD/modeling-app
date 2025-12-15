@@ -1,4 +1,8 @@
 use anyhow::Result;
+use kcl_ezpz::{
+    Constraint as SolverConstraint,
+    datatypes::{DatumPoint, LineSegment},
+};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -75,7 +79,7 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                optional_constraints.push(SolverConstraint::Fixed(
                     at_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -86,7 +90,7 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                optional_constraints.push(SolverConstraint::Fixed(
                     at_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
@@ -223,7 +227,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                optional_constraints.push(SolverConstraint::Fixed(
                     start_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -234,7 +238,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                optional_constraints.push(SolverConstraint::Fixed(
                     start_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
@@ -249,7 +253,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                optional_constraints.push(SolverConstraint::Fixed(
                     end_x_var.id.to_constraint_id(args.source_range)?,
                     x_initial_value.n,
                 ));
@@ -260,7 +264,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
                     args.source_range,
                     "edited segment fixed constraint value",
                 )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                optional_constraints.push(SolverConstraint::Fixed(
                     end_y_var.id.to_constraint_id(args.source_range)?,
                     y_initial_value.n,
                 ));
@@ -583,7 +587,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                             let p1_y = &pos1[1];
                             match (p1_x, p1_y) {
                                 (UnsolvedExpr::Unknown(p1_x), UnsolvedExpr::Unknown(p1_y)) => {
-                                    let constraint = kcl_ezpz::Constraint::PointsCoincident(
+                                    let constraint = SolverConstraint::PointsCoincident(
                                         kcl_ezpz::datatypes::DatumPoint::new_xy(
                                             p0_x.to_constraint_id(range)?,
                                             p0_y.to_constraint_id(range)?,
@@ -606,7 +610,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
-                                            points: vec![unsolved0.object_id, unsolved1.object_id],
+                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
                                         });
                                         sketch_state.sketch_constraints.push(constraint_id);
                                         track_constraint(constraint_id, constraint, exec_state, &args);
@@ -641,7 +645,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
-                                            points: vec![unsolved0.object_id, unsolved1.object_id],
+                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
                                         });
                                         sketch_state.sketch_constraints.push(constraint_id);
                                         track_constraint(constraint_id, constraint, exec_state, &args);
@@ -690,7 +694,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     #[cfg(feature = "artifact-graph")]
                                     {
                                         let constraint = crate::front::Constraint::Coincident(Coincident {
-                                            points: vec![unsolved0.object_id, unsolved1.object_id],
+                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
                                         });
                                         sketch_state.sketch_constraints.push(constraint_id);
                                         track_constraint(constraint_id, constraint, exec_state, &args);
@@ -727,9 +731,86 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                         }
                     }
                 }
+                // Point-Line or Line-Point case: create perpendicular distance constraint with distance 0
+                (
+                    UnsolvedSegmentKind::Point {
+                        position: point_pos, ..
+                    },
+                    UnsolvedSegmentKind::Line {
+                        start: line_start,
+                        end: line_end,
+                        ..
+                    },
+                )
+                | (
+                    UnsolvedSegmentKind::Line {
+                        start: line_start,
+                        end: line_end,
+                        ..
+                    },
+                    UnsolvedSegmentKind::Point {
+                        position: point_pos, ..
+                    },
+                ) => {
+                    let point_x = &point_pos[0];
+                    let point_y = &point_pos[1];
+                    match (point_x, point_y) {
+                        (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) => {
+                            // Extract line start and end coordinates
+                            let (start_x, start_y) = (&line_start[0], &line_start[1]);
+                            let (end_x, end_y) = (&line_end[0], &line_end[1]);
+
+                            match (start_x, start_y, end_x, end_y) {
+                                (
+                                    UnsolvedExpr::Unknown(sx), UnsolvedExpr::Unknown(sy),
+                                    UnsolvedExpr::Unknown(ex), UnsolvedExpr::Unknown(ey),
+                                ) => {
+                                    let point = DatumPoint::new_xy(
+                                        point_x.to_constraint_id(range)?,
+                                        point_y.to_constraint_id(range)?,
+                                    );
+                                    let line_segment = LineSegment::new(
+                                        DatumPoint::new_xy(sx.to_constraint_id(range)?, sy.to_constraint_id(range)?),
+                                        DatumPoint::new_xy(ex.to_constraint_id(range)?, ey.to_constraint_id(range)?),
+                                    );
+                                    let constraint = SolverConstraint::PointLineDistance(point, line_segment, 0.0);
+
+                                    #[cfg(feature = "artifact-graph")]
+                                    let constraint_id = exec_state.next_object_id();
+
+                                    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                                            "coincident() can only be used inside a sketch block".to_owned(),
+                                            vec![args.source_range],
+                                        )));
+                                    };
+                                    sketch_state.solver_constraints.push(constraint);
+                                    #[cfg(feature = "artifact-graph")]
+                                    {
+                                        let constraint = crate::front::Constraint::Coincident(Coincident {
+                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
+                                        });
+                                        sketch_state.sketch_constraints.push(constraint_id);
+                                        track_constraint(constraint_id, constraint, exec_state, &args);
+                                    }
+                                    Ok(KclValue::none())
+                                }
+                                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                                    "Line segment endpoints must be sketch variables for point-segment coincident constraint".to_owned(),
+                                    vec![args.source_range],
+                                ))),
+                            }
+                        }
+                        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Point coordinates must be sketch variables for point-segment coincident constraint"
+                                .to_owned(),
+                            vec![args.source_range],
+                        ))),
+                    }
+                }
                 _ => Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
-                        "both inputs of coincident must be points; found {:?} and {:?}",
+                        "coincident supports point-point or point-segment; found {:?} and {:?}",
                         &unsolved0.kind, &unsolved1.kind
                     ),
                     vec![args.source_range],
@@ -737,7 +818,8 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
             }
         }
         _ => Err(KclError::new_semantic(KclErrorDetails::new(
-            "All inputs must be points, created from point(), line(), or another sketch function".to_owned(),
+            "All inputs must be segments (points or lines), created from point(), line(), or another sketch function"
+                .to_owned(),
             vec![args.source_range],
         ))),
     }
@@ -791,8 +873,8 @@ fn coincident_constraints_fixed(
             vec![args.source_range],
         )));
     };
-    let constraint_x = kcl_ezpz::Constraint::Fixed(p0_x.to_constraint_id(args.source_range)?, p1_x.n);
-    let constraint_y = kcl_ezpz::Constraint::Fixed(p0_y.to_constraint_id(args.source_range)?, p1_y.n);
+    let constraint_x = SolverConstraint::Fixed(p0_x.to_constraint_id(args.source_range)?, p1_x.n);
+    let constraint_y = SolverConstraint::Fixed(p0_y.to_constraint_id(args.source_range)?, p1_y.n);
     Ok((constraint_x, constraint_y))
 }
 
@@ -1003,7 +1085,7 @@ pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclV
         line1_p1_y.to_constraint_id(range)?,
     );
     let solver_line1 = kcl_ezpz::datatypes::LineSegment::new(solver_line1_p0, solver_line1_p1);
-    let constraint = kcl_ezpz::Constraint::LinesEqualLength(solver_line0, solver_line1);
+    let constraint = SolverConstraint::LinesEqualLength(solver_line0, solver_line1);
     #[cfg(feature = "artifact-graph")]
     let constraint_id = exec_state.next_object_id();
     // Save the constraint to be used for solving.
@@ -1153,7 +1235,7 @@ pub async fn parallel(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     );
     let solver_line1 = kcl_ezpz::datatypes::LineSegment::new(solver_line1_p0, solver_line1_p1);
     let constraint =
-        kcl_ezpz::Constraint::LinesAtAngle(solver_line0, solver_line1, kcl_ezpz::datatypes::AngleKind::Parallel);
+        SolverConstraint::LinesAtAngle(solver_line0, solver_line1, kcl_ezpz::datatypes::AngleKind::Parallel);
     #[cfg(feature = "artifact-graph")]
     let constraint_id = exec_state.next_object_id();
     // Save the constraint to be used for solving.
