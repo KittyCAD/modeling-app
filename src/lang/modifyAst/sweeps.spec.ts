@@ -291,17 +291,43 @@ extrude001 = extrude(profile001, length = 2)`)
         ast,
         sketches,
         length,
-        bodyType: 'surface',
+        bodyType: 'SURFACE',
         artifactGraph,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleProfileCode)
       expect(newCode).toContain(
-        `extrude001 = extrude(profile001, length = 1, bodyType = surface)`
+        `extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
       )
-      // TODO: Re-enable once KCL stdlib supports bodyType parameter
-      // await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add an extrude call with bodyType "solid"', async () => {
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
+        circleProfileCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        bodyType: 'SOLID',
+        artifactGraph,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(circleProfileCode)
+      expect(newCode).toContain(
+        `extrude001 = extrude(profile001, length = 1, bodyType = SOLID)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add an extrude call to a wall', async () => {

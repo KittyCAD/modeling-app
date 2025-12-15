@@ -49,6 +49,12 @@ export fn equalLength(@lines: [Segment; 2]) {}
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn parallel(@input: [Segment; 2+]) {}
 
+/// Constrain lines to be perpendicular.
+///
+/// Currently limited to two lines.
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn perpendicular(@input: [Segment; 2+]) {}
+
 /// Constrain a line to be horizontal.
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn horizontal(@input: Segment) {}
