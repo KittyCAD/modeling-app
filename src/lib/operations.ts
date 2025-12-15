@@ -10,8 +10,6 @@ import {
   retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
 import {
-  BODY_TYPE_CONSTANTS,
-  EXTRUDE_METHOD_CONSTANTS,
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveTagDeclaratorFromOpArg,
   SWEEP_CONSTANTS,
@@ -49,10 +47,14 @@ import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 import { retrieveEdgeSelectionsFromOpArgs } from '@src/lang/modifyAst/edges'
-import type {
-  BodyType,
-  ExtrudeMethod,
-} from '@rust/kcl-lib/bindings/ModelingCmd'
+import {
+  KCL_PRELUDE_BODY_TYPE_SOLID,
+  KCL_PRELUDE_BODY_TYPE_SURFACE,
+  type KclPreludeBodyType,
+  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
+  KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+  type KclPreludeExtrudeMethod,
+} from '@src/lib/constants'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -389,32 +391,32 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     'error' in twistCenterResult ? undefined : twistCenterResult
 
   // method argument from a string to boolean
-  let method: ExtrudeMethod | undefined
+  let method: KclPreludeExtrudeMethod | undefined
   if ('method' in operation.labeledArgs && operation.labeledArgs.method) {
     const result = code.slice(
       operation.labeledArgs.method.sourceRange[0],
       operation.labeledArgs.method.sourceRange[1]
     )
-    if (result === EXTRUDE_METHOD_CONSTANTS.merge) {
-      method = 'merge'
-    } else if (result === EXTRUDE_METHOD_CONSTANTS.new) {
-      method = 'new'
+    if (result === KCL_PRELUDE_EXTRUDE_METHOD_MERGE) {
+      method = KCL_PRELUDE_EXTRUDE_METHOD_MERGE
+    } else if (result === KCL_PRELUDE_EXTRUDE_METHOD_NEW) {
+      method = KCL_PRELUDE_EXTRUDE_METHOD_NEW
     } else {
       return { reason: "Couldn't retrieve method argument" }
     }
   }
 
   // bodyType argument from a string
-  let bodyType: BodyType | undefined
+  let bodyType: KclPreludeBodyType | undefined
   if ('bodyType' in operation.labeledArgs && operation.labeledArgs.bodyType) {
     const result = code.slice(
       operation.labeledArgs.bodyType.sourceRange[0],
       operation.labeledArgs.bodyType.sourceRange[1]
     )
-    if (result === BODY_TYPE_CONSTANTS.solid) {
-      bodyType = 'solid'
-    } else if (result === BODY_TYPE_CONSTANTS.surface) {
-      bodyType = 'surface'
+    if (result === KCL_PRELUDE_BODY_TYPE_SOLID) {
+      bodyType = KCL_PRELUDE_BODY_TYPE_SOLID
+    } else if (result === KCL_PRELUDE_BODY_TYPE_SURFACE) {
+      bodyType = KCL_PRELUDE_BODY_TYPE_SURFACE
     } else {
       return { reason: "Couldn't retrieve bodyType argument" }
     }

@@ -37,26 +37,14 @@ import type {
   VariableDeclaration,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import {
+  KCL_DEFAULT_CONSTANT_PREFIXES,
+  type KclPreludeExtrudeMethod,
+  type KclPreludeBodyType,
+} from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
-import type {
-  BodyType,
-  ExtrudeMethod,
-} from '@rust/kcl-lib/bindings/ModelingCmd'
-
-// TODO: figure out if we can get this from Rust directly?
-export const EXTRUDE_METHOD_CONSTANTS: Record<ExtrudeMethod, string> = {
-  merge: 'MERGE',
-  new: 'NEW',
-}
-export const EXTRUDE_METHOD_VALUES: ExtrudeMethod[] = ['merge', 'new']
-export const BODY_TYPE_CONSTANTS: Record<BodyType, string> = {
-  surface: 'SURFACE',
-  solid: 'SOLID',
-}
-export const BODY_TYPE_VALUES: BodyType[] = ['surface', 'solid']
 
 export function addExtrude({
   ast,
@@ -87,8 +75,8 @@ export function addExtrude({
   twistAngle?: KclCommandValue
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
-  method?: ExtrudeMethod
-  bodyType?: BodyType
+  method?: KclPreludeExtrudeMethod
+  bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
   | {
@@ -156,20 +144,10 @@ export function addExtrude({
     twistCenterExpr = [createLabeledArg('twistCenter', twistCenterExpression)]
   }
   const methodExpr = method
-    ? [
-        createLabeledArg(
-          'method',
-          createLocalName(EXTRUDE_METHOD_CONSTANTS[method])
-        ),
-      ]
+    ? [createLabeledArg('method', createLocalName(method))]
     : []
   const bodyTypeExpr = bodyType
-    ? [
-        createLabeledArg(
-          'bodyType',
-          createLocalName(BODY_TYPE_CONSTANTS[bodyType])
-        ),
-      ]
+    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)

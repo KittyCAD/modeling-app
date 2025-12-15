@@ -27,6 +27,10 @@ import {
   KCL_DEFAULT_PRECISION,
   KCL_DEFAULT_FONT_POINT_SIZE,
   KCL_DEFAULT_FONT_SCALE,
+  type KclPreludeBodyType,
+  KCL_PRELUDE_BODY_TYPE_VALUES,
+  KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
+  type KclPreludeExtrudeMethod,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -48,8 +52,6 @@ import {
   addLoft,
   addRevolve,
   addSweep,
-  BODY_TYPE_VALUES,
-  EXTRUDE_METHOD_VALUES,
   type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
@@ -77,10 +79,7 @@ import {
   addDatumGdt,
   getNextAvailableDatumName,
 } from '@src/lang/modifyAst/gdt'
-import type {
-  ExtrudeMethod,
-  BodyType,
-} from '@rust/kcl-lib/bindings/ModelingCmd'
+import { capitaliseFC } from '@src/lib/utils'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -149,8 +148,8 @@ export type ModelingCommandSchema = {
     twistCenter?: KclCommandValue
     // TODO: figure out if we should expose `tolerance` or not
     // @pierremtb: I don't even think it should be in KCL
-    method?: ExtrudeMethod
-    bodyType?: BodyType
+    method?: KclPreludeExtrudeMethod
+    bodyType?: KclPreludeBodyType
   }
   Sweep: {
     // Enables editing workflow
@@ -625,16 +624,16 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       method: {
         inputType: 'options',
         required: false,
-        options: EXTRUDE_METHOD_VALUES.map((value) => ({
-          name: value.toUpperCase(),
+        options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
+          name: capitaliseFC(value.toLowerCase()),
           value,
         })),
       },
       bodyType: {
         inputType: 'options',
         required: false,
-        options: BODY_TYPE_VALUES.map((value) => ({
-          name: value.toUpperCase(),
+        options: KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
+          name: capitaliseFC(value.toLowerCase()),
           value,
         })),
       },

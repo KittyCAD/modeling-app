@@ -264,7 +264,7 @@ extrude001 = extrude(profile001, length = 2)`)
         ast,
         sketches,
         length,
-        method: 'new',
+        method: 'NEW',
         artifactGraph,
       })
       if (err(result)) throw result
@@ -291,7 +291,7 @@ extrude001 = extrude(profile001, length = 2)`)
         ast,
         sketches,
         length,
-        bodyType: 'surface',
+        bodyType: 'SURFACE',
         artifactGraph,
       })
       if (err(result)) throw result
@@ -318,7 +318,7 @@ extrude001 = extrude(profile001, length = 2)`)
         ast,
         sketches,
         length,
-        bodyType: 'solid',
+        bodyType: 'SOLID',
         artifactGraph,
       })
       if (err(result)) throw result
