@@ -48,9 +48,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
       - name: Install dependencies
@@ -105,7 +105,7 @@ jobs:
       RA_TARGET: ${{ matrix.target }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Use correct Rust toolchain
@@ -119,7 +119,7 @@ jobs:
           components: rust-src
           target: ${{ matrix.target }}
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
       - name: Update apt repositories
@@ -219,7 +219,7 @@ jobs:
             npm \
             yarn
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Use correct Rust toolchain
@@ -267,11 +267,11 @@ jobs:
       - run: echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - run: 'echo "TAG: $TAG"'
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Install Nodejs
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
       - run: echo "HEAD_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV

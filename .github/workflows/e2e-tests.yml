@@ -23,7 +23,7 @@ jobs:
   prepare-wasm:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
@@ -36,7 +36,7 @@ jobs:
             rust:
               - 'rust/**'
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
@@ -117,7 +117,7 @@ jobs:
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
@@ -134,7 +134,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
@@ -239,7 +239,7 @@ jobs:
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
@@ -256,7 +256,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
@@ -356,7 +356,7 @@ jobs:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
@@ -372,7 +372,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
           cache: "npm"

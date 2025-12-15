@@ -23,9 +23,9 @@ jobs:
       version: ${{ steps.export_version.outputs.version }}
       notes: ${{ steps.export_notes.outputs.notes }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -147,7 +147,7 @@ jobs:
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/download-artifact@v4
         name: prepared-files
@@ -165,7 +165,7 @@ jobs:
           cp prepared-files/assets/icon.png assets/icon.png
 
       - name: Sync node version and setup cache
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache: 'npm' # Set this to npm, npm or pnpm.
@@ -266,7 +266,7 @@ jobs:
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
     needs: [prepare-files, build-apps]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/download-artifact@v4
         with:
