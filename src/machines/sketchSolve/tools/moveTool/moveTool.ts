@@ -1,10 +1,12 @@
 import type {
   ApiObject,
   ExistingSegmentCtor,
+  SceneGraph,
   SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { ExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
 import { roundOff } from '@src/lib/utils'
 import {
   htmlHelper,
@@ -204,14 +206,29 @@ export function createOnDragStartCallback({
 /**
  * Creates the onDragEnd callback for sketch solve drag operations.
  * Restores visual feedback for point segments after dragging ends.
+ * Also fires sketchExecuteMock one last time and sends the event to update the sketch outcome.
  *
  * @param getDraggingPointElement - Getter for the currently dragging point element
  * @param setDraggingPointElement - Setter to clear the dragging point element
+ * @param getContextData - Function to get the current context data (selectedIds, sketchId, sketchExecOutcome, kclManager)
+ * @param sketchExecuteMock - Function to execute sketch in mock mode
+ * @param onNewSketchOutcome - Callback function called when a new sketch outcome is available
+ * @param getJsAppSettings - Function to get app settings (async)
  * @param findInnerCircle - Function to find the inner circle element within a point element (defaults to querying by data attribute)
  */
 export function createOnDragEndCallback({
   getDraggingPointElement,
   setDraggingPointElement,
+  getContextData = () => ({
+    selectedIds: [],
+    sketchId: 0,
+    kclManager: { code: '' },
+  }),
+  sketchExecuteMock = async () => {
+    return Promise.reject(new Error('sketchExecuteMock not provided'))
+  },
+  onNewSketchOutcome = () => {},
+  getJsAppSettings = async () => ({}),
   findInnerCircle = (element: HTMLElement): HTMLElement | null => {
     const found = element.querySelector('[data-point-inner-circle="true"]')
     // querySelector returns Element | null, but we know it's an HTMLElement (a div)
@@ -224,6 +241,30 @@ export function createOnDragEndCallback({
 }: {
   getDraggingPointElement: () => HTMLElement | null
   setDraggingPointElement: (element: HTMLElement | null) => void
+  getContextData?: () => {
+    selectedIds: Array<number>
+    sketchId: number
+    sketchExecOutcome?: {
+      sceneGraphDelta: SceneGraphDelta
+    }
+    kclManager: {
+      code: string
+    }
+  }
+  sketchExecuteMock?: (
+    version: number,
+    sketch: number,
+    settings: DeepPartial<Configuration>
+  ) => Promise<{
+    sceneGraph: SceneGraph
+    execOutcome: ExecOutcome
+  }>
+  onNewSketchOutcome?: (outcome: {
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    writeToDisk?: boolean
+  }) => void
+  getJsAppSettings?: () => Promise<DeepPartial<Configuration>>
   findInnerCircle?: (element: HTMLElement) => HTMLElement | null
 }): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
@@ -231,7 +272,7 @@ export function createOnDragEndCallback({
   mouseEvent: MouseEvent
   intersects: Array<any>
 }) => void | Promise<void> {
-  return () => {
+  return async () => {
     // Restore opacity for point segment if we were dragging one
     const element = getDraggingPointElement()
     if (element) {
@@ -244,6 +285,44 @@ export function createOnDragEndCallback({
     // Always clear the dragging state, even if no element was being dragged
     // This ensures state is always clean after drag ends
     setDraggingPointElement(null)
+
+    // Fire sketchExecuteMock one last time and send the event to update the sketch outcome
+    const contextData = getContextData()
+    const sketchId = contextData.sketchId
+
+    try {
+      const settings = await getJsAppSettings()
+      const result = await sketchExecuteMock(0, sketchId, settings).catch(
+        (err) => {
+          console.error('failed to execute sketch mock', err)
+          return null
+        }
+      )
+
+      if (result) {
+        // Construct SceneGraphDelta from the result
+        const sceneGraphDelta: SceneGraphDelta = {
+          new_graph: result.sceneGraph,
+          invalidates_ids: false,
+          new_objects: [],
+          exec_outcome: result.execOutcome,
+        }
+
+        // Get kclSource from current context
+        const kclSource: SourceDelta = {
+          text: contextData.kclManager.code,
+        }
+
+        // Send the event to update the sketch outcome
+        onNewSketchOutcome({
+          kclSource,
+          sceneGraphDelta,
+          writeToDisk: true,
+        })
+      }
+    } catch (err) {
+      console.error('error in onDragEnd sketchExecuteMock', err)
+    }
   }
 }
 
@@ -1331,16 +1410,40 @@ export function setUpOnDragAndSelectionClickCallbacks({
     return intersectingIds
   }
 
+  const onDragEndCallback = createOnDragEndCallback({
+    getDraggingPointElement,
+    setDraggingPointElement,
+    getContextData: () => {
+      const snapshot = self.getSnapshot()
+      return {
+        selectedIds: snapshot.context.selectedIds,
+        sketchId: snapshot.context.sketchId,
+        sketchExecOutcome: snapshot.context.sketchExecOutcome,
+        kclManager: context.kclManager,
+      }
+    },
+    sketchExecuteMock: async (
+      version: number,
+      sketch: number,
+      settings: DeepPartial<Configuration>
+    ) => {
+      return context.rustContext.sketchExecuteMock(version, sketch, settings)
+    },
+    onNewSketchOutcome: (outcome) =>
+      self.send({
+        type: 'update sketch outcome',
+        data: { ...outcome, writeToDisk: true },
+      }),
+    getJsAppSettings: async () => await jsAppSettings(),
+  })
+
   context.sceneInfra.setCallbacks({
     onDragStart: createOnDragStartCallback({
       setLastSuccessfulDragFromPoint,
       setDraggingPointElement,
       getDraggingPointElement,
     }),
-    onDragEnd: createOnDragEndCallback({
-      getDraggingPointElement,
-      setDraggingPointElement,
-    }),
+    onDragEnd: onDragEndCallback,
     onDrag: createOnDragCallback({
       getIsSolveInProgress,
       setIsSolveInProgress,
