@@ -1142,18 +1142,17 @@ impl FrontendState {
         coincident: Coincident,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        if coincident.segments.len() != 2 {
+        let &[seg0_id, seg1_id] = coincident.segments.as_slice() else {
             return Err(Error {
                 msg: format!(
                     "Coincident constraint must have exactly 2 segments, got {}",
                     coincident.segments.len()
                 ),
             });
-        }
+        };
         let sketch_id = sketch;
 
         // Get AST reference for first object (point or segment)
-        let seg0_id = coincident.segments[0];
         let seg0_object = self.scene_graph.objects.get(seg0_id.0).ok_or_else(|| Error {
             msg: format!("Object not found: {seg0_id:?}"),
         })?;
@@ -1197,7 +1196,6 @@ impl FrontendState {
         };
 
         // Get AST reference for second object (point or segment)
-        let seg1_id = coincident.segments[1];
         let seg1_object = self.scene_graph.objects.get(seg1_id.0).ok_or_else(|| Error {
             msg: format!("Object not found: {seg1_id:?}"),
         })?;
@@ -1270,18 +1268,17 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        if distance.points.len() != 2 {
+        let &[pt0_id, pt1_id] = distance.points.as_slice() else {
             return Err(Error {
                 msg: format!(
                     "Distance constraint must have exactly 2 points, got {}",
                     distance.points.len()
                 ),
             });
-        }
+        };
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
-        let pt0_id = distance.points[0];
         let pt0_object = self.scene_graph.objects.get(pt0_id.0).ok_or_else(|| Error {
             msg: format!("Point not found: {pt0_id:?}"),
         })?;
@@ -1315,7 +1312,6 @@ impl FrontendState {
             get_or_insert_ast_reference(new_ast, &pt0_object.source, "point", None)?
         };
 
-        let pt1_id = distance.points[1];
         let pt1_object = self.scene_graph.objects.get(pt1_id.0).ok_or_else(|| Error {
             msg: format!("Point not found: {pt1_id:?}"),
         })?;
@@ -1437,19 +1433,18 @@ impl FrontendState {
         lines_equal_length: LinesEqualLength,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        if lines_equal_length.lines.len() != 2 {
+        let &[line0_id, line1_id] = lines_equal_length.lines.as_slice() else {
             return Err(Error {
                 msg: format!(
                     "Lines equal length constraint must have exactly 2 lines, got {}",
                     lines_equal_length.lines.len()
                 ),
             });
-        }
+        };
 
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
-        let line0_id = lines_equal_length.lines[0];
         let line0_object = self.scene_graph.objects.get(line0_id.0).ok_or_else(|| Error {
             msg: format!("Line not found: {line0_id:?}"),
         })?;
@@ -1465,7 +1460,6 @@ impl FrontendState {
         };
         let line0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
 
-        let line1_id = lines_equal_length.lines[1];
         let line1_object = self.scene_graph.objects.get(line1_id.0).ok_or_else(|| Error {
             msg: format!("Line not found: {line1_id:?}"),
         })?;
@@ -1532,7 +1526,7 @@ impl FrontendState {
         lines: Vec<ObjectId>,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        if lines.len() != 2 {
+        let &[line0_id, line1_id] = lines.as_slice() else {
             return Err(Error {
                 msg: format!(
                     "{} constraint must have exactly 2 lines, got {}",
@@ -1540,12 +1534,11 @@ impl FrontendState {
                     lines.len()
                 ),
             });
-        }
+        };
 
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
-        let line0_id = lines[0];
         let line0_object = self.scene_graph.objects.get(line0_id.0).ok_or_else(|| Error {
             msg: format!("Line not found: {line0_id:?}"),
         })?;
@@ -1564,7 +1557,6 @@ impl FrontendState {
         };
         let line0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
 
-        let line1_id = lines[1];
         let line1_object = self.scene_graph.objects.get(line1_id.0).ok_or_else(|| Error {
             msg: format!("Line not found: {line1_id:?}"),
         })?;
