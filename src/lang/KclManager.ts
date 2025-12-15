@@ -158,7 +158,7 @@ export class KclManager extends EventTarget {
     this._wasmInstance = newInstancePromise
   }
   private _sceneEntitiesManager?: SceneEntities
-  private singletons: Singletons
+  readonly singletons: Singletons
   engineCommandManager: ConnectionManager
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
   private _modelingState: StateFrom<typeof modelingMachine> | null = null
@@ -489,7 +489,7 @@ export class KclManager extends EventTarget {
     // the cache and clear the scene.
     if (this._astParseFailed && this._switchedFiles) {
       await this.singletons.rustContext.clearSceneAndBustCache(
-        await jsAppSettings(),
+        await jsAppSettings(this.singletons.rustContext.settingsActor),
         this.currentFilePath || undefined
       )
     } else if (this._switchedFiles) {

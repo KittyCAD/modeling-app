@@ -21,6 +21,8 @@ import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createActor } from 'xstate'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { createSettings } from '@src/lib/settings/initialSettings'
+import { settingsMachine } from '@src/machines/settingsMachine'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -60,7 +62,14 @@ export async function buildTheWorldAndConnectToEngine() {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
   const engineCommandManager = new ConnectionManager()
-  const rustContext = new RustContext(engineCommandManager, instancePromise)
+  const settingsActor = createActor(settingsMachine, {
+    input: createSettings(),
+  })
+  const rustContext = new RustContext(
+    engineCommandManager,
+    instancePromise,
+    settingsActor
+  )
   const sceneInfra = new SceneInfra(engineCommandManager)
   const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
@@ -122,9 +131,15 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     ? Promise.resolve({} as ModuleType)
     : loadWasm()
   const engineCommandManager = new ConnectionManager()
-  const rustContext = new RustContext(engineCommandManager, instancePromise)
+  const settingsActor = createActor(settingsMachine, {
+    input: createSettings(),
+  })
+  const rustContext = new RustContext(
+    engineCommandManager,
+    instancePromise,
+    settingsActor
+  )
   const sceneInfra = new SceneInfra(engineCommandManager)
-
   const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
     sceneInfra,

@@ -40,8 +40,18 @@ import { saveSettings } from '@src/lib/settings/settingsUtils'
 import { getResolvedTheme, getOppositeTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 
+const dummySettingsActor = createActor(settingsMachine, {
+  input: createSettings(),
+})
+
 export const engineCommandManager = new ConnectionManager()
-export const rustContext = new RustContext(engineCommandManager, initPromise)
+export const rustContext = new RustContext(
+  engineCommandManager,
+  initPromise,
+  // HACK: TODO: convert settings to not be an XState actor to prevent the need for
+  // this dummy-with late binding of the real thing.
+  dummySettingsActor
+)
 
 declare global {
   interface Window {
@@ -310,6 +320,10 @@ export const useUser = () =>
 export const settingsActor = appActor.system.get(SETTINGS) as ActorRefFrom<
   (typeof appMachineActors)[typeof SETTINGS]
 >
+
+// HACK: late attaching settings actor to this manager
+rustContext.settingsActor = settingsActor
+
 export const getSettings = () => {
   const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
   return settings

@@ -10,6 +10,9 @@ import { Connection } from '@src/network/connection'
 import { expect, vi, describe, test } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { createActor } from 'xstate'
+import { settingsMachine } from '@src/machines/settingsMachine'
+import { createSettings } from '@src/lib/settings/initialSettings'
 
 const tick = () => {
   return new Promise((resolve, reject) => {
@@ -61,10 +64,18 @@ describe('useOnFileRoute', () => {
       const initWasmMock = Promise.resolve({} as ModuleType)
       const rustContext = new RustContext(engineCommandManager, initWasmMock)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, initWasmMock, {
-        rustContext,
-        sceneInfra,
+      const settingsActor = createActor(settingsMachine, {
+        input: createSettings(),
       })
+      const kclManager = new KclManager(
+        engineCommandManager,
+        initWasmMock,
+        {
+          rustContext,
+          sceneInfra,
+        },
+        settingsActor
+      )
       const callback = vi.fn(async () => {})
       const { unmount } = renderHook(() => {
         useOnFileRoute({
@@ -106,10 +117,18 @@ describe('useOnFileRoute', () => {
       const initWasmMock = Promise.resolve({} as ModuleType)
       const rustContext = new RustContext(engineCommandManager, initWasmMock)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, initWasmMock, {
-        rustContext,
-        sceneInfra,
+      const settingsActor = createActor(settingsMachine, {
+        input: createSettings(),
       })
+      const kclManager = new KclManager(
+        engineCommandManager,
+        initWasmMock,
+        {
+          rustContext,
+          sceneInfra,
+        },
+        settingsActor
+      )
       const spy = vi.spyOn(kclManager, 'executeCode')
       spy.mockImplementationOnce(() => {
         return new Promise((resolve, reject) => {
@@ -163,10 +182,18 @@ describe('useOnFileRoute', () => {
       const initWasmMock = Promise.resolve({} as ModuleType)
       const rustContext = new RustContext(engineCommandManager, initWasmMock)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, initWasmMock, {
-        rustContext,
-        sceneInfra,
+      const settingsActor = createActor(settingsMachine, {
+        input: createSettings(),
       })
+      const kclManager = new KclManager(
+        engineCommandManager,
+        initWasmMock,
+        {
+          rustContext,
+          sceneInfra,
+        },
+        settingsActor
+      )
       const spy = vi.spyOn(kclManager, 'executeCode')
       spy.mockImplementationOnce(() => {
         return new Promise((resolve, reject) => {
@@ -222,10 +249,18 @@ describe('useOnFileRoute', () => {
       const initWasmMock = Promise.resolve({} as ModuleType)
       const rustContext = new RustContext(engineCommandManager, initWasmMock)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, initWasmMock, {
-        rustContext,
-        sceneInfra,
+      const settingsActor = createActor(settingsMachine, {
+        input: createSettings(),
       })
+      const kclManager = new KclManager(
+        engineCommandManager,
+        initWasmMock,
+        {
+          rustContext,
+          sceneInfra,
+        },
+        settingsActor
+      )
       const spy = vi.spyOn(kclManager, 'executeCode')
       spy.mockImplementationOnce(() => {
         return new Promise((resolve, reject) => {
