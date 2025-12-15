@@ -17,7 +17,7 @@ use crate::{
 };
 
 lazy_static::lazy_static! {
-    static ref HEX_REGEX: Regex = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
+    static ref HEX_REGEX: Regex = Regex::new(r"^#[0-9a-fA-F]{6}$").expect("Regex should parse at startup");
 }
 
 const DEFAULT_ROUGHNESS: f64 = 1.0;

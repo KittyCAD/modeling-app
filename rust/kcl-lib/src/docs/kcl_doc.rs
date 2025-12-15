@@ -1011,9 +1011,12 @@ impl TyData {
     }
 }
 
+lazy_static::lazy_static! {
+    static ref MD_LINK_REGEX: Regex = Regex::new(r"\[([^\]]*)\]\([^\)]*\)").expect("Regex should parse at startup");
+}
+
 fn remove_md_links(s: &str) -> String {
-    let re = Regex::new(r"\[([^\]]*)\]\([^\)]*\)").unwrap();
-    re.replace_all(s, "$1").to_string()
+    MD_LINK_REGEX.replace_all(s, "$1").to_string()
 }
 
 trait ApplyMeta {
