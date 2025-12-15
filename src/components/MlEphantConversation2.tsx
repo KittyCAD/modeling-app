@@ -282,7 +282,7 @@ export const MlEphantConversationInput = (
             onSetMode={setMode}
           />
           <div className="flex flex-row gap-1">
-            {props.needsReconnect && (
+            {!props.disabled && props.needsReconnect && (
               <div className="flex flex-col w-fit items-end">
                 <div className="pr-1 text-xs text-red-500 flex flex-row items-center h-5">
                   <CustomIcon name="close" className="w-7 h-7" />{' '}
@@ -416,7 +416,7 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
               contexts={props.contexts}
               disabled={props.userBlocked || props.disabled || props.isLoading}
               hasPromptCompleted={props.hasPromptCompleted}
-              needsReconnect={!props.userBlocked && props.needsReconnect}
+              needsReconnect={props.needsReconnect}
               onProcess={onProcess}
               onReconnect={props.onReconnect}
               onInterrupt={props.onInterrupt}
