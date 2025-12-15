@@ -38,6 +38,7 @@ export interface MlEphantConversationProps {
   needsReconnect: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
+  userBlocked?: boolean
   defaultPrompt?: string
 }
 
@@ -315,7 +316,7 @@ export const MlEphantConversationInput = (
   )
 }
 
-export const StarterCard = () => {
+const StarterCard = ({ text }: { text: string }) => {
   const [, setTrigger] = useState<number>(0)
 
   useEffect(() => {
@@ -332,7 +333,7 @@ export const StarterCard = () => {
       onClickClearChat={() => {}}
       isLastResponse={false}
       responses={[]}
-      deltasAggregated="Try requesting a model, ask engineering questions, or let's explore ideas."
+      deltasAggregated={text}
     />
   )
 }
@@ -393,11 +394,13 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
-              {props.isLoading === false || props.needsReconnect ? (
+              {props.userBlocked ? (
+                <StarterCard text="Unfortunately, your account is currently blocked. Check your [account page](https://zoo.dev/account/billing) for more information, or [contact support](https://zoo.dev/contact)." />
+              ) : props.isLoading === false || props.needsReconnect ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
                   exchangeCards
                 ) : (
-                  <StarterCard />
+                  <StarterCard text="Try requesting a model, ask engineering questions, or let's explore ideas." />
                 )
               ) : (
                 <div className="text-center p-4">
@@ -409,9 +412,9 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
           <div className="border-t b-4">
             <MlEphantConversationInput
               contexts={props.contexts}
-              disabled={props.disabled || props.isLoading}
+              disabled={props.userBlocked || props.disabled || props.isLoading}
               hasPromptCompleted={props.hasPromptCompleted}
-              needsReconnect={props.needsReconnect}
+              needsReconnect={!props.userBlocked && props.needsReconnect}
               onProcess={onProcess}
               onReconnect={props.onReconnect}
               onInterrupt={props.onInterrupt}
