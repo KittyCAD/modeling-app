@@ -456,14 +456,19 @@ export class SceneInfra {
       this.scene.children,
       true
     )
-    if (!planeIntersects.length) return null
+    if (!planeIntersects.length) {
+      return null
+    }
 
     // Find the intersection with the raycastable (or sketch) plane
     const raycastablePlaneIntersection = planeIntersects.find(
       (intersect) => intersect.object.name === RAYCASTABLE_PLANE
     )
-    if (!raycastablePlaneIntersection)
-      return { intersection: planeIntersects[0] }
+    if (!raycastablePlaneIntersection) {
+      return {
+        intersection: planeIntersects[0],
+      }
+    }
     const planePosition = raycastablePlaneIntersection.object.position
     const inversePlaneQuaternion =
       raycastablePlaneIntersection.object.quaternion.clone().invert()
@@ -710,6 +715,7 @@ export class SceneInfra {
     }
 
     // Check the center point
+    console.log('raycastring', mouseDownVector)
     this.raycaster.setFromCamera(mouseDownVector, this.camControls.camera)
     updateIntersectionsMap(
       this.raycaster.intersectObjects(this.scene.children, true)
@@ -738,10 +744,12 @@ export class SceneInfra {
 
     // Convert the map values to an array and sort by distance
     return Array.from(intersectionsMap.values()).sort((a, b) => {
+      // Deprioritize axis selection to allow selecting segments that lie on axes
       const aIsAxis = isAxisObject(a.object)
       const bIsAxis = isAxisObject(b.object)
       if (aIsAxis && !bIsAxis) return 1
       if (!aIsAxis && bIsAxis) return -1
+      // Otherwise sort by distance
       return a.distance - b.distance
     })
   }
