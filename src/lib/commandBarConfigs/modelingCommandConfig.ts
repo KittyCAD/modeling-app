@@ -576,7 +576,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d', 'segment'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       length: {
         inputType: 'kcl',
@@ -670,7 +669,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       path: {
         inputType: 'selection',
@@ -678,7 +676,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionFilter: ['object'],
         required: true,
         multiple: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       sectional: {
         inputType: 'boolean',
@@ -732,7 +729,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       vDegree: {
         inputType: 'kcl',
@@ -786,7 +782,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       axisOrEdge: {
         inputType: 'options',
@@ -796,7 +791,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
           { name: 'Edge', isCurrent: false, value: 'Edge' },
         ],
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       axis: {
         required: (context) =>
@@ -874,7 +868,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       thickness: {
         inputType: 'kcl',
@@ -915,7 +908,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: false,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       cutAt: {
         inputType: 'vector2d',
@@ -1045,7 +1037,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       tools: {
         ...objectsTypesAndFilters,
@@ -1053,7 +1044,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
     },
   },
@@ -1085,7 +1075,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
     },
   },
@@ -1117,7 +1106,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
     },
   },
@@ -1153,7 +1141,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false,
         required: true,
         skip: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       offset: {
         inputType: 'kcl',
@@ -1196,7 +1183,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'Edge', isCurrent: false, value: 'Edge' },
           { name: 'Cylinder', isCurrent: false, value: 'Cylinder' },
         ],
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       axis: {
         inputType: 'options',
@@ -1293,7 +1279,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       radius: {
         inputType: 'kcl',
@@ -1338,7 +1323,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       length: {
         inputType: 'kcl',
@@ -1478,7 +1462,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionFilter: ['object'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       color: {
         inputType: 'color',
@@ -1524,7 +1507,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       x: {
         inputType: 'kcl',
@@ -1577,7 +1559,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       roll: {
         inputType: 'kcl',
@@ -1630,7 +1611,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       x: {
         inputType: 'kcl',
@@ -1688,7 +1668,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: false, // only one object can be cloned at this time
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       variableName: {
         inputType: 'string',
@@ -1746,7 +1725,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       instances: {
         inputType: 'kcl',
@@ -1813,7 +1791,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selectionMixed',
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       instances: {
         inputType: 'kcl',
@@ -1873,7 +1850,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: true,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       tolerance: {
         inputType: 'kcl',
@@ -1944,7 +1920,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         multiple: false,
         required: true,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       name: {
         inputType: 'string',
