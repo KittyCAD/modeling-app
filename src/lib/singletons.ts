@@ -48,8 +48,9 @@ export const engineCommandManager = new ConnectionManager()
 export const rustContext = new RustContext(
   engineCommandManager,
   initPromise,
-  // HACK: TODO: convert settings to not be an XState actor to prevent the need for
+  // HACK: convert settings to not be an XState actor to prevent the need for
   // this dummy-with late binding of the real thing.
+  // TODO: https://github.com/KittyCAD/modeling-app/issues/9356
   dummySettingsActor
 )
 
