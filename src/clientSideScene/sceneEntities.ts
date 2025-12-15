@@ -86,6 +86,7 @@ import {
   RAYCASTABLE_PLANE,
   SKETCH_GROUP_SEGMENTS,
   SKETCH_LAYER,
+  SKETCH_SOLVE_GROUP,
   X_AXIS,
   Y_AXIS,
 } from '@src/clientSideScene/sceneUtils'
@@ -97,9 +98,7 @@ import {
   getTanPreviousPoint,
   segmentUtils,
 } from '@src/clientSideScene/segments'
-import type EditorManager from '@src/editor/manager'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
+import type { KclManager } from '@src/lang/KclManager'
 import { ARG_AT, ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -160,6 +159,11 @@ import {
 } from '@src/lib/rectangleTool'
 import type RustContext from '@src/lib/rustContext'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { Themes, getResolvedTheme } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
@@ -198,14 +202,13 @@ type Vec3Array = [number, number, number]
 export class SceneEntities {
   readonly engineCommandManager: ConnectionManager
   readonly sceneInfra: SceneInfra
-  readonly editorManager: EditorManager
-  readonly codeManager: CodeManager
   readonly kclManager: KclManager
   readonly rustContext: RustContext
   readonly wasmInstance?: ModuleType
   commandBarActor?: ActorRefFrom<typeof commandBarMachine>
   activeSegments: { [key: string]: Group } = {}
   readonly intersectionPlane: Mesh
+  readonly sketchSolveGroup: Group
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
@@ -215,24 +218,49 @@ export class SceneEntities {
   constructor(
     engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
-    editorManager: EditorManager,
-    codeManager: CodeManager,
     kclManager: KclManager,
     rustContext: RustContext,
     wasmInstance?: ModuleType
   ) {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
-    this.editorManager = editorManager
-    this.codeManager = codeManager
     this.kclManager = kclManager
     this.rustContext = rustContext
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
     )
+    this.sketchSolveGroup = SceneEntities.createSketchSolveGroup(
+      this.sceneInfra
+    )
     this.wasmInstance = wasmInstance
     this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
     this.sceneInfra.baseUnitChange.add(this.onCamChange)
+  }
+
+  /**
+   * Initialize the intersection plane orientation and position from a modeling plane result
+   * produced by the 'animate-to-sketch-solve' step
+   */
+  initSketchSolveEntityOrientation(
+    plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+  ) {
+    const yAxis = plane.yAxis
+    const zAxis = plane.zAxis
+    const origin =
+      plane.type === 'defaultPlane'
+        ? ([0, 0, 0] as [number, number, number])
+        : plane.position
+
+    const quaternion = quaternionFromUpNForward(
+      new Vector3(...yAxis),
+      new Vector3(...zAxis)
+    )
+    this.currentSketchQuaternion = quaternion
+    this.intersectionPlane.setRotationFromQuaternion(quaternion)
+    this.intersectionPlane.position.copy(new Vector3(...origin))
+
+    this.sketchSolveGroup.setRotationFromQuaternion(quaternion)
+    this.sketchSolveGroup.position.copy(new Vector3(...origin))
   }
 
   onCamChange = () => {
@@ -391,6 +419,14 @@ export class SceneEntities {
     sceneInfra.scene.add(intersectionPlane)
     return intersectionPlane
   }
+  private static createSketchSolveGroup(sceneInfra: SceneInfra) {
+    const group = new Group()
+    group.userData = { type: SKETCH_SOLVE_GROUP }
+    group.name = SKETCH_SOLVE_GROUP
+    group.layers.set(SKETCH_LAYER)
+    sceneInfra.scene.add(group)
+    return group
+  }
 
   createSketchAxis(
     forward: [number, number, number],
@@ -416,9 +452,6 @@ export class SceneEntities {
     xAxisMesh.renderOrder = -2
     yAxisMesh.renderOrder = -1
 
-    // This makes sure axis lines are picked after segment lines in case of overlapping
-    xAxisMesh.position.z = -0.1
-    yAxisMesh.position.z = -0.1
     xAxisMesh.userData = {
       type: X_AXIS,
       baseColor: baseXColor,
@@ -1330,8 +1363,6 @@ export class SceneEntities {
           EXECUTION_TYPE_MOCK,
           {
             kclManager: this.kclManager,
-            editorManager: this.editorManager,
-            codeManager: this.codeManager,
             rustContext: this.rustContext,
           },
           {
@@ -1569,8 +1600,6 @@ export class SceneEntities {
         // and this couldn't wouldn't run.
         await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
           kclManager: this.kclManager,
-          editorManager: this.editorManager,
-          codeManager: this.codeManager,
           rustContext: this.rustContext,
         })
         this.sceneInfra.modelingSend({ type: 'Finish rectangle' })
@@ -1784,8 +1813,6 @@ export class SceneEntities {
           // and this couldn't wouldn't run.
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
-            editorManager: this.editorManager,
-            codeManager: this.codeManager,
             rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish center rectangle' })
@@ -1972,8 +1999,6 @@ export class SceneEntities {
           // Update the primary AST and unequip the rectangle tool
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
-            editorManager: this.editorManager,
-            codeManager: this.codeManager,
             rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish circle three point' })
@@ -2195,8 +2220,6 @@ export class SceneEntities {
           // Update the primary AST and unequip the arc tool
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
-            editorManager: this.editorManager,
-            codeManager: this.codeManager,
             rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish arc' })
@@ -2439,8 +2462,6 @@ export class SceneEntities {
           // Update the primary AST and unequip the arc tool
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
-            editorManager: this.editorManager,
-            codeManager: this.codeManager,
             rustContext: this.rustContext,
           })
           if (intersectsProfileStart) {
@@ -2640,8 +2661,6 @@ export class SceneEntities {
           // Update the primary AST and unequip the rectangle tool
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
-            editorManager: this.editorManager,
-            codeManager: this.codeManager,
             rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish circle' })
@@ -2698,7 +2717,7 @@ export class SceneEntities {
             updateExtraSegments,
           })
         }
-        await this.codeManager.writeToFile()
+        await this.kclManager.writeToFile()
       },
       onDrag: async ({
         selected,
@@ -2804,7 +2823,11 @@ export class SceneEntities {
           return
         }
         const { selected } = args
-        const event = getEventForSegmentSelection(selected)
+        const event = getEventForSegmentSelection(
+          selected,
+          this.kclManager.ast,
+          this.kclManager.artifactGraph
+        )
         if (!event) return
         this.sceneInfra.modelingSend(event)
       },
@@ -3313,7 +3336,7 @@ export class SceneEntities {
       if (!draftInfo)
         // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
-        this.codeManager.updateCodeEditor(code)
+        this.kclManager.updateCodeEditor(code)
 
       const { execState } = await executeAstMock({
         ast: truncatedAst,
@@ -3576,7 +3599,7 @@ export class SceneEntities {
           )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
-          this.editorManager.setHighlightRange([
+          this.kclManager.setHighlightRange([
             topLevelRange(node.start, node.end),
           ])
           colorSegment(selected, SEGMENT_YELLOW)
@@ -3652,10 +3675,10 @@ export class SceneEntities {
             })
           return
         }
-        this.editorManager.setHighlightRange([defaultSourceRange()])
+        this.kclManager.setHighlightRange([defaultSourceRange()])
       },
       onMouseLeave: ({ selected }: OnMouseEnterLeaveArgs) => {
-        this.editorManager.setHighlightRange([defaultSourceRange()])
+        this.kclManager.setHighlightRange([defaultSourceRange()])
         const parent = getParentGroup(
           selected,
           SEGMENT_BODIES_PLUS_PROFILE_START

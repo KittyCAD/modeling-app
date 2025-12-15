@@ -207,7 +207,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 2402.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -500,7 +501,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 1252.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -688,7 +690,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": -77.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1010,7 +1013,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 8.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1071,7 +1075,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 8.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1132,7 +1137,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 8.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1413,7 +1419,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 452.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1601,7 +1608,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": -77.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1881,7 +1889,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 8.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2134,7 +2143,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 629.9108216936542,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2322,7 +2332,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": -71.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2551,7 +2562,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": -71.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2905,7 +2917,8 @@ description: Artifact commands gallows-bracket.kcl
         "distance": 100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

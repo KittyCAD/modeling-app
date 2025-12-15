@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.107"
+version = "0.2.116"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -41,18 +41,18 @@ lsp-test-util = []
 tabled = ["dep:tabled"]
 
 [dependencies]
+ahash = { workspace = true }
 anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
 async-trait = { workspace = true }
 base64 = "0.22.1"
-bson = { workspace = true }
 chrono = "0.4.42"
-clap = { version = "4.5.51", default-features = false, optional = true, features = [
+clap = { version = "4.5.53", default-features = false, optional = true, features = [
   "std",
   "derive",
 ] }
-convert_case = "0.8.0"
-csscolorparser = "0.7.2"
+convert_case = "0.10.0"
+csscolorparser = "0.8.1"
 dashmap = { workspace = true }
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
@@ -61,10 +61,9 @@ futures = { version = "0.3.31" }
 git_rev = "0.1.0"
 gltf-json = "1.4.1"
 http = { workspace = true }
-image = { version = "0.25.8", default-features = false, features = ["png"] }
+image = { version = "0.25.9", default-features = false, features = ["png"] }
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.14.0"
-kcl-api = { version = "0.1", path = "../kcl-api" }
 kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
 kcl-error = { version = "0.1", path = "../kcl-error" }
 kcl-ezpz = { workspace = true }
@@ -86,6 +85,7 @@ reqwest = { version = "0.12", default-features = false, features = [
   "rustls-tls",
 ] }
 rgba_simple = "0.10.0"
+rmp-serde = { workspace = true }
 ropey = "1.6.1"
 schemars = { version = "0.8.17", features = [
   "impl_json_schema",
@@ -140,16 +140,16 @@ web-sys = { version = "0.3.76", features = ["console"] }
 [dev-dependencies]
 approx = "0.5"
 base64 = "0.22.1"
-criterion = { version = "0.7.0", features = ["async_tokio"] }
+criterion = { version = "0.8.0", features = ["async_tokio"] }
 expectorate = "1.2.0"
 handlebars = "6.3.2"
-image = { version = "0.25.8", default-features = false, features = ["png"] }
-insta = { version = "1.43.2", features = ["json", "filters", "redactions"] }
+image = { version = "0.25.9", default-features = false, features = ["png"] }
+insta = { version = "1.44.3", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
 tokio = { version = "1.48.0", features = ["rt-multi-thread", "macros", "time"] }
-twenty-twenty = "0.8.2"
+twenty-twenty = "0.8.3"
 
 [lints]
 workspace = true

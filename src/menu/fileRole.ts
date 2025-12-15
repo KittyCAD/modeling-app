@@ -42,15 +42,6 @@ export const projectFileRole = (
           })
         },
       },
-      {
-        label: 'Create with Zoo Text-To-CAD',
-        id: 'Design.Create with Zoo Text-To-CAD',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Design.Create with Zoo Text-To-CAD',
-          })
-        },
-      },
       { type: 'separator' },
       {
         label: 'Preferences',

@@ -12,7 +12,7 @@ import {
  *   - code
  *   - variables
  *   - debug
- *   - Text-to-CAD
+ *   - Zookeeper
  * - the modeling view
  */
 export const playwrightLayoutConfig: Layout = {
@@ -76,7 +76,7 @@ export const playwrightLayoutConfig: Layout = {
         },
         {
           id: DefaultLayoutPaneID.TTC,
-          label: 'Text-to-CAD',
+          label: 'Zookeeper',
           type: LayoutType.Simple,
           areaType: AreaType.TTC,
           icon: 'sparkles',
@@ -100,12 +100,6 @@ export const playwrightLayoutConfig: Layout = {
           label: 'Make part',
           icon: 'printer3d',
           actionType: ActionType.Make,
-        },
-        {
-          id: 'refresh',
-          label: 'Refresh app',
-          icon: 'exclamationMark',
-          actionType: ActionType.Refresh,
         },
       ],
     },

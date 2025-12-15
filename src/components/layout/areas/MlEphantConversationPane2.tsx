@@ -1,10 +1,9 @@
 import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
 import type { settings } from '@src/lib/settings/initialSettings'
-import type CodeManager from '@src/lang/codeManager'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import type { SystemIOActor } from '@src/lib/singletons'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
 import type { MlEphantManagerActor2 } from '@src/machines/mlEphantManagerMachine2'
@@ -21,27 +20,40 @@ import { useSelector } from '@xstate/react'
 import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
+import { type useModelingContext } from '@src/hooks/useModelingContext'
 
 export const MlEphantConversationPane2 = (props: {
   mlEphantManagerActor: MlEphantManagerActor2
   billingActor: BillingActor
   systemIOActor: SystemIOActor
   kclManager: KclManager
-  codeManager: CodeManager
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
+  sendModeling: ReturnType<typeof useModelingContext>['send']
   loaderFile: FileEntry | undefined
   settings: typeof settings
   user?: User
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
-  const conversation = useSelector(props.mlEphantManagerActor, (actor) => {
+  const timeoutReconnect = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  )
+
+  let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
   })
+
   const abruptlyClosed = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.abruptlyClosed
   })
+
+  if (
+    props.mlEphantManagerActor.getSnapshot().matches(S.Await) &&
+    !abruptlyClosed
+  ) {
+    conversation = undefined
+  }
 
   const billingContext = useSelector(props.billingActor, (actor) => {
     return actor.context
@@ -57,10 +69,33 @@ export const MlEphantConversationPane2 = (props: {
       return
     }
 
+    let project: Project = props.theProject
+
+    if (!window.electron) {
+      // If there is no project, we'll create a fake one. Expectation is for
+      // this to only happen on web.
+      project = {
+        metadata: null,
+        kcl_file_count: 1,
+        directory_count: 0,
+        default_file: '/main.kcl',
+        path: '/' + props.settings.meta.id.current,
+        name: props.settings.meta.id.current,
+        children: [
+          {
+            name: 'main.kcl',
+            path: `/main.kcl`,
+            children: null,
+          },
+        ],
+        readWriteAccess: true,
+      }
+    }
+
     const projectFiles = await collectProjectFiles({
-      selectedFileContents: props.codeManager.code,
+      selectedFileContents: props.kclManager.code,
       fileNames: props.kclManager.execState.filenames,
-      projectContext: props.theProject,
+      projectContext: project,
     })
 
     // Only on initial project creation do we call the create endpoint, which
@@ -69,16 +104,22 @@ export const MlEphantConversationPane2 = (props: {
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions2.MessageSend,
       prompt: request,
-      projectForPromptOutput: props.theProject,
+      projectForPromptOutput: project,
       applicationProjectDirectory: props.settings.app.projectDirectory.current,
       fileSelectedDuringPrompting: {
         entry: props.loaderFile,
-        content: props.codeManager.code,
+        content: props.kclManager.code,
       },
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
       mode,
+    })
+
+    // Clear selections since new model
+    props.sendModeling({
+      type: 'Set selection',
+      data: { selection: undefined, selectionType: 'singleCodeCursor' },
     })
   }
 
@@ -86,7 +127,8 @@ export const MlEphantConversationPane2 = (props: {
 
   const isProcessing = lastExchange[0]
     ? lastExchange[0].responses.some(
-        (x: MlCopilotServerMessage) => 'end_of_stream' in x || 'error' in x
+        (x: MlCopilotServerMessage) =>
+          'end_of_stream' in x || 'error' in x || 'info' in x
       ) === false
     : false
 
@@ -96,6 +138,39 @@ export const MlEphantConversationPane2 = (props: {
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions2.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
+      conversationId:
+        props.mlEphantManagerActor.getSnapshot().context.conversationId,
+    })
+  }
+
+  const onInterrupt = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions2.Interrupt,
+    })
+  }
+
+  if (needsReconnect && timeoutReconnect.current === undefined) {
+    timeoutReconnect.current = setTimeout(() => {
+      onReconnect()
+      timeoutReconnect.current = undefined
+    }, 3000)
+  }
+
+  const onClickClearChat = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions2.ConversationClose,
+    })
+    const sub = props.mlEphantManagerActor.subscribe((next) => {
+      if (!next.matches(S.Await)) {
+        return
+      }
+
+      props.mlEphantManagerActor.send({
+        type: MlEphantManagerTransitions2.CacheSetupAndConnect,
+        refParentSend: props.mlEphantManagerActor.send,
+        conversationId: undefined,
+      })
+      sub.unsubscribe()
     })
   }
 
@@ -219,10 +294,12 @@ export const MlEphantConversationPane2 = (props: {
       onProcess={(request: string, mode: MlCopilotMode) => {
         onProcess(request, mode).catch(reportRejection)
       }}
+      onClickClearChat={onClickClearChat}
       onReconnect={onReconnect}
+      onInterrupt={onInterrupt}
       disabled={isProcessing || needsReconnect}
       needsReconnect={needsReconnect}
-      hasPromptCompleted={isProcessing}
+      hasPromptCompleted={!isProcessing}
       userAvatarSrc={props.user?.image}
       defaultPrompt={defaultPrompt}
     />

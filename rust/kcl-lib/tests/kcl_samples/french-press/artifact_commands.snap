@@ -170,7 +170,8 @@ description: Artifact commands french-press.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -629,7 +630,8 @@ description: Artifact commands french-press.kcl
         "distance": 19.049999999999997,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -835,7 +837,8 @@ description: Artifact commands french-press.kcl
         "distance": 1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1019,7 +1022,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1076,7 +1080,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1133,7 +1138,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1369,7 +1375,8 @@ description: Artifact commands french-press.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -1614,7 +1621,8 @@ description: Artifact commands french-press.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -1895,7 +1903,8 @@ description: Artifact commands french-press.kcl
         "distance": 1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2045,7 +2054,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2102,7 +2112,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2159,7 +2170,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2216,7 +2228,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2273,7 +2286,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2330,7 +2344,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2387,7 +2402,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2444,7 +2460,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2594,7 +2611,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2651,7 +2669,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2708,7 +2727,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2765,7 +2785,8 @@ description: Artifact commands french-press.kcl
         "distance": -1.27,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2927,7 +2948,8 @@ description: Artifact commands french-press.kcl
         "distance": 185.928,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3203,7 +3225,8 @@ description: Artifact commands french-press.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -3560,7 +3583,8 @@ description: Artifact commands french-press.kcl
         "distance": -16.509999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

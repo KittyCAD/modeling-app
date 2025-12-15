@@ -12,9 +12,7 @@ test(
   'export works on the first try',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
   async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
-    if (!tronApp) {
-      fail()
-    }
+    if (!tronApp) throw new Error('tronApp is missing.')
 
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -164,9 +162,7 @@ test(
   'DXF export works from feature tree sketch context menu',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
   async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
-    if (!tronApp) {
-      fail()
-    }
+    if (!tronApp) throw new Error('tronApp is missing.')
 
     await context.folderSetupFn(async (dir) => {
       const sketchDir = path.join(dir, 'sketch-project')
@@ -204,7 +200,7 @@ extrude001 = extrude(profile001, length = 5)`
     await toolbar.openFeatureTreePane()
 
     // Find the sketch operation in the feature tree
-    const sketchNode = page.getByText('sketch001').first()
+    const sketchNode = await toolbar.getFeatureTreeOperation('Sketch', 0)
     await expect(sketchNode).toBeVisible()
 
     // Right-click to open context menu

@@ -196,7 +196,8 @@ description: Artifact commands sash-window.kcl
         "distance": 50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -388,7 +389,8 @@ description: Artifact commands sash-window.kcl
         "distance": -50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -437,7 +439,7 @@ description: Artifact commands sash-window.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -633,7 +635,8 @@ description: Artifact commands sash-window.kcl
         "distance": 23.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -865,7 +868,8 @@ description: Artifact commands sash-window.kcl
         "distance": -23.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -922,7 +926,8 @@ description: Artifact commands sash-window.kcl
         "distance": -23.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -971,7 +976,7 @@ description: Artifact commands sash-window.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -988,7 +993,7 @@ description: Artifact commands sash-window.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1238,7 +1243,8 @@ description: Artifact commands sash-window.kcl
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1525,7 +1531,8 @@ description: Artifact commands sash-window.kcl
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1834,7 +1841,8 @@ description: Artifact commands sash-window.kcl
         "distance": 23.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2066,7 +2074,8 @@ description: Artifact commands sash-window.kcl
         "distance": -23.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2123,7 +2132,8 @@ description: Artifact commands sash-window.kcl
         "distance": -23.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2172,7 +2182,7 @@ description: Artifact commands sash-window.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -2189,7 +2199,7 @@ description: Artifact commands sash-window.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -2389,7 +2399,8 @@ description: Artifact commands sash-window.kcl
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

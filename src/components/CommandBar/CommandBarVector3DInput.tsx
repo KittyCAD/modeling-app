@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import toast from 'react-hot-toast'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  rustContext,
+  kclManager,
+  useCommandBarState,
+} from '@src/lib/singletons'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
@@ -23,7 +28,7 @@ function CoordinateInput({
   value: string
   onChange: (value: string) => void
   calculation: ReturnType<typeof useCalculateKclExpression>
-  inputRef: React.RefObject<HTMLInputElement>
+  inputRef: React.RefObject<HTMLInputElement | null>
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
   testId: string
 }) {
@@ -67,6 +72,9 @@ function CoordinateInput({
     </label>
   )
 }
+
+// GOTCHA: must be defined outside of React to prevent endless rerenders
+const calculateKclExpressionOptions = { allowArrays: false }
 
 function CommandBarVector3DInput({
   arg,
@@ -129,19 +137,31 @@ function CommandBarVector3DInput({
   const xCalculation = useCalculateKclExpression({
     value: x,
     selectionRanges: { graphSelections: [], otherSelections: [] },
-    allowArrays: false,
+    rustContext,
+    options: calculateKclExpressionOptions,
+    code: kclManager.codeSignal.value,
+    ast: kclManager.astSignal.value,
+    variables: kclManager.variablesSignal.value,
   })
 
   const yCalculation = useCalculateKclExpression({
     value: y,
     selectionRanges: { graphSelections: [], otherSelections: [] },
-    allowArrays: false,
+    rustContext,
+    options: calculateKclExpressionOptions,
+    code: kclManager.codeSignal.value,
+    ast: kclManager.astSignal.value,
+    variables: kclManager.variablesSignal.value,
   })
 
   const zCalculation = useCalculateKclExpression({
     value: z,
     selectionRanges: { graphSelections: [], otherSelections: [] },
-    allowArrays: false,
+    rustContext,
+    options: calculateKclExpressionOptions,
+    code: kclManager.codeSignal.value,
+    ast: kclManager.astSignal.value,
+    variables: kclManager.variablesSignal.value,
   })
 
   // DOM access for focus and keyboard navigation
@@ -214,7 +234,7 @@ function CommandBarVector3DInput({
     const vectorExpression = `[${x.trim()}, ${y.trim()}, ${z.trim()}]`
 
     // Calculate the KCL expression
-    stringToKclExpression(vectorExpression, true)
+    stringToKclExpression(vectorExpression, rustContext, { allowArrays: true })
       .then((result) => {
         if (result instanceof Error || 'errors' in result) {
           toast.error('Unable to create valid vector expression')
@@ -232,7 +252,7 @@ function CommandBarVector3DInput({
 
   function handleKeyDown(
     e: React.KeyboardEvent<HTMLInputElement>,
-    nextInputRef?: React.RefObject<HTMLInputElement>
+    nextInputRef?: React.RefObject<HTMLInputElement | null>
   ) {
     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
       commandBarActor.send({ type: 'Close' })

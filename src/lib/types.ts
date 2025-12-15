@@ -1,7 +1,6 @@
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
+import type { KclManager } from '@src/lang/KclManager'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { authMachine } from '@src/machines/authMachine'
 import type { settingsMachine } from '@src/machines/settingsMachine'
@@ -64,7 +63,8 @@ export type Paths<T, D extends number = 10> = [D] extends [never]
   : T extends object
     ? {
         [K in keyof T]-?: K extends string | number
-          ? `${K}` | Join<K, Paths<T[K], Prev[D]>>
+          ? // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+            `${K}` | Join<K, Paths<T[K], Prev[D]>>
           : never
       }[keyof T]
     : ''
@@ -96,10 +96,7 @@ export type Leaves<T, D extends number = 10> = [D] extends [never]
 // https://stackoverflow.com/a/57390160/22753272
 export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>
 
-export function isEnumMember<T extends Record<string, unknown>>(
-  v: unknown,
-  e: T
-) {
+export function isEnumMember(v: unknown, e: Record<string, unknown>): boolean {
   return Object.values(e).includes(v)
 }
 
@@ -137,7 +134,6 @@ export type AppMachineEvent =
   | { type: AppMachineEventType.ResetLayout }
 
 export type AppMachineContext = {
-  codeManager: CodeManager
   kclManager: KclManager
   engineCommandManager: ConnectionManager
   sceneInfra: SceneInfra

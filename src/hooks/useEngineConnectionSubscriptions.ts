@@ -9,17 +9,21 @@ import {
   selectionBodyFace,
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
-import {
-  editorManager,
-  engineCommandManager,
-  kclManager,
-  sceneInfra,
-  rustContext,
-} from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
+import type { KclManager } from '@src/lang/KclManager'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type RustContext from '@src/lib/rustContext'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
+  const {
+    engineCommandManager,
+    kclManager,
+    rustContext,
+    sceneEntitiesManager,
+    sceneInfra,
+  } = context
   const stateRef = useRef(state)
   stateRef.current = state
 
@@ -36,15 +40,15 @@ export function useEngineConnectionSubscriptions() {
             kclManager.artifactGraph
           )
           if (codeRefs) {
-            editorManager.setHighlightRange(codeRefs.map(({ range }) => range))
+            kclManager.setHighlightRange(codeRefs.map(({ range }) => range))
           }
         } else if (
-          !editorManager.highlightRange ||
-          (editorManager.highlightRange[0] &&
-            editorManager.highlightRange[0][0] !== 0 &&
-            editorManager.highlightRange[0][1] !== 0)
+          !kclManager.highlightRange ||
+          (kclManager.highlightRange[0] &&
+            kclManager.highlightRange[0][0] !== 0 &&
+            kclManager.highlightRange[0][1] !== 0)
         ) {
-          editorManager.setHighlightRange([defaultSourceRange()])
+          kclManager.setHighlightRange([defaultSourceRange()])
         }
       },
     })
@@ -53,7 +57,10 @@ export function useEngineConnectionSubscriptions() {
       callback: (engineEvent) => {
         ;(async () => {
           if (stateRef.current.matches('Sketch no face')) return
-          const event = await getEventForSelectWithPoint(engineEvent)
+          const event = await getEventForSelectWithPoint(engineEvent, {
+            rustContext,
+            artifactGraph: kclManager.artifactGraph,
+          })
           event && send(event)
         })().catch(reportRejection)
       },
@@ -62,8 +69,13 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager, context?.sketchEnginePathId])
+  }, [
+    context?.sketchEnginePathId,
+    kclManager,
+    send,
+    engineCommandManager,
+    rustContext,
+  ])
 
   useEffect(() => {
     if (!engineCommandManager) return
@@ -74,14 +86,27 @@ export function useEngineConnectionSubscriptions() {
         ? ({ data }) => {
             void selectSketchPlane(
               data.entity_id,
-              context.store.useNewSketchMode?.current
+              context.store.useNewSketchMode?.current,
+              {
+                kclManager,
+                rustContext,
+                sceneEntitiesManager,
+                sceneInfra,
+              }
             )
           }
         : () => {},
     })
     return unSub
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager, state])
+  }, [
+    context.store.useNewSketchMode,
+    state,
+    kclManager,
+    sceneInfra,
+    rustContext,
+    engineCommandManager,
+    sceneEntitiesManager,
+  ])
 
   // Re-apply plane visibility when planes are (re)created on the Rust side
   useEffect(() => {
@@ -92,38 +117,57 @@ export function useEngineConnectionSubscriptions() {
       void kclManager.setPlaneVisibilityByKey('yz', vis.yz)
     })
     return unsubscribe
-  }, [])
+  }, [kclManager, rustContext])
 }
 
 export async function selectSketchPlane(
   planeOrFaceId: string | undefined,
-  useNewSketchMode: boolean | undefined
+  useNewSketchMode: boolean | undefined,
+  systemDeps?: {
+    kclManager: KclManager
+    sceneInfra: SceneInfra
+    rustContext: RustContext
+    sceneEntitiesManager: SceneEntities
+  }
 ) {
   try {
+    if (!systemDeps) return
     if (!planeOrFaceId) return
 
     if (useNewSketchMode) {
-      sceneInfra.modelingSend({
+      systemDeps.sceneInfra.modelingSend({
         type: 'Select sketch solve plane',
         data: planeOrFaceId,
       })
       return
     }
 
-    const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId)
+    const defaultSketchPlaneSelected = selectDefaultSketchPlane(
+      planeOrFaceId,
+      systemDeps
+    )
     if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
       return
     }
 
-    const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-    const offsetPlaneSelected = await selectOffsetSketchPlane(artifact)
+    const artifact = systemDeps.kclManager.artifactGraph.get(planeOrFaceId)
+    const offsetPlaneSelected = await selectOffsetSketchPlane(
+      artifact,
+      systemDeps
+    )
     if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
       return
     }
 
-    const sweepFaceSelected = await selectionBodyFace(planeOrFaceId)
+    const sweepFaceSelected = await selectionBodyFace(
+      planeOrFaceId,
+      systemDeps.kclManager.artifactGraph,
+      systemDeps.kclManager.ast,
+      systemDeps.kclManager.execState,
+      systemDeps
+    )
     if (sweepFaceSelected) {
-      sceneInfra.modelingSend({
+      systemDeps.sceneInfra.modelingSend({
         type: 'Select sketch plane',
         data: sweepFaceSelected,
       })

@@ -32,7 +32,7 @@ jobs:
     # Enabling this results in the following error on GitHub Actions:
     #   setarch: failed to set personality to x86_64: Operation not permitted
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Use correct Rust toolchain
         shell: bash
         run: |

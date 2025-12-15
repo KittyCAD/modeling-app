@@ -45,10 +45,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 681,
-            "end": 687,
+            "commentStart": 679,
+            "end": 685,
             "moduleId": 0,
-            "start": 681,
+            "start": 679,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -66,10 +66,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 757,
-            "end": 763,
+            "commentStart": 755,
+            "end": 761,
             "moduleId": 0,
-            "start": 757,
+            "start": 755,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -80,10 +80,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 904,
-            "end": 916,
+            "commentStart": 902,
+            "end": 914,
             "moduleId": 0,
-            "start": 904,
+            "start": 902,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -94,10 +94,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 876,
-            "end": 884,
+            "commentStart": 874,
+            "end": 882,
             "moduleId": 0,
-            "start": 876,
+            "start": 874,
             "type": "TagDeclarator",
             "value": "topFace"
           },
@@ -135,10 +135,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 681,
-              "end": 687,
+              "commentStart": 679,
+              "end": 685,
               "moduleId": 0,
-              "start": 681,
+              "start": 679,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -176,30 +176,13 @@ description: Variables in memory after executing panic_repro_cube.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 757,
-              "end": 763,
+              "commentStart": 755,
+              "end": 761,
               "moduleId": 0,
-              "start": 757,
+              "start": 755,
               "type": "TagDeclarator",
               "value": "seg02"
             },
-            "to": [
-              -10.0,
-              -10.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -10.0,
-              -10.0
-            ],
-            "tag": null,
             "to": [
               -10.0,
               -10.0
@@ -324,10 +307,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 681,
-            "end": 687,
+            "commentStart": 679,
+            "end": 685,
             "moduleId": 0,
-            "start": 681,
+            "start": 679,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -365,30 +348,13 @@ description: Variables in memory after executing panic_repro_cube.kcl
             10.0
           ],
           "tag": {
-            "commentStart": 757,
-            "end": 763,
+            "commentStart": 755,
+            "end": 761,
             "moduleId": 0,
-            "start": 757,
+            "start": 755,
             "type": "TagDeclarator",
             "value": "seg02"
           },
-          "to": [
-            -10.0,
-            -10.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -10.0,
-            -10.0
-          ],
-          "tag": null,
           "to": [
             -10.0,
             -10.0

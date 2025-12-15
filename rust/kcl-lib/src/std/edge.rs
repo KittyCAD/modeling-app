@@ -42,7 +42,7 @@ async fn inner_get_opposite_edge(
 
     let resp = exec_state
         .send_modeling_cmd(
-            (&args).into(),
+            ModelingCmdMeta::from_args(exec_state, &args),
             ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
                 edge_id: tagged_path_id,
                 object_id: sketch_id,
@@ -90,7 +90,7 @@ async fn inner_get_next_adjacent_edge(
 
     let resp = exec_state
         .send_modeling_cmd(
-            (&args).into(),
+            ModelingCmdMeta::from_args(exec_state, &args),
             ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
                 edge_id: tagged_path_id,
                 object_id: sketch_id,
@@ -144,7 +144,7 @@ async fn inner_get_previous_adjacent_edge(
 
     let resp = exec_state
         .send_modeling_cmd(
-            (&args).into(),
+            ModelingCmdMeta::from_args(exec_state, &args),
             ModelingCmd::from(mcmd::Solid3dGetPrevAdjacentEdge {
                 edge_id: tagged_path_id,
                 object_id: sketch_id,
@@ -172,18 +172,11 @@ async fn inner_get_previous_adjacent_edge(
 
 /// Get the shared edge between two faces.
 pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let mut faces: Vec<FaceTag> = args.get_kw_arg(
+    let faces: Vec<FaceTag> = args.get_kw_arg(
         "faces",
         &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Known(2)),
         exec_state,
     )?;
-
-    if faces.len() != 2 {
-        return Err(KclError::new_type(KclErrorDetails::new(
-            "getCommonEdge requires exactly two tags for faces".to_owned(),
-            vec![args.source_range],
-        )));
-    }
 
     fn into_tag(face: FaceTag, source_range: SourceRange) -> Result<TagIdentifier, KclError> {
         match face {
@@ -195,8 +188,15 @@ pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<K
         }
     }
 
-    let face2 = into_tag(faces.pop().unwrap(), args.source_range)?;
-    let face1 = into_tag(faces.pop().unwrap(), args.source_range)?;
+    let [face1, face2]: [FaceTag; 2] = faces.try_into().map_err(|_: Vec<FaceTag>| {
+        KclError::new_type(KclErrorDetails::new(
+            "getCommonEdge requires exactly two tags for faces".to_owned(),
+            vec![args.source_range],
+        ))
+    })?;
+
+    let face1 = into_tag(face1, args.source_range)?;
+    let face2 = into_tag(face2, args.source_range)?;
 
     let edge = inner_get_common_edge(face1, face2, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
@@ -234,14 +234,18 @@ async fn inner_get_common_edge(
     // TODO: we likely want to be a lot more persnickety _which_ fillets we are flushing
     // but for now, we'll just flush everything.
     if let Some(ExtrudeSurface::Chamfer { .. } | ExtrudeSurface::Fillet { .. }) = first_tagged_path.surface {
-        exec_state.flush_batch((&args).into(), true).await?;
+        exec_state
+            .flush_batch(ModelingCmdMeta::from_args(exec_state, &args), true)
+            .await?;
     } else if let Some(ExtrudeSurface::Chamfer { .. } | ExtrudeSurface::Fillet { .. }) = second_tagged_path.surface {
-        exec_state.flush_batch((&args).into(), true).await?;
+        exec_state
+            .flush_batch(ModelingCmdMeta::from_args(exec_state, &args), true)
+            .await?;
     }
 
     let resp = exec_state
         .send_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::Solid3dGetCommonEdge {
                 object_id: first_tagged_path.sketch,
                 face_ids: [first_face_id, second_face_id],

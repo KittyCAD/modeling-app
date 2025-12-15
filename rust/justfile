@@ -26,8 +26,8 @@ redo-kcl-stdlib-docs:
     rm -f ../docs/kcl-std/functions/*
     rm -f ../docs/kcl-std/modules/*
     rm -f ../docs/kcl-std/consts/*
-    TWENTY_TWENTY=overwrite {{cnr}} {{kcl_lib_flags}} -- kcl_test_example
-    TWENTY_TWENTY=overwrite {{cnr}} {{kcl_lib_flags}} docs::kcl_doc::test::kcl_test_examples
+    TWENTY_TWENTY=update {{cnr}} {{kcl_lib_flags}} -- kcl_test_example
+    TWENTY_TWENTY=update {{cnr}} {{kcl_lib_flags}} docs::kcl_doc::test::kcl_test_examples
     EXPECTORATE=overwrite {{cnr}} {{kcl_lib_flags}} -- docs::gen_std_tests::test_generate_stdlib
     EXPECTORATE=overwrite {{cnr}} {{kcl_lib_flags}} -- generate_settings_docs
 
@@ -47,23 +47,23 @@ new-sim-test test_name render_to_png="true":
 
 # Run a KCL deterministic simulation test case and accept output.
 overwrite-sim-test-sample test_name:
-    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::parse_{{test_name}}
-    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::unparse_{{test_name}}
-    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::kcl_test_execute_{{test_name}}
-    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::test_after_engine
+    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::parse_{{test_name}}
+    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::unparse_{{test_name}}
+    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::kcl_test_execute_{{test_name}}
+    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::test_after_engine
 
 overwrite-sim-test test_name:
-    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::parse
-    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::unparse
-    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::kcl_test_execute
-    [ {{test_name}} != "kcl_samples" ] || ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::test_after_engine
+    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::parse
+    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::unparse
+    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::kcl_test_execute
+    [ {{test_name}} != "kcl_samples" ] || ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::test_after_engine
 
 # Regenerate all the simulation test output.
 redo-sim-tests:
-    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests
+    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests
     # This copies PNG files generated during tests to the public folder. It
     # needs to happen *after* they're all generated.
-    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::test_after_engine
+    ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::test_after_engine
 
 test:
     cargo install cargo-nextest
@@ -88,7 +88,6 @@ publish-kcl version:
     cargo publish -p kcl-derive-docs
     cargo publish -p kcl-directory-test-macro
     cargo publish -p kcl-error
-    cargo publish -p kcl-api
     cargo publish -p kcl-lib
     cargo publish -p kcl-test-server
     # We push the tag at the end of publish since pushing the tag

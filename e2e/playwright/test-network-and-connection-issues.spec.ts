@@ -106,14 +106,7 @@ test.describe('Test network related behaviors', () => {
 
       await u.openDebugPanel()
       // click on "Start Sketch" button
-      await u.clearCommandLogs()
-      await toolbar.startSketchBtn.click()
-      await page.waitForTimeout(100)
-
-      // select a plane
-      await toolbar.openFeatureTreePane()
-      await page.getByRole('button', { name: 'Front plane' }).click()
-      await toolbar.closeFeatureTreePane()
+      await toolbar.startSketchOnDefaultPlane('Front plane')
 
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`
@@ -219,9 +212,7 @@ test.describe('Test network related behaviors', () => {
       )
       const networkToggleWeakText = page.getByText('Network health (Ok)')
 
-      if (!tronApp) {
-        fail()
-      }
+      if (!tronApp) throw new Error('tronApp is missing.')
 
       await tronApp.cleanProjectDir({
         app: {

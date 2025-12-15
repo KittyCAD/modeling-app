@@ -28,7 +28,7 @@ import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
 import { fileLoader, homeLoader } from '@src/lib/routeLoaders'
 import {
-  codeManager,
+  kclManager,
   engineCommandManager,
   rustContext,
 } from '@src/lib/singletons'
@@ -71,7 +71,7 @@ const router = createRouter([
         },
       },
       {
-        loader: fileLoader,
+        loader: fileLoader(kclManager),
         id: PATHS.FILE,
         path: PATHS.FILE + '/:id',
         errorElement: <ErrorPage />,
@@ -162,7 +162,7 @@ const router = createRouter([
  * @returns RouterProvider
  */
 export const Router = () => {
-  const networkStatus = useNetworkStatus()
+  const networkStatus = useNetworkStatus(engineCommandManager)
 
   return (
     <NetworkContext.Provider value={networkStatus}>
@@ -175,33 +175,32 @@ function CoreDump() {
   const token = useToken()
   const coreDumpManager = useMemo(
     () =>
-      new CoreDumpManager(
-        engineCommandManager,
-        codeManager,
-        rustContext,
-        token
-      ),
+      new CoreDumpManager(engineCommandManager, kclManager, rustContext, token),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     []
   )
-  useHotkeyWrapper(['mod + shift + period'], () => {
-    toast
-      .promise(
-        coreDump(coreDumpManager, true),
-        {
-          loading: 'Starting core dump...',
-          success: 'Core dump completed successfully',
-          error: 'Error while exporting core dump',
-        },
-        {
-          success: {
-            // Note: this extended duration is especially important for Playwright e2e testing
-            // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
-            duration: 6000,
+  useHotkeyWrapper(
+    ['mod + shift + period'],
+    () => {
+      toast
+        .promise(
+          coreDump(coreDumpManager, true),
+          {
+            loading: 'Starting core dump...',
+            success: 'Core dump completed successfully',
+            error: 'Error while exporting core dump',
           },
-        }
-      )
-      .catch(reportRejection)
-  })
+          {
+            success: {
+              // Note: this extended duration is especially important for Playwright e2e testing
+              // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+              duration: 6000,
+            },
+          }
+        )
+        .catch(reportRejection)
+    },
+    kclManager
+  )
   return null
 }

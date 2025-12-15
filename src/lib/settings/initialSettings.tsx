@@ -460,6 +460,30 @@ export function createSettings() {
         },
       }),
       /**
+       * Which type of orientation gizmo to use
+       */
+      gizmoType: new Setting<'cube' | 'axis'>({
+        defaultValue: 'cube',
+        hideOnLevel: 'project',
+        description: 'Which type of orientation gizmo to use',
+        validate: (v) => v === 'cube' || v === 'axis',
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.modeling.gizmoType.current,
+          options: (cmdContext, settingsContext) =>
+            (['cube', 'axis'] as const).map((v) => ({
+              name: capitaliseFC(v),
+              value: v,
+              isCurrent:
+                settingsContext.modeling.gizmoType.shouldShowCurrentLabel(
+                  cmdContext.argumentsToSubmit.level as SettingsLevel,
+                  v
+                ),
+            })),
+        },
+      }),
+      /**
        * Whether to highlight edges of 3D objects
        */
       highlightEdges: new Setting<boolean>({
@@ -665,17 +689,6 @@ export function createSettings() {
               />
             </div>
           )
-        },
-      }),
-      disableCopilot: new Setting<boolean>({
-        hideOnLevel: 'user',
-        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
-        defaultValue: IS_STAGING_OR_DEBUG ? false : true,
-        description:
-          'Disable the new Copilot in Text-to-CAD for this project, only available in Zoo Design Studio (Staging).',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
         },
       }),
     },

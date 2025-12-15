@@ -35,15 +35,17 @@ import type RustContext from '@src/lib/rustContext'
 import { binaryToUuid, isArray, promiseFactory, uuidv4 } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import type CodeManager from '@src/lang/codeManager'
-import { BSON } from 'bson'
+import {
+  decode as msgpackDecode,
+  encode as msgpackEncode,
+} from '@msgpack/msgpack'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
 import type { CommandLog } from '@src/lang/std/commandLog'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { SourceRange } from '@src/lang/wasm'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
@@ -86,7 +88,6 @@ export class ConnectionManager extends EventTarget {
 
   connection: Connection | undefined
   sceneInfra: SceneInfra | undefined
-  codeManager: CodeManager | undefined
   kclManager: KclManager | undefined
 
   // Circular dependency that is why it can be undefined
@@ -345,7 +346,7 @@ export class ConnectionManager extends EventTarget {
       rustContext: this.rustContext,
       settings: this.settings,
       jsAppSettings: await jsAppSettings(),
-      path: this.codeManager?.currentFilePath || '',
+      path: this.kclManager?.currentFilePath || '',
       sendSceneCommand: this.sendSceneCommand.bind(this),
       setTheme: this.setTheme.bind(this),
       listenToDarkModeMatcher: this.listenToDarkModeMatcher.bind(this),
@@ -679,14 +680,20 @@ export class ConnectionManager extends EventTarget {
     let message: WebSocketResponse | null = null
 
     if (event.data instanceof ArrayBuffer) {
-      // BSON deserialize the command
-      message = BSON.deserialize(
-        new Uint8Array(event.data)
-      ) as WebSocketResponse
+      const binaryData = new Uint8Array(event.data)
+
+      try {
+        message = msgpackDecode(binaryData) as WebSocketResponse
+      } catch (msgpackError) {
+        console.error(
+          'handleMessage: failed to deserialize binary websocket message',
+          { msgpackError }
+        )
+      }
       // The request id comes back as binary and we want to get the uuid
       // string from that.
 
-      if (message.request_id) {
+      if (message?.request_id) {
         message.request_id = binaryToUuid(message.request_id)
       }
     } else {
@@ -909,6 +916,15 @@ export class ConnectionManager extends EventTarget {
   }
 
   tearDown(options?: ManagerTearDown) {
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: `invoked tearDown()`,
+      metadata: {
+        options,
+        started: !!this.started,
+        connection: !!this.connection,
+      },
+    })
     if (!this.started) {
       EngineDebugger.addLog({
         label: 'connectionManager',
@@ -1031,11 +1047,11 @@ export class ConnectionManager extends EventTarget {
 
   // VITEST ONLY
   offline() {
-    this.tearDown()
     EngineDebugger.addLog({
       label: 'connectionManager',
-      message: 'offline',
+      message: 'offline, calling tearDown()',
     })
+    this.tearDown()
   }
 
   // VITEST ONLY
@@ -1228,7 +1244,7 @@ export class ConnectionManager extends EventTarget {
         range,
         idToRangeMap,
       })
-      return BSON.serialize(resp[0])
+      return msgpackEncode(resp[0])
     } catch (e) {
       console.warn(e)
       if (isArray(e) && e.length > 0) {

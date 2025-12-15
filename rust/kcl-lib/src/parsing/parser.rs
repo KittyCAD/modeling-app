@@ -482,9 +482,15 @@ fn expression(i: &mut TokenSlice) -> ModalResult<Expr> {
     let mut values = vec![head];
 
     let value_surrounded_by_comments = (
-        repeat(0.., preceded(opt(whitespace), non_code_node)), // Before the expression.
-        preceded(opt(whitespace), labelled_fn_call),           // The expression.
-        repeat(0.., noncode_just_after_code),                  // After the expression.
+        // Before the expression.
+        repeat(0.., preceded(opt(whitespace), non_code_node)),
+        // The expression
+        preceded(
+            opt(whitespace),
+            alt((labelled_fn_call, if_expr.map(Expr::IfExpression))),
+        ),
+        // After the expression.
+        repeat(0.., noncode_just_after_code),
     );
     let tail: Vec<(Vec<_>, _, Vec<_>)> = repeat(
         1..,
@@ -558,9 +564,22 @@ fn minus_sign(i: &mut TokenSlice) -> ModalResult<Token> {
     .parse_next(i)
 }
 
+fn plus_sign(i: &mut TokenSlice) -> ModalResult<Token> {
+    any.verify_map(|token: Token| {
+        if token.token_type == TokenType::Operator && token.value == "+" {
+            Some(token)
+        } else {
+            None
+        }
+    })
+    .context(expected("a plus sign `+`"))
+    .parse_next(i)
+}
+
 /// Numeric literal with suffix and optional leading negative sign.
 fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
-    let negative_token = opt(minus_sign).parse_next(i)?;
+    let prefix_token = opt(alt((minus_sign, plus_sign))).parse_next(i)?;
+    let is_negative = prefix_token.as_ref().is_some_and(|tok| tok.value == "-");
     let (value, suffix, number_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
@@ -579,14 +598,14 @@ fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
         })
         .context(expected("a number literal (e.g. 3 or 12.5)"))
         .parse_next(i)?;
-    let start = negative_token.as_ref().map(|t| t.start).unwrap_or(number_token.start);
+    let start = prefix_token.as_ref().map(|t| t.start).unwrap_or(number_token.start);
     Ok(Node::new(
         NumericLiteral {
-            value: if negative_token.is_some() { -value } else { value },
+            value: if is_negative { -value } else { value },
             suffix,
             raw: format!(
                 "{}{}",
-                negative_token.map(|t| t.value).unwrap_or_default(),
+                prefix_token.map(|t| t.value).unwrap_or_default(),
                 number_token.value
             ),
             digest: None,
@@ -938,7 +957,13 @@ fn array_separator(i: &mut TokenSlice) -> ModalResult<()> {
         // Normally you need a comma.
         comma_sep,
         // But, if the array is ending, no need for a comma.
-        peek(preceded((opt(non_code_node), opt(whitespace)), close_bracket)).void(),
+        peek((
+            opt(whitespace),
+            repeat(0.., terminated(non_code_node, opt(whitespace))).map(|_: Vec<_>| ()),
+            opt(whitespace),
+            close_bracket,
+        ))
+        .void(),
     ))
     .parse_next(i)
 }
@@ -1150,7 +1175,13 @@ fn property_separator(i: &mut TokenSlice) -> ModalResult<()> {
         // Normally you need a comma.
         comma_sep,
         // But, if the object is ending, no need for a comma.
-        peek(preceded((opt(non_code_node), opt(whitespace)), close_brace)).void(),
+        peek((
+            opt(whitespace),
+            repeat(0.., terminated(non_code_node, opt(whitespace))).map(|_: Vec<_>| ()),
+            opt(whitespace),
+            close_brace,
+        ))
+        .void(),
     ))
     .parse_next(i)
 }
@@ -1162,7 +1193,14 @@ fn labeled_arg_separator(i: &mut TokenSlice) -> ModalResult<Option<SourceRange>>
         // Normally you need a comma.
         comma_sep.map(|_| None),
         // But, if the argument list is ending, no need for a comma.
-        peek(preceded(opt(whitespace), close_paren)).void().map(|_| None),
+        peek((
+            opt(whitespace),
+            repeat(0.., terminated(non_code_node, opt(whitespace))).map(|_: Vec<_>| ()),
+            opt(whitespace),
+            close_paren,
+        ))
+        .void()
+        .map(|_| None),
         whitespace.map(|mut tokens| {
             // Safe to unwrap here because `whitespace` is guaranteed to return at least 1 whitespace.
             let first_token = tokens.pop().unwrap();
@@ -1463,7 +1501,11 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
 fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     let fn_tok = opt(fun).parse_next(i)?;
     ignore_whitespace(i);
-    let result = function_decl.parse_next(i)?;
+    let name = opt(binding_name).parse_next(i)?;
+    ignore_whitespace(i);
+    let mut result = function_decl.parse_next(i)?;
+    // Make the function expression aware of its name.
+    result.name = name;
     if fn_tok.is_none() {
         let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
         return Err(ErrMode::Cut(err.into()));
@@ -1496,6 +1538,7 @@ fn function_decl(i: &mut TokenSlice) -> ModalResult<Node<FunctionExpression>> {
     let end = close.end;
     let result = Node::new(
         FunctionExpression {
+            name: None,
             params,
             body: body.into(),
             return_type,
@@ -2388,10 +2431,10 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
             "an identifier, which becomes name you're binding the value to",
         ))
         .parse_next(i)?;
-    let (kind, mut start, dec_end) = if let Some((kind, token)) = &decl_token {
-        (*kind, token.start, token.end)
+    let (kind, mut start) = if let Some((kind, token)) = &decl_token {
+        (*kind, token.start)
     } else {
-        (VariableKind::Const, id.start, id.end)
+        (VariableKind::Const, id.start)
     };
     if let Some(token) = visibility_token {
         start = token.start;
@@ -2405,6 +2448,11 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
             ignore_whitespace(i);
 
             let val = function_decl
+                .map(|mut func| {
+                    // Make the function expression aware of its name.
+                    func.name = Some(id.clone());
+                    func
+                })
                 .map(Box::new)
                 .map(Expr::FunctionExpression)
                 .context(expected("a KCL function expression, like () { return 1 }"))
@@ -2424,13 +2472,23 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
 
             let val = expression
                 .try_map(|val| {
-                    // Function bodies can be used if and only if declaring a function.
-                    // Check the 'if' direction:
+                    // Check if declaring a variable where the value is a
+                    // function expression, e.g. `f = fn() {}`. If so, suggest
+                    // using `fn f() {}` instead.
                     if matches!(val, Expr::FunctionExpression(_)) {
-                        return Err(CompilationError::fatal(
-                            SourceRange::new(start, dec_end, id.module_id),
-                            format!("Expected a `fn` variable kind, found: `{kind}`"),
-                        ));
+                        let fn_end = val.start();
+                        ParseContext::warn(
+                            CompilationError::err(
+                                SourceRange::new(start, fn_end, id.module_id),
+                                "Define a function with `fn name()` instead of assigning the function to a variable",
+                            )
+                            .with_suggestion(
+                                format!("Use `fn {}`", &id.name),
+                                format!("fn {}", &id.name),
+                                Some(SourceRange::new(start, fn_end, id.module_id)),
+                                Tag::None,
+                            ),
+                        );
                     }
                     Ok(val)
                 })
@@ -2733,6 +2791,7 @@ fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Operator if token.value == "-" => Ok((UnaryOperator::Neg, token)),
+            TokenType::Operator if token.value == "+" => Ok((UnaryOperator::Plus, token)),
             TokenType::Operator => Err(CompilationError::fatal(
                  token.as_source_range(),
                  format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
@@ -3047,8 +3106,10 @@ fn record_ty_field(i: &mut TokenSlice) -> ModalResult<(Node<Identifier>, Node<Ty
 fn type_(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
     separated(1.., type_not_union, pipe_sep)
         .map(|mut tys: Vec<_>| {
-            if tys.len() == 1 {
-                tys.pop().unwrap()
+            if tys.len() == 1
+                && let Some(ty) = tys.pop()
+            {
+                ty
             } else {
                 let start = tys[0].start;
                 let module_id = tys[0].module_id;
@@ -4880,15 +4941,6 @@ e
     }
 
     #[test]
-    fn test_parse_weird_lots_of_slashes() {
-        assert_err_contains(
-            r#"J///////////o//+///////////P++++*++++++P///////˟
-++4"#,
-            "Unexpected token: +",
-        );
-    }
-
-    #[test]
     fn test_optional_param_order() {
         for (i, (params, expect_ok)) in [
             (
@@ -4974,6 +5026,30 @@ e
             let actual = optional_after_required(&params);
             assert_eq!(actual.is_ok(), expect_ok, "failed test {i}");
         }
+    }
+
+    #[test]
+    fn function_defined_with_var() {
+        let code = r#"
+        foo = fn(@x) {
+            return x
+        }
+        answer = foo(2)
+        "#;
+        let (_, errs) = assert_no_err(code);
+        assert!(errs[0].message.contains("Define a function with `fn name()` instead") && errs[0].suggestion.is_some());
+    }
+
+    #[test]
+    fn function_defined_with_var_and_recursive_name() {
+        let code = r#"
+        foo = fn bar(@x) {
+            return x
+        }
+        answer = foo(2)
+        "#;
+        let (_, errs) = assert_no_err(code);
+        assert!(errs[0].message.contains("Define a function with `fn name()` instead") && errs[0].suggestion.is_some());
     }
 
     #[test]
@@ -5631,6 +5707,58 @@ bar = 1
         assert_eq!(actual.operator, UnaryOperator::Not);
         crate::parsing::top_level_parse(some_program_string).unwrap(); // Updated import path
     }
+
+    #[test]
+    fn test_comments_in_args() {
+        // This currently fails because there's no trailing comma between the
+        // z = 1 and the comment which follows.
+        // We should tolerate that though, if it's the last argument.
+        let code = r#"x = rectangle(
+  recessSketch,
+  x = [cx, cy],
+  y = 1, // y component
+  z = 1 // axial thickness
+)"#;
+        let _result = crate::parsing::top_level_parse(code).unwrap();
+    }
+
+    #[test]
+    fn test_comments_and_block_in_args() {
+        let code = r#"shape = rectangle(
+  recessSketch,
+  x = [cx, cy],
+  y = 1,
+  z = 1 /* axial thickness */
+  // finishing comment
+  /* block metadata */
+)"#;
+        crate::parsing::top_level_parse(code).unwrap();
+    }
+
+    #[test]
+    fn test_array_multiple_trailing_comments() {
+        let code = r#"points = [
+  0,
+  1,
+  2 // radial segment
+  // keep origin
+  /* padding */
+]"#;
+        crate::parsing::top_level_parse(code).unwrap();
+    }
+
+    #[test]
+    fn test_object_multiple_trailing_comments() {
+        let code = r#"config = {
+  width = 10,
+  height = 5,
+  depth = 3 // final face depth
+  // allow taper
+  /* tolerance */
+}"#;
+        crate::parsing::top_level_parse(code).unwrap();
+    }
+
     #[test]
     fn test_sensible_error_when_missing_comma_between_fn_args() {
         let program_source = "startSketchOn(XY)
@@ -5813,6 +5941,17 @@ bar = 1
         assert!(!cause.was_fatal);
         assert_eq!(cause.err.message, ELSE_MUST_END_IN_EXPR);
         assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    #[test]
+    fn test_if_expr_in_pipeline() {
+        let code = r#"0
+|> if true {
+  f(%)
+} else {
+  f(%)
+}"#;
+        let _result = crate::parsing::top_level_parse(code).unwrap();
     }
 }
 

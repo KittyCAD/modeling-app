@@ -1,0 +1,69 @@
+// Sprocket
+// A standard hub sprocket is a toothed wheel that engages with a roller chain to transmit rotary motion and torque between shafts
+
+// Set Units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+// #25 chain size
+chainPitch = 1 / 4
+rollerWidth = 1 / 8
+rollerDiameter = 0.13
+pinDiameter = 3 / 32
+
+fn sprocket(@nTeeth, bore) {
+  // Calculate the basic geometry
+  pitchDiameter = chainPitch * 1 / sin(180deg / nTeeth)
+  holePos = (pitchDiameter - (rollerDiameter / 2) + bore) / 4
+
+  // Lightening/bolt holes patterned around center
+  // Create as a separate sketch group to use as a subtract2d tool later
+  holesSketch = startSketchOn(XZ)
+    |> circle(center = [0, holePos], diameter = round(sqrt(holePos / 1.5)) * holePos / 2.5 + 0.0001)
+    |> patternCircular2d(
+         instances = 2 * round(sqrt(2 * holePos)) + 2,
+         center = [0, 0],
+         arcDegrees = 360deg,
+         rotateDuplicates = true,
+       )
+
+  // Pattern the tooth profile around the origin to create a single closed profile
+  baseToothSketch = startSketchOn(XZ)
+    |> startProfile(at = [
+         (pitchDiameter - rollerDiameter) / 2,
+         0
+       ])
+    // Roller seating arc at tooth root
+    |> arc(angleStart = 180deg, angleEnd = 90deg + 360deg / nTeeth, diameter = rollerDiameter)
+    // Fillet from root to flank sized by pitch and roller size
+    |> tangentialArc(angle = 28deg, radius = chainPitch - (rollerDiameter / 2))
+    // Transition arc to pitch-circle point between teeth
+    |> arc(interiorAbsolute = polar(angle = 170deg / nTeeth, length = sqrt(lastSegX() ^ 2 + lastSegY() ^ 2)), endAbsolute = polar(angle = 180deg / nTeeth, length = sqrt(lastSegX() ^ 2 + lastSegY() ^ 2)))
+    // Mirror to form full tooth
+    |> mirror2d(axis = X)
+    // Pattern tooth around sprocket
+    |> patternCircular2d(
+         instances = nTeeth,
+         center = [0, 0],
+         arcDegrees = 360deg,
+         rotateDuplicates = true,
+       )
+    |> close()
+
+  // Subtract center bore and lightening/bolt holes from the closed sprocket profile
+  toothProfileWithHoles = subtract2d(
+    baseToothSketch,
+    tool = [
+      circle(startSketchOn(XZ), center = [0, 0], diameter = bore),
+      holesSketch
+    ],
+  )
+
+  // Thickness set by roller width
+  sprocket = extrude(toothProfileWithHoles, length = rollerWidth * 0.9)
+
+  return sprocket
+}
+
+// model an instance of the sprocket with 28 teeth and a 5/8 inch diameter center bore
+sprocket(28, bore = 5 / 8)

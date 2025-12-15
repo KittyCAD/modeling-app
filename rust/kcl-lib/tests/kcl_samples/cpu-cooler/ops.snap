@@ -16,7 +16,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -44,7 +59,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 7
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -72,7 +102,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 8
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -100,7 +145,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 9
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -128,7 +188,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 10
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -156,7 +231,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -187,7 +277,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 12
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -213,7 +318,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -267,7 +387,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 12
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -285,7 +420,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "default",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -303,7 +449,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "default",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -329,7 +486,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -360,7 +532,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 10
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -386,7 +573,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -417,7 +619,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -443,7 +660,18 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -471,7 +699,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 6
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -499,7 +742,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 7
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -527,7 +785,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 8
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -555,7 +828,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 9
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -583,7 +871,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 10
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -614,7 +917,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -640,7 +958,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -671,7 +1004,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -697,7 +1045,19 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -728,7 +1088,19 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -754,7 +1126,19 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -825,7 +1209,19 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -843,7 +1239,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -874,7 +1285,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -917,7 +1343,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -956,7 +1397,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "ArrayElement",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -985,7 +1441,38 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1001,7 +1488,35 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1043,7 +1558,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "ArrayElement",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1072,7 +1602,38 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1088,7 +1649,35 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1130,7 +1719,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "ArrayElement",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1159,7 +1763,38 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1175,7 +1810,35 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1213,7 +1876,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1332,7 +2010,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1422,7 +2115,19 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -1453,7 +2158,25 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1469,7 +2192,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1498,7 +2236,25 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1514,7 +2270,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1542,7 +2313,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1570,7 +2356,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1689,7 +2490,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1718,7 +2534,25 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1734,7 +2568,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1763,7 +2612,25 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1779,7 +2646,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1807,7 +2689,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1835,7 +2732,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -1954,7 +2866,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2042,7 +2969,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 5
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2071,7 +3013,25 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2087,7 +3047,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2160,7 +3135,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2233,7 +3223,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 12
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2264,7 +3269,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 14
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2341,7 +3361,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 15
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2357,7 +3392,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2430,7 +3476,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 11
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2468,7 +3529,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 12
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2541,7 +3617,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 12
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2579,7 +3670,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 13
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2595,7 +3701,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2647,7 +3768,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 15
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2702,7 +3838,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 16
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2729,7 +3880,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2760,7 +3926,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2803,7 +3984,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -2922,7 +4118,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -4252,7 +5463,18 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4268,7 +5490,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4299,7 +5536,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4347,7 +5599,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4373,7 +5640,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 4
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4402,7 +5684,25 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4418,7 +5718,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4449,7 +5764,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4475,7 +5805,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -4506,7 +5851,25 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4522,7 +5885,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4551,7 +5929,25 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4567,7 +5963,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4596,7 +6007,21 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4612,7 +6037,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4640,7 +6076,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4668,7 +6119,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4697,7 +6163,25 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4713,7 +6197,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4742,7 +6241,25 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4758,7 +6275,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4787,7 +6319,21 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "CallKwUnlabeledArg"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4803,7 +6349,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4831,7 +6388,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4859,7 +6431,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4908,7 +6495,19 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 1
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -4928,7 +6527,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4946,7 +6556,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4964,7 +6585,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -4982,7 +6614,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5000,7 +6643,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5018,7 +6672,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5036,7 +6701,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -5054,7 +6730,22 @@ description: Operations executed cpu-cooler.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5085,7 +6776,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 7
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5111,7 +6817,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 8
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5166,7 +6887,22 @@ description: Operations executed cpu-cooler.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 9
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -5184,7 +6920,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5201,7 +6948,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5218,7 +6976,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -5233,7 +7002,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5246,7 +7026,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5259,7 +7050,18 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 22
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -5272,7 +7074,66 @@ description: Operations executed cpu-cooler.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 23
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "SOLID",
+      "value": {
+        "type": "String",
+        "value": "solid"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 24
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "SURFACE",
+      "value": {
+        "type": "String",
+        "value": "surface"
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 25
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }

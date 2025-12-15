@@ -3,7 +3,7 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::BodyType};
 use kittycad_modeling_cmds as kcmc;
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
@@ -76,7 +76,7 @@ async fn inner_loft(
     let id = exec_state.next_uuid();
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::Loft {
                 section_ids: sketches.iter().map(|group| group.id).collect(),
                 base_curve_index,
@@ -104,6 +104,8 @@ async fn inner_loft(
             exec_state,
             &args,
             None,
+            None,
+            BodyType::Solid, // TODO: Support surface loft.
         )
         .await?,
     ))

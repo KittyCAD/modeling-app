@@ -9,7 +9,11 @@ import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import {
+  engineCommandManager,
+  kclManager,
+  sceneInfra,
+} from '@src/lib/singletons'
 import { useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { type IndexLoaderData } from '@src/lib/types'
@@ -40,7 +44,7 @@ export const ModelingPageProvider = ({
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
-    } = createNamedViewsCommand()
+    } = createNamedViewsCommand(engineCommandManager)
 
     const commands = [
       createNamedViewCommand,
@@ -108,7 +112,13 @@ export const ModelingPageProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [location])
 
-  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath)
+  const cb = modelingMenuCallbackMostActions(
+    settings,
+    navigate,
+    filePath,
+    engineCommandManager,
+    sceneInfra
+  )
   useMenuListener(cb)
 
   const kclCommandMemo = useMemo(() => {
@@ -144,6 +154,7 @@ export const ModelingPageProvider = ({
     return kclCommands({
       authToken: token ?? '',
       projectData,
+      kclManager,
       settings: {
         defaultUnit:
           settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -152,7 +163,7 @@ export const ModelingPageProvider = ({
       project,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [codeManager, kclManager, project, file])
+  }, [kclManager, project, file])
 
   useEffect(() => {
     commandBarActor.send({

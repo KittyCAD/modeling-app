@@ -584,7 +584,7 @@ extrude002 = extrude(profile002, length = 150)`
     const u = await getUtils(page)
 
     // Constants and locators
-    const planeColor: [number, number, number] = [80, 60, 60]
+    const planeColor: [number, number, number] = [50, 44, 45]
     const bgColor: [number, number, number] = [30, 30, 30]
     const middlePixelIsColor = async (color: [number, number, number]) => {
       return u.getGreatestPixDiff({ x: 600, y: 250 }, color)
@@ -724,10 +724,7 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
     await homePage.openProject('test-sample')
     await scene.settled(cmdBar)
     await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
-    const operationButton = await toolbar.getFeatureTreeOperation(
-      'Offset Plane',
-      1
-    )
+    const operationButton = await toolbar.getFeatureTreeOperation('plane002', 0)
 
     await test.step('Delete offset plane via feature tree selection', async () => {
       await expect(operationButton.last()).toBeVisible({ timeout: 10_000 })

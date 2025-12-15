@@ -1,4 +1,4 @@
-import { assertParse, recast, type Program, type Name } from '@src/lang/wasm'
+import { assertParse, recast, type Name } from '@src/lang/wasm'
 import {
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
@@ -7,6 +7,8 @@ import {
   getAstAndSketchSelections,
   getCapFromCylinder,
   getFacesFromBox,
+  getKclCommandValue,
+  runNewAstAndCheckForSweep,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
@@ -17,8 +19,7 @@ import {
 } from '@src/unitTestUtils'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclSingleton'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   addExtrude,
   addLoft,
@@ -30,6 +31,7 @@ import {
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -57,37 +59,6 @@ beforeEach(async () => {
 afterAll(() => {
   engineCommandManagerInThisFile.tearDown()
 })
-
-async function runNewAstAndCheckForSweep(
-  ast: Node<Program>,
-  rustContext: RustContext
-) {
-  const { artifactGraph } = await enginelessExecutor(
-    ast,
-    undefined,
-    undefined,
-    rustContext
-  )
-  const sweepArtifact = artifactGraph.values().find((a) => a.type === 'sweep')
-  expect(sweepArtifact).toBeDefined()
-}
-
-async function getKclCommandValue(
-  value: string,
-  instance: ModuleType,
-  rustContext: RustContext
-) {
-  const result = await stringToKclExpression(
-    value,
-    undefined,
-    instance,
-    rustContext
-  )
-  if (err(result) || 'errors' in result) {
-    throw new Error('Failed to create KCL expression')
-  }
-  return result
-}
 
 // TODO: two different methods for the same thing. Why?
 async function getAstAndArtifactGraphEngineless(
@@ -305,6 +276,34 @@ extrude001 = extrude(profile001, length = 2)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add an extrude call with bodyType "surface"', async () => {
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
+        circleProfileCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        bodyType: 'surface',
+        artifactGraph,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(circleProfileCode)
+      expect(newCode).toContain(
+        `extrude001 = extrude(profile001, length = 1, bodyType = surface)`
+      )
+      // TODO: Re-enable once KCL stdlib supports bodyType parameter
+      // await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add an extrude call to a wall', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
@@ -420,6 +419,54 @@ extrude002 = extrude(profile002, to = capEnd001)`)
         rustContextInThisFile
       )
       expect(error).not.toBeInstanceOf(Error)
+    })
+
+    it('should add an extrude call with full twist parameters', async () => {
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
+        circleProfileCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const length = await getKclCommandValue(
+        '10',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const twistAngle = await getKclCommandValue(
+        '180deg',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const twistAngleStep = await getKclCommandValue(
+        '15',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const twistCenter = await getKclCommandValue(
+        '[0, 0]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        twistAngle,
+        twistAngleStep,
+        twistCenter,
+        artifactGraph,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(circleProfileCode)
+      expect(newCode).toContain(`extrude001 = extrude(
+  profile001,
+  length = 10,
+  twistAngle = 180deg,
+  twistAngleStep = 15,
+  twistCenter = [0, 0],
+)`)
     })
 
     // TODO: this isn't producing the right results yet
@@ -542,7 +589,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
         kclManagerInThisFile
       )
       const sectional = true
-      const relativeTo = 'sketchPlane'
+      const relativeTo = 'SKETCH_PLANE'
       const result = addSweep({ ast, sketches, path, sectional, relativeTo })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -552,7 +599,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
   profile001,
   path = profile002,
   sectional = true,
-  relativeTo = 'sketchPlane',
+  relativeTo = sweep::SKETCH_PLANE,
 )`)
     })
 
@@ -562,7 +609,7 @@ sweep001 = sweep(
   profile001,
   path = profile002,
   sectional = true,
-  relativeTo = 'sketchPlane',
+  relativeTo = sweep::SKETCH_PLANE,
 )`
       const { ast, sketches, path } = await getAstAndSketchesForSweep(
         circleAndLineCodeWithSweep,
@@ -570,7 +617,7 @@ sweep001 = sweep(
         kclManagerInThisFile
       )
       const sectional = false
-      const relativeTo = 'trajectoryCurve'
+      const relativeTo = 'TRAJECTORY'
       const nodeToEdit = createPathToNodeForLastVariable(ast)
       const result = addSweep({
         ast,
@@ -585,7 +632,7 @@ sweep001 = sweep(
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineCode)
       expect(newCode).toContain(
-        `sweep001 = sweep(profile001, path = profile002, relativeTo = 'trajectoryCurve')`
+        `sweep001 = sweep(profile001, path = profile002, relativeTo = sweep::TRAJECTORY)`
       )
     })
 

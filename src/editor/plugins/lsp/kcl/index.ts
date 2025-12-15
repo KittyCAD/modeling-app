@@ -1,5 +1,5 @@
 import type { Extension } from '@codemirror/state'
-import type { PluginValue, ViewUpdate } from '@codemirror/view'
+import type { EditorView, PluginValue, ViewUpdate } from '@codemirror/view'
 import { ViewPlugin } from '@codemirror/view'
 import type {
   LanguageServerClient,
@@ -11,10 +11,14 @@ import {
   lspPlugin,
   lspRenameEvent,
 } from '@kittycad/codemirror-lsp-client'
-import { updateOutsideEditorEvent } from '@src/editor/manager'
-import { codeManagerUpdateEvent } from '@src/lang/codeManager'
-import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import {
+  updateOutsideEditorEvent,
+  editorCodeUpdateEvent,
+  type KclManager,
+} from '@src/lang/KclManager'
+import { kclManager, rustContext } from '@src/lib/singletons'
 import { deferExecution } from '@src/lib/utils'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import type { UpdateCanExecuteParams } from '@rust/kcl-lib/bindings/UpdateCanExecuteParams'
 import type { UpdateCanExecuteResponse } from '@rust/kcl-lib/bindings/UpdateCanExecuteResponse'
@@ -23,27 +27,42 @@ import type { UpdateUnitsResponse } from '@rust/kcl-lib/bindings/UpdateUnitsResp
 
 import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
 import { processCodeMirrorRanges } from '@src/lib/selections'
+import type {
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 const changesDelay = 600
 
-// A view plugin that requests completions from the server after a delay
+/** A view plugin that requests completions from the server after a delay */
 export class KclPlugin implements PluginValue {
   private viewUpdate: ViewUpdate | null = null
   private client: LanguageServerClient
+  private readonly kclManager: KclManager
+  private readonly sceneEntitiesManager: SceneEntities
 
-  constructor(client: LanguageServerClient) {
+  constructor(
+    client: LanguageServerClient,
+    view: EditorView,
+    systemDeps: {
+      kclManager: KclManager
+      sceneEntitiesManager: SceneEntities
+    }
+  ) {
     this.client = client
+    this.kclManager = systemDeps.kclManager
+    this.sceneEntitiesManager = systemDeps.sceneEntitiesManager
 
-    // Gotcha: Code can be written into the CodeMirror editor but not propagated to codeManager.code
-    // because the update function has not run. We need to initialize the codeManager.code when lsp initializes
+    // Gotcha: Code can be written into the CodeMirror editor but not propagated to kclManager.code
+    // because the update function has not run. We need to initialize the kclManager.code when lsp initializes
     // because new code could have been written into the editor before the update callback is initialized.
     // There appears to be limited ways to safely get the current doc content. This appears to be sync and safe.
     const kclLspPlugin = this.client.plugins.find((plugin) => {
       return plugin.client.name === 'kcl'
     })
     if (kclLspPlugin) {
-      // @ts-ignore Ignoring this private dereference of .view on the plugin. I do not have another helper method that can give me doc string
-      codeManager.code = kclLspPlugin.view.state.doc.toString()
+      systemDeps.kclManager.code = view.state.doc.toString()
     }
   }
 
@@ -57,12 +76,16 @@ export class KclPlugin implements PluginValue {
       return
     }
 
-    editorManager.handleOnViewUpdate(this.viewUpdate, processCodeMirrorRanges)
+    this.kclManager.handleOnViewUpdate(
+      this.viewUpdate,
+      processCodeMirrorRanges,
+      this.sceneEntitiesManager
+    )
   }, 50)
 
   update(viewUpdate: ViewUpdate) {
     this.viewUpdate = viewUpdate
-    editorManager.setEditorView(viewUpdate.view)
+    this.kclManager.setEditorView(viewUpdate.view)
 
     let isUserSelect = false
     let isRelevant = viewUpdate.docChanged
@@ -92,7 +115,7 @@ export class KclPlugin implements PluginValue {
       }
 
       // Don't make this an else.
-      if (tr.annotation(codeManagerUpdateEvent.type)) {
+      if (tr.annotation(editorCodeUpdateEvent.type)) {
         // We want to ignore when we are forcing the editor to update.
         isRelevant = false
         break
@@ -123,9 +146,9 @@ export class KclPlugin implements PluginValue {
     }
 
     const newCode = viewUpdate.state.doc.toString()
-    codeManager.code = newCode
+    this.kclManager.code = newCode
 
-    void codeManager.writeToFile().then(() => {
+    void this.kclManager.writeToFile().then(() => {
       this.scheduleUpdateDoc()
     })
   }
@@ -133,25 +156,66 @@ export class KclPlugin implements PluginValue {
   scheduleUpdateDoc() {
     if (this.sendScheduledInput != null)
       window.clearTimeout(this.sendScheduledInput)
-    this.sendScheduledInput = window.setTimeout(
-      () => this.updateDoc(),
-      changesDelay
-    )
+    this.sendScheduledInput = window.setTimeout(() => {
+      void this.updateDoc()
+    }, changesDelay)
   }
 
-  updateDoc() {
+  async updateDoc() {
     if (this.sendScheduledInput != null) {
       window.clearTimeout(this.sendScheduledInput)
       this.sendScheduledInput = null
     }
 
-    if (!this.client.ready) return
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    kclManager.executeCode()
+    if (!this.client.ready) {
+      return
+    }
+
+    // If we're in sketchSolveMode, update Rust state with the latest AST
+    // This handles the case where the user directly edits in the CodeMirror editor
+    // these are short term hacks while in rapid development for sketch revamp
+    // should be clean up.
+    try {
+      const modelingState = kclManager.modelingState
+      if (modelingState?.matches('sketchSolveMode')) {
+        await kclManager.executeCode()
+        const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
+          kclManager.ast,
+          await jsAppSettings()
+        )
+
+        // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
+        const sceneGraphDelta: SceneGraphDelta = {
+          new_graph: sceneGraph,
+          new_objects: [],
+          invalidates_ids: false,
+          exec_outcome: execOutcome,
+        }
+
+        const kclSource: SourceDelta = {
+          text: kclManager.code,
+        }
+
+        // Send event to sketch solve machine via modeling machine
+        kclManager.sendModelingEvent({
+          type: 'update sketch outcome',
+          data: {
+            kclSource,
+            sceneGraphDelta,
+          },
+        })
+      } else {
+        await kclManager.executeCode()
+      }
+    } catch (error) {
+      console.error('Error when updating Rust state after user edit:', error)
+    }
   }
 
   ensureDocUpdated() {
-    if (this.sendScheduledInput != null) this.updateDoc()
+    if (this.sendScheduledInput != null) {
+      void this.updateDoc()
+    }
   }
 
   async updateUnits(
@@ -167,9 +231,17 @@ export class KclPlugin implements PluginValue {
   }
 }
 
-export function kclPlugin(options: LanguageServerOptions): Extension {
+export function kclPlugin(
+  options: LanguageServerOptions,
+  systemDeps: {
+    kclManager: KclManager
+    sceneEntitiesManager: SceneEntities
+  }
+): Extension {
   return [
     lspPlugin(options),
-    ViewPlugin.define(() => new KclPlugin(options.client)),
+    ViewPlugin.define(
+      (view) => new KclPlugin(options.client, view, systemDeps)
+    ),
   ]
 }

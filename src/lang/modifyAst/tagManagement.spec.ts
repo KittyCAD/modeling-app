@@ -1,11 +1,12 @@
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import { assertParse, recast, type ArtifactGraph } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

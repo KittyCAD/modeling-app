@@ -10,9 +10,9 @@ jobs:
   npm-build-wasm:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -30,7 +30,7 @@ jobs:
         with:
           cache: false # configured below
 
-      - uses: taiki-e/install-action@c5b1b6f479c32f356cc6f4ba672a47f63853b13b
+      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
         with:
           tool: wasm-pack
 
@@ -43,13 +43,13 @@ jobs:
         shell: bash
         run: npm run build:wasm
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: prepared-wasm
           path: |
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: prepared-ts-rs-bindings
           path: |

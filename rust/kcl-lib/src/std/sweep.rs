@@ -1,7 +1,7 @@
 //! Standard library sweep.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::BodyType};
 use kittycad_modeling_cmds::{self as kcmc, shared::RelativeTo};
 use serde::Serialize;
 
@@ -84,7 +84,7 @@ async fn inner_sweep(
         let id = exec_state.next_uuid();
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmdMeta::from_args_id(exec_state, &args, id),
                 ModelingCmd::from(mcmd::Sweep {
                     target: sketch.id.into(),
                     trajectory,
@@ -108,6 +108,8 @@ async fn inner_sweep(
                 exec_state,
                 &args,
                 None,
+                None,
+                BodyType::Solid, // TODO: Support surface sweep
             )
             .await?,
         );
@@ -116,7 +118,7 @@ async fn inner_sweep(
     // Hide the artifact from the sketch or helix.
     exec_state
         .batch_modeling_cmd(
-            (&args).into(),
+            ModelingCmdMeta::from_args(exec_state, &args),
             ModelingCmd::from(mcmd::ObjectVisible {
                 object_id: trajectory.into(),
                 hidden: true,

@@ -1,8 +1,5 @@
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-
-import EditorManager from '@src/editor/manager'
-import { KclManager } from '@src/lang/KclSingleton'
-import CodeManager from '@src/lang/codeManager'
+import { KclManager } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { uuidv4 } from '@src/lib/utils'
 
@@ -25,10 +22,6 @@ import {
   billingMachine,
 } from '@src/machines/billingMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
-import {
-  mlEphantDefaultContext,
-  mlEphantManagerMachine,
-} from '@src/machines/mlEphantManagerMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
@@ -36,13 +29,14 @@ import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
+import { initPromise } from '@src/lang/wasmUtils'
 
 export const engineCommandManager = new ConnectionManager()
-export const rustContext = new RustContext(engineCommandManager)
+export const rustContext = new RustContext(engineCommandManager, initPromise)
 
 declare global {
   interface Window {
-    editorManager: EditorManager
+    kclManager: KclManager
     engineCommandManager: ConnectionManager
     engineDebugger: Debugger
   }
@@ -52,21 +46,11 @@ declare global {
 window.engineCommandManager = engineCommandManager
 
 export const sceneInfra = new SceneInfra(engineCommandManager)
-
-// This needs to be after sceneInfra and engineCommandManager are is created.
-export const editorManager = new EditorManager(engineCommandManager)
-export const codeManager = new CodeManager({ editorManager })
-
-// This needs to be after codeManager is created.
-// (lee: what??? why?)
-export const kclManager = new KclManager(engineCommandManager, {
+export const kclManager = new KclManager(engineCommandManager, initPromise, {
   rustContext,
-  codeManager,
-  editorManager,
   sceneInfra,
 })
 
-import { initPromise } from '@src/lang/wasmUtils'
 // Initialize KCL version
 import { setKclVersion } from '@src/lib/kclVersion'
 import { AppMachineEventType } from '@src/lib/types'
@@ -93,17 +77,9 @@ initPromise
     console.error(e)
   })
 
-// The most obvious of cyclic dependencies.
-// This is because the   handleOnViewUpdate(viewUpdate: ViewUpdate): void {
-// method requires it for the current ast.
-// CYCLIC REF
-editorManager.kclManager = kclManager
-editorManager.codeManager = codeManager
-
 // These are all late binding because of their circular dependency.
 // TODO: proper dependency injection.
 engineCommandManager.kclManager = kclManager
-engineCommandManager.codeManager = codeManager
 engineCommandManager.sceneInfra = sceneInfra
 engineCommandManager.rustContext = rustContext
 
@@ -114,19 +90,17 @@ kclManager.sceneInfraBaseUnitMultiplierSetter = (unit: BaseUnit) => {
 export const sceneEntitiesManager = new SceneEntities(
   engineCommandManager,
   sceneInfra,
-  editorManager,
-  codeManager,
   kclManager,
   rustContext
 )
+/** 🚨 Circular dependency alert 🚨 */
+kclManager.sceneEntitiesManager = sceneEntitiesManager
 
 if (typeof window !== 'undefined') {
   ;(window as any).engineCommandManager = engineCommandManager
   ;(window as any).kclManager = kclManager
   ;(window as any).sceneInfra = sceneInfra
   ;(window as any).sceneEntitiesManager = sceneEntitiesManager
-  ;(window as any).editorManager = editorManager
-  ;(window as any).codeManager = codeManager
   ;(window as any).rustContext = rustContext
   ;(window as any).engineDebugger = EngineDebugger
   ;(window as any).enableMousePositionLogs = () =>
@@ -148,13 +122,11 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-const { AUTH, SETTINGS, SYSTEM_IO, MLEPHANT_MANAGER, COMMAND_BAR, BILLING } =
-  ACTOR_IDS
+const { AUTH, SETTINGS, SYSTEM_IO, COMMAND_BAR, BILLING } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
   [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
-  [MLEPHANT_MANAGER]: mlEphantManagerMachine,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
 } as const
@@ -167,7 +139,6 @@ const appMachine = setup({
 }).createMachine({
   id: 'modeling-app',
   context: {
-    codeManager: codeManager,
     kclManager: kclManager,
     engineCommandManager: engineCommandManager,
     sceneInfra: sceneInfra,
@@ -185,10 +156,6 @@ const appMachine = setup({
     spawnChild(appMachineActors[SETTINGS], {
       systemId: SETTINGS,
       input: createSettings(),
-    }),
-    spawnChild(appMachineActors[MLEPHANT_MANAGER], {
-      systemId: MLEPHANT_MANAGER,
-      input: mlEphantDefaultContext(),
     }),
     spawnChild(appMachineActors[SYSTEM_IO], {
       systemId: SYSTEM_IO,
@@ -271,10 +238,6 @@ export type SystemIOActor = ActorRefFrom<
 >
 
 export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
-
-export const mlEphantManagerActor = appActor.system.get(
-  MLEPHANT_MANAGER
-) as ActorRefFrom<(typeof appMachineActors)[typeof MLEPHANT_MANAGER]>
 
 export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
   (typeof appMachineActors)[typeof COMMAND_BAR]

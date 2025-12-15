@@ -1,4 +1,4 @@
-import { KclManagerEvents } from '@src/lang/KclSingleton'
+import { KclManagerEvents } from '@src/lang/KclManager'
 import {
   engineCommandManager,
   kclManager,
@@ -7,6 +7,7 @@ import {
 } from '@src/lib/singletons'
 import { useEffect, useRef, useState } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { EngineDebugger } from '@src/lib/debugger'
 
 export const useOnPageIdle = ({
   startCallback,
@@ -90,6 +91,10 @@ export const useOnPageIdle = ({
             }
             console.log(sceneInfra.camControls.oldCameraState)
             console.warn('detected idle, tearing down connection.')
+            EngineDebugger.addLog({
+              label: 'useOnPageIdle',
+              message: 'Calling tearDown()',
+            })
             // We do a full tear down at the moment.
             engineCommandManager.tearDown()
             idleCallback()

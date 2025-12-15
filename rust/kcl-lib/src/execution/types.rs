@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt, str::FromStr};
+use std::{collections::HashMap, str::FromStr};
 
 use anyhow::Result;
 use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
@@ -12,6 +12,7 @@ use crate::{
         kcl_value::{KclValue, TypeDef},
         memory::{self},
     },
+    fmt,
     parsing::{
         ast::types::{PrimitiveType as AstPrimitiveType, Type},
         token::NumericSuffix,
@@ -43,6 +44,15 @@ impl RuntimeType {
 
     pub fn function() -> Self {
         RuntimeType::Primitive(PrimitiveType::Function)
+    }
+
+    pub fn segment() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Segment)
+    }
+
+    /// `[Segment; 1+]`
+    pub fn segments() -> Self {
+        RuntimeType::Array(Box::new(Self::segment()), ArrayLen::Minimum(1))
     }
 
     pub fn sketch() -> Self {
@@ -323,8 +333,8 @@ impl RuntimeType {
     }
 }
 
-impl fmt::Display for RuntimeType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl std::fmt::Display for RuntimeType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             RuntimeType::Primitive(t) => t.fmt(f),
             RuntimeType::Array(t, l) => match l {
@@ -406,7 +416,9 @@ pub enum PrimitiveType {
     TaggedFace,
     TagDecl,
     GdtAnnotation,
+    Segment,
     Sketch,
+    Constraint,
     Solid,
     Plane,
     Helix,
@@ -428,7 +440,9 @@ impl PrimitiveType {
             PrimitiveType::String => "strings".to_owned(),
             PrimitiveType::Boolean => "bools".to_owned(),
             PrimitiveType::GdtAnnotation => "GD&T Annotations".to_owned(),
+            PrimitiveType::Segment => "Segments".to_owned(),
             PrimitiveType::Sketch => "Sketches".to_owned(),
+            PrimitiveType::Constraint => "Constraints".to_owned(),
             PrimitiveType::Solid => "Solids".to_owned(),
             PrimitiveType::Plane => "Planes".to_owned(),
             PrimitiveType::Helix => "Helices".to_owned(),
@@ -455,8 +469,8 @@ impl PrimitiveType {
     }
 }
 
-impl fmt::Display for PrimitiveType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl std::fmt::Display for PrimitiveType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             PrimitiveType::Any => write!(f, "any"),
             PrimitiveType::None => write!(f, "none"),
@@ -470,7 +484,9 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::TaggedEdge => write!(f, "tagged edge"),
             PrimitiveType::TaggedFace => write!(f, "tagged face"),
             PrimitiveType::GdtAnnotation => write!(f, "GD&T Annotation"),
+            PrimitiveType::Segment => write!(f, "Segment"),
             PrimitiveType::Sketch => write!(f, "Sketch"),
+            PrimitiveType::Constraint => write!(f, "Constraint"),
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),
             PrimitiveType::Face => write!(f, "Face"),
@@ -750,6 +766,78 @@ impl NumericType {
         }
     }
 
+    /// Combine two types for range operations.
+    ///
+    /// This combinator function is suitable for ranges where uncertainty should
+    /// be handled by the user, and it doesn't make sense to convert units. So
+    /// this is one of th most conservative ways to combine types.
+    pub fn combine_range(
+        a: TyF64,
+        b: TyF64,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> Result<(f64, f64, NumericType), KclError> {
+        use NumericType::*;
+        match (a.ty, b.ty) {
+            (at, bt) if at == bt => Ok((a.n, b.n, at)),
+            (at, Any) => Ok((a.n, b.n, at)),
+            (Any, bt) => Ok((a.n, b.n, bt)),
+
+            (Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => {
+                Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!("Range start and range end have incompatible units: {l1} and {l2}"),
+                    vec![source_range],
+                )))
+            }
+            (Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => {
+                Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!("Range start and range end have incompatible units: {a1} and {a2}"),
+                    vec![source_range],
+                )))
+            }
+
+            (t @ Known(UnitType::Length(_)), Known(UnitType::GenericLength)) => Ok((a.n, b.n, t)),
+            (Known(UnitType::GenericLength), t @ Known(UnitType::Length(_))) => Ok((a.n, b.n, t)),
+            (t @ Known(UnitType::Angle(_)), Known(UnitType::GenericAngle)) => Ok((a.n, b.n, t)),
+            (Known(UnitType::GenericAngle), t @ Known(UnitType::Angle(_))) => Ok((a.n, b.n, t)),
+
+            (Known(UnitType::Count), Default { .. }) | (Default { .. }, Known(UnitType::Count)) => {
+                Ok((a.n, b.n, Known(UnitType::Count)))
+            }
+            (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) if l1 == l2 => Ok((a.n, b.n, t)),
+            (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) if l1 == l2 => Ok((a.n, b.n, t)),
+            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => {
+                if b.n != 0.0 {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                Ok((a.n, b.n, t))
+            }
+            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) if a1 == a2 => {
+                if a.n != 0.0 {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                Ok((a.n, b.n, t))
+            }
+
+            _ => {
+                let a = fmt::human_display_number(a.n, a.ty);
+                let b = fmt::human_display_number(b.n, b.ty);
+                Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "Range start and range end must be of the same type and have compatible units, but found {a} and {b}",
+                    ),
+                    vec![source_range],
+                )))
+            }
+        }
+    }
+
     pub fn from_parsed(suffix: NumericSuffix, settings: &super::MetaSettings) -> Self {
         match suffix {
             NumericSuffix::None => NumericType::Default {
@@ -823,8 +911,13 @@ impl NumericType {
     }
 
     fn coerce(&self, val: &KclValue) -> Result<KclValue, CoercionError> {
-        let KclValue::Number { value, ty, meta } = val else {
-            return Err(val.into());
+        let (value, ty, meta) = match val {
+            KclValue::Number { value, ty, meta } => (value, ty, meta),
+            // For coercion purposes, sketch vars pass through unchanged since
+            // they will be resolved later to a number. We need the sketch var
+            // ID.
+            KclValue::SketchVar { .. } => return Ok(val.clone()),
+            _ => return Err(val.into()),
         };
 
         if ty.subtype(self) {
@@ -938,6 +1031,32 @@ impl From<Option<UnitLength>> for NumericType {
 impl From<UnitAngle> for NumericType {
     fn from(value: UnitAngle) -> Self {
         NumericType::Known(UnitType::Angle(value))
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
+pub struct NumericSuffixTypeConvertError;
+
+impl TryFrom<NumericType> for NumericSuffix {
+    type Error = NumericSuffixTypeConvertError;
+
+    fn try_from(value: NumericType) -> Result<Self, Self::Error> {
+        match value {
+            NumericType::Known(UnitType::Count) => Ok(NumericSuffix::Count),
+            NumericType::Known(UnitType::Length(UnitLength::Millimeters)) => Ok(NumericSuffix::Mm),
+            NumericType::Known(UnitType::Length(UnitLength::Centimeters)) => Ok(NumericSuffix::Cm),
+            NumericType::Known(UnitType::Length(UnitLength::Meters)) => Ok(NumericSuffix::M),
+            NumericType::Known(UnitType::Length(UnitLength::Inches)) => Ok(NumericSuffix::Inch),
+            NumericType::Known(UnitType::Length(UnitLength::Feet)) => Ok(NumericSuffix::Ft),
+            NumericType::Known(UnitType::Length(UnitLength::Yards)) => Ok(NumericSuffix::Yd),
+            NumericType::Known(UnitType::GenericLength) => Ok(NumericSuffix::Length),
+            NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => Ok(NumericSuffix::Deg),
+            NumericType::Known(UnitType::Angle(UnitAngle::Radians)) => Ok(NumericSuffix::Rad),
+            NumericType::Known(UnitType::GenericAngle) => Ok(NumericSuffix::Angle),
+            NumericType::Default { .. } => Ok(NumericSuffix::None),
+            NumericType::Unknown => Ok(NumericSuffix::Unknown),
+            NumericType::Any => Err(NumericSuffixTypeConvertError),
+        }
     }
 }
 
@@ -1171,8 +1290,16 @@ impl KclValue {
                 KclValue::GdtAnnotation { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::Segment => match self {
+                KclValue::Segment { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::Sketch => match self {
                 KclValue::Sketch { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
+            PrimitiveType::Constraint => match self {
+                KclValue::SketchConstraint { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
             PrimitiveType::Solid => match self {
@@ -1215,6 +1342,7 @@ impl KclValue {
                         let id = exec_state.mod_local.id_generator.next_uuid();
                         let plane = Plane {
                             id,
+                            object_id: None,
                             artifact_id: id.into(),
                             info: PlaneInfo {
                                 origin,
@@ -1532,6 +1660,7 @@ impl KclValue {
             KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(*ty))),
             KclValue::String { .. } => Some(RuntimeType::Primitive(PrimitiveType::String)),
             KclValue::SketchVar { value, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(value.ty))),
+            KclValue::SketchConstraint { .. } => Some(RuntimeType::Primitive(PrimitiveType::Constraint)),
             KclValue::Object {
                 value, constrainable, ..
             } => {
@@ -1546,6 +1675,7 @@ impl KclValue {
             KclValue::Sketch { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sketch)),
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),
             KclValue::Face { .. } => Some(RuntimeType::Primitive(PrimitiveType::Face)),
+            KclValue::Segment { .. } => Some(RuntimeType::Primitive(PrimitiveType::Segment)),
             KclValue::Helix { .. } => Some(RuntimeType::Primitive(PrimitiveType::Helix)),
             KclValue::ImportedGeometry(..) => Some(RuntimeType::Primitive(PrimitiveType::ImportedGeometry)),
             KclValue::Tuple { value, .. } => Some(RuntimeType::Tuple(
@@ -1585,6 +1715,12 @@ impl KclValue {
 mod test {
     use super::*;
     use crate::execution::{ExecTestResults, parse_execute};
+
+    async fn new_exec_state() -> (crate::ExecutorContext, ExecState) {
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let exec_state = ExecState::new(&ctx);
+        (ctx, exec_state)
+    }
 
     fn values(exec_state: &mut ExecState) -> Vec<KclValue> {
         vec![
@@ -1654,7 +1790,7 @@ mod test {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_idempotent() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
         let values = values(&mut exec_state);
         for v in &values {
             // Identity subtype
@@ -1709,11 +1845,12 @@ mod test {
             v.coerce(&RuntimeType::Primitive(PrimitiveType::Boolean), true, &mut exec_state)
                 .unwrap_err();
         }
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_none() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
         let none = KclValue::KclNone {
             value: crate::parsing::ast::types::KclNone::new(),
             meta: Vec::new(),
@@ -1768,11 +1905,12 @@ mod test {
             },
             &mut exec_state,
         );
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_record() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
 
         let obj0 = KclValue::Object {
             value: HashMap::new(),
@@ -1865,11 +2003,12 @@ mod test {
             false,
         );
         obj2.coerce(&ty1, true, &mut exec_state).unwrap_err();
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_array() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
 
         let hom_arr = KclValue::HomArray {
             value: vec![
@@ -2028,11 +2167,12 @@ mod test {
 
         mixed0.coerce(&tym1, true, &mut exec_state).unwrap_err();
         mixed0.coerce(&tym2, true, &mut exec_state).unwrap_err();
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_union() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
 
         // Subtyping smaller unions
         assert!(RuntimeType::Union(vec![]).subtype(&RuntimeType::Union(vec![
@@ -2081,11 +2221,12 @@ mod test {
         ]);
         count.coerce(&tyb, true, &mut exec_state).unwrap_err();
         count.coerce(&tyb2, true, &mut exec_state).unwrap_err();
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_axes() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
 
         // Subtyping
         assert!(RuntimeType::Primitive(PrimitiveType::Axis2d).subtype(&RuntimeType::Primitive(PrimitiveType::Axis2d)));
@@ -2198,11 +2339,12 @@ mod test {
         assert_coerce_results(&a3d, &ty3d, &a3d, &mut exec_state);
         assert_coerce_results(&a3d, &ty2d, &a2d, &mut exec_state);
         a2d.coerce(&ty3d, true, &mut exec_state).unwrap_err();
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_numeric() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
 
         let count = KclValue::Number {
             value: 1.0,
@@ -2327,6 +2469,7 @@ mod test {
                 .round(),
             1.0
         );
+        ctx.close().await;
     }
 
     #[track_caller]
@@ -2449,7 +2592,7 @@ d = cos(1rad)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn coerce_nested_array() {
-        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock(None).await);
+        let (ctx, mut exec_state) = new_exec_state().await;
 
         let mixed1 = KclValue::HomArray {
             value: vec![
@@ -2514,5 +2657,6 @@ d = cos(1rad)
             ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
         };
         assert_coerce_results(&mixed1, &tym1, &result, &mut exec_state);
+        ctx.close().await;
     }
 }

@@ -9,13 +9,14 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -65,11 +66,11 @@ async function getKclCommandValue(
   instance: ModuleType,
   rustContext: RustContext
 ) {
+  const allowArrays = value.trim().startsWith('[')
   const result = await stringToKclExpression(
     value,
-    undefined,
-    instance,
-    rustContext
+    rustContext,
+    allowArrays ? { allowArrays: true } : undefined
   )
   if (err(result) || 'errors' in result) {
     throw new Error('Failed to create KCL expression')

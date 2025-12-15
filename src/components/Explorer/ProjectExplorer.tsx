@@ -14,7 +14,6 @@ import type {
   FileExplorerEntry,
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
-import { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { FILE_EXT } from '@src/lib/constants'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
@@ -29,7 +28,7 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { systemIOActor, useSettings } from '@src/lib/singletons'
+import { kclManager, systemIOActor, useSettings } from '@src/lib/singletons'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useEffect, useRef, useState } from 'react'
@@ -77,7 +76,7 @@ export const ProjectExplorer = ({
   canNavigate: boolean
   overrideApplicationProjectDirectory?: string
 }) => {
-  const { errors } = useKclContext()
+  const errors = kclManager.errorsSignal.value
   const settings = useSettings()
   const applicationProjectDirectory = settings.app.projectDirectory.current
 
@@ -484,7 +483,8 @@ export const ProjectExplorer = ({
                     const requestedFileNameWithExtension =
                       parentPathRelativeToProject(
                         file?.path?.replace(oldPath, newPath),
-                        applicationProjectDirectory
+                        overrideApplicationProjectDirectory ||
+                          applicationProjectDirectory
                       )
                     systemIOActor.send({
                       type: SystemIOMachineEvents.renameFolderAndNavigateToFile,
@@ -537,7 +537,8 @@ export const ProjectExplorer = ({
                   getParentAbsolutePath(row.path),
                   fileNameForcedWithOriginalExt
                 ),
-                applicationProjectDirectory
+                overrideApplicationProjectDirectory ||
+                  applicationProjectDirectory
               )
 
               if (row.isFake) {

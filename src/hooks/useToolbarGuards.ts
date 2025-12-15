@@ -5,25 +5,27 @@ import {
   createSetVarNameModal,
 } from '@src/components/SetVarNameModal'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useKclContext } from '@src/lang/KclProvider'
 import { moveValueIntoNewVariable } from '@src/lang/modifyAst'
 import { isNodeSafeToReplace } from '@src/lang/queryAst'
 import type { PathToNode, SourceRange } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
-import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import type { KclManager } from '@src/lang/KclManager'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 
 export const getVarNameModal = createSetVarNameModal(SetVarNameModal)
 
-export function useConvertToVariable(range?: SourceRange) {
-  const { ast } = useKclContext()
+export function useConvertToVariable(
+  kclManager: KclManager,
+  range?: SourceRange
+) {
+  const ast = kclManager.astSignal.value
   const { context } = useModelingContext()
   const [enable, setEnabled] = useState(false)
 
   useEffect(() => {
-    editorManager.convertToVariableEnabled = enable
-  }, [enable])
+    kclManager.convertToVariableEnabled = enable
+  }, [enable, kclManager])
 
   useEffect(() => {
     // Return early if there are no selection ranges for whatever reason
@@ -68,7 +70,7 @@ export function useConvertToVariable(range?: SourceRange) {
 
       const newCode = recast(_modifiedAst)
       if (err(newCode)) return
-      codeManager.updateCodeEditor(newCode)
+      kclManager.updateCodeEditor(newCode)
 
       return pathToReplacedNode
     } catch (e) {
@@ -76,7 +78,7 @@ export function useConvertToVariable(range?: SourceRange) {
     }
   }
 
-  editorManager.convertToVariableCallback = toSync(handleClick, reportRejection)
+  kclManager.convertToVariableCallback = toSync(handleClick, reportRejection)
 
   return { enable, handleClick }
 }

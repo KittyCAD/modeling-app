@@ -52,6 +52,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, expect, beforeEach, describe, test, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -281,8 +282,8 @@ describe('Testing addSketchTo', () => {
     )
     const str = recast(result.modifiedAst, instanceInThisFile)
     expect(str).toBe(`sketch001 = startSketchOn(YZ)
-  |> startProfile(at = 'default')
-  |> line(end = 'default')
+  |> startProfile(at = "default")
+  |> line(end = "default")
 `)
   })
 })

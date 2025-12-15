@@ -611,6 +611,7 @@ async fn run_example(text: &str) -> Result<()> {
     let ctx = ExecutorContext::new_with_default_client().await?;
     let mut exec_state = crate::execution::ExecState::new(&ctx);
     ctx.run(&program, &mut exec_state).await?;
+    ctx.close().await;
     Ok(())
 }
 

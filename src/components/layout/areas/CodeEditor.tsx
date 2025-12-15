@@ -1,6 +1,5 @@
 import type { EditorStateConfig, Extension } from '@codemirror/state'
 import { EditorState, StateEffect } from '@codemirror/state'
-import { oneDark } from '@codemirror/theme-one-dark'
 import { EditorView } from '@codemirror/view'
 import {
   forwardRef,
@@ -24,17 +23,6 @@ const useFirstRender = () => {
   return firstRender.current
 }
 
-const defaultLightThemeOption = EditorView.theme(
-  {
-    '&': {
-      backgroundColor: '#fff',
-    },
-  },
-  {
-    dark: false,
-  }
-)
-
 interface CodeEditorRef {
   editor?: HTMLDivElement | null
   view?: EditorView
@@ -45,7 +33,6 @@ interface CodeEditorProps {
   onCreateEditor?: (view: EditorView | null) => void
   initialDocValue?: EditorStateConfig['doc']
   extensions?: Extension
-  theme: 'light' | 'dark'
   autoFocus?: boolean
   selection?: EditorStateConfig['selection']
 }
@@ -59,7 +46,6 @@ const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>((props, ref) => {
     onCreateEditor,
     extensions = [],
     initialDocValue,
-    theme,
     autoFocus = false,
     selection,
   } = props
@@ -70,7 +56,6 @@ const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>((props, ref) => {
     onCreateEditor,
     extensions,
     initialDocValue,
-    theme,
     autoFocus,
     selection,
   })
@@ -102,7 +87,6 @@ export function useCodeMirror(props: UseCodeMirror) {
     onCreateEditor,
     extensions = [],
     initialDocValue,
-    theme,
     autoFocus = false,
     selection,
   } = props
@@ -115,14 +99,8 @@ export function useCodeMirror(props: UseCodeMirror) {
 
   const targetExtensions = useMemo(() => {
     let exts = isExtensionArray(extensions) ? extensions : []
-    if (theme === 'dark') {
-      exts = [...exts, oneDark]
-    } else if (theme === 'light') {
-      exts = [...exts, defaultLightThemeOption]
-    }
-
     return exts
-  }, [extensions, theme])
+  }, [extensions])
 
   useEffect(() => {
     if (container && !state) {

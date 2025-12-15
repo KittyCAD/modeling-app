@@ -2,24 +2,29 @@ use std::collections::HashMap;
 
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
-use kcl_ezpz::Constraint;
-use kittycad_modeling_cmds::units::UnitLength;
+use kcl_ezpz::{Constraint, NonLinearSystemError};
 
+#[cfg(feature = "artifact-graph")]
+use crate::front::{Object, ObjectKind};
 use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
-    exec::UnitType,
     execution::{
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
-        Operation, PlaneType, StatementKind, TagIdentifier, annotations,
+        AbstractSegment, BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta,
+        ModuleArtifactState, Operation, PlaneType, Segment, SegmentKind, SegmentRepr, SketchConstraintKind,
+        StatementKind, TagIdentifier, UnsolvedSegment, UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
-        fn_call::Args,
+        fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
         memory,
+        sketch_solve::{
+            FreedomAnalysis, create_segment_scene_objects, normalize_to_solver_unit, solver_numeric_type,
+            substitute_sketch_var_in_segment, substitute_sketch_vars,
+        },
         state::{ModuleState, SketchBlockState},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
-    fmt,
+    front::PointCtor,
     modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
@@ -139,8 +144,17 @@ impl ExecutorContext {
         path: &ModulePath,
     ) -> Result<ModuleExecutionOutcome, (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>)> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
-
-        let mut local_state = ModuleState::new(path.clone(), exec_state.stack().memory.clone(), Some(module_id));
+        #[cfg(not(feature = "artifact-graph"))]
+        let next_object_id = 0;
+        #[cfg(feature = "artifact-graph")]
+        let next_object_id = exec_state.global.root_module_artifacts.scene_objects.len();
+        let mut local_state = ModuleState::new(
+            path.clone(),
+            exec_state.stack().memory.clone(),
+            Some(module_id),
+            next_object_id,
+            exec_state.mod_local.freedom_analysis,
+        );
         if !preserve_mem {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         }
@@ -394,9 +408,22 @@ impl ExecutorContext {
                     exec_state.mod_local.being_declared = prev_being_declared;
                     let rhs = rhs_result?;
 
-                    exec_state
-                        .mut_stack()
-                        .add(var_name.clone(), rhs.clone(), source_range)?;
+                    let should_bind_name =
+                        if let Some(fn_name) = variable_declaration.declaration.init.fn_declaring_name() {
+                            // Declaring a function with a name, so only bind
+                            // the variable name if it differs from the function
+                            // name.
+                            var_name != fn_name
+                        } else {
+                            // Not declaring a function, so we should bind the
+                            // variable name.
+                            true
+                        };
+                    if should_bind_name {
+                        exec_state
+                            .mut_stack()
+                            .add(var_name.clone(), rhs.clone(), source_range)?;
+                    }
 
                     // Track operations, for the feature tree.
                     // Don't track these operations if the KCL code being executed is in the stdlib,
@@ -431,7 +458,9 @@ impl ExecutorContext {
                     let metadata = Metadata::from(&**ty);
                     let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
                     match attrs.impl_ {
-                        annotations::Impl::Rust | annotations::Impl::RustConstraint => {
+                        annotations::Impl::Rust
+                        | annotations::Impl::RustConstrainable
+                        | annotations::Impl::RustConstraint => {
                             let std_path = match &exec_state.mod_local.path {
                                 ModulePath::Std { value } => value,
                                 ModulePath::Local { .. } | ModulePath::Main => {
@@ -705,7 +734,7 @@ impl ExecutorContext {
         let result = self
             .exec_module_body(program, exec_state, preserve_mem, module_id, path)
             .await;
-        exec_state.global.mod_loader.leave_module(path);
+        exec_state.global.mod_loader.leave_module(path, source_range)?;
 
         // TODO: ModuleArtifactState is getting dropped here when there's an
         // error.  Should we propagate it for non-root modules?
@@ -778,8 +807,10 @@ impl ExecutorContext {
 
                 // Check the KCL @(feature_tree = ) annotation.
                 let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
-                if let Some(attrs) = attrs
-                    && (attrs.impl_ == annotations::Impl::Rust || attrs.impl_ == annotations::Impl::RustConstraint)
+                let closure = if let Some(attrs) = attrs
+                    && (attrs.impl_ == annotations::Impl::Rust
+                        || attrs.impl_ == annotations::Impl::RustConstrainable
+                        || attrs.impl_ == annotations::Impl::RustConstraint)
                 {
                     if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
@@ -809,7 +840,17 @@ impl ExecutorContext {
                         )),
                         meta: vec![metadata.to_owned()],
                     }
+                };
+
+                // If the function expression has a name, i.e. `fn name() {}`,
+                // bind it in the current scope.
+                if let Some(fn_name) = &function_expression.name {
+                    exec_state
+                        .mut_stack()
+                        .add(fn_name.name.clone(), closure.clone(), metadata.source_range)?;
                 }
+
+                closure
             }
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
@@ -900,6 +941,85 @@ impl Node<SketchBlock> {
             )));
         }
 
+        let range = SourceRange::from(self);
+
+        // Evaluate arguments.
+        let mut labeled = IndexMap::new();
+        for labeled_arg in &self.arguments {
+            let source_range = SourceRange::from(labeled_arg.arg.clone());
+            let metadata = Metadata { source_range };
+            let value = ctx
+                .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
+                .await?;
+            let arg = Arg::new(value, source_range);
+            match &labeled_arg.label {
+                Some(label) => {
+                    labeled.insert(label.name.clone(), arg);
+                }
+                None => {
+                    let name = labeled_arg.arg.ident_name();
+                    if let Some(name) = name {
+                        labeled.insert(name.to_owned(), arg);
+                    } else {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
+                            vec![SourceRange::from(&labeled_arg.arg)],
+                        )));
+                    }
+                }
+            }
+        }
+        let mut args = Args::new_no_args(range, ctx.clone(), Some("sketch block".to_owned()));
+        args.labeled = labeled;
+
+        #[cfg(feature = "artifact-graph")]
+        let sketch_id = {
+            // Create the sketch block scene object. This needs to happen before
+            // scene objects created inside the sketch block so that its ID is
+            // stable across sketch block edits.
+
+            use crate::{
+                engine::PlaneName,
+                execution::{Artifact, ArtifactId, CodeRef, SketchBlock},
+            };
+            let sketch_id = exec_state.next_object_id();
+            let arg_on: Option<crate::execution::Plane> =
+                args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
+            let on_object = arg_on.as_ref().and_then(|plane| plane.object_id);
+
+            // Get the plane artifact ID if the plane is an object plane
+            let plane_artifact_id = arg_on.as_ref().map(|plane| plane.artifact_id);
+
+            let artifact_id = ArtifactId::from(exec_state.next_uuid());
+            let sketch_scene_object = Object {
+                id: sketch_id,
+                kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
+                    args: crate::front::SketchArgs {
+                        on: on_object
+                            .map(crate::front::Plane::Object)
+                            .unwrap_or(crate::front::Plane::Default(PlaneName::Xy)),
+                    },
+                    segments: Default::default(),
+                    constraints: Default::default(),
+                }),
+                label: Default::default(),
+                comments: Default::default(),
+                artifact_id,
+                source: range.into(),
+            };
+            exec_state.add_scene_object(sketch_scene_object, range);
+
+            // Create and add the sketch block artifact
+            exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
+                id: artifact_id,
+                plane_id: plane_artifact_id,
+                code_ref: CodeRef::placeholder(range),
+                sketch_id,
+            }));
+
+            sketch_id
+        };
+
         let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
             self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
@@ -933,8 +1053,20 @@ impl Node<SketchBlock> {
         };
 
         // Translate sketch variables and constraints to solver input.
-        let range = SourceRange::from(self);
-        let constraints = &sketch_block_state.constraints;
+        let constraints = sketch_block_state
+            .solver_constraints
+            .iter()
+            .cloned()
+            .map(kcl_ezpz::ConstraintRequest::highest_priority)
+            .chain(
+                // Optional constraints have a lower priority.
+                sketch_block_state
+                    .solver_optional_constraints
+                    .iter()
+                    .cloned()
+                    .map(|c| kcl_ezpz::ConstraintRequest::new(c, 1)),
+            )
+            .collect::<Vec<_>>();
         let initial_guesses = sketch_block_state
             .sketch_vars
             .iter()
@@ -971,13 +1103,70 @@ impl Node<SketchBlock> {
             })
             .collect::<Result<Vec<_>, KclError>>()?;
         // Solve constraints.
-        let config = kcl_ezpz::Config::default();
-        let solve_outcome = kcl_ezpz::solve(constraints, initial_guesses, config).map_err(|e| {
-            KclError::new_internal(KclErrorDetails::new(
-                format!("Error from constraint solver: {}", e.error),
-                vec![SourceRange::from(self)],
-            ))
-        })?;
+        let config = kcl_ezpz::Config {
+            max_iterations: 50,
+            ..Default::default()
+        };
+        let solve_result = if exec_state.mod_local.freedom_analysis {
+            kcl_ezpz::solve_with_priority_analysis(&constraints, initial_guesses.clone(), config)
+                .map(|outcome| (outcome.outcome, Some(FreedomAnalysis::from(outcome.analysis))))
+        } else {
+            kcl_ezpz::solve_with_priority(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
+        };
+        let (solve_outcome, solve_analysis) = match solve_result {
+            Ok(o) => o,
+            Err(failure) => {
+                match &failure.error {
+                    NonLinearSystemError::FaerMatrix { .. }
+                    | NonLinearSystemError::Faer { .. }
+                    | NonLinearSystemError::FaerSolve { .. }
+                    | NonLinearSystemError::FaerSvd(..)
+                    | NonLinearSystemError::DidNotConverge => {
+                        // Constraint solver failed to find a solution. Build a
+                        // solution that is the initial guesses.
+                        exec_state.warn(
+                            CompilationError::err(range, "Constraint solver failed to find a solution".to_owned()),
+                            annotations::WARN_SOLVER,
+                        );
+                        let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
+                        (
+                            kcl_ezpz::SolveOutcome {
+                                final_values,
+                                iterations: Default::default(),
+                                warnings: failure.warnings,
+                                unsatisfied: Default::default(),
+                                priority_solved: Default::default(),
+                            },
+                            None,
+                        )
+                    }
+                    NonLinearSystemError::EmptySystemNotAllowed
+                    | NonLinearSystemError::WrongNumberGuesses { .. }
+                    | NonLinearSystemError::MissingGuess { .. }
+                    | NonLinearSystemError::NotFound(..) => {
+                        // These indicate something's gone wrong in KCL or ezpz,
+                        // it's not a user error. We should investigate this.
+                        #[cfg(target_arch = "wasm32")]
+                        web_sys::console::error_1(
+                            &format!("Internal error from constraint solver: {}", &failure.error).into(),
+                        );
+                        return Err(KclError::new_internal(KclErrorDetails::new(
+                            format!("Internal error from constraint solver: {}", &failure.error),
+                            vec![SourceRange::from(self)],
+                        )));
+                    }
+                    _ => {
+                        // Catch all error case so that it's not a breaking change to publish new errors.
+                        return Err(KclError::new_internal(KclErrorDetails::new(
+                            format!("Error from constraint solver: {}", &failure.error),
+                            vec![SourceRange::from(self)],
+                        )));
+                    }
+                }
+            }
+        };
+        #[cfg(not(feature = "artifact-graph"))]
+        let _ = solve_analysis;
         // Propagate warnings.
         for warning in &solve_outcome.warnings {
             let message = if let Some(index) = warning.about_constraint.as_ref() {
@@ -988,8 +1177,73 @@ impl Node<SketchBlock> {
             exec_state.warn(CompilationError::err(range, message), annotations::WARN_SOLVER);
         }
         // Substitute solutions back into sketch variables.
-        let variables =
-            substitute_sketch_vars(variables, &solve_outcome.final_values, solver_numeric_type(exec_state))?;
+        let solution_ty = solver_numeric_type(exec_state);
+        let variables = substitute_sketch_vars(variables, &solve_outcome, solution_ty, solve_analysis.as_ref())?;
+        let mut solved_segments = Vec::with_capacity(sketch_block_state.needed_by_engine.len());
+        for unsolved_segment in &sketch_block_state.needed_by_engine {
+            solved_segments.push(substitute_sketch_var_in_segment(
+                unsolved_segment.clone(),
+                &solve_outcome,
+                solver_numeric_type(exec_state),
+                solve_analysis.as_ref(),
+            )?);
+        }
+        #[cfg(feature = "artifact-graph")]
+        {
+            // Store variable solutions so that the sketch refactoring API can
+            // write them back to the source. Because of how the frontend works
+            // and how we don't really support more than one sketch block yet,
+            // we only update it if it's empty so that empty blocks at the end
+            // are ignored.
+            if exec_state.mod_local.artifacts.var_solutions.is_empty() {
+                exec_state.mod_local.artifacts.var_solutions =
+                    sketch_block_state.var_solutions(solve_outcome, solution_ty, SourceRange::from(self))?;
+            }
+        }
+
+        // Create scene objects after unknowns are solved.
+        let scene_objects = create_segment_scene_objects(&solved_segments, range, exec_state)?;
+
+        #[cfg(not(feature = "artifact-graph"))]
+        drop(scene_objects);
+        #[cfg(feature = "artifact-graph")]
+        {
+            let mut segment_object_ids = Vec::with_capacity(scene_objects.len());
+            for scene_object in scene_objects {
+                segment_object_ids.push(scene_object.id);
+                // Fill in placeholder scene objects.
+                exec_state.set_scene_object(scene_object);
+            }
+            // Update the sketch scene object with the segments.
+            let Some(sketch_object) = exec_state.mod_local.artifacts.scene_objects.get_mut(sketch_id.0) else {
+                let message = format!("Sketch object not found after it was just created; id={:?}", sketch_id);
+                debug_assert!(false, "{}", &message);
+                return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+            };
+            let ObjectKind::Sketch(sketch) = &mut sketch_object.kind else {
+                let message = format!(
+                    "Expected Sketch object after it was just created to be a sketch kind; id={:?}, actual={:?}",
+                    sketch_id, sketch_object
+                );
+                debug_assert!(false, "{}", &message);
+                return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+            };
+            sketch.segments.extend(segment_object_ids);
+            // Update the sketch scene object with constraints.
+            let mut sketch_block_state = sketch_block_state;
+            sketch
+                .constraints
+                .extend(std::mem::take(&mut sketch_block_state.sketch_constraints));
+
+            // Push sketch solve operation
+            exec_state.push_op(Operation::SketchSolve {
+                sketch_id,
+                node_path: NodePath::placeholder(),
+                source_range: range,
+            });
+        }
+
+        // TODO: sketch-api: send everything to the engine.
 
         let metadata = Metadata {
             source_range: SourceRange::from(self),
@@ -999,115 +1253,6 @@ impl Node<SketchBlock> {
             constrainable: Default::default(),
             meta: vec![metadata],
         })
-    }
-}
-
-fn solver_unit(exec_state: &ExecState) -> UnitLength {
-    exec_state.length_unit()
-}
-
-fn solver_numeric_type(exec_state: &ExecState) -> NumericType {
-    NumericType::Known(UnitType::Length(solver_unit(exec_state)))
-}
-
-/// When giving input to the solver, all numbers must be given in the same
-/// units.
-fn normalize_to_solver_unit(
-    value: &KclValue,
-    source_range: SourceRange,
-    exec_state: &mut ExecState,
-    description: &str,
-) -> Result<KclValue, KclError> {
-    let length_ty = RuntimeType::Primitive(PrimitiveType::Number(solver_numeric_type(exec_state)));
-    value.coerce(&length_ty, true, exec_state).map_err(|_| {
-        KclError::new_semantic(KclErrorDetails::new(
-            format!(
-                "{} must be a length coercible to the module length unit {}, but found {}",
-                description,
-                length_ty.human_friendly_type(),
-                value.human_friendly_type(),
-            ),
-            vec![source_range],
-        ))
-    })
-}
-
-fn substitute_sketch_vars(
-    variables: IndexMap<String, KclValue>,
-    solutions: &[f64],
-    solution_ty: NumericType,
-) -> Result<HashMap<String, KclValue>, KclError> {
-    let mut subbed = HashMap::with_capacity(variables.len());
-    for (name, value) in variables {
-        let subbed_value = substitute_sketch_var(value, solutions, solution_ty)?;
-        subbed.insert(name, subbed_value);
-    }
-    Ok(subbed)
-}
-
-fn substitute_sketch_var(value: KclValue, solutions: &[f64], solution_ty: NumericType) -> Result<KclValue, KclError> {
-    match value {
-        KclValue::Uuid { .. } => Ok(value),
-        KclValue::Bool { .. } => Ok(value),
-        KclValue::Number { .. } => Ok(value),
-        KclValue::String { .. } => Ok(value),
-        KclValue::SketchVar { value: var } => {
-            let Some(solution) = solutions.get(var.id.0) else {
-                let message = format!("No solution for sketch variable with id {}", var.id.0);
-                debug_assert!(false, "{}", &message);
-                return Err(KclError::new_internal(KclErrorDetails::new(
-                    message,
-                    var.meta.into_iter().map(|m| m.source_range).collect(),
-                )));
-            };
-            Ok(KclValue::Number {
-                value: *solution,
-                ty: solution_ty,
-                meta: var.meta.clone(),
-            })
-        }
-        KclValue::Tuple { value, meta } => {
-            let subbed = value
-                .into_iter()
-                .map(|v| substitute_sketch_var(v, solutions, solution_ty))
-                .collect::<Result<Vec<_>, KclError>>()?;
-            Ok(KclValue::Tuple { value: subbed, meta })
-        }
-        KclValue::HomArray { value, ty } => {
-            let subbed = value
-                .into_iter()
-                .map(|v| substitute_sketch_var(v, solutions, solution_ty))
-                .collect::<Result<Vec<_>, KclError>>()?;
-            Ok(KclValue::HomArray { value: subbed, ty })
-        }
-        KclValue::Object {
-            value,
-            constrainable,
-            meta,
-        } => {
-            let subbed = value
-                .into_iter()
-                .map(|(k, v)| substitute_sketch_var(v, solutions, solution_ty).map(|v| (k, v)))
-                .collect::<Result<HashMap<_, _>, KclError>>()?;
-            Ok(KclValue::Object {
-                value: subbed,
-                constrainable,
-                meta,
-            })
-        }
-        KclValue::TagIdentifier(_) => Ok(value),
-        KclValue::TagDeclarator(_) => Ok(value),
-        KclValue::GdtAnnotation { .. } => Ok(value),
-        KclValue::Plane { .. } => Ok(value),
-        KclValue::Face { .. } => Ok(value),
-        KclValue::Sketch { .. } => Ok(value),
-        KclValue::Solid { .. } => Ok(value),
-        KclValue::Helix { .. } => Ok(value),
-        KclValue::ImportedGeometry(_) => Ok(value),
-        KclValue::Function { .. } => Ok(value),
-        KclValue::Module { .. } => Ok(value),
-        KclValue::Type { .. } => Ok(value),
-        KclValue::KclNone { .. } => Ok(value),
     }
 }
 
@@ -1342,6 +1487,347 @@ impl Node<MemberExpression> {
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
+            (KclValue::Segment { value: segment }, Property::String(property), false) => match property.as_str() {
+                "at" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => {
+                        match &segment.kind {
+                            UnsolvedSegmentKind::Point { position, .. } => {
+                                // TODO: assert that types of all elements are the same.
+                                Ok(KclValue::HomArray {
+                                    value: vec![
+                                        KclValue::from_unsolved_expr(position[0].clone(), segment.meta.clone()),
+                                        KclValue::from_unsolved_expr(position[1].clone(), segment.meta.clone()),
+                                    ],
+                                    ty: RuntimeType::any(),
+                                })
+                            }
+                            _ => Err(KclError::new_undefined_value(
+                                KclErrorDetails::new(
+                                    format!("Property '{property}' not found in segment"),
+                                    vec![self.clone().into()],
+                                ),
+                                None,
+                            )),
+                        }
+                    }
+                    SegmentRepr::Solved { segment } => {
+                        match &segment.kind {
+                            SegmentKind::Point { position, .. } => {
+                                // TODO: assert that types of all elements are the same.
+                                Ok(KclValue::array_from_point2d(
+                                    [position[0].n, position[1].n],
+                                    position[0].ty,
+                                    segment.meta.clone(),
+                                ))
+                            }
+                            _ => Err(KclError::new_undefined_value(
+                                KclErrorDetails::new(
+                                    format!("Property '{property}' not found in segment"),
+                                    vec![self.clone().into()],
+                                ),
+                                None,
+                            )),
+                        }
+                    }
+                },
+                "start" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => match &segment.kind {
+                        UnsolvedSegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in point segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                        UnsolvedSegmentKind::Line {
+                            start,
+                            ctor,
+                            start_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        object_id: *start_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                        UnsolvedSegmentKind::Arc {
+                            start,
+                            ctor,
+                            start_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        object_id: *start_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                    },
+                    SegmentRepr::Solved { segment } => match &segment.kind {
+                        SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in point segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                        SegmentKind::Line {
+                            start,
+                            ctor,
+                            start_object_id,
+                            start_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        object_id: *start_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                            freedom: *start_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                        SegmentKind::Arc {
+                            start,
+                            ctor,
+                            start_object_id,
+                            start_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        object_id: *start_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                            freedom: *start_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                    },
+                },
+                "end" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => match &segment.kind {
+                        UnsolvedSegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in point segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                        UnsolvedSegmentKind::Line {
+                            end,
+                            ctor,
+                            end_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        object_id: *end_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: end.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.end.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                        UnsolvedSegmentKind::Arc {
+                            end,
+                            ctor,
+                            end_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        object_id: *end_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: end.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.end.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                    },
+                    SegmentRepr::Solved { segment } => match &segment.kind {
+                        SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in point segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                        SegmentKind::Line {
+                            end,
+                            ctor,
+                            end_object_id,
+                            end_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        object_id: *end_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: end.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.end.clone(),
+                                            }),
+                                            freedom: *end_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                        SegmentKind::Arc {
+                            end,
+                            ctor,
+                            end_object_id,
+                            end_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        object_id: *end_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: end.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.end.clone(),
+                                            }),
+                                            freedom: *end_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                    },
+                },
+                "center" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => match &segment.kind {
+                        UnsolvedSegmentKind::Arc {
+                            center,
+                            ctor,
+                            center_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        object_id: *center_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: center.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.center.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                    SegmentRepr::Solved { segment } => match &segment.kind {
+                        SegmentKind::Arc {
+                            center,
+                            ctor,
+                            center_object_id,
+                            center_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        object_id: *center_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: center.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.center.clone(),
+                                            }),
+                                            freedom: *center_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                        _ => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                },
+                other => Err(KclError::new_undefined_value(
+                    KclErrorDetails::new(
+                        format!("Property '{other}' not found in segment"),
+                        vec![self.clone().into()],
+                    ),
+                    None,
+                )),
+            },
             (KclValue::Plane { value: plane }, Property::String(property), false) => match property.as_str() {
                 "zAxis" => {
                     let (p, u) = plane.info.z_axis.as_3_dims();
@@ -1464,7 +1950,14 @@ impl Node<MemberExpression> {
                     vec![self.clone().into()],
                 )))
             }
-            (being_indexed, _, _) => Err(KclError::new_semantic(KclErrorDetails::new(
+            (being_indexed, _, false) => Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Only objects can have members accessed with dot notation, but you're trying to access {}",
+                    being_indexed.human_friendly_type()
+                ),
+                vec![self.clone().into()],
+            ))),
+            (being_indexed, _, true) => Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Only arrays can be indexed, but you're trying to index {}",
                     being_indexed.human_friendly_type()
@@ -1567,7 +2060,7 @@ impl Node<BinaryExpression> {
         // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new_no_args(self.into(), ctx.clone());
+                let args = Args::new_no_args(self.into(), ctx.clone(), Some("union".to_owned()));
                 let result = crate::std::csg::inner_union(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
@@ -1580,7 +2073,7 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::Sub {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new_no_args(self.into(), ctx.clone());
+                let args = Args::new_no_args(self.into(), ctx.clone(), Some("subtract".to_owned()));
                 let result = crate::std::csg::inner_subtract(
                     vec![*left.clone()],
                     vec![*right.clone()],
@@ -1595,7 +2088,7 @@ impl Node<BinaryExpression> {
             && let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value)
         {
             // Check if we have solids.
-            let args = Args::new_no_args(self.into(), ctx.clone());
+            let args = Args::new_no_args(self.into(), ctx.clone(), Some("intersect".to_owned()));
             let result = crate::std::csg::inner_intersect(
                 vec![*left.clone(), *right.clone()],
                 Default::default(),
@@ -1678,7 +2171,81 @@ impl Node<BinaryExpression> {
                             vec![SourceRange::from(self)],
                         )));
                     };
-                    sketch_block_state.constraints.push(constraint);
+                    sketch_block_state.solver_constraints.push(constraint);
+                    return Ok(KclValue::Bool { value: true, meta });
+                }
+                // One sketch constraint, one number.
+                (KclValue::SketchConstraint { value: constraint }, input_number @ KclValue::Number { .. })
+                | (input_number @ KclValue::Number { .. }, KclValue::SketchConstraint { value: constraint }) => {
+                    let number_value = normalize_to_solver_unit(
+                        input_number,
+                        input_number.into(),
+                        exec_state,
+                        "fixed constraint value",
+                    )?;
+                    let Some(n) = number_value.as_ty_f64() else {
+                        let message = format!(
+                            "Expected number after coercion, but found {}",
+                            number_value.human_friendly_type()
+                        );
+                        debug_assert!(false, "{}", &message);
+                        return Err(KclError::new_internal(KclErrorDetails::new(message, vec![self.into()])));
+                    };
+                    match &constraint.kind {
+                        SketchConstraintKind::Distance { points } => {
+                            let range = self.as_source_range();
+                            let p0 = &points[0];
+                            let p1 = &points[1];
+                            let solver_pt0 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+                                p0.vars.x.to_constraint_id(range)?,
+                                p0.vars.y.to_constraint_id(range)?,
+                            );
+                            let solver_pt1 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+                                p1.vars.x.to_constraint_id(range)?,
+                                p1.vars.y.to_constraint_id(range)?,
+                            );
+                            let solver_constraint = Constraint::Distance(solver_pt0, solver_pt1, n.n);
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(KclError::new_internal(KclErrorDetails::new(
+                                    message,
+                                    vec![SourceRange::from(self)],
+                                )));
+                            };
+                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::{execution::ArtifactId, front::Distance};
+
+                                let constraint = crate::front::Constraint::Distance(Distance {
+                                    points: vec![p0.object_id, p1.object_id],
+                                    distance: n.try_into().map_err(|_| {
+                                        KclError::new_internal(KclErrorDetails::new(
+                                            "Failed to convert distance units numeric suffix:".to_owned(),
+                                            vec![range],
+                                        ))
+                                    })?,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint { constraint },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        artifact_id: ArtifactId::constraint(),
+                                        source: range.into(),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
+                    }
                     return Ok(KclValue::Bool { value: true, meta });
                 }
                 _ => {
@@ -1789,129 +2356,145 @@ impl Node<BinaryExpression> {
 
 impl Node<UnaryExpression> {
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        if self.operator == UnaryOperator::Not {
-            let value = self.argument.get_result(exec_state, ctx).await?;
-            let KclValue::Bool {
-                value: bool_value,
-                meta: _,
-            } = value
-            else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "Cannot apply unary operator ! to non-boolean value: {}",
-                        value.human_friendly_type()
-                    ),
-                    vec![self.into()],
-                )));
-            };
-            let meta = vec![Metadata {
-                source_range: self.into(),
-            }];
-            let negated = KclValue::Bool {
-                value: !bool_value,
-                meta,
-            };
-
-            return Ok(negated);
-        }
-
-        let value = &self.argument.get_result(exec_state, ctx).await?;
-        let err = || {
-            KclError::new_semantic(KclErrorDetails::new(
-                format!(
-                    "You can only negate numbers, planes, or lines, but this is a {}",
-                    value.human_friendly_type()
-                ),
-                vec![self.into()],
-            ))
-        };
-        match value {
-            KclValue::Number { value, ty, .. } => {
+        match self.operator {
+            UnaryOperator::Not => {
+                let value = self.argument.get_result(exec_state, ctx).await?;
+                let KclValue::Bool {
+                    value: bool_value,
+                    meta: _,
+                } = value
+                else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Cannot apply unary operator ! to non-boolean value: {}",
+                            value.human_friendly_type()
+                        ),
+                        vec![self.into()],
+                    )));
+                };
                 let meta = vec![Metadata {
                     source_range: self.into(),
                 }];
-                Ok(KclValue::Number {
-                    value: -value,
+                let negated = KclValue::Bool {
+                    value: !bool_value,
                     meta,
-                    ty: *ty,
-                })
-            }
-            KclValue::Plane { value } => {
-                let mut plane = value.clone();
-                if plane.info.x_axis.x != 0.0 {
-                    plane.info.x_axis.x *= -1.0;
-                }
-                if plane.info.x_axis.y != 0.0 {
-                    plane.info.x_axis.y *= -1.0;
-                }
-                if plane.info.x_axis.z != 0.0 {
-                    plane.info.x_axis.z *= -1.0;
-                }
-
-                plane.value = PlaneType::Uninit;
-                plane.id = exec_state.next_uuid();
-                Ok(KclValue::Plane { value: plane })
-            }
-            KclValue::Object {
-                value: values, meta, ..
-            } => {
-                // Special-case for negating line-like objects.
-                let Some(direction) = values.get("direction") else {
-                    return Err(err());
                 };
 
-                let direction = match direction {
-                    KclValue::Tuple { value: values, meta } => {
-                        let values = values
-                            .iter()
-                            .map(|v| match v {
-                                KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
-                                    value: *value * -1.0,
-                                    ty: *ty,
-                                    meta: meta.clone(),
-                                }),
-                                _ => Err(err()),
-                            })
-                            .collect::<Result<Vec<_>, _>>()?;
-
-                        KclValue::Tuple {
-                            value: values,
-                            meta: meta.clone(),
-                        }
+                Ok(negated)
+            }
+            UnaryOperator::Neg => {
+                let value = &self.argument.get_result(exec_state, ctx).await?;
+                let err = || {
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "You can only negate numbers, planes, or lines, but this is a {}",
+                            value.human_friendly_type()
+                        ),
+                        vec![self.into()],
+                    ))
+                };
+                match value {
+                    KclValue::Number { value, ty, .. } => {
+                        let meta = vec![Metadata {
+                            source_range: self.into(),
+                        }];
+                        Ok(KclValue::Number {
+                            value: -value,
+                            meta,
+                            ty: *ty,
+                        })
                     }
-                    KclValue::HomArray {
-                        value: values,
-                        ty: ty @ RuntimeType::Primitive(PrimitiveType::Number(_)),
+                    KclValue::Plane { value } => {
+                        let mut plane = value.clone();
+                        if plane.info.x_axis.x != 0.0 {
+                            plane.info.x_axis.x *= -1.0;
+                        }
+                        if plane.info.x_axis.y != 0.0 {
+                            plane.info.x_axis.y *= -1.0;
+                        }
+                        if plane.info.x_axis.z != 0.0 {
+                            plane.info.x_axis.z *= -1.0;
+                        }
+
+                        plane.value = PlaneType::Uninit;
+                        plane.id = exec_state.next_uuid();
+                        Ok(KclValue::Plane { value: plane })
+                    }
+                    KclValue::Object {
+                        value: values, meta, ..
                     } => {
-                        let values = values
-                            .iter()
-                            .map(|v| match v {
-                                KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
-                                    value: *value * -1.0,
-                                    ty: *ty,
+                        // Special-case for negating line-like objects.
+                        let Some(direction) = values.get("direction") else {
+                            return Err(err());
+                        };
+
+                        let direction = match direction {
+                            KclValue::Tuple { value: values, meta } => {
+                                let values = values
+                                    .iter()
+                                    .map(|v| match v {
+                                        KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
+                                            value: *value * -1.0,
+                                            ty: *ty,
+                                            meta: meta.clone(),
+                                        }),
+                                        _ => Err(err()),
+                                    })
+                                    .collect::<Result<Vec<_>, _>>()?;
+
+                                KclValue::Tuple {
+                                    value: values,
                                     meta: meta.clone(),
-                                }),
-                                _ => Err(err()),
-                            })
-                            .collect::<Result<Vec<_>, _>>()?;
+                                }
+                            }
+                            KclValue::HomArray {
+                                value: values,
+                                ty: ty @ RuntimeType::Primitive(PrimitiveType::Number(_)),
+                            } => {
+                                let values = values
+                                    .iter()
+                                    .map(|v| match v {
+                                        KclValue::Number { value, ty, meta } => Ok(KclValue::Number {
+                                            value: *value * -1.0,
+                                            ty: *ty,
+                                            meta: meta.clone(),
+                                        }),
+                                        _ => Err(err()),
+                                    })
+                                    .collect::<Result<Vec<_>, _>>()?;
 
-                        KclValue::HomArray {
-                            value: values,
-                            ty: ty.clone(),
-                        }
+                                KclValue::HomArray {
+                                    value: values,
+                                    ty: ty.clone(),
+                                }
+                            }
+                            _ => return Err(err()),
+                        };
+
+                        let mut value = values.clone();
+                        value.insert("direction".to_owned(), direction);
+                        Ok(KclValue::Object {
+                            value,
+                            meta: meta.clone(),
+                            constrainable: false,
+                        })
                     }
-                    _ => return Err(err()),
-                };
-
-                let mut value = values.clone();
-                value.insert("direction".to_owned(), direction);
-                Ok(KclValue::Object {
-                    value,
-                    meta: meta.clone(),
-                    constrainable: false,
-                })
+                    _ => Err(err()),
+                }
             }
-            _ => Err(err()),
+            UnaryOperator::Plus => {
+                let operand = &self.argument.get_result(exec_state, ctx).await?;
+                match operand {
+                    KclValue::Number { .. } | KclValue::Plane { .. } => Ok(operand.clone()),
+                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "You can only apply unary + to numbers or planes, but this is a {}",
+                            operand.human_friendly_type()
+                        ),
+                        vec![self.into()],
+                    ))),
+                }
+            }
         }
     }
 }
@@ -2033,33 +2616,40 @@ impl Node<ArrayRangeExpression> {
                 StatementKind::Expression,
             )
             .await?;
-        let (start, start_ty) = start_val
-            .as_int_with_ty()
+        let start = start_val
+            .as_ty_f64()
             .ok_or(KclError::new_semantic(KclErrorDetails::new(
-                format!("Expected int but found {}", start_val.human_friendly_type()),
+                format!(
+                    "Expected number for range start but found {}",
+                    start_val.human_friendly_type()
+                ),
                 vec![self.into()],
             )))?;
         let metadata = Metadata::from(&self.end_element);
         let end_val = ctx
             .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
-        let (end, end_ty) = end_val
-            .as_int_with_ty()
-            .ok_or(KclError::new_semantic(KclErrorDetails::new(
-                format!("Expected int but found {}", end_val.human_friendly_type()),
-                vec![self.into()],
-            )))?;
+        let end = end_val.as_ty_f64().ok_or(KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "Expected number for range end but found {}",
+                end_val.human_friendly_type()
+            ),
+            vec![self.into()],
+        )))?;
 
-        if start_ty != end_ty {
-            let start = start_val.as_ty_f64().unwrap_or(TyF64 { n: 0.0, ty: start_ty });
-            let start = fmt::human_display_number(start.n, start.ty);
-            let end = end_val.as_ty_f64().unwrap_or(TyF64 { n: 0.0, ty: end_ty });
-            let end = fmt::human_display_number(end.n, end.ty);
+        let (start, end, ty) = NumericType::combine_range(start, end, exec_state, self.as_source_range())?;
+        let Some(start) = crate::try_f64_to_i64(start) else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Range start and end must be of the same type, but found {start} and {end}"),
+                format!("Range start must be an integer, but found {start}"),
                 vec![self.into()],
             )));
-        }
+        };
+        let Some(end) = crate::try_f64_to_i64(end) else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("Range end must be an integer, but found {end}"),
+                vec![self.into()],
+            )));
+        };
 
         if end < start {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -2083,11 +2673,11 @@ impl Node<ArrayRangeExpression> {
                 .into_iter()
                 .map(|num| KclValue::Number {
                     value: num as f64,
-                    ty: start_ty,
+                    ty,
                     meta: meta.clone(),
                 })
                 .collect(),
-            ty: RuntimeType::Primitive(PrimitiveType::Number(start_ty)),
+            ty: RuntimeType::Primitive(PrimitiveType::Number(ty)),
         })
     }
 }

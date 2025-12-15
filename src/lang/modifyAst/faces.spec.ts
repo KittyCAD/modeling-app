@@ -24,9 +24,9 @@ import {
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { StdLibCallOp } from '@src/lang/queryAst'
 import { getEdgeCutMeta } from '@src/lang/queryAst'
-import { expect } from 'vitest'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
@@ -168,8 +168,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const faces = getCapFromCylinder(artifactGraph)
       const thickness = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
@@ -209,8 +207,6 @@ extrude(p, length = 1000)`
       const faces = getCapFromCylinder(artifactGraph)
       const thickness = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
@@ -241,8 +237,6 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       const faces = getCapFromCylinder(artifactGraph)
       const thickness = (await stringToKclExpression(
         '2',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(ast)
@@ -279,8 +273,6 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       const faces = getFacesFromBox(artifactGraph, 2)
       const thickness = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
@@ -309,8 +301,6 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`,
       const faces = getFacesFromBox(artifactGraph, 2)
       const thickness = (await stringToKclExpression(
         '2',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(ast)
@@ -349,8 +339,6 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
       const faces = createSelectionFromArtifacts(twoCaps, artifactGraph)
       const thickness = (await stringToKclExpression(
         '5',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
@@ -397,8 +385,6 @@ extrude002 = extrude(profile002, length = 200)`
       const faces = createSelectionFromArtifacts(firstCap, artifactGraph)
       const thickness = (await stringToKclExpression(
         '0.1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
@@ -437,20 +423,15 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)`)
       const face = getCapFromCylinder(artifactGraph)
       const cutAt = (await stringToKclExpression(
         '[0, 0]',
-        true,
-        instanceInThisFile,
-        rustContextInThisFile
+        rustContextInThisFile,
+        { allowArrays: true }
       )) as KclCommandValue
       const depth = (await stringToKclExpression(
         '5',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const diameter = (await stringToKclExpression(
         '1',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addHole({
@@ -469,14 +450,19 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)`)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(cylinder)
-      expect(newCode).toContain(simpleHole)
-      // TODO: add mock exec once hole::hole is supported
+      if (err(newCode)) throw newCode
+      expect(newCode).toBe(`${cylinder}
+${simpleHole}
+`)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
-    // TODO: enable this test once https://github.com/KittyCAD/modeling-app/issues/8616 is closed
-    // Currently it resolves to hole(extrude001... instead of hole(hole001
-    it.skip('should add a simple hole call on cylinder end cap that has a hole already', async () => {
+    it('should add a simple hole call on cylinder end cap that has a hole already', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         `${cylinder}
 ${simpleHole}`,
@@ -486,20 +472,15 @@ ${simpleHole}`,
       const face = getCapFromCylinder(artifactGraph)
       const cutAt = (await stringToKclExpression(
         '[3, 3]',
-        true,
-        instanceInThisFile,
-        rustContextInThisFile
+        rustContextInThisFile,
+        { allowArrays: true }
       )) as KclCommandValue
       const depth = (await stringToKclExpression(
         '3',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const diameter = (await stringToKclExpression(
         '2',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addHole({
@@ -530,7 +511,12 @@ hole002 = hole::hole(
   holeType =   hole::simple(),
 )`
       )
-      // TODO: add mock exec once hole::hole is supported
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add a counterbore hole call on cylinder end cap', async () => {
@@ -542,32 +528,23 @@ hole002 = hole::hole(
       const face = getCapFromCylinder(artifactGraph)
       const cutAt = (await stringToKclExpression(
         '[0, 0]',
-        true,
-        instanceInThisFile,
-        rustContextInThisFile
+        rustContextInThisFile,
+        { allowArrays: true }
       )) as KclCommandValue
       const depth = (await stringToKclExpression(
         '5',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const diameter = (await stringToKclExpression(
         '1',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const cDepth = (await stringToKclExpression(
         '1',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const cDiameter = (await stringToKclExpression(
         '2',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addHole({
@@ -599,7 +576,12 @@ hole002 = hole::hole(
   holeType =   hole::counterbore(depth = 1, diameter = 2),
 )`
       )
-      // TODO: add mock exec once hole::hole is supported
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should edit a simple hole call into a countersink hole call on cylinder end cap with drill end', async () => {
@@ -609,42 +591,31 @@ ${simpleHole}`,
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const nodeToEdit = createPathToNodeForLastVariable(ast)
+      const nodeToEdit = createPathToNodeForLastVariable(ast, false)
       const face = getCapFromCylinder(artifactGraph)
       const cutAt = (await stringToKclExpression(
         '[1, 1]',
-        true,
-        instanceInThisFile,
-        rustContextInThisFile
+        rustContextInThisFile,
+        { allowArrays: true }
       )) as KclCommandValue
       const depth = (await stringToKclExpression(
         '6',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const diameter = (await stringToKclExpression(
         '1.1',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const dAngle = (await stringToKclExpression(
         '110',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const cAngle = (await stringToKclExpression(
         '120',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const cDiameter = (await stringToKclExpression(
         '2',
-        false,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addHole({
@@ -667,7 +638,6 @@ ${simpleHole}`,
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(cylinder)
       expect(newCode).toContain(
         `${cylinder}
 hole001 = hole::hole(
@@ -679,13 +649,17 @@ hole001 = hole::hole(
   holeType =   hole::countersink(angle = 120, diameter = 2),
 )`
       )
-      // TODO: add mock exec once hole::hole is supported
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
   })
 
   // Hole utils test
-  const cylinderForHole = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XZ)
+  const cylinderForHole = `sketch001 = startSketchOn(XZ)
 profile001 = circle(sketch001, center = [0, 0], diameter = 10)
 extrude001 = extrude(profile001, length = 10)`
   const flatSimpleHole = `${cylinderForHole}
@@ -1028,8 +1002,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
         )
         const offset = (await stringToKclExpression(
           '1',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue
         const id = rustContextInThisFile.getDefaultPlaneId(name)
@@ -1062,8 +1034,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
 
         const newOffset = (await stringToKclExpression(
           '2',
-          undefined,
-          instanceInThisFile,
           rustContextInThisFile
         )) as KclCommandValue
         const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
@@ -1101,8 +1071,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       )
       const offset = (await stringToKclExpression(
         '2',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const artifact = [...artifactGraph.values()].find(
@@ -1140,8 +1108,6 @@ plane002 = offsetPlane(plane001, offset = 2)`)
 
       const newOffset = (await stringToKclExpression(
         '3',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
@@ -1177,8 +1143,6 @@ plane002 = offsetPlane(plane001, offset = 3)`)
       const plane = getCapFromCylinder(artifactGraph)
       const offset = (await stringToKclExpression(
         '2',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addOffsetPlane({
@@ -1204,8 +1168,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 2)`)
 
       const newOffset = (await stringToKclExpression(
         '3',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
@@ -1241,8 +1203,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 3)`)
       const plane = getFacesFromBox(artifactGraph, 1)
       const offset = (await stringToKclExpression(
         '10',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addOffsetPlane({
@@ -1268,8 +1228,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 10)`)
 
       const newOffset = (await stringToKclExpression(
         '20',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
@@ -1308,8 +1266,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       const plane = createSelectionFromArtifacts([chamfer!], artifactGraph)
       const offset = (await stringToKclExpression(
         '1',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const result = addOffsetPlane({
@@ -1334,8 +1290,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
 
       const newOffset = (await stringToKclExpression(
         '2',
-        undefined,
-        instanceInThisFile,
         rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)

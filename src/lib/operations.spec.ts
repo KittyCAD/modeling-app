@@ -13,7 +13,12 @@ import {
   defaultNodePath,
   nodePathFromRange,
 } from '@src/lang/wasm'
-import { filterOperations, getOperationVariableName } from '@src/lib/operations'
+import {
+  filterOperations,
+  getOperationVariableName,
+  groupOperationTypeStreaks,
+} from '@src/lib/operations'
+import { expect, describe, it } from 'vitest'
 
 function stdlib(name: string): Operation {
   return {
@@ -265,6 +270,76 @@ describe('operations.test.ts', () => {
       const program = assertParse(code, instance)
       const variableName = getOperationVariableName(op, program)
       expect(variableName).toBeUndefined()
+    })
+  })
+
+  /**
+   * We don't have helpers for VariableDeclaration type Operations in this file,
+   * so these tests just generate nonsense operation lists, but the grouping function
+   * is generic enough to prove out our use case in the app.
+   */
+  describe('groupOperationTypeStreaks', () => {
+    it('groups StdLibCall streaks separated by one item and leaves short streaks ungrouped', () => {
+      const ops = [
+        stdlib('s1'),
+        stdlib('s2'),
+        stdlib('s3'),
+        // separator of a different type
+        userCall('sep1'),
+        // a longer streak that exceeds the min
+        stdlib('s4'),
+        stdlib('s5'),
+        stdlib('s6'),
+        stdlib('s7'),
+        // another separator
+        userCall('sep2'),
+        // short streak under the minimum
+        stdlib('s8'),
+        stdlib('s9'),
+      ]
+
+      const actual = groupOperationTypeStreaks(ops, ['StdLibCall'], 3)
+
+      expect(actual).toEqual([
+        [stdlib('s1'), stdlib('s2'), stdlib('s3')],
+        userCall('sep1'),
+        [stdlib('s4'), stdlib('s5'), stdlib('s6'), stdlib('s7')],
+        userCall('sep2'),
+        stdlib('s8'),
+        stdlib('s9'),
+      ])
+    })
+
+    it('groups multiple operation types when listed in typesToGroup', () => {
+      const ops = [
+        // GroupBegin streak
+        userCall('a'),
+        userCall('b'),
+        // StdLibCall streak
+        stdlib('s1'),
+        stdlib('s2'),
+        // Module instance GroupBegin streak
+        moduleBegin('m1'),
+        moduleBegin('m2'),
+        // separator not included in grouping
+        userReturn(),
+        // trailing single stdlib (below minLength of 2 if separated)
+        stdlib('s3'),
+      ]
+
+      const actual = groupOperationTypeStreaks(
+        ops,
+        ['GroupBegin', 'StdLibCall'],
+        2
+      )
+
+      expect(actual).toEqual([
+        [userCall('a'), userCall('b')],
+        [stdlib('s1'), stdlib('s2')],
+        [moduleBegin('m1'), moduleBegin('m2')],
+        userReturn(),
+        stdlib('s3'),
+      ])
     })
   })
 })

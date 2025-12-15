@@ -2,9 +2,7 @@ use indexmap::IndexMap;
 use serde::Serialize;
 
 use super::{ArtifactId, KclValue, types::NumericType};
-#[cfg(feature = "artifact-graph")]
-use crate::parsing::ast::types::{Node, Program};
-use crate::{ModuleId, NodePath, SourceRange, parsing::ast::types::ItemVisibility};
+use crate::{ModuleId, NodePath, SourceRange, front::ObjectId, parsing::ast::types::ItemVisibility};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
@@ -22,8 +20,12 @@ pub enum Operation {
         labeled_args: IndexMap<String, OpArg>,
         /// The node path of the operation in the source code.
         node_path: NodePath,
-        /// The source range of the operation in the source code.
+        /// The true source range of the operation in the source code.
         source_range: SourceRange,
+        /// The source range that's the boundary of calling the standard
+        /// library.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        stdlib_entry_source_range: Option<SourceRange>,
         /// True if the operation resulted in an error.
         #[serde(default, skip_serializing_if = "is_false")]
         is_error: bool,
@@ -52,6 +54,16 @@ pub enum Operation {
         source_range: SourceRange,
     },
     GroupEnd,
+    #[allow(dead_code)]
+    #[serde(rename_all = "camelCase")]
+    SketchSolve {
+        /// The ID of the sketch being modified.
+        sketch_id: ObjectId,
+        /// The node path of the operation in the source code.
+        node_path: NodePath,
+        /// The source range of the operation in the source code.
+        source_range: SourceRange,
+    },
 }
 
 impl Operation {
@@ -59,19 +71,27 @@ impl Operation {
     pub(crate) fn set_std_lib_call_is_error(&mut self, is_err: bool) {
         match self {
             Self::StdLibCall { is_error, .. } => *is_error = is_err,
-            Self::VariableDeclaration { .. } | Self::GroupBegin { .. } | Self::GroupEnd => {}
+            Self::VariableDeclaration { .. } | Self::GroupBegin { .. } | Self::GroupEnd | Self::SketchSolve { .. } => {}
         }
     }
 
     #[cfg(feature = "artifact-graph")]
-    pub(crate) fn fill_node_paths(&mut self, program: &Node<Program>, cached_body_items: usize) {
+    pub(crate) fn fill_node_paths(&mut self, programs: &crate::execution::ProgramLookup, cached_body_items: usize) {
         match self {
             Operation::StdLibCall {
                 node_path,
                 source_range,
+                stdlib_entry_source_range,
                 ..
+            } => {
+                // If there's a stdlib entry source range, use that to fill the
+                // node path. For example, this will point to the `hole()` call
+                // instead of the `subtract()` call that's deep inside the
+                // stdlib.
+                let range = stdlib_entry_source_range.as_ref().unwrap_or(source_range);
+                node_path.fill_placeholder(programs, cached_body_items, *range);
             }
-            | Operation::VariableDeclaration {
+            Operation::VariableDeclaration {
                 node_path,
                 source_range,
                 ..
@@ -81,9 +101,16 @@ impl Operation {
                 source_range,
                 ..
             } => {
-                node_path.fill_placeholder(program, cached_body_items, *source_range);
+                node_path.fill_placeholder(programs, cached_body_items, *source_range);
             }
             Operation::GroupEnd => {}
+            Operation::SketchSolve {
+                node_path,
+                source_range,
+                ..
+            } => {
+                node_path.fill_placeholder(programs, cached_body_items, *source_range);
+            }
         }
     }
 }
@@ -240,6 +267,10 @@ impl From<&KclValue> for OpKclValue {
                 value: value.initial_value,
                 ty: value.ty,
             },
+            KclValue::SketchConstraint { .. } => {
+                debug_assert!(false, "Sketch constraint cannot be represented in operations");
+                Self::KclNone {}
+            }
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
                 let value = value.iter().map(Self::from).collect();
                 Self::Array { value }
@@ -263,6 +294,19 @@ impl From<&KclValue> for OpKclValue {
             },
             KclValue::Face { value } => Self::Face {
                 artifact_id: value.artifact_id,
+            },
+            KclValue::Segment { value } => match &value.repr {
+                crate::execution::geometry::SegmentRepr::Unsolved { .. } => {
+                    // Arguments to constraint functions will be unsolved.
+                    Self::KclNone {}
+                }
+                crate::execution::geometry::SegmentRepr::Solved { .. } => {
+                    debug_assert!(
+                        false,
+                        "Solved segment not sent to the engine cannot be represented in operations"
+                    );
+                    Self::KclNone {}
+                }
             },
             KclValue::Sketch { value } => Self::Sketch {
                 value: Box::new(OpSketch {

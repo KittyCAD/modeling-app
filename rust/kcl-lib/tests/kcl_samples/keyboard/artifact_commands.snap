@@ -173,7 +173,8 @@ description: Artifact commands keyboard.kcl
         "distance": 345.44,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -222,7 +223,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -579,7 +580,8 @@ description: Artifact commands keyboard.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -636,7 +638,8 @@ description: Artifact commands keyboard.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -693,7 +696,8 @@ description: Artifact commands keyboard.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -750,7 +754,8 @@ description: Artifact commands keyboard.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1037,7 +1042,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1086,7 +1092,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1351,7 +1357,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1400,7 +1407,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -1724,7 +1731,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1773,7 +1781,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -2038,7 +2046,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2087,7 +2096,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -2352,7 +2361,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2401,7 +2411,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -2666,7 +2676,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2715,7 +2726,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -2980,7 +2991,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3029,7 +3041,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3294,7 +3306,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3343,7 +3356,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -3608,7 +3621,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3657,7 +3671,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -4184,7 +4198,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4233,7 +4248,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -4498,7 +4513,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4547,7 +4563,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -4812,7 +4828,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4861,7 +4878,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -5417,7 +5434,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5466,7 +5484,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -5731,7 +5749,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5780,7 +5799,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -6045,7 +6064,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -6094,7 +6114,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -6679,7 +6699,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -6728,7 +6749,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -6993,7 +7014,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -7042,7 +7064,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -7656,7 +7678,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -7705,7 +7728,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -7970,7 +7993,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -8019,7 +8043,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -8284,7 +8308,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -8333,7 +8358,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -8918,7 +8943,8 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -8967,7 +8993,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -9346,7 +9372,8 @@ description: Artifact commands keyboard.kcl
         "distance": -0.7619999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -9395,7 +9422,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -9576,7 +9603,8 @@ description: Artifact commands keyboard.kcl
         "distance": -0.7619999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -9625,7 +9653,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -9806,7 +9834,8 @@ description: Artifact commands keyboard.kcl
         "distance": -0.7619999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -9855,7 +9884,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -10036,7 +10065,8 @@ description: Artifact commands keyboard.kcl
         "distance": -0.7619999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -10085,7 +10115,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     },
@@ -10266,7 +10296,8 @@ description: Artifact commands keyboard.kcl
         "distance": -0.7619999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -10315,7 +10346,7 @@ description: Artifact commands keyboard.kcl
           "a": 100.0
         },
         "metalness": 0.0,
-        "roughness": 0.0,
+        "roughness": 0.01,
         "ambient_occlusion": 0.0
       }
     }

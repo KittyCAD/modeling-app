@@ -173,7 +173,8 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
 
     // Open feature tree and select the first sketch
     await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-    await page.getByRole('button', { name: 'sketch001' }).dblclick()
+    const sketchNode = await toolbar.getFeatureTreeOperation('Sketch', 0)
+    await sketchNode.dblclick()
     await page.waitForTimeout(600)
 
     // Select the profile by clicking the origin in the canvas, then press Delete
@@ -242,8 +243,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
 
     await test.step('Open feature tree and select Front plane (XZ)', async () => {
       await toolbar.openFeatureTreePane()
-
-      await page.getByRole('button', { name: 'Front plane' }).click()
+      await toolbar.selectDefaultPlane('Front plane')
 
       await page.waitForTimeout(600)
 
@@ -263,8 +263,8 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
 
     await test.step('Select the offset plane', async () => {
       await toolbar.openFeatureTreePane()
-
-      await page.getByRole('button', { name: 'Offset plane' }).click()
+      const opButton = await toolbar.getFeatureTreeOperation('plane001', 0)
+      await opButton.click()
 
       await page.waitForTimeout(600)
 
@@ -1135,8 +1135,6 @@ profile001 = startProfile(sketch001, at=[0, 0])
     await editor.closePane()
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
-    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
-
     const [startProfile1] = scene.makeMouseHelpers(568, 158)
     const [endLineStartTanArc] = scene.makeMouseHelpers(701, 158)
     const [endArcStartLine] = scene.makeMouseHelpers(765, 210)
@@ -1189,8 +1187,7 @@ profile001 = startProfile(sketch001, at=[0, 0])
       306
     )
 
-    await toolbar.startSketchPlaneSelection()
-    await selectXZPlane()
+    await toolbar.startSketchOnDefaultPlane('Front plane')
     // timeout wait for engine animation is unavoidable
     await page.waitForTimeout(600)
     await editor.expectEditor.toContain('sketch001 = startSketchOn(XZ)')
@@ -1522,8 +1519,7 @@ extrude001 = extrude(profile003, length = 5)
     await scene.settled(cmdBar)
 
     await toolbar.openFeatureTreePane()
-    await toolbar.startSketchPlaneSelection()
-    await page.getByRole('button', { name: 'Front plane' }).click()
+    await toolbar.startSketchOnDefaultPlane('Front plane')
 
     // timeout wait for engine animation is unavoidable
     await page.waitForTimeout(600)

@@ -23,7 +23,6 @@ import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
 import { useTryConnect } from '@src/hooks/network/useTryConnect'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
-import { ManualReconnection } from '@src/components/ManualReconnection'
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import { useOnFileRoute } from '@src/hooks/network/useOnFileRoute'
@@ -36,6 +35,17 @@ import type { IndexLoaderData } from '@src/lib/types'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { EngineDebugger } from '@src/lib/debugger'
+import { getResolvedTheme, Themes } from '@src/lib/theme'
+
+const TIME_TO_CONNECT = 30_000
+
+// Object defined outside of React to prevent rerenders
+const systemDeps = {
+  engineCommandManager,
+  kclManager,
+  sceneInfra,
+}
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -88,7 +98,9 @@ export const ConnectionStream = (props: {
     if (sceneInfra.camControls.wasDragging === true) return
 
     if (btnName(e.nativeEvent).left) {
-      sendSelectEventToEngine(e, videoRef.current).catch(reportRejection)
+      sendSelectEventToEngine(e, videoRef.current, {
+        engineCommandManager,
+      }).catch(reportRejection)
     }
   }
 
@@ -109,7 +121,9 @@ export const ConnectionStream = (props: {
       return
     }
 
-    sendSelectEventToEngine(e, videoRef.current)
+    sendSelectEventToEngine(e, videoRef.current, {
+      engineCommandManager,
+    })
       .then((result) => {
         if (!result) {
           return
@@ -144,9 +158,10 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       })
         .then(() => {
           // Take a screen shot after the page mounts and zoom to fit runs
@@ -169,7 +184,12 @@ export const ConnectionStream = (props: {
     engineCommandManager: engineCommandManager,
     sceneInfra: sceneInfra,
   })
-  useOnPageResize({ videoWrapperRef, videoRef, canvasRef })
+  useOnPageResize({
+    videoWrapperRef,
+    videoRef,
+    canvasRef,
+    engineCommandManager,
+  })
   useOnPageIdle({
     startCallback: () => {
       if (!videoWrapperRef.current) return
@@ -189,9 +209,10 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -212,9 +233,10 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -223,8 +245,10 @@ export const ConnectionStream = (props: {
     infiniteDetectionLoopCallback: () => {
       setShowManualConnect(true)
     },
+    engineCommandManager,
   })
   useOnVitestEngineOnline({
+    engineCommandManager,
     callback: () => {
       setShowManualConnect(false)
       tryConnecting({
@@ -235,9 +259,10 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -255,18 +280,24 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
       })
     },
+    engineCommandManager,
   })
   useOnWindowOnlineOffline({
     close: () => {
       setShowManualConnect(true)
+      EngineDebugger.addLog({
+        label: 'ConnectionStream.tsx',
+        message: 'window offline, calling tearDown()',
+      })
       engineCommandManager.tearDown()
     },
     connect: () => {
@@ -279,9 +310,10 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
+        sceneInfra,
       }).catch((e) => {
         console.warn(e)
         setShowManualConnect(true)
@@ -291,22 +323,29 @@ export const ConnectionStream = (props: {
   useOnFileRoute({
     file,
     isStreamAcceptingInput,
-    engineCommandManager,
-    kclManager,
     resetCameraPosition,
+    systemDeps,
   })
 
   useOnOfflineToExitSketchMode({
     callback: () => {
       modelingSend({ type: 'Cancel' })
     },
+    engineCommandManager,
   })
+
+  // Hardcoded engine background color based on theme
+  const backgroundColor =
+    getResolvedTheme(settings.app.theme.current) === Themes.Light
+      ? 'rgb(250, 250, 250)'
+      : 'rgb(30, 30, 30)'
 
   return (
     <div
       role="presentation"
       ref={videoWrapperRef}
       className="absolute inset-[-4px] z-0"
+      style={{ backgroundColor }}
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}
@@ -344,19 +383,13 @@ export const ConnectionStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
-      {!isSceneReady && !showManualConnect && (
+      {(!isSceneReady || showManualConnect) && (
         <Loading
           isRetrying={false}
           retryAttemptCountdown={0}
           dataTestId="loading-engine"
           className="absolute inset-0 h-screen"
-        >
-          Connecting and setting up scene...
-        </Loading>
-      )}
-      {showManualConnect && (
-        <ManualReconnection
-          className="absolute inset-0 h-screen"
+          showManualConnect={showManualConnect}
           callback={() => {
             setShowManualConnect(false)
             tryConnecting({
@@ -367,15 +400,18 @@ export const ConnectionStream = (props: {
               setIsSceneReady,
               isConnecting,
               numberOfConnectionAttempts,
-              timeToConnect: 30_000,
+              timeToConnect: TIME_TO_CONNECT,
               settings: settingsEngine,
               setShowManualConnect,
+              sceneInfra,
             }).catch((e) => {
               console.warn(e)
               setShowManualConnect(true)
             })
           }}
-        ></ManualReconnection>
+        >
+          Connecting and setting up scene...
+        </Loading>
       )}
       )
     </div>

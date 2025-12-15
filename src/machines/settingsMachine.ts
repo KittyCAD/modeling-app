@@ -39,6 +39,7 @@ import {
   Themes,
   darkModeMatcher,
   getOppositeTheme,
+  getResolvedTheme,
   getSystemTheme,
   setThemeClass,
 } from '@src/lib/theme'
@@ -56,10 +57,6 @@ export const settingsMachine = setup({
     events: {} as (
       | WildcardSetEvent<SettingsPaths>
       | SetEventTypes
-      | {
-          type: 'set.app.theme'
-          data: { level: SettingsLevel; value: Themes }
-        }
       | {
           type: 'set.modeling.units'
           data: { level: SettingsLevel; value: BaseUnit }
@@ -95,7 +92,7 @@ export const settingsMachine = setup({
       // create a detection loop with the file-system watcher.
       if (input.doNotPersist || !input.rootContext) return
 
-      input.rootContext.codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+      input.rootContext.kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       const { currentProject, ...settings } = input.context
 
       await saveSettings(settings, currentProject?.path)
@@ -212,13 +209,16 @@ export const settingsMachine = setup({
       const rootContext = self.system.get('root')?.getSnapshot().context
       const sceneInfra = rootContext?.sceneInfra
       const sceneEntitiesManager = rootContext?.sceneEntitiesManager
+      const kclManager = rootContext?.kclManager
 
-      if (!sceneInfra || !sceneEntitiesManager) {
+      if (!sceneInfra || !sceneEntitiesManager || !kclManager) {
         return
       }
+      const resolvedTheme = getResolvedTheme(context.app.theme.current)
       const opposingTheme = getOppositeTheme(context.app.theme.current)
       sceneInfra.theme = opposingTheme
       sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+      kclManager.setEditorTheme(resolvedTheme)
     },
     setAllowOrbitInSketchMode: ({ context, self }) => {
       const rootContext = self.system.get('root')?.getSnapshot().context
@@ -500,12 +500,6 @@ export const settingsMachine = setup({
           target: 'persisting settings',
 
           actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
-        },
-
-        'set.meta.disableCopilot': {
-          target: 'persisting settings',
-
-          actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
         'Reset settings': {

@@ -12,8 +12,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
+import type { KclManager } from '@src/lang/KclManager'
 import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
@@ -262,7 +261,6 @@ export function OnboardingButtons({
 
 export interface OnboardingUtilDeps {
   onboardingStatus: OnboardingStatus
-  codeManager: CodeManager
   kclManager: KclManager
   navigate: NavigateFunction
 }
@@ -299,7 +297,7 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     return Promise.resolve()
   }
 
-  const isCodeResettable = hasResetReadyCode(deps.codeManager)
+  const isCodeResettable = hasResetReadyCode(deps.kclManager)
   if (isCodeResettable) {
     return resetCodeAndAdvanceOnboarding(deps)
   }
@@ -313,7 +311,6 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
  */
 export async function resetCodeAndAdvanceOnboarding({
   onboardingStatus,
-  codeManager,
   kclManager,
   navigate,
 }: OnboardingUtilDeps) {
@@ -322,8 +319,8 @@ export async function resetCodeAndAdvanceOnboarding({
     ? onboardingStartPath
     : onboardingStatus
   // We do want to update both the state and editor here.
-  codeManager.updateCodeStateEditor(browserAxialFan)
-  codeManager.writeToFile().catch(reportRejection)
+  kclManager.updateCodeStateEditor(browserAxialFan)
+  kclManager.writeToFile().catch(reportRejection)
   kclManager.executeCode().catch(reportRejection)
   navigate(
     makeUrlPathRelative(
@@ -332,10 +329,10 @@ export async function resetCodeAndAdvanceOnboarding({
   )
 }
 
-function hasResetReadyCode(codeManager: CodeManager) {
+function hasResetReadyCode(kclManager: KclManager) {
   return (
-    isKclEmptyOrOnlySettings(codeManager.code) ||
-    codeManager.code === browserAxialFan
+    isKclEmptyOrOnlySettings(kclManager.codeSignal.value) ||
+    kclManager.codeSignal.value === browserAxialFan
   )
 }
 
@@ -413,10 +410,10 @@ export function TutorialRequestToast(
       <div className="grid grid-cols-3 gap-4">
         <TutorialToastCard
           src={quickTipSrc(1)}
-          alt="a screenshot of the Design Studio interface highlighting the Text-to-CAD button in the right sidebar"
+          alt="a screenshot of the Design Studio interface highlighting the Zookeeper button in the right sidebar"
         >
-          <strong>Text-to-CAD</strong> is in the upper right panel, where you
-          can create or modify parts with prompts.{' '}
+          <strong>Zookeeper</strong> is in the right sidebar, where you can
+          create or modify parts with prompts.{' '}
           <strong>1 credit = 1 second of compute time.</strong>
         </TutorialToastCard>
         <TutorialToastCard
@@ -559,7 +556,7 @@ export function useOnboardingHighlight(elementId: string) {
       `[data-${ONBOARDING_DATA_ATTRIBUTE}="${elementId}"`
     )
     if (elementToHighlight === null) {
-      console.error('Text-to-CAD dropdown element not found')
+      console.error('Dropdown element not found')
       return
     }
     // There is an ".onboarding-highlight" class defined in index.css

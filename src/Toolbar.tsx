@@ -9,14 +9,12 @@ import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { useKclContext } from '@src/lang/KclProvider'
 import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { editorManager, kclManager } from '@src/lib/singletons'
-import { codeManager, commandBarActor } from '@src/lib/singletons'
+import { kclManager, commandBarActor } from '@src/lib/singletons'
 import type {
   ToolbarDropdown,
   ToolbarItem,
@@ -41,10 +39,10 @@ export function Toolbar({
     'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10'
   const buttonBorderClassName = '!border-transparent'
 
-  const isInTemporaryWorkspace = codeManager.isBufferMode
+  const isInTemporaryWorkspace = kclManager.isBufferMode
 
   const onClickSave = () => {
-    codeManager.exitFromTemporaryWorkspaceMode()
+    kclManager.exitFromTemporaryWorkspaceMode()
   }
 
   const sketchPathId = useMemo(() => {
@@ -64,14 +62,13 @@ export function Toolbar({
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const { overallState, immediateState } = useNetworkContext()
-  const { isExecuting } = useKclContext()
   const { isStreamReady, isStreamAcceptingInput } = useAppState()
   const [showRichContent, setShowRichContent] = useState(false)
 
   const disableAllButtons =
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
-    isExecuting ||
+    kclManager.isExecutingSignal.value ||
     immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
     !isStreamReady ||
     !isStreamAcceptingInput
@@ -91,7 +88,7 @@ export function Toolbar({
       modelingState: state,
       modelingSend: send,
       sketchPathId,
-      editorHasFocus: editorManager.getEditorView()?.hasFocus,
+      editorHasFocus: kclManager.getEditorView()?.hasFocus,
       isActive: false, // Default value - individual items will override this
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -101,7 +98,7 @@ export function Toolbar({
       commandBarActor.send,
       sketchPathId,
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-      editorManager.getEditorView()?.hasFocus,
+      kclManager.getEditorView()?.hasFocus,
     ]
   )
 

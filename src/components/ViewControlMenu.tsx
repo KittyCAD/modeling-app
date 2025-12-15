@@ -12,7 +12,14 @@ import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { getLayout, sceneInfra, settingsActor } from '@src/lib/singletons'
+import {
+  getLayout,
+  kclManager,
+  rustContext,
+  sceneEntitiesManager,
+  sceneInfra,
+  settingsActor,
+} from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
@@ -36,6 +43,7 @@ export function useViewControlMenuItems() {
 
   const sketching = modelingState.matches('Sketch')
   const snapToGrid = settings.modeling.snapToGrid.current
+  const gizmoType = settings.modeling.gizmoType.current
 
   // Check if there's a valid selection with source range for "View KCL source code"
   const firstValidSelection = useMemo(() => {
@@ -68,7 +76,7 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
-          resetCameraPosition().catch(reportRejection)
+          resetCameraPosition({ sceneInfra }).catch(reportRejection)
         }}
         disabled={shouldLockView}
         hotkey="mod+alt+x"
@@ -120,6 +128,20 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
+          settingsActor.send({
+            type: 'set.modeling.gizmoType',
+            data: {
+              level: 'user',
+              value: gizmoType === 'axis' ? 'cube' : 'axis',
+            },
+          })
+        }}
+      >
+        {gizmoType === 'axis' ? 'Use cube gizmo' : 'Use axis gizmo'}
+      </ContextMenuItem>,
+      <ContextMenuDivider />,
+      <ContextMenuItem
+        onClick={() => {
           if (planeOrFaceId) {
             sceneInfra.modelingSend({
               type: 'Enter sketch',
@@ -128,7 +150,13 @@ export function useViewControlMenuItems() {
 
             void selectSketchPlane(
               planeOrFaceId,
-              modelingState.context.store.useNewSketchMode?.current
+              modelingState.context.store.useNewSketchMode?.current,
+              {
+                kclManager,
+                rustContext,
+                sceneEntitiesManager,
+                sceneInfra,
+              }
             )
           }
         }}
@@ -165,6 +193,7 @@ export function useViewControlMenuItems() {
       modelingState.context.store.useNewSketchMode,
       sketching,
       snapToGrid,
+      gizmoType,
     ]
   )
   return menuItems

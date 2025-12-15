@@ -2729,7 +2729,8 @@ description: Artifact commands exhaust-manifold.kcl
         "distance": 3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

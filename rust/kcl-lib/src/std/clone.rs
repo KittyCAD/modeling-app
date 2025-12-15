@@ -2,10 +2,10 @@
 
 use std::collections::HashMap;
 
-use anyhow::Result;
 use kcmc::{
     ModelingCmd, each_cmd as mcmd,
     ok_response::{OkModelingCmdResponse, output::EntityGetAllChildUuids},
+    shared::BodyType,
     websocket::OkWebSocketResponseData,
 };
 use kittycad_modeling_cmds::{self as kcmc};
@@ -21,10 +21,12 @@ use crate::{
     std::{Args, extrude::NamedCapTags},
 };
 
+type Result<T> = std::result::Result<T, KclError>;
+
 /// Clone a sketch or solid.
 ///
 /// This works essentially like a copy-paste operation.
-pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue> {
     let geometry = args.get_unlabeled_kw_arg(
         "geometry",
         &RuntimeType::Union(vec![
@@ -43,7 +45,7 @@ async fn inner_clone(
     geometry: GeometryWithImportedGeometry,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<GeometryWithImportedGeometry, KclError> {
+) -> Result<GeometryWithImportedGeometry> {
     let new_id = exec_state.next_uuid();
     let mut geometry = geometry.clone();
     let old_id = geometry.id(&args.ctx).await?;
@@ -64,7 +66,10 @@ async fn inner_clone(
         GeometryWithImportedGeometry::Solid(solid) => {
             // We flush before the clone so all the shit exists.
             exec_state
-                .flush_batch_for_solids((&args).into(), std::slice::from_ref(solid))
+                .flush_batch_for_solids(
+                    ModelingCmdMeta::from_args(exec_state, &args),
+                    std::slice::from_ref(solid),
+                )
                 .await?;
 
             let mut new_solid = solid.clone();
@@ -81,7 +86,7 @@ async fn inner_clone(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, new_id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, new_id),
             ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }),
         )
         .await?;
@@ -111,16 +116,24 @@ async fn fix_tags_and_references(
     match new_geometry {
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
-            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, None).await?;
+            sketch.clone = Some(old_geometry_id);
+            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             // Make the sketch id the new geometry id.
             solid.sketch.id = new_geometry_id;
             solid.sketch.original_id = new_geometry_id;
             solid.sketch.artifact_id = new_geometry_id.into();
+            solid.sketch.clone = Some(old_geometry_id);
 
-            fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state, Some(solid.value.clone()))
-                .await?;
+            fix_sketch_tags_and_references(
+                &mut solid.sketch,
+                &entity_id_map,
+                exec_state,
+                args,
+                Some(solid.value.clone()),
+            )
+            .await?;
 
             let (start_tag, end_tag) = get_named_cap_tags(solid);
 
@@ -155,6 +168,8 @@ async fn fix_tags_and_references(
                 exec_state,
                 args,
                 None,
+                Some(&entity_id_map.clone()),
+                BodyType::Solid, // TODO: Support surface clones.
             )
             .await?;
 
@@ -174,7 +189,7 @@ async fn get_old_new_child_map(
     // Get the old geometries entity ids.
     let response = exec_state
         .send_modeling_cmd(
-            args.into(),
+            ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(mcmd::EntityGetAllChildUuids {
                 entity_id: old_geometry_id,
             }),
@@ -187,13 +202,16 @@ async fn get_old_new_child_map(
             }),
     } = response
     else {
-        anyhow::bail!("Expected EntityGetAllChildUuids response, got: {:?}", response);
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
+            vec![args.source_range],
+        )));
     };
 
     // Get the new geometries entity ids.
     let response = exec_state
         .send_modeling_cmd(
-            args.into(),
+            ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(mcmd::EntityGetAllChildUuids {
                 entity_id: new_geometry_id,
             }),
@@ -206,7 +224,10 @@ async fn get_old_new_child_map(
             }),
     } = response
     else {
-        anyhow::bail!("Expected EntityGetAllChildUuids response, got: {:?}", response);
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
+            vec![args.source_range],
+        )));
     };
 
     // Create a map of old entity ids to new entity ids.
@@ -223,6 +244,7 @@ async fn fix_sketch_tags_and_references(
     new_sketch: &mut Sketch,
     entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>,
     exec_state: &mut ExecState,
+    args: &Args,
     surfaces: Option<Vec<ExtrudeSurface>>,
 ) -> Result<()> {
     // Fix the path references in the sketch.
@@ -255,10 +277,13 @@ async fn fix_sketch_tags_and_references(
             if let Some(found_surface) = surface_id_map.get(&tag.name) {
                 let mut new_surface = (*found_surface).clone();
                 let Some(new_face_id) = entity_id_map.get(&new_surface.face_id()).copied() else {
-                    anyhow::bail!(
-                        "Failed to find new face id for old face id: {:?}",
-                        new_surface.face_id()
-                    )
+                    return Err(KclError::new_engine(KclErrorDetails::new(
+                        format!(
+                            "Failed to find new face id for old face id: {:?}",
+                            new_surface.face_id()
+                        ),
+                        vec![args.source_range],
+                    )));
                 };
                 new_surface.set_face_id(new_face_id);
                 surface = Some(new_surface);

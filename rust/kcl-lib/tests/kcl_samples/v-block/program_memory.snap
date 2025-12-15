@@ -459,23 +459,6 @@ description: Variables in memory after executing v-block.kcl
                     ],
                     "type": "ToPoint",
                     "units": "in"
-                  },
-                  {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    },
-                    "from": [
-                      -1.5,
-                      0.0
-                    ],
-                    "tag": null,
-                    "to": [
-                      -1.5,
-                      0.0
-                    ],
-                    "type": "ToPoint",
-                    "units": "in"
                   }
                 ],
                 "on": {
@@ -992,23 +975,6 @@ description: Variables in memory after executing v-block.kcl
                     ],
                     "type": "ToPoint",
                     "units": "in"
-                  },
-                  {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    },
-                    "from": [
-                      -1.5,
-                      0.0
-                    ],
-                    "tag": null,
-                    "to": [
-                      -1.5,
-                      0.0
-                    ],
-                    "type": "ToPoint",
-                    "units": "in"
                   }
                 ],
                 "on": {
@@ -1498,23 +1464,6 @@ description: Variables in memory after executing v-block.kcl
               },
               "from": [
                 1.5,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                -1.5,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -1.5,
                 0.0
               ],
               "tag": null,
@@ -2036,23 +1985,6 @@ description: Variables in memory after executing v-block.kcl
                       ],
                       "type": "ToPoint",
                       "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.5,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.5,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
                     }
                   ],
                   "on": {
@@ -2587,23 +2519,6 @@ description: Variables in memory after executing v-block.kcl
                       ],
                       "type": "ToPoint",
                       "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.5,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.5,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
                     }
                   ],
                   "on": {
@@ -3109,23 +3024,6 @@ description: Variables in memory after executing v-block.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.5,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -1.5,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -3466,23 +3364,6 @@ description: Variables in memory after executing v-block.kcl
           },
           "from": [
             1.5,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -1.5,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.5,
             0.0
           ],
           "tag": null,

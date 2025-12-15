@@ -5,6 +5,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -16,7 +17,11 @@ let rustContextInThisFile: RustContext = null!
  *
  * Reuse the world for this file. This is not the same as global singleton imports!
  */
-beforeAll(async () => {
+beforeEach(async () => {
+  if (instanceInThisFile) {
+    return
+  }
+
   const { instance, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance

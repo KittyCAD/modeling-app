@@ -6,7 +6,6 @@ import { defineConfig } from 'vitest/config'
 
 const config = defineConfig({
   test: {
-    globals: true,
     pool: 'forks',
     environment: 'node',
     reporters: process.env.GITHUB_ACTIONS

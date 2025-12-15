@@ -1,5 +1,5 @@
 import env from '@src/env'
-import { BSON } from 'bson'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
 import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
@@ -32,6 +32,8 @@ export enum MlEphantSetupErrors {
   NoRefParentSend = 'no ref parent send',
 }
 
+type TypeVariant<T, U = T> = U extends T ? keyof U : never
+
 type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
   type: 'user'
 }
@@ -55,6 +57,7 @@ export enum MlEphantManagerTransitions2 {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
   ConversationClose = 'conversation-close',
+  Interrupt = 'interrupt',
   AbruptClose = 'abrupt-close',
   CacheSetupAndConnect = 'cache-setup-and-connect',
 }
@@ -99,6 +102,9 @@ export type MlEphantManagerEvents2 =
       type: MlEphantManagerTransitions2.ConversationClose
     }
   | {
+      type: MlEphantManagerTransitions2.Interrupt
+    }
+  | {
       type: MlEphantManagerTransitions2.AbruptClose
     }
 
@@ -130,6 +136,7 @@ export interface MlEphantManagerContext2 {
   conversation?: Conversation
   conversationId?: string
   lastMessageId?: number
+  lastMessageType?: TypeVariant<MlCopilotServerMessage>
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
   cachedSetup?: {
@@ -147,7 +154,9 @@ export const mlEphantDefaultContext2 = (args: {
   ws: undefined,
   abruptlyClosed: false,
   conversation: undefined,
+  cachedSetup: undefined,
   lastMessageId: undefined,
+  lastMessageType: undefined,
   fileFocusedOnInEditor: undefined,
   projectNameCurrentlyOpened: undefined,
 })
@@ -222,6 +231,15 @@ export const mlEphantManagerMachine2 = setup({
       }
     },
     cacheSetup: assign({
+      conversationId: ({ event }) => {
+        assertEvent(event, MlEphantManagerTransitions2.CacheSetupAndConnect)
+
+        if (event.conversationId) {
+          return event.conversationId
+        }
+
+        return undefined
+      },
       cachedSetup: ({ event }) => {
         assertEvent(event, MlEphantManagerTransitions2.CacheSetupAndConnect)
         return {
@@ -243,7 +261,8 @@ export const mlEphantManagerMachine2 = setup({
       // On future reenters of this actor it will not have args.input.event
       // You must read from the context for the cached conversationId
       const maybeConversationId =
-        args.input.context?.cachedSetup?.conversationId
+        args.input.context?.cachedSetup?.conversationId ??
+        args.input.context?.conversationId
       const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
 
       const ws = await Socket(
@@ -283,10 +302,14 @@ export const mlEphantManagerMachine2 = setup({
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
             if (!isString(event.data)) {
+              const binaryData = new Uint8Array(event.data)
               try {
-                response = BSON.deserialize(new Uint8Array(event.data))
-              } catch (e: unknown) {
-                return console.error(e)
+                response = msgpackDecode(binaryData)
+              } catch (msgpackError) {
+                return console.error(
+                  'failed to deserialize binary websocket message',
+                  { msgpackError }
+                )
               }
             } else {
               try {
@@ -387,6 +410,10 @@ export const mlEphantManagerMachine2 = setup({
             // to us. That means data is being stored and the system is ready.
             if ('conversation_id' in response) {
               onFulfilled({
+                abruptlyClosed: false,
+                lastMessageId: undefined,
+                lastMessageType: undefined,
+                cachedSetup: undefined,
                 conversation: {
                   exchanges: maybeReplayedExchanges,
                 },
@@ -472,6 +499,23 @@ export const mlEphantManagerMachine2 = setup({
         projectNameCurrentlyOpened: requestData.body.project_name,
       }
     }),
+    [MlEphantManagerTransitions2.Interrupt]: fromPromise(async function (
+      args: XSInput<MlEphantManagerTransitions2.Interrupt>
+    ): Promise<Partial<MlEphantManagerContext2>> {
+      const { context } = args.input
+      if (!isPresent<WebSocket>(context.ws))
+        return Promise.reject(new Error('WebSocket not present'))
+      if (!isPresent<Conversation>(context.conversation))
+        return Promise.reject(new Error('Conversation not present'))
+
+      const request: Extract<MlCopilotClientMessage, { type: 'system' }> = {
+        type: 'system',
+        command: 'interrupt',
+      }
+      context.ws.send(JSON.stringify(request))
+
+      return {}
+    }),
   },
 }).createMachine({
   initial: S.Await,
@@ -481,7 +525,16 @@ export const mlEphantManagerMachine2 = setup({
       on: {
         [MlEphantManagerTransitions2.CacheSetupAndConnect]: {
           target: MlEphantManagerStates2.Setup,
-          actions: [assign({ abruptlyClosed: false }), 'cacheSetup'],
+          actions: [
+            assign({
+              abruptlyClosed: false,
+              lastMessageId: undefined,
+              lastMessageType: undefined,
+              conversation: undefined,
+              conversationId: undefined,
+            }),
+            'cacheSetup',
+          ],
         },
         ...transitions([MlEphantManagerStates2.Setup]),
       },
@@ -517,6 +570,11 @@ export const mlEphantManagerMachine2 = setup({
               if (event.error === MlEphantSetupErrors.ConversationNotFound) {
                 // set the conversation Id to undefined to have the reenter make a new conversation id
                 return {
+                  abruptlyClosed: false,
+                  conversation: undefined,
+                  conversationId: undefined,
+                  lastMessageId: undefined,
+                  lastMessageType: undefined,
                   cachedSetup: {
                     refParentSend: context.cachedSetup?.refParentSend,
                     conversationId: undefined,
@@ -586,9 +644,11 @@ export const mlEphantManagerMachine2 = setup({
                       ),
                     }
 
-                    // Errors and information are considered their own
+                    // Errors are considered their own
                     // exchanges because they have no end_of_stream signal.
-                    if ('error' in event.response || 'info' in event.response) {
+                    // It is assumed `info` messages are followed up
+                    // with an end_of_stream signal.
+                    if ('error' in event.response) {
                       conversation.exchanges.push({
                         responses: [event.response],
                         deltasAggregated: '',
@@ -618,9 +678,28 @@ export const mlEphantManagerMachine2 = setup({
                       lastExchange.responses.push(event.response)
                     }
 
+                    // This sucks but must be done because we can't
+                    // enumerate the message types.
+                    const r = event.response
+                    const ts: TypeVariant<MlCopilotServerMessage>[] = [
+                      'info',
+                      'error',
+                      'end_of_stream',
+                      'session_data',
+                      'conversation_id',
+                      'delta',
+                      'tool_output',
+                      'reasoning',
+                      'replay',
+                    ]
+                    const lastMessageType:
+                      | TypeVariant<MlCopilotServerMessage>
+                      | undefined = ts.find((t) => t in r)
+
                     return {
                       conversation,
                       lastMessageId,
+                      lastMessageType,
                     }
                   }),
                 ],
@@ -634,6 +713,7 @@ export const mlEphantManagerMachine2 = setup({
             [S.Await]: {
               on: transitions([
                 MlEphantManagerTransitions2.MessageSend,
+                MlEphantManagerTransitions2.Interrupt,
                 MlEphantManagerTransitions2.ConversationClose,
                 MlEphantManagerTransitions2.AbruptClose,
               ]),
@@ -663,6 +743,25 @@ export const mlEphantManagerMachine2 = setup({
                 onError: { target: S.Await, actions: ['toastError'] },
               },
             },
+            [MlEphantManagerTransitions2.Interrupt]: {
+              invoke: {
+                input: (args) => {
+                  assertEvent(args.event, [
+                    MlEphantManagerTransitions2.Interrupt,
+                  ])
+                  return {
+                    event: args.event,
+                    context: args.context,
+                  }
+                },
+                src: MlEphantManagerTransitions2.Interrupt,
+                onDone: {
+                  target: S.Await,
+                  actions: [],
+                },
+                onError: { target: S.Await, actions: ['toastError'] },
+              },
+            },
           },
         },
       },
@@ -682,11 +781,15 @@ export const mlEphantManagerMachine2 = setup({
           (args) => {
             // We want to keep the context around to recover.
             if (args.context.abruptlyClosed) {
-              return
+              return assign({})
             }
             return assign({
+              abruptlyClosed: false,
               conversation: undefined,
               conversationId: undefined,
+              cachedSetup: undefined,
+              lastMessageId: undefined,
+              lastMessageType: undefined,
             })
           },
           (args) => {

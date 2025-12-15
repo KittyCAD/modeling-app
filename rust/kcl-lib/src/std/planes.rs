@@ -32,10 +32,30 @@ pub(crate) async fn inner_plane_of(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Plane, KclError> {
+    let plane_id = exec_state.id_generator().next_uuid();
+
+    #[cfg(not(feature = "artifact-graph"))]
+    let plane_object_id = None;
+    #[cfg(feature = "artifact-graph")]
+    let plane_object_id = {
+        use crate::execution::ArtifactId;
+
+        let plane_object_id = exec_state.next_object_id();
+        let plane_object = crate::front::Object {
+            id: plane_object_id,
+            kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+            label: Default::default(),
+            comments: Default::default(),
+            artifact_id: ArtifactId::new(plane_id),
+            source: args.source_range.into(),
+        };
+        exec_state.add_scene_object(plane_object, args.source_range);
+        Some(plane_object_id)
+    };
+
     // Support mock execution
     // Return an arbitrary (incorrect) plane and a non-fatal error.
     if args.ctx.no_engine_commands().await {
-        let plane_id = exec_state.id_generator().next_uuid();
         exec_state.err(crate::CompilationError {
             source_range: args.source_range,
             message: "The engine isn't available, so returning an arbitrary incorrect plane".to_owned(),
@@ -46,6 +66,7 @@ pub(crate) async fn inner_plane_of(
         return Ok(Plane {
             artifact_id: plane_id.into(),
             id: plane_id,
+            object_id: plane_object_id,
             // Engine doesn't know about the ID we created, so set this to Uninit.
             value: PlaneType::Uninit,
             info: crate::execution::PlaneInfo {
@@ -82,13 +103,15 @@ pub(crate) async fn inner_plane_of(
 
     // Flush the batch for our fillets/chamfers if there are any.
     exec_state
-        .flush_batch_for_solids(args.into(), std::slice::from_ref(&solid))
+        .flush_batch_for_solids(
+            ModelingCmdMeta::from_args(exec_state, args),
+            std::slice::from_ref(&solid),
+        )
         .await?;
 
     // Query the engine to learn what plane, if any, this face is on.
     let face_id = face.get_face_id(&solid, exec_state, args, true).await?;
-    let plane_id = exec_state.id_generator().next_uuid();
-    let meta = ModelingCmdMeta::with_id(&args.ctx, args.source_range, plane_id);
+    let meta = ModelingCmdMeta::from_args_id(exec_state, args, plane_id);
     let cmd = ModelingCmd::FaceIsPlanar(mcmd::FaceIsPlanar { object_id: face_id });
     let plane_resp = exec_state.send_modeling_cmd(meta, cmd).await?;
     let OkWebSocketResponseData::Modeling {
@@ -153,6 +176,7 @@ pub(crate) async fn inner_plane_of(
     Ok(Plane {
         artifact_id: plane_id.into(),
         id: plane_id,
+        object_id: plane_object_id,
         value: PlaneType::Custom,
         info: plane_info,
         meta: vec![Metadata {
@@ -200,7 +224,7 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
         a: 0.3,
     };
 
-    let meta = ModelingCmdMeta::from_args_id(args, plane.id);
+    let meta = ModelingCmdMeta::from_args_id(exec_state, args, plane.id);
     exec_state
         .batch_modeling_cmd(
             meta,
@@ -218,7 +242,7 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
     // Set the color.
     exec_state
         .batch_modeling_cmd(
-            args.into(),
+            ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(mcmd::PlaneSetColor {
                 color,
                 plane_id: plane.id,

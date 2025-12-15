@@ -1,18 +1,17 @@
 import { useEffect } from 'react'
 
-import { editorManager } from '@src/lib/singletons'
-
+import type { KclManager } from '@src/lang/KclManager'
 // Kurt's note: codeMirror styling overrides were needed to make this work
 // namely, the cursor needs to still be shown when the editor is not focused
 // search for code-mirror-override in the repo to find the relevant styles
 
-export function useHotKeyListener() {
+export function useHotKeyListener(kclManager: KclManager) {
   const keyName = 'Shift'
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) =>
-      event.key === keyName && editorManager.setIsShiftDown(true)
+      event.key === keyName && kclManager.setIsShiftDown(true)
     const handleKeyUp = (event: KeyboardEvent) =>
-      event.key === keyName && editorManager.setIsShiftDown(false)
+      event.key === keyName && kclManager.setIsShiftDown(false)
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
     return () => {

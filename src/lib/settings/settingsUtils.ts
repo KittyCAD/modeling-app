@@ -70,6 +70,7 @@ export function configurationToSettingsPayload(
       mouseControls: mouseControlsToCameraSystem(
         configuration?.settings?.modeling?.mouse_controls
       ),
+      gizmoType: configuration?.settings?.modeling?.gizmo_type,
       enableTouchControls:
         configuration?.settings?.modeling?.enable_touch_controls,
       useNewSketchMode: configuration?.settings?.modeling?.use_new_sketch_mode,
@@ -118,6 +119,7 @@ export function settingsPayloadToConfiguration(
         mouse_controls: configuration?.modeling?.mouseControls
           ? cameraSystemToMouseControl(configuration?.modeling?.mouseControls)
           : undefined,
+        gizmo_type: configuration?.modeling?.gizmoType,
         enable_touch_controls: configuration?.modeling?.enableTouchControls,
         use_new_sketch_mode: configuration?.modeling?.useNewSketchMode,
         highlight_edges: configuration?.modeling?.highlightEdges,
@@ -187,7 +189,6 @@ export function projectConfigurationToSettingsPayload(
   return {
     meta: {
       id: configuration?.settings?.meta?.id,
-      disableCopilot: configuration?.settings?.meta?.disable_copilot,
     },
     app: {
       // do not read in `theme`, because it is blocked on the project level
@@ -240,7 +241,6 @@ export function settingsPayloadToProjectConfiguration(
     settings: {
       meta: {
         id: configuration?.meta?.id,
-        disable_copilot: configuration?.meta?.disableCopilot,
       },
       app: {
         onboarding_status: configuration?.app?.onboardingStatus,

@@ -1,7 +1,6 @@
 // Stylized Cybertruck
 // A simplified, parametric 3-D model of a low-poly cybertruck, intended for use as a game-ready asset, concept visualization, or real-time rendering demo.
 
-
 // The model includes:
 // - A chassis block forming the vehicle’s base
 // - Front and rear fenders with wheel cut-outs
@@ -14,9 +13,6 @@
 // Geometry prioritizes stylized clarity and clean topology over realism,
 // making it suitable for games, educational tools, or prototyping environments.
 // Set units and version
-
-
-
 
 @settings(defaultLengthUnit = m, kclVersion = 1.0)
 
