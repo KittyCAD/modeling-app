@@ -24,9 +24,9 @@ import {
   writeProjectSettingsFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
 import {
   createSettings,
+  type Setting,
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
 import type {
@@ -36,7 +36,6 @@ import type {
 import { appThemeToTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 
@@ -702,7 +701,11 @@ export function getSettingInputType(setting: Setting) {
 export function getSettingsFromActorContext(
   s: SettingsActorType
 ): SettingsType {
-  const { currentProject: _, ...settings } = s.getSnapshot().context
+  const {
+    currentProject: _,
+    commandBarActor: _cmd,
+    ...settings
+  } = s.getSnapshot().context
   return settings
 }
 

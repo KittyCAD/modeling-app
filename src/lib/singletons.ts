@@ -28,8 +28,9 @@ import { ACTOR_IDS } from '@src/machines/machineConstants'
 import {
   getOnlySettingsFromContext,
   settingsMachine,
+  type SettingsMachineContext,
 } from '@src/machines/settingsMachine'
-import { getSettingsFromActorRef } from '@src/lib/settings/settingsUtils'
+import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -47,9 +48,13 @@ import {
   saveLayout,
   type Layout,
 } from '@src/lib/layout'
+import type { Project } from '@src/lib/project'
 
+export const commandBarActor = createActor(commandBarMachine, {
+  input: { commands: [] },
+}).start()
 const dummySettingsActor = createActor(settingsMachine, {
-  input: createSettings(),
+  input: { commandBarActor, ...createSettings() },
 })
 
 /**
@@ -149,19 +154,44 @@ const appMachineActors = {
         if (input.doNotPersist) return
 
         kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-        const { currentProject, ...settings } = input.context
+        const {
+          currentProject,
+          commandBarActor: _c,
+          ...settings
+        } = input.context
 
-        await saveSettings(settings, currentProject?.path)
+        await saveSettings(initPromise, settings, currentProject?.path)
 
         if (input.toastCallback) {
           input.toastCallback()
         }
+      }),
+      loadUserSettings: fromPromise<SettingsType, SettingsType>(async () => {
+        const { settings } = await loadAndValidateSettings(
+          kclManager.wasmInstancePromise
+        )
+        return settings
+      }),
+      loadProjectSettings: fromPromise<
+        SettingsType,
+        { project?: Project; settings: SettingsType }
+      >(async ({ input }) => {
+        const { settings } = await loadAndValidateSettings(
+          kclManager.wasmInstancePromise,
+          input.project?.path
+        )
+        return settings
       }),
     },
     actions: {
       setEngineTheme: ({ context }) => {
         engineCommandManager
           .setTheme(context.app.theme.current)
+          .catch(reportRejection)
+      },
+      setEngineHighlightEdges: ({ context }) => {
+        engineCommandManager
+          .setHighlightEdges(context.modeling.highlightEdges.current)
           .catch(reportRejection)
       },
       setClientTheme: ({ context }) => {
@@ -225,10 +255,6 @@ const appMachineActors = {
   [BILLING]: billingMachine,
 } as const
 
-export const commandBarActor = createActor(commandBarMachine, {
-  input: { commands: [] },
-}).start()
-
 const appMachine = setup({
   types: {} as {
     events: AppMachineEvent
@@ -256,7 +282,6 @@ const appMachine = setup({
       systemId: SETTINGS,
       input: {
         ...createSettings(),
-        kclManager,
         commandBarActor: commandBarActor,
       },
     }),

@@ -24,9 +24,8 @@ export async function enginelessExecutor(
   usePrevMemory?: boolean,
   path?: string
 ): Promise<ExecState> {
-  const theRustContext = providedRustContext ? providedRustContext : rustContext
-  const settings = await jsAppSettings(theRustContext.settingsActor)
-  return await theRustContext.executeMock(ast, settings, path, usePrevMemory)
+  const settings = await jsAppSettings(rustContext.settingsActor)
+  return await rustContext.executeMock(ast, settings, path, usePrevMemory)
 }
 
 export async function getAstAndArtifactGraph(

@@ -30,7 +30,6 @@ import type {
 import {
   clearSettingsAtLevel,
   configurationToSettingsPayload,
-  loadAndValidateSettings,
   projectConfigurationToSettingsPayload,
   setSettingsAtLevel,
 } from '@src/lib/settings/settingsUtils'
@@ -40,12 +39,10 @@ import {
   getSystemTheme,
   setThemeClass,
 } from '@src/lib/theme'
-import type { KclManager } from '@src/lang/KclManager'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 
 export type SettingsActorDepsType = {
   currentProject?: Project
-  kclManager: KclManager
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
 }
 export type SettingsMachineContext = SettingsType & SettingsActorDepsType
@@ -94,23 +91,18 @@ export const settingsMachine = setup({
     >(async () => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     }),
-    loadUserSettings: fromPromise<SettingsType, { kclManager: KclManager }>(
+    loadUserSettings: fromPromise<SettingsType, SettingsType>(
       async ({ input }) => {
-        const { settings } = await loadAndValidateSettings(
-          input.kclManager.wasmInstancePromise
-        )
-        return settings
+        // Implementation moved to singletons.ts to provide necessary singletons.
+        return input
       }
     ),
     loadProjectSettings: fromPromise<
       SettingsType,
-      { project?: Project; kclManager: KclManager }
+      { project?: Project; settings: SettingsType }
     >(async ({ input }) => {
-      const { settings } = await loadAndValidateSettings(
-        input.kclManager.wasmInstancePromise,
-        input.project?.path
-      )
-      return settings
+      // Implementation moved to singletons.ts to provide necessary singletons.
+      return input.settings
     }),
     watchSystemTheme: fromCallback<{
       type: 'update.themeWatcher'
@@ -183,6 +175,7 @@ export const settingsMachine = setup({
         addCommands(commandBarActor)
       })
 
+      console.log('commands bs', input)
       commands = updateCommands(input.settings)
     }),
   },
@@ -296,13 +289,8 @@ export const settingsMachine = setup({
     setEngineCameraProjection: () => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
-    setEngineHighlightEdges: ({ context }) => {
-      const engineCommandManager = context.kclManager.engineCommandManager
-      if (engineCommandManager) {
-        engineCommandManager
-          .setHighlightEdges(context.modeling.highlightEdges.current)
-          .catch(reportRejection)
-      }
+    setEngineHighlightEdges: () => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
     },
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
       type: 'update.themeWatcher',
@@ -330,6 +318,7 @@ export const settingsMachine = setup({
       input: ({ context, self }) => ({
         settings: getOnlySettingsFromContext(context),
         actor: self,
+        commandBarActor: context.commandBarActor,
       }),
     },
   ],
@@ -534,7 +523,7 @@ export const settingsMachine = setup({
     loadingUser: {
       invoke: {
         src: 'loadUserSettings',
-        input: ({ context: { kclManager } }) => ({ kclManager }),
+        input: ({ context }) => getOnlySettingsFromContext(context),
         onDone: {
           target: 'idle',
           actions: [
@@ -588,9 +577,9 @@ export const settingsMachine = setup({
           ],
         },
         onError: 'idle',
-        input: ({ event, context: { kclManager } }) => {
+        input: ({ event, context }) => {
           return {
-            kclManager,
+            settings: getOnlySettingsFromContext(context),
             project: event.type === 'load.project' ? event.project : undefined,
           }
         },
@@ -602,11 +591,6 @@ export const settingsMachine = setup({
 export function getOnlySettingsFromContext(
   s: SettingsMachineContext
 ): SettingsType {
-  const {
-    currentProject: _c,
-    kclManager: _k,
-    commandBarActor: _cba,
-    ...settings
-  } = s
+  const { currentProject: _c, commandBarActor: _cba, ...settings } = s
   return settings
 }
