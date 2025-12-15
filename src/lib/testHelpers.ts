@@ -25,8 +25,8 @@ export async function enginelessExecutor(
   path?: string,
   providedRustContext?: RustContext
 ): Promise<ExecState> {
-  const settings = await jsAppSettings()
   const theRustContext = providedRustContext ? providedRustContext : rustContext
+  const settings = await jsAppSettings(theRustContext.settingsActor)
   return await theRustContext.executeMock(ast, settings, path, usePrevMemory)
 }
 

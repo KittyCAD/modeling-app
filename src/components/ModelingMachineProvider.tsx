@@ -51,6 +51,7 @@ import {
   useCommandBarState,
   setLayout,
   settingsActor,
+  getSettings,
 } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { getDeleteKeys, uuidv4 } from '@src/lib/utils'
@@ -607,7 +608,7 @@ export const ModelingMachineProvider = ({
 
                 await rustContext.hackSetProgram(
                   kclManager.ast,
-                  await jsAppSettings()
+                  await jsAppSettings(getSettings())
                 )
                 const newSketchResult = await rustContext.newSketch(
                   0, // projectId - using 0 as placeholder
@@ -695,7 +696,7 @@ export const ModelingMachineProvider = ({
               } else {
                 await rustContext.hackSetProgram(
                   kclManager.ast,
-                  await jsAppSettings()
+                  await jsAppSettings(getSettings())
                 )
                 editSketchSceneGraph = await rustContext.editSketch(
                   0, // projectId
