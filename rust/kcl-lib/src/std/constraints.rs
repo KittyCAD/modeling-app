@@ -26,20 +26,18 @@ use crate::{
 
 pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let at: Vec<KclValue> = args.get_kw_arg("at", &RuntimeType::point2d(), exec_state)?;
-    if at.len() != 2 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
+    let [at_x_value, at_y_value]: [KclValue; 2] = at.try_into().map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
             "at must be a 2D point".to_owned(),
             vec![args.source_range],
-        )));
-    }
-    let at_x_value = at.first().unwrap().clone();
+        ))
+    })?;
     let Some(at_x) = at_x_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "at x must be a number or sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
-    let at_y_value = at.get(1).unwrap().clone();
     let Some(at_y) = at_y_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "at y must be a number or sketch var".to_owned(),
@@ -128,41 +126,36 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let start: Vec<KclValue> = args.get_kw_arg("start", &RuntimeType::point2d(), exec_state)?;
     // TODO: make this optional and add midpoint.
     let end: Vec<KclValue> = args.get_kw_arg("end", &RuntimeType::point2d(), exec_state)?;
-    if start.len() != 2 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
+    let [start_x_value, start_y_value]: [KclValue; 2] = start.try_into().map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
             "start must be a 2D point".to_owned(),
             vec![args.source_range],
-        )));
-    }
-    if end.len() != 2 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
+        ))
+    })?;
+    let [end_x_value, end_y_value]: [KclValue; 2] = end.try_into().map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
             "end must be a 2D point".to_owned(),
             vec![args.source_range],
-        )));
-    }
-    // SAFETY: checked length above.
-    let start_x_value = start.first().unwrap().clone();
+        ))
+    })?;
     let Some(start_x) = start_x_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "start x must be a number or sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
-    let start_y_value = start.get(1).unwrap().clone();
     let Some(start_y) = start_y_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "start y must be a number or sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
-    let end_x_value = end.first().unwrap().clone();
     let Some(end_x) = end_x_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "end x must be a number or sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
-    let end_y_value = end.get(1).unwrap().clone();
     let Some(end_y) = end_y_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "end y must be a number or sketch var".to_owned(),
@@ -555,15 +548,15 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
-    if points.len() != 2 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
+    let [point0, point1]: [KclValue; 2] = points.try_into().map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
             "must have two input points".to_owned(),
             vec![args.source_range],
-        )));
-    }
+        ))
+    })?;
 
     let range = args.source_range;
-    match (&points[0], &points[1]) {
+    match (&point0, &point1) {
         (KclValue::Segment { value: seg0 }, KclValue::Segment { value: seg1 }) => {
             let SegmentRepr::Unsolved { segment: unsolved0 } = &seg0.repr else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -887,14 +880,14 @@ pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
-    if points.len() != 2 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
+    let [point0, point1]: [KclValue; 2] = points.try_into().map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
             "must have two input points".to_owned(),
             vec![args.source_range],
-        )));
-    }
+        ))
+    })?;
 
-    match (&points[0], &points[1]) {
+    match (&point0, &point1) {
         (KclValue::Segment { value: seg0 }, KclValue::Segment { value: seg1 }) => {
             let SegmentRepr::Unsolved { segment: unsolved0 } = &seg0.repr else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -967,14 +960,14 @@ pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclV
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
-    if lines.len() != 2 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
+    let [line0, line1]: [KclValue; 2] = lines.try_into().map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
             "must have two input lines".to_owned(),
             vec![args.source_range],
-        )));
-    }
+        ))
+    })?;
 
-    let KclValue::Segment { value: segment0 } = &lines[0] else {
+    let KclValue::Segment { value: segment0 } = &line0 else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "line argument must be a Segment".to_owned(),
             vec![args.source_range],
@@ -1021,7 +1014,7 @@ pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclV
             vec![args.source_range],
         )));
     };
-    let KclValue::Segment { value: segment1 } = &lines[1] else {
+    let KclValue::Segment { value: segment1 } = &line1 else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "line argument must be a Segment".to_owned(),
             vec![args.source_range],
@@ -1157,14 +1150,14 @@ async fn lines_at_angle(
         &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
         exec_state,
     )?;
-    if lines.len() != 2 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
+    let [line0, line1]: [KclValue; 2] = lines.try_into().map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
             "must have two input lines".to_owned(),
             vec![args.source_range],
-        )));
-    }
+        ))
+    })?;
 
-    let KclValue::Segment { value: segment0 } = &lines[0] else {
+    let KclValue::Segment { value: segment0 } = &line0 else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "line argument must be a Segment".to_owned(),
             vec![args.source_range],
@@ -1211,7 +1204,7 @@ async fn lines_at_angle(
             vec![args.source_range],
         )));
     };
-    let KclValue::Segment { value: segment1 } = &lines[1] else {
+    let KclValue::Segment { value: segment1 } = &line1 else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "line argument must be a Segment".to_owned(),
             vec![args.source_range],
