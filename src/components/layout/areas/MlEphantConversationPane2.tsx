@@ -283,6 +283,21 @@ export const MlEphantConversationPane2 = (props: {
     }
   }, [searchParams, setSearchParams])
 
+  const userBlockedOnPayment: () => boolean = () => {
+    if (!props.user || !props.user.block) {
+      return false
+    }
+
+    switch (props.user.block) {
+      case 'missing_payment_method':
+      case 'payment_method_failed':
+        return true
+      default:
+        props.user.block satisfies never // exhaustiveness check
+        return false
+    }
+  }
+
   return (
     <MlEphantConversation2
       isLoading={conversation === undefined}
@@ -301,7 +316,7 @@ export const MlEphantConversationPane2 = (props: {
       needsReconnect={needsReconnect}
       hasPromptCompleted={!isProcessing}
       userAvatarSrc={props.user?.image}
-      userBlocked={Boolean(props.user?.block)}
+      userBlockedOnPayment={userBlockedOnPayment()}
       defaultPrompt={defaultPrompt}
     />
   )

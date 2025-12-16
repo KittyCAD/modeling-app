@@ -38,7 +38,7 @@ export interface MlEphantConversationProps {
   needsReconnect: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
-  userBlocked?: boolean
+  userBlockedOnPayment?: boolean
   defaultPrompt?: string
 }
 
@@ -394,7 +394,7 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
-              {props.userBlocked ? (
+              {props.userBlockedOnPayment ? (
                 <StarterCard
                   text={`Zookeeper is unavailable because you have run out of credits for the month. Please check your [account page](${withSiteBaseURL('/account/billing')}) to view usage or upgrade your plan.`}
                 />
@@ -414,7 +414,9 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
           <div className="border-t b-4">
             <MlEphantConversationInput
               contexts={props.contexts}
-              disabled={props.userBlocked || props.disabled || props.isLoading}
+              disabled={
+                props.userBlockedOnPayment || props.disabled || props.isLoading
+              }
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
               onProcess={onProcess}
