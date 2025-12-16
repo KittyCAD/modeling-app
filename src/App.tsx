@@ -72,7 +72,6 @@ import { useSignalEffect } from '@preact/signals-react'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
-import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -245,18 +244,20 @@ export function App() {
     }
   }, [])
 
-  const currentLevel: WarningLevel =
-    kclManager.fileSettings.experimentalFeatures ??
-    DEFAULT_EXPERIMENTAL_FEATURES
   const experimentalFeaturesLocalStatusBarItems: StatusBarItemType[] =
-    currentLevel.type === 'Deny'
-      ? []
-      : [
-          {
-            id: 'experimental-features',
-            component: ExperimentalFeaturesMenu,
-          },
-        ]
+    useMemo(() => {
+      const level =
+        kclManager.fileSettings.experimentalFeatures ??
+        DEFAULT_EXPERIMENTAL_FEATURES
+      return level.type === 'Deny'
+        ? []
+        : [
+            {
+              id: 'experimental-features',
+              component: ExperimentalFeaturesMenu,
+            },
+          ]
+    }, [])
 
   const zookeeperLocalStatusBarItems: StatusBarItemType[] = useMemo(() => {
     const zookeeperPaneOpen = getOpenPanes({ rootLayout: layout }).includes(
