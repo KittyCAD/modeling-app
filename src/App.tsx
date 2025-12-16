@@ -291,6 +291,10 @@ export function App() {
                 ] satisfies StatusBarItemType[])
               : []),
             {
+              id: 'zookeeper-credits',
+              component: ZookeeperCreditsMenu,
+            },
+            {
               id: 'selection',
               'data-testid': 'selection-status',
               element: 'text',
@@ -310,10 +314,6 @@ export function App() {
             {
               id: 'experimental-features',
               component: ExperimentalFeaturesMenu,
-            },
-            {
-              id: 'zookeeper-credits',
-              component: ZookeeperCreditsMenu,
             },
             ...defaultLocalStatusBarItems,
           ]}
