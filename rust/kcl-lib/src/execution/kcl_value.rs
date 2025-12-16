@@ -737,11 +737,11 @@ impl KclValue {
             _ => return None,
         };
 
-        if value.len() != 2 {
+        let [x, y] = value.as_slice() else {
             return None;
-        }
-        let x = value[0].as_ty_f64()?;
-        let y = value[1].as_ty_f64()?;
+        };
+        let x = x.as_ty_f64()?;
+        let y = y.as_ty_f64()?;
         Some([x, y])
     }
 
@@ -751,12 +751,12 @@ impl KclValue {
             _ => return None,
         };
 
-        if value.len() != 3 {
+        let [x, y, z] = value.as_slice() else {
             return None;
-        }
-        let x = value[0].as_ty_f64()?;
-        let y = value[1].as_ty_f64()?;
-        let z = value[2].as_ty_f64()?;
+        };
+        let x = x.as_ty_f64()?;
+        let y = y.as_ty_f64()?;
+        let z = z.as_ty_f64()?;
         Some([x, y, z])
     }
 

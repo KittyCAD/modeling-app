@@ -495,6 +495,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::parallel(e, a)),
             StdFnProps::default("std::sketch2::parallel"),
         ),
+        ("sketch2", "perpendicular") => (
+            |e, a| Box::pin(crate::std::constraints::perpendicular(e, a)),
+            StdFnProps::default("std::sketch2::perpendicular"),
+        ),
         ("sketch2", "vertical") => (
             |e, a| Box::pin(crate::std::constraints::vertical(e, a)),
             StdFnProps::default("std::sketch2::vertical"),
