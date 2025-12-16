@@ -674,12 +674,27 @@ pub struct Sketch {
     #[serde(skip)]
     pub meta: Vec<Metadata>,
     /// If not given, defaults to true.
-    #[serde(default = "very_true", skip_serializing_if = "is_true")]
-    pub is_closed: bool,
+    #[serde(default = "very_true", skip_serializing_if = "ProfileClosed::is_closed")]
+    pub is_closed: ProfileClosed,
 }
 
-fn is_true(b: &bool) -> bool {
-    *b
+/// Is the profile open or closed?
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+pub enum ProfileClosed {
+    No,
+    Implicitly,
+    Explicitly,
+}
+
+impl ProfileClosed {
+    fn is_closed(&self) -> bool {
+        match self {
+            ProfileClosed::No => false,
+            ProfileClosed::Implicitly => true,
+            ProfileClosed::Explicitly => true,
+        }
+    }
 }
 
 impl Sketch {
@@ -715,6 +730,18 @@ impl Sketch {
                 cmd_id: exec_state.next_uuid().into(),
             },
         ]
+    }
+
+    pub(crate) fn close_implicitly(&mut self) {
+        self.is_closed = ProfileClosed::Implicitly;
+    }
+
+    pub(crate) fn close_explicitly(&mut self) {
+        self.is_closed = ProfileClosed::Explicitly;
+    }
+
+    pub(crate) fn is_open(&self) -> bool {
+        !self.is_closed.is_closed()
     }
 }
 

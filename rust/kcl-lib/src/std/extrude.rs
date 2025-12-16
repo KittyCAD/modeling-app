@@ -104,7 +104,7 @@ async fn inner_extrude(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     let body_type = body_type.unwrap_or_default();
-    if let Some(open_profile) = sketches.iter().find(|sk| !sk.is_closed)
+    if let Some(open_profile) = sketches.iter().find(|sk| sk.is_open())
         && matches!(body_type, BodyType::Solid)
     {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -410,7 +410,7 @@ pub(crate) async fn do_post_extrude<'a>(
     let mut sketch = sketch.clone();
     match body_type {
         BodyType::Solid => {
-            sketch.is_closed = true;
+            sketch.is_closed = crate::execution::ProfileClosed::Explicitly;
         }
         BodyType::Surface => {}
     }

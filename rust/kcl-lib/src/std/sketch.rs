@@ -22,7 +22,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
-        Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
+        ProfileClosed, Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -388,7 +388,7 @@ async fn straight_line(
 
     let mut new_sketch = sketch;
     if loops_back_to_start {
-        new_sketch.is_closed = true;
+        new_sketch.close_implicitly();
     }
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
@@ -1218,7 +1218,7 @@ pub(crate) async fn inner_start_profile(
             Default::default()
         },
         start: current_path,
-        is_closed: false,
+        is_closed: ProfileClosed::No,
     };
     Ok(sketch)
 }
@@ -1275,7 +1275,7 @@ pub(crate) async fn inner_close(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    if sketch.is_closed {
+    if matches!(sketch.is_closed, ProfileClosed::Explicitly) {
         exec_state.warn(
             crate::CompilationError {
                 source_range: args.source_range,
@@ -1335,7 +1335,7 @@ pub(crate) async fn inner_close(
         );
     }
 
-    new_sketch.is_closed = true;
+    new_sketch.is_closed = ProfileClosed::Explicitly;
 
     Ok(new_sketch)
 }
