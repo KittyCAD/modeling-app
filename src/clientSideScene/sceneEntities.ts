@@ -2958,18 +2958,7 @@ export class SceneEntities {
     }
 
     if (!snappedToTangent) {
-      // Snap to axes
-      snappedPoint = [
-        intersectsYAxis ? 0 : snappedPoint[0],
-        intersectsXAxis ? 0 : snappedPoint[1],
-      ] as const
-
-      // Snap to grid
-      ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
-        snappedPoint,
-        mouseEvent
-      ))
-
+      // Highest priority: try snapping to profile start to close it
       if (sketchEntryNodePath) {
         const snappedToProfileStartResult = this.maybeSnapToProfileStart(
           snappedPoint,
@@ -2978,6 +2967,37 @@ export class SceneEntities {
         if (snappedToProfileStartResult.snappedToProfileStart) {
           snappedToProfileStart = true
           snappedPoint = snappedToProfileStartResult.point
+        }
+      }
+      if (!snappedToProfileStart) {
+        // If snapping to profileStart didn't occur, try snapping to axes, grid
+
+        // Snap to axes
+        snappedPoint = [
+          intersectsYAxis ? 0 : snappedPoint[0],
+          intersectsXAxis ? 0 : snappedPoint[1],
+        ] as const
+
+        // Snap to grid
+        ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
+          snappedPoint,
+          mouseEvent
+        ))
+
+        if (sketchEntryNodePath) {
+          // After snapping to axis/grid, try snapping to profileStart AGAIN, this is because the newly snapped
+          // point might now line up with a profileStart, in which case we want to close the shape.
+          // This happens when profileStart is too far to snap from the mouse poisition, but after snapping to grid
+          // it's now close enough.
+
+          const snappedToProfileStartResult = this.maybeSnapToProfileStart(
+            snappedPoint,
+            sketchEntryNodePath
+          )
+          if (snappedToProfileStartResult.snappedToProfileStart) {
+            snappedToProfileStart = true
+            snappedPoint = snappedToProfileStartResult.point
+          }
         }
       }
     }
