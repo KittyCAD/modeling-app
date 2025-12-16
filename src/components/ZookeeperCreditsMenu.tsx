@@ -1,8 +1,7 @@
 import { Popover } from '@headlessui/react'
 
-import { billingActor, useLayout } from '@src/lib/singletons'
+import { billingActor } from '@src/lib/singletons'
 import Tooltip from '@src/components/Tooltip'
-import { DefaultLayoutPaneID, getOpenPanes } from '@src/lib/layout'
 import type { BillingContext } from '@src/machines/billingMachine'
 import {
   BillingDialog,
@@ -12,12 +11,13 @@ import {
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { useSelector } from '@xstate/react'
+import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 
 function BillingStatusBarItem(props: { billingContext: BillingContext }) {
   return (
     <Popover className="relative flex items-stretch">
       <Popover.Button
-        className="m-0 p-0 border-0 flex items-stretch"
+        className={`${defaultStatusBarItemClassNames} m-0 !p-0 flex items-stretch`}
         data-testid="billing-remaining-bar"
       >
         <BillingRemaining
@@ -54,10 +54,5 @@ export function ZookeeperCreditsMenu() {
   const billingContext = useSelector(billingActor, (actor) => {
     return actor.context
   })
-  const layout = useLayout()
-  return getOpenPanes({ rootLayout: layout }).includes(
-    DefaultLayoutPaneID.TTC
-  ) ? (
-    <BillingStatusBarItem billingContext={billingContext} />
-  ) : null
+  return <BillingStatusBarItem billingContext={billingContext} />
 }
