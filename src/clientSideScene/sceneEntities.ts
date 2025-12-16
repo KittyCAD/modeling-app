@@ -690,14 +690,20 @@ export class SceneEntities {
         const { intersectionPoint } = args
         const snappedPoint = intersectionPoint.twoD.clone()
         const snapToGrid = this.getSettings?.().modeling.snapToGrid.current
+
         if (!args.intersects.length && !snapToGrid) {
           return
         }
-        const axisIntersection = args.intersects.find(
-          (sceneObject) =>
-            sceneObject.object.name === X_AXIS ||
-            sceneObject.object.name === Y_AXIS
-        )
+
+        let intersectsXY = { x: false, y: false }
+        args.intersects.forEach((intersect) => {
+          const parent = getParentGroup(intersect.object, [X_AXIS, Y_AXIS])
+          if (parent?.name === X_AXIS) {
+            intersectsXY.x = true
+          } else if (parent?.name === Y_AXIS) {
+            intersectsXY.y = true
+          }
+        })
 
         const arrowHead = getParentGroup(args.intersects[0]?.object, [
           ARROWHEAD,
@@ -710,7 +716,7 @@ export class SceneEntities {
         )
 
         if (
-          !axisIntersection &&
+          !(intersectsXY.x || intersectsXY.y) &&
           !(
             parent?.userData?.isLastInProfile &&
             (arrowHead || parent?.name === PROFILE_START)
@@ -719,41 +725,29 @@ export class SceneEntities {
         ) {
           return
         }
-        // We're hovering over an axis, so we should show a draft point (or snapToGrid is enabled)
-        let intersectsXY = { x: false, y: false }
-        args.intersects.forEach((intersect) => {
-          const parent = getParentGroup(intersect.object, [X_AXIS, Y_AXIS])
-          if (parent?.name === X_AXIS) {
-            intersectsXY.x = true
-          } else if (parent?.name === Y_AXIS) {
-            intersectsXY.y = true
-          }
-        })
-        if (intersectsXY.x && intersectsXY.y) {
-          snappedPoint.setComponent(0, 0)
-          snappedPoint.setComponent(1, 0)
-        } else if (intersectsXY.x) {
-          snappedPoint.setComponent(1, 0)
-        } else if (intersectsXY.y) {
-          snappedPoint.setComponent(0, 0)
-        } else if (arrowHead) {
+
+        if (arrowHead) {
           snappedPoint.set(arrowHead.position.x, arrowHead.position.y)
         } else if (parent?.name === PROFILE_START) {
           snappedPoint.set(parent.position.x, parent.position.y)
-        } else if (snapToGrid) {
-          const snappedToGrid = this.snapToGrid(
-            [snappedPoint.x, snappedPoint.y],
-            args.mouseEvent
-          ).point
-          snappedPoint.set(snappedToGrid[0], snappedToGrid[1])
-          this.positionDraftPoint({
-            snappedPoint,
-            origin: sketchDetails.origin,
-            yAxis: sketchDetails.yAxis,
-            zAxis: sketchDetails.zAxis,
-          })
+        } else {
+          if (intersectsXY.x) {
+            snappedPoint.setComponent(1, 0)
+          } else if (intersectsXY.y) {
+            snappedPoint.setComponent(0, 0)
+          }
+
+          if (snapToGrid) {
+            const snappedToGrid = this.snapToGrid(
+              [snappedPoint.x, snappedPoint.y],
+              args.mouseEvent
+            ).point
+            snappedPoint.set(snappedToGrid[0], snappedToGrid[1])
+          }
         }
 
+        // Position the draft point to indicate there was a snapping. If the handler returns early and doesn't reach
+        // this point then the draft point will not be rendered,
         this.positionDraftPoint({
           snappedPoint,
           origin: sketchDetails.origin,
