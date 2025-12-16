@@ -1142,6 +1142,15 @@ impl Node<SketchBlock> {
                 }
             }
         };
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::warn_1(
+            &format!(
+                "******* jtran: exec_ast; initial_guesses={:?}, solve_outcome={:?}",
+                &initial_guesses,
+                &solve_outcome
+            )
+            .into(),
+        );
         #[cfg(not(feature = "artifact-graph"))]
         let _ = solve_analysis;
         // Propagate warnings.
