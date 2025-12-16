@@ -345,7 +345,7 @@ export class ConnectionManager extends EventTarget {
     const onEngineConnectionOpened = createOnEngineConnectionOpened({
       rustContext: this.rustContext,
       settings: this.settings,
-      jsAppSettings: await jsAppSettings(),
+      jsAppSettings: await jsAppSettings(this.rustContext.settingsActor),
       path: this.kclManager?.currentFilePath || '',
       sendSceneCommand: this.sendSceneCommand.bind(this),
       setTheme: this.setTheme.bind(this),

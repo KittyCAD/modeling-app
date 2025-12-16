@@ -112,7 +112,7 @@ const attemptToConnectToEngine = async ({
 const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   sceneInfra,
 }: { sceneInfra: SceneInfra }) => {
-  const settings = await jsAppSettings()
+  const settings = await jsAppSettings(rustContext.settingsActor)
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',
     message: 'rustContext.clearSceneAndBustCache()',

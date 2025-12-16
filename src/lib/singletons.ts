@@ -9,12 +9,15 @@ import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, SnapshotFrom } from 'xstate'
-import { assign, createActor, setup, spawnChild } from 'xstate'
+import { assign, createActor, fromPromise, setup, spawnChild } from 'xstate'
 
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
-import { createSettings } from '@src/lib/settings/initialSettings'
+import {
+  createSettings,
+  type SettingsType,
+} from '@src/lib/settings/initialSettings'
 import type { AppMachineContext, AppMachineEvent } from '@src/lib/types'
 import { authMachine } from '@src/machines/authMachine'
 import {
@@ -22,7 +25,10 @@ import {
   billingMachine,
 } from '@src/machines/billingMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
-import { settingsMachine } from '@src/machines/settingsMachine'
+import {
+  settingsMachine,
+  type SettingsMachineContext,
+} from '@src/machines/settingsMachine'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
 import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -30,9 +36,23 @@ import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { initPromise } from '@src/lang/wasmUtils'
+import { saveSettings } from '@src/lib/settings/settingsUtils'
+import { getResolvedTheme, getOppositeTheme } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+
+const dummySettingsActor = createActor(settingsMachine, {
+  input: createSettings(),
+})
 
 export const engineCommandManager = new ConnectionManager()
-export const rustContext = new RustContext(engineCommandManager, initPromise)
+export const rustContext = new RustContext(
+  engineCommandManager,
+  initPromise,
+  // HACK: convert settings to not be an XState actor to prevent the need for
+  // this dummy-with late binding of the real thing.
+  // TODO: https://github.com/KittyCAD/modeling-app/issues/9356
+  dummySettingsActor
+)
 
 declare global {
   interface Window {
@@ -125,7 +145,93 @@ if (typeof window !== 'undefined') {
 const { AUTH, SETTINGS, SYSTEM_IO, COMMAND_BAR, BILLING } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
-  [SETTINGS]: settingsMachine,
+  [SETTINGS]: settingsMachine.provide({
+    actors: {
+      persistSettings: fromPromise<
+        undefined,
+        {
+          doNotPersist: boolean
+          context: SettingsMachineContext
+          toastCallback?: () => void
+        }
+      >(async ({ input }) => {
+        // Without this, when a user changes the file, it'd
+        // create a detection loop with the file-system watcher.
+        if (input.doNotPersist) return
+
+        // This flag is not used by the settings file watcher in RouteProvider so it doesn't do anything..
+        kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+        const { currentProject, ...settings } = input.context
+
+        await saveSettings(settings, currentProject?.path)
+
+        if (input.toastCallback) {
+          input.toastCallback()
+        }
+      }),
+    },
+    actions: {
+      setEngineTheme: ({ context }) => {
+        engineCommandManager
+          .setTheme(context.app.theme.current)
+          .catch(reportRejection)
+      },
+      setClientTheme: ({ context }) => {
+        const resolvedTheme = getResolvedTheme(context.app.theme.current)
+        const opposingTheme = getOppositeTheme(context.app.theme.current)
+        sceneInfra.theme = opposingTheme
+        sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+        kclManager.setEditorTheme(resolvedTheme)
+      },
+      setAllowOrbitInSketchMode: ({ context }) => {
+        sceneInfra.camControls._setting_allowOrbitInSketchMode =
+          context.app.allowOrbitInSketchMode.current
+        // ModelingMachineProvider will do a use effect to trigger the camera engine sync
+      },
+      'Execute AST': ({ context, event }) => {
+        try {
+          const relevantSetting = (s: SettingsType) => {
+            return (
+              s.modeling?.defaultUnit?.current !==
+                context.modeling.defaultUnit.current ||
+              s.modeling.showScaleGrid.current !==
+                context.modeling.showScaleGrid.current ||
+              s.modeling?.highlightEdges.current !==
+                context.modeling.highlightEdges.current
+            )
+          }
+
+          const allSettingsIncludesUnitChange =
+            event.type === 'Set all settings' &&
+            relevantSetting(event.settings || context)
+
+          const shouldExecute =
+            kclManager !== undefined &&
+            (event.type === 'set.modeling.defaultUnit' ||
+              event.type === 'set.modeling.showScaleGrid' ||
+              event.type === 'set.modeling.highlightEdges' ||
+              event.type === 'Reset settings' ||
+              allSettingsIncludesUnitChange)
+
+          if (shouldExecute) {
+            // Unit changes requires a re-exec of code
+            kclManager.executeCode().catch(reportRejection)
+          } else {
+            // For any future logging we'd like to do
+            // console.log(
+            //   'Not re-executing AST because the settings change did not affect the code interpretation'
+            // )
+          }
+        } catch (e) {
+          console.error('Error executing AST after settings change', e)
+        }
+      },
+      setEngineCameraProjection: ({ context }) => {
+        const newCurrentProjection = context.modeling.cameraProjection.current
+        sceneInfra.camControls?.setEngineCameraProjection(newCurrentProjection)
+      },
+    },
+  }),
   [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
   [COMMAND_BAR]: commandBarMachine,
   [BILLING]: billingMachine,
@@ -216,6 +322,10 @@ export const useUser = () =>
 export const settingsActor = appActor.system.get(SETTINGS) as ActorRefFrom<
   (typeof appMachineActors)[typeof SETTINGS]
 >
+
+// HACK: late attaching settings actor to this manager
+rustContext.settingsActor = settingsActor
+
 export const getSettings = () => {
   const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
   return settings

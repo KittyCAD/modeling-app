@@ -1,6 +1,6 @@
 import decamelize from 'decamelize'
 import toast from 'react-hot-toast'
-import type { AnyActorRef } from 'xstate'
+import type { ActorRefFrom, AnyActorRef } from 'xstate'
 import {
   assign,
   enqueueActions,
@@ -32,23 +32,21 @@ import {
   configurationToSettingsPayload,
   loadAndValidateSettings,
   projectConfigurationToSettingsPayload,
-  saveSettings,
   setSettingsAtLevel,
 } from '@src/lib/settings/settingsUtils'
 import {
   Themes,
   darkModeMatcher,
-  getOppositeTheme,
-  getResolvedTheme,
   getSystemTheme,
   setThemeClass,
 } from '@src/lib/theme'
-import { reportRejection } from '@src/lib/trap'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 
-type SettingsMachineContext = SettingsType & {
+export type SettingsMachineContext = SettingsType & {
   currentProject?: Project
 }
+
+export type SettingsActorType = ActorRefFrom<typeof settingsMachine>
 
 export const settingsMachine = setup({
   types: {
@@ -85,22 +83,9 @@ export const settingsMachine = setup({
         doNotPersist: boolean
         context: SettingsMachineContext
         toastCallback?: () => void
-        rootContext: any
       }
-    >(async ({ input }) => {
-      // Without this, when a user changes the file, it'd
-      // create a detection loop with the file-system watcher.
-      if (input.doNotPersist || !input.rootContext) return
-
-      // This flag is not used by the settings file watcher in RouteProvider so it doesn't do anything..
-      input.rootContext.kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-      const { currentProject, ...settings } = input.context
-
-      await saveSettings(settings, currentProject?.path)
-
-      if (input.toastCallback) {
-        input.toastCallback()
-      }
+    >(async () => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
     }),
     loadUserSettings: fromPromise<SettingsMachineContext, undefined>(
       async () => {
@@ -197,39 +182,14 @@ export const settingsMachine = setup({
     }),
   },
   actions: {
-    setEngineTheme: ({ context, self }) => {
-      const rootContext = self.system.get('root')?.getSnapshot().context
-      const engineCommandManager = rootContext?.engineCommandManager
-      if (engineCommandManager && context.app.theme.current) {
-        engineCommandManager
-          .setTheme(context.app.theme.current)
-          .catch(reportRejection)
-      }
+    setEngineTheme: () => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
     },
-    setClientTheme: ({ context, self }) => {
-      const rootContext = self.system.get('root')?.getSnapshot().context
-      const sceneInfra = rootContext?.sceneInfra
-      const sceneEntitiesManager = rootContext?.sceneEntitiesManager
-      const kclManager = rootContext?.kclManager
-
-      if (!sceneInfra || !sceneEntitiesManager || !kclManager) {
-        return
-      }
-      const resolvedTheme = getResolvedTheme(context.app.theme.current)
-      const opposingTheme = getOppositeTheme(context.app.theme.current)
-      sceneInfra.theme = opposingTheme
-      sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
-      kclManager.setEditorTheme(resolvedTheme)
+    setClientTheme: () => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
     },
-    setAllowOrbitInSketchMode: ({ context, self }) => {
-      const rootContext = self.system.get('root')?.getSnapshot().context
-      const sceneInfra = rootContext?.sceneInfra
-      if (!sceneInfra?.camControls) {
-        return
-      }
-      sceneInfra.camControls._setting_allowOrbitInSketchMode =
-        context.app.allowOrbitInSketchMode.current
-      // ModelingMachineProvider will do a use effect to trigger the camera engine sync
+    setAllowOrbitInSketchMode: () => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
     },
     toastSuccess: ({ event }) => {
       if (!('data' in event)) {
@@ -256,47 +216,8 @@ export const settingsMachine = setup({
         id: `${event.type}.success`,
       })
     },
-    'Execute AST': ({ context, event, self }) => {
-      const rootContext = self.system.get('root')?.getSnapshot().context
-      const kclManager = rootContext?.kclManager
-      try {
-        const relevantSetting = (s: typeof settings) => {
-          return (
-            s.modeling?.defaultUnit?.current !==
-              context.modeling.defaultUnit.current ||
-            s.modeling.showScaleGrid.current !==
-              context.modeling.showScaleGrid.current ||
-            s.modeling?.highlightEdges.current !==
-              context.modeling.highlightEdges.current
-          )
-        }
-
-        const allSettingsIncludesUnitChange =
-          event.type === 'Set all settings' &&
-          relevantSetting(event.settings || context)
-        const resetSettingsIncludesUnitChange =
-          event.type === 'Reset settings' && relevantSetting(settings)
-
-        const shouldExecute =
-          kclManager !== undefined &&
-          (event.type === 'set.modeling.defaultUnit' ||
-            event.type === 'set.modeling.showScaleGrid' ||
-            event.type === 'set.modeling.highlightEdges' ||
-            allSettingsIncludesUnitChange ||
-            resetSettingsIncludesUnitChange)
-
-        if (shouldExecute) {
-          // Unit changes requires a re-exec of code
-          kclManager.executeCode().catch(reportRejection)
-        } else {
-          // For any future logging we'd like to do
-          // console.log(
-          //   'Not re-executing AST because the settings change did not affect the code interpretation'
-          // )
-        }
-      } catch (e) {
-        console.error('Error executing AST after settings change', e)
-      }
+    'Execute AST': () => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
     },
     /**
      * Update the --cursor-color CSS variable
@@ -367,11 +288,8 @@ export const settingsMachine = setup({
         currentTheme === Themes.System ? getSystemTheme() : currentTheme
       )
     },
-    setEngineCameraProjection: ({ context, self }) => {
-      const newCurrentProjection = context.modeling.cameraProjection.current
-      const rootContext = self.system.get('root')?.getSnapshot().context
-      const sceneInfra = rootContext?.sceneInfra
-      sceneInfra?.camControls?.setEngineCameraProjection(newCurrentProjection)
+    setEngineCameraProjection: () => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
     },
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
       type: 'update.themeWatcher',
@@ -591,14 +509,12 @@ export const settingsMachine = setup({
               doNotPersist: event.doNotPersist ?? false,
               context,
               toastCallback: event.data.toastCallback,
-              rootContext: self.system.get('root')?.getSnapshot().context,
             }
           }
 
           return {
             doNotPersist: event.doNotPersist ?? false,
             context,
-            rootContext: self.system.get('root')?.getSnapshot().context,
           }
         },
       },

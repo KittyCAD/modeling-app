@@ -607,7 +607,7 @@ export const ModelingMachineProvider = ({
 
                 await rustContext.hackSetProgram(
                   kclManager.ast,
-                  await jsAppSettings()
+                  await jsAppSettings(rustContext.settingsActor)
                 )
                 const newSketchResult = await rustContext.newSketch(
                   0, // projectId - using 0 as placeholder
@@ -695,7 +695,7 @@ export const ModelingMachineProvider = ({
               } else {
                 await rustContext.hackSetProgram(
                   kclManager.ast,
-                  await jsAppSettings()
+                  await jsAppSettings(rustContext.settingsActor)
                 )
                 editSketchSceneGraph = await rustContext.editSketch(
                   0, // projectId

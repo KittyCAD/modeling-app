@@ -1,7 +1,6 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import { default_app_settings } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { NIL as uuidNIL, v4 } from 'uuid'
 
 import {
@@ -26,7 +25,7 @@ import {
   writeProjectSettingsFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { Setting } from '@src/lib/settings/initialSettings'
+import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
 import {
   createSettings,
   type settings,
@@ -38,6 +37,7 @@ import type {
 import { appThemeToTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 type OmitNull<T> = T extends null ? undefined : T
 const toUndefinedIfNull = (a: any): OmitNull<any> =>
@@ -684,14 +684,14 @@ export function getSettingInputType(setting: Setting) {
   return typeof setting.default as 'string' | 'boolean' | 'number'
 }
 
-export const jsAppSettings = async (): Promise<DeepPartial<Configuration>> => {
-  let jsAppSettings = default_app_settings()
-  // TODO: https://github.com/KittyCAD/modeling-app/issues/6445
-  const settings = await import('@src/lib/singletons').then((module) =>
-    module.getSettings()
-  )
-  if (settings) {
-    jsAppSettings = getAllCurrentSettings(settings)
-  }
-  return settingsPayloadToConfiguration(jsAppSettings)
+export function getSettingsFromActorContext(
+  s: SettingsActorType
+): SettingsType {
+  const { currentProject: _, ...settings } = s.getSnapshot().context
+  return settings
+}
+
+export async function jsAppSettings(s: SettingsType | SettingsActorType) {
+  const settings = 'send' in s ? getSettingsFromActorContext(s) : s
+  return settingsPayloadToConfiguration(getAllCurrentSettings(settings))
 }

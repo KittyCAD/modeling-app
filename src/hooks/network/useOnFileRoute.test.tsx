@@ -10,6 +10,9 @@ import { Connection } from '@src/network/connection'
 import { expect, vi, describe, test } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { createActor } from 'xstate'
+import { settingsMachine } from '@src/machines/settingsMachine'
+import { createSettings } from '@src/lib/settings/initialSettings'
 
 const tick = () => {
   return new Promise((resolve, reject) => {
@@ -59,7 +62,14 @@ describe('useOnFileRoute', () => {
         handleMessage: () => {},
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
-      const rustContext = new RustContext(engineCommandManager, initWasmMock)
+      const settingsActor = createActor(settingsMachine, {
+        input: createSettings(),
+      })
+      const rustContext = new RustContext(
+        engineCommandManager,
+        initWasmMock,
+        settingsActor
+      )
       const sceneInfra = new SceneInfra(engineCommandManager)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
@@ -104,7 +114,14 @@ describe('useOnFileRoute', () => {
         handleMessage: () => {},
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
-      const rustContext = new RustContext(engineCommandManager, initWasmMock)
+      const settingsActor = createActor(settingsMachine, {
+        input: createSettings(),
+      })
+      const rustContext = new RustContext(
+        engineCommandManager,
+        initWasmMock,
+        settingsActor
+      )
       const sceneInfra = new SceneInfra(engineCommandManager)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
@@ -161,7 +178,14 @@ describe('useOnFileRoute', () => {
         handleMessage: () => {},
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
-      const rustContext = new RustContext(engineCommandManager, initWasmMock)
+      const settingsActor = createActor(settingsMachine, {
+        input: createSettings(),
+      })
+      const rustContext = new RustContext(
+        engineCommandManager,
+        initWasmMock,
+        settingsActor
+      )
       const sceneInfra = new SceneInfra(engineCommandManager)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
@@ -220,7 +244,14 @@ describe('useOnFileRoute', () => {
         handleMessage: () => {},
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
-      const rustContext = new RustContext(engineCommandManager, initWasmMock)
+      const settingsActor = createActor(settingsMachine, {
+        input: createSettings(),
+      })
+      const rustContext = new RustContext(
+        engineCommandManager,
+        initWasmMock,
+        settingsActor
+      )
       const sceneInfra = new SceneInfra(engineCommandManager)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
