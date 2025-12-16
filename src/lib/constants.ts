@@ -268,7 +268,6 @@ export const OAUTH2_DEVICE_CLIENT_ID = '2af127fb-e14e-400a-9c57-a9ed08d1a5b7'
  */
 export type EnvironmentConfiguration = {
   domain: string // same name as the file development for development.json
-  pool: string // can be the empty string to indicate no pool for engine
   token: string // authentication token from signing in. Can be empty string
   kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
 }
@@ -279,7 +278,6 @@ export type EnvironmentConfiguration = {
  */
 export type EnvironmentConfigurationRuntime = {
   domain: string // same name as the file development for development.json
-  pool: string // can be the empty string to indicate no pool for engine
   kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
 }
 

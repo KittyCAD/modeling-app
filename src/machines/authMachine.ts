@@ -2,7 +2,6 @@ import type { User } from '@kittycad/lib'
 import { users, oauth2 } from '@kittycad/lib'
 import env, {
   updateEnvironment,
-  updateEnvironmentPool,
   updateEnvironmentKittycadWebSocketUrl,
   generateDomainsFromBaseDomain,
 } from '@src/env'
@@ -15,7 +14,6 @@ import {
 import { readEnvironmentConfigurationKittycadWebSocketUrl } from '@src/lib/desktop'
 import {
   listAllEnvironments,
-  readEnvironmentConfigurationPool,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
   writeEnvironmentConfigurationToken,
@@ -179,13 +177,6 @@ async function getUser(input: { token?: string }) {
       env().VITE_ZOO_BASE_DOMAIN ||
       ''
     updateEnvironment(environment)
-
-    // Update the pool
-    const cachedPool = await readEnvironmentConfigurationPool(
-      window.electron,
-      environment
-    )
-    updateEnvironmentPool(environment, cachedPool)
 
     // Update the WebSocket URL override
     const cachedKittycadWebSocketUrl =

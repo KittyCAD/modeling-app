@@ -810,24 +810,6 @@ export const writeEnvironmentConfigurationToken = async (
   return result
 }
 
-export const writeEnvironmentConfigurationPool = async (
-  electron: IElectronAPI,
-  environmentName: string,
-  pool: string
-) => {
-  pool = pool.trim()
-  const path = await getEnvironmentConfigurationPath(electron, environmentName)
-  const environmentConfiguration = await getEnvironmentConfigurationObject(
-    electron,
-    environmentName
-  )
-  environmentConfiguration.pool = pool
-  const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await electron.writeFile(path, requestedConfiguration)
-  console.log(`wrote ${environmentName}.json to disk`)
-  return result
-}
-
 export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
   electron: IElectronAPI,
   environmentName: string,
@@ -857,24 +839,11 @@ export const getEnvironmentConfigurationObject = async (
   if (environmentConfiguration === null) {
     const initialConfiguration: EnvironmentConfiguration = {
       token: '',
-      pool: '',
       domain: environmentName,
     }
     environmentConfiguration = initialConfiguration
   }
   return environmentConfiguration
-}
-
-export const readEnvironmentConfigurationPool = async (
-  electron: IElectronAPI,
-  environmentName: string
-) => {
-  const environmentConfiguration = await readEnvironmentConfigurationFile(
-    electron,
-    environmentName
-  )
-  if (!environmentConfiguration?.pool) return ''
-  return environmentConfiguration.pool.trim()
 }
 
 export const readEnvironmentConfigurationToken = async (

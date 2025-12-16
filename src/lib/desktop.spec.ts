@@ -253,12 +253,11 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       mockElectron.exists.mockImplementation(() => true)
       mockElectron.readFile.mockImplementation(() => {
-        return '{"token":"","pool":"","domain":"dev.zoo.dev"}'
+        return '{"token":"","domain":"dev.zoo.dev"}'
       })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected: EnvironmentConfiguration = {
         domain: 'dev.zoo.dev',
-        pool: '',
         token: '',
       }
       const actual = await readEnvironmentConfigurationFile(
@@ -274,12 +273,11 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       mockElectron.exists.mockImplementation(() => true)
       mockElectron.readFile.mockImplementation(() => {
-        return '{"token":"","pool":"","domain":"zoo.dev"}'
+        return '{"token":"","domain":"zoo.dev"}'
       })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected: EnvironmentConfiguration = {
         domain: 'zoo.dev',
-        pool: '',
         token: '',
       }
       const actual = await readEnvironmentConfigurationFile(
@@ -345,7 +343,7 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       mockElectron.exists.mockImplementation(() => true)
       mockElectron.readFile.mockImplementation(() => {
-        return '{"token":"dog-dog-dog","pool":"","domain":"development"}'
+        return '{"token":"dog-dog-dog","domain":"development"}'
       })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected = 'dog-dog-dog'
@@ -361,7 +359,7 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       mockElectron.exists.mockImplementation(() => true)
       mockElectron.readFile.mockImplementation(() => {
-        return '{"token":"cat-cat-cat","pool":"","domain":"production"}'
+        return '{"token":"cat-cat-cat","domain":"production"}'
       })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected = 'cat-cat-cat'

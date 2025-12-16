@@ -99,7 +99,6 @@ export class ConnectionManager extends EventTarget {
     height: 256,
   }
   settings: SettingsViaQueryString = {
-    pool: null,
     theme: Themes.Dark,
     highlightEdges: true,
     enableSSAO: true,
@@ -141,7 +140,6 @@ export class ConnectionManager extends EventTarget {
     } else {
       // Gotcha: This runs in testing environments
       this.settings = {
-        pool: null,
         theme: Themes.Dark,
         highlightEdges: true,
         enableSSAO: true,

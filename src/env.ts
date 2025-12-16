@@ -19,7 +19,6 @@ export type EnvironmentVariables = {
   readonly VITE_ZOO_API_TOKEN: string | undefined
   readonly VITE_ZOO_SITE_BASE_URL: string | undefined
   readonly VITE_ZOO_SITE_APP_URL: string | undefined
-  readonly POOL: string | undefined
 }
 
 /** Store the environment in memory to be accessed during runtime */
@@ -40,25 +39,10 @@ export const updateEnvironment = (environment: string | null) => {
     } else {
       ENVIRONMENT = {
         domain: environment,
-        pool: '',
       }
     }
   }
   console.log('updating environment', environment)
-}
-
-export const updateEnvironmentPool = (
-  environmentName: string,
-  pool: string
-) => {
-  if (environmentName === '') {
-    console.log('reject updating pool, environment: value is the empty string.')
-    return
-  }
-  if (!ENVIRONMENT) return
-  if (ENVIRONMENT.domain === environmentName) {
-    ENVIRONMENT.pool = pool
-  }
 }
 
 export const updateEnvironmentKittycadWebSocketUrl = (
@@ -82,7 +66,6 @@ const getEnvironmentFromThisFile = (baseDomain: string) => {
   return (
     ENVIRONMENT || {
       domain: baseDomain,
-      pool: '',
       kittycadWebSocketUrl: undefined,
     }
   )
@@ -133,7 +116,6 @@ export default (): EnvironmentVariables => {
     MLEPHANT_WEBSOCKET_URL,
     APP_URL,
   } = generateDomainsFromBaseDomain(BASE_DOMAIN)
-  let pool = ''
 
   /**
    * If you are desktop, see if you have any runtime environment which can be read from disk and
@@ -153,10 +135,10 @@ export default (): EnvironmentVariables => {
     KITTYCAD_WEBSOCKET_URL = environmentDomains.KITTYCAD_WEBSOCKET_URL
     MLEPHANT_WEBSOCKET_URL = environmentDomains.MLEPHANT_WEBSOCKET_URL
     APP_URL = environmentDomains.APP_URL
-    pool = environment && environment.pool ? environment.pool : ''
     BASE_DOMAIN = environment.domain
 
-    // Override WebSocket URL if specified in environment configuration
+    // Allow the environment configuration to override the Engine WebSocket URL
+    // TODO: Determine if this takes priority over .env.development.local
     if (environment.kittycadWebSocketUrl) {
       KITTYCAD_WEBSOCKET_URL = environment.kittycadWebSocketUrl
     }
@@ -190,7 +172,6 @@ export default (): EnvironmentVariables => {
       undefined,
     VITE_ZOO_SITE_BASE_URL: SITE_URL || undefined,
     VITE_ZOO_SITE_APP_URL: APP_URL || undefined,
-    POOL: pool, // TODO: Rename to ENGINE_POOL to be more descriptive
   }
 
   return environmentVariables

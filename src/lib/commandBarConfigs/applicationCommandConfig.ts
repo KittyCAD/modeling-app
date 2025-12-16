@@ -413,6 +413,7 @@ export function createApplicationCommands({
       environment: {
         inputType: 'string',
         required: true,
+        displayName: 'Domain',
       },
     },
   }

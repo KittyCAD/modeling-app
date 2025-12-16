@@ -7,15 +7,10 @@ import type { IElectronAPI } from '@root/interface'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import { updateEnvironment, updateEnvironmentPool } from '@src/env'
+import { updateEnvironment } from '@src/env'
 import env from '@src/env'
 import { APP_NAME } from '@src/lib/constants'
-import {
-  readEnvironmentConfigurationPool,
-  readEnvironmentFile,
-  writeEnvironmentConfigurationPool,
-  writeEnvironmentFile,
-} from '@src/lib/desktop'
+import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { authActor, useSettings } from '@src/lib/singletons'
@@ -50,7 +45,6 @@ const SignIn = () => {
   const [selectedEnvironment, setSelectedEnvironment] = useState(
     lastSelectedEnvironmentName
   )
-  const [pool, setPool] = useState(env().POOL || '')
 
   // See if the user added a real URL if they did, auto take the hostname!
   const setSelectedEnvironmentFormatter = (requestedEnvironment: string) => {
@@ -70,15 +64,8 @@ const SignIn = () => {
             return environment
           }
         })
-        .then((environment) => {
-          const defaultOrDiskEnvironment = environment || selectedEnvironment
-          if (defaultOrDiskEnvironment) {
-            readEnvironmentConfigurationPool(electron, defaultOrDiskEnvironment)
-              .then((pool) => {
-                setPool(pool)
-              })
-              .catch(reportRejection)
-          }
+        .then(() => {
+          // Environment loaded from disk
         })
         .catch(reportRejection)
     }
@@ -107,7 +94,6 @@ const SignIn = () => {
 
   const signInDesktop = async (electron: IElectronAPI) => {
     updateEnvironment(selectedEnvironment)
-    updateEnvironmentPool(selectedEnvironment, pool)
 
     // We want to invoke our command to login via device auth.
     const userCodeToDisplay = await electron
@@ -130,11 +116,6 @@ const SignIn = () => {
     }
 
     writeEnvironmentFile(electron, selectedEnvironment).catch(reportRejection)
-    writeEnvironmentConfigurationPool(
-      electron,
-      selectedEnvironment,
-      pool
-    ).catch(reportRejection)
     authActor.send({ type: 'Log in', token })
   }
 
@@ -204,8 +185,6 @@ const SignIn = () => {
                     </button>
                     {isDesktop() && (
                       <AdvancedSignInOptions
-                        pool={pool}
-                        setPool={setPool}
                         selectedEnvironment={selectedEnvironment}
                         setSelectedEnvironment={setSelectedEnvironmentFormatter}
                       />
