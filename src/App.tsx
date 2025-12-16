@@ -244,36 +244,31 @@ export function App() {
     }
   }, [])
 
+  const experimentalFeaturesLevel =
+    kclManager.fileSettings.experimentalFeatures ??
+    DEFAULT_EXPERIMENTAL_FEATURES
   const experimentalFeaturesLocalStatusBarItems: StatusBarItemType[] =
-    useMemo(() => {
-      const level =
-        kclManager.fileSettings.experimentalFeatures ??
-        DEFAULT_EXPERIMENTAL_FEATURES
-      return level.type === 'Deny'
-        ? []
-        : [
+    experimentalFeaturesLevel.type !== 'Deny'
+      ? [
+          {
+            id: 'experimental-features',
+            component: ExperimentalFeaturesMenu,
+          },
+        ]
+      : []
+
+  const zookeeperLocalStatusBarItems: StatusBarItemType[] = useMemo(
+    () =>
+      getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.TTC)
+        ? [
             {
-              id: 'experimental-features',
-              component: ExperimentalFeaturesMenu,
+              id: 'zookeeper-credits',
+              component: ZookeeperCreditsMenu,
             },
           ]
-    }, [])
-
-  const zookeeperLocalStatusBarItems: StatusBarItemType[] = useMemo(() => {
-    const zookeeperPaneOpen = getOpenPanes({ rootLayout: layout }).includes(
-      DefaultLayoutPaneID.TTC
-    )
-    if (zookeeperPaneOpen) {
-      return [
-        {
-          id: 'zookeeper-credits',
-          component: ZookeeperCreditsMenu,
-        },
-      ]
-    }
-
-    return []
-  }, [layout])
+        : [],
+    [layout]
+  )
 
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
