@@ -1057,8 +1057,8 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
         "originalId": "[uuid]",
         "units": "mm"
       },
-      "startCapId": null,
-      "endCapId": "[uuid]",
+      "startCapId": "[uuid]",
+      "endCapId": null,
       "units": "mm",
       "sectional": false
     }
