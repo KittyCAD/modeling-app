@@ -145,4 +145,3 @@ export const testAreaLibrary = Object.freeze({
   variables: testArea('Variables'),
   debug: testArea('Debug'),
 } satisfies Record<AreaType, AreaTypeDefinition>)
-
