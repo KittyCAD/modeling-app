@@ -274,11 +274,16 @@ export function App() {
     [layout]
   )
 
-  const undoRedoButtons = useMemo(() => <UndoRedoButtons
-    data-testid="app-header-undo-redo"
-    kclManager={kclManager}
-    className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
-  />, [])
+  const undoRedoButtons = useMemo(
+    () => (
+      <UndoRedoButtons
+        data-testid="app-header-undo-redo"
+        kclManager={kclManager}
+        className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
+      />
+    ),
+    []
+  )
 
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">

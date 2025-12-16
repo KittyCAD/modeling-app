@@ -119,73 +119,76 @@ interface LayoutRootNodeProps {
   enableContextMenus?: boolean
 }
 
-export const LayoutRootNode = memo(function LayoutRootNode({
-  areaLibrary,
-  actionLibrary,
-  layout,
-  getLayout,
-  setLayout,
-  layoutName = 'default',
-  enableContextMenus = false,
-}: LayoutRootNodeProps) {
-  const getLayoutWithFallback = () => getLayout() || defaultLayout
-  useEffect(() => {
-    saveLayout({ layout, layoutName })
-  }, [layout, layoutName])
+export const LayoutRootNode = memo(
+  function LayoutRootNode({
+    areaLibrary,
+    actionLibrary,
+    layout,
+    getLayout,
+    setLayout,
+    layoutName = 'default',
+    enableContextMenus = false,
+  }: LayoutRootNodeProps) {
+    const getLayoutWithFallback = () => getLayout() || defaultLayout
+    useEffect(() => {
+      saveLayout({ layout, layoutName })
+    }, [layout, layoutName])
 
-  function updateSplitSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
-    const rootLayout = getLayoutWithFallback()
-    setLayout(
-      findAndUpdateSplitSizes({
-        rootLayout: structuredClone(rootLayout),
-        ...props,
-      })
+    function updateSplitSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
+      const rootLayout = getLayoutWithFallback()
+      setLayout(
+        findAndUpdateSplitSizes({
+          rootLayout: structuredClone(rootLayout),
+          ...props,
+        })
+      )
+    }
+
+    function replaceLayoutNode(
+      props: WithoutRootLayout<IReplaceLayoutChildNode>
+    ) {
+      const rootLayout = getLayoutWithFallback()
+      setLayout(
+        findAndReplaceLayoutChildNode({
+          rootLayout: structuredClone(rootLayout),
+          ...props,
+        })
+      )
+    }
+
+    function togglePane(props: WithoutRootLayout<ITogglePane>) {
+      const rootLayout = getLayoutWithFallback()
+      setLayout(
+        togglePaneLayoutNode({
+          rootLayout: structuredClone(rootLayout),
+          ...props,
+        })
+      )
+    }
+
+    const providerValue = useMemo(
+      () => ({
+        areaLibrary: areaLibrary || nullAreaLibrary,
+        actionLibrary: actionLibrary || nullActionLibrary,
+        updateSplitSizes,
+        replaceLayoutNode,
+        togglePane,
+        enableContextMenus,
+        // More API here if needed within nested layout components
+        // The other properties are all callbacks which are set once.
+      }),
+      [enableContextMenus]
     )
-  }
 
-  function replaceLayoutNode(
-    props: WithoutRootLayout<IReplaceLayoutChildNode>
-  ) {
-    const rootLayout = getLayoutWithFallback()
-    setLayout(
-      findAndReplaceLayoutChildNode({
-        rootLayout: structuredClone(rootLayout),
-        ...props,
-      })
+    return (
+      <LayoutStateContext.Provider value={providerValue}>
+        <LayoutNode layout={layout} />
+      </LayoutStateContext.Provider>
     )
-  }
-
-  function togglePane(props: WithoutRootLayout<ITogglePane>) {
-    const rootLayout = getLayoutWithFallback()
-    setLayout(
-      togglePaneLayoutNode({
-        rootLayout: structuredClone(rootLayout),
-        ...props,
-      })
-    )
-  }
-
-  const providerValue = useMemo(() => ({
-    areaLibrary: areaLibrary || nullAreaLibrary,
-    actionLibrary: actionLibrary || nullActionLibrary,
-    updateSplitSizes,
-    replaceLayoutNode,
-    togglePane,
-    enableContextMenus,
-    // More API here if needed within nested layout components
-  // The other properties are all callbacks which are set once.
-  }), [enableContextMenus])
-
-  return (
-    <LayoutStateContext.Provider
-      value={providerValue}
-    >
-      <LayoutNode layout={layout} />
-    </LayoutStateContext.Provider>
-  )
-}, (oldProps, newProps) => 
-  oldProps.layout === newProps.layout
-  && oldProps.enableContextMenus === newProps.enableContextMenus
+  },
+  (oldProps, newProps) =>
+    oldProps.layout === newProps.layout &&
+    oldProps.enableContextMenus === newProps.enableContextMenus
 )
 
 /*
