@@ -331,9 +331,10 @@ export const ConnectionStream = (props: {
       ? 'rgb(250, 250, 250)'
       : 'rgb(30, 30, 30)'
 
-  const viewControlContextMenuGuard = useCallback(
-    (e) =>
-      sceneInfra.camControls.wasDragging === false && btnName(e).right === true
+  const viewControlContextMenuGuard: (e: MouseEvent) => boolean = useCallback(
+    (e: MouseEvent) =>
+      sceneInfra.camControls.wasDragging === false && btnName(e).right === true,
+    []
   )
 
   return (

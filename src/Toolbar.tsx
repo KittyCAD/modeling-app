@@ -26,9 +26,15 @@ import type {
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
 import { EngineConnectionStateType } from '@src/network/utils'
 
-type ToolbarProps = ReturnType<
-  typeof useModelingContext & typeof useNetworkContext & typeof useAppState
->
+type ToolbarProps = Omit<ReturnType<typeof useModelingContext>, 'theProject'> &
+  Pick<
+    ReturnType<typeof useNetworkContext>,
+    'overallState' | 'immediateState'
+  > &
+  Pick<
+    ReturnType<typeof useAppState>,
+    'isStreamReady' | 'isStreamAcceptingInput'
+  >
 
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
@@ -327,6 +333,7 @@ const Toolbar_ = memo(
                         {showRichContent ? (
                           <ToolbarItemTooltipRichContent
                             itemConfig={selectedIcon}
+                            state={props.state}
                           />
                         ) : (
                           <ToolbarItemTooltipShortContent
@@ -395,7 +402,10 @@ const Toolbar_ = memo(
                   contentClassName={tooltipContentClassName}
                 >
                   {showRichContent ? (
-                    <ToolbarItemTooltipRichContent itemConfig={itemConfig} />
+                    <ToolbarItemTooltipRichContent
+                      itemConfig={itemConfig}
+                      state={props.state}
+                    />
                   ) : (
                     <ToolbarItemTooltipShortContent
                       status={itemConfig.status}
@@ -481,13 +491,14 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
     }
   )
 
+  const onDesktop = isDesktop()
   const wrapperStyle = useMemo(
     () =>
-      isDesktop()
+      onDesktop
         ? // Without this, the tooltip disappears before being able to click on anything in it
           ({ WebkitAppRegion: 'no-drag' } as React.CSSProperties)
         : {},
-    [isDesktop()]
+    [onDesktop]
   )
 
   return (
@@ -614,7 +625,7 @@ const ToolbarItemTooltipRichContent = memo(
             <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
             <p className="px-2 my-2 text-ch font-sans text-chalkboard-70 dark:text-chalkboard-40">
               {typeof itemConfig.disabledReason === 'function'
-                ? itemConfig.disabledReason(props.state)
+                ? itemConfig.disabledReason(state)
                 : itemConfig.disabledReason}
             </p>
           </>

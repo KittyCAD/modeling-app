@@ -174,7 +174,7 @@ export const ContextMenu = memo(
     // ContextMenu's items prop always sets a static array, but it's a new ref each time.
     // This prevents the unnecessary rerender.
   },
-  (oldP, newP) => oldP.items.length === newP.items.length
+  (oldP, newP) => oldP.items?.length === newP.items?.length
 )
 
 export function ContextMenuDivider() {

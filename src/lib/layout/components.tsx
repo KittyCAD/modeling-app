@@ -177,6 +177,7 @@ export const LayoutRootNode = memo(
         // More API here if needed within nested layout components
         // The other properties are all callbacks which are set once.
       }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [enableContextMenus]
     )
 
