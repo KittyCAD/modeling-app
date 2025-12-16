@@ -5,7 +5,7 @@ import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjecti
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
-import type { Setting, settings } from '@src/lib/settings/initialSettings'
+import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
 import type { Themes } from '@src/lib/theme'
 import type { AtLeast, PathValue, Paths } from '@src/lib/types'
 
@@ -43,15 +43,12 @@ export const warningLevels: WarningLevel[] = [
 
 export type Toggle = 'On' | 'Off'
 
-export type SettingsPaths = Exclude<
-  Paths<typeof settings, 1>,
-  keyof typeof settings
->
+export type SettingsPaths = Exclude<Paths<SettingsType, 1>, keyof SettingsType>
 type SetEvent<T extends SettingsPaths> = {
   type: `set.${T}`
   data: {
     level: SettingsLevel
-    value: PathValue<typeof settings, T>['default']
+    value: PathValue<SettingsType, T>['default']
   }
 }
 
@@ -61,7 +58,7 @@ export type WildcardSetEvent<T extends SettingsPaths = SettingsPaths> = {
   type: `*`
   data: {
     level: SettingsLevel
-    value: PathValue<typeof settings, T>['default']
+    value: PathValue<SettingsType, T>['default']
   }
 }
 
@@ -141,7 +138,7 @@ type RecursiveSettingsPayloads<T> = {
     : Partial<RecursiveSettingsPayloads<T[P]>>
 }
 
-export type SaveSettingsPayload = RecursiveSettingsPayloads<typeof settings>
+export type SaveSettingsPayload = RecursiveSettingsPayloads<SettingsType>
 
 /**
  * Annotation names for default units are defined on rust side in
