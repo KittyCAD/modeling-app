@@ -690,14 +690,20 @@ export class SceneEntities {
         const { intersectionPoint } = args
         const snappedPoint = intersectionPoint.twoD.clone()
         const snapToGrid = this.getSettings?.().modeling.snapToGrid.current
+
         if (!args.intersects.length && !snapToGrid) {
           return
         }
-        const axisIntersection = args.intersects.find(
-          (sceneObject) =>
-            sceneObject.object.name === X_AXIS ||
-            sceneObject.object.name === Y_AXIS
-        )
+
+        let intersectsXY = { x: false, y: false }
+        args.intersects.forEach((intersect) => {
+          const parent = getParentGroup(intersect.object, [X_AXIS, Y_AXIS])
+          if (parent?.name === X_AXIS) {
+            intersectsXY.x = true
+          } else if (parent?.name === Y_AXIS) {
+            intersectsXY.y = true
+          }
+        })
 
         const arrowHead = getParentGroup(args.intersects[0]?.object, [
           ARROWHEAD,
@@ -710,7 +716,7 @@ export class SceneEntities {
         )
 
         if (
-          !axisIntersection &&
+          !(intersectsXY.x || intersectsXY.y) &&
           !(
             parent?.userData?.isLastInProfile &&
             (arrowHead || parent?.name === PROFILE_START)
@@ -719,41 +725,29 @@ export class SceneEntities {
         ) {
           return
         }
-        // We're hovering over an axis, so we should show a draft point (or snapToGrid is enabled)
-        let intersectsXY = { x: false, y: false }
-        args.intersects.forEach((intersect) => {
-          const parent = getParentGroup(intersect.object, [X_AXIS, Y_AXIS])
-          if (parent?.name === X_AXIS) {
-            intersectsXY.x = true
-          } else if (parent?.name === Y_AXIS) {
-            intersectsXY.y = true
-          }
-        })
-        if (intersectsXY.x && intersectsXY.y) {
-          snappedPoint.setComponent(0, 0)
-          snappedPoint.setComponent(1, 0)
-        } else if (intersectsXY.x) {
-          snappedPoint.setComponent(1, 0)
-        } else if (intersectsXY.y) {
-          snappedPoint.setComponent(0, 0)
-        } else if (arrowHead) {
+
+        if (arrowHead) {
           snappedPoint.set(arrowHead.position.x, arrowHead.position.y)
         } else if (parent?.name === PROFILE_START) {
           snappedPoint.set(parent.position.x, parent.position.y)
-        } else if (snapToGrid) {
-          const snappedToGrid = this.snapToGrid(
-            [snappedPoint.x, snappedPoint.y],
-            args.mouseEvent
-          ).point
-          snappedPoint.set(snappedToGrid[0], snappedToGrid[1])
-          this.positionDraftPoint({
-            snappedPoint,
-            origin: sketchDetails.origin,
-            yAxis: sketchDetails.yAxis,
-            zAxis: sketchDetails.zAxis,
-          })
+        } else {
+          if (intersectsXY.x) {
+            snappedPoint.setComponent(1, 0)
+          } else if (intersectsXY.y) {
+            snappedPoint.setComponent(0, 0)
+          }
+
+          if (snapToGrid) {
+            const snappedToGrid = this.snapToGrid(
+              [snappedPoint.x, snappedPoint.y],
+              args.mouseEvent
+            ).point
+            snappedPoint.set(snappedToGrid[0], snappedToGrid[1])
+          }
         }
 
+        // Position the draft point to indicate there was a snapping. If the handler returns early and doesn't reach
+        // this point then the draft point will not be rendered,
         this.positionDraftPoint({
           snappedPoint,
           origin: sketchDetails.origin,
@@ -1207,10 +1201,6 @@ export class SceneEntities {
 
         const { intersectionPoint } = args
         let intersection2d = intersectionPoint?.twoD
-        const intersectsProfileStart = this.didIntersectProfileStart(
-          args,
-          sketchEntryNodePath
-        )
 
         let modifiedAst: Node<Program> | Error = structuredClone(
           this.kclManager.ast
@@ -1224,135 +1214,141 @@ export class SceneEntities {
         if (err(sketch)) return Promise.reject(sketch)
         if (!sketch) return Promise.reject(new Error('No sketch found'))
 
-        // Snapping logic for the profile start handle
-        if (intersectsProfileStart) {
-          const originCoords = createArrayExpression([
-            createCallExpressionStdLibKw(
-              'profileStartX',
-              createPipeSubstitution(),
-              []
-            ),
-            createCallExpressionStdLibKw(
-              'profileStartY',
-              createPipeSubstitution(),
-              []
-            ),
-          ])
-
-          modifiedAst = addCallExpressionsToPipe({
-            node: this.kclManager.ast,
-            variables: this.kclManager.variables,
-            pathToNode: sketchEntryNodePath,
-            expressions: [
-              segmentName === 'tangentialArc'
-                ? createCallExpressionStdLibKw('tangentialArc', null, [
-                    createLabeledArg(ARG_END_ABSOLUTE, originCoords),
-                  ])
-                : createCallExpressionStdLibKw('line', null, [
-                    createLabeledArg(ARG_END_ABSOLUTE, originCoords),
-                  ]),
-            ],
-          })
-          if (trap(modifiedAst)) return Promise.reject(modifiedAst)
-          modifiedAst = addCloseToPipe({
-            node: modifiedAst,
-            variables: this.kclManager.variables,
-            pathToNode: sketchEntryNodePath,
-          })
-          if (trap(modifiedAst)) return Promise.reject(modifiedAst)
-        } else if (intersection2d) {
+        let intersectsProfileStart = false
+        if (intersection2d) {
           const lastSegment = sketch.paths.slice(-1)[0] || sketch.start
 
-          let {
+          const {
             snappedPoint,
             snappedToTangent,
             intersectsXAxis,
             intersectsYAxis,
             negativeTangentDirection,
+            snappedToProfileStart,
           } = this.getSnappedDragPoint(
             intersection2d,
             args.intersects,
             args.mouseEvent,
-            Object.values(this.activeSegments).at(-1)
+            Object.values(this.activeSegments).at(-1),
+            sketchEntryNodePath
           )
 
-          // Get the angle between the previous segment (or sketch start)'s end and this one's
-          const angle = Math.atan2(
-            snappedPoint[1] - lastSegment.to[1],
-            snappedPoint[0] - lastSegment.to[0]
-          )
+          if (snappedToProfileStart) {
+            intersectsProfileStart = true
+            const originCoords = createArrayExpression([
+              createCallExpressionStdLibKw(
+                'profileStartX',
+                createPipeSubstitution(),
+                []
+              ),
+              createCallExpressionStdLibKw(
+                'profileStartY',
+                createPipeSubstitution(),
+                []
+              ),
+            ])
 
-          const isHorizontal =
-            radToDeg(Math.abs(angle)) < ANGLE_SNAP_THRESHOLD_DEGREES ||
-            Math.abs(radToDeg(Math.abs(angle) - Math.PI)) <
+            modifiedAst = addCallExpressionsToPipe({
+              node: this.kclManager.ast,
+              variables: this.kclManager.variables,
+              pathToNode: sketchEntryNodePath,
+              expressions: [
+                segmentName === 'tangentialArc'
+                  ? createCallExpressionStdLibKw('tangentialArc', null, [
+                      createLabeledArg(ARG_END_ABSOLUTE, originCoords),
+                    ])
+                  : createCallExpressionStdLibKw('line', null, [
+                      createLabeledArg(ARG_END_ABSOLUTE, originCoords),
+                    ]),
+              ],
+            })
+            if (trap(modifiedAst)) return Promise.reject(modifiedAst)
+            modifiedAst = addCloseToPipe({
+              node: modifiedAst,
+              variables: this.kclManager.variables,
+              pathToNode: sketchEntryNodePath,
+            })
+            if (trap(modifiedAst)) return Promise.reject(modifiedAst)
+          } else {
+            // Get the angle between the previous segment (or sketch start)'s end and this one's
+            const angle = Math.atan2(
+              snappedPoint[1] - lastSegment.to[1],
+              snappedPoint[0] - lastSegment.to[0]
+            )
+
+            const isHorizontal =
+              radToDeg(Math.abs(angle)) < ANGLE_SNAP_THRESHOLD_DEGREES ||
+              Math.abs(radToDeg(Math.abs(angle) - Math.PI)) <
+                ANGLE_SNAP_THRESHOLD_DEGREES
+            const isVertical =
+              Math.abs(radToDeg(Math.abs(angle) - Math.PI / 2)) <
               ANGLE_SNAP_THRESHOLD_DEGREES
-          const isVertical =
-            Math.abs(radToDeg(Math.abs(angle) - Math.PI / 2)) <
-            ANGLE_SNAP_THRESHOLD_DEGREES
 
-          let resolvedFunctionName: ToolTip = 'line'
-          const snaps = {
-            previousArcTag: '',
-            negativeTangentDirection,
-            xAxis: !!intersectsXAxis,
-            yAxis: !!intersectsYAxis,
-          }
-
-          // This might need to become its own function if we want more
-          // case-based logic for different segment types
-          if (
-            (lastSegment.type === 'TangentialArc' && segmentName !== 'line') ||
-            segmentName === 'tangentialArc'
-          ) {
-            if (snappedPoint[0] === 0 || snappedPoint[1] === 0) {
-              resolvedFunctionName = 'tangentialArcTo'
-            } else {
-              resolvedFunctionName = 'tangentialArc'
+            let resolvedFunctionName: ToolTip = 'line'
+            const snaps = {
+              previousArcTag: '',
+              negativeTangentDirection,
+              xAxis: !!intersectsXAxis,
+              yAxis: !!intersectsYAxis,
             }
-          } else if (snappedToTangent) {
-            // Generate tag for previous arc segment and use it for the angle of angledLine:
-            //   |> tangentialArc(endAbsolute = [5, -10], tag = $arc001)
-            //   |> angledLine(angle = tangentToEnd(arc001), length = 12)
 
-            const previousSegmentPathToNode = getNodePathFromSourceRange(
-              modifiedAst,
-              sourceRangeFromRust(lastSegment.__geoMeta.sourceRange)
-            )
-            const taggedAstResult = mutateAstWithTagForSketchSegment(
-              modifiedAst,
-              previousSegmentPathToNode
-            )
-            if (trap(taggedAstResult)) return Promise.reject(taggedAstResult)
+            // This might need to become its own function if we want more
+            // case-based logic for different segment types
+            if (
+              (lastSegment.type === 'TangentialArc' &&
+                segmentName !== 'line') ||
+              segmentName === 'tangentialArc'
+            ) {
+              if (snappedPoint[0] === 0 || snappedPoint[1] === 0) {
+                resolvedFunctionName = 'tangentialArcTo'
+              } else {
+                resolvedFunctionName = 'tangentialArc'
+              }
+            } else if (snappedToTangent) {
+              // Generate tag for previous arc segment and use it for the angle of angledLine:
+              //   |> tangentialArc(endAbsolute = [5, -10], tag = $arc001)
+              //   |> angledLine(angle = tangentToEnd(arc001), length = 12)
 
-            modifiedAst = taggedAstResult.modifiedAst
-            snaps.previousArcTag = taggedAstResult.tag
-            resolvedFunctionName = 'angledLine'
-          } else if (isHorizontal) {
-            // If the angle between is 0 or 180 degrees (+/- the snapping angle), make the line an xLine
-            resolvedFunctionName = 'xLine'
-          } else if (isVertical) {
-            // If the angle between is 90 or 270 degrees (+/- the snapping angle), make the line a yLine
-            resolvedFunctionName = 'yLine'
-          } else if (snappedPoint[0] === 0 || snappedPoint[1] === 0) {
-            // We consider a point placed on axes or origin to be absolute
-            resolvedFunctionName = 'lineTo'
+              const previousSegmentPathToNode = getNodePathFromSourceRange(
+                modifiedAst,
+                sourceRangeFromRust(lastSegment.__geoMeta.sourceRange)
+              )
+              const taggedAstResult = mutateAstWithTagForSketchSegment(
+                modifiedAst,
+                previousSegmentPathToNode
+              )
+              if (trap(taggedAstResult)) return Promise.reject(taggedAstResult)
+
+              modifiedAst = taggedAstResult.modifiedAst
+              snaps.previousArcTag = taggedAstResult.tag
+              resolvedFunctionName = 'angledLine'
+            } else if (isHorizontal) {
+              // If the angle between is 0 or 180 degrees (+/- the snapping angle), make the line an xLine
+              resolvedFunctionName = 'xLine'
+            } else if (isVertical) {
+              // If the angle between is 90 or 270 degrees (+/- the snapping angle), make the line a yLine
+              resolvedFunctionName = 'yLine'
+            } else if (snappedPoint[0] === 0 || snappedPoint[1] === 0) {
+              // We consider a point placed on axes or origin to be absolute
+              resolvedFunctionName = 'lineTo'
+            }
+
+            const tmp = addNewSketchLn({
+              node: modifiedAst,
+              variables: this.kclManager.variables,
+              input: {
+                type: 'straight-segment',
+                from: [lastSegment.to[0], lastSegment.to[1]],
+                to: [snappedPoint[0], snappedPoint[1]],
+              },
+              fnName: resolvedFunctionName,
+              pathToNode: sketchEntryNodePath,
+              snaps,
+            })
+            if (trap(tmp)) return Promise.reject(tmp)
+            modifiedAst = tmp.modifiedAst
+            if (trap(modifiedAst)) return Promise.reject(modifiedAst)
           }
-
-          const tmp = addNewSketchLn({
-            node: modifiedAst,
-            variables: this.kclManager.variables,
-            input: {
-              type: 'straight-segment',
-              from: [lastSegment.to[0], lastSegment.to[1]],
-              to: [snappedPoint[0], snappedPoint[1]],
-            },
-            fnName: resolvedFunctionName,
-            pathToNode: sketchEntryNodePath,
-            snaps,
-          })
-          if (trap(tmp)) return Promise.reject(tmp)
-          modifiedAst = tmp.modifiedAst
-          if (trap(modifiedAst)) return Promise.reject(modifiedAst)
         } else {
           // return early as we didn't modify the ast
           return
@@ -2329,7 +2325,7 @@ export class SceneEntities {
               sketchEntryNodePath,
               intersects: args.intersects,
               intersection2d: new Vector2(...maybeSnapToAxis),
-            })
+            }).intersection2d
 
         if (sketchInit.type === 'PipeExpression') {
           const moddedResult = changeSketchArguments(
@@ -2855,7 +2851,8 @@ export class SceneEntities {
     //  - the  three.js object currently being dragged: the new draft segment or existing segment (may not be the last in activeSegments)
     // When placing the draft segment::
     // - the last segment in activeSegments
-    currentObject?: Object3D | Group
+    currentObject?: Object3D | Group,
+    sketchEntryNodePath?: PathToNode
   ) {
     let snappedPoint: Coords2d = [pos.x, pos.y]
 
@@ -2870,6 +2867,7 @@ export class SceneEntities {
     let snappedToTangent = false
     let negativeTangentDirection = false
     let snappedToGrid = false
+    let snappedToProfileStart = false
 
     const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
     const forceDirectionSnapping = mouseEvent.shiftKey
@@ -2960,17 +2958,47 @@ export class SceneEntities {
     }
 
     if (!snappedToTangent) {
-      // Snap to the main axes if there was no snapping to tangent direction
-      snappedPoint = [
-        intersectsYAxis ? 0 : snappedPoint[0],
-        intersectsXAxis ? 0 : snappedPoint[1],
-      ] as const
+      // Highest priority: try snapping to profile start to close it
+      if (sketchEntryNodePath) {
+        const snappedToProfileStartResult = this.maybeSnapToProfileStart(
+          snappedPoint,
+          sketchEntryNodePath
+        )
+        if (snappedToProfileStartResult.snappedToProfileStart) {
+          snappedToProfileStart = true
+          snappedPoint = snappedToProfileStartResult.point
+        }
+      }
+      if (!snappedToProfileStart) {
+        // If snapping to profileStart didn't occur, try snapping to axes, grid
 
-      if (!intersectsXAxis && !intersectsYAxis) {
+        // Snap to axes
+        snappedPoint = [
+          intersectsYAxis ? 0 : snappedPoint[0],
+          intersectsXAxis ? 0 : snappedPoint[1],
+        ] as const
+
+        // Snap to grid
         ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
           snappedPoint,
           mouseEvent
         ))
+
+        if (sketchEntryNodePath) {
+          // After snapping to axis/grid, try snapping to profileStart AGAIN, this is because the newly snapped
+          // point might now line up with a profileStart, in which case we want to close the shape.
+          // This happens when profileStart is too far to snap from the mouse position, but after snapping to grid
+          // it's now close enough.
+
+          const snappedToProfileStartResult = this.maybeSnapToProfileStart(
+            snappedPoint,
+            sketchEntryNodePath
+          )
+          if (snappedToProfileStartResult.snappedToProfileStart) {
+            snappedToProfileStart = true
+            snappedPoint = snappedToProfileStartResult.point
+          }
+        }
       }
     }
 
@@ -2979,9 +3007,11 @@ export class SceneEntities {
         intersectsYAxis ||
         intersectsXAxis ||
         snappedToTangent ||
-        snappedToGrid
+        snappedToGrid ||
+        snappedToProfileStart
       ),
       snappedToTangent,
+      snappedToProfileStart,
       negativeTangentDirection,
       snappedPoint,
       intersectsXAxis,
@@ -3012,7 +3042,38 @@ export class SceneEntities {
       draftPoint.position.set(snappedPoint.x, snappedPoint.y, 0)
     }
   }
+  // Same purpose as maybeSnapProfileStartIntersect2d but takes sketchEntryNodePath instead of intersects.
+  maybeSnapToProfileStart(posWorld: Coords2d, sketchEntryNodePath: PathToNode) {
+    const expressionIndex = Number(sketchEntryNodePath[1][0])
+    const profileStartGroup = Object.values(this.activeSegments).find((seg) => {
+      return (
+        seg.name === PROFILE_START &&
+        seg.userData.pathToNode[1][0] === expressionIndex
+      )
+    })
 
+    const result = {
+      point: posWorld,
+      snappedToProfileStart: false,
+    }
+
+    if (profileStartGroup) {
+      // Profile start in baseunit coordinates
+      // Or: [profileStartGroup.position.x, profileStartGroup.position.y]
+      const profileStartPoint: Coords2d = profileStartGroup.userData.from
+
+      const snapped =
+        this.sceneInfra.screenSpaceDistance(posWorld, profileStartPoint) <
+        20 * window.devicePixelRatio
+
+      result.snappedToProfileStart = snapped
+      if (snapped) {
+        result.point = [...profileStartPoint]
+      }
+    }
+
+    return result
+  }
   maybeSnapProfileStartIntersect2d({
     sketchEntryNodePath,
     intersects,
@@ -3031,12 +3092,15 @@ export class SceneEntities {
           intersectsProfileStart.position.y
         )
       : _intersection2d
-    return intersection2d
+    return {
+      snappedToProfileStart: Boolean(intersectsProfileStart),
+      intersection2d,
+    }
   }
 
   async onDragSegment({
     object,
-    intersection2d: _intersection2d,
+    intersection2d,
     sketchEntryNodePath,
     sketchNodePaths,
     draftInfo,
@@ -3054,12 +3118,6 @@ export class SceneEntities {
     }
     mouseEvent: MouseEvent
   }) {
-    const intersection2d = this.maybeSnapProfileStartIntersect2d({
-      sketchEntryNodePath,
-      intersects,
-      intersection2d: _intersection2d,
-    })
-
     const group = getParentGroup(object, SEGMENT_BODIES_PLUS_PROFILE_START)
     const subGroup = getParentGroup(object, [
       ARROWHEAD,
@@ -3089,7 +3147,8 @@ export class SceneEntities {
       intersection2d,
       intersects,
       mouseEvent,
-      object
+      object,
+      sketchEntryNodePath
     )
     let modifiedAst = draftInfo
       ? draftInfo.truncatedAst
