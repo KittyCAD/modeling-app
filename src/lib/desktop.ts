@@ -828,6 +828,24 @@ export const writeEnvironmentConfigurationPool = async (
   return result
 }
 
+export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
+  electron: IElectronAPI,
+  environmentName: string,
+  kittycadWebSocketUrl: string
+) => {
+  kittycadWebSocketUrl = kittycadWebSocketUrl.trim()
+  const path = await getEnvironmentConfigurationPath(electron, environmentName)
+  const environmentConfiguration = await getEnvironmentConfigurationObject(
+    electron,
+    environmentName
+  )
+  environmentConfiguration.kittycadWebSocketUrl = kittycadWebSocketUrl
+  const requestedConfiguration = JSON.stringify(environmentConfiguration)
+  const result = await electron.writeFile(path, requestedConfiguration)
+  console.log(`wrote ${environmentName}.json to disk`)
+  return result
+}
+
 export const getEnvironmentConfigurationObject = async (
   electron: IElectronAPI,
   environmentName: string
@@ -869,6 +887,18 @@ export const readEnvironmentConfigurationToken = async (
   )
   if (!environmentConfiguration?.token) return ''
   return environmentConfiguration.token.trim()
+}
+
+export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
+  electron: IElectronAPI,
+  environmentName: string
+) => {
+  const environmentConfiguration = await readEnvironmentConfigurationFile(
+    electron,
+    environmentName
+  )
+  if (!environmentConfiguration?.kittycadWebSocketUrl) return ''
+  return environmentConfiguration.kittycadWebSocketUrl.trim()
 }
 
 export const readEnvironmentFile = async (electron: IElectronAPI) => {

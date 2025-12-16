@@ -270,6 +270,7 @@ export type EnvironmentConfiguration = {
   domain: string // same name as the file development for development.json
   pool: string // can be the empty string to indicate no pool for engine
   token: string // authentication token from signing in. Can be empty string
+  kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
 }
 
 /**
@@ -279,6 +280,7 @@ export type EnvironmentConfiguration = {
 export type EnvironmentConfigurationRuntime = {
   domain: string // same name as the file development for development.json
   pool: string // can be the empty string to indicate no pool for engine
+  kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
 }
 
 export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'

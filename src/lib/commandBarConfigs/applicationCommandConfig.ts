@@ -2,7 +2,7 @@ import env from '@src/env'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
-  writeEnvironmentConfigurationPool,
+  writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
@@ -387,11 +387,10 @@ export function createApplicationCommands({
 
   const switchEnvironmentsCommand: Command = {
     name: 'switch-environments',
-    displayName: 'Switch environments',
-    description:
-      'Switch between different environments to connect your application runtime',
+    displayName: 'Switch Environments',
+    description: 'Connect the application runtime to a different environment',
     needsReview: false,
-    icon: 'importFile',
+    icon: 'importFile', // TODO: Replace with a more appropriate icon
     groupId: 'application',
     onSubmit: (data) => {
       if (!window.electron) {
@@ -418,25 +417,25 @@ export function createApplicationCommands({
     },
   }
 
-  const choosePoolCommand: Command = {
-    name: 'choose-pool',
-    displayName: 'Choose pool',
-    description: 'Switch between different engine pools',
-    needsReview: true,
-    icon: 'importFile',
+  const overrideEngineCommand: Command = {
+    name: 'override-engine',
+    displayName: 'Override Engine',
+    description: 'Connect the scene to a custom Engine WebSocket URL',
+    needsReview: false,
+    icon: 'importFile', // TODO: Replace with a more appropriate icon
     groupId: 'application',
     onSubmit: (data) => {
       if (!window.electron) {
         console.error(new Error('No file system present'))
         return
       }
-      if (data) {
+      if (data?.url) {
         const environmentName = env().VITE_ZOO_BASE_DOMAIN
         if (environmentName)
-          writeEnvironmentConfigurationPool(
+          writeEnvironmentConfigurationKittycadWebSocketUrl(
             window.electron,
             environmentName,
-            data.pool
+            data.url
           )
             .then(() => {
               // Reload the application and it will trigger the correct sign in workflow for the new environment
@@ -446,9 +445,11 @@ export function createApplicationCommands({
       }
     },
     args: {
-      pool: {
+      url: {
         inputType: 'string',
-        required: false,
+        required: true,
+        displayName: 'URL',
+        defaultValue: () => env().VITE_KITTYCAD_WEBSOCKET_URL || '',
       },
     },
   }
@@ -511,7 +512,7 @@ export function createApplicationCommands({
         setLayoutCommand,
         createASampleDesktopOnly,
         switchEnvironmentsCommand,
-        choosePoolCommand,
+        overrideEngineCommand,
       ]
     : [addKCLFileToProject, resetLayoutCommand, setLayoutCommand]
 }

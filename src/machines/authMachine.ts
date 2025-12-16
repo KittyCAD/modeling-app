@@ -3,6 +3,7 @@ import { users, oauth2 } from '@kittycad/lib'
 import env, {
   updateEnvironment,
   updateEnvironmentPool,
+  updateEnvironmentKittycadWebSocketUrl,
   generateDomainsFromBaseDomain,
 } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
@@ -11,6 +12,7 @@ import {
   OAUTH2_DEVICE_CLIENT_ID,
   COOKIE_NAME_PREFIX,
 } from '@src/lib/constants'
+import { readEnvironmentConfigurationKittycadWebSocketUrl } from '@src/lib/desktop'
 import {
   listAllEnvironments,
   readEnvironmentConfigurationPool,
@@ -184,6 +186,19 @@ async function getUser(input: { token?: string }) {
       environment
     )
     updateEnvironmentPool(environment, cachedPool)
+
+    // Update the WebSocket URL override
+    const cachedKittycadWebSocketUrl =
+      await readEnvironmentConfigurationKittycadWebSocketUrl(
+        window.electron,
+        environment
+      )
+    if (cachedKittycadWebSocketUrl) {
+      updateEnvironmentKittycadWebSocketUrl(
+        environment,
+        cachedKittycadWebSocketUrl
+      )
+    }
   }
 
   let token = ''

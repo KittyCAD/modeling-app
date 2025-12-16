@@ -52,14 +52,28 @@ export const updateEnvironmentPool = (
   pool: string
 ) => {
   if (environmentName === '') {
-    console.log(
-      'reject updating pool,  environment: value is the empty string.'
-    )
+    console.log('reject updating pool, environment: value is the empty string.')
     return
   }
   if (!ENVIRONMENT) return
   if (ENVIRONMENT.domain === environmentName) {
     ENVIRONMENT.pool = pool
+  }
+}
+
+export const updateEnvironmentKittycadWebSocketUrl = (
+  environmentName: string,
+  kittycadWebSocketUrl: string
+) => {
+  if (environmentName === '') {
+    console.log(
+      'reject updating kittycadWebSocketUrl, environment: value is the empty string.'
+    )
+    return
+  }
+  if (!ENVIRONMENT) return
+  if (ENVIRONMENT.domain === environmentName) {
+    ENVIRONMENT.kittycadWebSocketUrl = kittycadWebSocketUrl
   }
 }
 
@@ -69,6 +83,7 @@ const getEnvironmentFromThisFile = (baseDomain: string) => {
     ENVIRONMENT || {
       domain: baseDomain,
       pool: '',
+      kittycadWebSocketUrl: undefined,
     }
   )
 }
@@ -140,6 +155,11 @@ export default (): EnvironmentVariables => {
     APP_URL = environmentDomains.APP_URL
     pool = environment && environment.pool ? environment.pool : ''
     BASE_DOMAIN = environment.domain
+
+    // Override WebSocket URL if specified in environment configuration
+    if (environment.kittycadWebSocketUrl) {
+      KITTYCAD_WEBSOCKET_URL = environment.kittycadWebSocketUrl
+    }
   }
 
   /**
