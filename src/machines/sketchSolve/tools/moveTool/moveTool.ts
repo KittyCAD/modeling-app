@@ -124,6 +124,18 @@ function buildSegmentCtorWithDrag({
       start: newStart,
       end: newEnd,
     }
+  } else if (baseCtor.type === 'Arc') {
+    // For arcs, always apply the drag vector to center, start, and end points (translate the arc)
+    // This applies whether it's the entity under cursor or another selected entity
+    const newCenter = applyVectorToPoint2D(baseCtor.center, dragVec)
+    const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
+    const newEnd = applyVectorToPoint2D(baseCtor.end, dragVec)
+    return {
+      type: 'Arc',
+      center: newCenter,
+      start: newStart,
+      end: newEnd,
+    }
   }
 
   return baseCtor
