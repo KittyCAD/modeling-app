@@ -4,6 +4,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { Marked } from '@ts-stack/markdown'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
 // TODO: remove the need for this selector once we decouple all actors from React
@@ -62,7 +63,7 @@ function CommandBarBasicInput({
   }
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit}>
+    <form id="arg-form" onSubmit={handleSubmit} className="flex flex-col">
       <label
         data-testid="cmd-bar-arg-name"
         className="flex items-center mx-4 my-4"
@@ -97,6 +98,17 @@ function CommandBarBasicInput({
           autoFocus
         />
       </label>
+      {arg.description && (
+        <div
+          className="mx-4 mb-4 mt-2 text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
+          dangerouslySetInnerHTML={{
+            __html: Marked.parse(arg.description, {
+              gfm: true,
+              breaks: true,
+            }),
+          }}
+        />
+      )}
     </form>
   )
 }

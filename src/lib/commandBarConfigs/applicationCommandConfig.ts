@@ -450,6 +450,11 @@ export function createApplicationCommands({
         inputType: 'string',
         required: true,
         displayName: 'URL',
+        description: `
+          Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Engines.
+          Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
+          Finally, append **?pool=LABEL** for all other variants of deployed Engines.
+        `.trim(),
         defaultValue: () => env().VITE_KITTYCAD_WEBSOCKET_URL || '',
       },
     },
