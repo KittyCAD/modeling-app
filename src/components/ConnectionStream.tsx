@@ -1,5 +1,5 @@
 import type { MouseEventHandler } from 'react'
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import {
   engineCommandManager,
@@ -331,6 +331,11 @@ export const ConnectionStream = (props: {
       ? 'rgb(250, 250, 250)'
       : 'rgb(30, 30, 30)'
 
+  const viewControlContextMenuGuard = useCallback((e) =>
+          sceneInfra.camControls.wasDragging === false &&
+          btnName(e).right === true
+  )
+
   return (
     <div
       role="presentation"
@@ -368,10 +373,7 @@ export const ConnectionStream = (props: {
       />
       <ViewControlContextMenu
         event="mouseup"
-        guard={(e) =>
-          sceneInfra.camControls.wasDragging === false &&
-          btnName(e).right === true
-        }
+        guard={viewControlContextMenuGuard }
         menuTargetElement={videoWrapperRef}
       />
       {(!isSceneReady || showManualConnect) && (
