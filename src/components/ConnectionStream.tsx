@@ -331,9 +331,9 @@ export const ConnectionStream = (props: {
       ? 'rgb(250, 250, 250)'
       : 'rgb(30, 30, 30)'
 
-  const viewControlContextMenuGuard = useCallback((e) =>
-          sceneInfra.camControls.wasDragging === false &&
-          btnName(e).right === true
+  const viewControlContextMenuGuard = useCallback(
+    (e) =>
+      sceneInfra.camControls.wasDragging === false && btnName(e).right === true
   )
 
   return (
@@ -373,7 +373,7 @@ export const ConnectionStream = (props: {
       />
       <ViewControlContextMenu
         event="mouseup"
-        guard={viewControlContextMenuGuard }
+        guard={viewControlContextMenuGuard}
         menuTargetElement={videoWrapperRef}
       />
       {(!isSceneReady || showManualConnect) && (
