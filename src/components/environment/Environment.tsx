@@ -5,7 +5,11 @@ import { commandBarActor } from '@src/lib/singletons'
 export function EnvironmentChip() {
   let label = env().VITE_ZOO_BASE_DOMAIN
   const url = env().VITE_KITTYCAD_WEBSOCKET_URL || ''
-  if (url.includes('localhost') || url.includes('127.0.0.1') || url.includes('0.0.0.0')) {
+  if (
+    url.includes('localhost') ||
+    url.includes('127.0.0.1') ||
+    url.includes('0.0.0.0')
+  ) {
     label = `${label} + local`
   } else if (url.includes('pr=')) {
     label = `${label} + preview`

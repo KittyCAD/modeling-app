@@ -163,27 +163,6 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         },
         'break',
         {
-          id: 'change-environment',
-          Element: 'button',
-          children: <span>Change environment</span>,
-          onClick: () => {
-            const environment = env().VITE_ZOO_BASE_DOMAIN
-            if (environment) {
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: {
-                  groupId: 'application',
-                  name: 'switch-environments',
-                  argDefaultValues: {
-                    environment,
-                  },
-                },
-              })
-            }
-          },
-          className: hideEnvironmentItems ? 'hidden' : '',
-        },
-        {
           id: 'sign-out',
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',

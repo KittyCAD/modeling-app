@@ -390,7 +390,7 @@ export function createApplicationCommands({
     displayName: 'Switch Environments',
     description: 'Connect the application runtime to a different environment',
     needsReview: false,
-    icon: 'importFile', // TODO: Replace with a more appropriate icon
+    icon: 'gear',
     groupId: 'application',
     onSubmit: (data) => {
       if (!window.electron) {
@@ -423,7 +423,7 @@ export function createApplicationCommands({
     displayName: 'Override Engine',
     description: 'Connect the scene to a custom Engine WebSocket URL',
     needsReview: false,
-    icon: 'importFile', // TODO: Replace with a more appropriate icon
+    icon: 'gear',
     groupId: 'application',
     onSubmit: (data) => {
       if (!window.electron) {
