@@ -1,7 +1,7 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { useMachine, useSelector } from '@xstate/react'
 import type { ComponentProps } from 'react'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, memo } from 'react'
 import type { Actor, Prop } from 'xstate'
 
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -93,7 +93,7 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
   )
 }
 
-export const FeatureTreePaneContents = () => {
+export const FeatureTreePaneContents = memo(() => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const layout = useLayout()
@@ -322,7 +322,7 @@ export const FeatureTreePaneContents = () => {
       </section>
     </div>
   )
-}
+})
 
 interface VisibilityToggleProps {
   visible: boolean
@@ -410,7 +410,7 @@ type OpValueProps = {
  * to be used for default planes after we fix them and
  * add them to the artifact graph / feature tree
  */
-const OperationItemWrapper = ({
+const OperationItemWrapper = memo(({
   icon,
   name,
   type,
@@ -491,7 +491,7 @@ const OperationItemWrapper = ({
       )}
     </div>
   )
-}
+})
 
 function VariableTooltipContents({
   variableName,

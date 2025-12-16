@@ -207,7 +207,7 @@ function LayoutNode({
       return <PaneLayout layout={layout} key={`node-${layout.id}`} />
     default: {
       const { Component, ...props } = areaLibrary[layout.areaType]
-      return Component({ areaConfig: props, layout, onClose })
+      return <Component areaConfig={props} layout={layout} onClose={onClose} />
     }
   }
 }

@@ -26,12 +26,9 @@ import type {
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
 import { EngineConnectionStateType } from '@src/network/utils'
 
-export function Toolbar({
-  className = '',
-  ...props
-}: React.HTMLAttributes<HTMLElement>) {
-  const { state, send, context } = useModelingContext()
+type ToolbarProps = ReturnType<typeof useModelingContext & typeof useNetworkContext & typeof useAppState>
 
+const Toolbar_ = memo((props: ToolbarProps) => {
   const iconClassName =
     'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
   const bgClassName = '!bg-transparent'
@@ -49,33 +46,31 @@ export function Toolbar({
     if (
       isCursorInFunctionDefinition(
         kclManager.ast,
-        context.selectionRanges.graphSelections[0]
+        props.context.selectionRanges.graphSelections[0]
       )
     )
       return false
     return isCursorInSketchCommandRange(
       kclManager.artifactGraph,
-      context.selectionRanges
+      props.context.selectionRanges
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.artifactGraph, context.selectionRanges])
+  }, [kclManager.artifactGraph, props.context.selectionRanges])
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
-  const { overallState, immediateState } = useNetworkContext()
-  const { isStreamReady, isStreamAcceptingInput } = useAppState()
   const [showRichContent, setShowRichContent] = useState(false)
 
   const disableAllButtons =
-    (overallState !== NetworkHealthState.Ok &&
-      overallState !== NetworkHealthState.Weak) ||
+    (props.overallState !== NetworkHealthState.Ok &&
+      props.overallState !== NetworkHealthState.Weak) ||
     kclManager.isExecutingSignal.value ||
-    immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
-    !isStreamReady ||
-    !isStreamAcceptingInput
+    props.immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
+    !props.isStreamReady ||
+    !props.isStreamAcceptingInput
 
   const currentMode =
     (Object.entries(toolbarConfig).find(([_, mode]) =>
-      mode.check(state)
+      mode.check(props.state)
     )?.[0] as ToolbarModeName) || 'modeling'
 
   /** These are the props that will be passed to the callbacks in the toolbar config
@@ -85,16 +80,16 @@ export function Toolbar({
    */
   const configCallbackProps: ToolbarItemCallbackProps = useMemo(
     () => ({
-      modelingState: state,
-      modelingSend: send,
+      modelingState: props.state,
+      modelingSend: props.send,
       sketchPathId,
       editorHasFocus: kclManager.getEditorView()?.hasFocus,
       isActive: false, // Default value - individual items will override this
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
-      state,
-      send,
+      props.state,
+      props.send,
       commandBarActor.send,
       sketchPathId,
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -167,10 +162,10 @@ export function Toolbar({
       const isDisabled =
         disableAllButtons ||
         !isConfiguredAvailable ||
-        maybeIconConfig.disabled?.(state) === true
+        maybeIconConfig.disabled?.(props.state) === true
 
       // Calculate the isActive state for this specific item
-      const itemIsActive = maybeIconConfig.isActive?.(state) || false
+      const itemIsActive = maybeIconConfig.isActive?.(props.state) || false
 
       // Create item-specific callback props with the correct isActive value
       const itemCallbackProps = {
@@ -190,13 +185,13 @@ export function Toolbar({
         hotkey:
           typeof maybeIconConfig.hotkey === 'string'
             ? maybeIconConfig.hotkey
-            : maybeIconConfig.hotkey?.(state),
+            : maybeIconConfig.hotkey?.(props.state),
         disabled: isDisabled,
         disabledReason:
           typeof maybeIconConfig.disabledReason === 'function'
-            ? maybeIconConfig.disabledReason(state)
+            ? maybeIconConfig.disabledReason(props.state)
             : maybeIconConfig.disabledReason,
-        disableHotkey: maybeIconConfig.disableHotkey?.(state),
+        disableHotkey: maybeIconConfig.disableHotkey?.(props.state),
         status: maybeIconConfig.status,
         // Store the item-specific callback props for use in onClick handlers
         callbackProps: itemCallbackProps,
@@ -220,11 +215,9 @@ export function Toolbar({
       className="z-[19] max-w-full whitespace-nowrap rounded-b px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
     >
       <ul
-        {...props}
         ref={toolbarButtonsRef}
         className={
-          'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex gap-1.5 items-center ' +
-          className
+          'has-[[aria-expanded=true]]:!pointer-events-none m-0 py-1 rounded-l-sm flex gap-1.5 items-center '
         }
       >
         {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
@@ -422,12 +415,12 @@ export function Toolbar({
             </button>
           </div>
         )}
-        {state.matches('Sketch no face') && (
+        {props.state.matches('Sketch no face') && (
           <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
             <p className="text-xs">Select a plane or face to start sketching</p>
           </div>
         )}
-        {state.matches('sketchSolveMode') && (
+        {props.state.matches('sketchSolveMode') && (
           <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
             <p className="text-xs">
               Sketch mode revamp, expect bugs, disable again in settings if you
@@ -438,7 +431,7 @@ export function Toolbar({
       </div>
     </menu>
   )
-}
+}, () => true)
 
 interface ToolbarItemContentsProps extends React.PropsWithChildren {
   itemConfig: ToolbarItemResolved
@@ -476,15 +469,18 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
     }
   )
 
-  return (
-    <Tooltip
-      inert={false}
-      wrapperStyle={
+  const wrapperStyle = useMemo(() =>
         isDesktop()
           ? // Without this, the tooltip disappears before being able to click on anything in it
             ({ WebkitAppRegion: 'no-drag' } as React.CSSProperties)
           : {}
-      }
+  , [isDesktop()])
+
+
+  return (
+    <Tooltip
+      inert={false}
+      wrapperStyle={wrapperStyle}
       hoverOnly
       position="bottom"
       wrapperClassName={'!p-4 !pointer-events-auto ' + wrapperClassName}
@@ -528,15 +524,16 @@ const ToolbarItemTooltipShortContent = ({
   </div>
 )
 
-const ToolbarItemTooltipRichContent = ({
+const ToolbarItemTooltipRichContent = memo(({
   itemConfig,
+  state,
 }: {
   itemConfig: ToolbarItemResolved
+  state: ReturnType<typeof useModelingContext>['state']
 }) => {
   const shouldBeEnabled = ['available', 'experimental'].includes(
     itemConfig.status
   )
-  const { state } = useModelingContext()
   return (
     <>
       {itemConfig.status === 'experimental' && (
@@ -601,7 +598,7 @@ const ToolbarItemTooltipRichContent = ({
           <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
           <p className="px-2 my-2 text-ch font-sans text-chalkboard-70 dark:text-chalkboard-40">
             {typeof itemConfig.disabledReason === 'function'
-              ? itemConfig.disabledReason(state)
+              ? itemConfig.disabledReason(props.state)
               : itemConfig.disabledReason}
           </p>
         </>
@@ -629,6 +626,23 @@ const ToolbarItemTooltipRichContent = ({
       )}
     </>
   )
+})
+
+// Making this toplevel Toolbar memo'd is no-op, because we use context
+// inside that causes a render anyway. Instead we memo the inner.
+export function Toolbar() {
+  const { state, send, context } = useModelingContext()
+  const { overallState, immediateState } = useNetworkContext()
+  const { isStreamReady, isStreamAcceptingInput } = useAppState()
+  return <Toolbar_
+    state={state}
+    send={send}
+    context={context}
+    overallState={overallState}
+    immediateState={immediateState}
+    isStreamReady={isStreamReady}
+    isStreamAcceptingInput={isStreamAcceptingInput}
+  />
 }
 
 function isToolbarDropdown(
