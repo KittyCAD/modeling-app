@@ -2987,7 +2987,7 @@ export class SceneEntities {
         if (sketchEntryNodePath) {
           // After snapping to axis/grid, try snapping to profileStart AGAIN, this is because the newly snapped
           // point might now line up with a profileStart, in which case we want to close the shape.
-          // This happens when profileStart is too far to snap from the mouse poisition, but after snapping to grid
+          // This happens when profileStart is too far to snap from the mouse position, but after snapping to grid
           // it's now close enough.
 
           const snappedToProfileStartResult = this.maybeSnapToProfileStart(
