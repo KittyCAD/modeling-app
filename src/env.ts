@@ -136,16 +136,10 @@ export default (): EnvironmentVariables => {
     MLEPHANT_WEBSOCKET_URL = environmentDomains.MLEPHANT_WEBSOCKET_URL
     APP_URL = environmentDomains.APP_URL
     BASE_DOMAIN = environment.domain
-
-    // Allow the environment configuration to override the Engine WebSocket URL
-    // TODO: Determine if this takes priority over .env.development.local
-    if (environment.kittycadWebSocketUrl) {
-      KITTYCAD_WEBSOCKET_URL = environment.kittycadWebSocketUrl
-    }
   }
 
   /**
-   * Allow .env.development.local to override the WebSocket URLs
+   * Allow .env.development.local to override the default WebSocket URLs
    */
   if (
     env.VITE_KITTYCAD_WEBSOCKET_URL &&
@@ -158,6 +152,11 @@ export default (): EnvironmentVariables => {
     env.VITE_MLEPHANT_WEBSOCKET_URL !== 'undefined'
   ) {
     MLEPHANT_WEBSOCKET_URL = env.VITE_MLEPHANT_WEBSOCKET_URL
+  }
+
+  // Allow the environment configuration to override the Engine WebSocket URL
+  if (environment.kittycadWebSocketUrl) {
+    KITTYCAD_WEBSOCKET_URL = environment.kittycadWebSocketUrl
   }
 
   const environmentVariables: EnvironmentVariables = {
