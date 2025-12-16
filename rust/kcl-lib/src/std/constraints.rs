@@ -69,32 +69,30 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     };
     #[cfg(feature = "artifact-graph")]
     let optional_constraints = {
-        let object_id = exec_state.add_placeholder_scene_object(segment.object_id, args.source_range);
+        exec_state.add_placeholder_scene_object(segment.object_id, args.source_range);
 
         let mut optional_constraints = Vec::new();
-        if exec_state.segment_ids_edited_contains(&object_id) {
-            if let Some(at_x_var) = at_x_value.as_sketch_var() {
-                let x_initial_value = at_x_var.initial_value_to_solver_units(
-                    exec_state,
-                    args.source_range,
-                    "edited segment fixed constraint value",
-                )?;
-                optional_constraints.push(SolverConstraint::Fixed(
-                    at_x_var.id.to_constraint_id(args.source_range)?,
-                    x_initial_value.n,
-                ));
-            }
-            if let Some(at_y_var) = at_y_value.as_sketch_var() {
-                let y_initial_value = at_y_var.initial_value_to_solver_units(
-                    exec_state,
-                    args.source_range,
-                    "edited segment fixed constraint value",
-                )?;
-                optional_constraints.push(SolverConstraint::Fixed(
-                    at_y_var.id.to_constraint_id(args.source_range)?,
-                    y_initial_value.n,
-                ));
-            }
+        if let Some(at_x_var) = at_x_value.as_sketch_var() {
+            let x_initial_value = at_x_var.initial_value_to_solver_units(
+                exec_state,
+                args.source_range,
+                "edited segment fixed constraint value",
+            )?;
+            optional_constraints.push(SolverConstraint::Fixed(
+                at_x_var.id.to_constraint_id(args.source_range)?,
+                x_initial_value.n,
+            ));
+        }
+        if let Some(at_y_var) = at_y_value.as_sketch_var() {
+            let y_initial_value = at_y_var.initial_value_to_solver_units(
+                exec_state,
+                args.source_range,
+                "edited segment fixed constraint value",
+            )?;
+            optional_constraints.push(SolverConstraint::Fixed(
+                at_y_var.id.to_constraint_id(args.source_range)?,
+                y_initial_value.n,
+            ));
         }
         optional_constraints
     };
@@ -213,62 +211,54 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     };
     #[cfg(feature = "artifact-graph")]
     let optional_constraints = {
-        let start_object_id = exec_state.add_placeholder_scene_object(start_object_id, args.source_range);
-        let end_object_id = exec_state.add_placeholder_scene_object(end_object_id, args.source_range);
-        let line_object_id = exec_state.add_placeholder_scene_object(line_object_id, args.source_range);
+        exec_state.add_placeholder_scene_object(start_object_id, args.source_range);
+        exec_state.add_placeholder_scene_object(end_object_id, args.source_range);
+        exec_state.add_placeholder_scene_object(line_object_id, args.source_range);
 
         let mut optional_constraints = Vec::new();
-        if exec_state.segment_ids_edited_contains(&start_object_id)
-            || exec_state.segment_ids_edited_contains(&line_object_id)
-        {
-            if let Some(start_x_var) = start_x_value.as_sketch_var() {
-                let x_initial_value = start_x_var.initial_value_to_solver_units(
-                    exec_state,
-                    args.source_range,
-                    "edited segment fixed constraint value",
-                )?;
-                optional_constraints.push(SolverConstraint::Fixed(
-                    start_x_var.id.to_constraint_id(args.source_range)?,
-                    x_initial_value.n,
-                ));
-            }
-            if let Some(start_y_var) = start_y_value.as_sketch_var() {
-                let y_initial_value = start_y_var.initial_value_to_solver_units(
-                    exec_state,
-                    args.source_range,
-                    "edited segment fixed constraint value",
-                )?;
-                optional_constraints.push(SolverConstraint::Fixed(
-                    start_y_var.id.to_constraint_id(args.source_range)?,
-                    y_initial_value.n,
-                ));
-            }
+        if let Some(start_x_var) = start_x_value.as_sketch_var() {
+            let x_initial_value = start_x_var.initial_value_to_solver_units(
+                exec_state,
+                args.source_range,
+                "edited segment fixed constraint value",
+            )?;
+            optional_constraints.push(SolverConstraint::Fixed(
+                start_x_var.id.to_constraint_id(args.source_range)?,
+                x_initial_value.n,
+            ));
         }
-        if exec_state.segment_ids_edited_contains(&end_object_id)
-            || exec_state.segment_ids_edited_contains(&line_object_id)
-        {
-            if let Some(end_x_var) = end_x_value.as_sketch_var() {
-                let x_initial_value = end_x_var.initial_value_to_solver_units(
-                    exec_state,
-                    args.source_range,
-                    "edited segment fixed constraint value",
-                )?;
-                optional_constraints.push(SolverConstraint::Fixed(
-                    end_x_var.id.to_constraint_id(args.source_range)?,
-                    x_initial_value.n,
-                ));
-            }
-            if let Some(end_y_var) = end_y_value.as_sketch_var() {
-                let y_initial_value = end_y_var.initial_value_to_solver_units(
-                    exec_state,
-                    args.source_range,
-                    "edited segment fixed constraint value",
-                )?;
-                optional_constraints.push(SolverConstraint::Fixed(
-                    end_y_var.id.to_constraint_id(args.source_range)?,
-                    y_initial_value.n,
-                ));
-            }
+        if let Some(start_y_var) = start_y_value.as_sketch_var() {
+            let y_initial_value = start_y_var.initial_value_to_solver_units(
+                exec_state,
+                args.source_range,
+                "edited segment fixed constraint value",
+            )?;
+            optional_constraints.push(SolverConstraint::Fixed(
+                start_y_var.id.to_constraint_id(args.source_range)?,
+                y_initial_value.n,
+            ));
+        }
+        if let Some(end_x_var) = end_x_value.as_sketch_var() {
+            let x_initial_value = end_x_var.initial_value_to_solver_units(
+                exec_state,
+                args.source_range,
+                "edited segment fixed constraint value",
+            )?;
+            optional_constraints.push(SolverConstraint::Fixed(
+                end_x_var.id.to_constraint_id(args.source_range)?,
+                x_initial_value.n,
+            ));
+        }
+        if let Some(end_y_var) = end_y_value.as_sketch_var() {
+            let y_initial_value = end_y_var.initial_value_to_solver_units(
+                exec_state,
+                args.source_range,
+                "edited segment fixed constraint value",
+            )?;
+            optional_constraints.push(SolverConstraint::Fixed(
+                end_y_var.id.to_constraint_id(args.source_range)?,
+                y_initial_value.n,
+            ));
         }
         optional_constraints
     };
@@ -422,89 +412,77 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     };
     #[cfg(feature = "artifact-graph")]
     let optional_constraints = {
-        let start_object_id = exec_state.add_placeholder_scene_object(start_object_id, args.source_range);
-        let end_object_id = exec_state.add_placeholder_scene_object(end_object_id, args.source_range);
-        let center_object_id = exec_state.add_placeholder_scene_object(center_object_id, args.source_range);
-        let arc_object_id = exec_state.add_placeholder_scene_object(arc_object_id, args.source_range);
+        exec_state.add_placeholder_scene_object(start_object_id, args.source_range);
+        exec_state.add_placeholder_scene_object(end_object_id, args.source_range);
+        exec_state.add_placeholder_scene_object(center_object_id, args.source_range);
+        exec_state.add_placeholder_scene_object(arc_object_id, args.source_range);
 
         let mut optional_constraints = Vec::new();
-        if exec_state.segment_ids_edited_contains(&start_object_id)
-            || exec_state.segment_ids_edited_contains(&arc_object_id)
-        {
-            if let Some(start_x_var) = start_x_value.as_sketch_var() {
-                let x_initial_value = start_x_var.initial_value_to_solver_units(
-                    exec_state,
-                    args.source_range,
-                    "edited segment fixed constraint value",
-                )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
-                    start_x_var.id.to_constraint_id(args.source_range)?,
-                    x_initial_value.n,
-                ));
-            }
-            if let Some(start_y_var) = start_y_value.as_sketch_var() {
-                let y_initial_value = start_y_var.initial_value_to_solver_units(
-                    exec_state,
-                    args.source_range,
-                    "edited segment fixed constraint value",
-                )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
-                    start_y_var.id.to_constraint_id(args.source_range)?,
-                    y_initial_value.n,
-                ));
-            }
+        if let Some(start_x_var) = start_x_value.as_sketch_var() {
+            let x_initial_value = start_x_var.initial_value_to_solver_units(
+                exec_state,
+                args.source_range,
+                "edited segment fixed constraint value",
+            )?;
+            optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                start_x_var.id.to_constraint_id(args.source_range)?,
+                x_initial_value.n,
+            ));
         }
-        if exec_state.segment_ids_edited_contains(&end_object_id)
-            || exec_state.segment_ids_edited_contains(&arc_object_id)
-        {
-            if let Some(end_x_var) = end_x_value.as_sketch_var() {
-                let x_initial_value = end_x_var.initial_value_to_solver_units(
-                    exec_state,
-                    args.source_range,
-                    "edited segment fixed constraint value",
-                )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
-                    end_x_var.id.to_constraint_id(args.source_range)?,
-                    x_initial_value.n,
-                ));
-            }
-            if let Some(end_y_var) = end_y_value.as_sketch_var() {
-                let y_initial_value = end_y_var.initial_value_to_solver_units(
-                    exec_state,
-                    args.source_range,
-                    "edited segment fixed constraint value",
-                )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
-                    end_y_var.id.to_constraint_id(args.source_range)?,
-                    y_initial_value.n,
-                ));
-            }
+        if let Some(start_y_var) = start_y_value.as_sketch_var() {
+            let y_initial_value = start_y_var.initial_value_to_solver_units(
+                exec_state,
+                args.source_range,
+                "edited segment fixed constraint value",
+            )?;
+            optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                start_y_var.id.to_constraint_id(args.source_range)?,
+                y_initial_value.n,
+            ));
         }
-        if exec_state.segment_ids_edited_contains(&center_object_id)
-            || exec_state.segment_ids_edited_contains(&arc_object_id)
-        {
-            if let Some(center_x_var) = center_x_value.as_sketch_var() {
-                let x_initial_value = center_x_var.initial_value_to_solver_units(
-                    exec_state,
-                    args.source_range,
-                    "edited segment fixed constraint value",
-                )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
-                    center_x_var.id.to_constraint_id(args.source_range)?,
-                    x_initial_value.n,
-                ));
-            }
-            if let Some(center_y_var) = center_y_value.as_sketch_var() {
-                let y_initial_value = center_y_var.initial_value_to_solver_units(
-                    exec_state,
-                    args.source_range,
-                    "edited segment fixed constraint value",
-                )?;
-                optional_constraints.push(kcl_ezpz::Constraint::Fixed(
-                    center_y_var.id.to_constraint_id(args.source_range)?,
-                    y_initial_value.n,
-                ));
-            }
+        if let Some(end_x_var) = end_x_value.as_sketch_var() {
+            let x_initial_value = end_x_var.initial_value_to_solver_units(
+                exec_state,
+                args.source_range,
+                "edited segment fixed constraint value",
+            )?;
+            optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                end_x_var.id.to_constraint_id(args.source_range)?,
+                x_initial_value.n,
+            ));
+        }
+        if let Some(end_y_var) = end_y_value.as_sketch_var() {
+            let y_initial_value = end_y_var.initial_value_to_solver_units(
+                exec_state,
+                args.source_range,
+                "edited segment fixed constraint value",
+            )?;
+            optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                end_y_var.id.to_constraint_id(args.source_range)?,
+                y_initial_value.n,
+            ));
+        }
+        if let Some(center_x_var) = center_x_value.as_sketch_var() {
+            let x_initial_value = center_x_var.initial_value_to_solver_units(
+                exec_state,
+                args.source_range,
+                "edited segment fixed constraint value",
+            )?;
+            optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                center_x_var.id.to_constraint_id(args.source_range)?,
+                x_initial_value.n,
+            ));
+        }
+        if let Some(center_y_var) = center_y_value.as_sketch_var() {
+            let y_initial_value = center_y_var.initial_value_to_solver_units(
+                exec_state,
+                args.source_range,
+                "edited segment fixed constraint value",
+            )?;
+            optional_constraints.push(kcl_ezpz::Constraint::Fixed(
+                center_y_var.id.to_constraint_id(args.source_range)?,
+                y_initial_value.n,
+            ));
         }
         optional_constraints
     };
