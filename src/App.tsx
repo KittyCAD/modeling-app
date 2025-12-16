@@ -92,7 +92,7 @@ export function App() {
   const { onProjectOpen } = useLspContext()
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
- 
+
   // We need the ref for the outermost div so we can screenshot the app for
   // the coredump.
 
@@ -104,7 +104,10 @@ export function App() {
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
-    onProjectOpen({ name: projectName, path: projectPath }, loaderData.file || null)
+    onProjectOpen(
+      { name: projectName, path: projectPath },
+      loaderData.file || null
+    )
   }, [onProjectOpen, projectName, projectPath, loaderData.file])
 
   useEffect(() => {
