@@ -4163,6 +4163,27 @@ mod sketch_block_arc_using_center_coincident {
         super::execute(TEST_NAME, true).await
     }
 }
+mod sketch_block_modeling_command_is_error {
+    const TEST_NAME: &str = "sketch_block_modeling_command_is_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
 mod holes_cube {
     const TEST_NAME: &str = "holes_cube";
 
