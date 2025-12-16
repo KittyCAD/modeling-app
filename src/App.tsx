@@ -82,7 +82,7 @@ if (window.electron) {
 export function App() {
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects(kclManager)
-  const { project, file } = useLoaderData() as IndexLoaderData
+  const loaderData = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
@@ -92,19 +92,20 @@ export function App() {
   const { onProjectOpen } = useLspContext()
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
+ 
   // We need the ref for the outermost div so we can screenshot the app for
   // the coredump.
 
   // Stream related refs and data
   const [searchParams] = useSearchParams()
 
-  const projectName = project?.name || null
-  const projectPath = project?.path || null
+  const projectName = loaderData.project?.name || null
+  const projectPath = loaderData.project?.path || null
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
-    onProjectOpen({ name: projectName, path: projectPath }, file || null)
-  }, [onProjectOpen, projectName, projectPath, file])
+    onProjectOpen({ name: projectName, path: projectPath }, loaderData.file || null)
+  }, [onProjectOpen, projectName, projectPath, loaderData.file])
 
   useEffect(() => {
     // Clear conversation
@@ -276,7 +277,7 @@ export function App() {
         <div className="relative flex items-center flex-col">
           <AppHeader
             className="transition-opacity transition-duration-75"
-            project={{ project, file }}
+            project={loaderData}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={
