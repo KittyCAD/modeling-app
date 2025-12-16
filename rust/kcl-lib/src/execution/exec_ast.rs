@@ -3362,6 +3362,19 @@ y = x[0mm + 1]
         );
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cannot_solid_extrude_an_open_profile() {
+        // This should fail during mock execution, because KCL should catch
+        // that the profile is not closed.
+        let code = std::fs::read_to_string("tests/inputs/cannot_solid_extrude_an_open_profile.kcl").unwrap();
+        let program = crate::Program::parse_no_errs(&code).expect("should parse");
+        let exec_ctxt = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&exec_ctxt);
+
+        let err = exec_ctxt.run(&program, &mut exec_state).await.unwrap_err().error;
+        assert_eq!(err.message(), crate::std::extrude::ERR_SOLID_EXTRUDE_OPEN_PROFILE);
+    }
+
     #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn feature_tree_annotation_on_user_defined_kcl() {

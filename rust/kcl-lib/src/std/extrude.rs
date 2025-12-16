@@ -29,6 +29,9 @@ use crate::{
     std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference},
 };
 
+pub(crate) const ERR_SOLID_EXTRUDE_OPEN_PROFILE: &str =
+    "Cannot solid extrude an open profile. Either close the profile, or use a surface extrude.";
+
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
@@ -101,6 +104,14 @@ async fn inner_extrude(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     let body_type = body_type.unwrap_or_default();
+    if let Some(open_profile) = sketches.iter().find(|sk| !sk.is_closed)
+        && matches!(body_type, BodyType::Solid)
+    {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            ERR_SOLID_EXTRUDE_OPEN_PROFILE.to_owned(),
+            open_profile.meta.iter().map(|m| m.source_range).collect(),
+        )));
+    }
 
     // Extrude the element(s).
     let mut solids = Vec::new();

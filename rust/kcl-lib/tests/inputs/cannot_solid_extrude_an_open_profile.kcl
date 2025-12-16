@@ -1,0 +1,4 @@
+startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [3, 4])
+  |> extrude(length = 5)
