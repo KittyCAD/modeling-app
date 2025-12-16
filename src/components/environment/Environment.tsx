@@ -3,11 +3,18 @@ import env from '@src/env'
 import { commandBarActor } from '@src/lib/singletons'
 
 export function EnvironmentChip() {
-  const shorthand = env().VITE_ZOO_BASE_DOMAIN
+  let label = env().VITE_ZOO_BASE_DOMAIN
+  const url = env().VITE_KITTYCAD_WEBSOCKET_URL || ''
+  if (url.includes('localhost') || url.includes('127.0.0.1') || url.includes('0.0.0.0')) {
+    label = `${label} + local`
+  } else if (url.includes('pr=')) {
+    label = `${label} + preview`
+  } else if (url.includes('pool=')) {
+    label = `${label} + pool`
+  }
   return (
-    // TODO: Show an indicator if a custom engine URL is set
     <div className="flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50">
-      <span className="">{shorthand}</span>
+      <span className="">{label}</span>
     </div>
   )
 }
