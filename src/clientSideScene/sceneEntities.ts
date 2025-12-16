@@ -3052,7 +3052,7 @@ export class SceneEntities {
       )
     })
 
-    let result = {
+    const result = {
       point: posWorld,
       snappedToProfileStart: false,
     }
@@ -3066,13 +3066,10 @@ export class SceneEntities {
         this.sceneInfra.screenSpaceDistance(posWorld, profileStartPoint) <
         20 * window.devicePixelRatio
 
-      if (snapped) {
-        result = {
-          point: [...profileStartPoint],
-          snappedToProfileStart: true,
-        }
-      }
       result.snappedToProfileStart = snapped
+      if (snapped) {
+        result.point = [...profileStartPoint]
+      }
     }
 
     return result
