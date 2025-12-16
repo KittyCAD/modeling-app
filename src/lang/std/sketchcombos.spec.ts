@@ -233,12 +233,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
       selectionRanges: Selections['graphSelections']
     ) {
       const ast = assertParse(inputCode, instanceInThisFile)
-      const execState = await enginelessExecutor(
-        ast,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      const execState = await enginelessExecutor(ast, rustContextInThisFile)
       const transformInfos = getTransformInfos(
         makeSelections(selectionRanges.slice(1)),
         ast,
@@ -373,12 +368,7 @@ part001 = startSketchOn(XY)
         }
       })
 
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges.slice(1)),
       ast,
@@ -469,12 +459,7 @@ part001 = startSketchOn(XY)
         }
       })
 
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -534,12 +519,7 @@ part001 = startSketchOn(XY)
         }
       })
 
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -634,12 +614,7 @@ async function helperThing(
       }
     })
 
-  const execState = await enginelessExecutor(
-    ast,
-    undefined,
-    undefined,
-    rustContextInThisFile
-  )
+  const execState = await enginelessExecutor(ast, rustContextInThisFile)
   const transformInfos = getTransformInfos(
     makeSelections(selectionRanges.slice(1)),
     ast,

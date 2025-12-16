@@ -11,7 +11,6 @@ import {
   serializeConfiguration,
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import {
   cameraSystemToMouseControl,
   mouseControlsToCameraSystem,
@@ -25,10 +24,10 @@ import {
   writeProjectSettingsFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
 import {
   createSettings,
-  type settings,
+  type Setting,
+  type SettingsType,
 } from '@src/lib/settings/initialSettings'
 import type {
   SaveSettingsPayload,
@@ -37,6 +36,7 @@ import type {
 import { appThemeToTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 type OmitNull<T> = T extends null ? undefined : T
@@ -331,11 +331,19 @@ export function readLocalStorageProjectSettingsFile():
 }
 
 export interface AppSettings {
-  settings: ReturnType<typeof createSettings>
+  settings: SettingsType
   configuration: DeepPartial<Configuration>
 }
 
+/**
+ * Finds the TOML settings files for user-level (and project-level if projectPath is provided)
+ * settings, deserialize them and validate them, serialize and write the validated TOML back to the locations,
+ * and return the settings object and the raw "configuration" object returned from WASM.
+ *
+ * Relies on WASM for TOML de/serialization.
+ */
 export async function loadAndValidateSettings(
+  initPromise: Promise<ModuleType>,
   projectPath?: string
 ): Promise<AppSettings> {
   // Make sure we have wasm initialized.
@@ -491,8 +499,15 @@ export async function loadAndValidateSettings(
   }
 }
 
+/**
+ * Given a settings object, serialize it to TOML
+ * and write it to the appropriate location.
+ *
+ * Relies on WASM for TOML serialization.
+ */
 export async function saveSettings(
-  allSettings: typeof settings,
+  initPromise: Promise<ModuleType>,
+  allSettings: SettingsType,
   projectPath?: string
 ) {
   // Make sure we have wasm initialized.
@@ -537,15 +552,15 @@ export async function saveSettings(
 }
 
 export function getChangedSettingsAtLevel(
-  allSettings: typeof settings,
+  allSettings: SettingsType,
   level: SettingsLevel
 ): Partial<SaveSettingsPayload> {
   const changedSettings = {} as Record<
-    keyof typeof settings,
+    keyof SettingsType,
     Record<string, unknown>
   >
   Object.entries(allSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof typeof settings
+    const categoryKey = category as keyof SettingsType
     Object.entries(settingsCategory).forEach(
       ([setting, settingValue]: [string, Setting]) => {
         // If setting is different its ancestors' non-undefined values,
@@ -571,15 +586,14 @@ export function getChangedSettingsAtLevel(
 }
 
 export function getAllCurrentSettings(
-  allSettings: typeof settings
+  allSettings: SettingsType
 ): SaveSettingsPayload {
   const currentSettings = {} as SaveSettingsPayload
   Object.entries(allSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof typeof settings
+    const categoryKey = category as keyof SettingsType
     Object.entries(settingsCategory).forEach(
       ([setting, settingValue]: [string, Setting]) => {
-        const settingKey =
-          setting as keyof (typeof settings)[typeof categoryKey]
+        const settingKey = setting as keyof SettingsType[typeof categoryKey]
         currentSettings[categoryKey] = {
           ...currentSettings[categoryKey],
           [settingKey]: settingValue.current,
@@ -592,7 +606,7 @@ export function getAllCurrentSettings(
 }
 
 export function clearSettingsAtLevel(
-  allSettings: typeof settings,
+  allSettings: SettingsType,
   level: SettingsLevel
 ) {
   Object.entries(allSettings).forEach(([_category, settingsCategory]) => {
@@ -607,12 +621,12 @@ export function clearSettingsAtLevel(
 }
 
 export function setSettingsAtLevel(
-  allSettings: typeof settings,
+  allSettings: SettingsType,
   level: SettingsLevel,
   newSettings: Partial<SaveSettingsPayload>
 ) {
   Object.entries(newSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof typeof settings
+    const categoryKey = category as keyof SettingsType
     if (!allSettings[categoryKey]) return // ignore unrecognized categories
     Object.entries(settingsCategory).forEach(([settingKey, settingValue]) => {
       // TODO: How do you get a valid type for allSettings[categoryKey][settingKey]?
@@ -687,7 +701,11 @@ export function getSettingInputType(setting: Setting) {
 export function getSettingsFromActorContext(
   s: SettingsActorType
 ): SettingsType {
-  const { currentProject: _, ...settings } = s.getSnapshot().context
+  const {
+    currentProject: _,
+    commandBarActor: _cmd,
+    ...settings
+  } = s.getSnapshot().context
   return settings
 }
 
