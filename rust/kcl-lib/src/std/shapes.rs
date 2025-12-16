@@ -521,6 +521,7 @@ async fn inner_polygon(
     };
 
     sketch.paths.push(current_path);
+    sketch.is_closed = true;
 
     exec_state
         .batch_modeling_cmd(
