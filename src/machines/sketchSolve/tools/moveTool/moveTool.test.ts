@@ -1498,7 +1498,7 @@ describe('createOnMouseEnterCallback', () => {
     const lineMesh = createLineSegmentMesh({ segmentId: 5 })
 
     const callback = createOnMouseEnterCallback({
-      updateLineSegmentHover,
+      updateSegmentHover: updateLineSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
     })
@@ -1526,7 +1526,7 @@ describe('createOnMouseEnterCallback', () => {
     const lineMesh = createLineSegmentMesh({ segmentId: 5 })
 
     const callback = createOnMouseEnterCallback({
-      updateLineSegmentHover,
+      updateSegmentHover: updateLineSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
     })
@@ -1549,7 +1549,7 @@ describe('createOnMouseEnterCallback', () => {
     const pointGroup = createPointSegmentGroup({ segmentId: 3 })
 
     const callback = createOnMouseEnterCallback({
-      updateLineSegmentHover,
+      updateSegmentHover: updateLineSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
     })
@@ -1572,7 +1572,7 @@ describe('createOnMouseEnterCallback', () => {
     const lineMesh = createLineSegmentMesh({ segmentId: 7 })
 
     const callback = createOnMouseEnterCallback({
-      updateLineSegmentHover,
+      updateSegmentHover: updateLineSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
     })
@@ -1598,7 +1598,7 @@ describe('createOnMouseEnterCallback', () => {
     const setLastHoveredMesh = vi.fn()
 
     const callback = createOnMouseEnterCallback({
-      updateLineSegmentHover,
+      updateSegmentHover: updateLineSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
     })
@@ -1624,7 +1624,7 @@ describe('createOnMouseLeaveCallback', () => {
     const setLastHoveredMesh = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
-      updateLineSegmentHover,
+      updateSegmentHover: updateLineSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
@@ -1654,7 +1654,7 @@ describe('createOnMouseLeaveCallback', () => {
     const setLastHoveredMesh = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
-      updateLineSegmentHover,
+      updateSegmentHover: updateLineSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
@@ -1679,7 +1679,7 @@ describe('createOnMouseLeaveCallback', () => {
     const setLastHoveredMesh = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
-      updateLineSegmentHover,
+      updateSegmentHover: updateLineSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
@@ -1707,7 +1707,7 @@ describe('createOnMouseLeaveCallback', () => {
     const setLastHoveredMesh = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
-      updateLineSegmentHover,
+      updateSegmentHover: updateLineSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
@@ -1732,7 +1732,7 @@ describe('createOnMouseLeaveCallback', () => {
     const setLastHoveredMesh = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
-      updateLineSegmentHover,
+      updateSegmentHover: updateLineSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,

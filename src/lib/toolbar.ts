@@ -1286,6 +1286,27 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           state.matches('sketchSolveMode') &&
           state.context.sketchSolveToolName === 'pointTool',
       },
+      {
+        id: 'center-arc',
+        onClick: ({ modelingSend, isActive }) =>
+          isActive
+            ? modelingSend({
+                type: 'unequip tool',
+              })
+            : modelingSend({
+                type: 'equip tool',
+                data: { tool: 'centerArcTool' },
+              }),
+        icon: 'arcCenter',
+        status: 'available',
+        title: 'Center Arc',
+        hotkey: 'A',
+        description: 'Draw an arc by center and two endpoints',
+        links: [],
+        isActive: (state) =>
+          state.matches('sketchSolveMode') &&
+          state.context.sketchSolveToolName === 'centerArcTool',
+      },
       'break',
       {
         id: 'coincident',

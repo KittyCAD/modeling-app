@@ -10,7 +10,9 @@ import {
   htmlHelper,
   SEGMENT_TYPE_LINE,
   SEGMENT_TYPE_POINT,
-  updateLineSegmentHover,
+  SEGMENT_TYPE_ARC,
+  ARC_SEGMENT_BODY,
+  updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
 import {
   type Object3D,
@@ -277,8 +279,13 @@ export function findEntityUnderCursorId(
         selected.children.some(
           (child) => child.userData?.type === STRAIGHT_SEGMENT_BODY
         )
+      const isArcSegment =
+        selected.userData?.type === SEGMENT_TYPE_ARC ||
+        selected.children.some(
+          (child) => child.userData?.type === ARC_SEGMENT_BODY
+        )
 
-      if (isPointSegment || isLineSegment) {
+      if (isPointSegment || isLineSegment || isArcSegment) {
         return groupId
       }
     }
@@ -288,6 +295,7 @@ export function findEntityUnderCursorId(
   const groupUnderCursor = getParentGroup(selected, [
     SEGMENT_TYPE_POINT,
     SEGMENT_TYPE_LINE,
+    SEGMENT_TYPE_ARC,
   ])
   if (groupUnderCursor) {
     const groupId = Number(groupUnderCursor.name)
@@ -307,12 +315,12 @@ export function findEntityUnderCursorId(
  * @returns The onMouseEnter callback function
  */
 export function createOnMouseEnterCallback({
-  updateLineSegmentHover,
+  updateSegmentHover,
   getSelectedIds,
   setLastHoveredMesh,
   getDraftEntityIds,
 }: {
-  updateLineSegmentHover: (
+  updateSegmentHover: (
     mesh: Mesh,
     isHovering: boolean,
     selectedIds: Array<number>,
@@ -334,13 +342,17 @@ export function createOnMouseEnterCallback({
     }
     if (!selected) return
 
-    // Only highlight line segment meshes (not point segments or other objects)
+    // Only highlight segment meshes (lines or arcs), not points or other objects
     const mesh = selected
-    if (mesh.userData?.type === STRAIGHT_SEGMENT_BODY && mesh instanceof Mesh) {
+    if (
+      mesh instanceof Mesh &&
+      (mesh.userData?.type === STRAIGHT_SEGMENT_BODY ||
+        mesh.userData?.type === ARC_SEGMENT_BODY)
+    ) {
       const allSelectedIds = getSelectedIds()
       const draftEntityIds = getDraftEntityIds?.()
       // Highlight the line segment to show it's interactive
-      updateLineSegmentHover(mesh, true, allSelectedIds, draftEntityIds)
+      updateSegmentHover(mesh, true, allSelectedIds, draftEntityIds)
       // Store the hovered mesh so we can clear it on mouse leave
       setLastHoveredMesh(mesh)
     }
@@ -358,13 +370,13 @@ export function createOnMouseEnterCallback({
  * @returns The onMouseLeave callback function
  */
 export function createOnMouseLeaveCallback({
-  updateLineSegmentHover,
+  updateSegmentHover,
   getSelectedIds,
   getLastHoveredMesh,
   setLastHoveredMesh,
   getDraftEntityIds,
 }: {
-  updateLineSegmentHover: (
+  updateSegmentHover: (
     mesh: Mesh,
     isHovering: boolean,
     selectedIds: Array<number>,
@@ -392,7 +404,7 @@ export function createOnMouseLeaveCallback({
       const allSelectedIds = getSelectedIds()
       const draftEntityIds = getDraftEntityIds?.()
       // Remove hover highlighting from the previously hovered segment
-      updateLineSegmentHover(hoveredMesh, false, allSelectedIds, draftEntityIds)
+      updateSegmentHover(hoveredMesh, false, allSelectedIds, draftEntityIds)
       setLastHoveredMesh(null)
     }
 
@@ -400,13 +412,14 @@ export function createOnMouseLeaveCallback({
     if (selected) {
       const mesh = selected
       if (
-        mesh.userData?.type === STRAIGHT_SEGMENT_BODY &&
-        mesh instanceof Mesh
+        mesh instanceof Mesh &&
+        (mesh.userData?.type === STRAIGHT_SEGMENT_BODY ||
+          mesh.userData?.type === ARC_SEGMENT_BODY)
       ) {
         const allSelectedIds = getSelectedIds()
         const draftEntityIds = getDraftEntityIds?.()
         // Ensure hover is cleared even if the mesh wasn't in our tracking
-        updateLineSegmentHover(mesh, false, allSelectedIds, draftEntityIds)
+        updateSegmentHover(mesh, false, allSelectedIds, draftEntityIds)
       }
     }
   }
@@ -1384,7 +1397,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       }) => self.send({ type: 'update selected ids', data }),
     }),
     onMouseEnter: createOnMouseEnterCallback({
-      updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds: () => {
         const snapshot = self.getSnapshot()
         // Combine selectedIds and duringAreaSelectIds for highlighting
@@ -1404,7 +1417,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       },
     }),
     onMouseLeave: createOnMouseLeaveCallback({
-      updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds: () => {
         const snapshot = self.getSnapshot()
         // Combine selectedIds and duringAreaSelectIds for highlighting

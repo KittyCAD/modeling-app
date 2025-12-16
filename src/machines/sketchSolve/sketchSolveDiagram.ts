@@ -169,8 +169,8 @@ export const sketchSolveMachine = setup({
         'Sets which entities are currently in draft state (e.g., while user is drawing a line)',
     },
     'clear draft entities': {
-      actions: 'clear draft entities',
-      description: 'Clears the draft entities tracking',
+      actions: ['clear draft entities', 'refresh selection styling'],
+      description: 'Clears the draft entities tracking and refreshes styling',
     },
     'delete draft entities': {
       actions: 'delete draft entities',
