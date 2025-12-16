@@ -22,8 +22,10 @@ import {
   Fragment,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
+  memo,
 } from 'react'
 import {
   getOppositeSide,
@@ -117,7 +119,7 @@ interface LayoutRootNodeProps {
   enableContextMenus?: boolean
 }
 
-export function LayoutRootNode({
+export const LayoutRootNode = memo(function LayoutRootNode({
   areaLibrary,
   actionLibrary,
   layout,
@@ -163,22 +165,28 @@ export function LayoutRootNode({
     )
   }
 
+  const providerValue = useMemo(() => ({
+    areaLibrary: areaLibrary || nullAreaLibrary,
+    actionLibrary: actionLibrary || nullActionLibrary,
+    updateSplitSizes,
+    replaceLayoutNode,
+    togglePane,
+    enableContextMenus,
+    // More API here if needed within nested layout components
+  // The other properties are all callbacks which are set once.
+  }), [enableContextMenus])
+
   return (
     <LayoutStateContext.Provider
-      value={{
-        areaLibrary: areaLibrary || nullAreaLibrary,
-        actionLibrary: actionLibrary || nullActionLibrary,
-        updateSplitSizes,
-        replaceLayoutNode,
-        togglePane,
-        enableContextMenus,
-        // More API here if needed within nested layout components
-      }}
+      value={providerValue}
     >
       <LayoutNode layout={layout} />
     </LayoutStateContext.Provider>
   )
-}
+}, (oldProps, newProps) => 
+  oldProps.layout === newProps.layout
+  && oldProps.enableContextMenus === newProps.enableContextMenus
+)
 
 /*
  * A layout is a nested set of Areas (Splits or Panes),
