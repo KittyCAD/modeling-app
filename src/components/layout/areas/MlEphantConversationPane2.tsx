@@ -15,7 +15,6 @@ import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
-import type { BillingActor } from '@src/machines/billingMachine'
 import { useSelector } from '@xstate/react'
 import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
@@ -24,7 +23,6 @@ import { type useModelingContext } from '@src/hooks/useModelingContext'
 
 export const MlEphantConversationPane2 = (props: {
   mlEphantManagerActor: MlEphantManagerActor2
-  billingActor: BillingActor
   systemIOActor: SystemIOActor
   kclManager: KclManager
   theProject: Project | undefined
@@ -54,10 +52,6 @@ export const MlEphantConversationPane2 = (props: {
   ) {
     conversation = undefined
   }
-
-  const billingContext = useSelector(props.billingActor, (actor) => {
-    return actor.context
-  })
 
   const onProcess = async (request: string, mode: MlCopilotMode) => {
     if (props.theProject === undefined) {
@@ -305,7 +299,6 @@ export const MlEphantConversationPane2 = (props: {
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
       conversation={conversation}
-      billingContext={billingContext}
       onProcess={(request: string, mode: MlCopilotMode) => {
         onProcess(request, mode).catch(reportRejection)
       }}

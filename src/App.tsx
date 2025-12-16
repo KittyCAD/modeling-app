@@ -65,6 +65,7 @@ import {
 import { useSignalEffect } from '@preact/signals-react'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
+import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -309,6 +310,10 @@ export function App() {
             {
               id: 'experimental-features',
               component: ExperimentalFeaturesMenu,
+            },
+            {
+              id: 'zookeeper-credits',
+              component: ZookeeperCreditsMenu,
             },
             ...defaultLocalStatusBarItems,
           ]}
