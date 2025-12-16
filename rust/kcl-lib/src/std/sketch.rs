@@ -27,6 +27,7 @@ use crate::{
     },
     parsing::ast::types::TagNode,
     std::{
+        EQUAL_POINTS_DIST_EPSILON,
         args::{Args, TyF64},
         axis_or_reference::Axis2dOrEdgeReference,
         planes::inner_plane_of,
@@ -321,6 +322,17 @@ async fn straight_line(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
+    let loops_back_to_start = end_absolute.as_ref().is_some_and(|p| {
+        // If this line goes back to where the sketch starts, then it
+        // will close the sketch.
+        let to_x = p[0].to_mm();
+        let to_y = p[1].to_mm();
+        let start_x = sketch.start.from[0];
+        let start_y = sketch.start.from[1];
+        let same_x = (to_x - start_x).abs() < EQUAL_POINTS_DIST_EPSILON;
+        let same_y = (to_y - start_y).abs() < EQUAL_POINTS_DIST_EPSILON;
+        same_x && same_y
+    });
     let (point, is_absolute) = match (end_absolute, end) {
         (Some(_), Some(_)) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -375,6 +387,9 @@ async fn straight_line(
     };
 
     let mut new_sketch = sketch;
+    if loops_back_to_start {
+        new_sketch.is_closed = true;
+    }
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
