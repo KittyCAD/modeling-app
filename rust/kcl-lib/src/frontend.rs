@@ -54,6 +54,38 @@ const ARC_PROPERTY_START: &str = "start";
 const ARC_PROPERTY_END: &str = "end";
 const ARC_PROPERTY_CENTER: &str = "center";
 
+#[derive(Debug, Clone, Copy)]
+enum EditDeleteKind {
+    Edit,
+    DeleteSketch,
+    DeleteNonSketch,
+}
+
+impl EditDeleteKind {
+    /// Returns true if this edit is any type of deletion.
+    fn is_delete(&self) -> bool {
+        match self {
+            EditDeleteKind::Edit => false,
+            EditDeleteKind::DeleteSketch | EditDeleteKind::DeleteNonSketch => true,
+        }
+    }
+
+    fn to_change_kind(self) -> ChangeKind {
+        match self {
+            EditDeleteKind::Edit => ChangeKind::Edit,
+            EditDeleteKind::DeleteSketch | EditDeleteKind::DeleteNonSketch => ChangeKind::Delete,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+enum ChangeKind {
+    Add,
+    Edit,
+    Delete,
+    None,
+}
+
 #[derive(Debug, Clone)]
 pub struct FrontendState {
     program: Program,
@@ -87,11 +119,14 @@ impl SketchApi for FrontendState {
         &mut self,
         ctx: &ExecutorContext,
         _version: Version,
-        _sketch: ObjectId,
+        sketch: ObjectId,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        let mut truncated_program = self.program.clone();
+        self.truncate_after_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
+
         // Execute.
         let outcome = ctx
-            .run_mock(&self.program, &MockConfig::default())
+            .run_mock(&truncated_program, &MockConfig::default())
             .await
             .map_err(|err| Error {
                 msg: err.error.message().to_owned(),
@@ -187,6 +222,9 @@ impl SketchApi for FrontendState {
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
+        // Since we just added the sketch block to the end, we don't need to
+        // truncate it.
+
         // Execute.
         let outcome = ctx
             .run_mock(&new_program, &MockConfig::default())
@@ -245,13 +283,17 @@ impl SketchApi for FrontendState {
         // Enter sketch mode by setting the sketch_mode.
         self.scene_graph.sketch_mode = Some(sketch);
 
+        // Truncate after the sketch block for mock execution.
+        let mut truncated_program = self.program.clone();
+        self.truncate_after_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
+
         // Execute in mock mode to ensure state is up to date. The caller will
         // want freedom analysis to display segments correctly.
         let mock_config = MockConfig {
             freedom_analysis: true,
             ..Default::default()
         };
-        let outcome = ctx.run_mock(&self.program, &mock_config).await.map_err(|err| {
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -328,8 +370,14 @@ impl SketchApi for FrontendState {
         // Modify the AST to remove the sketch.
         self.mutate_ast(&mut new_ast, sketch_id, AstMutateCommand::DeleteNode)?;
 
-        self.execute_after_edit(ctx, Default::default(), true, &mut new_ast)
-            .await
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            Default::default(),
+            EditDeleteKind::DeleteSketch,
+            &mut new_ast,
+        )
+        .await
     }
 
     async fn add_segment(
@@ -374,7 +422,7 @@ impl SketchApi for FrontendState {
                 }
             }
         }
-        self.execute_after_edit(ctx, segment_ids_edited, false, &mut new_ast)
+        self.execute_after_edit(ctx, sketch, segment_ids_edited, EditDeleteKind::Edit, &mut new_ast)
             .await
     }
 
@@ -402,8 +450,14 @@ impl SketchApi for FrontendState {
         for segment_id in segment_ids_set {
             self.delete_segment(&mut new_ast, sketch, segment_id)?;
         }
-        self.execute_after_edit(ctx, Default::default(), true, &mut new_ast)
-            .await
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            Default::default(),
+            EditDeleteKind::DeleteNonSketch,
+            &mut new_ast,
+        )
+        .await
     }
 
     async fn add_constraint(
@@ -628,9 +682,13 @@ impl FrontendState {
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
+        // Truncate after the sketch block for mock execution.
+        let mut truncated_program = new_program;
+        self.truncate_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+
         // Execute.
         let outcome = ctx
-            .run_mock(&new_program, &MockConfig::default())
+            .run_mock(&truncated_program, &MockConfig::default())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
@@ -744,9 +802,13 @@ impl FrontendState {
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
+        // Truncate after the sketch block for mock execution.
+        let mut truncated_program = new_program;
+        self.truncate_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+
         // Execute.
         let outcome = ctx
-            .run_mock(&new_program, &MockConfig::default())
+            .run_mock(&truncated_program, &MockConfig::default())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
@@ -866,9 +928,13 @@ impl FrontendState {
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
+        // Truncate after the sketch block for mock execution.
+        let mut truncated_program = new_program;
+        self.truncate_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+
         // Execute.
         let outcome = ctx
-            .run_mock(&new_program, &MockConfig::default())
+            .run_mock(&truncated_program, &MockConfig::default())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
@@ -1195,8 +1261,9 @@ impl FrontendState {
     async fn execute_after_edit(
         &mut self,
         ctx: &ExecutorContext,
+        sketch: ObjectId,
         segment_ids_edited: AhashIndexSet<ObjectId>,
-        is_delete: bool,
+        edit_kind: EditDeleteKind,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
@@ -1217,6 +1284,17 @@ impl FrontendState {
         // TODO: sketch-api: make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
+        // Truncate after the sketch block for mock execution.
+        let is_delete = edit_kind.is_delete();
+        let truncated_program = match edit_kind {
+            EditDeleteKind::DeleteSketch => new_program,
+            EditDeleteKind::Edit | EditDeleteKind::DeleteNonSketch => {
+                let mut truncated_program = new_program;
+                self.truncate_after_sketch_block(sketch, edit_kind.to_change_kind(), &mut truncated_program.ast)?;
+                truncated_program
+            }
+        };
+
         #[cfg(not(feature = "artifact-graph"))]
         drop(segment_ids_edited);
 
@@ -1227,7 +1305,7 @@ impl FrontendState {
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited,
         };
-        let outcome = ctx.run_mock(&new_program, &mock_config).await.map_err(|err| {
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -1241,9 +1319,8 @@ impl FrontendState {
         let new_source = {
             // Feed back sketch var solutions into the source.
             //
-            // TODO: Limit to only the sketch ID parameter. Currently, the
-            // interpreter is returning all var solutions from the last sketch
-            // block.
+            // The interpreter is returning all var solutions from the sketch
+            // block we're editing.
             let mut new_ast = self.program.ast.clone();
             for (var_range, value) in &outcome.var_solutions {
                 let rounded = value.round(3);
@@ -1750,7 +1827,7 @@ impl FrontendState {
     async fn execute_after_add_constraint(
         &mut self,
         ctx: &ExecutorContext,
-        _sketch_id: ObjectId,
+        sketch_id: ObjectId,
         #[cfg_attr(not(feature = "artifact-graph"), allow(unused_variables))] sketch_block_range: SourceRange,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
@@ -1779,12 +1856,16 @@ impl FrontendState {
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
+        // Truncate after the sketch block for mock execution.
+        let mut truncated_program = new_program;
+        self.truncate_after_sketch_block(sketch_id, ChangeKind::Add, &mut truncated_program.ast)?;
+
         // Execute.
         let mock_config = MockConfig {
             freedom_analysis: true,
             ..Default::default()
         };
-        let outcome = ctx.run_mock(&new_program, &mock_config).await.map_err(|err| {
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -1902,6 +1983,24 @@ impl FrontendState {
         }
     }
 
+    fn truncate_after_sketch_block(
+        &self,
+        sketch_id: ObjectId,
+        edit_kind: ChangeKind,
+        ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<()> {
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch_id:?}"),
+        })?;
+        let ObjectKind::Sketch(_) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        let sketch_block_range = expect_single_source_range(&sketch_object.source)?;
+        truncate_after_sketch_block(ast, sketch_block_range, edit_kind)
+    }
+
     fn mutate_ast(
         &mut self,
         ast: &mut ast::Node<ast::Program>,
@@ -1935,6 +2034,51 @@ fn expect_single_source_range(source_ref: &SourceRef) -> api::Result<SourceRange
             Ok(ranges[0])
         }
     }
+}
+
+fn truncate_after_sketch_block(
+    ast: &mut ast::Node<ast::Program>,
+    sketch_block_range: SourceRange,
+    edit_kind: ChangeKind,
+) -> api::Result<()> {
+    let r1 = sketch_block_range;
+    let matches_range = |r2: SourceRange| -> bool {
+        // We may have added items to the sketch block, so the end may not be an
+        // exact match.
+        match edit_kind {
+            ChangeKind::Add => r1.module_id() == r2.module_id() && r1.start() == r2.start() && r1.end() <= r2.end(),
+            // For edit, we don't know whether it grew or shrank.
+            ChangeKind::Edit => r1.module_id() == r2.module_id() && r1.start() == r2.start(),
+            ChangeKind::Delete => r1.module_id() == r2.module_id() && r1.start() == r2.start() && r1.end() >= r2.end(),
+            // No edit should be an exact match.
+            ChangeKind::None => r1.module_id() == r2.module_id() && r1.start() == r2.start() && r1.end() == r2.end(),
+        }
+    };
+    let index = ast.body.iter().position(|item| match item {
+        ast::BodyItem::ImportStatement(_) => false,
+        ast::BodyItem::ExpressionStatement(node) => {
+            let r2 = SourceRange::from(node);
+            matches_range(r2) && matches!(node.expression, ast::Expr::SketchBlock(_))
+        }
+        ast::BodyItem::VariableDeclaration(node) => {
+            let r2 = SourceRange::from(&node.declaration.init);
+            matches_range(r2) && matches!(node.declaration.init, ast::Expr::SketchBlock(_))
+        }
+        ast::BodyItem::TypeDeclaration(_) => false,
+        ast::BodyItem::ReturnStatement(node) => {
+            let r2 = SourceRange::from(&node.argument);
+            matches_range(r2) && matches!(node.argument, ast::Expr::SketchBlock(_))
+        }
+    });
+    if let Some(sketch_block_index) = index {
+        ast.body.truncate(sketch_block_index + 1);
+    } else {
+        return Err(Error {
+            msg: format!("Sketch block source range not found in AST: {sketch_block_range:?}, edit_kind={edit_kind:?}"),
+        });
+    }
+
+    Ok(())
 }
 
 /// Return the AST expression referencing the variable at the given source ref.
@@ -2053,6 +2197,7 @@ impl Visitor for AstMutateContext {
         }
     }
 }
+
 fn filter_and_process(
     ctx: &mut AstMutateContext,
     node: NodeMut,

@@ -1191,14 +1191,11 @@ impl Node<SketchBlock> {
         #[cfg(feature = "artifact-graph")]
         {
             // Store variable solutions so that the sketch refactoring API can
-            // write them back to the source. Because of how the frontend works
-            // and how we don't really support more than one sketch block yet,
-            // we only update it if it's empty so that empty blocks at the end
-            // are ignored.
-            if exec_state.mod_local.artifacts.var_solutions.is_empty() {
-                exec_state.mod_local.artifacts.var_solutions =
-                    sketch_block_state.var_solutions(solve_outcome, solution_ty, SourceRange::from(self))?;
-            }
+            // write them back to the source. The frontend module truncates the
+            // AST so that the sketch block that we care about is always the
+            // last one. Therefore, we should overwrite any previous solutions.
+            exec_state.mod_local.artifacts.var_solutions =
+                sketch_block_state.var_solutions(solve_outcome, solution_ty, SourceRange::from(self))?;
         }
 
         // Create scene objects after unknowns are solved.
