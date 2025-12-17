@@ -889,8 +889,7 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": "mm",
-      "isClosed": "no"
+      "units": "mm"
     }
   },
   "holeRadius": {
