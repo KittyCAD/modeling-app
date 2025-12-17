@@ -1,6 +1,6 @@
 import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
-import type { settings } from '@src/lib/settings/initialSettings'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { KclManager } from '@src/lang/KclManager'
 import type { SystemIOActor } from '@src/lib/singletons'
 import { useEffect, useState, useRef } from 'react'
@@ -31,7 +31,7 @@ export const MlEphantConversationPane2 = (props: {
   contextModeling: ModelingMachineContext
   sendModeling: ReturnType<typeof useModelingContext>['send']
   loaderFile: FileEntry | undefined
-  settings: typeof settings
+  settings: SettingsType
   user?: User
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
@@ -283,6 +283,21 @@ export const MlEphantConversationPane2 = (props: {
     }
   }, [searchParams, setSearchParams])
 
+  const userBlockedOnPayment: () => boolean = () => {
+    if (!props.user || !props.user.block) {
+      return false
+    }
+
+    switch (props.user.block) {
+      case 'missing_payment_method':
+      case 'payment_method_failed':
+        return true
+      default:
+        props.user.block satisfies never // exhaustiveness check
+        return false
+    }
+  }
+
   return (
     <MlEphantConversation2
       isLoading={conversation === undefined}
@@ -301,6 +316,7 @@ export const MlEphantConversationPane2 = (props: {
       needsReconnect={needsReconnect}
       hasPromptCompleted={!isProcessing}
       userAvatarSrc={props.user?.image}
+      userBlockedOnPayment={userBlockedOnPayment()}
       defaultPrompt={defaultPrompt}
     />
   )

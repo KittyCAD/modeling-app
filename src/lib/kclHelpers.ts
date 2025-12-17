@@ -38,7 +38,8 @@ export async function getCalculatedKclExpressionValue(
 ) {
   // Create a one-line program that assigns the value to a variable
   const dummyProgramCode = `${DUMMY_VARIABLE_NAME} = ${value}`
-  const pResult = parse(dummyProgramCode, rustContext.getRustInstance())
+  const wasmInstance = await rustContext.wasmInstancePromise
+  const pResult = parse(dummyProgramCode, wasmInstance)
   if (err(pResult) || !resultIsOk(pResult)) return pResult
   const ast = pResult.program
 
@@ -87,11 +88,7 @@ export async function getCalculatedKclExpressionValue(
 
     const arrayValues = varValue.value.map((item: KclValue) => {
       if (isNumberValueItem(item)) {
-        const formatted = formatNumberValue(
-          item.value,
-          item.ty,
-          rustContext.getRustInstance()
-        )
+        const formatted = formatNumberValue(item.value, item.ty, wasmInstance)
         if (!err(formatted)) {
           return formatted
         }
@@ -116,7 +113,7 @@ export async function getCalculatedKclExpressionValue(
     const formatted = formatNumberValue(
       varValue.value,
       varValue.ty,
-      rustContext.getRustInstance()
+      wasmInstance
     )
     if (err(formatted)) return undefined
     return formatted
