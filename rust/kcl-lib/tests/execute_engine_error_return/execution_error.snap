@@ -5,7 +5,7 @@ description: Error from executing execute_engine_error_return.kcl
 KCL Semantic error
 
   × semantic: Cannot solid extrude an open profile. Either close the profile,
-  │ or use a a surface extrude.
+  │ or use a surface extrude.
    ╭─[2:6]
  1 │ part001 = startSketchOn(XY)
  2 │   |> startProfile(at = [5.5229, 5.25217])
@@ -22,7 +22,7 @@ KCL Semantic error
   ╰─▶ KCL Semantic error
       
         × semantic: Cannot solid extrude an open profile. Either close the
-        │ profile, or use a a surface extrude.
+        │ profile, or use a surface extrude.
          ╭─[2:6]
        1 │ part001 = startSketchOn(XY)
        2 │   |> startProfile(at = [5.5229, 5.25217])
