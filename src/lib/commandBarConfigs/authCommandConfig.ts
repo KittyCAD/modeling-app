@@ -23,7 +23,7 @@ export function createAuthCommands({
       name: 'refresh',
       displayName: 'Reload app',
       description: 'Force the scene, features, and editor to reload.',
-      icon: 'exclamationMark',
+      icon: 'arrowRotateFullRight',
       needsReview: false,
       onSubmit: () => {
         refreshPage('Command palette').catch(reportRejection)
