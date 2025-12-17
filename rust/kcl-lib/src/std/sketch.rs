@@ -321,15 +321,6 @@ async fn straight_line(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let _loops_back_to_start = end_absolute.as_ref().is_some_and(|end| {
-        let end_x = end[0].to_mm();
-        let end_y = end[1].to_mm();
-        let start_x = sketch.start.from[0];
-        let start_y = sketch.start.from[1];
-        let same_x = (end_x - start_x).abs() < EQUAL_POINTS_DIST_EPSILON;
-        let same_y = (end_y - start_y).abs() < EQUAL_POINTS_DIST_EPSILON;
-        same_x && same_y
-    });
     let from = sketch.current_pen_position()?;
     let (point, is_absolute) = match (end_absolute, end) {
         (Some(_), Some(_)) => {
@@ -371,6 +362,15 @@ async fn straight_line(
         [from.x + point[0], from.y + point[1]]
     };
 
+    // Does it loop back on itself?
+    let end_x = end[0];
+    let end_y = end[1];
+    let start_x = sketch.start.from[0];
+    let start_y = sketch.start.from[1];
+    let same_x = (end_x - start_x).abs() < EQUAL_POINTS_DIST_EPSILON;
+    let same_y = (end_y - start_y).abs() < EQUAL_POINTS_DIST_EPSILON;
+    let loops_back_to_start = same_x && same_y;
+
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.ignore_units(),
@@ -387,6 +387,9 @@ async fn straight_line(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
