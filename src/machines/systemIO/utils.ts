@@ -314,7 +314,7 @@ export const collectProjectFiles = async (args: {
     const MB20 = 2 ** 20 * 20
     if (uploadSize > MB20) {
       toast.error(
-        'Your project exceeds 20Mb, this will slow down Zookeeper\nPlease remove any unnecessary files'
+        'Your project exceeds 20Mb, this will slow down Text-to-CAD\nPlease remove any unnecessary files'
       )
     }
   }

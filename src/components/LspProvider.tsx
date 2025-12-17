@@ -24,7 +24,7 @@ import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { kclManager, sceneEntitiesManager } from '@src/lib/singletons'
+import { kclManager } from '@src/lib/singletons'
 import { useToken } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
@@ -138,34 +138,31 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     let plugin = null
     if (isKclLspReady && kclLspClient) {
       // Set up the lsp plugin.
-      const lsp = kcl(
-        {
-          documentUri: `file:///${PROJECT_ENTRYPOINT}`,
-          workspaceFolders: getWorkspaceFolders(),
-          client: kclLspClient,
-          processLspNotification: (
-            plugin: LanguageServerPlugin,
-            notification: LSP.NotificationMessage
-          ) => {
-            try {
-              switch (notification.method) {
-                case 'kcl/astUpdated':
-                  // Update the folding ranges, since the AST has changed.
-                  // This is a hack since codemirror does not support async foldService.
-                  // When they do we can delete this.
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  plugin.updateFoldingRanges()
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  plugin.requestSemanticTokens()
-                  break
-              }
-            } catch (error) {
-              console.error(error)
+      const lsp = kcl({
+        documentUri: `file:///${PROJECT_ENTRYPOINT}`,
+        workspaceFolders: getWorkspaceFolders(),
+        client: kclLspClient,
+        processLspNotification: (
+          plugin: LanguageServerPlugin,
+          notification: LSP.NotificationMessage
+        ) => {
+          try {
+            switch (notification.method) {
+              case 'kcl/astUpdated':
+                // Update the folding ranges, since the AST has changed.
+                // This is a hack since codemirror does not support async foldService.
+                // When they do we can delete this.
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                plugin.updateFoldingRanges()
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
+                plugin.requestSemanticTokens()
+                break
             }
-          },
+          } catch (error) {
+            console.error(error)
+          }
         },
-        { kclManager, sceneEntitiesManager }
-      )
+      })
 
       plugin = lsp
     }
@@ -217,15 +214,12 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     let plugin = null
     if (isCopilotLspReady && copilotLspClient) {
       // Set up the lsp plugin.
-      const lsp = copilotPlugin(
-        {
-          documentUri: `file:///${PROJECT_ENTRYPOINT}`,
-          workspaceFolders: getWorkspaceFolders(),
-          client: copilotLspClient,
-          allowHTMLContent: true,
-        },
-        kclManager
-      )
+      const lsp = copilotPlugin({
+        documentUri: `file:///${PROJECT_ENTRYPOINT}`,
+        workspaceFolders: getWorkspaceFolders(),
+        client: copilotLspClient,
+        allowHTMLContent: true,
+      })
 
       plugin = lsp
     }

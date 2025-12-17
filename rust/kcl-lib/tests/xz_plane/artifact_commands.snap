@@ -139,8 +139,7 @@ description: Artifact commands xz_plane.kcl
         "distance": 12.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

@@ -283,8 +283,7 @@ description: Artifact commands out_of_band_sketches.kcl
         "distance": 10.14,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -345,8 +344,7 @@ description: Artifact commands out_of_band_sketches.kcl
         "distance": 10.14,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

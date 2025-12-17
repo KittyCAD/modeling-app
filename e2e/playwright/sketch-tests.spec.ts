@@ -263,8 +263,8 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
 
     await test.step('Select the offset plane', async () => {
       await toolbar.openFeatureTreePane()
-      const opButton = await toolbar.getFeatureTreeOperation('plane001', 0)
-      await opButton.click()
+
+      await page.getByRole('button', { name: 'Offset plane' }).click()
 
       await page.waitForTimeout(600)
 

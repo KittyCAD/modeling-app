@@ -221,10 +221,6 @@ export type fn
 @(impl = std_rust)
 export type Plane
 
-/// A segment of a path in a sketch. It may be a line, arc, or other segment type.
-@(impl = std_rust_constrainable, experimental = true)
-export type Segment
-
 /// A sketch is a collection of paths.
 ///
 /// When you define a sketch to a variable like:

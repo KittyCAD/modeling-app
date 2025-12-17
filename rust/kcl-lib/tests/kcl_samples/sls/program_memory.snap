@@ -1228,10 +1228,10 @@ description: Variables in memory after executing sls.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1672,
-            "end": 1698,
+            "commentStart": 1675,
+            "end": 1701,
             "moduleId": 0,
-            "start": 1672,
+            "start": 1675,
             "type": "TagDeclarator",
             "value": "engineSectionLowerSegment"
           },
@@ -1242,10 +1242,10 @@ description: Variables in memory after executing sls.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1782,
-            "end": 1794,
+            "commentStart": 1785,
+            "end": 1797,
             "moduleId": 0,
-            "start": 1782,
+            "start": 1785,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -1272,10 +1272,10 @@ description: Variables in memory after executing sls.kcl
             ],
             "radius": 4.2,
             "tag": {
-              "commentStart": 1672,
-              "end": 1698,
+              "commentStart": 1675,
+              "end": 1701,
               "moduleId": 0,
-              "start": 1672,
+              "start": 1675,
               "type": "TagDeclarator",
               "value": "engineSectionLowerSegment"
             },
@@ -1365,10 +1365,10 @@ description: Variables in memory after executing sls.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1672,
-            "end": 1698,
+            "commentStart": 1675,
+            "end": 1701,
             "moduleId": 0,
-            "start": 1672,
+            "start": 1675,
             "type": "TagDeclarator",
             "value": "engineSectionLowerSegment"
           },
@@ -1379,10 +1379,10 @@ description: Variables in memory after executing sls.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1782,
-            "end": 1794,
+            "commentStart": 1785,
+            "end": 1797,
             "moduleId": 0,
-            "start": 1782,
+            "start": 1785,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -1409,10 +1409,10 @@ description: Variables in memory after executing sls.kcl
             ],
             "radius": 4.2,
             "tag": {
-              "commentStart": 1672,
-              "end": 1698,
+              "commentStart": 1675,
+              "end": 1701,
               "moduleId": 0,
-              "start": 1672,
+              "start": 1675,
               "type": "TagDeclarator",
               "value": "engineSectionLowerSegment"
             },
@@ -1523,10 +1523,10 @@ description: Variables in memory after executing sls.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1672,
-            "end": 1698,
+            "commentStart": 1675,
+            "end": 1701,
             "moduleId": 0,
-            "start": 1672,
+            "start": 1675,
             "type": "TagDeclarator",
             "value": "engineSectionLowerSegment"
           },
@@ -1537,10 +1537,10 @@ description: Variables in memory after executing sls.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1782,
-            "end": 1794,
+            "commentStart": 1785,
+            "end": 1797,
             "moduleId": 0,
-            "start": 1782,
+            "start": 1785,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -1567,10 +1567,10 @@ description: Variables in memory after executing sls.kcl
             ],
             "radius": 4.2,
             "tag": {
-              "commentStart": 1672,
-              "end": 1698,
+              "commentStart": 1675,
+              "end": 1701,
               "moduleId": 0,
-              "start": 1672,
+              "start": 1675,
               "type": "TagDeclarator",
               "value": "engineSectionLowerSegment"
             },
@@ -1702,10 +1702,10 @@ description: Variables in memory after executing sls.kcl
           ],
           "radius": 4.2,
           "tag": {
-            "commentStart": 1672,
-            "end": 1698,
+            "commentStart": 1675,
+            "end": 1701,
             "moduleId": 0,
-            "start": 1672,
+            "start": 1675,
             "type": "TagDeclarator",
             "value": "engineSectionLowerSegment"
           },

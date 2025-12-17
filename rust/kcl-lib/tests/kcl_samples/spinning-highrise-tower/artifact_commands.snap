@@ -173,8 +173,7 @@ description: Artifact commands spinning-highrise-tower.kcl
         "distance": -200.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -419,8 +418,7 @@ description: Artifact commands spinning-highrise-tower.kcl
         "distance": -5000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -665,8 +663,7 @@ description: Artifact commands spinning-highrise-tower.kcl
         "distance": 1700.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -838,8 +835,7 @@ description: Artifact commands spinning-highrise-tower.kcl
         "distance": -1200.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1808,8 +1804,7 @@ description: Artifact commands spinning-highrise-tower.kcl
         "distance": 84500.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2014,8 +2009,7 @@ description: Artifact commands spinning-highrise-tower.kcl
         "distance": 4500.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

@@ -235,8 +235,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -2000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -492,8 +491,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -405.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -759,8 +757,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -405.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1026,8 +1023,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -405.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1320,8 +1316,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -405.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1598,8 +1593,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -1800.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1788,8 +1782,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -1800.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2017,8 +2010,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": 3850.0000000000005,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2303,8 +2295,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2458,8 +2449,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2786,8 +2776,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2941,8 +2930,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3269,8 +3257,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3424,8 +3411,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3806,8 +3792,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3961,8 +3946,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -4315,8 +4299,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": -50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -4561,8 +4544,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "distance": 50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

@@ -32,28 +32,6 @@ description: Operations executed sketch_block_basic_fixed_constraints.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "SketchSolve",
-      "sketchId": 0,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlock"
-          }
-        ]
-      },
-      "sourceRange": []
     }
   ],
   "std::math": [
@@ -227,54 +205,6 @@ description: Operations executed sketch_block_basic_fixed_constraints.kcl
           {
             "type": "ProgramBodyItem",
             "index": 23
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "SOLID",
-      "value": {
-        "type": "String",
-        "value": "solid"
-      },
-      "visibility": "export",
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 24
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "SURFACE",
-      "value": {
-        "type": "String",
-        "value": "surface"
-      },
-      "visibility": "export",
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"

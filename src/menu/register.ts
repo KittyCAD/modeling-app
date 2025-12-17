@@ -1,8 +1,7 @@
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
 import {
   authActor,
   commandBarActor,
@@ -17,9 +16,7 @@ import type { NavigateFunction } from 'react-router-dom'
 export function modelingMenuCallbackMostActions(
   settings: SettingsType,
   navigate: NavigateFunction,
-  filePath: string,
-  engineCommandManager: ConnectionManager,
-  sceneInfra: SceneInfra
+  filePath: string
 ) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -106,6 +103,11 @@ export function modelingMenuCallbackMostActions(
       })
     } else if (data.menuLabel === 'File.Create new file') {
       // NO OP. A safe command bar create new file is not implemented yet.
+    } else if (data.menuLabel === 'Edit.Modify with Zoo Text-To-CAD') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Prompt-to-edit', groupId: 'modeling' },
+      })
     } else if (data.menuLabel === 'Edit.Edit parameter') {
       commandBarActor.send({
         type: 'Find and select command',
@@ -258,6 +260,24 @@ export function modelingMenuCallbackMostActions(
           groupId: 'code',
           name: 'Insert',
         },
+      })
+    } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          name: 'Text-to-CAD',
+          groupId: 'application',
+          argDefaultValues: {
+            method: 'existingProject',
+            projectName: currentProject?.name,
+          },
+        },
+      })
+    } else if (data.menuLabel === 'Design.Modify with Zoo Text-To-CAD') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: { name: 'Prompt-to-edit', groupId: 'modeling' },
       })
     }
   }

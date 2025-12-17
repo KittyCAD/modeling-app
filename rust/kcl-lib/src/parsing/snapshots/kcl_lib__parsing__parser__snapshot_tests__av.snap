@@ -118,14 +118,6 @@ expression: actual
           "commentStart": 4,
           "end": 59,
           "moduleId": 0,
-          "name": {
-            "commentStart": 3,
-            "end": 4,
-            "moduleId": 0,
-            "name": "f",
-            "start": 3,
-            "type": "Identifier"
-          },
           "params": [
             {
               "type": "Parameter",

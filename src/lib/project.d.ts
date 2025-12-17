@@ -12,11 +12,11 @@ export type FileType = 'file' | 'directory' | 'symlink'
  * Metadata about a file or directory.
  */
 export type FileMetadata = {
-  accessed: number | null
-  created: number | null
+  accessed: string | null
+  created: string | null
   type: FileType | null
   size: number
-  modified: number | null
+  modified: string | null
   permission: FilePermission | null
 }
 

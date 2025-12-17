@@ -130,8 +130,7 @@ description: Artifact commands translate_after_fillet.kcl
         "distance": -0.625,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -350,8 +349,7 @@ description: Artifact commands translate_after_fillet.kcl
         "distance": -0.46875,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -480,8 +478,7 @@ description: Artifact commands translate_after_fillet.kcl
         "distance": 2.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

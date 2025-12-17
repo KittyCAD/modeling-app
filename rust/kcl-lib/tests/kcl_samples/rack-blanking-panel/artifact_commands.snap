@@ -685,8 +685,7 @@ description: Artifact commands rack-blanking-panel.kcl
         "distance": 1.5189199999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1017,8 +1016,7 @@ description: Artifact commands rack-blanking-panel.kcl
         "distance": 8.466666666666665,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1075,8 +1073,7 @@ description: Artifact commands rack-blanking-panel.kcl
         "distance": 8.466666666666665,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

@@ -78,4 +78,3 @@ venv
 .vscode-test
 .biome/
 .million
-.cursor

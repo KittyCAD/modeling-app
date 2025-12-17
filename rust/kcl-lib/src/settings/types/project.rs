@@ -74,6 +74,9 @@ pub struct PerProjectSettings {
 pub struct ProjectMetaSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub id: uuid::Uuid,
+    /// Enable the conversational agent in Text-to-CAD for this project.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub enable_zookeeper: bool,
 }
 
 /// Project specific application settings.
@@ -266,7 +269,10 @@ mod tests {
     fn test_project_settings_named_views() {
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
-                meta: ProjectMetaSettings { id: uuid::Uuid::nil() },
+                meta: ProjectMetaSettings {
+                    id: uuid::Uuid::nil(),
+                    enable_zookeeper: Default::default(),
+                },
                 app: ProjectAppSettings {
                     onboarding_status: Default::default(),
                     stream_idle_mode: false,

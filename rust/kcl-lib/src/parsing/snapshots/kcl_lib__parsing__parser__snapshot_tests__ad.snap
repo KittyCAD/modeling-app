@@ -50,14 +50,6 @@ expression: actual
           "commentStart": 24,
           "end": 51,
           "moduleId": 0,
-          "name": {
-            "commentStart": 8,
-            "end": 24,
-            "moduleId": 0,
-            "name": "firstPrimeNumber",
-            "start": 8,
-            "type": "Identifier"
-          },
           "params": [],
           "start": 24,
           "type": "FunctionExpression",

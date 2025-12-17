@@ -17,7 +17,6 @@ revolve(
   bidirectionalAngle?: number(Angle),
   tagStart?: TagDecl,
   tagEnd?: TagDecl,
-  bodyType?: string,
 ): [Solid; 1+]
 ```
 
@@ -44,7 +43,6 @@ revolved around the same axis.
 | `bidirectionalAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored. | No |
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the revolve, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the revolve. | No |
-| `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
 
 ### Returns
 
@@ -292,6 +290,7 @@ part001 = revolve(
 ```kcl
 // Revolve two sketches around the same axis.
 
+
 sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [4, 8])
   |> xLine(length = 3)
@@ -328,6 +327,7 @@ revolve([profile001, profile002], axis = X)
 ```kcl
 // Revolve around a path that has not been extruded.
 
+
 profile001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 20], tag = $revolveAxis)
@@ -358,6 +358,7 @@ sketch001 = startSketchOn(XY)
 ```kcl
 // Revolve around a path that has not been extruded or closed.
 
+
 profile001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 20], tag = $revolveAxis)
@@ -386,6 +387,7 @@ sketch001 = startSketchOn(XY)
 ```kcl
 // Symmetrically revolve around a path.
 
+
 profile001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 20], tag = $revolveAxis)
@@ -413,6 +415,7 @@ sketch001 = startSketchOn(XY)
 
 ```kcl
 // Bidirectional revolve around a path.
+
 
 profile001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])

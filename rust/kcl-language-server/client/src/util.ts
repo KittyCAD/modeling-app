@@ -165,16 +165,11 @@ export function execute(
       }
 
       if (stderr) {
-        if (typeof stderr !== 'string') {
-          return reject(new Error(stderr.toString()))
-        }
         reject(new Error(stderr))
         return
       }
 
-      const stdoutAsString =
-        typeof stdout !== 'string' ? stdout.toString() : stdout
-      resolve(stdoutAsString.trimEnd())
+      resolve(stdout.trimEnd())
     })
   })
 }
@@ -192,9 +187,8 @@ export function executeDiscoverProject(
         reject(err)
         return
       }
-      const stdoutAsString =
-        typeof stdout !== 'string' ? stdout.toString() : stdout
-      resolve(stdoutAsString.trimEnd())
+
+      resolve(stdout.trimEnd())
     })
   })
 }

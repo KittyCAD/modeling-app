@@ -1,7 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { fileTests } from '@lezer/generator/dist/test'
-import { describe, it } from 'vitest'
 
 import { KclLanguage } from '../src/index'
 

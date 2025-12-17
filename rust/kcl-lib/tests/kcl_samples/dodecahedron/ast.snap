@@ -1041,14 +1041,6 @@ description: Result of parsing dodecahedron.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "createFaceTemplate",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",
@@ -2802,14 +2794,6 @@ description: Result of parsing dodecahedron.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "calculateArrayLength",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",
@@ -2960,14 +2944,6 @@ description: Result of parsing dodecahedron.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "reduceIntersect",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
                       "params": [
                         {
                           "type": "Parameter",
@@ -3355,14 +3331,6 @@ description: Result of parsing dodecahedron.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "createIntersection",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",

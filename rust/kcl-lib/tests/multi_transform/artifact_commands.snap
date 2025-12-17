@@ -216,8 +216,7 @@ description: Artifact commands multi_transform.kcl
         "distance": 4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

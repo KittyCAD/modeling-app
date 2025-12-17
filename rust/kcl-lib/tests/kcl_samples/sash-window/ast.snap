@@ -3305,14 +3305,6 @@ description: Result of parsing sash-window.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "panelFn",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",

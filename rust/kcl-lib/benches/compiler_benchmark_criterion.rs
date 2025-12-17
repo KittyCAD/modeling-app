@@ -33,16 +33,12 @@ pub fn bench_mock_warmed_up(c: &mut Criterion) {
             let rt = tokio::runtime::Runtime::new().unwrap();
             let ctx = rt.block_on(async { kcl_lib::ExecutorContext::new_mock(None).await });
             // First run outside the benchmark measurement, to initialize KCL memory.
-            let mock_config = kcl_lib::MockConfig {
-                use_prev_memory: false,
-                ..Default::default()
-            };
-            let _out = rt.block_on(async { ctx.run_mock(&program, &mock_config).await.unwrap() });
+            let _out = rt.block_on(async { ctx.run_mock(&program, false).await.unwrap() });
             b.iter(|| {
                 if let Err(err) = rt.block_on(async {
                     // Subsequent runs set use_previous_memory to true, because that's what the app
                     // uses in production.
-                    ctx.run_mock(black_box(&program), &Default::default()).await?;
+                    ctx.run_mock(black_box(&program), true).await?;
                     ctx.close().await;
                     Ok::<(), anyhow::Error>(())
                 }) {

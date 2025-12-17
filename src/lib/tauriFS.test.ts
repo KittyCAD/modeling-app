@@ -3,7 +3,6 @@ import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
 } from '@src/lib/desktopFS'
-import { expect, describe, it } from 'vitest'
 
 describe('Test project name utility functions', () => {
   it('interpolates a project name without an index', () => {

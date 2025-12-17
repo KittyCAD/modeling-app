@@ -8,7 +8,9 @@ test.describe('Onboarding tests', () => {
     editor,
     tronApp,
   }) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) {
+      fail()
+    }
 
     // Because our default test settings have the onboardingStatus set to 'dismissed',
     // we must set it to empty for the tests where we want to see the onboarding UI.

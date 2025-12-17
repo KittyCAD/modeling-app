@@ -6,7 +6,6 @@ export class CopilotFixture {
   conversationInput!: Locator
   submitButton!: Locator
   placeHolderResponse!: Locator
-  thinkingView!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -20,6 +19,5 @@ export class CopilotFixture {
     this.placeHolderResponse = this.page.getByTestId(
       'ml-response-chat-bubble-thinking'
     )
-    this.thinkingView = this.page.getByTestId('ml-response-thinking-view')
   }
 }

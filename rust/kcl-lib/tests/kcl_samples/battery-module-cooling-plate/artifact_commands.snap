@@ -173,8 +173,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -303,8 +302,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -433,8 +431,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -563,8 +560,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -693,8 +689,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1121,8 +1116,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1549,8 +1543,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1977,8 +1970,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2405,8 +2397,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2833,8 +2824,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3342,8 +3332,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3851,8 +3840,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -4360,8 +4348,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -4869,8 +4856,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -5378,8 +5364,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -5826,8 +5811,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -5999,8 +5983,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -6253,8 +6236,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

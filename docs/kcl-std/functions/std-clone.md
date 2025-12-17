@@ -67,6 +67,7 @@ extrude(clonedSketch, length = 5)
 ```kcl
 // Clone a basic solid and move it.
 
+
 exampleSketch = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
@@ -96,6 +97,7 @@ clonedPart = clone(myPart)
 
 ```kcl
 // Translate and rotate a cloned sketch to create a loft.
+
 
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -128,6 +130,7 @@ loft([sketch001, sketch002])
 
 ```kcl
 // Translate a cloned solid. Fillet only the clone.
+
 
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -170,6 +173,7 @@ fillet(
 ```kcl
 // You can reuse the tags from the original geometry with the cloned geometry.
 
+
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
@@ -207,6 +211,7 @@ startSketchOn(sketch002, face = sketch002.sketch.tags.sketchingFace)
 
 ```kcl
 // You can also use the tags from the original geometry to fillet the cloned geometry.
+
 
 width = 20
 length = 10
@@ -318,6 +323,7 @@ sketch002 = clone(sketch001)
 // Sketch on the end of a revolved face by tagging the end face.
 // This shows the cloned geometry will have the same tags as the original geometry.
 
+
 exampleSketch = startSketchOn(XY)
   |> startProfile(at = [4, 12])
   |> line(end = [2, 0])
@@ -369,6 +375,7 @@ example001 = revolve(
 
 ```kcl
 // Clone an imported model.
+
 
 import "tests/inputs/cube.sldprt" as cube
 

@@ -1457,8 +1457,7 @@ description: Artifact commands prosthetic-hip.kcl
         "distance": 6.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1691,8 +1690,7 @@ description: Artifact commands prosthetic-hip.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -1992,8 +1990,7 @@ description: Artifact commands prosthetic-hip.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -2293,8 +2290,7 @@ description: Artifact commands prosthetic-hip.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {

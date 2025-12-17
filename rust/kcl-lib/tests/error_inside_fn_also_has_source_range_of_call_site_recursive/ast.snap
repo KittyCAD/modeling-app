@@ -98,14 +98,6 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "someNestedFunction",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
                       "params": [
                         {
                           "type": "Parameter",
@@ -213,14 +205,6 @@ description: Result of parsing error_inside_fn_also_has_source_range_of_call_sit
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "someFunction",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",

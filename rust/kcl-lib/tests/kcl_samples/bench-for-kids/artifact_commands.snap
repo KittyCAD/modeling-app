@@ -167,8 +167,7 @@ description: Artifact commands bench-for-kids.kcl
         "distance": 800.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -330,8 +329,7 @@ description: Artifact commands bench-for-kids.kcl
         "distance": 165.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -692,8 +690,7 @@ description: Artifact commands bench-for-kids.kcl
         "distance": 200.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -982,8 +979,7 @@ description: Artifact commands bench-for-kids.kcl
         "distance": -240.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

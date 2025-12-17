@@ -173,8 +173,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": 50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -303,8 +302,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -15.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -462,8 +460,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -621,8 +618,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -6.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -780,8 +776,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -6.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -939,8 +934,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -9.524999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1098,8 +1092,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1257,8 +1250,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1416,8 +1408,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1575,8 +1566,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -12.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1734,8 +1724,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -1.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1893,8 +1882,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2052,8 +2040,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -2.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2211,8 +2198,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2370,8 +2356,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2529,8 +2514,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2688,8 +2672,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -4.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2847,8 +2830,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -3.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3006,8 +2988,7 @@ description: Artifact commands tooling-nest-block.kcl
         "distance": -19.049999999999997,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

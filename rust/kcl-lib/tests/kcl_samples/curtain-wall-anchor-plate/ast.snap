@@ -1553,14 +1553,6 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "lProfileFn",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",
@@ -2347,14 +2339,6 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "hexagonFn",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",
@@ -3111,14 +3095,6 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "boltFn",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",
@@ -4640,14 +4616,6 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "boltWithPlateAndNutFn",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",

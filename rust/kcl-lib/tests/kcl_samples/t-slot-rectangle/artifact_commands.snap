@@ -536,8 +536,7 @@ description: Artifact commands t-slot-rectangle.kcl
         "distance": 457.2,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1172,8 +1171,7 @@ description: Artifact commands t-slot-rectangle.kcl
         "distance": 558.8,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

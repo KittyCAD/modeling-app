@@ -12,7 +12,9 @@ test(
   'export works on the first try',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
   async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) {
+      fail()
+    }
 
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
@@ -162,7 +164,9 @@ test(
   'DXF export works from feature tree sketch context menu',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
   async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) {
+      fail()
+    }
 
     await context.folderSetupFn(async (dir) => {
       const sketchDir = path.join(dir, 'sketch-project')

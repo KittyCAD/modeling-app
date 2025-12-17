@@ -130,8 +130,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 6.3,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -294,8 +293,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -424,8 +422,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 92.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -588,8 +585,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 42.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -935,8 +931,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 30.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1135,8 +1130,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": -40.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1312,8 +1306,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 51.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1442,8 +1435,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": -51.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1607,8 +1599,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": -32.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1771,8 +1762,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 200.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1901,8 +1891,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 22.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2065,8 +2054,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 42.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2383,8 +2371,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": 30.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2583,8 +2570,7 @@ description: Artifact commands coilover-assembly.kcl
         "distance": -40.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

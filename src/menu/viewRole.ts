@@ -252,15 +252,6 @@ export const modelingViewRole = (
               })
             },
           },
-          {
-            label: 'Zookeeper',
-            id: 'View.Panes.Zookeeper',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.Panes.Zookeeper',
-              })
-            },
-          },
         ],
       },
       {

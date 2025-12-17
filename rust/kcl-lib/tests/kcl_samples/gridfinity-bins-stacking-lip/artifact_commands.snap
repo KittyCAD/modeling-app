@@ -213,8 +213,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "distance": 34.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -477,8 +476,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
           "value": -90.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -680,8 +678,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "distance": 4.75,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -895,8 +892,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "distance": -2.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -953,8 +949,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "distance": -2.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1011,8 +1006,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "distance": -2.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1069,8 +1063,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "distance": -2.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2883,8 +2876,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "distance": 7.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3234,8 +3226,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "distance": 76.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3508,8 +3499,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         "distance": 118.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3821,8 +3811,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
           "value": -90.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -4085,8 +4074,7 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
           "value": 90.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {

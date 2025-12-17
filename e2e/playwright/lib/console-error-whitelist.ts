@@ -254,6 +254,15 @@ export const isErrorWhitelisted = (exception: Error) => {
       foundInSpec: 'e2e/playwright/regression-tests.spec.ts',
     },
     {
+      name: 'SyntaxError',
+      stack: `SyntaxError: Unexpected end of JSON input
+    at crossPlatformFetch (http://localhost:3000/src/lib/crossPlatformFetch.ts:34:31)
+    at async sendTelemetry (http://localhost:3000/src/lib/textToCad.ts:179:3)`,
+      message: `Unexpected end of JSON input`,
+      project: 'Google Chrome',
+      foundInSpec: 'e2e/playwright/text-to-cad-tests.spec.ts',
+    },
+    {
       name: '{"kind"',
       stack: ``,
       message: `engine","sourceRanges":[[0,0,0]],"msg":"Failed to wait for promise from engine: JsValue(\\"Force interrupt, executionIsStale, new AST requested\\")"}`,

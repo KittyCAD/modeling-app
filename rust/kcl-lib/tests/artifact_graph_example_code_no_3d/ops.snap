@@ -248,54 +248,6 @@ description: Operations executed artifact_graph_example_code_no_3d.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "SOLID",
-      "value": {
-        "type": "String",
-        "value": "solid"
-      },
-      "visibility": "export",
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 24
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "SURFACE",
-      "value": {
-        "type": "String",
-        "value": "surface"
-      },
-      "visibility": "export",
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 25
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
     }
   ]
 }

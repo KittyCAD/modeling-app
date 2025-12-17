@@ -156,8 +156,7 @@ description: Artifact commands artifact_graph_sketch_on_face_etc.kcl
         "distance": 6.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -312,8 +311,7 @@ description: Artifact commands artifact_graph_sketch_on_face_etc.kcl
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -468,8 +466,7 @@ description: Artifact commands artifact_graph_sketch_on_face_etc.kcl
         "distance": 4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -624,8 +621,7 @@ description: Artifact commands artifact_graph_sketch_on_face_etc.kcl
         "distance": 3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

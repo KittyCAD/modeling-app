@@ -1,7 +1,7 @@
 //! Standard library sweep.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::BodyType};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds::{self as kcmc, shared::RelativeTo};
 use serde::Serialize;
 
@@ -109,7 +109,6 @@ async fn inner_sweep(
                 &args,
                 None,
                 None,
-                BodyType::Solid, // TODO: Support surface sweep
             )
             .await?,
         );

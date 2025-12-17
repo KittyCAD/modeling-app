@@ -7,14 +7,11 @@ export const ZOOM_MAGIC_NUMBER = 63.5
 export const INTERSECTION_PLANE_LAYER = 1
 export const SKETCH_LAYER = 2
 
-// redundant types so that it can be changed temporarily but CI will catch if left as the wrong type
-// eslint-disable-next-line @typescript-eslint/prefer-as-const
-export const DEBUG_SHOW_INTERSECTION_PLANE: false = false
-// eslint-disable-next-line @typescript-eslint/prefer-as-const
-export const DEBUG_SHOW_BOTH_SCENES: false = false
+// redundant types so that it can be changed temporarily but CI will catch the wrong type
+export const DEBUG_SHOW_INTERSECTION_PLANE = false
+export const DEBUG_SHOW_BOTH_SCENES = false
 
 export const RAYCASTABLE_PLANE = 'raycastable-plane'
-export const SKETCH_SOLVE_GROUP = 'sketchSolveGroup'
 
 export const X_AXIS = 'xAxis'
 export const Y_AXIS = 'yAxis'
@@ -30,4 +27,3 @@ export const ARROWHEAD = 'arrowhead'
 export const SEGMENT_LENGTH_LABEL = 'segment-length-label'
 export const SEGMENT_LENGTH_LABEL_TEXT = 'segment-length-label-text'
 export const SEGMENT_LENGTH_LABEL_OFFSET_PX = 30
-export const SKETCH_POINT_HANDLE = 'sketch-point-handle'

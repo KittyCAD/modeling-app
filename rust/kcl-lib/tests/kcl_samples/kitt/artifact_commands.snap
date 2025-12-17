@@ -173,8 +173,7 @@ description: Artifact commands kitt.kcl
         "distance": 18.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -346,8 +345,7 @@ description: Artifact commands kitt.kcl
         "distance": 3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -655,8 +653,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -828,8 +825,7 @@ description: Artifact commands kitt.kcl
         "distance": 0.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1001,8 +997,7 @@ description: Artifact commands kitt.kcl
         "distance": 0.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1174,8 +1169,7 @@ description: Artifact commands kitt.kcl
         "distance": 0.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1347,8 +1341,7 @@ description: Artifact commands kitt.kcl
         "distance": 0.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1656,8 +1649,7 @@ description: Artifact commands kitt.kcl
         "distance": 0.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1829,8 +1821,7 @@ description: Artifact commands kitt.kcl
         "distance": 0.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2002,8 +1993,7 @@ description: Artifact commands kitt.kcl
         "distance": 0.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2175,8 +2165,7 @@ description: Artifact commands kitt.kcl
         "distance": 0.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2348,8 +2337,7 @@ description: Artifact commands kitt.kcl
         "distance": 0.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2521,8 +2509,7 @@ description: Artifact commands kitt.kcl
         "distance": 3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2694,8 +2681,7 @@ description: Artifact commands kitt.kcl
         "distance": 1.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2867,8 +2853,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3040,8 +3025,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3213,8 +3197,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3386,8 +3369,7 @@ description: Artifact commands kitt.kcl
         "distance": 4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3559,8 +3541,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3732,8 +3713,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3905,8 +3885,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -4111,8 +4090,7 @@ description: Artifact commands kitt.kcl
         "distance": 3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -4284,8 +4262,7 @@ description: Artifact commands kitt.kcl
         "distance": 3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -4490,8 +4467,7 @@ description: Artifact commands kitt.kcl
         "distance": 3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -4663,8 +4639,7 @@ description: Artifact commands kitt.kcl
         "distance": 3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -4836,8 +4811,7 @@ description: Artifact commands kitt.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -5009,8 +4983,7 @@ description: Artifact commands kitt.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -5182,8 +5155,7 @@ description: Artifact commands kitt.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -5355,8 +5327,7 @@ description: Artifact commands kitt.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -5528,8 +5499,7 @@ description: Artifact commands kitt.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -5701,8 +5671,7 @@ description: Artifact commands kitt.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -5874,8 +5843,7 @@ description: Artifact commands kitt.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -6047,8 +6015,7 @@ description: Artifact commands kitt.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -6220,8 +6187,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -6393,8 +6359,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -6566,8 +6531,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -6739,8 +6703,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -6912,8 +6875,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -7085,8 +7047,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -7258,8 +7219,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -7431,8 +7391,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -7604,8 +7563,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -7777,8 +7735,7 @@ description: Artifact commands kitt.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

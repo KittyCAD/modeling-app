@@ -39,6 +39,7 @@ patternLinear3d(
 ```kcl
 // / Pattern using a named axis.
 
+
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 2])
@@ -67,6 +68,7 @@ example = extrude(exampleSketch, length = 1)
 
 ```kcl
 // / Pattern using a raw axis.
+
 
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])

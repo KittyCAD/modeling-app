@@ -13,11 +13,9 @@ import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import type { EnterEditFlowProps } from '@src/lib/operations'
 import { enterEditFlow } from '@src/lib/operations'
-import type { KclManager } from '@src/lang/KclManager'
-import type RustContext from '@src/lib/rustContext'
+import { kclManager } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 type FeatureTreeEvent =
   | {
@@ -66,10 +64,9 @@ type FeatureTreeEvent =
 type FeatureTreeContext = {
   targetSourceRange?: SourceRange
   currentOperation?: Operation
-  rustContext: RustContext
-  kclManager: KclManager
-  sceneEntitiesManager: SceneEntities
 }
+
+export const featureTreeMachineDefaultContext: FeatureTreeContext = {}
 
 export const featureTreeMachine = setup({
   types: {
@@ -111,11 +108,6 @@ export const featureTreeMachine = setup({
         input: {
           artifact: Artifact | undefined
           targetSourceRange: SourceRange | undefined
-          systemDeps: {
-            kclManager: KclManager
-            rustContext: RustContext
-            sceneEntitiesManager: SceneEntities
-          }
         }
       }) => {
         return new Promise((resolve, reject) => {
@@ -126,7 +118,7 @@ export const featureTreeMachine = setup({
           }
 
           const pathToNode = getNodePathFromSourceRange(
-            input.systemDeps.kclManager.ast,
+            kclManager.ast,
             targetSourceRange
           )
           const selection = {
@@ -136,7 +128,7 @@ export const featureTreeMachine = setup({
             },
             artifact,
           }
-          deleteSelectionPromise({ selection, systemDeps: input.systemDeps })
+          deleteSelectionPromise(selection)
             .then((result) => {
               if (err(result)) {
                 reject(result)
@@ -416,7 +408,7 @@ export const featureTreeMachine = setup({
               const artifact = context.targetSourceRange
                 ? (getArtifactFromRange(
                     context.targetSourceRange,
-                    context.kclManager.artifactGraph
+                    kclManager.artifactGraph
                   ) ?? undefined)
                 : undefined
               return {
@@ -424,9 +416,6 @@ export const featureTreeMachine = setup({
                 operation: context.currentOperation!,
                 artifact,
                 commandBarSend: commandBarActor.send,
-                rustContext: context.rustContext,
-                code: context.kclManager.code,
-                artifactGraph: context.kclManager.artifactGraph,
               }
             },
             onDone: {
@@ -473,17 +462,12 @@ export const featureTreeMachine = setup({
               const artifact = context.targetSourceRange
                 ? (getArtifactFromRange(
                     context.targetSourceRange,
-                    context.kclManager.artifactGraph
+                    kclManager.artifactGraph
                   ) ?? undefined)
                 : undefined
               return {
                 artifact,
                 targetSourceRange: context.targetSourceRange,
-                systemDeps: {
-                  kclManager: context.kclManager,
-                  rustContext: context.rustContext,
-                  sceneEntitiesManager: context.sceneEntitiesManager,
-                },
               }
             },
             onDone: {

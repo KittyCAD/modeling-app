@@ -903,14 +903,6 @@ description: Result of parsing subtract_doesnt_need_brackets.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "cube",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",

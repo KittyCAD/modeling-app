@@ -56,10 +56,10 @@ description: Variables in memory after executing brake-rotor.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4455,
-            "end": 4461,
+            "commentStart": 4458,
+            "end": 4464,
             "moduleId": 0,
-            "start": 4455,
+            "start": 4458,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -162,10 +162,10 @@ description: Variables in memory after executing brake-rotor.kcl
               70.0
             ],
             "tag": {
-              "commentStart": 4455,
-              "end": 4461,
+              "commentStart": 4458,
+              "end": 4464,
               "moduleId": 0,
-              "start": 4455,
+              "start": 4458,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -797,10 +797,10 @@ description: Variables in memory after executing brake-rotor.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 4455,
-                      "end": 4461,
+                      "commentStart": 4458,
+                      "end": 4464,
                       "moduleId": 0,
-                      "start": 4455,
+                      "start": 4458,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -903,10 +903,10 @@ description: Variables in memory after executing brake-rotor.kcl
                         70.0
                       ],
                       "tag": {
-                        "commentStart": 4455,
-                        "end": 4461,
+                        "commentStart": 4458,
+                        "end": 4464,
                         "moduleId": 0,
-                        "start": 4455,
+                        "start": 4458,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -1193,10 +1193,10 @@ description: Variables in memory after executing brake-rotor.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 4455,
-                      "end": 4461,
+                      "commentStart": 4458,
+                      "end": 4464,
                       "moduleId": 0,
-                      "start": 4455,
+                      "start": 4458,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -1299,10 +1299,10 @@ description: Variables in memory after executing brake-rotor.kcl
                         70.0
                       ],
                       "tag": {
-                        "commentStart": 4455,
-                        "end": 4461,
+                        "commentStart": 4458,
+                        "end": 4464,
                         "moduleId": 0,
-                        "start": 4455,
+                        "start": 4458,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -1589,10 +1589,10 @@ description: Variables in memory after executing brake-rotor.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 4455,
-                      "end": 4461,
+                      "commentStart": 4458,
+                      "end": 4464,
                       "moduleId": 0,
-                      "start": 4455,
+                      "start": 4458,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -1695,10 +1695,10 @@ description: Variables in memory after executing brake-rotor.kcl
                         70.0
                       ],
                       "tag": {
-                        "commentStart": 4455,
-                        "end": 4461,
+                        "commentStart": 4458,
+                        "end": 4464,
                         "moduleId": 0,
-                        "start": 4455,
+                        "start": 4458,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -1985,10 +1985,10 @@ description: Variables in memory after executing brake-rotor.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 4455,
-                      "end": 4461,
+                      "commentStart": 4458,
+                      "end": 4464,
                       "moduleId": 0,
-                      "start": 4455,
+                      "start": 4458,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2091,10 +2091,10 @@ description: Variables in memory after executing brake-rotor.kcl
                         70.0
                       ],
                       "tag": {
-                        "commentStart": 4455,
-                        "end": 4461,
+                        "commentStart": 4458,
+                        "end": 4464,
                         "moduleId": 0,
-                        "start": 4455,
+                        "start": 4458,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -2381,10 +2381,10 @@ description: Variables in memory after executing brake-rotor.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 4455,
-                      "end": 4461,
+                      "commentStart": 4458,
+                      "end": 4464,
                       "moduleId": 0,
-                      "start": 4455,
+                      "start": 4458,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2487,10 +2487,10 @@ description: Variables in memory after executing brake-rotor.kcl
                         70.0
                       ],
                       "tag": {
-                        "commentStart": 4455,
-                        "end": 4461,
+                        "commentStart": 4458,
+                        "end": 4464,
                         "moduleId": 0,
-                        "start": 4455,
+                        "start": 4458,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -2860,10 +2860,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 4455,
-                    "end": 4461,
+                    "commentStart": 4458,
+                    "end": 4464,
                     "moduleId": 0,
-                    "start": 4455,
+                    "start": 4458,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -2966,10 +2966,10 @@ description: Variables in memory after executing brake-rotor.kcl
                       70.0
                     ],
                     "tag": {
-                      "commentStart": 4455,
-                      "end": 4461,
+                      "commentStart": 4458,
+                      "end": 4464,
                       "moduleId": 0,
-                      "start": 4455,
+                      "start": 4458,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -3238,10 +3238,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 4455,
-                    "end": 4461,
+                    "commentStart": 4458,
+                    "end": 4464,
                     "moduleId": 0,
-                    "start": 4455,
+                    "start": 4458,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -3344,10 +3344,10 @@ description: Variables in memory after executing brake-rotor.kcl
                       70.0
                     ],
                     "tag": {
-                      "commentStart": 4455,
-                      "end": 4461,
+                      "commentStart": 4458,
+                      "end": 4464,
                       "moduleId": 0,
-                      "start": 4455,
+                      "start": 4458,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -3616,10 +3616,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 4455,
-                    "end": 4461,
+                    "commentStart": 4458,
+                    "end": 4464,
                     "moduleId": 0,
-                    "start": 4455,
+                    "start": 4458,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -3722,10 +3722,10 @@ description: Variables in memory after executing brake-rotor.kcl
                       70.0
                     ],
                     "tag": {
-                      "commentStart": 4455,
-                      "end": 4461,
+                      "commentStart": 4458,
+                      "end": 4464,
                       "moduleId": 0,
-                      "start": 4455,
+                      "start": 4458,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -3994,10 +3994,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 4455,
-                    "end": 4461,
+                    "commentStart": 4458,
+                    "end": 4464,
                     "moduleId": 0,
-                    "start": 4455,
+                    "start": 4458,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -4100,10 +4100,10 @@ description: Variables in memory after executing brake-rotor.kcl
                       70.0
                     ],
                     "tag": {
-                      "commentStart": 4455,
-                      "end": 4461,
+                      "commentStart": 4458,
+                      "end": 4464,
                       "moduleId": 0,
-                      "start": 4455,
+                      "start": 4458,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -4372,10 +4372,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   "id": "[uuid]",
                   "sourceRange": [],
                   "tag": {
-                    "commentStart": 4455,
-                    "end": 4461,
+                    "commentStart": 4458,
+                    "end": 4464,
                     "moduleId": 0,
-                    "start": 4455,
+                    "start": 4458,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -4478,10 +4478,10 @@ description: Variables in memory after executing brake-rotor.kcl
                       70.0
                     ],
                     "tag": {
-                      "commentStart": 4455,
-                      "end": 4461,
+                      "commentStart": 4458,
+                      "end": 4464,
                       "moduleId": 0,
-                      "start": 4455,
+                      "start": 4458,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -4697,10 +4697,10 @@ description: Variables in memory after executing brake-rotor.kcl
             160.0
           ],
           "tag": {
-            "commentStart": 2647,
-            "end": 2668,
+            "commentStart": 2650,
+            "end": 2671,
             "moduleId": 0,
-            "start": 2647,
+            "start": 2650,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -4721,10 +4721,10 @@ description: Variables in memory after executing brake-rotor.kcl
             160.0
           ],
           "tag": {
-            "commentStart": 2765,
-            "end": 2771,
+            "commentStart": 2768,
+            "end": 2774,
             "moduleId": 0,
-            "start": 2765,
+            "start": 2768,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -4745,10 +4745,10 @@ description: Variables in memory after executing brake-rotor.kcl
             100.0
           ],
           "tag": {
-            "commentStart": 2873,
-            "end": 2879,
+            "commentStart": 2876,
+            "end": 2882,
             "moduleId": 0,
-            "start": 2873,
+            "start": 2876,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -4769,10 +4769,10 @@ description: Variables in memory after executing brake-rotor.kcl
             100.0
           ],
           "tag": {
-            "commentStart": 2949,
-            "end": 2955,
+            "commentStart": 2952,
+            "end": 2958,
             "moduleId": 0,
-            "start": 2949,
+            "start": 2952,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -4997,10 +4997,10 @@ description: Variables in memory after executing brake-rotor.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 4455,
-              "end": 4461,
+              "commentStart": 4458,
+              "end": 4464,
               "moduleId": 0,
-              "start": 4455,
+              "start": 4458,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -5103,10 +5103,10 @@ description: Variables in memory after executing brake-rotor.kcl
                 70.0
               ],
               "tag": {
-                "commentStart": 4455,
-                "end": 4461,
+                "commentStart": 4458,
+                "end": 4464,
                 "moduleId": 0,
-                "start": 4455,
+                "start": 4458,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -5355,10 +5355,10 @@ description: Variables in memory after executing brake-rotor.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2647,
-            "end": 2668,
+            "commentStart": 2650,
+            "end": 2671,
             "moduleId": 0,
-            "start": 2647,
+            "start": 2650,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -5369,10 +5369,10 @@ description: Variables in memory after executing brake-rotor.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2765,
-            "end": 2771,
+            "commentStart": 2768,
+            "end": 2774,
             "moduleId": 0,
-            "start": 2765,
+            "start": 2768,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -5383,10 +5383,10 @@ description: Variables in memory after executing brake-rotor.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2873,
-            "end": 2879,
+            "commentStart": 2876,
+            "end": 2882,
             "moduleId": 0,
-            "start": 2873,
+            "start": 2876,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -5397,10 +5397,10 @@ description: Variables in memory after executing brake-rotor.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2949,
-            "end": 2955,
+            "commentStart": 2952,
+            "end": 2958,
             "moduleId": 0,
-            "start": 2949,
+            "start": 2952,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -5421,10 +5421,10 @@ description: Variables in memory after executing brake-rotor.kcl
               160.0
             ],
             "tag": {
-              "commentStart": 2647,
-              "end": 2668,
+              "commentStart": 2650,
+              "end": 2671,
               "moduleId": 0,
-              "start": 2647,
+              "start": 2650,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -5445,10 +5445,10 @@ description: Variables in memory after executing brake-rotor.kcl
               160.0
             ],
             "tag": {
-              "commentStart": 2765,
-              "end": 2771,
+              "commentStart": 2768,
+              "end": 2774,
               "moduleId": 0,
-              "start": 2765,
+              "start": 2768,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -5469,10 +5469,10 @@ description: Variables in memory after executing brake-rotor.kcl
               100.0
             ],
             "tag": {
-              "commentStart": 2873,
-              "end": 2879,
+              "commentStart": 2876,
+              "end": 2882,
               "moduleId": 0,
-              "start": 2873,
+              "start": 2876,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -5493,10 +5493,10 @@ description: Variables in memory after executing brake-rotor.kcl
               100.0
             ],
             "tag": {
-              "commentStart": 2949,
-              "end": 2955,
+              "commentStart": 2952,
+              "end": 2958,
               "moduleId": 0,
-              "start": 2949,
+              "start": 2952,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -5655,10 +5655,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -5669,10 +5669,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -5683,10 +5683,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -5697,10 +5697,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -5721,10 +5721,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -5745,10 +5745,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -5769,10 +5769,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -5793,10 +5793,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -5952,10 +5952,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -5966,10 +5966,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -5980,10 +5980,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -5994,10 +5994,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -6018,10 +6018,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -6042,10 +6042,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -6066,10 +6066,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -6090,10 +6090,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -6249,10 +6249,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -6263,10 +6263,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -6277,10 +6277,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -6291,10 +6291,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -6315,10 +6315,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -6339,10 +6339,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -6363,10 +6363,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -6387,10 +6387,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -6546,10 +6546,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -6560,10 +6560,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -6574,10 +6574,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -6588,10 +6588,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -6612,10 +6612,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -6636,10 +6636,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -6660,10 +6660,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -6684,10 +6684,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -6843,10 +6843,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -6857,10 +6857,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -6871,10 +6871,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -6885,10 +6885,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -6909,10 +6909,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -6933,10 +6933,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -6957,10 +6957,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -6981,10 +6981,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -7140,10 +7140,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -7154,10 +7154,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -7168,10 +7168,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -7182,10 +7182,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -7206,10 +7206,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -7230,10 +7230,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -7254,10 +7254,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -7278,10 +7278,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -7437,10 +7437,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -7451,10 +7451,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -7465,10 +7465,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -7479,10 +7479,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -7503,10 +7503,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -7527,10 +7527,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -7551,10 +7551,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -7575,10 +7575,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -7734,10 +7734,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -7748,10 +7748,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -7762,10 +7762,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -7776,10 +7776,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -7800,10 +7800,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -7824,10 +7824,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -7848,10 +7848,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -7872,10 +7872,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -8031,10 +8031,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -8045,10 +8045,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -8059,10 +8059,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -8073,10 +8073,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -8097,10 +8097,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -8121,10 +8121,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -8145,10 +8145,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -8169,10 +8169,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -8328,10 +8328,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -8342,10 +8342,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -8356,10 +8356,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -8370,10 +8370,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -8394,10 +8394,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -8418,10 +8418,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -8442,10 +8442,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -8466,10 +8466,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -8625,10 +8625,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -8639,10 +8639,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -8653,10 +8653,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -8667,10 +8667,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -8691,10 +8691,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -8715,10 +8715,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -8739,10 +8739,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -8763,10 +8763,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -8922,10 +8922,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -8936,10 +8936,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -8950,10 +8950,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -8964,10 +8964,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -8988,10 +8988,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -9012,10 +9012,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -9036,10 +9036,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -9060,10 +9060,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -9219,10 +9219,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -9233,10 +9233,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -9247,10 +9247,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -9261,10 +9261,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -9285,10 +9285,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -9309,10 +9309,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -9333,10 +9333,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -9357,10 +9357,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -9516,10 +9516,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -9530,10 +9530,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -9544,10 +9544,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -9558,10 +9558,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -9582,10 +9582,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -9606,10 +9606,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -9630,10 +9630,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -9654,10 +9654,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -9813,10 +9813,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -9827,10 +9827,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -9841,10 +9841,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -9855,10 +9855,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -9879,10 +9879,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -9903,10 +9903,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -9927,10 +9927,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -9951,10 +9951,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -10110,10 +10110,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -10124,10 +10124,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -10138,10 +10138,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -10152,10 +10152,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -10176,10 +10176,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -10200,10 +10200,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -10224,10 +10224,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -10248,10 +10248,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -10407,10 +10407,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -10421,10 +10421,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -10435,10 +10435,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -10449,10 +10449,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -10473,10 +10473,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -10497,10 +10497,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -10521,10 +10521,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -10545,10 +10545,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -10704,10 +10704,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -10718,10 +10718,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -10732,10 +10732,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -10746,10 +10746,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -10770,10 +10770,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -10794,10 +10794,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -10818,10 +10818,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -10842,10 +10842,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -11001,10 +11001,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -11015,10 +11015,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -11029,10 +11029,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -11043,10 +11043,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -11067,10 +11067,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -11091,10 +11091,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -11115,10 +11115,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -11139,10 +11139,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -11298,10 +11298,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -11312,10 +11312,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -11326,10 +11326,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -11340,10 +11340,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -11364,10 +11364,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -11388,10 +11388,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -11412,10 +11412,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -11436,10 +11436,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -11595,10 +11595,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -11609,10 +11609,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -11623,10 +11623,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -11637,10 +11637,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -11661,10 +11661,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -11685,10 +11685,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -11709,10 +11709,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -11733,10 +11733,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -11892,10 +11892,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -11906,10 +11906,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -11920,10 +11920,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -11934,10 +11934,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -11958,10 +11958,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -11982,10 +11982,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -12006,10 +12006,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -12030,10 +12030,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -12189,10 +12189,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -12203,10 +12203,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -12217,10 +12217,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -12231,10 +12231,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -12255,10 +12255,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -12279,10 +12279,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -12303,10 +12303,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -12327,10 +12327,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -12486,10 +12486,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -12500,10 +12500,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -12514,10 +12514,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -12528,10 +12528,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -12552,10 +12552,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -12576,10 +12576,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -12600,10 +12600,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -12624,10 +12624,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -12783,10 +12783,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -12797,10 +12797,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -12811,10 +12811,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -12825,10 +12825,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -12849,10 +12849,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -12873,10 +12873,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -12897,10 +12897,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -12921,10 +12921,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -13080,10 +13080,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -13094,10 +13094,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -13108,10 +13108,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -13122,10 +13122,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -13146,10 +13146,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -13170,10 +13170,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -13194,10 +13194,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -13218,10 +13218,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -13377,10 +13377,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -13391,10 +13391,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -13405,10 +13405,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -13419,10 +13419,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -13443,10 +13443,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -13467,10 +13467,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -13491,10 +13491,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -13515,10 +13515,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -13674,10 +13674,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -13688,10 +13688,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -13702,10 +13702,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -13716,10 +13716,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -13740,10 +13740,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -13764,10 +13764,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -13788,10 +13788,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -13812,10 +13812,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -13971,10 +13971,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -13985,10 +13985,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -13999,10 +13999,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -14013,10 +14013,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -14037,10 +14037,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -14061,10 +14061,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -14085,10 +14085,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -14109,10 +14109,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -14268,10 +14268,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -14282,10 +14282,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -14296,10 +14296,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -14310,10 +14310,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -14334,10 +14334,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -14358,10 +14358,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -14382,10 +14382,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -14406,10 +14406,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -14565,10 +14565,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -14579,10 +14579,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -14593,10 +14593,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -14607,10 +14607,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -14631,10 +14631,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -14655,10 +14655,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -14679,10 +14679,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -14703,10 +14703,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -14862,10 +14862,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -14876,10 +14876,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -14890,10 +14890,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -14904,10 +14904,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -14928,10 +14928,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -14952,10 +14952,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -14976,10 +14976,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -15000,10 +15000,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -15159,10 +15159,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -15173,10 +15173,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -15187,10 +15187,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -15201,10 +15201,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -15225,10 +15225,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -15249,10 +15249,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -15273,10 +15273,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -15297,10 +15297,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -15456,10 +15456,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -15470,10 +15470,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -15484,10 +15484,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -15498,10 +15498,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -15522,10 +15522,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -15546,10 +15546,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -15570,10 +15570,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -15594,10 +15594,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -15753,10 +15753,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -15767,10 +15767,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -15781,10 +15781,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -15795,10 +15795,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -15819,10 +15819,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -15843,10 +15843,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -15867,10 +15867,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -15891,10 +15891,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -16050,10 +16050,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2647,
-                "end": 2668,
+                "commentStart": 2650,
+                "end": 2671,
                 "moduleId": 0,
-                "start": 2647,
+                "start": 2650,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -16064,10 +16064,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2765,
-                "end": 2771,
+                "commentStart": 2768,
+                "end": 2774,
                 "moduleId": 0,
-                "start": 2765,
+                "start": 2768,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -16078,10 +16078,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2873,
-                "end": 2879,
+                "commentStart": 2876,
+                "end": 2882,
                 "moduleId": 0,
-                "start": 2873,
+                "start": 2876,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -16092,10 +16092,10 @@ description: Variables in memory after executing brake-rotor.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2949,
-                "end": 2955,
+                "commentStart": 2952,
+                "end": 2958,
                 "moduleId": 0,
-                "start": 2949,
+                "start": 2952,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -16116,10 +16116,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2647,
-                  "end": 2668,
+                  "commentStart": 2650,
+                  "end": 2671,
                   "moduleId": 0,
-                  "start": 2647,
+                  "start": 2650,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -16140,10 +16140,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   160.0
                 ],
                 "tag": {
-                  "commentStart": 2765,
-                  "end": 2771,
+                  "commentStart": 2768,
+                  "end": 2774,
                   "moduleId": 0,
-                  "start": 2765,
+                  "start": 2768,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -16164,10 +16164,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2873,
-                  "end": 2879,
+                  "commentStart": 2876,
+                  "end": 2882,
                   "moduleId": 0,
-                  "start": 2873,
+                  "start": 2876,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -16188,10 +16188,10 @@ description: Variables in memory after executing brake-rotor.kcl
                   100.0
                 ],
                 "tag": {
-                  "commentStart": 2949,
-                  "end": 2955,
+                  "commentStart": 2952,
+                  "end": 2958,
                   "moduleId": 0,
-                  "start": 2949,
+                  "start": 2952,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },

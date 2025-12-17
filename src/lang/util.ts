@@ -16,27 +16,6 @@ import { isArray, isOverlap } from '@src/lib/utils'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
-export function forceSuffix(unitStr: string): NumericSuffix {
-  switch (unitStr) {
-    case 'None':
-    case 'Count':
-    case 'Length':
-    case 'Angle':
-    case 'Mm':
-    case 'Cm':
-    case 'M':
-    case 'Inch':
-    case 'Ft':
-    case 'Yd':
-    case 'Deg':
-    case 'Rad':
-    case 'Unknown':
-      return unitStr
-    default:
-      return 'Mm' // default to Mm if unknown
-  }
-}
-
 /**
  * Create a SourceRange for the top-level module.
  */

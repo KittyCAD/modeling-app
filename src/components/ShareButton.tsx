@@ -2,8 +2,9 @@ import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
+import { useKclContext } from '@src/lang/KclProvider'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
-import { billingActor, commandBarActor, kclManager } from '@src/lib/singletons'
+import { billingActor, commandBarActor } from '@src/lib/singletons'
 import { useSelector } from '@xstate/react'
 import { memo, useCallback, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -60,12 +61,12 @@ export const ShareButton = memo(function ShareButton() {
     scopes: ['modeling'],
   })
 
-  const ast = kclManager.astSignal.value
+  const kclContext = useKclContext()
 
   // It doesn't make sense for the user to be able to click on this
   // until we get what their subscription allows for.
   const disabled =
-    ast.body.some((n) => n.type === 'ImportStatement') ||
+    kclContext.ast.body.some((n) => n.type === 'ImportStatement') ||
     billingContext.hasSubscription === undefined
 
   return (

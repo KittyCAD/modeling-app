@@ -224,8 +224,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": 1000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -375,8 +374,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -433,8 +431,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -491,8 +488,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -549,8 +545,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -607,8 +602,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -665,8 +659,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -723,8 +716,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -781,8 +773,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -839,8 +830,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -897,8 +887,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -955,8 +944,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1013,8 +1001,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1071,8 +1058,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1129,8 +1115,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1187,8 +1172,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1245,8 +1229,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1482,8 +1465,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -2022,8 +2004,7 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {

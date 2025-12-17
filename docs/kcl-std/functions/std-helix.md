@@ -113,6 +113,7 @@ springSketch = startSketchOn(XZ)
 ```kcl
 // Create a helix on a cylinder.
 
+
 part001 = startSketchOn(XY)
   |> circle(center = [5, 5], radius = 10)
   |> extrude(length = 10)

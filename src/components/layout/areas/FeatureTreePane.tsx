@@ -11,6 +11,7 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useKclContext } from '@src/lang/KclProvider'
 import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
@@ -30,21 +31,25 @@ import {
 import { stripQuotes } from '@src/lib/utils'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import { selectOffsetSketchPlane } from '@src/lib/selections'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
+import {
+  selectDefaultSketchPlane,
+  selectOffsetSketchPlane,
+} from '@src/lib/selections'
 import {
   commandBarActor,
   engineCommandManager,
   getLayout,
   kclManager,
   rustContext,
-  sceneEntitiesManager,
   sceneInfra,
   setLayout,
   useLayout,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import { featureTreeMachine } from '@src/machines/featureTreeMachine'
+import {
+  featureTreeMachine,
+  featureTreeMachineDefaultContext,
+} from '@src/machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
@@ -64,15 +69,6 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
-
-// Defined outside of React to prevent rerenders
-// TODO: get all system dependencies into React via global context
-const systemDeps = {
-  kclManager,
-  sceneInfra,
-  sceneEntitiesManager,
-  rustContext,
-}
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -200,9 +196,7 @@ export const FeatureTreePaneContents = () => {
     }),
     {
       input: {
-        rustContext,
-        kclManager,
-        sceneEntitiesManager,
+        ...featureTreeMachineDefaultContext,
       },
       // devTools: true,
     }
@@ -227,8 +221,7 @@ export const FeatureTreePaneContents = () => {
   // We use the code that corresponds to the operations. In case this is an
   // error on the first run, fall back to whatever is currently in the code
   // editor.
-  const operationsCode =
-    kclManager.lastSuccessfulCode || kclManager.codeSignal.value
+  const operationsCode = kclManager.lastSuccessfulCode || kclManager.code
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = groupOperationTypeStreaks(
@@ -462,7 +455,7 @@ const OperationItemWrapper = ({
               </code>
             </>
           ) : (
-            <span className="text-sm">{variableName ?? name}</span>
+            <span className="text-sm">{name}</span>
           )}
           {customSuffix && customSuffix}
         </div>
@@ -530,19 +523,18 @@ interface OperationProps {
  * for an operation in the feature tree.
  */
 const OperationItem = (props: OperationProps) => {
-  const diagnostics = kclManager.diagnosticsSignal.value
-  const ast = kclManager.astSignal.value
+  const kclContext = useKclContext()
   const name = getOperationLabel(props.item)
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(props.item, props.code)
   }, [props.item, props.code])
 
   const variableName = useMemo(() => {
-    return getOperationVariableName(props.item, ast)
-  }, [props.item, ast])
+    return getOperationVariableName(props.item, kclContext.ast)
+  }, [props.item, kclContext.ast])
 
   const errors = useMemo(() => {
-    return diagnostics.filter(
+    return kclContext.diagnostics.filter(
       (diag) =>
         diag.severity === 'error' &&
         'sourceRange' in props.item &&
@@ -550,7 +542,7 @@ const OperationItem = (props: OperationProps) => {
         diag.to <= props.item.sourceRange[1]
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [diagnostics.length])
+  }, [kclContext.diagnostics.length])
 
   async function selectOperation() {
     if (props.sketchNoFace) {
@@ -559,7 +551,7 @@ const OperationItem = (props: OperationProps) => {
           props.item,
           kclManager.artifactGraph
         )
-        const result = await selectOffsetSketchPlane(artifact, systemDeps)
+        const result = await selectOffsetSketchPlane(artifact)
         if (err(result)) {
           console.error(result)
         }
@@ -580,8 +572,7 @@ const OperationItem = (props: OperationProps) => {
   function enterEditFlow() {
     if (
       props.item.type === 'StdLibCall' ||
-      props.item.type === 'VariableDeclaration' ||
-      props.item.type === 'SketchSolve'
+      props.item.type === 'VariableDeclaration'
     ) {
       props.send({
         type: 'enterEditFlow',
@@ -594,11 +585,7 @@ const OperationItem = (props: OperationProps) => {
   }
 
   function enterAppearanceFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      (props.item.type === 'GroupBegin' &&
-        props.item.group.type === 'FunctionCall')
-    ) {
+    if (props.item.type === 'StdLibCall') {
       props.send({
         type: 'enterAppearanceFlow',
         data: {
@@ -684,7 +671,7 @@ const OperationItem = (props: OperationProps) => {
           data: { forceNewSketch: true },
         })
 
-        void selectOffsetSketchPlane(artifact, systemDeps)
+        void selectOffsetSketchPlane(artifact)
       }
     }
   }
@@ -790,19 +777,10 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' ||
-      (props.item.type === 'GroupBegin' &&
-        props.item.group.type === 'FunctionCall')
+      ...(props.item.type === 'StdLibCall'
         ? [
             <ContextMenuItem
-              disabled={
-                !(
-                  (props.item.type === 'GroupBegin' &&
-                    props.item.group.type === 'FunctionCall') ||
-                  (props.item.type === 'StdLibCall' &&
-                    stdLibMap[props.item.name]?.supportsAppearance)
-                )
-              }
+              disabled={!stdLibMap[props.item.name]?.supportsAppearance}
               onClick={enterAppearanceFlow}
               data-testid="context-menu-set-appearance"
             >
@@ -867,13 +845,6 @@ const OperationItem = (props: OperationProps) => {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'SketchSolve'
-        ? [
-            <ContextMenuItem onClick={enterEditFlow} hotkey="Double click">
-              Edit
-            </ContextMenuItem>,
-          ]
-        : []),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [props.item, props.send]
@@ -907,11 +878,7 @@ const DefaultPlanes = () => {
   const onClickPlane = useCallback(
     (planeId: string) => {
       if (sketchNoFace) {
-        void selectSketchPlane(
-          planeId,
-          modelingState.context.store.useNewSketchMode?.current,
-          systemDeps
-        )
+        selectDefaultSketchPlane(planeId)
       } else {
         const foundDefaultPlane =
           rustContext.defaultPlanes !== null &&
@@ -933,24 +900,17 @@ const DefaultPlanes = () => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [sketchNoFace, modelingState.context.store.useNewSketchMode]
+    [sketchNoFace]
   )
 
-  const startSketchOnDefaultPlane = useCallback(
-    (planeId: string) => {
-      sceneInfra.modelingSend({
-        type: 'Enter sketch',
-        data: { forceNewSketch: true },
-      })
+  const startSketchOnDefaultPlane = useCallback((planeId: string) => {
+    sceneInfra.modelingSend({
+      type: 'Enter sketch',
+      data: { forceNewSketch: true },
+    })
 
-      void selectSketchPlane(
-        planeId,
-        modelingState.context.store.useNewSketchMode?.current,
-        systemDeps
-      )
-    },
-    [modelingState.context.store.useNewSketchMode]
-  )
+    selectDefaultSketchPlane(planeId)
+  }, [])
 
   const defaultPlanes = rustContext.defaultPlanes
   if (!defaultPlanes) return null

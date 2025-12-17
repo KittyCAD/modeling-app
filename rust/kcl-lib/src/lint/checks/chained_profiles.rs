@@ -310,11 +310,7 @@ fn find_defined_names_expr(expr: &Expr, defined_names: &mut HashSet<String>) {
             find_defined_names_binary_part(&bin_expr.left, defined_names);
             find_defined_names_binary_part(&bin_expr.right, defined_names);
         }
-        Expr::FunctionExpression(func) => {
-            if let Some(name) = &func.name {
-                defined_names.insert(name.name.to_owned());
-            }
-        }
+        Expr::FunctionExpression(_) => {}
         Expr::PipeSubstitution(_) => {}
         Expr::ArrayExpression(array) => {
             for element in &array.elements {

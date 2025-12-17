@@ -222,8 +222,7 @@ description: Artifact commands parametric_with_tan_arc.kcl
         "distance": 11.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

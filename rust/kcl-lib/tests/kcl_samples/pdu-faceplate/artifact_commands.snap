@@ -264,8 +264,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": 44.45,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -437,8 +436,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -98.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -643,8 +641,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -40.45,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -876,8 +873,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -40.45,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1049,8 +1045,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": 3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1310,8 +1305,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": 15.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1560,8 +1554,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -40.45,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1793,8 +1786,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -40.45,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1977,8 +1969,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -20.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2174,8 +2165,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2232,8 +2222,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2866,8 +2855,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -40.45,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3282,8 +3270,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3340,8 +3327,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3398,8 +3384,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3456,8 +3441,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3514,8 +3498,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3572,8 +3555,7 @@ description: Artifact commands pdu-faceplate.kcl
         "distance": -3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

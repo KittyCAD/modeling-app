@@ -971,7 +971,7 @@ export function doesSketchPipeNeedSplitting(
  */
 export function getSettingsAnnotation(
   kcl: string | Node<Program>,
-  instance: ModuleType
+  instance?: ModuleType
 ): KclSettingsAnnotation | Error {
   const metaSettings = kclSettings(kcl, instance)
   if (err(metaSettings)) return metaSettings

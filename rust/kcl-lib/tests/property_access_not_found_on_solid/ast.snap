@@ -529,14 +529,6 @@ description: Result of parsing property_access_not_found_on_solid.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "myFunction",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [],
             "start": 0,
             "type": "FunctionExpression",

@@ -5,6 +5,8 @@ excerpt: "From the hole's parts (bottom, middle, top), cut the hole into the giv
 layout: manual
 ---
 
+**WARNING:** This function is experimental and may change or be removed.
+
 From the hole's parts (bottom, middle, top), cut the hole into the given solid, at the given 2D position on the given face.
 
 ```kcl
@@ -35,6 +37,9 @@ hole::hole(
 ### Examples
 
 ```kcl
+// `hole` module is still experimental, so enable experimental features here.
+@settings(experimentalFeatures = allow)
+
 // Model a cube
 cubeLen = 20
 bigCube = startSketchOn(XY)
@@ -75,6 +80,9 @@ bigCube
 </model-viewer>
 
 ```kcl
+// `hole` module is still experimental, so enable experimental features here.
+@settings(experimentalFeatures = allow)
+
 // Model a cube
 cubeLen = 20
 bigCube = startSketchOn(XY)

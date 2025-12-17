@@ -150,8 +150,7 @@ description: Artifact commands pillow-block-bearing.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -381,8 +380,7 @@ description: Artifact commands pillow-block-bearing.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -733,8 +731,7 @@ description: Artifact commands pillow-block-bearing.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -1057,8 +1054,7 @@ description: Artifact commands pillow-block-bearing.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -1126,8 +1122,7 @@ description: Artifact commands pillow-block-bearing.kcl
           "value": 22.5
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -1442,8 +1437,7 @@ description: Artifact commands pillow-block-bearing.kcl
         "distance": 12.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1653,8 +1647,7 @@ description: Artifact commands pillow-block-bearing.kcl
         "distance": -4.762499999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1783,8 +1776,7 @@ description: Artifact commands pillow-block-bearing.kcl
         "distance": -7.9375,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1913,8 +1905,7 @@ description: Artifact commands pillow-block-bearing.kcl
         "distance": -4.762499999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2043,8 +2034,7 @@ description: Artifact commands pillow-block-bearing.kcl
         "distance": -7.9375,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2173,8 +2163,7 @@ description: Artifact commands pillow-block-bearing.kcl
         "distance": -4.762499999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2303,8 +2292,7 @@ description: Artifact commands pillow-block-bearing.kcl
         "distance": -7.9375,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2433,8 +2421,7 @@ description: Artifact commands pillow-block-bearing.kcl
         "distance": -4.762499999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2563,8 +2550,7 @@ description: Artifact commands pillow-block-bearing.kcl
         "distance": -7.9375,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

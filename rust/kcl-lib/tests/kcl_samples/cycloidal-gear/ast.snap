@@ -1578,14 +1578,6 @@ description: Result of parsing cycloidal-gear.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "gearSketch",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
                       "params": [
                         {
                           "type": "Parameter",
@@ -1884,14 +1876,6 @@ description: Result of parsing cycloidal-gear.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "cycloidalGear",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",

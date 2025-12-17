@@ -196,7 +196,9 @@ test.describe('Testing loading external models', () => {
       `Load external models from local drive - ${modelName}`,
       { tag: ['@desktop'] },
       async ({ page, homePage, scene, toolbar, cmdBar, tronApp }) => {
-        if (!tronApp) throw new Error('tronApp is missing.')
+        if (!tronApp) {
+          fail()
+        }
 
         await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.goToModelingScene()

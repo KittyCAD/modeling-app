@@ -130,8 +130,7 @@ description: Artifact commands socket-head-cap-screw.kcl
         "distance": -4.826,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -350,8 +349,7 @@ description: Artifact commands socket-head-cap-screw.kcl
         "distance": -3.6195000000000004,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -480,8 +478,7 @@ description: Artifact commands socket-head-cap-screw.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

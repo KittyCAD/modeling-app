@@ -1,5 +1,6 @@
 import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
 import type { AsyncFn } from '@src/lib/types'
+import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -310,19 +311,6 @@ export function isReducedMotion(): boolean {
   )
 }
 
-/**
- * Get the list of delete key names for the current platform.
- * Backspace only on macOS as Windows and Linux have dedicated Delete key.
- * `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
- *
- * @returns Array of key names that should be treated as delete keys for the current platform
- */
-export function getDeleteKeys(): string[] {
-  return platform() === 'macos'
-    ? ['backspace', 'delete', 'del']
-    : ['delete', 'del']
-}
-
 export function XOR(bool1: boolean, bool2: boolean): boolean {
   return (bool1 || bool2) && !(bool1 && bool2)
 }
@@ -511,18 +499,35 @@ export function capitaliseFC(str: string): string {
  * @param buffer - The binary buffer containing the UUID bytes.
  * @returns A string representation of the UUID in the format 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.
  */
-export function binaryToUuid(binaryData: Buffer | Uint8Array | string): string {
+export function binaryToUuid(
+  binaryData: Buffer | Uint8Array | BSONBinary | string
+): string {
   if (typeof binaryData === 'string') {
     return binaryData
   }
 
   let buffer: Uint8Array
 
+  // Handle MongoDB BSON Binary object
+  if (
+    binaryData &&
+    '_bsontype' in binaryData &&
+    binaryData._bsontype === 'Binary'
+  ) {
+    // Extract the buffer from the BSON Binary object
+    buffer = binaryData.buffer
+  }
+  // Handle case where buffer property exists (some MongoDB drivers structure)
+  else if (binaryData && binaryData.buffer instanceof Uint8Array) {
+    buffer = binaryData.buffer
+  }
   // Handle direct Buffer or Uint8Array
-  if (binaryData instanceof Uint8Array || Buffer.isBuffer(binaryData)) {
+  else if (binaryData instanceof Uint8Array || Buffer.isBuffer(binaryData)) {
     buffer = binaryData
   } else {
-    console.error('Invalid input type: expected Uint8Array')
+    console.error(
+      'Invalid input type: expected MongoDB BSON Binary, Buffer, or Uint8Array'
+    )
     return ''
   }
 

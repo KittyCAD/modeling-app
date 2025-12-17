@@ -2,7 +2,6 @@ import type { KCLError } from '@src/lang/errors'
 import { kclErrorsToDiagnostics, toUtf8, toUtf16 } from '@src/lang/errors'
 import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
-import { expect, describe, it } from 'vitest'
 
 describe('test UTF conversions', () => {
   it('Converts UTF-8 to UTF-16', () => {

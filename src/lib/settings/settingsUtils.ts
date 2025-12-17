@@ -1,6 +1,7 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import { default_app_settings } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { NIL as uuidNIL, v4 } from 'uuid'
 
 import {
@@ -11,6 +12,7 @@ import {
   serializeConfiguration,
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import {
   cameraSystemToMouseControl,
   mouseControlsToCameraSystem,
@@ -24,10 +26,10 @@ import {
   writeProjectSettingsFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
+import type { Setting } from '@src/lib/settings/initialSettings'
 import {
   createSettings,
-  type Setting,
-  type SettingsType,
+  type settings,
 } from '@src/lib/settings/initialSettings'
 import type {
   SaveSettingsPayload,
@@ -36,8 +38,6 @@ import type {
 import { appThemeToTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 type OmitNull<T> = T extends null ? undefined : T
 const toUndefinedIfNull = (a: any): OmitNull<any> =>
@@ -189,6 +189,7 @@ export function projectConfigurationToSettingsPayload(
   return {
     meta: {
       id: configuration?.settings?.meta?.id,
+      enableZookeeper: configuration?.settings?.meta?.enable_zookeeper,
     },
     app: {
       // do not read in `theme`, because it is blocked on the project level
@@ -241,6 +242,7 @@ export function settingsPayloadToProjectConfiguration(
     settings: {
       meta: {
         id: configuration?.meta?.id,
+        enable_zookeeper: configuration?.meta?.enableZookeeper,
       },
       app: {
         onboarding_status: configuration?.app?.onboardingStatus,
@@ -331,19 +333,11 @@ export function readLocalStorageProjectSettingsFile():
 }
 
 export interface AppSettings {
-  settings: SettingsType
+  settings: ReturnType<typeof createSettings>
   configuration: DeepPartial<Configuration>
 }
 
-/**
- * Finds the TOML settings files for user-level (and project-level if projectPath is provided)
- * settings, deserialize them and validate them, serialize and write the validated TOML back to the locations,
- * and return the settings object and the raw "configuration" object returned from WASM.
- *
- * Relies on WASM for TOML de/serialization.
- */
 export async function loadAndValidateSettings(
-  initPromise: Promise<ModuleType>,
   projectPath?: string
 ): Promise<AppSettings> {
   // Make sure we have wasm initialized.
@@ -499,15 +493,8 @@ export async function loadAndValidateSettings(
   }
 }
 
-/**
- * Given a settings object, serialize it to TOML
- * and write it to the appropriate location.
- *
- * Relies on WASM for TOML serialization.
- */
 export async function saveSettings(
-  initPromise: Promise<ModuleType>,
-  allSettings: SettingsType,
+  allSettings: typeof settings,
   projectPath?: string
 ) {
   // Make sure we have wasm initialized.
@@ -552,15 +539,15 @@ export async function saveSettings(
 }
 
 export function getChangedSettingsAtLevel(
-  allSettings: SettingsType,
+  allSettings: typeof settings,
   level: SettingsLevel
 ): Partial<SaveSettingsPayload> {
   const changedSettings = {} as Record<
-    keyof SettingsType,
+    keyof typeof settings,
     Record<string, unknown>
   >
   Object.entries(allSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof SettingsType
+    const categoryKey = category as keyof typeof settings
     Object.entries(settingsCategory).forEach(
       ([setting, settingValue]: [string, Setting]) => {
         // If setting is different its ancestors' non-undefined values,
@@ -586,14 +573,15 @@ export function getChangedSettingsAtLevel(
 }
 
 export function getAllCurrentSettings(
-  allSettings: SettingsType
+  allSettings: typeof settings
 ): SaveSettingsPayload {
   const currentSettings = {} as SaveSettingsPayload
   Object.entries(allSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof SettingsType
+    const categoryKey = category as keyof typeof settings
     Object.entries(settingsCategory).forEach(
       ([setting, settingValue]: [string, Setting]) => {
-        const settingKey = setting as keyof SettingsType[typeof categoryKey]
+        const settingKey =
+          setting as keyof (typeof settings)[typeof categoryKey]
         currentSettings[categoryKey] = {
           ...currentSettings[categoryKey],
           [settingKey]: settingValue.current,
@@ -606,7 +594,7 @@ export function getAllCurrentSettings(
 }
 
 export function clearSettingsAtLevel(
-  allSettings: SettingsType,
+  allSettings: typeof settings,
   level: SettingsLevel
 ) {
   Object.entries(allSettings).forEach(([_category, settingsCategory]) => {
@@ -621,12 +609,12 @@ export function clearSettingsAtLevel(
 }
 
 export function setSettingsAtLevel(
-  allSettings: SettingsType,
+  allSettings: typeof settings,
   level: SettingsLevel,
   newSettings: Partial<SaveSettingsPayload>
 ) {
   Object.entries(newSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof SettingsType
+    const categoryKey = category as keyof typeof settings
     if (!allSettings[categoryKey]) return // ignore unrecognized categories
     Object.entries(settingsCategory).forEach(([settingKey, settingValue]) => {
       // TODO: How do you get a valid type for allSettings[categoryKey][settingKey]?
@@ -698,18 +686,14 @@ export function getSettingInputType(setting: Setting) {
   return typeof setting.default as 'string' | 'boolean' | 'number'
 }
 
-export function getSettingsFromActorContext(
-  s: SettingsActorType
-): SettingsType {
-  const {
-    currentProject: _,
-    commandBarActor: _cmd,
-    ...settings
-  } = s.getSnapshot().context
-  return settings
-}
-
-export async function jsAppSettings(s: SettingsType | SettingsActorType) {
-  const settings = 'send' in s ? getSettingsFromActorContext(s) : s
-  return settingsPayloadToConfiguration(getAllCurrentSettings(settings))
+export const jsAppSettings = async (): Promise<DeepPartial<Configuration>> => {
+  let jsAppSettings = default_app_settings()
+  // TODO: https://github.com/KittyCAD/modeling-app/issues/6445
+  const settings = await import('@src/lib/singletons').then((module) =>
+    module.getSettings()
+  )
+  if (settings) {
+    jsAppSettings = getAllCurrentSettings(settings)
+  }
+  return settingsPayloadToConfiguration(jsAppSettings)
 }

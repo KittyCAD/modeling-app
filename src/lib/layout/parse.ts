@@ -2,7 +2,6 @@ import type {
   Action,
   BaseLayout,
   Layout,
-  LayoutWithMetadata,
   Orientation,
   PaneLayout,
   Side,
@@ -17,14 +16,14 @@ import { isErr } from '@src/lib/trap'
 import { isCustomIconName } from '@src/components/CustomIcon'
 
 export function parseLayoutFromJsonString(
-  layoutString: string,
-  migrationFunction: (l: LayoutWithMetadata) => LayoutWithMetadata
+  layoutString: string
 ): Layout | Error {
   try {
     const layoutWithMetadata = JSON.parse(layoutString)
     if (
       !(
         'version' in layoutWithMetadata &&
+        layoutWithMetadata.version === 'v1' &&
         'layout' in layoutWithMetadata &&
         layoutWithMetadata.layout
       )
@@ -32,8 +31,7 @@ export function parseLayoutFromJsonString(
       return new Error('Invalid layout persistence metadata')
     }
 
-    const migrationResult = migrationFunction(layoutWithMetadata)
-    const parseResult = parseLayoutInner(migrationResult.layout)
+    const parseResult = parseLayoutInner(layoutWithMetadata.layout)
 
     return !isErr(parseResult) ? parseResult : new Error('invalid layout')
   } catch (e) {
@@ -137,7 +135,7 @@ function isOrientation(o: unknown): o is Orientation {
  * Fatal: `areaType`
  */
 export function parseSplitLayout(
-  layout: Omit<BaseLayout, 'type'> & Partial<Omit<SplitLayout, 'type'>>
+  layout: BaseLayout & Partial<Omit<SplitLayout, 'type'>>
 ): SplitLayout | Error {
   // No children is fatal
   if (!isArray(layout.children)) {

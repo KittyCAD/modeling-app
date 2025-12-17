@@ -4,6 +4,7 @@ description: Result of unparsing computed_var.kcl
 ---
 // This tests computed properties.
 
+
 arr = [0, 0, 0, 10]
 i = 3
 ten = arr[i]

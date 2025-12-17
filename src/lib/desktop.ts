@@ -13,7 +13,7 @@ import {
   parseAppSettings,
   parseProjectSettings,
 } from '@src/lang/wasm'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -32,27 +32,9 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { processEnv } from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
-import type { Stats } from 'fs'
-
-const convertStatsToFileMetadata = (
-  stats: Stats | null
-): FileMetadata | null => {
-  if (!stats) {
-    return null
-  }
-  return {
-    modified: stats.mtimeMs,
-    accessed: stats.atimeMs,
-    created: stats.ctimeMs,
-    // this is not used anywhere and we use statIsDirectory in other places
-    // that need to know if it's a file or directory.
-    type: null,
-    size: stats.size,
-    permission: null,
-  }
-}
 
 export async function renameProjectDirectory(
   electron: IElectronAPI,
@@ -177,7 +159,7 @@ export async function createNewProjectDirectory(
   await electron.writeFile(projectFile, codeToWrite)
   let metadata: FileMetadata | null = null
   try {
-    metadata = convertStatsToFileMetadata(await electron.stat(projectFile))
+    metadata = await electron.stat(projectFile)
   } catch (e) {
     if (e === 'ENOENT') {
       console.error('File does not exist')
@@ -202,11 +184,28 @@ export async function createNewProjectDirectory(
 
 export async function listProjects(
   electron: IElectronAPI,
-  initPromise: Promise<ModuleType> | ModuleType,
-  configuration?: DeepPartial<Configuration> | Error
+  configuration?: DeepPartial<Configuration> | Error,
+  wasmInstance?: ModuleType
 ): Promise<Project[]> {
   // Make sure we have wasm initialized.
-  await initPromise
+  const initializedResult = await initPromise
+
+  // Bypass if vitest!
+  if (!processEnv()?.VITEST) {
+    // Hack: This is required because of the initialise module load and vitest unit tests spamming this
+    // since it is a global dependency that is spam loaded. This function should never return a string.
+    // If it does during application code something is wrong.
+    if (typeof initializedResult === 'string') {
+      console.error(
+        'TODO: Stop globally importing and spamming lang/wasmUtils/initialise. You should not see this message in the application.'
+      )
+      return Promise.reject(new Error(initializedResult))
+    }
+
+    if (err(initializedResult)) {
+      return Promise.reject(initializedResult)
+    }
+  }
 
   if (configuration === undefined) {
     configuration = await readAppSettingsFile(electron).catch((e) => {
@@ -433,9 +432,9 @@ export async function getProjectInfo(
   wasmInstance?: ModuleType
 ): Promise<Project> {
   // Check the directory.
-  let stats: Stats | undefined
+  let metadata
   try {
-    stats = await electron.stat(projectPath)
+    metadata = await electron.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(
@@ -475,7 +474,17 @@ export async function getProjectInfo(
 
   let project = {
     ...walked,
-    metadata: convertStatsToFileMetadata(stats ?? null),
+    // We need to map from node fs.Stats to FileMetadata
+    metadata: {
+      modified: metadata.mtimeMs,
+      accessed: metadata.atimeMs,
+      created: metadata.ctimeMs,
+      // this is not used anywhere and we use statIsDirectory in other places
+      // that need to know if it's a file or directory.
+      type: null,
+      size: metadata.size,
+      permission: metadata.mode,
+    },
     kcl_file_count: 0,
     directory_count: 0,
     default_file,

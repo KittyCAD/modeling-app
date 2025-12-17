@@ -324,8 +324,7 @@ description: Artifact commands flange.kcl
         "distance": 15.875,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -454,8 +453,7 @@ description: Artifact commands flange.kcl
         "distance": 3.251199999999997,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -584,8 +582,7 @@ description: Artifact commands flange.kcl
         "distance": 1.5239999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -714,8 +711,7 @@ description: Artifact commands flange.kcl
         "distance": -20.650199999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

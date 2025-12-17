@@ -1,4 +1,4 @@
-import { Suspense, useMemo } from 'react'
+import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import {
   Outlet,
@@ -41,7 +41,6 @@ import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import { Spinner } from '@src/components/Spinner'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -72,20 +71,18 @@ const router = createRouter([
         },
       },
       {
-        loader: fileLoader(kclManager),
+        loader: fileLoader,
         id: PATHS.FILE,
         path: PATHS.FILE + '/:id',
         errorElement: <ErrorPage />,
         element: (
           <ModelingPageProvider>
-            <Suspense fallback={<Spinner className="w-8 h-8" />}>
-              <ModelingMachineProvider>
-                <CoreDump />
-                <Outlet />
-                <App />
-                <CommandBar />
-              </ModelingMachineProvider>
-            </Suspense>
+            <ModelingMachineProvider>
+              <CoreDump />
+              <Outlet />
+              <App />
+              <CommandBar />
+            </ModelingMachineProvider>
           </ModelingPageProvider>
         ),
         children: [
@@ -165,7 +162,7 @@ const router = createRouter([
  * @returns RouterProvider
  */
 export const Router = () => {
-  const networkStatus = useNetworkStatus(engineCommandManager)
+  const networkStatus = useNetworkStatus()
 
   return (
     <NetworkContext.Provider value={networkStatus}>
@@ -182,28 +179,24 @@ function CoreDump() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     []
   )
-  useHotkeyWrapper(
-    ['mod + shift + period'],
-    () => {
-      toast
-        .promise(
-          coreDump(coreDumpManager, true),
-          {
-            loading: 'Starting core dump...',
-            success: 'Core dump completed successfully',
-            error: 'Error while exporting core dump',
+  useHotkeyWrapper(['mod + shift + period'], () => {
+    toast
+      .promise(
+        coreDump(coreDumpManager, true),
+        {
+          loading: 'Starting core dump...',
+          success: 'Core dump completed successfully',
+          error: 'Error while exporting core dump',
+        },
+        {
+          success: {
+            // Note: this extended duration is especially important for Playwright e2e testing
+            // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+            duration: 6000,
           },
-          {
-            success: {
-              // Note: this extended duration is especially important for Playwright e2e testing
-              // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
-              duration: 6000,
-            },
-          }
-        )
-        .catch(reportRejection)
-    },
-    kclManager
-  )
+        }
+      )
+      .catch(reportRejection)
+  })
   return null
 }

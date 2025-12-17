@@ -9,7 +9,6 @@ use uuid::Uuid;
 use crate::exec::ArtifactCommand;
 use crate::{
     ExecState, ExecutorContext, KclError, SourceRange,
-    errors::KclErrorDetails,
     exec::{IdGenerator, KclValue},
     execution::Solid,
     std::Args,
@@ -83,10 +82,7 @@ impl ExecState {
         &mut self,
         mut meta: ModelingCmdMeta<'_>,
         cmd: ModelingCmd,
-    ) -> Result<(), KclError> {
-        if self.is_in_sketch_block() {
-            return Err(no_modeling_in_sketch_block_error(meta.source_range));
-        }
+    ) -> Result<(), crate::errors::KclError> {
         let id = meta.id(self.id_generator());
         #[cfg(feature = "artifact-graph")]
         self.push_command(ArtifactCommand {
@@ -103,10 +99,7 @@ impl ExecState {
         &mut self,
         meta: ModelingCmdMeta<'_>,
         cmds: &[ModelingCmdReq],
-    ) -> Result<(), KclError> {
-        if self.is_in_sketch_block() {
-            return Err(no_modeling_in_sketch_block_error(meta.source_range));
-        }
+    ) -> Result<(), crate::errors::KclError> {
         #[cfg(feature = "artifact-graph")]
         for cmd_req in cmds {
             self.push_command(ArtifactCommand {
@@ -125,10 +118,7 @@ impl ExecState {
         &mut self,
         mut meta: ModelingCmdMeta<'_>,
         cmd: ModelingCmd,
-    ) -> Result<(), KclError> {
-        if self.is_in_sketch_block() {
-            return Err(no_modeling_in_sketch_block_error(meta.source_range));
-        }
+    ) -> Result<(), crate::errors::KclError> {
         let id = meta.id(self.id_generator());
         // TODO: The order of the tracking of these doesn't match the order that
         // they're sent to the engine.
@@ -147,9 +137,6 @@ impl ExecState {
         mut meta: ModelingCmdMeta<'_>,
         cmd: ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        if self.is_in_sketch_block() {
-            return Err(no_modeling_in_sketch_block_error(meta.source_range));
-        }
         let id = meta.id(self.id_generator());
         #[cfg(feature = "artifact-graph")]
         self.push_command(ArtifactCommand {
@@ -166,10 +153,7 @@ impl ExecState {
         &mut self,
         mut meta: ModelingCmdMeta<'_>,
         cmd: &ModelingCmd,
-    ) -> Result<(), KclError> {
-        if self.is_in_sketch_block() {
-            return Err(no_modeling_in_sketch_block_error(meta.source_range));
-        }
+    ) -> Result<(), crate::errors::KclError> {
         let id = meta.id(self.id_generator());
         #[cfg(feature = "artifact-graph")]
         self.push_command(ArtifactCommand {
@@ -188,9 +172,6 @@ impl ExecState {
         // We only do this at the very end of the file.
         batch_end: bool,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        if self.is_in_sketch_block() {
-            return Err(no_modeling_in_sketch_block_error(meta.source_range));
-        }
         meta.ctx.engine.flush_batch(batch_end, meta.source_range).await
     }
 
@@ -200,9 +181,6 @@ impl ExecState {
         meta: ModelingCmdMeta<'_>,
         solids: &[Solid],
     ) -> Result<(), KclError> {
-        if self.is_in_sketch_block() {
-            return Err(no_modeling_in_sketch_block_error(meta.source_range));
-        }
         // Make sure we don't traverse sketches more than once.
         let mut traversed_sketches = Vec::new();
 
@@ -251,11 +229,4 @@ impl ExecState {
 
         Ok(())
     }
-}
-
-fn no_modeling_in_sketch_block_error(range: SourceRange) -> KclError {
-    KclError::new_invalid_expression(KclErrorDetails::new(
-        "Modeling commands communicating with the engine cannot be used inside a sketch block".to_owned(),
-        vec![range],
-    ))
 }

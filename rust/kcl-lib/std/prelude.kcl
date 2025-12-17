@@ -81,13 +81,6 @@ export NEW = "new": string
 /// modifying it without creating a new object.
 export MERGE = "merge": string
 
-/// When bodies are solid, they have a top and bottom, and enclose all space between them.
-export SOLID = "solid": string
-
-/// When bodies are surfaces, they have zero thickness. They are perfectly flat and do not
-/// enclose any space.
-export SURFACE = "surface": string
-
 /// Create a helix.
 ///
 /// ```no3d

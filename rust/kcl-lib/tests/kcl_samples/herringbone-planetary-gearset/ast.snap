@@ -2192,14 +2192,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "herringboneGearSketch",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
                       "params": [
                         {
                           "type": "Parameter",
@@ -2772,14 +2764,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "herringboneGear",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",
@@ -5221,14 +5205,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "ringGearSketch",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
                       "params": [
                         {
                           "type": "Parameter",
@@ -5801,14 +5777,6 @@ description: Result of parsing herringbone-planetary-gearset.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "ringGear",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",

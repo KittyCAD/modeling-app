@@ -1,7 +1,6 @@
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { assertParse } from '@src/lang/wasm'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { describe, expect, it } from 'vitest'
 
 describe('GDT Datum Default Name', () => {
   it('should work with command bar when datum A already exists', async () => {

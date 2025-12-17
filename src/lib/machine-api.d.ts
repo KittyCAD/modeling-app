@@ -224,13 +224,11 @@ export interface components {
       machine_type: components['schemas']['MachineType']
       /** @description Information regarding the make and model of the attached Machine. */
       make_model: components['schemas']['MachineMakeModel']
-      /**
-       * @description Maximum part size that can be manufactured by this device. This may be some sort of theoretical upper bound, getting close to this limit seems like maybe a bad idea.
+      /** @description Maximum part size that can be manufactured by this device. This may be some sort of theoretical upper bound, getting close to this limit seems like maybe a bad idea.
        *
        *     This may be `None` if the maximum size is not knowable by the Machine API.
        *
-       *     What "close" means is up to you!
-       */
+       *     What "close" means is up to you! */
       max_part_volume?: components['schemas']['Volume'] | null
       /**
        * Format: double
@@ -353,11 +351,9 @@ export interface components {
       | 'cutter_error_pause'
       | 'first_layer_error_pause'
       | 'nozzle_clog_pause'
-    /**
-     * @description Set of three values to represent the extent of a 3-D Volume. This contains the width, depth, and height values, generally used to represent some maximum or minimum.
+    /** @description Set of three values to represent the extent of a 3-D Volume. This contains the width, depth, and height values, generally used to represent some maximum or minimum.
      *
-     *     All measurements are in millimeters.
-     */
+     *     All measurements are in millimeters. */
     Volume: {
       /**
        * Format: double

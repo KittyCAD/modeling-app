@@ -156,8 +156,7 @@ description: Artifact commands crazy_multi_profile.kcl
         "distance": 20.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -671,8 +670,7 @@ description: Artifact commands crazy_multi_profile.kcl
           "value": 45.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -722,8 +720,7 @@ description: Artifact commands crazy_multi_profile.kcl
         "distance": 4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1285,8 +1282,7 @@ description: Artifact commands crazy_multi_profile.kcl
         "distance": 2.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1334,8 +1330,7 @@ description: Artifact commands crazy_multi_profile.kcl
           "value": 45.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {

@@ -1,4 +1,4 @@
-import { commandBarActor, kclManager, settingsActor } from '@src/lib/singletons'
+import { commandBarActor, settingsActor } from '@src/lib/singletons'
 import { useContext } from 'react'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -13,9 +13,7 @@ export const defaultActionLibrary = Object.freeze({
   export: {
     useHidden: () => false,
     useDisabled: () => {
-      const engineIsReady = useReliesOnEngine(
-        kclManager.isExecutingSignal.value ?? false
-      )
+      const engineIsReady = useReliesOnEngine()
       return engineIsReady ? 'Need engine connection to export' : undefined
     },
     shortcut: 'Ctrl + Shift + E',

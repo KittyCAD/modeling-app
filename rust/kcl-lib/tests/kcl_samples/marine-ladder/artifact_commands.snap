@@ -487,8 +487,7 @@ description: Artifact commands marine-ladder.kcl
         "distance": 450.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

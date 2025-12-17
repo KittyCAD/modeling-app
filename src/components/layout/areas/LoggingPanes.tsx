@@ -1,7 +1,7 @@
 import ReactJsonView from '@microlink/react-json-view'
 
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
-import { kclManager } from '@src/lib/singletons'
+import { useKclContext } from '@src/lang/KclProvider'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 
@@ -25,7 +25,7 @@ export function LogsPane(props: AreaTypeComponentProps) {
 }
 export const LogsPaneContent = () => {
   const theme = useResolvedTheme()
-  const logs = kclManager.logsSignal.value
+  const { logs } = useKclContext()
   return (
     <div className="overflow-hidden">
       <div className="absolute inset-0 p-2 flex flex-col overflow-auto">

@@ -83,6 +83,7 @@ sweepSketch = startSketchOn(XY)
 ```kcl
 // Move an imported model.
 
+
 import "tests/inputs/cube.sldprt" as cube
 
 // Circle so you actually see the move.
@@ -112,6 +113,7 @@ cube
 ```kcl
 // Move an imported model.
 
+
 import "tests/inputs/cube.sldprt" as cube
 
 // Circle so you actually see the move.
@@ -140,6 +142,7 @@ cube
 
 ```kcl
 // Sweep two sketches along the same path.
+
 
 sketch001 = startSketchOn(XY)
 rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
@@ -185,6 +188,7 @@ translate(
 
 ```kcl
 // Move a sketch.
+
 
 fn square(@length) {
   l = length / 2

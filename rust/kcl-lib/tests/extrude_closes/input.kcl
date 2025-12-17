@@ -1,8 +1,0 @@
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [-1.89, -3.77])
-  |> line(end = [-1.33, 5.06])
-  |> line(end = [6.24, 0.83])
-  |> yLine(length = -4.9)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-// This should be closed by the extrude.
-extrude001 = extrude(profile001, length = 5)

@@ -1,15 +1,13 @@
-export default function setup(context: {
-  provide: (key: string, value: unknown) => void
-  config: { test?: { snapshotOptions?: { updateSnapshot?: string } } }
-}) {
+import type { GlobalSetupContext } from 'vitest/node'
+
+export default function setup({ provide, config }: GlobalSetupContext) {
   // Check if snapshot update mode is enabled
   // Only update existing snapshots when mode is 'all' (triggered by -u flag)
   // 'new' mode only creates snapshots for tests that don't have any, but doesn't update existing ones
-  const isUpdateSnapshots =
-    context.config.test?.snapshotOptions?.updateSnapshot === 'all'
+  const isUpdateSnapshots = config.snapshotOptions.updateSnapshot === 'all'
 
   // Provide the update flag to tests
-  context.provide('vitest:updateSnapshots', isUpdateSnapshots)
+  provide('vitest:updateSnapshots', isUpdateSnapshots)
 }
 
 declare module 'vitest' {

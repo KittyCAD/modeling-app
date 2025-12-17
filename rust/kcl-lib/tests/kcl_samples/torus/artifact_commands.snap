@@ -170,8 +170,7 @@ description: Artifact commands torus.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {

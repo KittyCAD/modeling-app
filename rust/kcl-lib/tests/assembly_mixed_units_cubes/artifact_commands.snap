@@ -173,8 +173,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
         "distance": 127.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -381,8 +380,7 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

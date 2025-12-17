@@ -9,6 +9,7 @@ import {
   type Program,
 } from '@src/lang/wasm'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { rustContext } from '@src/lib/singletons'
 import type RustContext from '@src/lib/rustContext'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
@@ -16,16 +17,16 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
 import { err } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
-import { expect } from 'vitest'
 
 export async function enginelessExecutor(
   ast: Node<Program>,
-  rustContext: RustContext,
   usePrevMemory?: boolean,
-  path?: string
+  path?: string,
+  providedRustContext?: RustContext
 ): Promise<ExecState> {
-  const settings = await jsAppSettings(rustContext.settingsActor)
-  return await rustContext.executeMock(ast, settings, path, usePrevMemory)
+  const settings = await jsAppSettings()
+  const theRustContext = providedRustContext ? providedRustContext : rustContext
+  return await theRustContext.executeMock(ast, settings, path, usePrevMemory)
 }
 
 export async function getAstAndArtifactGraph(
@@ -123,11 +124,11 @@ export async function getKclCommandValue(
   instance: ModuleType,
   rustContext: RustContext
 ) {
-  const allowArrays = value.trim().startsWith('[')
   const result = await stringToKclExpression(
     value,
-    rustContext,
-    allowArrays ? { allowArrays: true } : undefined
+    undefined,
+    instance,
+    rustContext
   )
   if (err(result) || 'errors' in result) {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
@@ -141,7 +142,12 @@ export async function runNewAstAndCheckForSweep(
   ast: Node<Program>,
   rustContext: RustContext
 ) {
-  const { artifactGraph } = await enginelessExecutor(ast, rustContext)
+  const { artifactGraph } = await enginelessExecutor(
+    ast,
+    undefined,
+    undefined,
+    rustContext
+  )
   const sweepArtifact = artifactGraph.values().find((a) => a.type === 'sweep')
   expect(sweepArtifact).toBeDefined()
 }

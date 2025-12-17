@@ -27,7 +27,7 @@ jobs:
     name: cargo fmt
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v5
       - name: Use correct Rust toolchain
         shell: bash
         run: |

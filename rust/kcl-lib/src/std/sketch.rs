@@ -917,8 +917,7 @@ async fn inner_start_sketch_on(
             if let Some(align_axis) = align_axis {
                 let plane_of = inner_plane_of(*solid, tag, exec_state, args).await?;
 
-                // plane_of info axis units are Some(UnitLength::Millimeters), see inner_plane_of and PlaneInfo
-                let offset = normal_offset.map_or(0.0, |x| x.to_mm());
+                let offset = normal_offset.map_or(0.0, |x| x.n);
                 let (x_axis, y_axis, normal_offset) = match align_axis {
                     Axis2dOrEdgeReference::Axis { direction, origin: _ } => {
                         if (direction[0].n - 1.0).abs() < f64::EPSILON {
@@ -1051,19 +1050,6 @@ pub async fn make_sketch_plane_from_orientation(
             }),
         )
         .await?;
-    #[cfg(feature = "artifact-graph")]
-    {
-        let plane_object_id = exec_state.next_object_id();
-        let plane_object = crate::front::Object {
-            id: plane_object_id,
-            kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
-            label: Default::default(),
-            comments: Default::default(),
-            artifact_id: ArtifactId::new(plane.id),
-            source: args.source_range.into(),
-        };
-        exec_state.add_scene_object(plane_object, args.source_range);
-    }
 
     Ok(Box::new(plane))
 }

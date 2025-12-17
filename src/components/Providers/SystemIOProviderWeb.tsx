@@ -2,7 +2,13 @@ import {
   CREATE_FILE_URL_PARAM,
   DEFAULT_PROJECT_KCL_FILE,
 } from '@src/lib/constants'
-import { systemIOActor, useSettings } from '@src/lib/singletons'
+import {
+  billingActor,
+  mlEphantManagerActor,
+  systemIOActor,
+  useSettings,
+  useToken,
+} from '@src/lib/singletons'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
 import {
   useClearURLParams,
@@ -16,6 +22,7 @@ import { useSearchParams } from 'react-router-dom'
 export function SystemIOMachineLogicListenerWeb() {
   const clearURLParams = useClearURLParams()
   const settings = useSettings()
+  const token = useToken()
   const [searchParams, setSearchParams] = useSearchParams()
   const clearImportSearchParams = useCallback(() => {
     // Clear the search parameters related to the "Import file from URL" command
@@ -41,7 +48,21 @@ export function SystemIOMachineLogicListenerWeb() {
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
   useWatchForNewFileRequestsFromMlEphant(
+    mlEphantManagerActor,
     mlEphantManagerActor2,
+    billingActor,
+    token,
+    (prompt, promptMeta) => {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.createKCLFile,
+        data: {
+          requestedProjectName: promptMeta.project.name,
+          requestedCode: prompt.outputs?.['main.kcl'] ?? prompt.code ?? '',
+          requestedFileNameWithExtension:
+            promptMeta.targetFile?.name ?? DEFAULT_PROJECT_KCL_FILE,
+        },
+      })
+    },
     (toolOutput, projectNameCurrentlyOpened) => {
       if (
         toolOutput.type !== 'text_to_cad' &&
@@ -60,7 +81,12 @@ export function SystemIOMachineLogicListenerWeb() {
     }
   )
 
-  useProjectIdToConversationId(mlEphantManagerActor2, systemIOActor, settings)
+  useProjectIdToConversationId(
+    mlEphantManagerActor,
+    mlEphantManagerActor2,
+    systemIOActor,
+    settings
+  )
 
   return null
 }

@@ -194,8 +194,7 @@ description: Artifact commands scrub-daddy-holder.kcl
         "distance": 3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -256,8 +255,7 @@ description: Artifact commands scrub-daddy-holder.kcl
         "distance": 3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -420,8 +418,7 @@ description: Artifact commands scrub-daddy-holder.kcl
         "distance": 4.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -629,8 +626,7 @@ description: Artifact commands scrub-daddy-holder.kcl
         "distance": 37.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

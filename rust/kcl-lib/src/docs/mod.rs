@@ -243,7 +243,7 @@ mod tests {
             panic!();
         };
         let snippet = data.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"translate(x = ${0:0}, y = ${1:0}, z = ${2:0})"#);
+        assert_eq!(snippet, r#"translate(x = ${0:10}, y = ${1:10}, z = ${2:10})"#);
     }
 
     #[test]
@@ -298,7 +298,6 @@ mod tests {
   twistAngleStep?: number(Angle),
   twistCenter?: Point2d,
   method?: string,
-  bodyType?: string,
 ): [Solid; 1+]"#
         );
     }

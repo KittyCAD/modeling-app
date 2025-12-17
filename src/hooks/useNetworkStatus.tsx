@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import { engineCommandManager } from '@src/lib/singletons'
 import {
   ConnectingTypeGroup,
   DisconnectingType,
@@ -36,7 +36,7 @@ export interface NetworkStatus {
 
 // Must be called from one place in the application.
 // We've chosen the <Router /> component for this.
-export function useNetworkStatus(engineCommandManager: ConnectionManager) {
+export function useNetworkStatus() {
   const [immediateState, setImmediateState] = useState<EngineConnectionState>({
     type: EngineConnectionStateType.Disconnected,
   })
@@ -131,7 +131,7 @@ export function useNetworkStatus(engineCommandManager: ConnectionManager) {
         offlineCallback
       )
     }
-  }, [engineCommandManager])
+  }, [])
 
   useEffect(() => {
     const issues = {
@@ -261,7 +261,7 @@ export function useNetworkStatus(engineCommandManager: ConnectionManager) {
         onConnectionStateChange as EventListener
       )
     }
-  }, [engineCommandManager])
+  }, [])
 
   return {
     immediateState,

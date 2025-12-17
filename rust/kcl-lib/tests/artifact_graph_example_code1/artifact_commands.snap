@@ -173,8 +173,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
         "distance": -10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -346,8 +345,7 @@ description: Artifact commands artifact_graph_example_code1.kcl
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

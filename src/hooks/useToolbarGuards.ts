@@ -5,27 +5,25 @@ import {
   createSetVarNameModal,
 } from '@src/components/SetVarNameModal'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useKclContext } from '@src/lang/KclProvider'
 import { moveValueIntoNewVariable } from '@src/lang/modifyAst'
 import { isNodeSafeToReplace } from '@src/lang/queryAst'
 import type { PathToNode, SourceRange } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
-import type { KclManager } from '@src/lang/KclManager'
+import { kclManager } from '@src/lib/singletons'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 
 export const getVarNameModal = createSetVarNameModal(SetVarNameModal)
 
-export function useConvertToVariable(
-  kclManager: KclManager,
-  range?: SourceRange
-) {
-  const ast = kclManager.astSignal.value
+export function useConvertToVariable(range?: SourceRange) {
+  const { ast } = useKclContext()
   const { context } = useModelingContext()
   const [enable, setEnabled] = useState(false)
 
   useEffect(() => {
     kclManager.convertToVariableEnabled = enable
-  }, [enable, kclManager])
+  }, [enable])
 
   useEffect(() => {
     // Return early if there are no selection ranges for whatever reason

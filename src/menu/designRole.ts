@@ -131,6 +131,25 @@ export const modelingDesignRole = (
           })
         },
       },
+      { type: 'separator' },
+      {
+        label: 'Create with Zoo Text-To-CAD',
+        id: 'Design.Create with Zoo Text-To-CAD',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'Design.Create with Zoo Text-To-CAD',
+          })
+        },
+      },
+      {
+        label: 'Modify with Zoo Text-To-CAD',
+        id: 'Design.Modify with Zoo Text-To-CAD',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'Design.Modify with Zoo Text-To-CAD',
+          })
+        },
+      },
     ],
   }
 }

@@ -181,8 +181,7 @@ description: Artifact commands bottle.kcl
         "distance": 202.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -311,8 +310,7 @@ description: Artifact commands bottle.kcl
         "distance": 18.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

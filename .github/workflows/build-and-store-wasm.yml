@@ -9,8 +9,8 @@ jobs:
   build-and-upload:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -24,7 +24,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
-      - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
+      - uses: taiki-e/install-action@c5b1b6f479c32f356cc6f4ba672a47f63853b13b
         with:
           tool: wasm-pack
       - name: Rust Cache
@@ -36,7 +36,7 @@ jobs:
 
 
       # Upload the WASM bundle as an artifact
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v4
         with:
           name: wasm-bundle
           path: rust/kcl-wasm-lib/pkg

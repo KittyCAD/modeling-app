@@ -190,8 +190,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
         "distance": 6.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -417,8 +416,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

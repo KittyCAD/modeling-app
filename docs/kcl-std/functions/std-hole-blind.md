@@ -5,6 +5,8 @@ excerpt: "The hole has the given blind depth."
 layout: manual
 ---
 
+**WARNING:** This function is experimental and may change or be removed.
+
 The hole has the given blind depth.
 
 ```kcl

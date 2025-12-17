@@ -3,9 +3,8 @@
 use std::sync::Arc;
 
 use indexmap::IndexMap;
+use kcl_api::{Error, FileId, LifecycleApi, ProjectId, Result, SceneGraph, Version};
 use tokio::sync::RwLock;
-
-use crate::front::{Error, FileId, LifecycleApi, ProjectId, Result, SceneGraph, Version};
 
 #[derive(Debug, Clone)]
 pub struct Project {
@@ -46,7 +45,7 @@ impl ProjectManager {
 }
 
 impl LifecycleApi for ProjectManager {
-    async fn open_project(&self, id: ProjectId, files: Vec<crate::front::File>, open_file: FileId) -> Result<()> {
+    async fn open_project(&self, id: ProjectId, files: Vec<kcl_api::File>, open_file: FileId) -> Result<()> {
         Self::with_project_mut(move |project| {
             *project = Some(Project {
                 id,
@@ -71,7 +70,7 @@ impl LifecycleApi for ProjectManager {
         .await
     }
 
-    async fn add_file(&self, project_id: ProjectId, file: crate::front::File) -> Result<()> {
+    async fn add_file(&self, project_id: ProjectId, file: kcl_api::File) -> Result<()> {
         Self::with_project_mut(move |project| {
             let Some(project) = project else {
                 return Err(Error::bad_project(project_id, None));
@@ -162,8 +161,10 @@ impl LifecycleApi for ProjectManager {
 }
 
 // Dummy struct to ensure we export the types from the API crate :-(
-#[derive(ts_rs::TS, serde::Serialize)]
-#[ts(export, export_to = "FrontendApi.ts")]
+#[derive(ts_rs::TS, serde::Serialize, serde::Deserialize)]
+#[ts(export)]
 pub struct IgnoreMe {
-    pub a: crate::front::File,
+    pub a: kcl_api::Error,
+    pub b: kcl_api::SceneGraphDelta,
+    pub c: kcl_api::File,
 }

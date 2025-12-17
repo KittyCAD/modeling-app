@@ -7,7 +7,6 @@ import {
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import { createActor, waitFor } from 'xstate'
-import { expect, describe, it } from 'vitest'
 
 describe('systemIOMachine - XState', () => {
   describe('desktop', () => {

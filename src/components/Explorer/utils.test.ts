@@ -7,7 +7,6 @@ import {
 } from '@src/components/Explorer/utils'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import type { FileEntry } from '@src/lib/project'
-import { expect, describe, it } from 'vitest'
 
 describe('Explorer utils.ts', () => {
   describe('isRowFake', () => {

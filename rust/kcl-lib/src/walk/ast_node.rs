@@ -1,6 +1,6 @@
 use crate::{
     SourceRange,
-    parsing::ast::types::{self, NodeRef, NodeRefMut},
+    parsing::ast::types::{self, NodeRef},
 };
 
 /// The "Node" type wraps all the AST elements we're able to find in a KCL
@@ -45,50 +45,6 @@ pub enum Node<'a> {
     ObjectProperty(NodeRef<'a, types::ObjectProperty>),
 
     KclNone(&'a types::KclNone),
-}
-
-/// The "Node" type wraps all the AST elements we're able to find in a KCL
-/// file. Tokens we walk through will be one of these.
-#[derive(Debug)]
-pub enum NodeMut<'a> {
-    Program(NodeRefMut<'a, types::Program>),
-
-    ImportStatement(NodeRefMut<'a, types::ImportStatement>),
-    ExpressionStatement(NodeRefMut<'a, types::ExpressionStatement>),
-    VariableDeclaration(NodeRefMut<'a, types::VariableDeclaration>),
-    TypeDeclaration(NodeRefMut<'a, types::TypeDeclaration>),
-    ReturnStatement(NodeRefMut<'a, types::ReturnStatement>),
-
-    VariableDeclarator(NodeRefMut<'a, types::VariableDeclarator>),
-
-    NumericLiteral(NodeRefMut<'a, types::NumericLiteral>),
-    Literal(NodeRefMut<'a, types::Literal>),
-    TagDeclarator(NodeRefMut<'a, types::TagDeclarator>),
-    Identifier(NodeRefMut<'a, types::Identifier>),
-    Name(NodeRefMut<'a, types::Name>),
-    BinaryExpression(NodeRefMut<'a, types::BinaryExpression>),
-    FunctionExpression(NodeRefMut<'a, types::FunctionExpression>),
-    CallExpressionKw(NodeRefMut<'a, types::CallExpressionKw>),
-    PipeExpression(NodeRefMut<'a, types::PipeExpression>),
-    PipeSubstitution(NodeRefMut<'a, types::PipeSubstitution>),
-    ArrayExpression(NodeRefMut<'a, types::ArrayExpression>),
-    ArrayRangeExpression(NodeRefMut<'a, types::ArrayRangeExpression>),
-    ObjectExpression(NodeRefMut<'a, types::ObjectExpression>),
-    MemberExpression(NodeRefMut<'a, types::MemberExpression>),
-    UnaryExpression(NodeRefMut<'a, types::UnaryExpression>),
-    IfExpression(NodeRefMut<'a, types::IfExpression>),
-    ElseIf(&'a mut types::ElseIf),
-    LabelledExpression(NodeRefMut<'a, types::LabelledExpression>),
-    AscribedExpression(NodeRefMut<'a, types::AscribedExpression>),
-    SketchBlock(NodeRefMut<'a, types::SketchBlock>),
-    Block(NodeRefMut<'a, types::Block>),
-    SketchVar(NodeRefMut<'a, types::SketchVar>),
-
-    Parameter(&'a mut types::Parameter),
-
-    ObjectProperty(NodeRefMut<'a, types::ObjectProperty>),
-
-    KclNone(&'a mut types::KclNone),
 }
 
 impl Node<'_> {
@@ -235,52 +191,6 @@ impl TryFrom<&Node<'_>> for SourceRange {
     }
 }
 
-impl TryFrom<&NodeMut<'_>> for SourceRange {
-    type Error = AstNodeError;
-
-    fn try_from(node: &NodeMut) -> Result<Self, Self::Error> {
-        Ok(match node {
-            NodeMut::Program(n) => SourceRange::from(&**n),
-            NodeMut::ImportStatement(n) => SourceRange::from(&**n),
-            NodeMut::ExpressionStatement(n) => SourceRange::from(&**n),
-            NodeMut::VariableDeclaration(n) => SourceRange::from(&**n),
-            NodeMut::TypeDeclaration(n) => SourceRange::from(&**n),
-            NodeMut::ReturnStatement(n) => SourceRange::from(&**n),
-            NodeMut::VariableDeclarator(n) => SourceRange::from(&**n),
-            NodeMut::NumericLiteral(n) => SourceRange::from(&**n),
-            NodeMut::Literal(n) => SourceRange::from(&**n),
-            NodeMut::TagDeclarator(n) => SourceRange::from(&**n),
-            NodeMut::Identifier(n) => SourceRange::from(&**n),
-            NodeMut::Name(n) => SourceRange::from(&**n),
-            NodeMut::BinaryExpression(n) => SourceRange::from(&**n),
-            NodeMut::FunctionExpression(n) => SourceRange::from(&**n),
-            NodeMut::CallExpressionKw(n) => SourceRange::from(&**n),
-            NodeMut::PipeExpression(n) => SourceRange::from(&**n),
-            NodeMut::PipeSubstitution(n) => SourceRange::from(&**n),
-            NodeMut::ArrayExpression(n) => SourceRange::from(&**n),
-            NodeMut::ArrayRangeExpression(n) => SourceRange::from(&**n),
-            NodeMut::ObjectExpression(n) => SourceRange::from(&**n),
-            NodeMut::MemberExpression(n) => SourceRange::from(&**n),
-            NodeMut::UnaryExpression(n) => SourceRange::from(&**n),
-            NodeMut::Parameter(p) => SourceRange::from(&p.identifier),
-            NodeMut::ObjectProperty(n) => SourceRange::from(&**n),
-            NodeMut::IfExpression(n) => SourceRange::from(&**n),
-            NodeMut::LabelledExpression(n) => SourceRange::from(&**n),
-            NodeMut::AscribedExpression(n) => SourceRange::from(&**n),
-            NodeMut::SketchBlock(n) => SourceRange::from(&**n),
-            NodeMut::Block(n) => SourceRange::from(&**n),
-            NodeMut::SketchVar(n) => SourceRange::from(&**n),
-
-            // Note: This is different from the immutable version.
-            NodeMut::ElseIf(n) => SourceRange::new(n.cond.start(), n.then_val.end, n.then_val.module_id),
-
-            // The KclNone type here isn't an actual node, so it has no
-            // start/end information.
-            NodeMut::KclNone(_) => return Err(Self::Error::NoSourceForAKclNone),
-        })
-    }
-}
-
 impl<'tree> From<&'tree types::BodyItem> for Node<'tree> {
     fn from(node: &'tree types::BodyItem) -> Self {
         match node {
@@ -288,18 +198,6 @@ impl<'tree> From<&'tree types::BodyItem> for Node<'tree> {
             types::BodyItem::ExpressionStatement(v) => v.into(),
             types::BodyItem::VariableDeclaration(v) => v.as_ref().into(),
             types::BodyItem::TypeDeclaration(v) => v.as_ref().into(),
-            types::BodyItem::ReturnStatement(v) => v.into(),
-        }
-    }
-}
-
-impl<'tree> From<&'tree mut types::BodyItem> for NodeMut<'tree> {
-    fn from(node: &'tree mut types::BodyItem) -> Self {
-        match node {
-            types::BodyItem::ImportStatement(v) => v.as_mut().into(),
-            types::BodyItem::ExpressionStatement(v) => v.into(),
-            types::BodyItem::VariableDeclaration(v) => v.as_mut().into(),
-            types::BodyItem::TypeDeclaration(v) => v.as_mut().into(),
             types::BodyItem::ReturnStatement(v) => v.into(),
         }
     }
@@ -331,32 +229,6 @@ impl<'tree> From<&'tree types::Expr> for Node<'tree> {
     }
 }
 
-impl<'tree> From<&'tree mut types::Expr> for NodeMut<'tree> {
-    fn from(node: &'tree mut types::Expr) -> Self {
-        match node {
-            types::Expr::Literal(lit) => lit.as_mut().into(),
-            types::Expr::TagDeclarator(tag) => tag.as_mut().into(),
-            types::Expr::Name(id) => id.as_mut().into(),
-            types::Expr::BinaryExpression(be) => be.as_mut().into(),
-            types::Expr::FunctionExpression(fe) => fe.as_mut().into(),
-            types::Expr::CallExpressionKw(ce) => ce.as_mut().into(),
-            types::Expr::PipeExpression(pe) => pe.as_mut().into(),
-            types::Expr::PipeSubstitution(ps) => ps.as_mut().into(),
-            types::Expr::ArrayExpression(ae) => ae.as_mut().into(),
-            types::Expr::ArrayRangeExpression(are) => are.as_mut().into(),
-            types::Expr::ObjectExpression(oe) => oe.as_mut().into(),
-            types::Expr::MemberExpression(me) => me.as_mut().into(),
-            types::Expr::UnaryExpression(ue) => ue.as_mut().into(),
-            types::Expr::IfExpression(e) => e.as_mut().into(),
-            types::Expr::LabelledExpression(e) => e.as_mut().into(),
-            types::Expr::AscribedExpression(e) => e.as_mut().into(),
-            types::Expr::SketchBlock(e) => e.as_mut().into(),
-            types::Expr::SketchVar(e) => e.as_mut().into(),
-            types::Expr::None(n) => n.into(),
-        }
-    }
-}
-
 impl<'tree> From<&'tree types::BinaryPart> for Node<'tree> {
     fn from(node: &'tree types::BinaryPart) -> Self {
         match node {
@@ -376,36 +248,11 @@ impl<'tree> From<&'tree types::BinaryPart> for Node<'tree> {
     }
 }
 
-impl<'tree> From<&'tree mut types::BinaryPart> for NodeMut<'tree> {
-    fn from(node: &'tree mut types::BinaryPart) -> Self {
-        match node {
-            types::BinaryPart::Literal(lit) => lit.as_mut().into(),
-            types::BinaryPart::Name(id) => id.as_mut().into(),
-            types::BinaryPart::BinaryExpression(be) => be.as_mut().into(),
-            types::BinaryPart::CallExpressionKw(ce) => ce.as_mut().into(),
-            types::BinaryPart::UnaryExpression(ue) => ue.as_mut().into(),
-            types::BinaryPart::MemberExpression(me) => me.as_mut().into(),
-            types::BinaryPart::ArrayExpression(e) => e.as_mut().into(),
-            types::BinaryPart::ArrayRangeExpression(e) => e.as_mut().into(),
-            types::BinaryPart::ObjectExpression(e) => e.as_mut().into(),
-            types::BinaryPart::IfExpression(e) => e.as_mut().into(),
-            types::BinaryPart::AscribedExpression(e) => e.as_mut().into(),
-            types::BinaryPart::SketchVar(e) => e.as_mut().into(),
-        }
-    }
-}
-
 macro_rules! impl_from {
     ($node:ident, $t: ident) => {
         impl<'a> From<NodeRef<'a, types::$t>> for Node<'a> {
             fn from(v: NodeRef<'a, types::$t>) -> Self {
                 Node::$t(v)
-            }
-        }
-
-        impl<'a> From<NodeRefMut<'a, types::$t>> for NodeMut<'a> {
-            fn from(v: NodeRefMut<'a, types::$t>) -> Self {
-                NodeMut::$t(v)
             }
         }
     };
@@ -416,12 +263,6 @@ macro_rules! impl_from_ref {
         impl<'a> From<&'a types::$t> for Node<'a> {
             fn from(v: &'a types::$t) -> Self {
                 Node::$t(v)
-            }
-        }
-
-        impl<'a> From<&'a mut types::$t> for NodeMut<'a> {
-            fn from(v: &'a mut types::$t) -> Self {
-                NodeMut::$t(v)
             }
         }
     };

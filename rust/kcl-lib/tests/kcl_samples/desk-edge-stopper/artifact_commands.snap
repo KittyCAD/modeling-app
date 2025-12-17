@@ -275,8 +275,7 @@ description: Artifact commands desk-edge-stopper.kcl
         "distance": 200.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -474,8 +473,7 @@ description: Artifact commands desk-edge-stopper.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -532,8 +530,7 @@ description: Artifact commands desk-edge-stopper.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -590,8 +587,7 @@ description: Artifact commands desk-edge-stopper.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

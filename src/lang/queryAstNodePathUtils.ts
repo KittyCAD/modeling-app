@@ -160,10 +160,6 @@ function moreNodePathFromSourceRange(
     return path
   }
   if (_node.type === 'FunctionExpression' && isInRange) {
-    if (_node.name && _node.name.start <= start && _node.name.end >= end) {
-      path.push(['name', 'FunctionExpression'])
-      return moreNodePathFromSourceRange(_node.name, sourceRange, path)
-    }
     for (let i = 0; i < _node.params.length; i++) {
       const param = _node.params[i]
       if (param.identifier.start <= start && param.identifier.end >= end) {
@@ -263,37 +259,6 @@ function moreNodePathFromSourceRange(
       return moreNodePathFromSourceRange(expr, sourceRange, path)
     }
     // TODO: Check the type annotation.
-    return path
-  }
-
-  if (_node.type === 'SketchBlock' && isInRange) {
-    const { arguments: args, body } = _node
-    // Handle arguments (similar to CallExpressionKw)
-    if (args && args.length > 0) {
-      for (let argIndex = 0; argIndex < args.length; argIndex++) {
-        const arg = args[argIndex].arg
-        if (arg.start <= start && arg.end >= end) {
-          path.push(['arguments', 'SketchBlock'])
-          path.push([argIndex, ARG_INDEX_FIELD])
-          path.push(['arg', LABELED_ARG_FIELD])
-          return moreNodePathFromSourceRange(arg, sourceRange, path)
-        }
-      }
-    }
-    // Handle body (similar to FunctionExpression)
-    if (body.start <= start && body.end >= end) {
-      path.push(['body', 'SketchBlock'])
-      const bodyItems = body.items
-      for (let i = 0; i < bodyItems.length; i++) {
-        const item = bodyItems[i]
-        if (item.start <= start && item.end >= end) {
-          path.push(['items', 'Block'])
-          path.push([i, 'index'])
-          return moreNodePathFromSourceRange(item, sourceRange, path)
-        }
-      }
-      return path
-    }
     return path
   }
 

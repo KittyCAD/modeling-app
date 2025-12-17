@@ -306,8 +306,7 @@ description: Artifact commands poop_chute.kcl
           "value": 90.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -641,8 +640,7 @@ description: Artifact commands poop_chute.kcl
         "distance": 1.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

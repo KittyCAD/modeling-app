@@ -13,7 +13,6 @@ import {
   createVariableExpressionsArray,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
-  createPoint2dExpression,
 } from '@src/lang/modifyAst'
 import {
   modifyAstWithTagsForSelection,
@@ -37,11 +36,7 @@ import type {
   VariableDeclaration,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import {
-  KCL_DEFAULT_CONSTANT_PREFIXES,
-  type KclPreludeExtrudeMethod,
-  type KclPreludeBodyType,
-} from '@src/lib/constants'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
@@ -60,7 +55,6 @@ export function addExtrude({
   twistAngleStep,
   twistCenter,
   method,
-  bodyType,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -75,8 +69,7 @@ export function addExtrude({
   twistAngle?: KclCommandValue
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
-  method?: KclPreludeExtrudeMethod
-  bodyType?: KclPreludeBodyType
+  method?: string
   nodeToEdit?: PathToNode
 }):
   | {
@@ -137,17 +130,11 @@ export function addExtrude({
   const twistAngleStepExpr = twistAngleStep
     ? [createLabeledArg('twistAngleStep', valueOrVariable(twistAngleStep))]
     : []
-  let twistCenterExpr: LabeledArg[] = []
-  if (twistCenter) {
-    const twistCenterExpression = createPoint2dExpression(twistCenter)
-    if (err(twistCenterExpression)) return twistCenterExpression
-    twistCenterExpr = [createLabeledArg('twistCenter', twistCenterExpression)]
-  }
+  const twistCenterExpr = twistCenter
+    ? [createLabeledArg('twistCenter', valueOrVariable(twistCenter))]
+    : []
   const methodExpr = method
     ? [createLabeledArg('method', createLocalName(method))]
-    : []
-  const bodyTypeExpr = bodyType
-    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
@@ -162,7 +149,6 @@ export function addExtrude({
     ...twistAngleStepExpr,
     ...twistCenterExpr,
     ...methodExpr,
-    ...bodyTypeExpr,
   ])
 
   // Insert variables for labeled arguments if provided

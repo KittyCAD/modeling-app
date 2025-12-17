@@ -7,13 +7,7 @@ import { KclManager } from '@src/lang/KclManager'
 import RustContext from '@src/lib/rustContext'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { Connection } from '@src/network/connection'
-import { expect, vi, describe, test } from 'vitest'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { createActor } from 'xstate'
-import { settingsMachine } from '@src/machines/settingsMachine'
-import { createSettings } from '@src/lib/settings/initialSettings'
-import { commandBarMachine } from '@src/machines/commandBarMachine'
+import { vi } from 'vitest'
 
 const tick = () => {
   return new Promise((resolve, reject) => {
@@ -23,24 +17,26 @@ const tick = () => {
 
 describe('useOnFileRoute', () => {
   describe('after mount', () => {
-    test('should call unmount', async () => {
+    test('should call unmount', () => {
       const file: FileEntry = {
         path: '/application/project-001/main.kcl',
         name: 'main.kcl',
         children: null,
       }
-      const { engineCommandManager, sceneInfra, kclManager } =
-        await buildTheWorldAndNoEngineConnection(true)
+      const engineCommandManager = new ConnectionManager()
+      const rustContext = new RustContext(engineCommandManager)
+      const sceneInfra = new SceneInfra(engineCommandManager)
+      const kclManager = new KclManager(engineCommandManager, {
+        rustContext,
+        sceneInfra,
+      })
       const { unmount } = renderHook(() => {
         useOnFileRoute({
           file,
           isStreamAcceptingInput: false,
+          engineCommandManager,
+          kclManager,
           resetCameraPosition,
-          systemDeps: {
-            engineCommandManager,
-            kclManager,
-            sceneInfra,
-          },
         })
       })
       unmount()
@@ -62,20 +58,9 @@ describe('useOnFileRoute', () => {
         callbackOnUnitTestingConnection: () => {},
         handleMessage: () => {},
       })
-      const initWasmMock = Promise.resolve({} as ModuleType)
-      const commandBarActor = createActor(commandBarMachine, {
-        input: { commands: [] },
-      }).start()
-      const settingsActor = createActor(settingsMachine, {
-        input: { commandBarActor, ...createSettings() },
-      })
-      const rustContext = new RustContext(
-        engineCommandManager,
-        initWasmMock,
-        settingsActor
-      )
+      const rustContext = new RustContext(engineCommandManager)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, initWasmMock, {
+      const kclManager = new KclManager(engineCommandManager, {
         rustContext,
         sceneInfra,
       })
@@ -84,12 +69,9 @@ describe('useOnFileRoute', () => {
         useOnFileRoute({
           file,
           isStreamAcceptingInput: true,
+          engineCommandManager,
+          kclManager,
           resetCameraPosition: callback,
-          systemDeps: {
-            engineCommandManager,
-            kclManager,
-            sceneInfra,
-          },
         })
       })
       unmount()
@@ -117,20 +99,9 @@ describe('useOnFileRoute', () => {
         callbackOnUnitTestingConnection: () => {},
         handleMessage: () => {},
       })
-      const initWasmMock = Promise.resolve({} as ModuleType)
-      const commandBarActor = createActor(commandBarMachine, {
-        input: { commands: [] },
-      }).start()
-      const settingsActor = createActor(settingsMachine, {
-        input: { commandBarActor, ...createSettings() },
-      })
-      const rustContext = new RustContext(
-        engineCommandManager,
-        initWasmMock,
-        settingsActor
-      )
+      const rustContext = new RustContext(engineCommandManager)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, initWasmMock, {
+      const kclManager = new KclManager(engineCommandManager, {
         rustContext,
         sceneInfra,
       })
@@ -146,12 +117,9 @@ describe('useOnFileRoute', () => {
           useOnFileRoute({
             file,
             isStreamAcceptingInput: true,
+            engineCommandManager,
+            kclManager,
             resetCameraPosition: callback,
-            systemDeps: {
-              engineCommandManager,
-              kclManager,
-              sceneInfra,
-            },
           })
         },
         { initialProps: { file } }
@@ -184,20 +152,9 @@ describe('useOnFileRoute', () => {
         callbackOnUnitTestingConnection: () => {},
         handleMessage: () => {},
       })
-      const initWasmMock = Promise.resolve({} as ModuleType)
-      const commandBarActor = createActor(commandBarMachine, {
-        input: { commands: [] },
-      }).start()
-      const settingsActor = createActor(settingsMachine, {
-        input: { commandBarActor, ...createSettings() },
-      })
-      const rustContext = new RustContext(
-        engineCommandManager,
-        initWasmMock,
-        settingsActor
-      )
+      const rustContext = new RustContext(engineCommandManager)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, initWasmMock, {
+      const kclManager = new KclManager(engineCommandManager, {
         rustContext,
         sceneInfra,
       })
@@ -213,12 +170,9 @@ describe('useOnFileRoute', () => {
           useOnFileRoute({
             file,
             isStreamAcceptingInput: true,
+            engineCommandManager,
+            kclManager,
             resetCameraPosition: callback,
-            systemDeps: {
-              engineCommandManager,
-              kclManager,
-              sceneInfra,
-            },
           })
         },
         { initialProps: { file } }
@@ -253,20 +207,9 @@ describe('useOnFileRoute', () => {
         callbackOnUnitTestingConnection: () => {},
         handleMessage: () => {},
       })
-      const initWasmMock = Promise.resolve({} as ModuleType)
-      const commandBarActor = createActor(commandBarMachine, {
-        input: { commands: [] },
-      }).start()
-      const settingsActor = createActor(settingsMachine, {
-        input: { commandBarActor, ...createSettings() },
-      })
-      const rustContext = new RustContext(
-        engineCommandManager,
-        initWasmMock,
-        settingsActor
-      )
+      const rustContext = new RustContext(engineCommandManager)
       const sceneInfra = new SceneInfra(engineCommandManager)
-      const kclManager = new KclManager(engineCommandManager, initWasmMock, {
+      const kclManager = new KclManager(engineCommandManager, {
         rustContext,
         sceneInfra,
       })
@@ -282,12 +225,9 @@ describe('useOnFileRoute', () => {
           useOnFileRoute({
             file,
             isStreamAcceptingInput: false,
+            engineCommandManager,
+            kclManager,
             resetCameraPosition: callback,
-            systemDeps: {
-              engineCommandManager,
-              kclManager,
-              sceneInfra,
-            },
           })
         },
         { initialProps: { file } }

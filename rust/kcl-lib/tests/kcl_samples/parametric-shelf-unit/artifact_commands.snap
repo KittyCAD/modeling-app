@@ -196,8 +196,7 @@ description: Artifact commands parametric-shelf-unit.kcl
         "distance": 2000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -258,8 +257,7 @@ description: Artifact commands parametric-shelf-unit.kcl
         "distance": 2000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -422,8 +420,7 @@ description: Artifact commands parametric-shelf-unit.kcl
         "distance": 50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -634,8 +631,7 @@ description: Artifact commands parametric-shelf-unit.kcl
         "distance": 20.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

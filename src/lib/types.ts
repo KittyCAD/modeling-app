@@ -63,8 +63,7 @@ export type Paths<T, D extends number = 10> = [D] extends [never]
   : T extends object
     ? {
         [K in keyof T]-?: K extends string | number
-          ? // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-            `${K}` | Join<K, Paths<T[K], Prev[D]>>
+          ? `${K}` | Join<K, Paths<T[K], Prev[D]>>
           : never
       }[keyof T]
     : ''
@@ -141,7 +140,7 @@ export type AppMachineContext = {
   authActor?: ActorRefFrom<typeof authMachine>
   settingsActor?: ActorRefFrom<typeof settingsMachine>
   systemIOActor?: ActorRefFrom<typeof systemIOMachine>
-  commandBarActor: ActorRefFrom<typeof commandBarMachine>
+  commandBarActor?: ActorRefFrom<typeof commandBarMachine>
   billingActor?: ActorRefFrom<typeof billingMachine>
   layout: Layout
 }

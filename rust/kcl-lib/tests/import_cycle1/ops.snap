@@ -107,32 +107,6 @@ description: Operations executed import_cycle1.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "SOLID",
-      "value": {
-        "type": "String",
-        "value": "solid"
-      },
-      "visibility": "export",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "SURFACE",
-      "value": {
-        "type": "String",
-        "value": "surface"
-      },
-      "visibility": "export",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
     }
   ]
 }

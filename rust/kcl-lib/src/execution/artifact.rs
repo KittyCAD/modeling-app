@@ -13,7 +13,6 @@ use crate::{
     KclError, NodePath, SourceRange,
     errors::KclErrorDetails,
     execution::ArtifactId,
-    front::ObjectId,
     parsing::ast::types::{Node, Program},
 };
 
@@ -219,19 +218,6 @@ pub struct StartSketchOnPlane {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
-pub struct SketchBlock {
-    pub id: ArtifactId,
-    /// The plane ID if the sketch block is on a specific plane, None if it's on a default plane.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub plane_id: Option<ArtifactId>,
-    pub code_ref: CodeRef,
-    /// The sketch ID (ObjectId) for the sketch scene object.
-    pub sketch_id: ObjectId,
-}
-
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(rename_all = "camelCase")]
 pub struct Wall {
     pub id: ArtifactId,
     pub seg_id: ArtifactId,
@@ -365,7 +351,6 @@ pub enum Artifact {
     PlaneOfFace(PlaneOfFace),
     StartSketchOnFace(StartSketchOnFace),
     StartSketchOnPlane(StartSketchOnPlane),
-    SketchBlock(SketchBlock),
     Sweep(Sweep),
     Wall(Wall),
     Cap(Cap),
@@ -385,7 +370,6 @@ impl Artifact {
             Artifact::Solid2d(a) => a.id,
             Artifact::StartSketchOnFace(a) => a.id,
             Artifact::StartSketchOnPlane(a) => a.id,
-            Artifact::SketchBlock(a) => a.id,
             Artifact::PlaneOfFace(a) => a.id,
             Artifact::Sweep(a) => a.id,
             Artifact::Wall(a) => a.id,
@@ -408,7 +392,6 @@ impl Artifact {
             Artifact::Solid2d(_) => None,
             Artifact::StartSketchOnFace(a) => Some(&a.code_ref),
             Artifact::StartSketchOnPlane(a) => Some(&a.code_ref),
-            Artifact::SketchBlock(a) => Some(&a.code_ref),
             Artifact::PlaneOfFace(a) => Some(&a.code_ref),
             Artifact::Sweep(a) => Some(&a.code_ref),
             Artifact::Wall(_) => None,
@@ -432,7 +415,6 @@ impl Artifact {
             | Artifact::StartSketchOnFace(_)
             | Artifact::PlaneOfFace(_)
             | Artifact::StartSketchOnPlane(_)
-            | Artifact::SketchBlock(_)
             | Artifact::Sweep(_) => None,
             Artifact::Wall(a) => Some(&a.face_code_ref),
             Artifact::Cap(a) => Some(&a.face_code_ref),
@@ -451,7 +433,6 @@ impl Artifact {
             Artifact::Solid2d(_) => Some(new),
             Artifact::StartSketchOnFace { .. } => Some(new),
             Artifact::StartSketchOnPlane { .. } => Some(new),
-            Artifact::SketchBlock { .. } => Some(new),
             Artifact::PlaneOfFace { .. } => Some(new),
             Artifact::Sweep(a) => a.merge(new),
             Artifact::Wall(a) => a.merge(new),
@@ -685,12 +666,6 @@ fn fill_in_node_paths(artifact: &mut Artifact, programs: &crate::execution::Prog
             if plane.code_ref.node_path.is_empty() {
                 plane.code_ref.node_path =
                     NodePath::from_range(programs, cached_body_items, plane.code_ref.range).unwrap_or_default();
-            }
-        }
-        Artifact::SketchBlock(block) => {
-            if block.code_ref.node_path.is_empty() {
-                block.code_ref.node_path =
-                    NodePath::from_range(programs, cached_body_items, block.code_ref.range).unwrap_or_default();
             }
         }
         _ => {}

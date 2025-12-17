@@ -156,8 +156,7 @@ description: Artifact commands intersect_cubes.kcl
         "distance": 20.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -345,8 +344,7 @@ description: Artifact commands intersect_cubes.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

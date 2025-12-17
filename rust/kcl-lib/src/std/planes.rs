@@ -32,30 +32,10 @@ pub(crate) async fn inner_plane_of(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Plane, KclError> {
-    let plane_id = exec_state.id_generator().next_uuid();
-
-    #[cfg(not(feature = "artifact-graph"))]
-    let plane_object_id = None;
-    #[cfg(feature = "artifact-graph")]
-    let plane_object_id = {
-        use crate::execution::ArtifactId;
-
-        let plane_object_id = exec_state.next_object_id();
-        let plane_object = crate::front::Object {
-            id: plane_object_id,
-            kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
-            label: Default::default(),
-            comments: Default::default(),
-            artifact_id: ArtifactId::new(plane_id),
-            source: args.source_range.into(),
-        };
-        exec_state.add_scene_object(plane_object, args.source_range);
-        Some(plane_object_id)
-    };
-
     // Support mock execution
     // Return an arbitrary (incorrect) plane and a non-fatal error.
     if args.ctx.no_engine_commands().await {
+        let plane_id = exec_state.id_generator().next_uuid();
         exec_state.err(crate::CompilationError {
             source_range: args.source_range,
             message: "The engine isn't available, so returning an arbitrary incorrect plane".to_owned(),
@@ -66,7 +46,6 @@ pub(crate) async fn inner_plane_of(
         return Ok(Plane {
             artifact_id: plane_id.into(),
             id: plane_id,
-            object_id: plane_object_id,
             // Engine doesn't know about the ID we created, so set this to Uninit.
             value: PlaneType::Uninit,
             info: crate::execution::PlaneInfo {
@@ -111,6 +90,7 @@ pub(crate) async fn inner_plane_of(
 
     // Query the engine to learn what plane, if any, this face is on.
     let face_id = face.get_face_id(&solid, exec_state, args, true).await?;
+    let plane_id = exec_state.id_generator().next_uuid();
     let meta = ModelingCmdMeta::from_args_id(exec_state, args, plane_id);
     let cmd = ModelingCmd::FaceIsPlanar(mcmd::FaceIsPlanar { object_id: face_id });
     let plane_resp = exec_state.send_modeling_cmd(meta, cmd).await?;
@@ -176,7 +156,6 @@ pub(crate) async fn inner_plane_of(
     Ok(Plane {
         artifact_id: plane_id.into(),
         id: plane_id,
-        object_id: plane_object_id,
         value: PlaneType::Custom,
         info: plane_info,
         meta: vec![Metadata {

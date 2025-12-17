@@ -91,6 +91,15 @@ export const modelingEditRole = (
     label: 'Edit',
     submenu: [
       {
+        label: 'Modify with Zoo Text-To-CAD',
+        id: 'Edit.Modify with Zoo Text-To-CAD',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'Edit.Modify with Zoo Text-To-CAD',
+          })
+        },
+      },
+      {
         label: 'Edit Parameter',
         id: 'Edit.Edit parameter',
         click: () => {

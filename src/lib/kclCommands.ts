@@ -19,8 +19,7 @@ import {
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
-import { rustContext, systemIOActor } from '@src/lib/singletons'
-import type { KclManager } from '@src/lang/KclManager'
+import { kclManager, rustContext, systemIOActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
@@ -38,7 +37,6 @@ interface KclCommandConfig {
   specialPropsForInsertCommand: {
     providedOptions: CommandArgumentOption<string>[]
   }
-  kclManager: KclManager
   projectData: IndexLoaderData
   authToken: string
   settings: {
@@ -50,8 +48,6 @@ interface KclCommandConfig {
 }
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
-const EXECUTING_MESSAGE =
-  'Cannot run command while code is executing. Please try again later.'
 
 export function kclCommands(commandProps: KclCommandConfig): Command[] {
   return [
@@ -68,16 +64,15 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           inputType: 'options',
           defaultValue:
-            commandProps.kclManager.fileSettings.defaultLengthUnit ||
+            kclManager.fileSettings.defaultLengthUnit ||
             DEFAULT_DEFAULT_LENGTH_UNIT,
           options: () =>
             Object.values(baseUnitsUnion).map((v) => {
               return {
                 name: v,
                 value: v,
-                isCurrent: commandProps.kclManager.fileSettings
-                  .defaultLengthUnit
-                  ? v === commandProps.kclManager.fileSettings.defaultLengthUnit
+                isCurrent: kclManager.fileSettings.defaultLengthUnit
+                  ? v === kclManager.fileSettings.defaultLengthUnit
                   : v === DEFAULT_DEFAULT_LENGTH_UNIT,
               }
             }),
@@ -85,18 +80,12 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'unit' in data) {
-          const newCode = changeDefaultUnits(
-            commandProps.kclManager.code,
-            data.unit
-          )
+          const newCode = changeDefaultUnits(kclManager.code, data.unit)
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
           } else {
-            commandProps.kclManager.updateCodeStateEditor(newCode)
-            Promise.all([
-              commandProps.kclManager.writeToFile(),
-              commandProps.kclManager.executeCode(),
-            ])
+            kclManager.updateCodeStateEditor(newCode)
+            Promise.all([kclManager.writeToFile(), kclManager.executeCode()])
               .then(() => {
                 toast.success(`Updated per-file units to ${data.unit}`)
               })
@@ -121,63 +110,52 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           inputType: 'options',
           defaultValue:
-            commandProps.kclManager.fileSettings.experimentalFeatures?.type ||
+            kclManager.fileSettings.experimentalFeatures?.type ||
             DEFAULT_EXPERIMENTAL_FEATURES.type,
           options: () =>
             warningLevels.map((l) => {
               return {
                 name: l.type,
                 value: l.type,
-                isCurrent: commandProps.kclManager.fileSettings
-                  .experimentalFeatures
-                  ? l.type ===
-                    commandProps.kclManager.fileSettings.experimentalFeatures
-                      .type
+                isCurrent: kclManager.fileSettings.experimentalFeatures
+                  ? l.type === kclManager.fileSettings.experimentalFeatures.type
                   : l.type === DEFAULT_EXPERIMENTAL_FEATURES.type,
               }
             }),
         },
       },
       onSubmit: (data) => {
-        awaitWasmAndSubmit().catch(reportRejection)
-
-        async function awaitWasmAndSubmit() {
-          if (typeof data === 'object' && 'level' in data) {
-            const newAst = setExperimentalFeatures(
-              commandProps.kclManager.code,
-              {
-                type: data.level,
-              },
-              await commandProps.kclManager.wasmInstancePromise
-            )
-            if (err(newAst)) {
-              toast.error(
-                `Failed to set file experimental features level: ${newAst.message}`
-              )
-              return
-            }
-            updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-              kclManager: commandProps.kclManager,
-              rustContext,
-            })
-              .then((result) => {
-                if (err(result)) {
-                  toast.error(
-                    `Failed to set file experimental features level: ${result.message}`
-                  )
-                  return
-                }
-
-                toast.success(
-                  `Updated file experimental features level to ${data.level}`
-                )
-              })
-              .catch(reportRejection)
-          } else {
+        if (typeof data === 'object' && 'level' in data) {
+          const newAst = setExperimentalFeatures(kclManager.code, {
+            type: data.level,
+          })
+          if (err(newAst)) {
             toast.error(
-              'Failed to set experimental features level: no value provided to submit function. This is a bug.'
+              `Failed to set file experimental features level: ${newAst.message}`
             )
+            return
           }
+          updateModelingState(newAst, EXECUTION_TYPE_REAL, {
+            kclManager,
+            rustContext,
+          })
+            .then((result) => {
+              if (err(result)) {
+                toast.error(
+                  `Failed to set file experimental features level: ${result.message}`
+                )
+                return
+              }
+
+              toast.success(
+                `Updated file experimental features level to ${data.level}`
+              )
+            })
+            .catch(reportRejection)
+        } else {
+          toast.error(
+            'Failed to set experimental features level: no value provided to submit function. This is a bug.'
+          )
         }
       },
     },
@@ -188,11 +166,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       groupId: 'code',
       hide: 'web',
       needsReview: true,
-      reviewValidation: async () => {
-        if (commandProps.kclManager.isExecuting) {
-          return new Error(EXECUTING_MESSAGE)
-        }
-      },
       args: {
         path: {
           inputType: 'options',
@@ -218,7 +191,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             return providedOptions
           },
           validation: async ({ data }) => {
-            const importExists = commandProps.kclManager.ast.body.find(
+            const importExists = kclManager.ast.body.find(
               (n) =>
                 n.type === 'ImportStatement' &&
                 ((n.path.type === 'Kcl' && n.path.filename === data.path) ||
@@ -245,7 +218,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           },
           validation: async ({ data }) => {
             const variableExists =
-              commandProps.kclManager.variables['__mod_' + data.localName]
+              kclManager.variables['__mod_' + data.localName]
             if (variableExists) {
               return 'This variable name is already in use.'
             }
@@ -259,7 +232,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
 
-        const ast = commandProps.kclManager.ast
+        const ast = kclManager.ast
         const { path, localName } = data
         const { modifiedAst, pathToNode } = addModuleImport({
           ast,
@@ -270,7 +243,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager: commandProps.kclManager,
+            kclManager,
             rustContext,
           },
           {
@@ -288,7 +261,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       groupId: 'code',
       icon: 'code',
       onSubmit: () => {
-        commandProps.kclManager.format().catch(reportRejection)
+        kclManager.format().catch(reportRejection)
       },
     },
     {
@@ -301,7 +274,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       onSubmit: (input) => {
         copyFileShareLink({
           token: commandProps.authToken,
-          code: commandProps.kclManager.code,
+          code: kclManager.code,
           name: commandProps.projectData.project?.name || '',
           isRestrictedToOrg: input?.event.data.isRestrictedToOrg ?? false,
           password: input?.event.data.password,
@@ -334,11 +307,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           return new Error('variable name is required')
         }
         const newAst = insertNamedConstant({
-          node: commandProps.kclManager.ast,
+          node: kclManager.ast,
           newExpression: value,
         })
         updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-          kclManager: commandProps.kclManager,
+          kclManager,
           rustContext,
         }).catch(reportRejection)
       },
@@ -356,7 +329,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           inputType: 'options',
           valueSummary: (nodeToEdit: PathToNode) => {
             const node = getNodeFromPath<VariableDeclarator>(
-              commandProps.kclManager.ast,
+              kclManager.ast,
               nodeToEdit,
               'VariableDeclarator',
               true
@@ -367,17 +340,12 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           },
           required: true,
           options() {
-            return commandProps.kclManager.execState.operations.flatMap(
-              (op) => {
-                if (op.type !== 'VariableDeclaration') return []
-                if (op.value.type !== 'Number') return []
-                const value = pathToNodeFromRustNodePath(op.nodePath).slice(
-                  0,
-                  -1
-                )
-                return { name: op.name, value }
-              }
-            )
+            return kclManager.execState.operations.flatMap((op) => {
+              if (op.type !== 'VariableDeclaration') return []
+              if (op.value.type !== 'Number') return []
+              const value = pathToNodeFromRustNodePath(op.nodePath).slice(0, -1)
+              return { name: op.name, value }
+            })
           },
         },
         value: {
@@ -387,7 +355,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             const nodeToEdit = commandBarContext.argumentsToSubmit.nodeToEdit
             if (!nodeToEdit || !isPathToNode(nodeToEdit)) return '5'
             const node = getNodeFromPath<VariableDeclarator>(
-              commandProps.kclManager.ast,
+              kclManager.ast,
               nodeToEdit
             )
             if (err(node) || node.node.type !== 'VariableDeclarator')
@@ -395,11 +363,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             const variableName = node.node.id.name || ''
             if (typeof variableName !== 'string') return '5'
             const variableNode = getVariableDeclaration(
-              commandProps.kclManager.ast,
+              kclManager.ast,
               variableName
             )
             if (!variableNode) return '5'
-            const code = commandProps.kclManager.code.slice(
+            const code = kclManager.code.slice(
               variableNode.declaration.init.start,
               variableNode.declaration.init.end
             )
@@ -415,7 +383,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
 
         // Get the variable AST node to edit
         const { nodeToEdit, value } = data
-        const newAst = structuredClone(commandProps.kclManager.ast)
+        const newAst = structuredClone(kclManager.ast)
         const variableNode = getNodeFromPath<Node<VariableDeclarator>>(
           newAst,
           nodeToEdit
@@ -433,7 +401,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         variableNode.node.init = value.valueAst
 
         updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-          kclManager: commandProps.kclManager,
+          kclManager,
           rustContext,
         }).catch(reportRejection)
       },

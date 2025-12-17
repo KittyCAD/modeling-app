@@ -81,24 +81,6 @@ export const KCL_DEFAULT_ORIGIN = `[0, 0, 0]`
 /** The default KCL vector2d origin expression */
 export const KCL_DEFAULT_ORIGIN_2D = `[0, 0]`
 
-/** The default KCL color expression */
-export const KCL_DEFAULT_COLOR = `#3c73ff`
-
-/** The sketch mode revamp selection rgb values */
-export const SKETCH_SELECTION_RGB = [255, 183, 39]
-/** The sketch mode revamp selection rgb values as a string */
-export const SKETCH_SELECTION_RGB_STR = SKETCH_SELECTION_RGB.join(', ')
-
-/**
- * Converts an RGB array [r, g, b] to a single integer color value (0xRRGGBB format).
- * Used for Three.js color values that expect an integer representation.
- */
-export function packRgbToColor(rgb: number[]): number {
-  return (rgb[0] << 16) | (rgb[1] << 8) | rgb[2]
-}
-/** The sketch mode revamp selection rgb values as HEX */
-export const SKETCH_SELECTION_COLOR = packRgbToColor(SKETCH_SELECTION_RGB)
-
 /** The default KCL font point size expression */
 export const KCL_DEFAULT_FONT_POINT_SIZE = `36`
 
@@ -307,26 +289,8 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 
 /** Timeout in MS to save layout */
 export const LAYOUT_SAVE_THROTTLE = 500
+/** prefix for localStorage persisted layout data */
+export const LAYOUT_PERSIST_PREFIX = 'layout-'
 
 // Copilot input
 export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
-
-/**
- * KCL constants defined in rust/kcl-lib/std/prelude.kcl
- * TODO: figure if how we could keep this in sync automatically
- */
-export type KclPreludeBodyType = 'SURFACE' | 'SOLID'
-export const KCL_PRELUDE_BODY_TYPE_SURFACE: KclPreludeBodyType = 'SURFACE'
-export const KCL_PRELUDE_BODY_TYPE_SOLID: KclPreludeBodyType = 'SOLID'
-export const KCL_PRELUDE_BODY_TYPE_VALUES: KclPreludeBodyType[] = [
-  KCL_PRELUDE_BODY_TYPE_SURFACE,
-  KCL_PRELUDE_BODY_TYPE_SOLID,
-]
-
-export type KclPreludeExtrudeMethod = 'MERGE' | 'NEW'
-export const KCL_PRELUDE_EXTRUDE_METHOD_MERGE: KclPreludeExtrudeMethod = 'MERGE'
-export const KCL_PRELUDE_EXTRUDE_METHOD_NEW: KclPreludeExtrudeMethod = 'NEW'
-export const KCL_PRELUDE_EXTRUDE_METHOD_VALUES: KclPreludeExtrudeMethod[] = [
-  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
-  KCL_PRELUDE_EXTRUDE_METHOD_NEW,
-]

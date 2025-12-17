@@ -46,7 +46,7 @@ export const debugPaneConfig: PaneLayout['children'][number] = {
  *   - variables
  * - the modeling view
  * - a right (in LTR languages) sidebar with:
- *   - Zookeeper
+ *   - Text-to-CAD
  */
 export const defaultLayoutConfig: Layout = {
   id: 'default',
@@ -145,7 +145,7 @@ export const defaultLayoutConfig: Layout = {
       children: [
         {
           id: DefaultLayoutPaneID.TTC,
-          label: 'Zookeeper',
+          label: 'Text-to-CAD',
           type: LayoutType.Simple,
           areaType: AreaType.TTC,
           icon: 'sparkles',

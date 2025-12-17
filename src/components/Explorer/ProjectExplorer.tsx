@@ -14,6 +14,7 @@ import type {
   FileExplorerEntry,
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
+import { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { FILE_EXT } from '@src/lib/constants'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
@@ -28,7 +29,7 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
-import { kclManager, systemIOActor, useSettings } from '@src/lib/singletons'
+import { systemIOActor, useSettings } from '@src/lib/singletons'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useEffect, useRef, useState } from 'react'
@@ -76,7 +77,7 @@ export const ProjectExplorer = ({
   canNavigate: boolean
   overrideApplicationProjectDirectory?: string
 }) => {
-  const errors = kclManager.errorsSignal.value
+  const { errors } = useKclContext()
   const settings = useSettings()
   const applicationProjectDirectory = settings.app.projectDirectory.current
 

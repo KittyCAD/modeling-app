@@ -1,14 +1,18 @@
 import {
   billingActor,
   kclManager,
+  mlEphantManagerActor,
   systemIOActor,
   useSettings,
   useUser,
 } from '@src/lib/singletons'
+import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import { MlEphantConversationPane2 } from '@src/components/layout/areas/MlEphantConversationPane2'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { IndexLoaderData } from '@src/lib/types'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { MLEphantConversationPaneMenu } from '@src/components/MlEphantConversation'
+import { MLEphantConversationPaneMenu2 } from '@src/components/MlEphantConversation2'
 import { useLoaderData } from 'react-router-dom'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
@@ -30,26 +34,54 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
       id={`${props.layout.id}-pane`}
       className="border-none"
     >
-      <LayoutPanelHeader
-        id={props.layout.id}
-        icon="sparkles"
-        title="Zookeeper"
-        onClose={props.onClose}
-      />
-      <MlEphantConversationPane2
-        {...{
-          mlEphantManagerActor: mlEphantManagerActor2,
-          billingActor,
-          systemIOActor,
-          kclManager,
-          contextModeling,
-          sendModeling,
-          theProject: theProject.current,
-          loaderFile,
-          settings,
-          user,
-        }}
-      />
+      {settings.meta.enableZookeeper.current === true ? (
+        <>
+          <LayoutPanelHeader
+            id={props.layout.id}
+            icon="sparkles"
+            title="Text-to-CAD"
+            Menu={MLEphantConversationPaneMenu2}
+            onClose={props.onClose}
+          />
+          <MlEphantConversationPane2
+            {...{
+              mlEphantManagerActor: mlEphantManagerActor2,
+              billingActor,
+              systemIOActor,
+              kclManager,
+              contextModeling,
+              sendModeling,
+              theProject: theProject.current,
+              loaderFile,
+              settings,
+              user,
+            }}
+          />
+        </>
+      ) : (
+        <>
+          <LayoutPanelHeader
+            id={props.layout.id}
+            icon="sparkles"
+            title="Text-to-CAD"
+            Menu={MLEphantConversationPaneMenu}
+            onClose={props.onClose}
+          />
+          <MlEphantConversationPane
+            {...{
+              mlEphantManagerActor,
+              billingActor,
+              systemIOActor,
+              kclManager,
+              contextModeling,
+              theProject: theProject.current,
+              loaderFile,
+              settings,
+              user,
+            }}
+          />
+        </>
+      )}
     </LayoutPanel>
   )
 }

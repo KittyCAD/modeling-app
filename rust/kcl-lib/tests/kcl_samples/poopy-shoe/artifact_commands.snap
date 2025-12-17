@@ -306,8 +306,7 @@ description: Artifact commands poopy-shoe.kcl
           "value": 90.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -641,8 +640,7 @@ description: Artifact commands poopy-shoe.kcl
         "distance": 22.224999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -821,8 +819,7 @@ description: Artifact commands poopy-shoe.kcl
         "distance": 3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1113,8 +1110,7 @@ description: Artifact commands poopy-shoe.kcl
         "distance": 3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1345,8 +1341,7 @@ description: Artifact commands poopy-shoe.kcl
         "distance": 3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1501,8 +1496,7 @@ description: Artifact commands poopy-shoe.kcl
         "distance": 3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1657,8 +1651,7 @@ description: Artifact commands poopy-shoe.kcl
         "distance": 69.85,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1855,8 +1848,7 @@ description: Artifact commands poopy-shoe.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

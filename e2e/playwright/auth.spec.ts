@@ -5,7 +5,9 @@ test.describe('Authentication tests', () => {
     `The user can sign out and back in`,
     { tag: ['@desktop'] },
     async ({ page, homePage, signInPage, toolbar, tronApp }) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+      if (!tronApp) {
+        fail()
+      }
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.projectSection.waitFor()

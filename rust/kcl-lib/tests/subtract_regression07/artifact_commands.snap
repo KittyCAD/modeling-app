@@ -303,8 +303,7 @@ description: Artifact commands subtract_regression07.kcl
         "opposite": {
           "Other": 4.762499999999999
         },
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

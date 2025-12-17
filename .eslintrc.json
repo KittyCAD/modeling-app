@@ -6,6 +6,7 @@
   "plugins": [
     "react-perf",
     "css-modules",
+    "jest",
     "jsx-a11y",
     "react",
     "react-hooks",
@@ -140,7 +141,8 @@
       ],
       "rules": {
         "suggest-no-throw/suggest-no-throw": "off",
-        "testing-library/prefer-screen-queries": "off"
+        "testing-library/prefer-screen-queries": "off",
+        "jest/valid-expect": "off"
       }
     },
     {

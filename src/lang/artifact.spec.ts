@@ -4,7 +4,6 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, expect, beforeEach, describe, test } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -43,6 +42,8 @@ mySketch001 = startSketchOn(XY)
   // |> rx(45)`
     const execState = await enginelessExecutor(
       assertParse(code, instanceInThisFile),
+      undefined,
+      undefined,
       rustContextInThisFile
     )
     const sketch001 = execState.variables['mySketch001']
@@ -104,6 +105,8 @@ mySketch001 = startSketchOn(XY)
   |> extrude(length = 2)`
     const execState = await enginelessExecutor(
       assertParse(code, instanceInThisFile),
+      undefined,
+      undefined,
       rustContextInThisFile
     )
     const sketch001 = execState.variables['mySketch001']
@@ -194,6 +197,8 @@ sk2 = startSketchOn(XY)
 `
     const execState = await enginelessExecutor(
       assertParse(code, instanceInThisFile),
+      undefined,
+      undefined,
       rustContextInThisFile
     )
     const variables = execState.variables

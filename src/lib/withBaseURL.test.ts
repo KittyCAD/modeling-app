@@ -3,7 +3,6 @@ import {
   withSiteBaseURL,
   withWebSocketURL,
 } from '@src/lib/withBaseURL'
-import { expect, describe, it } from 'vitest'
 
 describe('withBaseURL', () => {
   /**

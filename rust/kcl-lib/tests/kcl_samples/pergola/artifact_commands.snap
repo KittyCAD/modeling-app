@@ -156,8 +156,7 @@ description: Artifact commands pergola.kcl
         "distance": 2150.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -509,8 +508,7 @@ description: Artifact commands pergola.kcl
         "distance": 250.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -809,8 +807,7 @@ description: Artifact commands pergola.kcl
         "distance": 250.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1109,8 +1106,7 @@ description: Artifact commands pergola.kcl
         "distance": 250.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

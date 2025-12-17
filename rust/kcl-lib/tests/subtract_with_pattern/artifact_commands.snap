@@ -173,8 +173,7 @@ description: Artifact commands subtract_with_pattern.kcl
         "distance": 500.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -336,8 +335,7 @@ description: Artifact commands subtract_with_pattern.kcl
         "distance": 50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

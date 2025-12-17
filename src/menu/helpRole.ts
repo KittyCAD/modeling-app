@@ -39,6 +39,14 @@ export const helpRole = (
             .catch(reportRejection)
         },
       },
+      {
+        label: 'Get Started with Text-to-CAD',
+        click: () => {
+          shell
+            .openExternal('https://text-to-cad.zoo.dev/dashboard')
+            .catch(reportRejection)
+        },
+      },
       { type: 'separator' },
       {
         label: 'Ask the Community Discord',

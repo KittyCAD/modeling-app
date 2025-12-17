@@ -29,6 +29,7 @@ import {
   offsetToPos,
   posToOffset,
 } from '@kittycad/codemirror-lsp-client'
+import { kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { deferExecution } from '@src/lib/utils'
 
@@ -36,7 +37,6 @@ import type { CopilotAcceptCompletionParams } from '@rust/kcl-lib/bindings/Copil
 import type { CopilotCompletionResponse } from '@rust/kcl-lib/bindings/CopilotCompletionResponse'
 import type { CopilotLspCompletionParams } from '@rust/kcl-lib/bindings/CopilotLspCompletionParams'
 import type { CopilotRejectCompletionParams } from '@rust/kcl-lib/bindings/CopilotRejectCompletionParams'
-import type { KclManager } from '@src/lang/KclManager'
 
 const copilotPluginAnnotation = Annotation.define<boolean>()
 export const copilotPluginEvent = copilotPluginAnnotation.of(true)
@@ -192,8 +192,6 @@ const completionDecoration = StateField.define<CompletionState>({
 // A view plugin that requests completions from the server after a delay
 export class CompletionRequester implements PluginValue {
   private client: LanguageServerClient
-  /** This extension must carry around a reference to our manager singleton class, which is injected */
-  private kclManager: KclManager
   private lastPos: number = 0
 
   private queuedUids: string[] = []
@@ -209,16 +207,14 @@ export class CompletionRequester implements PluginValue {
 
   constructor(
     readonly view: EditorView,
-    client: LanguageServerClient,
-    kclManager: KclManager
+    client: LanguageServerClient
   ) {
     this.client = client
-    this.kclManager = kclManager
   }
 
   update(viewUpdate: ViewUpdate) {
     // Make sure we are in a state where we can request completions.
-    if (!this.kclManager.copilotEnabled) {
+    if (!kclManager.copilotEnabled) {
       return
     }
 
@@ -574,14 +570,10 @@ export class CompletionRequester implements PluginValue {
   }
 }
 
-export const copilotPlugin = (
-  options: LanguageServerOptions,
-  kclManager: KclManager
-): Extension => {
+export const copilotPlugin = (options: LanguageServerOptions): Extension => {
   let plugin: CompletionRequester | null = null
   const completionPlugin = ViewPlugin.define(
-    (view) =>
-      (plugin = new CompletionRequester(view, options.client, kclManager))
+    (view) => (plugin = new CompletionRequester(view, options.client))
   )
 
   const domHandlers = EditorView.domEventHandlers({

@@ -9,7 +9,11 @@ import type {
 import { buildCommandArgument } from '@src/lib/createMachineCommand'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getPropertyByPath } from '@src/lib/objectPropertyByPath'
-import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
+import type {
+  Setting,
+  SettingsType,
+  createSettings,
+} from '@src/lib/settings/initialSettings'
 import type {
   SetEventTypes,
   SettingProps,
@@ -59,7 +63,7 @@ interface CreateSettingsArgs {
 // Takes a Setting with a commandConfig and creates a Command
 // that can be used in the CommandBar component.
 export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
-  type S = PathValue<SettingsType, typeof type>
+  type S = PathValue<ReturnType<typeof createSettings>, typeof type>
 
   const context = actor.getSnapshot().context
   const isProjectAvailable = context.currentProject !== undefined

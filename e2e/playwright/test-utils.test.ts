@@ -3,7 +3,6 @@ import {
   runningOnMac,
   runningOnWindows,
 } from '@e2e/playwright/test-utils'
-import { afterAll, describe, expect, it } from 'vitest'
 
 describe('platform detection utilities', () => {
   const originalPlatform = process.platform

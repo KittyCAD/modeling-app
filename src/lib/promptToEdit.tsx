@@ -1,9 +1,12 @@
 import type {
   SourceRange as ApiSourceRange,
   SourceRangePrompt,
+  TextToCadMultiFileIteration,
 } from '@kittycad/lib'
+import { ml } from '@kittycad/lib'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { parentPathRelativeToProject } from '@src/lib/paths'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import type {
@@ -32,6 +35,21 @@ function convertAppRangeToApiRange(
     start: sourceIndexToLineColumn(code, range[0]),
     end: sourceIndexToLineColumn(code, range[1]),
   }
+}
+
+export async function submitTextToCadMultiFileIterationRequest(
+  request: PromptToEditRequest,
+  token: string
+): Promise<TextToCadMultiFileIteration | Error> {
+  const client = createKCClient(token)
+  const data = await kcCall(() =>
+    ml.create_text_to_cad_multi_file_iteration({
+      client,
+      files: request.files,
+      body: request.body,
+    })
+  )
+  return data
 }
 
 // The ML service should know enough about caps, edges, faces, etc when doing
@@ -257,4 +275,15 @@ See later source ranges for more context. about the sweep`,
   }
 
   return payload
+}
+
+export async function getPromptToEditResult(
+  id: string,
+  token?: string
+): Promise<TextToCadMultiFileIteration | Error> {
+  const client = createKCClient(token)
+  const data = await kcCall(() =>
+    ml.get_text_to_cad_part_for_user({ client, id })
+  )
+  return data as TextToCadMultiFileIteration | Error
 }

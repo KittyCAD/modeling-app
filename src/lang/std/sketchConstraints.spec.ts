@@ -15,7 +15,6 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -61,7 +60,12 @@ async function testingSwapSketchFnCall({
   const range = topLevelRange(startIndex, startIndex + callToSwap.length)
   const ast = assertParse(inputCode, instanceInThisFile)
 
-  const execState = await enginelessExecutor(ast, rustContextInThisFile)
+  const execState = await enginelessExecutor(
+    ast,
+    undefined,
+    undefined,
+    rustContextInThisFile
+  )
   const selections = {
     graphSelections: [
       {
@@ -396,6 +400,8 @@ part001 = startSketchOn(XY)
   it('normal case works', async () => {
     const execState = await enginelessExecutor(
       assertParse(code, instanceInThisFile),
+      undefined,
+      undefined,
       rustContextInThisFile
     )
     const index = code.indexOf('// normal-segment') - 7
@@ -420,6 +426,8 @@ part001 = startSketchOn(XY)
   it('verify it works when the segment is in the `start` property', async () => {
     const execState = await enginelessExecutor(
       assertParse(code, instanceInThisFile),
+      undefined,
+      undefined,
       rustContextInThisFile
     )
     const index = code.indexOf('// segment-in-start') - 7

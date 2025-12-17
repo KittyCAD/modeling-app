@@ -173,8 +173,7 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
         "distance": 100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -532,8 +531,7 @@ description: Artifact commands sketch-on-chamfer-two-times-different-order.kcl
         "distance": 50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

@@ -93,14 +93,6 @@ description: Result of parsing var_ref_in_own_def_decl.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "declare",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [],
             "start": 0,
             "type": "FunctionExpression",

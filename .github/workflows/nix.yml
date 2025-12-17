@@ -13,7 +13,7 @@ jobs:
   nix-flake-check:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -28,7 +28,7 @@ jobs:
   nix-build-linux:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
 
@@ -42,7 +42,7 @@ jobs:
   nix-build-macos:
     runs-on: namespace-profile-macos-6-cores
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
 

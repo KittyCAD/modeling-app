@@ -20,10 +20,6 @@ import env from '@src/env'
 import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createActor } from 'xstate'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { createSettings } from '@src/lib/settings/initialSettings'
-import { settingsMachine } from '@src/machines/settingsMachine'
-import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -61,21 +57,11 @@ export function findAngleLengthPair(call: CallExpressionKw): Expr | undefined {
 // if this runs in vitest the engineCommandManager will run a lite connection mode.
 export async function buildTheWorldAndConnectToEngine() {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
-  const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
+  const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
   const engineCommandManager = new ConnectionManager()
-  const commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [] },
-  }).start()
-  const settingsActor = createActor(settingsMachine, {
-    input: { commandBarActor, ...createSettings() },
-  })
-  const rustContext = new RustContext(
-    engineCommandManager,
-    instancePromise,
-    settingsActor
-  )
+  const rustContext = new RustContext(engineCommandManager, instance)
   const sceneInfra = new SceneInfra(engineCommandManager)
-  const kclManager = new KclManager(engineCommandManager, instancePromise, {
+  const kclManager = new KclManager(engineCommandManager, {
     rustContext,
     sceneInfra,
   })
@@ -83,18 +69,18 @@ export async function buildTheWorldAndConnectToEngine() {
   engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
 
+  const commandBarActor = createActor(commandBarMachine, {
+    input: { commands: [] },
+  }).start()
+
   const sceneEntitiesManager = new SceneEntities(
     engineCommandManager,
     sceneInfra,
     kclManager,
-    rustContext
+    rustContext,
+    instance
   )
   sceneEntitiesManager.commandBarActor = commandBarActor
-  kclManager.sceneEntitiesManager = sceneEntitiesManager
-
-  const getSettings = () => getSettingsFromActorContext(settingsActor)
-  sceneInfra.camControls.getSettings = getSettings
-  sceneEntitiesManager.getSettings = getSettings
 
   await new Promise((resolve) => {
     engineCommandManager
@@ -113,68 +99,35 @@ export async function buildTheWorldAndConnectToEngine() {
       .catch(reportRejection)
   })
   return {
-    instance: await instancePromise,
+    instance,
     engineCommandManager,
     rustContext,
     sceneInfra,
     kclManager,
     sceneEntitiesManager,
     commandBarActor,
-    settingsActor,
   }
 }
 
 // Initialize all the singletons and the WASM blob but do not connect to the engine
-export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
-  async function loadWasm() {
-    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
-    const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
-    return instancePromise
-  }
-  const instancePromise = mockWasm
-    ? Promise.resolve({} as ModuleType)
-    : loadWasm()
+export async function buildTheWorldAndNoEngineConnection() {
+  const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+  const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
   const engineCommandManager = new ConnectionManager()
-  const commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [] },
-  }).start()
-  const settingsActor = createActor(settingsMachine, {
-    input: { commandBarActor, ...createSettings() },
-  })
-  const rustContext = new RustContext(
-    engineCommandManager,
-    instancePromise,
-    settingsActor
-  )
+  const rustContext = new RustContext(engineCommandManager, instance)
   const sceneInfra = new SceneInfra(engineCommandManager)
-  const kclManager = new KclManager(engineCommandManager, instancePromise, {
+  const kclManager = new KclManager(engineCommandManager, {
     rustContext,
     sceneInfra,
   })
   engineCommandManager.kclManager = kclManager
   engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
-  const sceneEntitiesManager = new SceneEntities(
-    engineCommandManager,
-    sceneInfra,
-    kclManager,
-    rustContext
-  )
-
-  settingsActor.start()
-  const getSettings = () => getSettingsFromActorContext(settingsActor)
-  sceneInfra.camControls.getSettings = getSettings
-  sceneEntitiesManager.getSettings = getSettings
-
-  kclManager.sceneEntitiesManager = sceneEntitiesManager
   return {
-    instance: await instancePromise,
+    instance,
     engineCommandManager,
     rustContext,
     sceneInfra,
     kclManager,
-    sceneEntitiesManager,
-    commandBarActor,
-    settingsActor,
   }
 }

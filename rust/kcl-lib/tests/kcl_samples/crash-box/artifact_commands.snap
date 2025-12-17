@@ -173,8 +173,7 @@ description: Artifact commands crash-box.kcl
         "distance": -1200.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -465,8 +464,7 @@ description: Artifact commands crash-box.kcl
         "distance": 250.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -728,8 +726,7 @@ description: Artifact commands crash-box.kcl
           }
         },
         "faces": null,
-        "extrude_method": "new",
-        "body_type": "solid"
+        "extrude_method": "new"
       }
     },
     {
@@ -789,8 +786,7 @@ description: Artifact commands crash-box.kcl
           }
         },
         "faces": null,
-        "extrude_method": "new",
-        "body_type": "solid"
+        "extrude_method": "new"
       }
     },
     {

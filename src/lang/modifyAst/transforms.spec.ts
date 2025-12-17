@@ -18,7 +18,6 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type RustContext from '@src/lib/rustContext'
 import { addScale } from '@src/lang/modifyAst/transforms'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

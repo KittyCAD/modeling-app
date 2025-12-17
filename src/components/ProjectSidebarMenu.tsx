@@ -38,10 +38,7 @@ const ProjectSidebarMenu = ({
     window.electron && window.electron.os.isMac ? 'ml-20' : ''
   return (
     <div className={'!no-underline flex gap-2 ' + trafficLightsOffset}>
-      <div className="relative group/home cursor-pointer">
-        <AppLogoLink project={project} file={file} />
-        <Tooltip position="bottom-left">Go home</Tooltip>
-      </div>
+      <AppLogoLink project={project} file={file} />
       {enableMenu ? (
         <ProjectMenuPopover project={project} file={file} />
       ) : (
@@ -66,7 +63,7 @@ function AppLogoLink({
 }) {
   const { onProjectClose } = useLspContext()
   const wrapperClassName =
-    "relative group-hover/home:before:outline h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
+    "relative h-full grid flex-none place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
   return isDesktop() ? (

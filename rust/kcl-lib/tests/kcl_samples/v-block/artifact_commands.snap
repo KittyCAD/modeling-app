@@ -383,8 +383,7 @@ description: Artifact commands v-block.kcl
         "distance": 31.75,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -553,8 +552,7 @@ description: Artifact commands v-block.kcl
         "distance": -76.19999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -611,8 +609,7 @@ description: Artifact commands v-block.kcl
         "distance": -76.19999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

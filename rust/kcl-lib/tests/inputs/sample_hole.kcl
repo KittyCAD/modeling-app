@@ -1,3 +1,5 @@
+@settings(experimentalFeatures = allow)
+
 cubeLen = 20
 bigCube = startSketchOn(XY)
   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2 + 10])

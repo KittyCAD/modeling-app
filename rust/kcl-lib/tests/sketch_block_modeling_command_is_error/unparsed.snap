@@ -1,9 +1,0 @@
----
-source: kcl-lib/src/simulation_tests.rs
-description: Result of unparsing sketch_block_modeling_command_is_error.kcl
----
-@settings(experimentalFeatures = allow)
-
-sketch(on = XY) {
-  startSketchOn(XY)
-}

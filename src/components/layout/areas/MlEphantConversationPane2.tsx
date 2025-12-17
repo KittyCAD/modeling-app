@@ -1,9 +1,9 @@
 import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { settings } from '@src/lib/settings/initialSettings'
 import type { KclManager } from '@src/lang/KclManager'
 import type { SystemIOActor } from '@src/lib/singletons'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
 import type { MlEphantManagerActor2 } from '@src/machines/mlEphantManagerMachine2'
@@ -31,29 +31,23 @@ export const MlEphantConversationPane2 = (props: {
   contextModeling: ModelingMachineContext
   sendModeling: ReturnType<typeof useModelingContext>['send']
   loaderFile: FileEntry | undefined
-  settings: SettingsType
+  settings: typeof settings
   user?: User
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
-  const timeoutReconnect = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
-  )
 
   let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
   })
 
+  if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
+    conversation = undefined
+  }
+
   const abruptlyClosed = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.abruptlyClosed
   })
-
-  if (
-    props.mlEphantManagerActor.getSnapshot().matches(S.Await) &&
-    !abruptlyClosed
-  ) {
-    conversation = undefined
-  }
 
   const billingContext = useSelector(props.billingActor, (actor) => {
     return actor.context
@@ -127,8 +121,7 @@ export const MlEphantConversationPane2 = (props: {
 
   const isProcessing = lastExchange[0]
     ? lastExchange[0].responses.some(
-        (x: MlCopilotServerMessage) =>
-          'end_of_stream' in x || 'error' in x || 'info' in x
+        (x: MlCopilotServerMessage) => 'end_of_stream' in x || 'error' in x
       ) === false
     : false
 
@@ -138,22 +131,7 @@ export const MlEphantConversationPane2 = (props: {
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions2.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
-      conversationId:
-        props.mlEphantManagerActor.getSnapshot().context.conversationId,
     })
-  }
-
-  const onInterrupt = () => {
-    props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions2.Interrupt,
-    })
-  }
-
-  if (needsReconnect && timeoutReconnect.current === undefined) {
-    timeoutReconnect.current = setTimeout(() => {
-      onReconnect()
-      timeoutReconnect.current = undefined
-    }, 3000)
   }
 
   const onClickClearChat = () => {
@@ -283,21 +261,6 @@ export const MlEphantConversationPane2 = (props: {
     }
   }, [searchParams, setSearchParams])
 
-  const userBlockedOnPayment: () => boolean = () => {
-    if (!props.user || !props.user.block) {
-      return false
-    }
-
-    switch (props.user.block) {
-      case 'missing_payment_method':
-      case 'payment_method_failed':
-        return true
-      default:
-        props.user.block satisfies never // exhaustiveness check
-        return false
-    }
-  }
-
   return (
     <MlEphantConversation2
       isLoading={conversation === undefined}
@@ -311,12 +274,10 @@ export const MlEphantConversationPane2 = (props: {
       }}
       onClickClearChat={onClickClearChat}
       onReconnect={onReconnect}
-      onInterrupt={onInterrupt}
       disabled={isProcessing || needsReconnect}
       needsReconnect={needsReconnect}
-      hasPromptCompleted={!isProcessing}
+      hasPromptCompleted={isProcessing}
       userAvatarSrc={props.user?.image}
-      userBlockedOnPayment={userBlockedOnPayment()}
       defaultPrompt={defaultPrompt}
     />
   )

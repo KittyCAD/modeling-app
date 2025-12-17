@@ -130,8 +130,7 @@ description: Artifact commands pipe.kcl
         "distance": 152.39999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -260,8 +259,7 @@ description: Artifact commands pipe.kcl
         "distance": -152.39999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

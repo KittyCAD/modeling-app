@@ -66,10 +66,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           ],
           "radius": 11.0,
           "tag": {
-            "commentStart": 1253,
-            "end": 1270,
+            "commentStart": 1256,
+            "end": 1273,
             "moduleId": 0,
-            "start": 1253,
+            "start": 1256,
             "type": "TagDeclarator",
             "value": "chamferCircleTag"
           },
@@ -177,10 +177,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1253,
-            "end": 1270,
+            "commentStart": 1256,
+            "end": 1273,
             "moduleId": 0,
-            "start": 1253,
+            "start": 1256,
             "type": "TagDeclarator",
             "value": "chamferCircleTag"
           },
@@ -191,10 +191,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1966,
-            "end": 1983,
+            "commentStart": 1969,
+            "end": 1986,
             "moduleId": 0,
-            "start": 1966,
+            "start": 1969,
             "type": "TagDeclarator",
             "value": "chamferStartFace"
           },
@@ -205,10 +205,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1996,
-            "end": 2011,
+            "commentStart": 1999,
+            "end": 2014,
             "moduleId": 0,
-            "start": 1996,
+            "start": 1999,
             "type": "TagDeclarator",
             "value": "chamferEndFace"
           },
@@ -235,10 +235,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             ],
             "radius": 11.0,
             "tag": {
-              "commentStart": 1253,
-              "end": 1270,
+              "commentStart": 1256,
+              "end": 1273,
               "moduleId": 0,
-              "start": 1253,
+              "start": 1256,
               "type": "TagDeclarator",
               "value": "chamferCircleTag"
             },
@@ -337,10 +337,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1253,
-            "end": 1270,
+            "commentStart": 1256,
+            "end": 1273,
             "moduleId": 0,
-            "start": 1253,
+            "start": 1256,
             "type": "TagDeclarator",
             "value": "chamferCircleTag"
           },
@@ -351,10 +351,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1966,
-            "end": 1983,
+            "commentStart": 1969,
+            "end": 1986,
             "moduleId": 0,
-            "start": 1966,
+            "start": 1969,
             "type": "TagDeclarator",
             "value": "chamferStartFace"
           },
@@ -365,10 +365,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1996,
-            "end": 2011,
+            "commentStart": 1999,
+            "end": 2014,
             "moduleId": 0,
-            "start": 1996,
+            "start": 1999,
             "type": "TagDeclarator",
             "value": "chamferEndFace"
           },
@@ -395,10 +395,10 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             ],
             "radius": 11.0,
             "tag": {
-              "commentStart": 1253,
-              "end": 1270,
+              "commentStart": 1256,
+              "end": 1273,
               "moduleId": 0,
-              "start": 1253,
+              "start": 1256,
               "type": "TagDeclarator",
               "value": "chamferCircleTag"
             },

@@ -1,7 +1,7 @@
 import { useAppState } from '@src/AppState'
 import { EngineDebugger } from '@src/lib/debugger'
+import { engineCommandManager } from '@src/lib/singletons'
 import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import { getDimensions } from '@src/network/utils'
 import { useEffect, useRef } from 'react'
 
@@ -15,12 +15,10 @@ export const useOnPageResize = ({
   videoWrapperRef,
   videoRef,
   canvasRef,
-  engineCommandManager,
 }: {
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
   videoRef: React.RefObject<HTMLVideoElement | null>
   canvasRef: React.RefObject<HTMLCanvasElement | null>
-  engineCommandManager: ConnectionManager
 }) => {
   const setSizeOneMoreTime = useRef<NodeJS.Timeout | null>(null)
   const last = useRef<number>(Date.now())
@@ -86,11 +84,5 @@ export const useOnPageResize = ({
     return () => {
       observer.disconnect()
     }
-  }, [
-    videoWrapperRef,
-    videoRef,
-    canvasRef,
-    isStreamAcceptingInput,
-    engineCommandManager,
-  ])
+  }, [videoWrapperRef, videoRef, canvasRef, isStreamAcceptingInput])
 }

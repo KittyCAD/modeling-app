@@ -284,8 +284,7 @@ description: Artifact commands hex-nut.kcl
         "distance": 6.7564,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

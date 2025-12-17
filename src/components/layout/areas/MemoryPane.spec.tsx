@@ -5,7 +5,6 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -17,11 +16,7 @@ let rustContextInThisFile: RustContext = null!
  *
  * Reuse the world for this file. This is not the same as global singleton imports!
  */
-beforeEach(async () => {
-  if (instanceInThisFile) {
-    return
-  }
-
+beforeAll(async () => {
   const { instance, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
@@ -62,7 +57,12 @@ describe('processMemory', () => {
     |> line(endAbsolute = [2.15, 4.32])
     // |> rx(90)`
     const ast = assertParse(code, instanceInThisFile)
-    const execState = await enginelessExecutor(ast, rustContextInThisFile)
+    const execState = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const output = processMemory(execState.variables, instanceInThisFile)
     expect(output.nFeet).toEqual('2: number(ft)')
     expect(output.nInches).toEqual('2: number(in)')

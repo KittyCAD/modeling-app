@@ -3115,14 +3115,6 @@ description: Result of parsing helical-gear.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "helicalGearSketch",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
                       "params": [
                         {
                           "type": "Parameter",
@@ -3597,14 +3589,6 @@ description: Result of parsing helical-gear.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "moduleId": 0,
-              "name": "helicalGear",
-              "start": 0,
-              "type": "Identifier"
-            },
             "params": [
               {
                 "type": "Parameter",

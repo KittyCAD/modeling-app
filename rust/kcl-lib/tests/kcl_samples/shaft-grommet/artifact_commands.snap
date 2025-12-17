@@ -221,8 +221,7 @@ description: Artifact commands shaft-grommet.kcl
           "value": 330.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {

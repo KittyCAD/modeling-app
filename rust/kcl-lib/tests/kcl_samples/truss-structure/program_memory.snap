@@ -513,10 +513,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 695,
-                "end": 706,
+                "commentStart": 698,
+                "end": 709,
                 "moduleId": 0,
-                "start": 695,
+                "start": 698,
                 "type": "TagDeclarator",
                 "value": "bottomFace"
               },
@@ -534,10 +534,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 802,
+                "commentStart": 798,
+                "end": 805,
                 "moduleId": 0,
-                "start": 795,
+                "start": 798,
                 "type": "TagDeclarator",
                 "value": "tag001"
               },
@@ -548,10 +548,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 881,
-                "end": 888,
+                "commentStart": 884,
+                "end": 891,
                 "moduleId": 0,
-                "start": 881,
+                "start": 884,
                 "type": "TagDeclarator",
                 "value": "tag002"
               },
@@ -579,10 +579,10 @@ description: Variables in memory after executing truss-structure.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 695,
-                  "end": 706,
+                  "commentStart": 698,
+                  "end": 709,
                   "moduleId": 0,
-                  "start": 695,
+                  "start": 698,
                   "type": "TagDeclarator",
                   "value": "bottomFace"
                 },
@@ -620,10 +620,10 @@ description: Variables in memory after executing truss-structure.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 795,
-                  "end": 802,
+                  "commentStart": 798,
+                  "end": 805,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 798,
                   "type": "TagDeclarator",
                   "value": "tag001"
                 },
@@ -644,10 +644,10 @@ description: Variables in memory after executing truss-structure.kcl
                   39.978459489299915
                 ],
                 "tag": {
-                  "commentStart": 881,
-                  "end": 888,
+                  "commentStart": 884,
+                  "end": 891,
                   "moduleId": 0,
-                  "start": 881,
+                  "start": 884,
                   "type": "TagDeclarator",
                   "value": "tag002"
                 },
@@ -758,10 +758,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 695,
-                "end": 706,
+                "commentStart": 698,
+                "end": 709,
                 "moduleId": 0,
-                "start": 695,
+                "start": 698,
                 "type": "TagDeclarator",
                 "value": "bottomFace"
               },
@@ -779,10 +779,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 802,
+                "commentStart": 798,
+                "end": 805,
                 "moduleId": 0,
-                "start": 795,
+                "start": 798,
                 "type": "TagDeclarator",
                 "value": "tag001"
               },
@@ -793,10 +793,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 881,
-                "end": 888,
+                "commentStart": 884,
+                "end": 891,
                 "moduleId": 0,
-                "start": 881,
+                "start": 884,
                 "type": "TagDeclarator",
                 "value": "tag002"
               },
@@ -824,10 +824,10 @@ description: Variables in memory after executing truss-structure.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 695,
-                  "end": 706,
+                  "commentStart": 698,
+                  "end": 709,
                   "moduleId": 0,
-                  "start": 695,
+                  "start": 698,
                   "type": "TagDeclarator",
                   "value": "bottomFace"
                 },
@@ -865,10 +865,10 @@ description: Variables in memory after executing truss-structure.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 795,
-                  "end": 802,
+                  "commentStart": 798,
+                  "end": 805,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 798,
                   "type": "TagDeclarator",
                   "value": "tag001"
                 },
@@ -889,10 +889,10 @@ description: Variables in memory after executing truss-structure.kcl
                   39.978459489299915
                 ],
                 "tag": {
-                  "commentStart": 881,
-                  "end": 888,
+                  "commentStart": 884,
+                  "end": 891,
                   "moduleId": 0,
-                  "start": 881,
+                  "start": 884,
                   "type": "TagDeclarator",
                   "value": "tag002"
                 },
@@ -1003,10 +1003,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 695,
-                "end": 706,
+                "commentStart": 698,
+                "end": 709,
                 "moduleId": 0,
-                "start": 695,
+                "start": 698,
                 "type": "TagDeclarator",
                 "value": "bottomFace"
               },
@@ -1024,10 +1024,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 795,
-                "end": 802,
+                "commentStart": 798,
+                "end": 805,
                 "moduleId": 0,
-                "start": 795,
+                "start": 798,
                 "type": "TagDeclarator",
                 "value": "tag001"
               },
@@ -1038,10 +1038,10 @@ description: Variables in memory after executing truss-structure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 881,
-                "end": 888,
+                "commentStart": 884,
+                "end": 891,
                 "moduleId": 0,
-                "start": 881,
+                "start": 884,
                 "type": "TagDeclarator",
                 "value": "tag002"
               },
@@ -1069,10 +1069,10 @@ description: Variables in memory after executing truss-structure.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 695,
-                  "end": 706,
+                  "commentStart": 698,
+                  "end": 709,
                   "moduleId": 0,
-                  "start": 695,
+                  "start": 698,
                   "type": "TagDeclarator",
                   "value": "bottomFace"
                 },
@@ -1110,10 +1110,10 @@ description: Variables in memory after executing truss-structure.kcl
                   12.0
                 ],
                 "tag": {
-                  "commentStart": 795,
-                  "end": 802,
+                  "commentStart": 798,
+                  "end": 805,
                   "moduleId": 0,
-                  "start": 795,
+                  "start": 798,
                   "type": "TagDeclarator",
                   "value": "tag001"
                 },
@@ -1134,10 +1134,10 @@ description: Variables in memory after executing truss-structure.kcl
                   39.978459489299915
                 ],
                 "tag": {
-                  "commentStart": 881,
-                  "end": 888,
+                  "commentStart": 884,
+                  "end": 891,
                   "moduleId": 0,
-                  "start": 881,
+                  "start": 884,
                   "type": "TagDeclarator",
                   "value": "tag002"
                 },
@@ -1882,10 +1882,10 @@ description: Variables in memory after executing truss-structure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 695,
-            "end": 706,
+            "commentStart": 698,
+            "end": 709,
             "moduleId": 0,
-            "start": 695,
+            "start": 698,
             "type": "TagDeclarator",
             "value": "bottomFace"
           },
@@ -1903,10 +1903,10 @@ description: Variables in memory after executing truss-structure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 795,
-            "end": 802,
+            "commentStart": 798,
+            "end": 805,
             "moduleId": 0,
-            "start": 795,
+            "start": 798,
             "type": "TagDeclarator",
             "value": "tag001"
           },
@@ -1917,10 +1917,10 @@ description: Variables in memory after executing truss-structure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 881,
-            "end": 888,
+            "commentStart": 884,
+            "end": 891,
             "moduleId": 0,
-            "start": 881,
+            "start": 884,
             "type": "TagDeclarator",
             "value": "tag002"
           },
@@ -1948,10 +1948,10 @@ description: Variables in memory after executing truss-structure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 695,
-              "end": 706,
+              "commentStart": 698,
+              "end": 709,
               "moduleId": 0,
-              "start": 695,
+              "start": 698,
               "type": "TagDeclarator",
               "value": "bottomFace"
             },
@@ -1989,10 +1989,10 @@ description: Variables in memory after executing truss-structure.kcl
               12.0
             ],
             "tag": {
-              "commentStart": 795,
-              "end": 802,
+              "commentStart": 798,
+              "end": 805,
               "moduleId": 0,
-              "start": 795,
+              "start": 798,
               "type": "TagDeclarator",
               "value": "tag001"
             },
@@ -2013,10 +2013,10 @@ description: Variables in memory after executing truss-structure.kcl
               39.978459489299915
             ],
             "tag": {
-              "commentStart": 881,
-              "end": 888,
+              "commentStart": 884,
+              "end": 891,
               "moduleId": 0,
-              "start": 881,
+              "start": 884,
               "type": "TagDeclarator",
               "value": "tag002"
             },
@@ -2131,10 +2131,10 @@ description: Variables in memory after executing truss-structure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 695,
-            "end": 706,
+            "commentStart": 698,
+            "end": 709,
             "moduleId": 0,
-            "start": 695,
+            "start": 698,
             "type": "TagDeclarator",
             "value": "bottomFace"
           },
@@ -2172,10 +2172,10 @@ description: Variables in memory after executing truss-structure.kcl
             12.0
           ],
           "tag": {
-            "commentStart": 795,
-            "end": 802,
+            "commentStart": 798,
+            "end": 805,
             "moduleId": 0,
-            "start": 795,
+            "start": 798,
             "type": "TagDeclarator",
             "value": "tag001"
           },
@@ -2196,10 +2196,10 @@ description: Variables in memory after executing truss-structure.kcl
             39.978459489299915
           ],
           "tag": {
-            "commentStart": 881,
-            "end": 888,
+            "commentStart": 884,
+            "end": 891,
             "moduleId": 0,
-            "start": 881,
+            "start": 884,
             "type": "TagDeclarator",
             "value": "tag002"
           },
@@ -2561,10 +2561,10 @@ description: Variables in memory after executing truss-structure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 695,
-            "end": 706,
+            "commentStart": 698,
+            "end": 709,
             "moduleId": 0,
-            "start": 695,
+            "start": 698,
             "type": "TagDeclarator",
             "value": "bottomFace"
           },
@@ -2602,10 +2602,10 @@ description: Variables in memory after executing truss-structure.kcl
             12.0
           ],
           "tag": {
-            "commentStart": 795,
-            "end": 802,
+            "commentStart": 798,
+            "end": 805,
             "moduleId": 0,
-            "start": 795,
+            "start": 798,
             "type": "TagDeclarator",
             "value": "tag001"
           },
@@ -2626,10 +2626,10 @@ description: Variables in memory after executing truss-structure.kcl
             39.978459489299915
           ],
           "tag": {
-            "commentStart": 881,
-            "end": 888,
+            "commentStart": 884,
+            "end": 891,
             "moduleId": 0,
-            "start": 881,
+            "start": 884,
             "type": "TagDeclarator",
             "value": "tag002"
           },
@@ -3891,10 +3891,10 @@ description: Variables in memory after executing truss-structure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 695,
-            "end": 706,
+            "commentStart": 698,
+            "end": 709,
             "moduleId": 0,
-            "start": 695,
+            "start": 698,
             "type": "TagDeclarator",
             "value": "bottomFace"
           },
@@ -3912,10 +3912,10 @@ description: Variables in memory after executing truss-structure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 795,
-            "end": 802,
+            "commentStart": 798,
+            "end": 805,
             "moduleId": 0,
-            "start": 795,
+            "start": 798,
             "type": "TagDeclarator",
             "value": "tag001"
           },
@@ -3926,10 +3926,10 @@ description: Variables in memory after executing truss-structure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 881,
-            "end": 888,
+            "commentStart": 884,
+            "end": 891,
             "moduleId": 0,
-            "start": 881,
+            "start": 884,
             "type": "TagDeclarator",
             "value": "tag002"
           },
@@ -3957,10 +3957,10 @@ description: Variables in memory after executing truss-structure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 695,
-              "end": 706,
+              "commentStart": 698,
+              "end": 709,
               "moduleId": 0,
-              "start": 695,
+              "start": 698,
               "type": "TagDeclarator",
               "value": "bottomFace"
             },
@@ -3998,10 +3998,10 @@ description: Variables in memory after executing truss-structure.kcl
               12.0
             ],
             "tag": {
-              "commentStart": 795,
-              "end": 802,
+              "commentStart": 798,
+              "end": 805,
               "moduleId": 0,
-              "start": 795,
+              "start": 798,
               "type": "TagDeclarator",
               "value": "tag001"
             },
@@ -4022,10 +4022,10 @@ description: Variables in memory after executing truss-structure.kcl
               39.978459489299915
             ],
             "tag": {
-              "commentStart": 881,
-              "end": 888,
+              "commentStart": 884,
+              "end": 891,
               "moduleId": 0,
-              "start": 881,
+              "start": 884,
               "type": "TagDeclarator",
               "value": "tag002"
             },

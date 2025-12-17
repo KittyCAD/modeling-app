@@ -39,6 +39,7 @@ patternLinear2d(
 ```kcl
 // / Pattern using a named axis.
 
+
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
   |> patternLinear2d(axis = X, instances = 7, distance = 4)
@@ -63,6 +64,7 @@ example = extrude(exampleSketch, length = 1)
 
 ```kcl
 // / Pattern using a raw axis.
+
 
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)

@@ -123,7 +123,7 @@ test.describe('Point and click for boolean workflows', () => {
 
       await test.step(`Delete ${operationName} operation via feature tree selection`, async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const op = await toolbar.getFeatureTreeOperation('solid001', 0)
+        const op = await toolbar.getFeatureTreeOperation(operationName, 0)
         await op.click({ button: 'right' })
         await page.getByTestId('context-menu-delete').click()
         await scene.settled(cmdBar)

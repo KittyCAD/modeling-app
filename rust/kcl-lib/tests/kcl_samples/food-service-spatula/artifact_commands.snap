@@ -589,8 +589,7 @@ description: Artifact commands food-service-spatula.kcl
         "distance": 3.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -892,8 +891,7 @@ description: Artifact commands food-service-spatula.kcl
         "distance": 15.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1247,8 +1245,7 @@ description: Artifact commands food-service-spatula.kcl
         "distance": -150.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1419,8 +1416,7 @@ description: Artifact commands food-service-spatula.kcl
         "distance": -30.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

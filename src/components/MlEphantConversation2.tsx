@@ -11,7 +11,7 @@ import {
 } from '@kittycad/react-shared'
 import { type BillingContext } from '@src/machines/billingMachine'
 import type { MlCopilotMode } from '@kittycad/lib'
-import { Popover } from '@headlessui/react'
+import { Popover, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import type {
@@ -19,9 +19,8 @@ import type {
   Exchange,
 } from '@src/machines/mlEphantManagerMachine2'
 import type { ReactNode } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
-import { kclManager } from '@src/lib/singletons'
 
 const noop = () => {}
 
@@ -31,14 +30,12 @@ export interface MlEphantConversationProps {
   contexts: MlEphantManagerPromptContext[]
   billingContext: BillingContext
   onProcess: (request: string, mode: MlCopilotMode) => void
-  onInterrupt: () => void
   onClickClearChat: () => void
   onReconnect: () => void
   disabled?: boolean
   needsReconnect: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
-  userBlockedOnPayment?: boolean
   defaultPrompt?: string
 }
 
@@ -70,11 +67,11 @@ export interface MlCopilotModesProps {
 
 const MlCopilotModes = (props: MlCopilotModesProps) => {
   return (
-    <>
+    <div className="flex-none">
       <Popover className="relative">
         <Popover.Button
           data-testid="ml-copilot-efforts-button"
-          className="h-7 bg-default flex flex-row items-center gap-1 m-0 pl-1 pr-2 rounded-sm"
+          className="h-7 bg-default flex flex-row items-center gap-1 pl-1 pr-2"
         >
           {props.children}
           <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
@@ -104,7 +101,7 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
           )}
         </Popover.Panel>
       </Popover>
-    </>
+    </div>
   )
 }
 
@@ -118,7 +115,7 @@ export interface MlEphantExtraInputsProps {
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
   return (
     <div className="flex-1 flex min-w-0 items-end">
-      <div className="flex flex-row w-fit-content items-end gap-1">
+      <div className="flex flex-row w-fit-content items-end">
         {/* TODO: Generalize to a MlCopilotContexts component */}
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
@@ -153,12 +150,9 @@ export interface MlEphantContextsProps {
 const MlCopilotSelectionsContext = (props: {
   selections: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
 }) => {
-  const selectionText = getSelectionTypeDisplayText(
-    kclManager.astSignal.value,
-    props.selections.data
-  )
+  const selectionText = getSelectionTypeDisplayText(props.selections.data)
   return selectionText ? (
-    <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 m-0 pl-1 pr-2 rounded-sm">
+    <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 pl-1 pr-2">
       <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
       {selectionText}
     </button>
@@ -170,8 +164,6 @@ interface MlEphantConversationInputProps {
   billingContext: BillingContext
   onProcess: MlEphantConversationProps['onProcess']
   onReconnect: MlEphantConversationProps['onReconnect']
-  onInterrupt: MlEphantConversationProps['onInterrupt']
-  hasPromptCompleted: MlEphantConversationProps['hasPromptCompleted']
   disabled?: boolean
   needsReconnect: boolean
   defaultPrompt?: string
@@ -198,7 +190,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
             hoverOnly
             wrapperClassName="ui-open:!hidden"
           >
-            Zookeeper credits
+            Text-to-CAD credits
           </Tooltip>
         )}
       </Popover.Button>
@@ -215,12 +207,19 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
   )
 }
 
+const ANIMATION_TIME = 2000
+
 export const MlEphantConversationInput = (
   props: MlEphantConversationInputProps
 ) => {
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const [value, setValue] = useState<string>('')
+  const [heightConvo, setHeightConvo] = useState(0)
   const [mode, setMode] = useState<MlCopilotMode>(DEFAULT_ML_COPILOT_MODE)
+  const [lettersForAnimation, setLettersForAnimation] = useState<ReactNode[]>(
+    []
+  )
+  const [isAnimating, setAnimating] = useState(false)
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
@@ -231,9 +230,36 @@ export const MlEphantConversationInput = (
     if (!value) return
     if (!refDiv.current) return
 
+    setHeightConvo(refDiv.current.getBoundingClientRect().height)
+
     props.onProcess(value, mode)
+
+    setLettersForAnimation(
+      value.split('').map((c, index) => (
+        <span
+          key={index}
+          style={{
+            display: 'inline-block',
+            animation: `${Math.random() * 2}s linear 0s 1 normal forwards running send-up`,
+          }}
+        >
+          {c}
+        </span>
+      ))
+    )
+    setAnimating(true)
     setValue('')
+
+    setTimeout(() => {
+      setAnimating(false)
+    }, ANIMATION_TIME)
   }
+
+  useEffect(() => {
+    if (!isAnimating && refDiv.current !== null) {
+      refDiv.current.focus()
+    }
+  }, [isAnimating])
 
   const selectionsContext:
     | Extract<MlEphantManagerPromptContext, { type: 'selections' }>
@@ -242,11 +268,7 @@ export const MlEphantConversationInput = (
   return (
     <div className="flex flex-col p-4 gap-2">
       <div className="flex flex-row justify-between">
-        <div>
-          <div className="text-3 text-xs">
-            Zookeeper can make mistakes. Always verify information.
-          </div>
-        </div>
+        <div></div>
         <BillingStatusBarItem billingContext={props.billingContext} />
       </div>
       <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
@@ -271,9 +293,15 @@ export const MlEphantConversationInput = (
               onClick()
             }
           }}
-          className="bg-transparent outline-none w-full text-sm overflow-auto"
+          className={`bg-transparent outline-none w-full text-sm overflow-auto ${isAnimating ? 'hidden' : ''}`}
           style={{ height: '3lh' }}
         ></textarea>
+        <div
+          className={`${isAnimating ? '' : 'hidden'} overflow-hidden w-full p-2`}
+          style={{ height: heightConvo }}
+        >
+          {lettersForAnimation}
+        </div>
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div className="flex items-end">
           <MlEphantExtraInputs
@@ -282,7 +310,7 @@ export const MlEphantConversationInput = (
             onSetMode={setMode}
           />
           <div className="flex flex-row gap-1">
-            {!props.disabled && props.needsReconnect && (
+            {props.needsReconnect && (
               <div className="flex flex-col w-fit items-end">
                 <div className="pr-1 text-xs text-red-500 flex flex-row items-center h-5">
                   <CustomIcon name="close" className="w-7 h-7" />{' '}
@@ -291,32 +319,25 @@ export const MlEphantConversationInput = (
                 <button onClick={props.onReconnect}>Reconnect</button>
               </div>
             )}
-            {props.hasPromptCompleted ? (
-              <button
-                data-testid="ml-ephant-conversation-input-button"
-                disabled={props.disabled}
-                onClick={onClick}
-                className="m-0 p-1 rounded-sm border-none bg-ml-green hover:bg-ml-green text-chalkboard-100"
-              >
-                <CustomIcon name="arrowShortUp" className="w-5 h-5" />
-              </button>
-            ) : (
-              <button
-                data-testid="ml-ephant-conversation-input-button"
-                onClick={props.onInterrupt}
-                className="m-0 p-1 rounded-sm border-none bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
-              >
-                <CustomIcon name="close" className="w-5 h-5" />
-              </button>
-            )}
+            <button
+              data-testid="ml-ephant-conversation-input-button"
+              disabled={props.disabled}
+              onClick={onClick}
+              className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
+            >
+              <CustomIcon name="caretUp" className="w-5 h-5 animate-bounce" />
+            </button>
           </div>
         </div>
+      </div>
+      <div className="text-3 text-xs">
+        Text-to-CAD can make mistakes. Always verify information.
       </div>
     </div>
   )
 }
 
-const StarterCard = ({ text }: { text: string }) => {
+export const StarterCard = () => {
   const [, setTrigger] = useState<number>(0)
 
   useEffect(() => {
@@ -333,7 +354,7 @@ const StarterCard = ({ text }: { text: string }) => {
       onClickClearChat={() => {}}
       isLastResponse={false}
       responses={[]}
-      deltasAggregated={text}
+      deltasAggregated="Try requesting a model, ask engineering questions, or let's explore ideas."
     />
   )
 }
@@ -346,6 +367,28 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
     setAutoScroll(true)
     props.onProcess(request, mode)
   }
+
+  useEffect(() => {
+    if (autoScroll === false) {
+      return
+    }
+    if (refScroll.current === null) {
+      return
+    }
+    if (props.conversation?.exchanges.length === 0) {
+      return
+    }
+
+    setTimeout(() => {
+      if (refScroll.current == null) {
+        return
+      }
+      refScroll.current.scrollTo({
+        top: refScroll.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    })
+  }, [props.conversation?.exchanges, autoScroll])
 
   useEffect(() => {
     if (autoScroll === false) {
@@ -378,35 +421,21 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
     }
   )
 
-  const hasCards = exchangeCards !== undefined && exchangeCards.length > 0
-
-  useEffect(() => {
-    if (refScroll.current === null) return
-    refScroll.current.scrollTo({
-      top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
-    })
-  }, [hasCards])
-
   return (
     <div className="relative">
       <div className="absolute inset-0">
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
-              {props.userBlockedOnPayment ? (
-                <StarterCard
-                  text={`Zookeeper is unavailable because you have run out of credits for the month. Please check your [account page](${withSiteBaseURL('/account/billing')}) to view usage or upgrade your plan.`}
-                />
-              ) : props.isLoading === false || props.needsReconnect ? (
+              {props.isLoading === false ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
                   exchangeCards
                 ) : (
-                  <StarterCard text="Try requesting a model, ask engineering questions, or let's explore ideas." />
+                  <StarterCard />
                 )
               ) : (
-                <div className="text-center p-4">
-                  <Loading isDummy={true} className="!text-ml-green"></Loading>
+                <div className="text-center p-4 text-3 text-md animate-pulse">
+                  <Loading></Loading>
                 </div>
               )}
             </div>
@@ -414,14 +443,10 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
           <div className="border-t b-4">
             <MlEphantConversationInput
               contexts={props.contexts}
-              disabled={
-                props.userBlockedOnPayment || props.disabled || props.isLoading
-              }
-              hasPromptCompleted={props.hasPromptCompleted}
+              disabled={props.disabled || props.isLoading}
               needsReconnect={props.needsReconnect}
               onProcess={onProcess}
               onReconnect={props.onReconnect}
-              onInterrupt={props.onInterrupt}
               billingContext={props.billingContext}
               defaultPrompt={props.defaultPrompt}
               hasAlreadySentPrompts={
@@ -434,3 +459,38 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
     </div>
   )
 }
+
+export const MLEphantConversationPaneMenu2 = () => (
+  <Popover className="relative">
+    <Popover.Button className="p-0 !bg-transparent border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 ui-open:!border-primary dark:ui-open:!border-chalkboard-70 !outline-none">
+      <CustomIcon name="questionMark" className="w-5 h-5" />
+    </Popover.Button>
+
+    <Transition
+      enter="duration-100 ease-out"
+      enterFrom="opacity-0 -translate-y-2"
+      enterTo="opacity-100 translate-y-0"
+      as={Fragment}
+    >
+      <Popover.Panel className="w-max max-w-md z-10 bg-default flex flex-col gap-4 absolute top-full left-auto right-0 mt-1 p-4 border border-solid b-5 rounded shadow-lg">
+        <div className="flex gap-2 items-center">
+          <CustomIcon
+            name="beaker"
+            className="w-5 h-5 bg-ml-green dark:text-chalkboard-100 rounded-sm"
+          />
+          <p className="text-base font-bold">
+            <span className="dark:text-ml-green light:underline decoration-ml-green underline-offset-4">
+              Text-to-CAD
+            </span>{' '}
+            is experimental
+          </p>
+        </div>
+        <p className="text-sm">
+          Text-to-CAD is now conversational, so you can refer to previous
+          prompts and iterate. Conversations are not currently shared between
+          computers.
+        </p>
+      </Popover.Panel>
+    </Transition>
+  </Popover>
+)

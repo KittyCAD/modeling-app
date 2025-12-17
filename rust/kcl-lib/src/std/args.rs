@@ -1,25 +1,20 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
-use kcmc::{
-    shared::BodyType,
-    units::{UnitAngle, UnitLength},
-};
-use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::Serialize;
 
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
-    CompilationError, MetaSettings, ModuleId, SourceRange,
+    CompilationError, ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch, SketchSurface,
         Solid, TagIdentifier, annotations,
         kcl_value::FunctionSource,
-        types::{NumericSuffixTypeConvertError, NumericType, PrimitiveType, RuntimeType, UnitType},
+        types::{NumericType, PrimitiveType, RuntimeType, UnitType},
     },
-    front::Number,
     parsing::ast::types::TagNode,
     std::{
         shapes::{PolygonType, SketchOrSurface},
@@ -42,13 +37,6 @@ pub struct TyF64 {
 impl TyF64 {
     pub const fn new(n: f64, ty: NumericType) -> Self {
         Self { n, ty }
-    }
-
-    pub fn from_number(n: Number, settings: &MetaSettings) -> Self {
-        Self {
-            n: n.value,
-            ty: NumericType::from_parsed(n.units, settings),
-        }
     }
 
     pub fn to_mm(&self) -> f64 {
@@ -110,21 +98,6 @@ impl TyF64 {
     pub fn map_value(mut self, n: f64) -> Self {
         self.n = n;
         self
-    }
-
-    // This can't be a TryFrom impl because `Point2d` is defined in another
-    // crate.
-    pub fn to_point2d(value: &[TyF64; 2]) -> Result<crate::front::Point2d<Number>, NumericSuffixTypeConvertError> {
-        Ok(crate::front::Point2d {
-            x: Number {
-                value: value[0].n,
-                units: value[0].ty.try_into()?,
-            },
-            y: Number {
-                value: value[1].n,
-                units: value[1].ty.try_into()?,
-            },
-        })
     }
 }
 
@@ -580,17 +553,6 @@ impl<'a> FromKclValue<'a> for crate::execution::PlaneType {
     }
 }
 
-impl<'a> FromKclValue<'a> for BodyType {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let body_type = match arg.as_str()? {
-            "solid" => Self::Solid,
-            "surface" => Self::Surface,
-            _ => return None,
-        };
-        Some(body_type)
-    }
-}
-
 impl<'a> FromKclValue<'a> for kittycad_modeling_cmds::units::UnitLength {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let s = arg.as_str()?;
@@ -888,9 +850,12 @@ impl<'a> FromKclValue<'a> for SourceRange {
                 return None;
             }
         };
-        let [v0, v1, v2] = value.as_slice() else {
+        if value.len() != 3 {
             return None;
-        };
+        }
+        let v0 = value.first()?;
+        let v1 = value.get(1)?;
+        let v2 = value.get(2)?;
         Some(SourceRange::new(
             v0.as_usize()?,
             v1.as_usize()?,
@@ -1134,9 +1099,11 @@ impl<'a> FromKclValue<'a> for [TyF64; 2] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
-                let [v0, v1] = value.as_slice() else {
+                if value.len() != 2 {
                     return None;
-                };
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
                 let array = [v0.as_ty_f64()?, v1.as_ty_f64()?];
                 Some(array)
             }
@@ -1149,9 +1116,12 @@ impl<'a> FromKclValue<'a> for [TyF64; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
-                let [v0, v1, v2] = value.as_slice() else {
+                if value.len() != 3 {
                     return None;
-                };
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let v2 = value.get(2)?;
                 let array = [v0.as_ty_f64()?, v1.as_ty_f64()?, v2.as_ty_f64()?];
                 Some(array)
             }
@@ -1164,9 +1134,15 @@ impl<'a> FromKclValue<'a> for [TyF64; 6] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
-                let [v0, v1, v2, v3, v4, v5] = value.as_slice() else {
+                if value.len() != 6 {
                     return None;
-                };
+                }
+                let v0 = value.first()?;
+                let v1 = value.get(1)?;
+                let v2 = value.get(2)?;
+                let v3 = value.get(3)?;
+                let v4 = value.get(4)?;
+                let v5 = value.get(5)?;
                 let array = [
                     v0.as_ty_f64()?,
                     v1.as_ty_f64()?,

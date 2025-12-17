@@ -4,7 +4,7 @@ myParam = 4
 
 s = sketch() {
   x = var 0
-  y = var +10
+  y = var 10
   x == 1 + 2
   y == max([5 * myParam, 0])
 

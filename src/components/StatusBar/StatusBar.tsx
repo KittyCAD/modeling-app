@@ -3,7 +3,6 @@ import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import Tooltip, { type TooltipProps } from '@src/components/Tooltip'
-import { Fragment } from 'react/jsx-runtime'
 
 export function StatusBar({
   globalItems,
@@ -18,23 +17,13 @@ export function StatusBar({
       className="relative z-10 flex justify-between items-center bg-chalkboard-20 dark:bg-chalkboard-90 text-chalkboard-80 dark:text-chalkboard-30 border-t border-t-chalkboard-30 dark:border-t-chalkboard-80"
     >
       <menu id="statusbar-globals" className="flex items-stretch">
-        {globalItems.map((item, index, arr) => (
-          <Fragment key={item.id}>
-            <StatusBarItem {...item} position="left" />
-            {index < arr.length - 1 && (
-              <div className="w-[1px] self-stretch bg-chalkboard-30 dark:bg-chalkboard-80" />
-            )}
-          </Fragment>
+        {globalItems.map((item) => (
+          <StatusBarItem key={item.id} {...item} position="left" />
         ))}
       </menu>
       <menu id="statusbar-locals" className="flex items-stretch">
-        {localItems.map((item, index, arr) => (
-          <Fragment key={item.id}>
-            <StatusBarItem {...item} position="right" />
-            {index < arr.length - 1 && (
-              <div className="w-[1px] self-stretch bg-chalkboard-30 dark:bg-chalkboard-80" />
-            )}
-          </Fragment>
+        {localItems.map((item) => (
+          <StatusBarItem key={item.id} {...item} position="right" />
         ))}
       </menu>
     </footer>

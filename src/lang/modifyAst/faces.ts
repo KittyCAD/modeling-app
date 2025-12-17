@@ -402,7 +402,9 @@ export async function retrieveHoleBodyArgs(
     if (err(depthStr)) return depthStr
     const depthResult = await stringToKclExpression(
       depthStr,
-      providedRustContext!
+      false,
+      instance,
+      providedRustContext
     )
     if (err(depthResult) || 'errors' in depthResult) {
       return new Error("Couldn't retrieve blindDepth argument")
@@ -417,7 +419,9 @@ export async function retrieveHoleBodyArgs(
     if (err(diameterStr)) return diameterStr
     const diameterResult = await stringToKclExpression(
       diameterStr,
-      providedRustContext!
+      false,
+      instance,
+      providedRustContext
     )
     if (err(diameterResult) || 'errors' in diameterResult) {
       return new Error("Couldn't retrieve diameter argument")
@@ -460,7 +464,9 @@ export async function retrieveHoleBottomArgs(
       if (err(angleStr)) return angleStr
       const angleResult = await stringToKclExpression(
         angleStr,
-        providedRustContext!
+        false,
+        instance,
+        providedRustContext
       )
       if (err(angleResult) || 'errors' in angleResult) {
         return new Error("Couldn't retrieve drillBitAngle argument")
@@ -523,7 +529,9 @@ export async function retrieveHoleTypeArgs(
     if (err(depthStr)) return depthStr
     const depthResult = await stringToKclExpression(
       depthStr,
-      providedRustContext!
+      false,
+      instance,
+      providedRustContext
     )
     if (err(depthResult) || 'errors' in depthResult) {
       return new Error("Couldn't retrieve depth argument")
@@ -538,7 +546,9 @@ export async function retrieveHoleTypeArgs(
     if (err(diameterStr)) return diameterStr
     const diameterResult = await stringToKclExpression(
       diameterStr,
-      providedRustContext!
+      false,
+      instance,
+      providedRustContext
     )
     if (err(diameterResult) || 'errors' in diameterResult) {
       return new Error("Couldn't retrieve counterboreDiameter argument")
@@ -560,7 +570,9 @@ export async function retrieveHoleTypeArgs(
     if (err(angleStr)) return angleStr
     const angleResult = await stringToKclExpression(
       angleStr,
-      providedRustContext!
+      false,
+      instance,
+      providedRustContext
     )
     if (err(angleResult) || 'errors' in angleResult) {
       return new Error("Couldn't retrieve countersinkAngle argument")
@@ -577,7 +589,9 @@ export async function retrieveHoleTypeArgs(
     }
     const diameterResult = await stringToKclExpression(
       diameterStr,
-      providedRustContext!
+      false,
+      instance,
+      providedRustContext
     )
     if (err(diameterResult) || 'errors' in diameterResult) {
       return new Error("Couldn't retrieve countersinkDiameter argument")

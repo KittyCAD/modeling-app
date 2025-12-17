@@ -7,5 +7,6 @@ target
 /lcov.info
 
 # ts-rs
+/kcl-api/bindings
 /kcl-error/bindings
 /kcl-lib/bindings

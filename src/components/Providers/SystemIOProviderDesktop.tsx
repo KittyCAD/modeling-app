@@ -1,7 +1,10 @@
 import { useLspContext } from '@src/components/LspProvider'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { fsManager } from '@src/lang/std/fileSystemManager'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import {
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  PROJECT_ENTRYPOINT,
+} from '@src/lib/constants'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   PATHS,
@@ -12,12 +15,17 @@ import {
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
+import { type Prompt, PromptType } from '@src/lib/prompt'
 import {
+  billingActor,
   engineCommandManager,
   kclManager,
+  mlEphantManagerActor,
   systemIOActor,
   useSettings,
+  useToken,
 } from '@src/lib/singletons'
+import { type PromptMeta } from '@src/machines/mlEphantManagerMachine'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
 import {
   useHasListedProjects,
@@ -43,6 +51,7 @@ export function SystemIOMachineLogicListenerDesktop() {
   const hasListedProjects = useHasListedProjects()
   const navigate = useNavigate()
   const settings = useSettings()
+  const token = useToken()
   const { onFileOpen, onFileClose } = useLspContext()
   const { pathname } = useLocation()
 
@@ -235,7 +244,83 @@ export function SystemIOMachineLogicListenerDesktop() {
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
   useWatchForNewFileRequestsFromMlEphant(
+    mlEphantManagerActor,
     mlEphantManagerActor2,
+    billingActor,
+    token,
+    (prompt: Prompt, promptMeta: PromptMeta) => {
+      if (promptMeta.type === PromptType.Create) {
+        if (prompt.code === undefined) return
+        // Strip the leading /
+        const indexFirstSlash = promptMeta.project.path.indexOf(
+          window.electron?.sep ?? ''
+        )
+        let requestedProjectName = promptMeta.project.path
+        if (indexFirstSlash === 0) {
+          requestedProjectName = requestedProjectName.slice(1)
+        }
+        requestedProjectName = requestedProjectName.slice(
+          0,
+          requestedProjectName.indexOf(window.electron?.sep ?? '')
+        )
+
+        systemIOActor.send({
+          type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+          data: {
+            override: true,
+            files: [
+              {
+                requestedCode: prompt.code,
+                requestedProjectName,
+                requestedFileName: PROJECT_ENTRYPOINT,
+              },
+            ],
+            requestedProjectName,
+            requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
+          },
+        })
+      } else {
+        const outputsRecord: Record<string, string> = {
+          ...(prompt.outputs ?? {}),
+        }
+        const requestedFiles: RequestedKCLFile[] = Object.entries(
+          outputsRecord
+        ).map(([relativePath, fileContents]) => {
+          const lastSep = relativePath.lastIndexOf(window.electron?.sep ?? '')
+          let pathPart = relativePath.slice(0, lastSep)
+          let filePart = relativePath.slice(lastSep)
+          if (lastSep < 0) {
+            pathPart = ''
+            filePart = relativePath
+          }
+          return {
+            requestedCode: fileContents,
+            requestedFileName: filePart,
+            requestedProjectName:
+              promptMeta.project.name + window.electron?.sep + pathPart,
+          }
+        })
+
+        const targetFilePathRelativeToProject = getFilePathRelativeToProject(
+          promptMeta.targetFile?.path || '',
+          promptMeta.project.name
+        )
+
+        systemIOActor.send({
+          type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+          data: {
+            files: requestedFiles,
+            override: true,
+            // Gotcha: Both are called "project name" and "file name", but one of them
+            // has to include the project-relative file path between the two.
+            requestedProjectName: promptMeta.project.name,
+            requestedFileNameWithExtension:
+              targetFilePathRelativeToProject ?? '',
+          },
+        })
+      }
+    },
+
     (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {
       if (
         toolOutput.type !== 'text_to_cad' &&
@@ -285,7 +370,12 @@ export function SystemIOMachineLogicListenerDesktop() {
   )
 
   // Save the conversation id for the project id if necessary.
-  useProjectIdToConversationId(mlEphantManagerActor2, systemIOActor, settings)
+  useProjectIdToConversationId(
+    mlEphantManagerActor,
+    mlEphantManagerActor2,
+    systemIOActor,
+    settings
+  )
 
   useGlobalProjectNavigation()
   useGlobalFileNavigation()

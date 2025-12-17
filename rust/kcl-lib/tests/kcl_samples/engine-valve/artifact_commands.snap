@@ -226,8 +226,7 @@ description: Artifact commands engine-valve.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -405,8 +404,7 @@ description: Artifact commands engine-valve.kcl
         "distance": 42.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -535,8 +533,7 @@ description: Artifact commands engine-valve.kcl
         "distance": 1.8,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -665,8 +662,7 @@ description: Artifact commands engine-valve.kcl
         "distance": 0.9,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -795,8 +791,7 @@ description: Artifact commands engine-valve.kcl
         "distance": 0.9,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -925,8 +920,7 @@ description: Artifact commands engine-valve.kcl
         "distance": 0.9,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1055,8 +1049,7 @@ description: Artifact commands engine-valve.kcl
         "distance": 0.9,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1185,8 +1178,7 @@ description: Artifact commands engine-valve.kcl
         "distance": 0.9,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1315,8 +1307,7 @@ description: Artifact commands engine-valve.kcl
         "distance": 2.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

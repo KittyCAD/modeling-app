@@ -224,8 +224,7 @@ description: Artifact commands flush_batch_on_end.kcl
         "distance": 38.099999999999994,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

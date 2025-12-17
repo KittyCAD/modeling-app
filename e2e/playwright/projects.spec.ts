@@ -1000,9 +1000,11 @@ test(
     // No main.kcl file is created on the filesystem.
     expect(testDir).toBeDefined()
     if (testDir !== undefined) {
+      // eslint-disable-next-line jest/no-conditional-expect
       await expect(
         fsp.access(path.join(testDir, 'router-template-slate', 'main.kcl'))
       ).rejects.toThrow()
+      // eslint-disable-next-line jest/no-conditional-expect
       await expect(
         fsp.access(
           path.join(testDir, 'router-template-slate', 'nested', 'main.kcl')
@@ -1241,7 +1243,9 @@ test(
     tag: '@desktop',
   },
   async ({ context, page, tronApp, homePage }, testInfo) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) {
+      fail()
+    }
 
     await context.folderSetupFn(async (dir) => {
       await Promise.all([

@@ -11,10 +11,10 @@ import toast from 'react-hot-toast'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import { engineCommandManager } from '@src/lib/singletons'
 import { getSettings, settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import type { ConnectionManager } from '@src/network/connectionManager'
 
 function isWorldCoordinateSystemType(x: string): x is WorldCoordinateSystem {
   return x === 'right_handed_up_z' || x === 'right_handed_up_y'
@@ -94,9 +94,7 @@ function cameraViewStateToNamedView(
   return requestedView
 }
 
-export function createNamedViewsCommand(
-  engineCommandManager: ConnectionManager
-) {
+export function createNamedViewsCommand() {
   // Creates a command to be registered in the command bar.
   // The createNamedViewsCommand will prompt the user for a name and then
   // hit the engine for the camera properties and write them back to disk

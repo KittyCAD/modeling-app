@@ -41,8 +41,7 @@ Assign someone to each section of the manual checklist.
 
 * [ ] Download the release build for this platform
 * [ ] Confirm the application opens (dismiss the updater)
-* [ ] Create a project
-* [ ] Run two basic Zookeeper prompts
+* [ ] Create a project with a basic Text-to-CAD prompt
 * [ ] Confirm the result is viewable in an engine stream
 * [ ] Use 'Check for updates' to bring back the updater toast
 * [ ] Confirm the app can update to the previous release
@@ -51,8 +50,7 @@ Assign someone to each section of the manual checklist.
 
 * [ ] Download the release build for this platform
 * [ ] Confirm the application opens (dismiss the updater)
-* [ ] Create a project
-* [ ] Run two basic Zookeeper prompts
+* [ ] Create a project with a basic Text-to-CAD prompt
 * [ ] Confirm the result is viewable in an engine stream
 * [ ] Use 'Check for updates' to bring back the updater toast
 * [ ] Confirm the app can update to the previous release
@@ -61,8 +59,7 @@ Assign someone to each section of the manual checklist.
 
 * [ ] Download the release build for this platform
 * [ ] Confirm the application opens (dismiss the updater)
-* [ ] Create a project
-* [ ] Run two basic Zookeeper prompts
+* [ ] Create a project with a basic Text-to-CAD prompt
 * [ ] Confirm the result is viewable in an engine stream
 * [ ] Use 'Check for updates' to bring back the updater toast
 * [ ] Confirm the app can update to the previous release

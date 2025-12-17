@@ -57,6 +57,16 @@ const toolOutput = (): Extract<
   }
 }
 
+const error = (): MlCopilotServerMessage & { error: any } => {
+  return {
+    error: {
+      detail:
+        'aosteuhsaotu [Some markdown link](https://discord.com) and a bunch of text' +
+        stringRand(ALPHA, Math.trunc(Math.random() * 80) + 10),
+    },
+  }
+}
+
 const info = (): MlCopilotServerMessage & { info: any } => {
   return {
     info: {
@@ -135,10 +145,10 @@ const endOfStream = (): MlCopilotServerMessage & { end_of_stream: any } => {
 
 const generators = {
   reasoning: [
-    // error,
-    // error,
-    // error,
-    // error,
+    error,
+    error,
+    error,
+    error,
     info,
     toolOutput,
     toolOutput,
@@ -178,19 +188,8 @@ function generateMlServerMessages(): MlCopilotServerMessage[] {
 
 function generateUserResponse(
   ms: MockSocket,
-  cbs: WebSocketEventListenerMap['message'][],
-  forceResponse?: MlCopilotServerMessage
+  cbs: WebSocketEventListenerMap['message'][]
 ) {
-  // Separate from the below because it's not time based.
-  if (forceResponse) {
-    for (let cb of cbs) {
-      cb.bind(ms)(
-        new MessageEvent('message', { data: JSON.stringify(forceResponse) })
-      )
-    }
-    return
-  }
-
   const messages = generateMlServerMessages()
   let i = 0
   const loop = () => {
@@ -303,15 +302,6 @@ export class MockSocket extends WebSocket {
 
     if (obj.type === 'system' && obj.command === 'new') {
       // response = { conversation_id: { conversation_id: 'satehusateohustahseut' }}
-    }
-
-    if (obj.type === 'system' && obj.command === 'interrupt') {
-      const response = {
-        info: {
-          text: 'Stream interrupted by user request',
-        },
-      }
-      generateUserResponse(this, this.cbs.message, response)
     }
 
     if (obj.type === 'user') {

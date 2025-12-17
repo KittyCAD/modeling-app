@@ -18,7 +18,6 @@ import {
   getOperationVariableName,
   groupOperationTypeStreaks,
 } from '@src/lib/operations'
-import { expect, describe, it } from 'vitest'
 
 function stdlib(name: string): Operation {
   return {

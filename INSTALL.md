@@ -29,8 +29,6 @@ Compared to other CAD software, getting Zoo Design Studio up and running is quic
        sudo apt update
        sudo apt install libfuse2
        ```
-
-       Note that on ARM, `zlib1g-dev` may also be required and installable with `sudo apt install zlib1g-dev`
     - Optionally, follow [these steps](https://github.com/probonopd/go-appimage/blob/master/src/appimaged/README.md#initial-setup) to install `appimaged`. It is a daemon that makes interacting with AppImage files more seamless.
     - Once installed, copy the downloaded `Zoo Design Studio-{version}-{arch}-linux.AppImage` to the directory of your choice, for instance `~/Applications`.
 

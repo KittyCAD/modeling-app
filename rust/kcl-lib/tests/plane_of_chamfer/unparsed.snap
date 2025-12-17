@@ -4,6 +4,7 @@ description: Result of unparsing plane_of_chamfer.kcl
 ---
 // From issue https://github.com/KittyCAD/modeling-app/issues/7832
 
+
 sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> yLine(length = 1.14)

@@ -177,7 +177,7 @@ const SignIn = () => {
               Thank you for using our CAD application. It is built on a novel
               geometry engine and crafted to help you create robust parametric
               designs. It represents your models as code, making it easy to
-              collaborate with ML tools like Zookeeper to design parts and
+              collaborate with ML tools like Zoo Text-To-CAD to design parts and
               libraries fast.
             </p>
             {window.electron ? (

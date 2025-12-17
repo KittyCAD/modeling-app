@@ -3,9 +3,8 @@ import { BrowserRouter } from 'react-router-dom'
 
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { Project } from '@src/lib/project'
-import { expect, describe, test } from 'vitest'
 
-const now = Date.now()
+const now = new Date()
 const projectWellFormed = {
   name: 'Simple Box',
   path: '/some/path/Simple Box',
@@ -18,8 +17,8 @@ const projectWellFormed = {
   ],
   readWriteAccess: true,
   metadata: {
-    created: now,
-    modified: now,
+    created: now.toISOString(),
+    modified: now.toISOString(),
     size: 32,
     accessed: null,
     type: null,

@@ -951,7 +951,6 @@ mod test {
         ] {
             // Run each test.
             let func_expr = Node::no_src(FunctionExpression {
-                name: None,
                 params,
                 body: Program::empty(),
                 return_type: None,

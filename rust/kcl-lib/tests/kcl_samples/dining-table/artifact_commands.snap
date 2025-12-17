@@ -196,8 +196,7 @@ description: Artifact commands dining-table.kcl
         "distance": -20.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -402,8 +401,7 @@ description: Artifact commands dining-table.kcl
         "distance": 730.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -916,8 +914,7 @@ description: Artifact commands dining-table.kcl
         "distance": -120.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1210,8 +1207,7 @@ description: Artifact commands dining-table.kcl
         "distance": -120.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

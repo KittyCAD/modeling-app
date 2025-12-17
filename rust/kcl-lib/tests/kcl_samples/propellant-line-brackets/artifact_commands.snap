@@ -207,8 +207,7 @@ description: Artifact commands propellant-line-brackets.kcl
         "distance": 101.6,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -611,8 +610,7 @@ description: Artifact commands propellant-line-brackets.kcl
         "distance": -6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -669,8 +667,7 @@ description: Artifact commands propellant-line-brackets.kcl
         "distance": -6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -727,8 +724,7 @@ description: Artifact commands propellant-line-brackets.kcl
         "distance": -6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -929,8 +925,7 @@ description: Artifact commands propellant-line-brackets.kcl
         "distance": -6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -987,8 +982,7 @@ description: Artifact commands propellant-line-brackets.kcl
         "distance": -6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1299,8 +1293,7 @@ description: Artifact commands propellant-line-brackets.kcl
         "distance": 25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1565,8 +1558,7 @@ description: Artifact commands propellant-line-brackets.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1695,8 +1687,7 @@ description: Artifact commands propellant-line-brackets.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

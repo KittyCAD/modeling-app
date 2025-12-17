@@ -461,8 +461,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -634,8 +633,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "distance": 13.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -807,8 +805,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "distance": 13.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -980,8 +977,7 @@ description: Artifact commands router-template-cross-bar.kcl
         "distance": 4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

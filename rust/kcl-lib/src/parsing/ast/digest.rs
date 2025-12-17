@@ -274,11 +274,6 @@ impl KclNone {
 
 impl FunctionExpression {
     compute_digest!(|slf, hasher| {
-        if let Some(name) = &mut slf.name {
-            hasher.update(name.compute_digest());
-        } else {
-            hasher.update(b"FunctionExpression::name::None");
-        }
         hasher.update(slf.params.len().to_ne_bytes());
         for param in slf.params.iter_mut() {
             hasher.update(param.compute_digest());

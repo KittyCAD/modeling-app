@@ -643,8 +643,7 @@ description: Artifact commands axial-fan.kcl
         "distance": 4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -902,8 +901,7 @@ description: Artifact commands axial-fan.kcl
         "distance": -4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -960,8 +958,7 @@ description: Artifact commands axial-fan.kcl
         "distance": -4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1018,8 +1015,7 @@ description: Artifact commands axial-fan.kcl
         "distance": -4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1076,8 +1072,7 @@ description: Artifact commands axial-fan.kcl
         "distance": -4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1305,8 +1300,7 @@ description: Artifact commands axial-fan.kcl
         "distance": 17.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -1435,8 +1429,7 @@ description: Artifact commands axial-fan.kcl
         "distance": -17.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2058,8 +2051,7 @@ description: Artifact commands axial-fan.kcl
         "distance": 4.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2188,8 +2180,7 @@ description: Artifact commands axial-fan.kcl
         "distance": 16.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2318,8 +2309,7 @@ description: Artifact commands axial-fan.kcl
         "distance": -16.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -2786,8 +2776,7 @@ description: Artifact commands axial-fan.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None",
-        "body_type": "solid"
+        "opposite": "None"
       }
     },
     {
@@ -3634,8 +3623,7 @@ description: Artifact commands axial-fan.kcl
         "distance": 17.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {
@@ -3867,8 +3855,7 @@ description: Artifact commands axial-fan.kcl
         "distance": 3.8,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge",
-        "body_type": "solid"
+        "extrude_method": "merge"
       }
     },
     {

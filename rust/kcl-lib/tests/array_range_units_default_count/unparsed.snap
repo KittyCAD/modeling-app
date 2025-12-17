@@ -1,5 +1,0 @@
----
-source: kcl-lib/src/simulation_tests.rs
-description: Result of unparsing array_range_units_default_count.kcl
----
-indices = [0..<3_]

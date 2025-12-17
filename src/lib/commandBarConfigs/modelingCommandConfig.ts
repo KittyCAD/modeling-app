@@ -27,10 +27,6 @@ import {
   KCL_DEFAULT_PRECISION,
   KCL_DEFAULT_FONT_POINT_SIZE,
   KCL_DEFAULT_FONT_SCALE,
-  type KclPreludeBodyType,
-  KCL_PRELUDE_BODY_TYPE_VALUES,
-  KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
-  type KclPreludeExtrudeMethod,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -79,7 +75,6 @@ import {
   addDatumGdt,
   getNextAvailableDatumName,
 } from '@src/lang/modifyAst/gdt'
-import { capitaliseFC } from '@src/lib/utils'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -148,8 +143,7 @@ export type ModelingCommandSchema = {
     twistCenter?: KclCommandValue
     // TODO: figure out if we should expose `tolerance` or not
     // @pierremtb: I don't even think it should be in KCL
-    method?: KclPreludeExtrudeMethod
-    bodyType?: KclPreludeBodyType
+    method?: string
   }
   Sweep: {
     // Enables editing workflow
@@ -573,7 +567,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d', 'segment'],
+        selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -617,25 +611,17 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
       },
       twistCenter: {
-        inputType: 'vector2d',
+        inputType: 'kcl',
+        allowArrays: true,
         required: false,
-        defaultValue: KCL_DEFAULT_ORIGIN_2D,
       },
       method: {
         inputType: 'options',
         required: false,
-        options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
-          name: capitaliseFC(value.toLowerCase()),
-          value,
-        })),
-      },
-      bodyType: {
-        inputType: 'options',
-        required: false,
-        options: KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
-          name: capitaliseFC(value.toLowerCase()),
-          value,
-        })),
+        options: [
+          { name: 'New', value: 'NEW' },
+          { name: 'Merge', value: 'MERGE' },
+        ],
       },
     },
   },

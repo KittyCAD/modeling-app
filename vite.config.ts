@@ -30,6 +30,7 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     test: {
+      globals: true,
       pool: 'forks',
       poolOptions: {
         forks: {
@@ -79,11 +80,7 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     plugins: [
-      react({
-        babel: {
-          plugins: [['module:@preact/signals-react-transform']],
-        },
-      }),
+      react(),
       indexHtmlCsp(!process.env.VERCEL && mode !== 'development'),
       viteTsconfigPaths(),
       eslint(),

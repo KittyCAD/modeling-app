@@ -4,6 +4,7 @@ description: Result of unparsing index_of_array.kcl
 ---
 // This tests indexing an array.
 
+
 arr = [90, 91, 92]
 
 // Test: literal index.

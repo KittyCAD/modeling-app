@@ -1,18 +1,12 @@
-// Import globals setup first to ensure 'expect' and 'fetch' are available
-import '@src/setupTests-globals'
 import '@testing-library/jest-dom'
-
-import { cleanup } from '@testing-library/react'
-import { afterEach } from 'vitest'
+import fetch from 'node-fetch'
 import { Vector2 } from 'three'
 import { vi } from 'vitest'
 import 'vitest-webgl-canvas-mock'
 import { WebSocket } from 'ws'
 
-// Explicit cleanup is needed to prevent DOM elements persisting between tests
-afterEach(() => {
-  cleanup()
-})
+// @ts-ignore
+globalThis.fetch = fetch
 
 class MockRTCPeerConnection {
   createDataChannel() {

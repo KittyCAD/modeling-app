@@ -1,11 +1,9 @@
-import type { ConnectionManager } from '@src/network/connectionManager'
+import { engineCommandManager } from '@src/lib/singletons'
 import { useEffect } from 'react'
 let didUseEffectRunOnce = false
 
 // Required for on page exit
-const resetGlobalEngineCommandManager = (
-  engineCommandManager: ConnectionManager
-) => {
+const resetGlobalEngineCommandManager = () => {
   // reset the ability to initialize
   engineCommandManager.started = false
   didUseEffectRunOnce = false

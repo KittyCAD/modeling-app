@@ -1,6 +1,6 @@
 //! A generator for ArtifactIds that can be stable across executions.
 
-use crate::execution::{ArtifactId, ModuleId};
+use crate::execution::ModuleId;
 
 const NAMESPACE_KCL: uuid::Uuid = uuid::uuid!("8bda3118-75eb-58c7-a866-bef1dcb495e7");
 
@@ -29,10 +29,6 @@ impl IdGenerator {
         self.next_id += 1;
 
         next_uuid
-    }
-
-    pub fn next_artifact_id(&mut self) -> ArtifactId {
-        ArtifactId::new(self.next_uuid())
     }
 }
 

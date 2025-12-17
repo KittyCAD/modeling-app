@@ -206,11 +206,6 @@ async fn inner_translate(
         Some(OriginType::Local)
     };
 
-    let translation = shared::Point3d {
-        x: LengthUnit(x.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-        y: LengthUnit(y.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-        z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-    };
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
@@ -219,7 +214,16 @@ async fn inner_translate(
                 ModelingCmd::from(mcmd::SetObjectTransform {
                     object_id,
                     transforms: vec![shared::ComponentTransform {
-                        translate: Some(transform_by(translation, false, !is_global, origin)),
+                        translate: Some(transform_by(
+                            shared::Point3d {
+                                x: LengthUnit(x.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+                                y: LengthUnit(y.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+                                z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+                            },
+                            false,
+                            !is_global,
+                            origin,
+                        )),
                         scale: None,
                         rotate_rpy: None,
                         rotate_angle_axis: None,

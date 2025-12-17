@@ -5,7 +5,6 @@ import {
   useAdjacentOnboardingSteps,
 } from '@src/routes/Onboarding/utils'
 import type { Location } from 'react-router-dom'
-import { expect, describe, it } from 'vitest'
 
 describe('Onboarding utility functions', () => {
   describe('useAdjacentOnboardingSteps', () => {

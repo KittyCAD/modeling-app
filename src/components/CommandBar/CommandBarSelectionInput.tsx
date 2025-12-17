@@ -9,11 +9,7 @@ import {
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
 } from '@src/lib/selections'
-import {
-  engineCommandManager,
-  kclManager,
-  sceneEntitiesManager,
-} from '@src/lib/singletons'
+import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
@@ -38,7 +34,7 @@ function CommandBarSelectionInput({
   const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
-    return getSelectionCountByType(kclManager.astSignal.value, selection)
+    return getSelectionCountByType(selection)
   }, [selection])
   const isArgRequired =
     arg.required instanceof Function
@@ -64,12 +60,7 @@ function CommandBarSelectionInput({
     return () => {
       toSync(() => {
         const promises = [
-          new Promise(() =>
-            kclManager.setSelectionFilterToDefault(
-              sceneEntitiesManager,
-              selection
-            )
-          ),
+          new Promise(() => kclManager.setSelectionFilterToDefault(selection)),
         ]
         if (!kclManager._isAstEmpty(kclManager.ast)) {
           promises.push(kclManager.hidePlanes())
@@ -153,10 +144,8 @@ function CommandBarSelectionInput({
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
-    arg.selectionFilter &&
-      kclManager.setSelectionFilter(arg.selectionFilter, sceneEntitiesManager)
-    return () =>
-      kclManager.setSelectionFilterToDefault(sceneEntitiesManager, selection)
+    arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
+    return () => kclManager.setSelectionFilterToDefault(selection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter])
 
@@ -169,8 +158,7 @@ function CommandBarSelectionInput({
         }
       >
         {canSubmitSelection
-          ? getSelectionTypeDisplayText(kclManager.astSignal.value, selection) +
-            ' selected'
+          ? getSelectionTypeDisplayText(selection) + ' selected'
           : `Please select ${
               arg.multiple ? 'one or more ' : 'one '
             }${getSemanticSelectionType(arg.selectionTypes).join(' or ')}`}

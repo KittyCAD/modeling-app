@@ -3,14 +3,13 @@ import type { EventFrom, StateFrom } from 'xstate'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
-import { commandBarActor } from '@src/lib/singletons'
+import { commandBarActor, kclManager } from '@src/lib/singletons'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
-import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
@@ -91,40 +90,17 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
     items: [
       {
         id: 'sketch',
-        onClick: ({
-          modelingSend,
-          modelingState,
-          sketchPathId,
-          editorHasFocus,
-        }) => {
-          const isSketchBlock = isSketchBlockSelected(
-            modelingState.context.selectionRanges
-          )
-
-          // Don't force new sketch if we're in a sketch block or have a sketchBlock selected
-          if ((editorHasFocus && sketchPathId) || isSketchBlock) {
-            modelingSend({ type: 'Enter sketch' })
-          } else {
-            // No sketch context - start new sketch
-            modelingSend({
-              type: 'Enter sketch',
-              data: { forceNewSketch: true },
-            })
-          }
-        },
+        onClick: ({ modelingSend, sketchPathId, editorHasFocus }) =>
+          !(editorHasFocus && sketchPathId)
+            ? modelingSend({
+                type: 'Enter sketch',
+                data: { forceNewSketch: true },
+              })
+            : modelingSend({ type: 'Enter sketch' }),
         icon: 'sketch',
         status: 'available',
-        title: ({ editorHasFocus, sketchPathId, modelingState }) => {
-          const isSketchBlock = isSketchBlockSelected(
-            modelingState.context.selectionRanges
-          )
-
-          if ((editorHasFocus && sketchPathId) || isSketchBlock) {
-            return 'Edit Sketch'
-          } else {
-            return 'Start Sketch'
-          }
-        },
+        title: ({ editorHasFocus, sketchPathId }) =>
+          editorHasFocus && sketchPathId ? 'Edit Sketch' : 'Start Sketch',
         showTitle: true,
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
@@ -294,7 +270,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           })
         },
         icon: 'hole',
-        status: 'available',
+        status: 'experimental',
         title: 'Hole',
         description:
           'Standard holes that could be drilled or cut into a 3D solid.',
@@ -789,22 +765,28 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'arc',
             status: 'available',
             disabled: (state) => {
+              const theKclManager = state.context.kclManager
+                ? state.context.kclManager
+                : kclManager
               return (
                 (!isEditingExistingSketch({
                   sketchDetails: state.context.sketchDetails,
-                  kclManager: state.context.kclManager,
+                  kclManager: theKclManager,
                 }) &&
                   !state.matches({ Sketch: 'Tangential arc to' })) ||
                 pipeHasCircle({
                   sketchDetails: state.context.sketchDetails,
-                  kclManager: state.context.kclManager,
+                  kclManager: theKclManager,
                 })
               )
             },
             disabledReason: (state) => {
+              const theKclManager = state.context.kclManager
+                ? state.context.kclManager
+                : kclManager
               return !isEditingExistingSketch({
                 sketchDetails: state.context.sketchDetails,
-                kclManager: state.context.kclManager,
+                kclManager: theKclManager,
               }) && !state.matches({ Sketch: 'Tangential arc to' })
                 ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."
                 : undefined
@@ -1234,16 +1216,16 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         id: 'sketch-exit',
         onClick: ({ modelingSend }) =>
           modelingSend({
-            type: 'Exit sketch',
+            type: 'Cancel',
           }),
         icon: 'arrowLeft',
         status: 'available',
         title: 'Exit sketch',
         showTitle: true,
+        hotkey: 'Esc',
         description: 'Exit the current sketch',
         links: [],
       },
-      'break',
       {
         id: 'line',
         onClick: ({ modelingSend, isActive }) =>
@@ -1253,7 +1235,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               })
             : modelingSend({
                 type: 'equip tool',
-                data: { tool: 'lineTool' },
+                data: { tool: 'dimensionTool' },
               }),
         icon: 'line',
         status: 'available',
@@ -1263,7 +1245,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [],
         isActive: (state) =>
           state.matches('sketchSolveMode') &&
-          state.context.sketchSolveToolName === 'lineTool',
+          state.context.sketchSolveToolName === 'dimensionTool',
       },
       {
         id: 'point',
@@ -1276,7 +1258,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'equip tool',
                 data: { tool: 'pointTool' },
               }),
-        icon: 'oneDot',
+        icon: 'arrowDown',
         status: 'available',
         title: 'Point',
         hotkey: 'L',
@@ -1285,91 +1267,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         isActive: (state) =>
           state.matches('sketchSolveMode') &&
           state.context.sketchSolveToolName === 'pointTool',
-      },
-      'break',
-      {
-        id: 'coincident',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'coincident',
-          }),
-        icon: 'coincident',
-        status: 'available',
-        title: 'Coincident',
-        hotkey: 'L',
-        description: 'Constrain points or curves to be coincident',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'Parallel',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'Parallel',
-          }),
-        icon: 'parallel',
-        status: 'available',
-        title: 'Parallel',
-        hotkey: 'L',
-        description: 'Constrain lines or curves to be parallel',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'equalLength',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'LinesEqualLength',
-          }),
-        icon: 'equal',
-        status: 'available',
-        title: 'Equal Length',
-        hotkey: 'L',
-        description: 'Constrain lines to have equal length',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'vertical',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'Vertical',
-          }),
-        icon: 'vertical',
-        status: 'available',
-        title: 'Vertical',
-        hotkey: 'L',
-        description: 'Constrain lines to be vertical',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'Horizontal',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'Horizontal',
-          }),
-        icon: 'horizontal',
-        status: 'available',
-        title: 'Horizontal',
-        hotkey: 'L',
-        description: 'Constrain lines to be horizontal',
-        links: [],
-        isActive: (state) => false,
-      },
-      {
-        id: 'Distance',
-        onClick: ({ modelingSend, isActive }) =>
-          modelingSend({
-            type: 'Distance',
-          }),
-        icon: 'dimension',
-        status: 'available',
-        title: 'Distance',
-        hotkey: 'L',
-        description: 'Constrain distance between points or lines',
-        links: [],
-        isActive: (state) => false,
       },
     ],
   },

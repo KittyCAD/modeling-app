@@ -4,12 +4,11 @@ use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    front::FrontendState, wasm_engine::FileManager, EngineManager, ExecOutcome, KclError, KclErrorWithOutputs,
-    MockConfig, Program, ProjectManager,
+    wasm_engine::FileManager, EngineManager, ExecOutcome, KclError, KclErrorWithOutputs, Program, ProjectManager,
 };
 use wasm_bindgen::prelude::*;
 
-pub(crate) const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";
+const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";
 
 #[wasm_bindgen]
 pub struct Context {
@@ -18,7 +17,6 @@ pub struct Context {
     fs: Arc<FileManager>,
     mock_engine: Arc<Box<dyn EngineManager>>,
     pub(crate) project_manager: ProjectManager,
-    pub(crate) frontend: Arc<tokio::sync::RwLock<FrontendState>>,
 }
 
 #[wasm_bindgen]
@@ -49,11 +47,10 @@ impl Context {
             )),
             response_context,
             project_manager: ProjectManager,
-            frontend: Arc::new(tokio::sync::RwLock::new(FrontendState::new())),
         })
     }
 
-    pub(crate) fn create_executor_ctx(
+    fn create_executor_ctx(
         &self,
         settings: &str,
         path: Option<String>,
@@ -184,11 +181,7 @@ impl Context {
                 "Could not create KCL executor context. {TRUE_BUG} Details: {e}"
             )))
         })?;
-        let mock_config = MockConfig {
-            use_prev_memory,
-            ..Default::default()
-        };
-        ctx.run_mock(&program, &mock_config).await
+        ctx.run_mock(&program, use_prev_memory).await
     }
 
     /// Export a scene to a file.

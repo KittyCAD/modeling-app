@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import GizmoRenderer from '@src/components/gizmo/GizmoRenderer'
-import { sceneInfra, useSettings } from '@src/lib/singletons'
+import { useSettings } from '@src/lib/singletons'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
@@ -29,8 +29,7 @@ export default function CubeGizmo() {
       renderer.current = new GizmoRenderer(
         canvasRef.current,
         initialIsPerspectiveRef.current,
-        initialResolvedThemeRef.current,
-        sceneInfra
+        initialResolvedThemeRef.current
       )
     }
     return () => {

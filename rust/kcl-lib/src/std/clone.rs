@@ -2,10 +2,10 @@
 
 use std::collections::HashMap;
 
+use anyhow::Result;
 use kcmc::{
     ModelingCmd, each_cmd as mcmd,
     ok_response::{OkModelingCmdResponse, output::EntityGetAllChildUuids},
-    shared::BodyType,
     websocket::OkWebSocketResponseData,
 };
 use kittycad_modeling_cmds::{self as kcmc};
@@ -21,12 +21,10 @@ use crate::{
     std::{Args, extrude::NamedCapTags},
 };
 
-type Result<T> = std::result::Result<T, KclError>;
-
 /// Clone a sketch or solid.
 ///
 /// This works essentially like a copy-paste operation.
-pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue> {
+pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let geometry = args.get_unlabeled_kw_arg(
         "geometry",
         &RuntimeType::Union(vec![
@@ -45,7 +43,7 @@ async fn inner_clone(
     geometry: GeometryWithImportedGeometry,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<GeometryWithImportedGeometry> {
+) -> Result<GeometryWithImportedGeometry, KclError> {
     let new_id = exec_state.next_uuid();
     let mut geometry = geometry.clone();
     let old_id = geometry.id(&args.ctx).await?;
@@ -117,7 +115,7 @@ async fn fix_tags_and_references(
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
             sketch.clone = Some(old_geometry_id);
-            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, None).await?;
+            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             // Make the sketch id the new geometry id.
@@ -126,14 +124,8 @@ async fn fix_tags_and_references(
             solid.sketch.artifact_id = new_geometry_id.into();
             solid.sketch.clone = Some(old_geometry_id);
 
-            fix_sketch_tags_and_references(
-                &mut solid.sketch,
-                &entity_id_map,
-                exec_state,
-                args,
-                Some(solid.value.clone()),
-            )
-            .await?;
+            fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state, Some(solid.value.clone()))
+                .await?;
 
             let (start_tag, end_tag) = get_named_cap_tags(solid);
 
@@ -169,7 +161,6 @@ async fn fix_tags_and_references(
                 args,
                 None,
                 Some(&entity_id_map.clone()),
-                BodyType::Solid, // TODO: Support surface clones.
             )
             .await?;
 
@@ -202,10 +193,7 @@ async fn get_old_new_child_map(
             }),
     } = response
     else {
-        return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
-            vec![args.source_range],
-        )));
+        anyhow::bail!("Expected EntityGetAllChildUuids response, got: {:?}", response);
     };
 
     // Get the new geometries entity ids.
@@ -224,10 +212,7 @@ async fn get_old_new_child_map(
             }),
     } = response
     else {
-        return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
-            vec![args.source_range],
-        )));
+        anyhow::bail!("Expected EntityGetAllChildUuids response, got: {:?}", response);
     };
 
     // Create a map of old entity ids to new entity ids.
@@ -244,7 +229,6 @@ async fn fix_sketch_tags_and_references(
     new_sketch: &mut Sketch,
     entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>,
     exec_state: &mut ExecState,
-    args: &Args,
     surfaces: Option<Vec<ExtrudeSurface>>,
 ) -> Result<()> {
     // Fix the path references in the sketch.
@@ -277,13 +261,10 @@ async fn fix_sketch_tags_and_references(
             if let Some(found_surface) = surface_id_map.get(&tag.name) {
                 let mut new_surface = (*found_surface).clone();
                 let Some(new_face_id) = entity_id_map.get(&new_surface.face_id()).copied() else {
-                    return Err(KclError::new_engine(KclErrorDetails::new(
-                        format!(
-                            "Failed to find new face id for old face id: {:?}",
-                            new_surface.face_id()
-                        ),
-                        vec![args.source_range],
-                    )));
+                    anyhow::bail!(
+                        "Failed to find new face id for old face id: {:?}",
+                        new_surface.face_id()
+                    )
                 };
                 new_surface.set_face_id(new_face_id);
                 surface = Some(new_surface);
