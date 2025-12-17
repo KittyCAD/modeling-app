@@ -87,7 +87,7 @@ mySketch001 = startSketchOn(XY)
         ],
         id: expect.any(String),
         artifactId: expect.any(String),
-        isClosed: false,
+        isClosed: 'no',
         originalId: expect.any(String),
         units: 'mm',
       },
