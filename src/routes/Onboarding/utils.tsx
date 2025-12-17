@@ -212,7 +212,7 @@ export function OnboardingButtons({
           iconStart={{
             icon:
               previousStep && previousStep !== 'dismissed'
-                ? 'arrowLeft'
+                ? 'arrowShortLeft'
                 : 'close',
             className: 'text-chalkboard-10',
             bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
@@ -245,7 +245,9 @@ export function OnboardingButtons({
           }}
           iconStart={{
             icon:
-              nextStep && nextStep !== 'completed' ? 'arrowRight' : 'checkmark',
+              nextStep && nextStep !== 'completed'
+                ? 'arrowShortRight'
+                : 'checkmark',
             bgClassName: 'dark:bg-chalkboard-80',
           }}
           className="dark:hover:bg-chalkboard-80/50"
@@ -466,7 +468,7 @@ export function TutorialRequestToast(
         <ActionButton
           Element="button"
           iconStart={{
-            icon: 'arrowRight',
+            icon: 'arrowShortRight',
           }}
           name="accept"
           onClick={onAccept}

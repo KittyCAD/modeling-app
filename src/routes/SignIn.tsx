@@ -181,7 +181,7 @@ const SignIn = () => {
                       data-testid="sign-in-button"
                     >
                       Sign in to get started
-                      <CustomIcon name="arrowRight" className="w-6 h-6" />
+                      <CustomIcon name="arrowShortRight" className="w-6 h-6" />
                     </button>
                     {isDesktop() && (
                       <AdvancedSignInOptions
@@ -219,7 +219,7 @@ const SignIn = () => {
                       }
                       data-testid="cancel-sign-in-button"
                     >
-                      <CustomIcon name="arrowLeft" className="w-6 h-6" />
+                      <CustomIcon name="arrowShortLeft" className="w-6 h-6" />
                       Cancel
                     </button>
                   </>
@@ -244,7 +244,7 @@ const SignIn = () => {
                   data-testid="sign-in-button"
                 >
                   Sign in to get started
-                  <CustomIcon name="arrowRight" className="w-6 h-6" />
+                  <CustomIcon name="arrowShortRight" className="w-6 h-6" />
                 </Link>
               </>
             )}
@@ -280,7 +280,7 @@ const SignIn = () => {
               data-testid="view-sample-button"
             >
               View this sample
-              <CustomIcon name="arrowRight" className="w-6 h-6" />
+              <CustomIcon name="arrowShortRight" className="w-6 h-6" />
             </div>
           </Link>
           <div className="self-end h-min md:col-span-3 xl:row-span-2 flex flex-col md:grid grid-cols-2 gap-5">
