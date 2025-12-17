@@ -4,13 +4,13 @@ import {
   useSettings,
   useUser,
 } from '@src/lib/singletons'
-import { MlEphantConversationPane2 } from '@src/components/layout/areas/MlEphantConversationPane2'
+import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { IndexLoaderData } from '@src/lib/types'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useLoaderData } from 'react-router-dom'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   const settings = useSettings()
@@ -21,7 +21,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
     theProject,
   } = useModelingContext()
   const { file: loaderFile } = useLoaderData() as IndexLoaderData
-  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
+  const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   return (
     <LayoutPanel
@@ -35,9 +35,9 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
         title="Zookeeper"
         onClose={props.onClose}
       />
-      <MlEphantConversationPane2
+      <MlEphantConversationPane
         {...{
-          mlEphantManagerActor: mlEphantManagerActor2,
+          mlEphantManagerActor: mlEphantManagerActor,
           systemIOActor,
           kclManager,
           contextModeling,

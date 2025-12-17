@@ -66,8 +66,8 @@ import { defaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { getResolvedTheme } from '@src/lib/theme'
 import {
   MlEphantManagerReactContext,
-  MlEphantManagerTransitions2,
-} from '@src/machines/mlEphantManagerMachine2'
+  MlEphantManagerTransitions,
+} from '@src/machines/mlEphantManagerMachine'
 import { useSignalEffect } from '@preact/signals-react'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
@@ -109,7 +109,7 @@ export function App() {
   useEffect(() => {
     // Clear conversation
     mlEphantManagerActor2.send({
-      type: MlEphantManagerTransitions2.ConversationClose,
+      type: MlEphantManagerTransitions.ConversationClose,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [projectName, projectPath])
