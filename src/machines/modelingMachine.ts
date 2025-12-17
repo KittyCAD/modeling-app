@@ -1635,7 +1635,7 @@ export const modelingMachine = setup({
         const constraint = applyRemoveConstrainingValues({
           selectionRanges,
           pathToNodes: data && [data],
-          providedKclManager: kclManager,
+          kclManager,
           wasmInstance,
         })
         if (trap(constraint)) return
