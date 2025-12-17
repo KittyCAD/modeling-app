@@ -94,7 +94,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "mm",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "sketch002": {
