@@ -87,6 +87,7 @@ async fn inner_mirror_2d(
                                 )));
                             }
                         }
+                        sketch.is_closed = crate::execution::ProfileClosed::Maybe;
                         Ok(())
                     })?;
             } else {
