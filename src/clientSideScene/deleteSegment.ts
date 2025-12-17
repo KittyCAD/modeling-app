@@ -110,8 +110,7 @@ export async function deleteSegmentsOrProfiles({
     sketchDetails.yAxis,
     sketchDetails.origin,
     getEventForSegmentSelection,
-    updateExtraSegments,
-    await dependencies.kclManager.wasmInstancePromise
+    updateExtraSegments
   )
 
   // Update the machine context.sketchDetails so subsequent interactions use fresh paths

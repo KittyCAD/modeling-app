@@ -1097,16 +1097,10 @@ export class SceneEntities {
     up: [number, number, number],
     origin: [number, number, number],
     getEventForSegmentSelection: typeof getEventForSegmentSelectionFn,
-    updateExtraSegments: typeof updateExtraSegmentsFn,
-    wasmInstance?: ModuleType
+    updateExtraSegments: typeof updateExtraSegmentsFn
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
-    const nextAst = await this.kclManager.updateAst(
-      modifiedAst,
-      false,
-      undefined,
-      wasmInstance
-    )
+    const nextAst = await this.kclManager.updateAst(modifiedAst, false)
     this.sceneInfra.resetMouseListeners()
     await this.setupSketch({
       sketchEntryNodePath,

@@ -698,12 +698,7 @@ export const modelingMachine = setup({
     }),
     'set up draft line': assign(
       ({
-        context: {
-          sketchDetails,
-          sceneEntitiesManager,
-          kclManager,
-          wasmInstance,
-        },
+        context: { sketchDetails, sceneEntitiesManager, kclManager },
         event,
       }) => {
         if (!sketchDetails) return {}
@@ -737,12 +732,7 @@ export const modelingMachine = setup({
     ),
     'set up draft arc': assign(
       ({
-        context: {
-          sketchDetails,
-          sceneEntitiesManager,
-          kclManager,
-          wasmInstance,
-        },
+        context: { sketchDetails, sceneEntitiesManager, kclManager },
         event,
       }) => {
         if (!sketchDetails) return {}
@@ -1086,12 +1076,7 @@ export const modelingMachine = setup({
       })
     },
     'add axis n grid': ({
-      context: {
-        sketchDetails,
-        sceneEntitiesManager,
-        kclManager,
-        wasmInstance,
-      },
+      context: { sketchDetails, sceneEntitiesManager, kclManager },
     }) => {
       if (!sketchDetails) return
       if (localStorage.getItem('disableAxis')) return
@@ -1130,7 +1115,6 @@ export const modelingMachine = setup({
       context: {
         sketchDetails,
         kclManager,
-        wasmInstance,
         rustContext,
         sceneEntitiesManager,
         sceneInfra,
@@ -1650,8 +1634,7 @@ export const modelingMachine = setup({
           sketchDetails.yAxis,
           sketchDetails.origin,
           getEventForSegmentSelection,
-          updateExtraSegments,
-          wasmInstance
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1679,7 +1662,6 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
-          wasmInstance,
         },
       }: {
         input: Pick<
@@ -1709,8 +1691,7 @@ export const modelingMachine = setup({
           sketchDetails.yAxis,
           sketchDetails.origin,
           getEventForSegmentSelection,
-          updateExtraSegments,
-          wasmInstance
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1736,7 +1717,6 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
-          wasmInstance,
         },
       }: {
         input: Pick<
@@ -1766,8 +1746,7 @@ export const modelingMachine = setup({
           sketchDetails.yAxis,
           sketchDetails.origin,
           getEventForSegmentSelection,
-          updateExtraSegments,
-          wasmInstance
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1793,7 +1772,6 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
-          wasmInstance,
         },
       }: {
         input: Pick<
@@ -1821,8 +1799,7 @@ export const modelingMachine = setup({
           sketchDetails.yAxis,
           sketchDetails.origin,
           getEventForSegmentSelection,
-          updateExtraSegments,
-          wasmInstance
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1849,7 +1826,6 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
-          wasmInstance,
         },
       }: {
         input: Pick<
@@ -1877,8 +1853,7 @@ export const modelingMachine = setup({
           sketchDetails.yAxis,
           sketchDetails.origin,
           getEventForSegmentSelection,
-          updateExtraSegments,
-          wasmInstance
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1905,7 +1880,6 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
-          wasmInstance,
         },
       }: {
         input: Pick<
@@ -1933,8 +1907,7 @@ export const modelingMachine = setup({
           sketchDetails.yAxis,
           sketchDetails.origin,
           getEventForSegmentSelection,
-          updateExtraSegments,
-          wasmInstance
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1961,7 +1934,6 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
-          wasmInstance,
         },
       }: {
         input: Pick<
@@ -1989,8 +1961,7 @@ export const modelingMachine = setup({
           sketchDetails.yAxis,
           sketchDetails.origin,
           getEventForSegmentSelection,
-          updateExtraSegments,
-          wasmInstance
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -2050,8 +2021,7 @@ export const modelingMachine = setup({
           sketchDetails.yAxis,
           sketchDetails.origin,
           getEventForSegmentSelection,
-          updateExtraSegments,
-          wasmInstance
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -2079,7 +2049,6 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
-          wasmInstance,
         },
       }: {
         input: Pick<
@@ -2106,8 +2075,7 @@ export const modelingMachine = setup({
           sketchDetails.yAxis,
           sketchDetails.origin,
           getEventForSegmentSelection,
-          updateExtraSegments,
-          wasmInstance
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -2522,8 +2490,7 @@ export const modelingMachine = setup({
             sketchDetails.yAxis,
             sketchDetails.origin,
             getEventForSegmentSelection,
-            updateExtraSegments,
-            wasmInstance
+            updateExtraSegments
           )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 

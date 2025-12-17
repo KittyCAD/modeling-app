@@ -870,13 +870,12 @@ export class KclManager extends EventTarget {
     execute: boolean,
     optionalParams?: {
       focusPath?: Array<PathToNode>
-    },
-    wasmInstance?: ModuleType
+    }
   ): Promise<{
     newAst: Node<Program>
     selections?: Selections
   }> {
-    const newCode = recast(ast, wasmInstance)
+    const newCode = recast(ast, await this._wasmInstancePromise)
     if (err(newCode)) return Promise.reject(newCode)
 
     const astWithUpdatedSource = await this.safeParse(newCode)
