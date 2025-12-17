@@ -148,7 +148,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           }
           const project: Project = await getProjectInfo(
             window.electron,
-            projectPath
+            projectPath,
+            await context.wasmInstancePromise
           )
           if (
             project.kcl_file_count === 0 &&

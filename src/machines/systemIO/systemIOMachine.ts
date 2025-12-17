@@ -7,6 +7,7 @@ import type { AppMachineContext } from '@src/lib/types'
 import type {
   RequestedKCLFile,
   SystemIOContext,
+  SystemIOInput,
 } from '@src/machines/systemIO/utils'
 import {
   NO_PROJECT_DIRECTORY,
@@ -39,6 +40,7 @@ import { assertEvent, assign, fromPromise, setup } from 'xstate'
 export const systemIOMachine = setup({
   types: {
     context: {} as SystemIOContext,
+    input: {} as SystemIOInput,
     events: {} as
       | {
           type: SystemIOMachineEvents.readFoldersFromProjectDirectory
@@ -621,7 +623,8 @@ export const systemIOMachine = setup({
   // Remember, this machine and change its projectDirectory at any point
   // '' will be no project directory, aka clear this machine out!
   // To be the absolute root of someones computer we should take the string of path.resolve() in node.js which is different for each OS
-  context: () => ({
+  context: ({ input }) => ({
+    ...input,
     folders: [],
     defaultProjectFolderName: DEFAULT_PROJECT_NAME,
     projectDirectoryPath: NO_PROJECT_DIRECTORY,

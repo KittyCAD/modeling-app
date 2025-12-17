@@ -289,6 +289,9 @@ const appMachine = setup({
     }),
     spawnChild(appMachineActors[SYSTEM_IO], {
       systemId: SYSTEM_IO,
+      input: {
+        wasmInstancePromise: initPromise,
+      },
     }),
     spawnChild(appMachineActors[COMMAND_BAR], {
       systemId: COMMAND_BAR,

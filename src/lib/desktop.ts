@@ -206,7 +206,7 @@ export async function listProjects(
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
   // Make sure we have wasm initialized.
-  await initPromise
+  const wasmInstance = await initPromise
 
   if (configuration === undefined) {
     configuration = await readAppSettingsFile(electron).catch((e) => {
@@ -241,7 +241,7 @@ export async function listProjects(
       continue
     }
 
-    const project = await getProjectInfo(electron, projectPath)
+    const project = await getProjectInfo(electron, projectPath, wasmInstance)
 
     if (
       project.kcl_file_count === 0 &&
@@ -430,7 +430,7 @@ const directoryCount = (file: FileEntry) => {
 export async function getProjectInfo(
   electron: IElectronAPI,
   projectPath: string,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): Promise<Project> {
   // Check the directory.
   let stats: Stats | undefined

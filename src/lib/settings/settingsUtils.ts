@@ -343,7 +343,7 @@ export interface AppSettings {
  * Relies on WASM for TOML de/serialization.
  */
 export async function loadAndValidateSettings(
-  initPromise: Promise<ModuleType>,
+  initPromise: Promise<ModuleType> | ModuleType,
   projectPath?: string
 ): Promise<AppSettings> {
   // Make sure we have wasm initialized.

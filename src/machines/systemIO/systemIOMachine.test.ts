@@ -8,12 +8,33 @@ import {
 } from '@src/machines/systemIO/utils'
 import { createActor, waitFor } from 'xstate'
 import { expect, describe, it } from 'vitest'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+
+let instanceInThisFile: ModuleType = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
+beforeEach(async () => {
+  if (instanceInThisFile) {
+    return
+  }
+
+  const { instance } = await buildTheWorldAndNoEngineConnection()
+  instanceInThisFile = instance
+})
 
 describe('systemIOMachine - XState', () => {
   describe('desktop', () => {
     describe('when initializied', () => {
       it('should contain the default context values', () => {
-        const actor = createActor(systemIOMachineDesktop).start()
+        const actor = createActor(systemIOMachineDesktop, {
+          input: { wasmInstancePromise: Promise.resolve(instanceInThisFile) },
+        }).start()
         const context = actor.getSnapshot().context
         expect(context.folders).toStrictEqual([])
         expect(context.defaultProjectFolderName).toStrictEqual(
@@ -30,14 +51,18 @@ describe('systemIOMachine - XState', () => {
         })
       })
       it('should be in idle state', () => {
-        const actor = createActor(systemIOMachineDesktop).start()
+        const actor = createActor(systemIOMachineDesktop, {
+          input: { wasmInstancePromise: Promise.resolve(instanceInThisFile) },
+        }).start()
         const state = actor.getSnapshot().value
         expect(state).toBe(SystemIOMachineStates.idle)
       })
     })
     describe('when reading projects', () => {
       it('should exit early when project directory is empty string', async () => {
-        const actor = createActor(systemIOMachineDesktop).start()
+        const actor = createActor(systemIOMachineDesktop, {
+          input: { wasmInstancePromise: Promise.resolve(instanceInThisFile) },
+        }).start()
         actor.send({
           type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
         })
@@ -54,7 +79,9 @@ describe('systemIOMachine - XState', () => {
     describe('when setting project directory path', () => {
       it('should set new project directory path', async () => {
         const kclSamplesPath = path.join('public', 'kcl-samples')
-        const actor = createActor(systemIOMachineDesktop).start()
+        const actor = createActor(systemIOMachineDesktop, {
+          input: { wasmInstancePromise: Promise.resolve(instanceInThisFile) },
+        }).start()
         actor.send({
           type: SystemIOMachineEvents.setProjectDirectoryPath,
           data: { requestedProjectDirectoryPath: kclSamplesPath },
@@ -66,7 +93,9 @@ describe('systemIOMachine - XState', () => {
     describe('when setting default project folder name', () => {
       it('should set a new default project folder name', async () => {
         const expected = 'coolcoolcoolProjectName'
-        const actor = createActor(systemIOMachineDesktop).start()
+        const actor = createActor(systemIOMachineDesktop, {
+          input: { wasmInstancePromise: Promise.resolve(instanceInThisFile) },
+        }).start()
         actor.send({
           type: SystemIOMachineEvents.setDefaultProjectFolderName,
           data: { requestedDefaultProjectFolderName: expected },
