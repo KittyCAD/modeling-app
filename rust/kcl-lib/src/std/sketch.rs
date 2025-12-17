@@ -22,11 +22,12 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
-        Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
+        ProfileClosed, Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
     std::{
+        EQUAL_POINTS_DIST_EPSILON,
         args::{Args, TyF64},
         axis_or_reference::Axis2dOrEdgeReference,
         planes::inner_plane_of,
@@ -320,6 +321,15 @@ async fn straight_line(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
+    let _loops_back_to_start = end_absolute.as_ref().is_some_and(|end| {
+        let end_x = end[0].to_mm();
+        let end_y = end[1].to_mm();
+        let start_x = sketch.start.from[0];
+        let start_y = sketch.start.from[1];
+        let same_x = (end_x - start_x).abs() < EQUAL_POINTS_DIST_EPSILON;
+        let same_y = (end_y - start_y).abs() < EQUAL_POINTS_DIST_EPSILON;
+        same_x && same_y
+    });
     let from = sketch.current_pen_position()?;
     let (point, is_absolute) = match (end_absolute, end) {
         (Some(_), Some(_)) => {
@@ -1203,7 +1213,7 @@ pub(crate) async fn inner_start_profile(
             Default::default()
         },
         start: current_path,
-        is_closed: false,
+        is_closed: ProfileClosed::No,
     };
     Ok(sketch)
 }
@@ -1260,7 +1270,7 @@ pub(crate) async fn inner_close(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    if sketch.is_closed {
+    if matches!(sketch.is_closed, ProfileClosed::Explicitly) {
         exec_state.warn(
             crate::CompilationError {
                 source_range: args.source_range,
@@ -1320,7 +1330,7 @@ pub(crate) async fn inner_close(
         );
     }
 
-    new_sketch.is_closed = true;
+    new_sketch.is_closed = ProfileClosed::Explicitly;
 
     Ok(new_sketch)
 }

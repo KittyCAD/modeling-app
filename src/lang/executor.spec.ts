@@ -252,7 +252,7 @@ newVar = myVar + 1`
         id: expect.any(String),
         originalId: expect.any(String),
         artifactId: expect.any(String),
-        isClosed: false,
+        isClosed: 'no',
         units: 'mm',
       },
     })
