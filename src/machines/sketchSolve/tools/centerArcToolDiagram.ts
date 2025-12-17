@@ -57,6 +57,7 @@ export const machine = setup({
     arcId: undefined,
     arcEndPointId: undefined,
     arcStartPoint: undefined,
+    arcCcw: undefined,
     sceneGraphDelta: {} as SceneGraphDelta,
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
@@ -148,6 +149,14 @@ export const machine = setup({
       entry: 'animate arc end point listener',
       exit: 'remove point listener',
       on: {
+        'update arc ccw': {
+          actions: assign(({ event }) => {
+            if (event.type !== 'update arc ccw') return {}
+            return {
+              arcCcw: event.data,
+            }
+          }),
+        },
         'add point': {
           target: 'Finalizing arc',
           guard: ({ event }) => {
@@ -194,16 +203,26 @@ export const machine = setup({
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
+            arcCcw: context.arcCcw,
           }
         },
         onDone: {
-          target: 'unequipping',
+          target: 'ready for center click',
           actions: [
             'send result to parent',
             ({ self }) => {
               // Clear draft entities after finalization (arc is now committed)
               self._parent?.send({ type: 'clear draft entities' })
             },
+            assign({
+              // Clear context values for the next arc
+              centerPoint: undefined,
+              centerPointId: undefined,
+              arcId: undefined,
+              arcEndPointId: undefined,
+              arcStartPoint: undefined,
+              arcCcw: undefined,
+            }),
           ],
         },
         onError: animatingArc,

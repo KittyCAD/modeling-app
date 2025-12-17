@@ -8,7 +8,7 @@ use crate::{
     exec::WarningLevel,
     execution::MockConfig,
     fmt::format_number_literal,
-    front::{ArcCtor, Distance, Line, LinesEqualLength, Parallel, Perpendicular, PointCtor},
+    front::{ArcCtor, Distance, LinesEqualLength, Parallel, Perpendicular, PointCtor},
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
@@ -40,6 +40,7 @@ const ARC_FN: &str = "arc";
 const ARC_START_PARAM: &str = "start";
 const ARC_END_PARAM: &str = "end";
 const ARC_CENTER_PARAM: &str = "center";
+const ARC_CCW_PARAM: &str = "ccw";
 
 const COINCIDENT_FN: &str = "coincident";
 const DISTANCE_FN: &str = "distance";
@@ -703,23 +704,35 @@ impl FrontendState {
         let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
         let center_ast = to_ast_point2d(&ctor.center).map_err(|err| Error { msg: err.to_string() })?;
+        let ccw_ast = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+            value: ast::LiteralValue::Bool(ctor.ccw),
+            raw: ctor.ccw.to_string(),
+            digest: None,
+        })));
+        let mut arguments = vec![
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_START_PARAM)),
+                arg: start_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_END_PARAM)),
+                arg: end_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_CENTER_PARAM)),
+                arg: center_ast,
+            },
+        ];
+        // Only include ccw if it's not the default (shortest path)
+        // For now, always include it to preserve user intent
+        arguments.push(ast::LabeledArg {
+            label: Some(ast::Identifier::new(ARC_CCW_PARAM)),
+            arg: ccw_ast,
+        });
         let arc_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
             unlabeled: None,
-            arguments: vec![
-                ast::LabeledArg {
-                    label: Some(ast::Identifier::new(ARC_START_PARAM)),
-                    arg: start_ast,
-                },
-                ast::LabeledArg {
-                    label: Some(ast::Identifier::new(ARC_END_PARAM)),
-                    arg: end_ast,
-                },
-                ast::LabeledArg {
-                    label: Some(ast::Identifier::new(ARC_CENTER_PARAM)),
-                    arg: center_ast,
-                },
-            ],
+            arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
@@ -1010,6 +1023,7 @@ impl FrontendState {
                 start: new_start_ast,
                 end: new_end_ast,
                 center: new_center_ast,
+                ccw: ctor.ccw,
             },
         )?;
         Ok(())
@@ -1907,6 +1921,7 @@ enum AstMutateCommand {
         start: ast::Expr,
         end: ast::Expr,
         center: ast::Expr,
+        ccw: bool,
     },
     #[cfg(feature = "artifact-graph")]
     EditVarInitialValue {
@@ -2061,12 +2076,13 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
-        AstMutateCommand::EditArc { start, end, center } => {
+        AstMutateCommand::EditArc { start, end, center, ccw } => {
             if let NodeMut::CallExpressionKw(call) = node {
                 if call.callee.name.name != ARC_FN {
                     return TraversalReturn::new_continue(());
                 }
                 // Update the arguments.
+                let mut found_ccw = false;
                 for labeled_arg in &mut call.arguments {
                     if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_START_PARAM) {
                         labeled_arg.arg = start.clone();
@@ -2077,6 +2093,25 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                     if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_CENTER_PARAM) {
                         labeled_arg.arg = center.clone();
                     }
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(ARC_CCW_PARAM) {
+                        labeled_arg.arg = ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                            value: ast::LiteralValue::Bool(*ccw),
+                            raw: ccw.to_string(),
+                            digest: None,
+                        })));
+                        found_ccw = true;
+                    }
+                }
+                // If ccw parameter doesn't exist, add it
+                if !found_ccw {
+                    call.arguments.push(ast::LabeledArg {
+                        label: Some(ast::Identifier::new(ARC_CCW_PARAM)),
+                        arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                            value: ast::LiteralValue::Bool(*ccw),
+                            raw: ccw.to_string(),
+                            digest: None,
+                        }))),
+                    });
                 }
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
@@ -2585,6 +2620,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            ccw: true,
         };
         let segment = SegmentCtor::Arc(arc_ctor);
         let (src_delta, scene_delta) = frontend
@@ -2643,6 +2679,7 @@ sketch(on = XY) {
                     units: NumericSuffix::Mm,
                 }),
             },
+            ccw: true,
         };
         let segments = vec![ExistingSegmentCtor {
             id: arc,

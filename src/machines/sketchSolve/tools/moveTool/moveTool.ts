@@ -41,7 +41,8 @@ import {
   buildSegmentCtorFromObject,
   type SolveActionArgs,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
+import { applyVectorToPoint2D, getNumericValue } from '@src/lib/kclHelpers'
+import { shouldFlipCcwWithPrevious } from '@src/machines/sketchSolve/tools/centerArcToolImpl'
 import {
   AREA_SELECT_BORDER_WIDTH,
   LINE_EXTENSION_SIZE,
@@ -130,11 +131,16 @@ function buildSegmentCtorWithDrag({
     const newCenter = applyVectorToPoint2D(baseCtor.center, dragVec)
     const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
     const newEnd = applyVectorToPoint2D(baseCtor.end, dragVec)
+
+    // When dragging the arc body (all points translate), we don't need to flip ccw
+    // The ccw flag remains the same since all points move together
+
     return {
       type: 'Arc',
       center: newCenter,
       start: newStart,
       end: newEnd,
+      ccw: baseCtor.ccw,
     }
   }
 
@@ -591,6 +597,12 @@ export function createOnDragCallback({
 
       // Build ctors for each segment with drag applied
       const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
+      // Track arcs that need ccw updates: map from arcId to {pointId, isStart}
+      const arcsToUpdate = new Map<
+        number,
+        { pointId: number; isStart: boolean }
+      >()
+
       for (const id of idsToEdit) {
         const obj = objects[id]
         if (!obj) {
@@ -603,6 +615,28 @@ export function createOnDragCallback({
         }
 
         const isEntityUnderCursor = id === entityUnderCursorId
+
+        // If dragging a point that belongs to an arc, track the arc for ccw update
+        if (
+          obj.kind.segment.type === 'Point' &&
+          obj.kind.segment.owner !== null &&
+          obj.kind.segment.owner !== undefined
+        ) {
+          const ownerId = obj.kind.segment.owner
+          const ownerObj = objects[ownerId]
+          if (
+            ownerObj?.kind.type === 'Segment' &&
+            ownerObj.kind.segment.type === 'Arc'
+          ) {
+            // Determine if this is the start or end point
+            const isStart = ownerObj.kind.segment.start === id
+            const isEnd = ownerObj.kind.segment.end === id
+            if (isStart || isEnd) {
+              arcsToUpdate.set(ownerId, { pointId: id, isStart })
+            }
+          }
+        }
+
         const ctor = buildSegmentCtorWithDrag({
           objUnderCursor: obj,
           selectedObjects: objects,
@@ -614,6 +648,96 @@ export function createOnDragCallback({
 
         if (ctor) {
           segmentsToEdit.push({ id, ctor })
+        }
+      }
+
+      // Also update arcs whose endpoints are being dragged
+      for (const [arcId, { pointId, isStart }] of arcsToUpdate) {
+        // Skip if arc is already being edited directly
+        if (idsToEdit.has(arcId)) {
+          continue
+        }
+
+        const arcObj = objects[arcId]
+        if (
+          !arcObj ||
+          arcObj.kind.type !== 'Segment' ||
+          arcObj.kind.segment.type !== 'Arc'
+        ) {
+          continue
+        }
+
+        // Get previous arc state BEFORE drag (from scene graph)
+        const prevArcCtor = buildSegmentCtorFromObject(arcObj, objects)
+        if (!prevArcCtor || prevArcCtor.type !== 'Arc') {
+          continue
+        }
+
+        // Get the new point position AFTER drag (from updated points in segmentsToEdit)
+        const updatedPointCtor = segmentsToEdit.find(
+          (s) => s.id === pointId
+        )?.ctor
+        if (!updatedPointCtor || updatedPointCtor.type !== 'Point') {
+          continue
+        }
+
+        // Extract numeric values from previous arc state
+        const centerX = getNumericValue(prevArcCtor.center.x)
+        const centerY = getNumericValue(prevArcCtor.center.y)
+        const prevStartX = getNumericValue(prevArcCtor.start.x)
+        const prevStartY = getNumericValue(prevArcCtor.start.y)
+        const prevEndX = getNumericValue(prevArcCtor.end.x)
+        const prevEndY = getNumericValue(prevArcCtor.end.y)
+        const newPointX = getNumericValue(updatedPointCtor.position.x)
+        const newPointY = getNumericValue(updatedPointCtor.position.y)
+
+        let shouldFlip = false
+        if (isStart) {
+          // Dragging start point: use end as fixed, swap start/end, and invert ccw logic
+          const previousStart: [number, number] = [prevStartX, prevStartY]
+          const newStart: [number, number] = [newPointX, newPointY]
+          const fixedEnd: [number, number] = [prevEndX, prevEndY]
+
+          // Swap start/end and invert ccw for the check
+          shouldFlip = shouldFlipCcwWithPrevious({
+            currentCcw: !prevArcCtor.ccw, // Invert ccw when dragging start
+            center: [centerX, centerY],
+            start: fixedEnd, // End becomes the fixed point
+            end: newStart, // New start position
+            previousEnd: previousStart, // Previous start position
+          })
+        } else {
+          // Dragging end point: use start as fixed (normal case)
+          const previousEnd: [number, number] = [prevEndX, prevEndY]
+          const newEnd: [number, number] = [newPointX, newPointY]
+          const fixedStart: [number, number] = [prevStartX, prevStartY]
+
+          shouldFlip = shouldFlipCcwWithPrevious({
+            currentCcw: prevArcCtor.ccw,
+            center: [centerX, centerY],
+            start: fixedStart,
+            end: newEnd,
+            previousEnd,
+          })
+        }
+
+        if (shouldFlip) {
+          // Find or create the arc ctor to update
+          let arcCtorToUpdate = segmentsToEdit.find((s) => s.id === arcId)?.ctor
+          if (!arcCtorToUpdate || arcCtorToUpdate.type !== 'Arc') {
+            arcCtorToUpdate = { ...prevArcCtor }
+            segmentsToEdit.push({ id: arcId, ctor: arcCtorToUpdate })
+          }
+          arcCtorToUpdate.ccw = !arcCtorToUpdate.ccw
+          if (isStart) {
+            // Update start coordinates with newStart
+            arcCtorToUpdate.start.x = { type: 'Var', value: newPointX, units }
+            arcCtorToUpdate.start.y = { type: 'Var', value: newPointY, units }
+          } else {
+            // Update end coordinates with newEnd
+            arcCtorToUpdate.end.x = { type: 'Var', value: newPointX, units }
+            arcCtorToUpdate.end.y = { type: 'Var', value: newPointY, units }
+          }
         }
       }
 

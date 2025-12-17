@@ -518,22 +518,28 @@ class ArcSegment implements SketchEntityUtils {
     const startAngle = Math.atan2(startY - centerY, startX - centerX)
     const endAngle = Math.atan2(endY - centerY, endX - centerX)
 
-    // Determine CCW (counter-clockwise) based on angle difference
-    // Normalize angles to [0, 2π]
-    let normalizedStartAngle = startAngle
-    let normalizedEndAngle = endAngle
-    while (normalizedStartAngle < 0) normalizedStartAngle += 2 * Math.PI
-    while (normalizedEndAngle < 0) normalizedEndAngle += 2 * Math.PI
+    // Use ccw from input if available, otherwise calculate from angles (backwards compatibility)
+    let ccw: boolean
+    if ('ccw' in input && typeof input.ccw === 'boolean') {
+      ccw = input.ccw
+    } else {
+      // Determine CCW (counter-clockwise) based on angle difference
+      // Normalize angles to [0, 2π]
+      let normalizedStartAngle = startAngle
+      let normalizedEndAngle = endAngle
+      while (normalizedStartAngle < 0) normalizedStartAngle += 2 * Math.PI
+      while (normalizedEndAngle < 0) normalizedEndAngle += 2 * Math.PI
 
-    let arcAngle = normalizedEndAngle - normalizedStartAngle
-    // If the angle is > π, go the other way (shorter path)
-    if (arcAngle > Math.PI) {
-      arcAngle = arcAngle - 2 * Math.PI
-    } else if (arcAngle < -Math.PI) {
-      arcAngle = arcAngle + 2 * Math.PI
+      let arcAngle = normalizedEndAngle - normalizedStartAngle
+      // If the angle is > π, go the other way (shorter path)
+      if (arcAngle > Math.PI) {
+        arcAngle = arcAngle - 2 * Math.PI
+      } else if (arcAngle < -Math.PI) {
+        arcAngle = arcAngle + 2 * Math.PI
+      }
+      // CCW is positive angle
+      ccw = arcAngle > 0
     }
-    // CCW is positive angle
-    const ccw = arcAngle > 0
 
     const segmentGroup = new Group()
     // Coordinates need to be divided by scale to match LineSegment pattern
@@ -615,22 +621,28 @@ class ArcSegment implements SketchEntityUtils {
     const startAngle = Math.atan2(startY - centerY, startX - centerX)
     const endAngle = Math.atan2(endY - centerY, endX - centerX)
 
-    // Determine CCW
-    // Normalize angles to [0, 2π]
-    let normalizedStartAngle = startAngle
-    let normalizedEndAngle = endAngle
-    while (normalizedStartAngle < 0) normalizedStartAngle += 2 * Math.PI
-    while (normalizedEndAngle < 0) normalizedEndAngle += 2 * Math.PI
+    // Use ccw from input if available, otherwise calculate from angles (backwards compatibility)
+    let ccw: boolean
+    if ('ccw' in input && typeof input.ccw === 'boolean') {
+      ccw = input.ccw
+    } else {
+      // Determine CCW (counter-clockwise) based on angle difference
+      // Normalize angles to [0, 2π]
+      let normalizedStartAngle = startAngle
+      let normalizedEndAngle = endAngle
+      while (normalizedStartAngle < 0) normalizedStartAngle += 2 * Math.PI
+      while (normalizedEndAngle < 0) normalizedEndAngle += 2 * Math.PI
 
-    let arcAngle = normalizedEndAngle - normalizedStartAngle
-    // If the angle is > π, go the other way (shorter path)
-    if (arcAngle > Math.PI) {
-      arcAngle = arcAngle - 2 * Math.PI
-    } else if (arcAngle < -Math.PI) {
-      arcAngle = arcAngle + 2 * Math.PI
+      let arcAngle = normalizedEndAngle - normalizedStartAngle
+      // If the angle is > π, go the other way (shorter path)
+      if (arcAngle > Math.PI) {
+        arcAngle = arcAngle - 2 * Math.PI
+      } else if (arcAngle < -Math.PI) {
+        arcAngle = arcAngle + 2 * Math.PI
+      }
+      // CCW is positive angle
+      ccw = arcAngle > 0
     }
-    // CCW is positive angle
-    const ccw = arcAngle > 0
 
     const arcSegmentBody = group.children.find(
       (child) => child.userData.type === ARC_SEGMENT_BODY
@@ -793,6 +805,3 @@ export const segmentUtilsMap = {
   LineSegment: new LineSegment(),
   ArcSegment: new ArcSegment(),
 }
-
-// Re-export ArcSegment so tools can use its helpers
-// export { ArcSegment }

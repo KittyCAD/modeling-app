@@ -123,6 +123,7 @@ function createArcApiObject({
             x: { type: 'Var', value: 0, units: 'Mm' },
             y: { type: 'Var', value: 0, units: 'Mm' },
           },
+          ccw: true,
         },
         ctor_applicable: false,
       },

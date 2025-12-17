@@ -211,3 +211,14 @@ function extractNumericValue(
   }
   return null
 }
+
+/**
+ * Extracts the numeric value from an Expr (Number or Var type).
+ * Returns the value if the Expr is a Number or Var, otherwise returns the default value (0).
+ */
+export function getNumericValue(expr: Expr, defaultValue = 0): number {
+  if (expr.type === 'Number' || expr.type === 'Var') {
+    return expr.value
+  }
+  return defaultValue
+}
