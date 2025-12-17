@@ -1442,6 +1442,7 @@ pub async fn absolute_arc(
 
     let start = [from.x, from.y];
     let end = point_to_len_unit(end_absolute, from.units);
+    let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
 
     let current_path = Path::ArcThreePoint {
         base: BasePath {
@@ -1462,6 +1463,9 @@ pub async fn absolute_arc(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -1512,6 +1516,7 @@ pub async fn relative_arc(
         )
         .await?;
 
+    let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
     let current_path = Path::Arc {
         base: BasePath {
             from: from.ignore_units(),
@@ -1531,6 +1536,9 @@ pub async fn relative_arc(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -1682,6 +1690,7 @@ async fn inner_tangential_arc_radius_angle(
             (center, to, ccw)
         }
     };
+    let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
 
     let current_path = Path::TangentialArc {
         ccw,
@@ -1701,6 +1710,9 @@ async fn inner_tangential_arc_radius_angle(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -2134,6 +2146,7 @@ pub(crate) async fn inner_elliptic(
         major_axis_magnitude * libm::cos(end_angle.to_radians()),
         minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
     ];
+    let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
     let major_axis_angle = libm::atan2(major_axis[1].n, major_axis[0].n);
 
     let point = [
@@ -2178,6 +2191,9 @@ pub(crate) async fn inner_elliptic(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -2302,6 +2318,7 @@ pub(crate) async fn inner_hyperbolic(
         y: end[1],
         units: from.units,
     };
+    let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
 
     let semi_major_u = semi_major.to_length_units(from.units);
     let semi_minor_u = semi_minor.to_length_units(from.units);
@@ -2342,6 +2359,9 @@ pub(crate) async fn inner_hyperbolic(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
