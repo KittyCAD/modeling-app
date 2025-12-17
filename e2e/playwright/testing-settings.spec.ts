@@ -50,9 +50,8 @@ test.describe(
       homePage,
       tronApp,
     }) => {
-      if (!tronApp) {
-        fail()
-      }
+      if (!tronApp) throw new Error('tronApp is missing.')
+
       // Override beforeEach test setup
       // with corrupted settings
       await tronApp.cleanProjectDir(
@@ -234,9 +233,8 @@ test.describe(
         tag: '@desktop',
       },
       async ({ page, tronApp }) => {
-        if (!tronApp) {
-          fail()
-        }
+        if (!tronApp) throw new Error('tronApp is missing.')
+
         await tronApp.cleanProjectDir({
           modeling: {
             base_unit: 'in',
@@ -506,9 +504,7 @@ test.describe(
           unitOfMeasure: string,
           copy: string
         ) => {
-          const gizmo = page.getByRole('button', {
-            name: 'Current units are: ',
-          })
+          const gizmo = page.getByTestId('units-menu')
           await gizmo.click()
           const button = page.locator('ul').getByRole('button', {
             name: copy,
@@ -693,9 +689,7 @@ test.describe(
       homePage,
       tronApp,
     }) => {
-      if (!tronApp) {
-        fail()
-      }
+      if (!tronApp) throw new Error('tronApp is missing.')
 
       await tronApp.cleanProjectDir({
         // Override the settings so that the theme is set to `system`
@@ -753,9 +747,7 @@ test.describe(
       const editedInlineUnits = { short: 'mm', long: 'Millimeters' }
       const inlineSettingsString = (s: string) =>
         `@settings(defaultLengthUnit = ${s})`
-      const unitsIndicator = page.getByRole('button', {
-        name: 'Current units are:',
-      })
+      const unitsIndicator = page.getByTestId('units-menu')
       const unitsChangeButton = (name: string) =>
         page.getByRole('button', { name, exact: true })
 
@@ -770,7 +762,9 @@ test.describe(
 
       await test.step(`Initial units from settings are ignored`, async () => {
         await homePage.openProject('project-000')
-        await expect(unitsIndicator).toHaveText('Current units are: mm')
+        await expect(unitsIndicator).toHaveText(
+          'Default units for current filemm'
+        )
       })
 
       await test.step(`Manually write inline settings`, async () => {

@@ -18,6 +18,7 @@ import {
   enginelessExecutor,
   getCapFromCylinder,
 } from '@src/lib/testHelpers'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -77,12 +78,7 @@ async function getKclCommandValue(
   instance: ModuleType,
   rustContext: RustContext
 ) {
-  const result = await stringToKclExpression(
-    value,
-    undefined,
-    instance,
-    rustContext
-  )
+  const result = await stringToKclExpression(value, rustContext)
   if (err(result) || 'errors' in result) {
     throw new Error('Failed to create KCL expression')
   }
@@ -168,12 +164,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         'gdt::flatness(faces = [capEnd001], tolerance = 0.1mm)'
       )
 
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add flatness annotations to multiple faces', async () => {
@@ -207,12 +198,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
 
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add flatness annotations to different bodies', async () => {
@@ -244,12 +230,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('faces = [capEnd001], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [capEnd002], tolerance = 0.1mm')
 
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should not create duplicate annotations when same face is selected multiple times', async () => {
@@ -293,12 +274,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should allow adding another annotation to the same face', async () => {
@@ -323,12 +299,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       })
       if (err(result1)) throw result1
 
-      await enginelessExecutor(
-        result1.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result1.modifiedAst, rustContextInThisFile)
 
       // Add second annotation to the same face
       const tolerance2 = await getKclCommandValue(
@@ -355,12 +326,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('faces = [capEnd001], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [capEnd001], tolerance = 0.2mm')
 
-      await enginelessExecutor(
-        result2.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result2.modifiedAst, rustContextInThisFile)
     })
 
     it('should add flatness annotation with all optional parameters', async () => {
@@ -425,12 +391,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('framePlane = XY')
       expect(newCode).toContain('fontPointSize = 36')
       expect(newCode).toContain('fontScale = 1.5')
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should place GDT annotations at the end of the file', async () => {
@@ -457,12 +418,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const firstGdtIndex = newCode.indexOf('gdt::flatness')
       expect(firstGdtIndex).toBeGreaterThan(lastExtrudeIndex)
 
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add a flatness annotation to an edgeCut (chamfer) face', async () => {
@@ -506,12 +462,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('chamfer(')
       expect(newCode).toContain('getCommonEdge(faces = [seg01, capEnd001])')
 
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should successfully add a fillet GDT annotation (tests end-to-end integration)', async () => {
@@ -563,12 +514,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify the fillet was tagged properly
       expect(newCode).toContain('tag = $seg02')
 
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })
 
@@ -593,12 +539,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('gdt::datum(face = capEnd001, name = "A")')
 
       // Execute to validate runtime consistency
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add datum annotation to a wall face', async () => {
@@ -621,12 +562,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('gdt::datum(face = seg01, name = "C")')
 
       // Execute to validate runtime consistency
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should add datum annotation to a chamfer face', async () => {
@@ -666,12 +602,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('gdt::datum(face = seg02, name = "D")')
 
       // Execute to validate runtime consistency
-      await enginelessExecutor(
-        result.modifiedAst,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
     it('should fail when selecting multiple faces', async () => {

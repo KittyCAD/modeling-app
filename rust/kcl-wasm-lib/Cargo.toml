@@ -1,6 +1,8 @@
 [package]
 name = "kcl-wasm-lib"
-version = "0.1.111"
+description = "KittyCAD Language wasm bindings"
+license = "MIT"
+version = "0.1.116"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 publish = false
@@ -17,7 +19,6 @@ rayon = { workspace = true }
 typed-path = "0.12.0"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-bson = { workspace = true, features = ["uuid-1", "chrono"] }
 console_error_panic_hook = { workspace = true }
 data-encoding = "2.9.0"
 futures = "0.3.31"
@@ -26,7 +27,6 @@ getrandom_2 = { package = "getrandom", version = "0.2", features = ["js"] }
 getrandom_3 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
 gloo-utils = "0.2.0"
 js-sys = "0.3.72"
-kcl-api = { version = "0.1", path = "../kcl-api" }
 kcl-lib = { path = "../kcl-lib", features = ["artifact-graph"] }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
@@ -51,7 +51,7 @@ features = [
 [dev-dependencies]
 anyhow.workspace = true
 pretty_assertions = "1.4.1"
-wasm-bindgen-test = "0.3.55"
+wasm-bindgen-test = "0.3.56"
 
 # Local development only. Placeholder to speed up development cycle
 #[package.metadata.wasm-pack.profile.release]

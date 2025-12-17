@@ -1,9 +1,7 @@
 import { createMachine, setup } from 'xstate'
+import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 
-type CenterRectToolEvent =
-  | { type: 'unequip' }
-  | { type: 'add point'; data: [x: number, y: number] }
-  | { type: 'update selection' }
+type CenterRectToolEvent = BaseToolEvent
 
 export const machine = setup({
   types: {
@@ -39,8 +37,9 @@ export const machine = setup({
       description:
         "can be requested from the outside, but we want this tool to have the final say on when it's done.",
     },
-    'update selection': {
-      description: 'Handle selection updates from the sketch solve machine.',
+    escape: {
+      target: '#Center Rectangle tool.unequipping',
+      description: 'ESC unequips the tool',
     },
   },
   description:

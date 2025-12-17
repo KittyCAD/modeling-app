@@ -66,6 +66,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "bike-hub-washer/main.kcl",
+    "multipleFiles": false,
+    "title": "Bike hub washer",
+    "description": "Washer to protect the hub, it is made for the front wheel and might work for various generic front hubs.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "bone-plate/main.kcl",
     "multipleFiles": false,
     "title": "Bone Plate",
@@ -138,6 +148,16 @@
       "lug-nut.kcl",
       "main.kcl",
       "parameters.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "cassette/main.kcl",
+    "multipleFiles": false,
+    "title": "Sprocket Cassette",
+    "description": "A sprocket cassette is a stack of individual sprockets that mount together on a splined hub to provide multiple gear ratios",
+    "files": [
+      "main.kcl"
     ]
   },
   {
@@ -494,6 +514,20 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "hand-trolley/main.kcl",
+    "multipleFiles": true,
+    "title": "Hand Trolley",
+    "description": "A hand trolley, also known as a hand truck, is a small, wheeled cart with a weldment frame, used to move heavy or bulky items over short distances. It's essentially a simple lever system that makes lifting and moving objects much easier",
+    "files": [
+      "axle.kcl",
+      "main.kcl",
+      "parameters.kcl",
+      "weldment.kcl",
+      "wheel.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "helical-gear/main.kcl",
     "multipleFiles": false,
     "title": "Helical Gear",
@@ -779,6 +813,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "pipe-manifold/main.kcl",
+    "multipleFiles": false,
+    "title": "Pipe manifold",
+    "description": "A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Each port provides an attachment point for a threaded pipe fitting",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "pipe-with-bend/main.kcl",
     "multipleFiles": false,
     "title": "Pipe with bend",
@@ -1029,6 +1073,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "sprocket/main.kcl",
+    "multipleFiles": false,
+    "title": "Sprocket",
+    "description": "A standard hub sprocket is a toothed wheel that engages with a roller chain to transmit rotary motion and torque between shafts",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "spur-gear/main.kcl",
     "multipleFiles": false,
     "title": "Spur Gear",
@@ -1233,6 +1287,16 @@
     "multipleFiles": false,
     "title": "Truss Structure",
     "description": "A truss structure is a framework composed of triangular units made from straight members connected at joints, often called nodes. Trusses are widely used in architecture, civil engineering, and construction for their ability to support large loads with minimal material.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "tube-manifold/main.kcl",
+    "multipleFiles": false,
+    "title": "Tube manifold",
+    "description": "A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically refered to by their inner diameters, so the fittings are parameterized by their outer diameters",
     "files": [
       "main.kcl"
     ]

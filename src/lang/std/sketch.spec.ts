@@ -18,6 +18,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, expect, beforeEach, describe, test, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -139,12 +140,7 @@ describe('testing changeSketchArguments', () => {
     const expectedCode = genCode(lineAfterChange)
     const ast = assertParse(code, instanceInThisFile)
 
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const sourceStart = code.indexOf(lineToChange)
     const changeSketchArgsRetVal = changeSketchArguments(
       ast,
@@ -181,7 +177,7 @@ describe('testing addTagForSketchOnFace', () => {
 `
     const code = genCode(originalLine)
     const ast = assertParse(code, instanceInThisFile)
-    await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    await enginelessExecutor(ast, rustContextInThisFile)
     const sourceStart = code.indexOf(originalLine)
     const sourceRange = topLevelRange(
       sourceStart,
@@ -245,7 +241,7 @@ ${insertCode}
 `
       const code = genCode(originalChamfer)
       const ast = assertParse(code, instanceInThisFile)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(ast, rustContextInThisFile)
       const sourceStart = code.indexOf(originalChamfer)
       const extraChars = originalChamfer.indexOf('chamfer')
       const sourceRange = topLevelRange(
@@ -293,17 +289,17 @@ describe('testing getConstraintInfo', () => {
       const match = new RegExp(functionName).exec(code)
       expect(match).toBeTruthy()
       if (match === null) {
-        return
+        throw new Error('match is null')
       }
       const start = code.indexOf(match[0])
       expect(start).toBeGreaterThanOrEqual(0)
       const sourceRange = topLevelRange(start, start + functionName.length)
-      if (err(ast)) return ast
+      if (err(ast)) throw new Error('ast is error')
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const callExp = getNodeFromPath<Node<CallExpressionKw>>(ast, pathToNode, [
         'CallExpressionKw',
       ])
-      if (err(callExp)) return callExp
+      if (err(callExp)) throw new Error('callExp is error')
       const result = getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
@@ -671,17 +667,17 @@ describe('testing getConstraintInfo', () => {
       const match = new RegExp(functionName).exec(code)
       expect(match).toBeTruthy()
       if (match === null) {
-        return
+        throw new Error('match is null')
       }
       const start = code.indexOf(match[0])
       expect(start).toBeGreaterThanOrEqual(0)
       const sourceRange = topLevelRange(start, start + functionName.length)
-      if (err(ast)) return ast
+      if (err(ast)) throw new Error('ast is error')
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const callExp = getNodeFromPath<Node<CallExpressionKw>>(ast, pathToNode, [
         'CallExpressionKw',
       ])
-      if (err(callExp)) return callExp
+      if (err(callExp)) throw new Error('callExp is error')
       const result = getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
@@ -827,17 +823,17 @@ describe('testing getConstraintInfo', () => {
       const match = new RegExp(functionName).exec(code)
       expect(match).toBeTruthy()
       if (match === null) {
-        return
+        throw new Error('match is null')
       }
       const start = code.indexOf(match[0])
       expect(start).toBeGreaterThanOrEqual(0)
       const sourceRange = topLevelRange(start, start + functionName.length)
-      if (err(ast)) return ast
+      if (err(ast)) throw new Error('ast is error')
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const callExp = getNodeFromPath<Node<CallExpressionKw>>(ast, pathToNode, [
         'CallExpressionKw',
       ])
-      if (err(callExp)) return callExp
+      if (err(callExp)) throw new Error('callExp is error')
       const result = getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
@@ -1201,17 +1197,17 @@ describe('testing getConstraintInfo', () => {
       const match = new RegExp(functionName).exec(code)
       expect(match).toBeTruthy()
       if (match === null) {
-        return
+        throw new Error('match is null')
       }
       const start = code.indexOf(match[0])
       expect(start).toBeGreaterThanOrEqual(0)
       const sourceRange = topLevelRange(start, start + functionName.length)
-      if (err(ast)) return ast
+      if (err(ast)) throw new Error('ast  is error')
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const callExp = getNodeFromPath<Node<CallExpressionKw>>(ast, pathToNode, [
         'CallExpressionKw',
       ])
-      if (err(callExp)) return callExp
+      if (err(callExp)) throw new Error('callExp is error')
 
       const result = getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)

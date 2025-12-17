@@ -27,7 +27,7 @@ import {
   getPathOrUrlFromArgs,
   parseCLIArgs,
 } from '@src/commandLineArgs'
-import { initPromiseNode } from '@src/lang/wasmUtilsNode'
+import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
 import {
   OAUTH2_DEVICE_CLIENT_ID,
   ZOO_STUDIO_PROTOCOL,
@@ -42,11 +42,14 @@ import {
   enableMenu,
 } from '@src/menu'
 import { getAutoUpdater } from '@src/updater'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')
 
 let mainWindow: BrowserWindow | null = null
+/** All Electron windows will share this WASM module */
+const initPromise = initialiseWasmNode()
 
 // Preemptive code, GC may delete a menu while a user is using it as seen in VSCode
 // as seen on https://github.com/microsoft/vscode/issues/55347
@@ -210,7 +213,7 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
         .catch(reportRejection)
     } else {
       // otherwise we're trying to open a local file from the command line
-      getProjectPathAtStartup(pathToOpen)
+      getProjectPathAtStartup(initPromise, pathToOpen)
         .then(async (projectPath) => {
           const startIndex = path.join(
             __dirname,
@@ -602,9 +605,11 @@ app.on('ready', () => {
 })
 
 const getProjectPathAtStartup = async (
+  initPromise: Promise<ModuleType>,
   filePath?: string
 ): Promise<string | null> => {
-  await initPromiseNode
+  // Make sure we have WASM, because we're about to use it indirectly.
+  await initPromise
   // If we are in development mode, we don't want to load a project at
   // startup.
   // Since the args passed are always '.'

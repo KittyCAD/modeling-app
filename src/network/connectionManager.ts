@@ -35,7 +35,6 @@ import type RustContext from '@src/lib/rustContext'
 import { binaryToUuid, isArray, promiseFactory, uuidv4 } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { BSON } from 'bson'
 import {
   decode as msgpackDecode,
   encode as msgpackEncode,
@@ -60,11 +59,6 @@ import {
   isModelingResponse,
 } from '@src/lib/kcSdkGuards'
 import { showErrorToastPlusReportLink } from '@src/components/ToastErrorPlusReportLink'
-
-type RawFileWithBinary = {
-  name: string
-  contents: Uint8Array | number[]
-}
 
 export class ConnectionManager extends EventTarget {
   started: boolean
@@ -351,7 +345,7 @@ export class ConnectionManager extends EventTarget {
     const onEngineConnectionOpened = createOnEngineConnectionOpened({
       rustContext: this.rustContext,
       settings: this.settings,
-      jsAppSettings: await jsAppSettings(),
+      jsAppSettings: await jsAppSettings(this.rustContext.settingsActor),
       path: this.kclManager?.currentFilePath || '',
       sendSceneCommand: this.sendSceneCommand.bind(this),
       setTheme: this.setTheme.bind(this),
@@ -493,6 +487,80 @@ export class ConnectionManager extends EventTarget {
       type: 'darkModeMatcher',
     })
     darkModeMatcher?.addEventListener('change', onDarkThemeMediaQueryChange)
+  }
+
+  /** Set the edge highlighting setting in the engine, with debug logging */
+  async setHighlightEdges(shouldHighlight: boolean) {
+    const cmd = {
+      type: 'edge_lines_visible',
+      hidden: !shouldHighlight,
+    } as const
+    const debugLog = (event: string) =>
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: `setHighlightEdges - set_highlight_edges - ${event}`,
+        metadata: {
+          cmd,
+        },
+      })
+
+    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: 'setHighlightEdges, websocket is not ready',
+        metadata: {
+          readyState: this.connection?.websocket?.readyState,
+        },
+      })
+      return
+    }
+
+    await this.connection.deferredConnection?.promise
+
+    debugLog('start')
+    await this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd,
+    })
+    debugLog('done')
+  }
+
+  /** Set the "show scale grid" setting in the engine, with debug logging */
+  async setShowScaleGrid(shouldShowGrid: boolean) {
+    const cmd = {
+      type: 'edge_lines_visible',
+      hidden: !shouldShowGrid,
+    } as const
+    const debugLog = (event: string) =>
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: `setHighlightEdges - set_highlight_edges - ${event}`,
+        metadata: {
+          cmd,
+        },
+      })
+
+    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: 'setHighlightEdges, websocket is not ready',
+        metadata: {
+          readyState: this.connection?.websocket?.readyState,
+        },
+      })
+      return
+    }
+
+    await this.connection.deferredConnection?.promise
+
+    debugLog('start')
+    await this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd,
+    })
+    debugLog('done')
   }
 
   async sendSceneCommand(
@@ -691,38 +759,16 @@ export class ConnectionManager extends EventTarget {
       try {
         message = msgpackDecode(binaryData) as WebSocketResponse
       } catch (msgpackError) {
-        try {
-          message = BSON.deserialize(binaryData) as WebSocketResponse
-        } catch (bsonError) {
-          console.error(
-            'handleMessage: failed to deserialize binary websocket message',
-            { msgpackError, bsonError }
-          )
-        }
+        console.error(
+          'handleMessage: failed to deserialize binary websocket message',
+          { msgpackError }
+        )
       }
       // The request id comes back as binary and we want to get the uuid
       // string from that.
 
       if (message?.request_id) {
         message.request_id = binaryToUuid(message.request_id)
-      }
-      // TODO: remove this hack once we only use MsgPack as it will be unnecessary after BSON is removed
-      if (message && 'resp' in message && message.resp?.type === 'export') {
-        const files = message.resp.data?.files
-        if (isArray(files)) {
-          for (const file of files) {
-            const contents = file.contents as unknown
-            if (
-              contents &&
-              typeof contents === 'object' &&
-              (contents as { _bsontype?: string })._bsontype === 'Binary' &&
-              (contents as { buffer?: unknown }).buffer instanceof Uint8Array
-            ) {
-              const typedFile = file as RawFileWithBinary
-              typedFile.contents = (contents as { buffer: Uint8Array }).buffer
-            }
-          }
-        }
       }
     } else {
       message = JSON.parse(event.data)

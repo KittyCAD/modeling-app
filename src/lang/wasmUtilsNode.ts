@@ -1,8 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import { init, reloadModule } from '@src/lib/wasm_lib_wrapper'
+import { getModule, init, reloadModule } from '@src/lib/wasm_lib_wrapper'
 import fsPromises from 'fs/promises'
-import { processEnv } from '@src/env'
 
 export const wasmUrlNode = () => {
   // In prod the file will be right next to the compiled js file.
@@ -27,26 +26,18 @@ export const wasmUrlNode = () => {
 }
 
 // Initialise the wasm module.
-const initialiseNode = async () => {
-  if (processEnv()?.VITEST) {
-    const message =
-      'wasmUtilsNode is trying to call initialiseNode. This will be blocked in VITEST runtimes.'
-    console.log(message)
-    return Promise.resolve(message)
-  }
-
+export const initialiseWasmNode = async () => {
   try {
     await reloadModule()
     const fullPath = wasmUrlNode()
     const buffer = await fsPromises.readFile(fullPath)
-    return await init({ module_or_path: buffer })
+    await init({ module_or_path: buffer })
+    return getModule()
   } catch (e) {
     console.log('Error initialising WASM', e)
     return Promise.reject(e)
   }
 }
-
-export const initPromiseNode = initialiseNode()
 
 /**
  * Given a path to a .wasm file read it from disk and load the module
@@ -59,7 +50,7 @@ export const loadAndInitialiseWasmInstance = async (path: string) => {
   const instanceOfWasmLibImport = await import(
     `@rust/kcl-wasm-lib/pkg/kcl_wasm_lib`
   )
-  // Tell the instance to load the was buffer
+  // Tell the instance to load the wasm buffer
   await instanceOfWasmLibImport.default({ module_or_path: wasmBuffer })
   return instanceOfWasmLibImport
 }

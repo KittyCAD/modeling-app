@@ -28,6 +28,46 @@
 ///
 /// See [sketch on face](/docs/kcl-lang/sketch-on-face) for more details.
 ///
+/// ### Multiple Profiles
+///
+/// When creating multiple profiles in a sketch, each profile must be made
+/// separately and assigned to a variable. Using one pipeline to create multiple
+/// profiles, where one profile is piped into the next, is not currently
+/// supported.
+///
+/// ```kcl,inline
+/// // This does NOT work.
+/// twoSquares = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///   |> startProfile(at = [20, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+/// twoCubes = extrude(twoSquares, length = 10)
+/// ```
+///
+/// Instead, use separate pipelines, and extrude an array of them all.
+///
+/// ```kcl,inline
+/// sketch1 = startSketchOn(XY)
+/// squareProfile1 = startProfile(sketch1, at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+/// squareProfile2 = startProfile(sketch1, at = [20, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+/// twoCubes = extrude([squareProfile1, squareProfile2], length = 10)
+/// ```
+///
 /// ```kcl
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -544,6 +584,25 @@ export fn ellipse(
 ///   |> extrude(to = XZ, method = NEW)
 ///   |> appearance(color ='#FF00FF')
 /// ```
+/// ```kcl
+/// // Surface extrude of an open profile
+/// openProfile = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [4, 0])
+///   |> arc(angleStart = 120deg, angleEnd = 0, radius = 5)
+///   |> line(end = [5, 0])
+///   |> line(end = [0, 10])
+/// // Surface extrude 
+/// extrude(openProfile, length = 2, bodyType = SURFACE)
+/// ```
+/// ```kcl
+/// // Surface extrude of a closed profile
+/// closedProfile = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> circle(center = [0, 0], diameter = 10)
+/// // Surface extrude 
+/// extrude(closedProfile, length = 5, bodyType = SURFACE)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn extrude(
   /// Which sketch or sketches should be extruded.
@@ -572,6 +631,9 @@ export fn extrude(
   twistCenter?: Point2d,
   /// The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`.
   method?: string,
+  /// What type of body to produce (solid or surface).
+  /// Defaults to "solid".
+  bodyType?: string = "solid",
 ): [Solid; 1+] {}
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
@@ -811,6 +873,9 @@ export fn revolve(
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the revolve.
   tagEnd?: TagDecl,
+  /// What type of body to produce (solid or surface).
+  /// Defaults to "solid".
+  bodyType?: string = "solid",
 ): [Solid; 1+] {}
 
 /// Just like `patternTransform`, but works on 2D sketches not 3D solids.

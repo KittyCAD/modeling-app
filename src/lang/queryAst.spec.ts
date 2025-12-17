@@ -41,6 +41,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -89,12 +90,7 @@ variableBelowShouldNotBeIncluded = 3
     const rangeStart = code.indexOf('// selection-range-7ish-before-this') - 7
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const ast = assertParse(code, instanceInThisFile)
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
 
     const { variables, bodyPath, insertIndex } = findAllPreviousVariables(
       ast,
@@ -831,12 +827,7 @@ part001 = startSketchOn(plane001)
 `
 
     const ast = assertParse(code, instanceInThisFile)
-    const execState = await enginelessExecutor(
-      ast,
-      false,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const { operations, artifactGraph } = execState
 
     expect(operations).toBeTruthy()
@@ -1010,12 +1001,7 @@ plane001 = offsetPlane(YZ, offset = 10)
 `
 
     const ast = assertParse(code, instanceInThisFile)
-    const execState = await enginelessExecutor(
-      ast,
-      false,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const { variables } = execState
 
     const selections: Selections = {
@@ -1048,8 +1034,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
@@ -1085,8 +1069,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
@@ -1118,8 +1100,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
@@ -1159,8 +1139,6 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const artifacts = [...artifactGraph.values()].filter(
@@ -1203,8 +1181,6 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const artifacts = [...artifactGraph.values()].filter(
@@ -1254,8 +1230,6 @@ extrude001 = extrude(profile001, length = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
@@ -1301,8 +1275,6 @@ extrude001 = extrude(profile001, length = 1)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph, operations } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const op = operations.find(
@@ -1334,8 +1306,6 @@ revolve001 = revolve([profile001, profile002], axis = X, angle = 180)
     const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const { artifactGraph, operations } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const op = operations.find(
@@ -1373,8 +1343,6 @@ appearance(extrude001, color = '#FF0000')`
     const ast = assertParse(redExtrusion, instanceInThisFile)
     const { artifactGraph, operations } = await enginelessExecutor(
       ast,
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const op = operations.find(

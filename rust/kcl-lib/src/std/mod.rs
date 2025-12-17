@@ -463,9 +463,45 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),
             StdFnProps::default("std::appearance::hexString"),
         ),
+        ("sketch2", "point") => (
+            |e, a| Box::pin(crate::std::constraints::point(e, a)),
+            StdFnProps::default("std::sketch2::point"),
+        ),
+        ("sketch2", "line") => (
+            |e, a| Box::pin(crate::std::constraints::line(e, a)),
+            StdFnProps::default("std::sketch2::line"),
+        ),
+        ("sketch2", "arc") => (
+            |e, a| Box::pin(crate::std::constraints::arc(e, a)),
+            StdFnProps::default("std::sketch2::arc"),
+        ),
+        ("sketch2", "coincident") => (
+            |e, a| Box::pin(crate::std::constraints::coincident(e, a)),
+            StdFnProps::default("std::sketch2::coincident"),
+        ),
+        ("sketch2", "distance") => (
+            |e, a| Box::pin(crate::std::constraints::distance(e, a)),
+            StdFnProps::default("std::sketch2::distance"),
+        ),
+        ("sketch2", "equalLength") => (
+            |e, a| Box::pin(crate::std::constraints::equal_length(e, a)),
+            StdFnProps::default("std::sketch2::equalLength"),
+        ),
+        ("sketch2", "horizontal") => (
+            |e, a| Box::pin(crate::std::constraints::horizontal(e, a)),
+            StdFnProps::default("std::sketch2::horizontal"),
+        ),
         ("sketch2", "parallel") => (
             |e, a| Box::pin(crate::std::constraints::parallel(e, a)),
             StdFnProps::default("std::sketch2::parallel"),
+        ),
+        ("sketch2", "perpendicular") => (
+            |e, a| Box::pin(crate::std::constraints::perpendicular(e, a)),
+            StdFnProps::default("std::sketch2::perpendicular"),
+        ),
+        ("sketch2", "vertical") => (
+            |e, a| Box::pin(crate::std::constraints::vertical(e, a)),
+            StdFnProps::default("std::sketch2::vertical"),
         ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
@@ -475,6 +511,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
 
 pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
     match (path, fn_name) {
+        ("types", "Segment") => (PrimitiveType::Segment, StdFnProps::default("std::types::Segment")),
         ("types", "Sketch") => (PrimitiveType::Sketch, StdFnProps::default("std::types::Sketch")),
         ("types", "Solid") => (PrimitiveType::Solid, StdFnProps::default("std::types::Solid")),
         ("types", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::types::Plane")),

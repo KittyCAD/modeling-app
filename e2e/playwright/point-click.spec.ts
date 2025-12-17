@@ -29,7 +29,7 @@ test.describe('Point-and-click tests', () => {
     await scene.settled(cmdBar)
 
     await test.step(`Edit first extrude via feature tree`, async () => {
-      await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+      await (await toolbar.getFeatureTreeOperation('bracketBody', 0)).dblclick()
       await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
@@ -55,7 +55,9 @@ test.describe('Point-and-click tests', () => {
     })
 
     await test.step(`Edit second extrude via feature tree`, async () => {
-      await (await toolbar.getFeatureTreeOperation('Extrude', 1)).dblclick()
+      await (
+        await toolbar.getFeatureTreeOperation('shelfMountingHoles', 0)
+      ).dblclick()
       await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
@@ -83,7 +85,9 @@ test.describe('Point-and-click tests', () => {
     })
 
     await test.step(`Edit third extrude via feature tree`, async () => {
-      await (await toolbar.getFeatureTreeOperation('Extrude', 2)).dblclick()
+      await (
+        await toolbar.getFeatureTreeOperation('wallMountingHoles', 0)
+      ).dblclick()
       await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
@@ -122,96 +126,115 @@ test.describe('Point-and-click tests', () => {
   }) => {
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 5)`
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, code)
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, code)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
 
     await test.step('Add extrude with tags', async () => {
-      await toolbar.extrudeButton.click()
-      await editor.selectText('circle')
-      await cmdBar.progressCmdBar()
-      await cmdBar.clickOptionalArgument('length')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '5',
-        headerArguments: {
-          Profiles: '1 profile',
-          Length: '',
-        },
-        highlightedHeaderArg: 'length',
-        commandName: 'Extrude',
+      await test.step('Open extrude command from toolbar', async () => {
+        await toolbar.extrudeButton.click()
       })
-      await page.keyboard.insertText('4')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Length: '4',
-          Profiles: '1 profile',
-        },
-        commandName: 'Extrude',
+      await test.step('Select profile', async () => {
+        await editor.selectText('circle')
+        await cmdBar.progressCmdBar()
       })
-      await cmdBar.clickOptionalArgument('tagEnd')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'tagEnd$',
-        currentArgValue: '',
-        headerArguments: {
-          Length: '4',
-          Profiles: '1 profile',
-          TagEnd: '',
-        },
-        highlightedHeaderArg: 'tagEnd',
-        commandName: 'Extrude',
+      await test.step('Set length', async () => {
+        await cmdBar.clickOptionalArgument('length')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'length',
+          currentArgValue: '5',
+          headerArguments: {
+            Profiles: '1 profile',
+            Length: '',
+          },
+          highlightedHeaderArg: 'length',
+          commandName: 'Extrude',
+        })
+        await page.keyboard.insertText('4')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Length: '4',
+            Profiles: '1 profile',
+          },
+          commandName: 'Extrude',
+        })
       })
-      await page.keyboard.insertText('myEndTag')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Length: '4',
-          Profiles: '1 profile',
-          TagEnd: 'myEndTag',
-        },
-        commandName: 'Extrude',
+      await test.step('Set end tag', async () => {
+        await cmdBar.clickOptionalArgument('tagEnd')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'tagEnd$',
+          currentArgValue: '',
+          headerArguments: {
+            Length: '4',
+            Profiles: '1 profile',
+            TagEnd: '',
+          },
+          highlightedHeaderArg: 'tagEnd',
+          commandName: 'Extrude',
+        })
+        await page.keyboard.insertText('myEndTag')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Length: '4',
+            Profiles: '1 profile',
+            TagEnd: 'myEndTag',
+          },
+          commandName: 'Extrude',
+        })
       })
-      await cmdBar.submit()
-      await editor.expectEditor.toContain(
-        'extrude(profile001, length = 4, tagEnd = $myEndTag)'
-      )
+      await test.step('Submit and verify', async () => {
+        await cmdBar.submit()
+        await editor.expectEditor.toContain(
+          'extrude(profile001, length = 4, tagEnd = $myEndTag)'
+        )
+      })
     })
 
     await test.step(`Edit first extrude via feature tree`, async () => {
-      await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
-      await cmdBar.clickHeaderArgument('length')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'length',
-        currentArgValue: '4',
-        headerArguments: {
-          Length: '4',
-          TagEnd: 'myEndTag',
-        },
-        highlightedHeaderArg: 'length',
-        commandName: 'Extrude',
+      await test.step('Open extrude operation from feature tree', async () => {
+        await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
       })
-      await page.keyboard.insertText('3')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Length: '3',
-          TagEnd: 'myEndTag',
-        },
-        commandName: 'Extrude',
+      await test.step('Edit length argument', async () => {
+        await cmdBar.clickHeaderArgument('length')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'length',
+          currentArgValue: '4',
+          headerArguments: {
+            Length: '4',
+            TagEnd: 'myEndTag',
+          },
+          highlightedHeaderArg: 'length',
+          commandName: 'Extrude',
+        })
+        await page.keyboard.insertText('3')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Length: '3',
+            TagEnd: 'myEndTag',
+          },
+          commandName: 'Extrude',
+        })
       })
-      await cmdBar.progressCmdBar()
-      await editor.expectEditor.toContain(
-        'extrude(profile001, length = 3, tagEnd = $myEndTag)'
-      )
+      await test.step('Submit and verify', async () => {
+        await cmdBar.submit()
+        await editor.expectEditor.toContain(
+          'extrude(profile001, length = 3, tagEnd = $myEndTag)'
+        )
+      })
     })
   })
 
@@ -821,7 +844,7 @@ openSketch = startSketchOn(XY)
     await test.step('Delete offset plane via feature tree selection', async () => {
       await editor.closePane()
       const operationButton = await toolbar.getFeatureTreeOperation(
-        'Offset Plane',
+        'plane001',
         0
       )
       await operationButton.click({ button: 'left' })
@@ -1644,8 +1667,8 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
       await test.step('Delete standalone assigned fillet via feature tree selection', async () => {
         await test.step('Delete standalone assigned fillet', async () => {
           const operationButton = await toolbar.getFeatureTreeOperation(
-            'Fillet',
-            1
+            'fillet03',
+            0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
@@ -1666,7 +1689,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
         await test.step('Delete standalone unassigned fillet', async () => {
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Fillet',
-            1
+            0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
@@ -2125,8 +2148,8 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
         await test.step('Delete standalone assigned chamfer', async () => {
           await toolbar.openFeatureTreePane()
           const operationButton = await toolbar.getFeatureTreeOperation(
-            'Chamfer',
-            1
+            'chamfer03',
+            0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
@@ -2148,7 +2171,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           await toolbar.openFeatureTreePane()
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Chamfer',
-            1
+            0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
@@ -2909,7 +2932,7 @@ solid001 = extrude(sketch001, length = 5)`
       await test.step('Open edit mode from feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const patternOperation = await toolbar.getFeatureTreeOperation(
-          'Circular Pattern',
+          'pattern001',
           0
         )
         await patternOperation.dblclick()
@@ -3155,7 +3178,7 @@ solid001 = extrude(sketch001, length = 5)`
     await test.step('Delete Pattern Circular 3D', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const patternOperation = await toolbar.getFeatureTreeOperation(
-        'Circular Pattern',
+        'pattern001',
         0
       )
       // Delete the pattern operation
@@ -3351,7 +3374,7 @@ solid001 = extrude(sketch001, length = 5)`
         await toolbar.closePane(DefaultLayoutPaneID.Code)
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const patternOperation = await toolbar.getFeatureTreeOperation(
-          'Linear Pattern',
+          'pattern001',
           0
         )
         await patternOperation.dblclick()
@@ -3497,7 +3520,7 @@ solid001 = extrude(sketch001, length = 5)`
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
 
       const patternOperation = await toolbar.getFeatureTreeOperation(
-        'Linear Pattern',
+        'pattern001',
         0
       )
       await patternOperation.click({ button: 'left' })
@@ -4653,9 +4676,6 @@ extrude001 = extrude(profile001, length = 10)`
     await test.step('Expect hole call added to the editor', async () => {
       await scene.settled(cmdBar)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `@settings(experimentalFeatures = allow)`
-      )
       await editor.expectEditor.toContain(
         `hole001 = hole::hole(
   extrude001,

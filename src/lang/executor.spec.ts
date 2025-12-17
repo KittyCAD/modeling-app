@@ -10,6 +10,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -505,11 +506,6 @@ theExtrude = startSketchOn(XY)
 async function exe(code: string) {
   const ast = assertParse(code, instanceInThisFile)
 
-  const execState = await enginelessExecutor(
-    ast,
-    true,
-    undefined,
-    rustContextInThisFile
-  )
+  const execState = await enginelessExecutor(ast, rustContextInThisFile, true)
   return execState.variables
 }

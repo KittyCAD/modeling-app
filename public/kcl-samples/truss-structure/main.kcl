@@ -1,9 +1,6 @@
 // Truss Structure
 // A truss structure is a framework composed of triangular units made from straight members connected at joints, often called nodes. Trusses are widely used in architecture, civil engineering, and construction for their ability to support large loads with minimal material.
 
-
-
-
 @settings(defaultLengthUnit = in)
 
 // Define parameters

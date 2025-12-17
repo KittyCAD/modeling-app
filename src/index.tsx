@@ -7,7 +7,6 @@ import ModalContainer from 'react-modal-promise'
 import { Router } from '@src/Router'
 import { ToastUpdate } from '@src/components/ToastUpdate'
 import '@src/index.css'
-import { initPromise } from '@src/lang/wasmUtils'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
@@ -15,7 +14,7 @@ import { markOnce } from '@src/lib/performance'
 import {
   appActor,
   commandBarActor,
-  mlEphantManagerActor,
+  kclManager,
   systemIOActor,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -23,11 +22,11 @@ import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 
 markOnce('code/willAuth')
-initializeWindowExceptionHandler()
+initializeWindowExceptionHandler(kclManager)
 
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.
-initPromise
+kclManager.wasmInstancePromise
   .then(() => {
     appActor.start()
     // Application commands must be created after the initPromise because
@@ -35,9 +34,7 @@ initPromise
     commandBarActor.send({
       type: 'Add commands',
       data: {
-        commands: [
-          ...createApplicationCommands({ systemIOActor, mlEphantManagerActor }),
-        ],
+        commands: [...createApplicationCommands({ systemIOActor })],
       },
     })
   })

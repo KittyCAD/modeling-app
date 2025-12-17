@@ -235,7 +235,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -2000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -491,7 +492,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -405.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -757,7 +759,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -405.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1023,7 +1026,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -405.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1316,7 +1320,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -405.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1593,7 +1598,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -1800.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1799,7 +1805,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -1800.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2005,7 +2012,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -1800.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2278,7 +2286,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2432,7 +2441,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2759,7 +2769,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2913,7 +2924,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3240,7 +3252,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3394,7 +3407,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3775,7 +3789,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3929,7 +3944,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -270.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4279,7 +4295,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4340,7 +4357,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": -50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4642,7 +4660,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": 50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4703,7 +4722,8 @@ description: Artifact commands stylized-mini-bus.kcl
         "distance": 50.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

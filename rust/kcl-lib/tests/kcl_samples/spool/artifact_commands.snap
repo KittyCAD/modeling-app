@@ -203,7 +203,8 @@ description: Artifact commands spool.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -422,7 +423,8 @@ description: Artifact commands spool.kcl
         "distance": -133.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -479,7 +481,8 @@ description: Artifact commands spool.kcl
         "distance": -133.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -536,7 +539,8 @@ description: Artifact commands spool.kcl
         "distance": -133.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -593,7 +597,8 @@ description: Artifact commands spool.kcl
         "distance": -133.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -650,7 +655,8 @@ description: Artifact commands spool.kcl
         "distance": -133.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -707,7 +713,8 @@ description: Artifact commands spool.kcl
         "distance": -133.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -764,7 +771,8 @@ description: Artifact commands spool.kcl
         "distance": -133.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -821,7 +829,8 @@ description: Artifact commands spool.kcl
         "distance": -133.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1030,7 +1039,8 @@ description: Artifact commands spool.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1087,7 +1097,8 @@ description: Artifact commands spool.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1144,7 +1155,8 @@ description: Artifact commands spool.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1201,7 +1213,8 @@ description: Artifact commands spool.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1258,7 +1271,8 @@ description: Artifact commands spool.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1315,7 +1329,8 @@ description: Artifact commands spool.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1372,7 +1387,8 @@ description: Artifact commands spool.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1429,7 +1445,8 @@ description: Artifact commands spool.kcl
         "distance": -5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

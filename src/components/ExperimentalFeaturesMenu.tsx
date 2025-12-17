@@ -12,6 +12,8 @@ import { warningLevels } from '@src/lib/settings/settingsTypes'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
+import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
+import Tooltip from '@src/components/Tooltip'
 
 export function ExperimentalFeaturesMenu() {
   const currentLevel: WarningLevel =
@@ -20,19 +22,17 @@ export function ExperimentalFeaturesMenu() {
 
   return (
     currentLevel.type !== 'Deny' && (
-      <Popover className="relative pointer-events-auto">
+      <Popover className="relative pointer-events-auto flex">
         {({ close }) => (
           <>
             <Popover.Button
               data-testid="experimental-features-menu"
-              className={`flex items-center gap-2 px-1 py-1 
-        text-xs text-primary bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm 
-        border !border-primary/50 rounded-full`}
+              className={`${defaultStatusBarItemClassNames} gap-2 m-0`}
             >
               <CustomIcon name="beaker" className="w-4 h-4" />
-              <span className="sr-only">
+              <Tooltip hoverOnly={true} position="top-right">
                 Experimental features:&nbsp; {currentLevel.type}
-              </span>
+              </Tooltip>
             </Popover.Button>
             <Popover.Panel
               className={`absolute bottom-full right-0 mb-2 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
@@ -45,34 +45,39 @@ export function ExperimentalFeaturesMenu() {
                     <button
                       className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                       onClick={() => {
-                        const newAst = setExperimentalFeatures(
-                          kclManager.code,
-                          level
-                        )
-                        if (err(newAst)) {
-                          toast.error(
-                            `Failed to set file experimental features level: ${newAst.message}`
-                          )
-                        } else {
-                          updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-                            kclManager,
-                            rustContext,
-                          })
-                            .then((result) => {
-                              if (err(result)) {
-                                toast.error(
-                                  `Failed to set file experimental features level: ${result.message}`
-                                )
-                                return
-                              }
+                        awaitWasmAndSetFlag().catch(reportRejection)
 
-                              toast.success(
-                                `Updated file experimental features level to ${level.type}`
-                              )
+                        async function awaitWasmAndSetFlag() {
+                          const newAst = setExperimentalFeatures(
+                            kclManager.code,
+                            level,
+                            await kclManager.wasmInstancePromise
+                          )
+                          if (err(newAst)) {
+                            toast.error(
+                              `Failed to set file experimental features level: ${newAst.message}`
+                            )
+                          } else {
+                            updateModelingState(newAst, EXECUTION_TYPE_REAL, {
+                              kclManager,
+                              rustContext,
                             })
-                            .catch(reportRejection)
+                              .then((result) => {
+                                if (err(result)) {
+                                  toast.error(
+                                    `Failed to set file experimental features level: ${result.message}`
+                                  )
+                                  return
+                                }
+
+                                toast.success(
+                                  `Updated file experimental features level to ${level.type}`
+                                )
+                              })
+                              .catch(reportRejection)
+                          }
+                          close()
                         }
-                        close()
                       }}
                     >
                       <span className="flex-1">{level.type}</span>

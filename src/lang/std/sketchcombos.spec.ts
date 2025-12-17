@@ -30,6 +30,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -232,12 +233,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
       selectionRanges: Selections['graphSelections']
     ) {
       const ast = assertParse(inputCode, instanceInThisFile)
-      const execState = await enginelessExecutor(
-        ast,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      const execState = await enginelessExecutor(ast, rustContextInThisFile)
       const transformInfos = getTransformInfos(
         makeSelections(selectionRanges.slice(1)),
         ast,
@@ -372,12 +368,7 @@ part001 = startSketchOn(XY)
         }
       })
 
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges.slice(1)),
       ast,
@@ -468,12 +459,7 @@ part001 = startSketchOn(XY)
         }
       })
 
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -533,12 +519,7 @@ part001 = startSketchOn(XY)
         }
       })
 
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -633,12 +614,7 @@ async function helperThing(
       }
     })
 
-  const execState = await enginelessExecutor(
-    ast,
-    undefined,
-    undefined,
-    rustContextInThisFile
-  )
+  const execState = await enginelessExecutor(ast, rustContextInThisFile)
   const transformInfos = getTransformInfos(
     makeSelections(selectionRanges.slice(1)),
     ast,

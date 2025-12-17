@@ -61,11 +61,14 @@ import {
   parse_app_settings,
   parse_project_settings,
   parse_wasm,
+  point_to_unit,
   recast_wasm,
   serialize_configuration,
   serialize_project_configuration,
 } from '@src/lib/wasm_lib_wrapper'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
+import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -213,7 +216,7 @@ export function resultIsOk(result: ParseResult): result is SuccessParseResult {
 
 export const parse = (
   code: string | Error,
-  instance?: ModuleType
+  instance: ModuleType
 ): ParseResult | Error => {
   if (err(code)) return code
 
@@ -245,10 +248,7 @@ export const parse = (
 /**
  * Parse and throw an exception if there are any errors (probably not suitable for use outside of testing).
  */
-export function assertParse(
-  code: string,
-  instance?: ModuleType
-): Node<Program> {
+export function assertParse(code: string, instance: ModuleType): Node<Program> {
   const result = parse(code, instance)
   // eslint-disable-next-line suggest-no-throw/suggest-no-throw
   if (err(result)) throw result
@@ -517,6 +517,151 @@ export function isPointsCCW(points: Coords2d[], instance?: ModuleType): number {
   return is_points_ccw_fn(new Float64Array(points.flat()))
 }
 
+/**
+ * Convert a 2D point from one length unit to another.
+ */
+function pointToUnit(
+  point: [number, number],
+  fromLenUnit: UnitLength,
+  toLenUnit: UnitLength
+): Coords2d | Error {
+  try {
+    const result = point_to_unit(
+      JSON.stringify(point),
+      JSON.stringify(fromLenUnit),
+      JSON.stringify(toLenUnit)
+    )
+    return [result[0], result[1]]
+  } catch (e: any) {
+    return new Error(
+      `Error converting point to length unit: ${point} with len unit ${fromLenUnit} to len unit ${toLenUnit}`,
+      { cause: e }
+    )
+  }
+}
+
+/**
+ * Convert a NumericSuffix string to UnitLength.
+ * Returns null if the suffix is not a length unit.
+ */
+function numericSuffixToUnitLength(suffix: NumericSuffix): UnitLength | null {
+  switch (suffix) {
+    case 'Mm':
+      return 'mm'
+    case 'Cm':
+      return 'cm'
+    case 'M':
+      return 'm'
+    case 'Inch':
+      return 'in'
+    case 'Ft':
+      return 'ft'
+    case 'Yd':
+      return 'yd'
+    // non length units for type completeness
+    case 'None':
+    case 'Deg':
+    case 'Rad':
+    case 'Count':
+    case 'Length':
+    case 'Angle':
+    case 'Unknown':
+      return null
+    default:
+      // this is more of a type completeness check
+      // rather then something we expect to hit at runtime
+      const _exhaustiveCheck: never = suffix
+      return null
+  }
+}
+
+/**
+ * Convert a UnitLength to NumericSuffix string.
+ */
+function unitLengthToNumericSuffix(unit: UnitLength): NumericSuffix {
+  switch (unit) {
+    case 'mm':
+      return 'Mm'
+    case 'cm':
+      return 'Cm'
+    case 'm':
+      return 'M'
+    case 'in':
+      return 'Inch'
+    case 'ft':
+      return 'Ft'
+    case 'yd':
+      return 'Yd'
+    default:
+      const _exhaustiveCheck: never = unit
+      return 'Mm'
+  }
+}
+
+/**
+ * Calculate the distance between two 2D points expressed as Expr coordinates.
+ * Both points are converted to a common unit (the unit of the first point) before calculation.
+ * Returns the distance value and the unit it's expressed in.
+ */
+export function distanceBetweenPoint2DExpr(
+  point1: { x: Number; y: Number },
+  point2: { x: Number; y: Number }
+): { distance: number; units: NumericSuffix } | Error {
+  // Convert units to UnitLength
+  const x1Unit = numericSuffixToUnitLength(point1.x.units)
+  const y1Unit = numericSuffixToUnitLength(point1.y.units)
+  const x2Unit = numericSuffixToUnitLength(point2.x.units)
+  const y2Unit = numericSuffixToUnitLength(point2.y.units)
+
+  if (!x1Unit || !y1Unit || !x2Unit || !y2Unit) {
+    return new Error(
+      'Cannot calculate distance: one or more coordinates have non-length units'
+    )
+  }
+
+  // Use the first point's x unit as the target unit for conversion
+  const targetSuffix = point1.x.units
+  const targetUnit = numericSuffixToUnitLength(targetSuffix)
+  if (!targetUnit) {
+    return new Error(
+      `Cannot calculate distance: target unit ${targetSuffix} is not a length unit`
+    )
+  }
+
+  // Convert all coordinates to the target unit
+  const x1Converted = pointToUnit([point1.x.value, 0], x1Unit, targetUnit)
+  const y1Converted = pointToUnit([point1.y.value, 0], y1Unit, targetUnit)
+  const x2Converted = pointToUnit([point2.x.value, 0], x2Unit, targetUnit)
+  const y2Converted = pointToUnit([point2.y.value, 0], y2Unit, targetUnit)
+
+  if (
+    x1Converted instanceof Error ||
+    y1Converted instanceof Error ||
+    x2Converted instanceof Error ||
+    y2Converted instanceof Error
+  ) {
+    return new Error('Failed to convert coordinates for distance calculation')
+  }
+
+  // Calculate distance
+  const dx = x2Converted[0] - x1Converted[0]
+  const dy = y2Converted[0] - y1Converted[0]
+  const distance = Math.hypot(dx, dy)
+
+  return { distance, units: targetSuffix }
+}
+
+/**
+ * Convert BaseUnit to NumericSuffix for use in SegmentCtor.
+ * Handles the 'in' -> 'inch' conversion needed for unitLengthToNumericSuffix.
+ */
+export function baseUnitToNumericSuffix(
+  defaultLengthUnit?: UnitLength
+): NumericSuffix {
+  const currentUnit = defaultLengthUnit ?? DEFAULT_DEFAULT_LENGTH_UNIT
+  return unitLengthToNumericSuffix(currentUnit)
+}
+
 export function getTangentialArcToInfo({
   arcStartPoint,
   arcEndPoint,
@@ -659,6 +804,9 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'VariableDeclarationInit':
         pathToNode.push(['init', ''])
         break
+      case 'FunctionExpressionName':
+        pathToNode.push(['name', 'FunctionExpression'])
+        break
       case 'FunctionExpressionParam':
         pathToNode.push(['params', 'FunctionExpression'])
         pathToNode.push([step.index, 'index'])
@@ -772,7 +920,7 @@ export function base64Decode(base64: string): ArrayBuffer | Error {
  */
 export function kclSettings(
   kcl: string | Node<Program>,
-  instance?: ModuleType
+  instance: ModuleType
 ): MetaSettings | null | Error {
   let program: Node<Program>
   if (typeof kcl === 'string') {

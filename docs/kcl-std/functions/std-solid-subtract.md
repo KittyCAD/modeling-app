@@ -39,7 +39,6 @@ and complex multi-body part modeling.
 ```kcl
 // Subtract a cylinder from a cube using the stdlib functions.
 
-
 fn cube(center, size) {
   return startSketchOn(XY)
     |> startProfile(at = [center[0] - size, center[1] - size])
@@ -76,7 +75,6 @@ subtractedPart = subtract([part001], tools = [part002])
 // Subtract a cylinder from a cube using operators.
 // NOTE: This will not work when using codemods through the UI.
 // Codemods will generate the stdlib function call instead.
-
 
 fn cube(center, size) {
   return startSketchOn(XY)

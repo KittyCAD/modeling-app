@@ -7,7 +7,7 @@ import {
   createVariableDeclaration,
 } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
-import { expect } from 'vitest'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { type ActorRefFrom, createActor } from 'xstate'
 import { vi } from 'vitest'
@@ -151,8 +151,14 @@ describe('modelingMachine.test.ts', () => {
   describe('modelingMachine - XState', () => {
     describe('when initialized', () => {
       it('should start in the idle state', async () => {
-        const contextCopied = generateModelingMachineDefaultContext()
-        contextCopied.kclManager = kclManagerInThisFile
+        const contextCopied = generateModelingMachineDefaultContext({
+          kclManager: kclManagerInThisFile,
+          sceneInfra: sceneInfraInThisFile,
+          rustContext: rustContextInThisFile,
+          wasmInstance: instanceInThisFile,
+          sceneEntitiesManager: sceneEntitiesManagerInThisFile,
+          engineCommandManager: engineCommandManagerInThisFile,
+        })
         contextCopied.engineCommandManager = engineCommandManagerInThisFile
         contextCopied.sceneInfra = sceneInfraInThisFile
         contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
@@ -935,10 +941,16 @@ p3 = [342.51, 216.38],
               )
             }
 
-            const contextCopied = generateModelingMachineDefaultContext()
+            const contextCopied = generateModelingMachineDefaultContext({
+              kclManager: kclManagerInThisFile,
+              sceneInfra: sceneInfraInThisFile,
+              rustContext: rustContextInThisFile,
+              wasmInstance: instanceInThisFile,
+              sceneEntitiesManager: sceneEntitiesManagerInThisFile,
+              engineCommandManager: engineCommandManagerInThisFile,
+            })
             const kclEditorActor = createActor(kclEditorMachine).start()
 
-            contextCopied.kclManager = kclManagerInThisFile
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
             contextCopied.sceneInfra = sceneInfraInThisFile
             contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
@@ -1062,10 +1074,16 @@ p3 = [342.51, 216.38],
               )
             }
 
-            const contextCopied = generateModelingMachineDefaultContext()
+            const contextCopied = generateModelingMachineDefaultContext({
+              kclManager: kclManagerInThisFile,
+              sceneInfra: sceneInfraInThisFile,
+              rustContext: rustContextInThisFile,
+              wasmInstance: instanceInThisFile,
+              sceneEntitiesManager: sceneEntitiesManagerInThisFile,
+              engineCommandManager: engineCommandManagerInThisFile,
+            })
             const kclEditorActor = createActor(kclEditorMachine).start()
 
-            contextCopied.kclManager = kclManagerInThisFile
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
             contextCopied.sceneInfra = sceneInfraInThisFile
             contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
@@ -1199,10 +1217,16 @@ p3 = [342.51, 216.38],
               )
             }
 
-            const contextCopied = generateModelingMachineDefaultContext()
+            const contextCopied = generateModelingMachineDefaultContext({
+              kclManager: kclManagerInThisFile,
+              sceneInfra: sceneInfraInThisFile,
+              rustContext: rustContextInThisFile,
+              wasmInstance: instanceInThisFile,
+              sceneEntitiesManager: sceneEntitiesManagerInThisFile,
+              engineCommandManager: engineCommandManagerInThisFile,
+            })
             const kclEditorActor = createActor(kclEditorMachine).start()
 
-            contextCopied.kclManager = kclManagerInThisFile
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
             contextCopied.sceneInfra = sceneInfraInThisFile
             contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
@@ -1323,10 +1347,16 @@ p3 = [342.51, 216.38],
               )
             }
 
-            const contextCopied = generateModelingMachineDefaultContext()
+            const contextCopied = generateModelingMachineDefaultContext({
+              kclManager: kclManagerInThisFile,
+              sceneInfra: sceneInfraInThisFile,
+              rustContext: rustContextInThisFile,
+              wasmInstance: instanceInThisFile,
+              sceneEntitiesManager: sceneEntitiesManagerInThisFile,
+              engineCommandManager: engineCommandManagerInThisFile,
+            })
             const kclEditorActor = createActor(kclEditorMachine).start()
 
-            contextCopied.kclManager = kclManagerInThisFile
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
             contextCopied.sceneInfra = sceneInfraInThisFile
             contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile

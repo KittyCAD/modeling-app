@@ -6,6 +6,7 @@ import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

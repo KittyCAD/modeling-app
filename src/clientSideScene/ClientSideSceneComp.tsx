@@ -119,7 +119,7 @@ export const ClientSideScene = ({
       // This is called initially too, not just on resize
       sceneInfra.onCanvasResized()
       sceneInfra.camControls.onWindowResize()
-      sceneEntitiesManager.onCamChange()
+      sceneEntitiesManager.onCamChange().catch(reportRejection)
     })
     observer.observe(container)
 
@@ -269,7 +269,7 @@ const Overlay = ({
 
   const constraints = getConstraintInfoKw(
     callExpression,
-    kclManager.code,
+    kclManager.codeSignal.value,
     overlay.pathToNode,
     overlay.filterValue
   )
@@ -572,7 +572,10 @@ const ConstraintSymbol = ({
             })
           } else if (isConstrained) {
             try {
-              const pResult = parse(recast(kclManager.ast))
+              const pResult = parse(
+                recast(kclManager.ast),
+                await kclManager.wasmInstancePromise
+              )
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
 

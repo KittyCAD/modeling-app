@@ -2,8 +2,9 @@
 import { lezer } from '@lezer/generator/rollup'
 import vitePluginEslint from '@nabla/vite-plugin-eslint'
 import viteJsPluginReact from '@vitejs/plugin-react'
-import type { ConfigEnv, UserConfig } from 'vite'
-import { defineConfig, mergeConfig } from 'vite'
+import type { ConfigEnv, UserConfig as ViteUserConfig } from 'vite'
+import { mergeConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import vitePluginPackageVersion from 'vite-plugin-package-version'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults } from 'vitest/config'
@@ -20,7 +21,7 @@ export default defineConfig((env) => {
   const forgeEnv = env as ConfigEnv<'build'>
   const { forgeConfigSelf } = forgeEnv
   const define = getBuildDefine(forgeEnv)
-  const config: UserConfig = {
+  const config = {
     server: {
       open: true,
       port: 3000,
@@ -35,7 +36,6 @@ export default defineConfig((env) => {
       },
     },
     test: {
-      globals: true,
       pool: 'forks',
       poolOptions: {
         forks: {
@@ -86,7 +86,11 @@ export default defineConfig((env) => {
     },
     plugins: [
       pluginHotRestart('restart'),
-      viteJsPluginReact(),
+      viteJsPluginReact({
+        babel: {
+          plugins: [['module:@preact/signals-react-transform']],
+        },
+      }),
       viteTsconfigPaths(),
       vitePluginEslint(),
       vitePluginPackageVersion(),

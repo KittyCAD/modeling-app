@@ -1,12 +1,25 @@
 import toast from 'react-hot-toast'
 
-import type { ApiFile } from '@rust/kcl-lib/bindings/ApiFile'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
+import type {
+  ApiConstraint,
+  ApiFile,
+  ApiFileId,
+  ApiObjectId,
+  ApiProjectId,
+  ApiVersion,
+  ExistingSegmentCtor,
+  SceneGraph,
+  SceneGraphDelta,
+  SegmentCtor,
+  SketchArgs,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { encode as msgpackEncode } from '@msgpack/msgpack'
 
@@ -15,7 +28,6 @@ import type { WebSocketResponse } from '@kittycad/lib'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { ExecState } from '@src/lang/wasm'
 import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { defaultPlaneStrToKey } from '@src/lib/planes'
@@ -27,9 +39,11 @@ import { getModule } from '@src/lib/wasm_lib_wrapper'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { Signal } from '@src/lib/signal'
+import type { ExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export default class RustContext {
-  private wasmInitFailed: boolean = true
+  private readonly _wasmInstancePromise: Promise<ModuleType>
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
@@ -37,31 +51,30 @@ export default class RustContext {
   private projectId = 0
   public readonly planesCreated = new Signal()
 
-  /** Initialize the WASM module */
-  private async ensureWasmInit() {
-    try {
-      await initPromise
-      if (this.wasmInitFailed) {
-        this.wasmInitFailed = false
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      this.wasmInitFailed = true
-    }
+  private _settingsActor: SettingsActorType
+  get settingsActor() {
+    return this._settingsActor
+  }
+  set settingsActor(settingsActor: SettingsActorType) {
+    this._settingsActor = settingsActor
   }
 
-  constructor(engineCommandManager: ConnectionManager, instance?: ModuleType) {
+  constructor(
+    engineCommandManager: ConnectionManager,
+    wasmInstancePromise: Promise<ModuleType>,
+    /**
+     * TODO: move settings system upstream of KclManager so this hack isn't necessary.
+     * We pass in a dummy settingsActor, then assign our real one later in singletons.ts using the setter
+     */
+    dummySettingsActor: SettingsActorType
+  ) {
     this.engineCommandManager = engineCommandManager
+    this._wasmInstancePromise = wasmInstancePromise
+    this._settingsActor = dummySettingsActor
 
-    if (instance) {
-      this.createFromInstance(instance)
-    } else {
-      this.ensureWasmInit()
-        .then(() => {
-          this.ctxInstance = this.create()
-        })
-        .catch(reportRejection)
-    }
+    wasmInstancePromise
+      .then((instance) => this.createFromInstance(instance))
+      .catch(reportRejection)
   }
 
   /** Create a new context instance */
@@ -76,8 +89,8 @@ export default class RustContext {
     return ctxInstance
   }
 
-  getRustInstance() {
-    return this.rustInstance || undefined
+  get wasmInstancePromise() {
+    return this._wasmInstancePromise
   }
 
   private createFromInstance(instance: ModuleType) {
@@ -264,6 +277,307 @@ export default class RustContext {
       await instance.sendResponse(serialized)
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
+  /**
+   * Temporary hack. Set the program AST used by the frontend layer of the API
+   * and execute it with a real engine so that state is updated and ready for
+   * the next API call.
+   */
+  async hackSetProgram(
+    program_ast: Node<Program>,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    sceneGraph: SceneGraph
+    execOutcome: ExecOutcome
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SceneGraph, ExecOutcome] = await instance.hack_set_program(
+        JSON.stringify(program_ast),
+        JSON.stringify(settings)
+      )
+      return {
+        sceneGraph: result[0],
+        execOutcome: result[1],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  /**
+   * Execute the sketch in mock mode, without changing anything. This is
+   * useful after editing segments, and the user releases the mouse button.
+   */
+  async sketchExecuteMock(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    sceneGraph: SceneGraph
+    execOutcome: ExecOutcome
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SceneGraph, ExecOutcome] =
+        await instance.sketch_execute_mock(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(settings)
+        )
+      return {
+        sceneGraph: result[0],
+        execOutcome: result[1],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  /** Add a new sketch and enter sketch mode. */
+  async newSketch(
+    project: ApiProjectId,
+    file: ApiFileId,
+    version: ApiVersion,
+    sketchArgs: SketchArgs,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    sketchId: ApiObjectId
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SourceDelta, SceneGraphDelta, ApiObjectId] =
+        await instance.new_sketch(
+          JSON.stringify(project),
+          JSON.stringify(file),
+          JSON.stringify(version),
+          JSON.stringify(sketchArgs),
+          JSON.stringify(settings)
+        )
+      return {
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+        sketchId: result[2],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  /** Enter sketch mode for an existing sketch. */
+  async editSketch(
+    project: ApiProjectId,
+    file: ApiFileId,
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    settings: DeepPartial<Configuration>
+  ): Promise<SceneGraphDelta> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: SceneGraphDelta = await instance.edit_sketch(
+        JSON.stringify(project),
+        JSON.stringify(file),
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(settings)
+      )
+      return result
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  /** Exit sketch mode. */
+  async exitSketch(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    settings: DeepPartial<Configuration>
+  ): Promise<SceneGraphDelta> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: SceneGraphDelta = await instance.exit_sketch(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(settings)
+      )
+      return result
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  /** Delete a sketch. */
+  async deleteSketch(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SourceDelta, SceneGraphDelta] =
+        await instance.delete_sketch(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(settings)
+        )
+      return {
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  /** Add a segment to a sketch. */
+  async addSegment(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    segment: SegmentCtor,
+    label: string | undefined,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SourceDelta, SceneGraphDelta] = await instance.add_segment(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(segment),
+        label,
+        JSON.stringify(settings)
+      )
+      return {
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  /** Edit a segment in a sketch. */
+  async editSegments(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    segments: ExistingSegmentCtor[],
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SourceDelta, SceneGraphDelta] =
+        await instance.edit_segments(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(segments),
+          JSON.stringify(settings)
+        )
+      return {
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  /** Delete objects in a sketch. */
+  async deleteObjects(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    constraintIds: ApiObjectId[],
+    segmentIds: ApiObjectId[],
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SourceDelta, SceneGraphDelta] =
+        await instance.delete_objects(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(constraintIds),
+          JSON.stringify(segmentIds),
+          JSON.stringify(settings)
+        )
+      return {
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  /** Add a constraint to a sketch. */
+  async addConstraint(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    constraint: ApiConstraint,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SourceDelta, SceneGraphDelta] =
+        await instance.add_constraint(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(constraint),
+          JSON.stringify(settings)
+        )
+      return {
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
       return Promise.reject(err)
     }
   }

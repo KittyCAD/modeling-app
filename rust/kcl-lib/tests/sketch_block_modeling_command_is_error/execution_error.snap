@@ -1,0 +1,28 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing sketch_block_modeling_command_is_error.kcl
+---
+KCL InvalidExpression error
+
+  × invalid expression: Modeling commands communicating with the engine cannot
+  │ be used inside a sketch block
+   ╭─[4:3]
+ 3 │ sketch(on = XY) {
+ 4 │   startSketchOn(XY)
+   ·   ────────┬────────┬
+   ·           ╰── tests/sketch_block_modeling_command_is_error/input.kcl
+   ·           ╰── tests/sketch_block_modeling_command_is_error/input.kcl
+ 5 │ }
+   ╰────
+  ╰─▶ KCL InvalidExpression error
+      
+        × invalid expression: Modeling commands communicating with the engine
+        │ cannot be used inside a sketch block
+         ╭─[4:3]
+       3 │ sketch(on = XY) {
+       4 │   startSketchOn(XY)
+         ·   ────────┬────────
+         ·           ╰── tests/sketch_block_modeling_command_is_error/
+      input.kcl
+       5 │ }
+         ╰────

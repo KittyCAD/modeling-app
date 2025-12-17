@@ -31,6 +31,7 @@ import {
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -68,12 +69,7 @@ async function getAstAndArtifactGraphEngineless(
   const ast = assertParse(code, instance)
   if (err(ast)) throw ast
 
-  const { artifactGraph } = await enginelessExecutor(
-    ast,
-    undefined,
-    undefined,
-    rustContext
-  )
+  const { artifactGraph } = await enginelessExecutor(ast, rustContext)
   return { ast, artifactGraph }
 }
 
@@ -275,6 +271,60 @@ extrude001 = extrude(profile001, length = 2)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add an extrude call with bodyType "surface"', async () => {
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
+        circleProfileCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        bodyType: 'SURFACE',
+        artifactGraph,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(circleProfileCode)
+      expect(newCode).toContain(
+        `extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add an extrude call with bodyType "solid"', async () => {
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
+        circleProfileCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        bodyType: 'SOLID',
+        artifactGraph,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(circleProfileCode)
+      expect(newCode).toContain(
+        `extrude001 = extrude(profile001, length = 1, bodyType = SOLID)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add an extrude call to a wall', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
@@ -390,6 +440,54 @@ extrude002 = extrude(profile002, to = capEnd001)`)
         rustContextInThisFile
       )
       expect(error).not.toBeInstanceOf(Error)
+    })
+
+    it('should add an extrude call with full twist parameters', async () => {
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
+        circleProfileCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const length = await getKclCommandValue(
+        '10',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const twistAngle = await getKclCommandValue(
+        '180deg',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const twistAngleStep = await getKclCommandValue(
+        '15',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const twistCenter = await getKclCommandValue(
+        '[0, 0]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        twistAngle,
+        twistAngleStep,
+        twistCenter,
+        artifactGraph,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(circleProfileCode)
+      expect(newCode).toContain(`extrude001 = extrude(
+  profile001,
+  length = 10,
+  twistAngle = 180deg,
+  twistAngleStep = 15,
+  twistCenter = [0, 0],
+)`)
     })
 
     // TODO: this isn't producing the right results yet
@@ -929,8 +1027,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
         const ast = assertParse(helixCode, instanceInThisFile)
         const { artifactGraph, operations } = await enginelessExecutor(
           ast,
-          undefined,
-          undefined,
           rustContextInThisFile
         )
         const op = operations.find(
@@ -964,8 +1060,6 @@ helix001 = helix(
       const ast = assertParse(helixCode, instanceInThisFile)
       const { artifactGraph, operations } = await enginelessExecutor(
         ast,
-        undefined,
-        undefined,
         rustContextInThisFile
       )
       const op = operations.find(
