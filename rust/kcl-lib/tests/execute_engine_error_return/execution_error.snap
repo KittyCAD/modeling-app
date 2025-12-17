@@ -2,24 +2,32 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing execute_engine_error_return.kcl
 ---
-KCL Engine error
+KCL Semantic error
 
-  × engine: The path is not closed.  Solid2D construction requires a closed
-  │ path!
+  × semantic: Cannot solid extrude an open profile. Either close the profile,
+  │ or use a surface extrude.
+   ╭─[2:6]
+ 1 │ part001 = startSketchOn(XY)
+ 2 │   |> startProfile(at = [5.5229, 5.25217])
+   ·      ──────────────────┬─────────────────
+   ·                        ╰── tests/execute_engine_error_return/input.kcl
+ 3 │   |> line(end = [10.50433, -1.19122])
+   ╰────
    ╭─[7:6]
  6 │   |> line(end = [-11.53311, 2.81559])
  7 │   |> extrude(length = 4)
-   ·      ─────────┬─────────┬
-   ·               ╰── tests/execute_engine_error_return/input.kcl
+   ·      ─────────┬─────────
    ·               ╰── tests/execute_engine_error_return/input.kcl
    ╰────
-  ╰─▶ KCL Engine error
+  ╰─▶ KCL Semantic error
       
-        × engine: The path is not closed.  Solid2D construction requires a
-        │ closed path!
-         ╭─[7:6]
-       6 │   |> line(end = [-11.53311, 2.81559])
-       7 │   |> extrude(length = 4)
-         ·      ─────────┬─────────
-         ·               ╰── tests/execute_engine_error_return/input.kcl
+        × semantic: Cannot solid extrude an open profile. Either close the
+        │ profile, or use a surface extrude.
+         ╭─[2:6]
+       1 │ part001 = startSketchOn(XY)
+       2 │   |> startProfile(at = [5.5229, 5.25217])
+         ·      ──────────────────┬─────────────────
+         ·                        ╰── tests/execute_engine_error_return/
+      input.kcl
+       3 │   |> line(end = [10.50433, -1.19122])
          ╰────
