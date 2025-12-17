@@ -4472,7 +4472,7 @@ description: Variables in memory after executing loop_tag.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "mm",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "height": {
@@ -4545,7 +4545,7 @@ description: Variables in memory after executing loop_tag.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "mm",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "numSides": {

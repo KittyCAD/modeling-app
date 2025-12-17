@@ -673,13 +673,38 @@ pub struct Sketch {
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,
-    /// If not given, defaults to true.
-    #[serde(default = "very_true", skip_serializing_if = "is_true")]
-    pub is_closed: bool,
+    /// Has the profile been closed?
+    /// If not given, defaults to yes, closed explicitly.
+    #[serde(
+        default = "ProfileClosed::explicitly",
+        skip_serializing_if = "ProfileClosed::is_explicitly"
+    )]
+    pub is_closed: ProfileClosed,
 }
 
-fn is_true(b: &bool) -> bool {
-    *b
+impl ProfileClosed {
+    #[expect(dead_code, reason = "it's not actually dead, it's called by serde")]
+    fn explicitly() -> Self {
+        Self::Explicitly
+    }
+
+    fn is_explicitly(&self) -> bool {
+        matches!(self, ProfileClosed::Explicitly)
+    }
+}
+
+/// Has the profile been closed?
+#[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Clone, Copy, Hash, Ord, PartialOrd, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+pub enum ProfileClosed {
+    /// It's definitely open.
+    No,
+    /// Unknown.
+    Maybe,
+    /// Yes, by adding a segment which loops back to the start.
+    Implicitly,
+    /// Yes, by calling `close()` or by making a closed shape (e.g. circle).
+    Explicitly,
 }
 
 impl Sketch {

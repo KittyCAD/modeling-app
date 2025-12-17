@@ -1,6 +1,6 @@
 import type { FileEntry } from '@src/lib/project'
 import { type MlToolResult } from '@kittycad/lib'
-import { type settings } from '@src/lib/settings/initialSettings'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { SystemIOActor } from '@src/lib/singletons'
 import { systemIOActor } from '@src/lib/singletons'
 import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
@@ -35,7 +35,7 @@ export const useClearURLParams = () =>
 export const useProjectIdToConversationId = (
   mlEphantManagerActor2: MlEphantManagerActor,
   systemIOActor: SystemIOActor,
-  settings2: typeof settings
+  settings2: SettingsType
 ) => {
   useEffect(() => {
     let lastConversationId =

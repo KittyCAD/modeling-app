@@ -140,12 +140,7 @@ describe('testing changeSketchArguments', () => {
     const expectedCode = genCode(lineAfterChange)
     const ast = assertParse(code, instanceInThisFile)
 
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const sourceStart = code.indexOf(lineToChange)
     const changeSketchArgsRetVal = changeSketchArguments(
       ast,
@@ -182,7 +177,7 @@ describe('testing addTagForSketchOnFace', () => {
 `
     const code = genCode(originalLine)
     const ast = assertParse(code, instanceInThisFile)
-    await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    await enginelessExecutor(ast, rustContextInThisFile)
     const sourceStart = code.indexOf(originalLine)
     const sourceRange = topLevelRange(
       sourceStart,
@@ -246,7 +241,7 @@ ${insertCode}
 `
       const code = genCode(originalChamfer)
       const ast = assertParse(code, instanceInThisFile)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(ast, rustContextInThisFile)
       const sourceStart = code.indexOf(originalChamfer)
       const extraChars = originalChamfer.indexOf('chamfer')
       const sourceRange = topLevelRange(
