@@ -14,7 +14,7 @@ export function createAuthCommands({
       name: 'log-out',
       displayName: 'Log out',
       description: 'Log out of your account.',
-      icon: 'arrowLeft',
+      icon: 'arrowShortLeft',
       needsReview: false,
       onSubmit: () => authActor.send({ type: 'Log out' }),
     },
