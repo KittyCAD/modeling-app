@@ -1,17 +1,22 @@
 import { ActionButton } from '@src/components/ActionButton'
 import env from '@src/env'
-import { writeEnvironmentConfigurationPool } from '@src/lib/desktop'
 import { commandBarActor } from '@src/lib/singletons'
-import { reportRejection } from '@src/lib/trap'
 
 export function EnvironmentChip() {
-  const shorthand = env().VITE_ZOO_BASE_DOMAIN
-  const pool = env().POOL
+  let label = env().VITE_ZOO_BASE_DOMAIN
+  const url = new URL(env().VITE_KITTYCAD_WEBSOCKET_URL || '')
+  if (
+    url.hostname === 'localhost' ||
+    url.hostname === '127.0.0.1' ||
+    url.hostname === '0.0.0.0'
+  ) {
+    label = `${label} + local`
+  } else if (url.search) {
+    label = `${label} + ${url.search.substring(1)}`
+  }
   return (
     <div className="flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50">
-      <span className="">
-        {shorthand} {pool ? `+ Pool` : ''}
-      </span>
+      <span className="">{label}</span>
     </div>
   )
 }
@@ -23,7 +28,7 @@ export function EnvironmentDescription() {
       <div
         className={`flex flex-col p-2 mb-2 rounded-t-sm bg-chalkboard-20 text-chalkboard-100 dark:bg-chalkboard-80 dark:text-chalkboard-10`}
       >
-        <p className="flex flex-row justify-between">
+        <p className="flex flex-row justify-between items-center">
           <h2 className="text-sm font-sans font-normal">Environment</h2>
           <p
             data-testid="environment"
@@ -56,78 +61,42 @@ export function EnvironmentDescription() {
       </div>
       <ul>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
-          <p className="text-chalkboard-100 dark:text-chalkboard-10">API</p>{' '}
+          <p className="text-chalkboard-100 dark:text-chalkboard-10">Account</p>{' '}
           <p className="text-chalkboard-60 dark:text-chalkboard-40">
             {env().VITE_ZOO_API_BASE_URL}
           </p>
         </li>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
-          <p className="text-chalkboard-100 dark:text-chalkboard-10">Site</p>{' '}
-          <p className="text-chalkboard-60 dark:text-chalkboard-40">
-            {env().VITE_ZOO_SITE_BASE_URL}
+          <p className="text-chalkboard-100 dark:text-chalkboard-10">Engine</p>{' '}
+          <p className="text-chalkboard-60 dark:text-chalkboard-40 flex flex-row justify-between items-center">
+            <span className="flex-1 min-w-0 truncate">
+              {env().VITE_KITTYCAD_WEBSOCKET_URL}
+            </span>
+            <ActionButton
+              Element="button"
+              onClick={() => {
+                commandBarActor.send({
+                  type: 'Find and select command',
+                  data: {
+                    groupId: 'application',
+                    name: 'override-engine',
+                    argDefaultValues: {
+                      url: env().VITE_KITTYCAD_WEBSOCKET_URL,
+                    },
+                  },
+                })
+              }}
+              iconEnd={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
+              className="ml-3 p-0.5 pr-2 flex-shrink-0"
+            />
           </p>
         </li>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
           <p className="text-chalkboard-100 dark:text-chalkboard-10">
-            WebSockets
+            Zookeeper
           </p>{' '}
-          <p className="text-chalkboard-60 dark:text-chalkboard-40">
-            {env().VITE_KITTYCAD_WEBSOCKET_URL}
-          </p>
           <p className="text-chalkboard-60 dark:text-chalkboard-40">
             {env().VITE_MLEPHANT_WEBSOCKET_URL}
-          </p>
-        </li>
-        <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
-          <p className="text-chalkboard-100 dark:text-chalkboard-10">
-            Connection Pool
-          </p>{' '}
-          <p className="text-chalkboard-60 dark:text-chalkboard-40 flex flex-row justify-between">
-            <span>{env().POOL || 'Auto'}</span>
-            <div className="flex flex-row gap-1">
-              <ActionButton
-                Element="button"
-                onClick={() => {
-                  commandBarActor.send({
-                    type: 'Find and select command',
-                    data: {
-                      groupId: 'application',
-                      name: 'choose-pool',
-                      argDefaultValues: {
-                        pool: env().POOL,
-                      },
-                    },
-                  })
-                }}
-              >
-                <span className="py-2 lg:py-0">Edit</span>
-              </ActionButton>
-              {env().POOL !== '' && (
-                <ActionButton
-                  onClick={() => {
-                    const environment = env().VITE_ZOO_BASE_DOMAIN
-                    if (environment) {
-                      if (!window.electron) {
-                        console.error("Can't access electron")
-                        return
-                      }
-                      writeEnvironmentConfigurationPool(
-                        window.electron,
-                        environment,
-                        ''
-                      )
-                        .then(() => {
-                          window.location.reload()
-                        })
-                        .catch(reportRejection)
-                    }
-                  }}
-                  Element="button"
-                >
-                  <span className="py-2 lg:py-0">Clear</span>
-                </ActionButton>
-              )}
-            </div>
           </p>
         </li>
       </ul>
