@@ -3,7 +3,7 @@ import { type MlToolResult } from '@kittycad/lib'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { SystemIOActor } from '@src/lib/singletons'
 import { systemIOActor } from '@src/lib/singletons'
-import { type MlEphantManagerActor2 } from '@src/machines/mlEphantManagerMachine2'
+import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -33,7 +33,7 @@ export const useClearURLParams = () =>
   useSelector(systemIOActor, (state) => state.context.clearURLParams)
 
 export const useProjectIdToConversationId = (
-  mlEphantManagerActor2: MlEphantManagerActor2,
+  mlEphantManagerActor2: MlEphantManagerActor,
   systemIOActor: SystemIOActor,
   settings2: SettingsType
 ) => {
@@ -81,7 +81,7 @@ export const useProjectIdToConversationId = (
 
 // Watch MlEphant for any responses that require files to be created.
 export const useWatchForNewFileRequestsFromMlEphant = (
-  mlEphantManagerActor2: MlEphantManagerActor2,
+  mlEphantManagerActor2: MlEphantManagerActor,
   fn2: (
     toolOutputTextToCad: MlToolResult,
     projectNameCurrentlyOpened: string,

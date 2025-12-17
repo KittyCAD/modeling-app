@@ -24,6 +24,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
+          rustflags: '' # Use .cargo/config.toml
       - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
         with:
           tool: wasm-pack

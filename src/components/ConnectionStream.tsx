@@ -27,8 +27,7 @@ import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnection
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import { useOnFileRoute } from '@src/hooks/network/useOnFileRoute'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { useRouteLoaderData, useSearchParams } from 'react-router-dom'
-import env from '@src/env'
+import { useRouteLoaderData } from 'react-router-dom'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { PATHS } from '@src/lib/paths'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -48,7 +47,6 @@ const systemDeps = {
 }
 
 export const ConnectionStream = (props: {
-  pool: string | null
   authToken: string | undefined
 }) => {
   const [showManualConnect, setShowManualConnect] = useState(false)
@@ -71,13 +69,7 @@ export const ConnectionStream = (props: {
     overallState === NetworkHealthState.Weak
   const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
     useTryConnect()
-  // Stream related refs and data
-  const [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool') || env().POOL || null
-  /**
-   * We omit `pool` here because `engineStreamMachine` will override it anyway
-   * within the `EngineStreamTransition.StartOrReconfigureEngine` Promise actor.
-   */
+
   const settingsEngine: SettingsViaQueryString = {
     theme: settings.app.theme.current,
     enableSSAO: settings.modeling.enableSSAO.current,
@@ -85,7 +77,6 @@ export const ConnectionStream = (props: {
     showScaleGrid: settings.modeling.showScaleGrid.current,
     cameraProjection: settings.modeling.cameraProjection.current,
     cameraOrbit: settings.modeling.cameraOrbit.current,
-    pool,
   }
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
