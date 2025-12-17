@@ -159,6 +159,8 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
   let isSwapped = context.arcIsSwapped ?? false
   // Track previous end position to detect crossing
   let previousEnd: [number, number] | undefined
+  // Cache settings to avoid fetching on every mouse move
+  let cachedSettings: Awaited<ReturnType<typeof jsAppSettings>> | null = null
 
   context.sceneInfra.setCallbacks({
     onMove: async (args) => {
@@ -176,7 +178,13 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
         )
         try {
           isEditInProgress = true
-          const settings = await jsAppSettings()
+          // Cache settings to avoid fetching on every mouse move
+          if (!cachedSettings) {
+            cachedSettings = await jsAppSettings(
+              context.rustContext.settingsActor
+            )
+          }
+          const settings = cachedSettings
 
           // Get the current start point (may be swapped)
           const startPoint = context.arcStartPoint
@@ -548,7 +556,7 @@ export async function createArcActor({
       sketchId,
       segmentCtor,
       'arc-segment',
-      await jsAppSettings()
+      await jsAppSettings(rustContext.settingsActor)
     )
 
     return result
@@ -728,7 +736,7 @@ export async function finalizeArcActor({
           ctor: segmentCtor,
         },
       ],
-      await jsAppSettings()
+      await jsAppSettings(rustContext.settingsActor)
     )
 
     return result

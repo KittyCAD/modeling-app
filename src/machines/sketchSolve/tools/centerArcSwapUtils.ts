@@ -48,23 +48,9 @@ export function shouldSwapStartEnd({
   // Calculate the raw change in arc-length
   let rawDiff = ΔN - ΔP
 
-  console.log('[shouldSwapStartEnd] Angle calculation:', {
-    θS: ((θS * 180) / Math.PI).toFixed(1) + '°',
-    θP: ((θP * 180) / Math.PI).toFixed(1) + '°',
-    θN: ((θN * 180) / Math.PI).toFixed(1) + '°',
-    ΔP: ((ΔP * 180) / Math.PI).toFixed(1) + '°',
-    ΔN: ((ΔN * 180) / Math.PI).toFixed(1) + '°',
-    rawDiff: ((rawDiff * 180) / Math.PI).toFixed(1) + '°',
-    absRawDiff: ((Math.abs(rawDiff) * 180) / Math.PI).toFixed(1) + '°',
-    crossed: Math.abs(rawDiff) > Math.PI,
-  })
-
   // Check if we crossed the 0/360° seam: if |rawDiff| > π, we crossed
   const crossed = Math.abs(rawDiff) > Math.PI
   if (!crossed) {
-    console.log(
-      '[shouldSwapStartEnd] No seam crossing detected, returning false'
-    )
     return false
   }
 
@@ -78,13 +64,7 @@ export function shouldSwapStartEnd({
   const movedCCW = rawDiff > 0
   // If we're swapped, we want CW direction. If movedCCW, we should unswap (return true to swap back)
   // If we're not swapped, we want CCW direction. If movedCW, we should swap (return true)
-  const result = movedCCW === isSwapped
-  console.log('[shouldSwapStartEnd] Final decision:', {
-    movedCCW,
-    isSwapped,
-    shouldSwap: result,
-  })
-  return result
+  return movedCCW === isSwapped
 }
 
 /**
@@ -119,16 +99,6 @@ export function calculateArcSwapState({
   finalEnd: [number, number]
 } {
   let isSwapped = currentIsSwapped
-
-  console.log('[calculateArcSwapState] Input:', {
-    center: center.map((v) => v.toFixed(2)),
-    startPoint: startPoint.map((v) => v.toFixed(2)),
-    newEndPoint: newEndPoint.map((v) => v.toFixed(2)),
-    previousEnd: previousEnd
-      ? previousEnd.map((v) => v.toFixed(2))
-      : 'undefined',
-    currentIsSwapped,
-  })
 
   // On the first edit (no previousEnd), determine initial direction based on angle
   if (previousEnd === undefined) {
@@ -172,11 +142,6 @@ export function calculateArcSwapState({
       start: startPoint,
       end: newEndPoint,
       previousEnd: previousEnd,
-    })
-    console.log('[calculateArcSwapState] shouldSwapStartEnd result:', {
-      shouldSwap,
-      isSwapped,
-      willBecomeSwapped: shouldSwap ? !isSwapped : isSwapped,
     })
     if (shouldSwap) {
       isSwapped = !isSwapped
