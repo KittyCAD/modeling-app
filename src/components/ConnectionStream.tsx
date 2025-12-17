@@ -186,7 +186,13 @@ export const ConnectionStream = (props: {
           })
       },
     }),
-    [isConnecting.current, numberOfConnectionAttempts.current, props.authToken, setIsSceneReady, setAppState]
+    [
+      isConnecting.current,
+      numberOfConnectionAttempts.current,
+      props.authToken,
+      setIsSceneReady,
+      setAppState,
+    ]
   )
 
   const { resetGlobalEngineCommandManager } =
