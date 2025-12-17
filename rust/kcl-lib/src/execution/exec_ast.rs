@@ -15,6 +15,7 @@ use crate::{
         SegmentKind, SegmentRepr, SketchConstraintKind, StatementKind, TagIdentifier, UnsolvedSegment,
         UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
+        control_continue,
         fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
         memory,
@@ -903,11 +904,7 @@ impl ExecutorContext {
                 let value_cf = self
                     .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
                     .await?;
-                let value = if value_cf.is_some_return() {
-                    return Ok(value_cf);
-                } else {
-                    value_cf.into_value()
-                };
+                let value = control_continue!(value_cf);
                 exec_state
                     .mut_stack()
                     .add(expr.label.name.clone(), value.clone(), init.into())?;
@@ -954,10 +951,8 @@ impl Node<AscribedExpression> {
         let result = ctx
             .execute_expr(&self.expr, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
-        if result.is_some_return() {
-            return Ok(result);
-        }
-        apply_ascription(&result.value, &self.ty, exec_state, self.into()).map(KclValue::continue_)
+        let result = control_continue!(result);
+        apply_ascription(&result, &self.ty, exec_state, self.into()).map(KclValue::continue_)
     }
 }
 
@@ -985,10 +980,8 @@ impl Node<SketchBlock> {
             let value_cf = ctx
                 .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
-            if value_cf.is_some_return() {
-                return Ok(value_cf);
-            }
-            let arg = Arg::new(value_cf.into_value(), source_range);
+            let value = control_continue!(value_cf);
+            let arg = Arg::new(value, source_range);
             match &labeled_arg.label {
                 Some(label) => {
                     labeled.insert(label.name.clone(), arg);
@@ -1529,11 +1522,7 @@ impl Node<MemberExpression> {
         let object_cf = ctx
             .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
             .await?;
-        let object = if object_cf.is_some_return() {
-            return Ok(object_cf);
-        } else {
-            object_cf.into_value()
-        };
+        let object = control_continue!(object_cf);
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
@@ -2067,11 +2056,7 @@ impl Node<BinaryExpression> {
                         }
                         part => {
                             let left_value = part.get_result(exec_state, ctx).await?;
-                            let left_value = if left_value.is_some_return() {
-                                return Ok(left_value);
-                            } else {
-                                left_value.into_value()
-                            };
+                            let left_value = control_continue!(left_value);
                             stack.push(State::EvaluateRight { node, left: left_value });
                         }
                     }
@@ -2091,11 +2076,7 @@ impl Node<BinaryExpression> {
                         }
                         part => {
                             let right_value = part.get_result(exec_state, ctx).await?;
-                            let right_value = if right_value.is_some_return() {
-                                return Ok(right_value);
-                            } else {
-                                right_value.into_value()
-                            };
+                            let right_value = control_continue!(right_value);
                             let result = node.apply_operator(exec_state, ctx, left, right_value).await?;
                             last_result = Some(result);
                         }
@@ -2443,11 +2424,7 @@ impl Node<UnaryExpression> {
         match self.operator {
             UnaryOperator::Not => {
                 let value = self.argument.get_result(exec_state, ctx).await?;
-                let value = if value.is_some_return() {
-                    return Ok(value);
-                } else {
-                    value.into_value()
-                };
+                let value = control_continue!(value);
                 let KclValue::Bool {
                     value: bool_value,
                     meta: _,
@@ -2473,11 +2450,7 @@ impl Node<UnaryExpression> {
             }
             UnaryOperator::Neg => {
                 let value = self.argument.get_result(exec_state, ctx).await?;
-                let value = if value.is_some_return() {
-                    return Ok(value);
-                } else {
-                    value.into_value()
-                };
+                let value = control_continue!(value);
                 let err = || {
                     KclError::new_semantic(KclErrorDetails::new(
                         format!(
@@ -2580,11 +2553,7 @@ impl Node<UnaryExpression> {
             }
             UnaryOperator::Plus => {
                 let operand = self.argument.get_result(exec_state, ctx).await?;
-                let operand = if operand.is_some_return() {
-                    return Ok(operand);
-                } else {
-                    operand.into_value()
-                };
+                let operand = control_continue!(operand);
                 match operand {
                     KclValue::Number { .. } | KclValue::Plane { .. } => Ok(operand.continue_()),
                     _ => Err(KclError::new_semantic(KclErrorDetails::new(
@@ -2622,11 +2591,7 @@ pub(crate) async fn execute_pipe_body(
     let output = ctx
         .execute_expr(first, exec_state, &meta, &[], StatementKind::Expression)
         .await?;
-    let output = if output.is_some_return() {
-        return Ok(output);
-    } else {
-        output.into_value()
-    };
+    let output = control_continue!(output);
 
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
@@ -2661,11 +2626,7 @@ async fn inner_execute_pipe_body(
         let output = ctx
             .execute_expr(expression, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
-        let output = if output.is_some_return() {
-            return Ok(output);
-        } else {
-            output.into_value()
-        };
+        let output = control_continue!(output);
         exec_state.mod_local.pipe_value = Some(output);
     }
     // Safe to unwrap here, because pipe_value always has something pushed in when the `match first` executes.
@@ -2707,11 +2668,7 @@ impl Node<ArrayExpression> {
             let value = ctx
                 .execute_expr(element, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
-            let value = if value.is_some_return() {
-                return Ok(value);
-            } else {
-                value.into_value()
-            };
+            let value = control_continue!(value);
 
             results.push(value);
         }
@@ -2741,11 +2698,7 @@ impl Node<ArrayRangeExpression> {
                 StatementKind::Expression,
             )
             .await?;
-        let start_val = if start_val.is_some_return() {
-            return Ok(start_val);
-        } else {
-            start_val.into_value()
-        };
+        let start_val = control_continue!(start_val);
         let start = start_val
             .as_ty_f64()
             .ok_or(KclError::new_semantic(KclErrorDetails::new(
@@ -2759,11 +2712,7 @@ impl Node<ArrayRangeExpression> {
         let end_val = ctx
             .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
-        let end_val = if end_val.is_some_return() {
-            return Ok(end_val);
-        } else {
-            end_val.into_value()
-        };
+        let end_val = control_continue!(end_val);
         let end = end_val.as_ty_f64().ok_or(KclError::new_semantic(KclErrorDetails::new(
             format!(
                 "Expected number for range end but found {}",
@@ -2831,12 +2780,7 @@ impl Node<ObjectExpression> {
             let result = ctx
                 .execute_expr(&property.value, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
-            let result = if result.is_some_return() {
-                return Ok(result);
-            } else {
-                result.into_value()
-            };
-
+            let result = control_continue!(result);
             object.insert(property.key.name.clone(), result);
         }
 
@@ -2887,11 +2831,7 @@ impl Node<IfExpression> {
                 StatementKind::Expression,
             )
             .await?;
-        let cond_value = if cond_value.is_some_return() {
-            return Ok(cond_value);
-        } else {
-            cond_value.into_value()
-        };
+        let cond_value = control_continue!(cond_value);
         if cond_value.get_bool()? {
             let block_result = ctx.exec_block(&*self.then_val, exec_state, BodyType::Block).await?;
             // Block must end in an expression, so this has to be Some.
@@ -2911,11 +2851,7 @@ impl Node<IfExpression> {
                     StatementKind::Expression,
                 )
                 .await?;
-            let cond_value = if cond_value.is_some_return() {
-                return Ok(cond_value);
-            } else {
-                cond_value.into_value()
-            };
+            let cond_value = control_continue!(cond_value);
             if cond_value.get_bool()? {
                 let block_result = ctx.exec_block(&*else_if.then_val, exec_state, BodyType::Block).await?;
                 // Block must end in an expression, so this has to be Some.

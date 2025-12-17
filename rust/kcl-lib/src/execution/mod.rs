@@ -71,6 +71,22 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
+/// Convenience macro for handling control flow in execution by returning early
+/// if it is some kind of early return or stripping off the control flow
+/// otherwise.
+macro_rules! control_continue {
+    ($control_flow:expr) => {{
+        let cf = $control_flow;
+        if cf.is_some_return() {
+            return Ok(cf);
+        } else {
+            cf.into_value()
+        }
+    }};
+}
+// Expose the macro to other modules.
+pub(crate) use control_continue;
+
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
 pub(crate) enum ControlFlowKind {
     #[default]

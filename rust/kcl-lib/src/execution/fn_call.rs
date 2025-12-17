@@ -8,6 +8,7 @@ use crate::{
         BodyType, ExecState, ExecutorContext, KclValue, KclValueControlFlow, Metadata, StatementKind, TagEngineInfo,
         TagIdentifier, annotations,
         cad_op::{Group, OpArg, OpKclValue, Operation},
+        control_continue,
         kcl_value::{FunctionBody, FunctionSource},
         memory,
         types::RuntimeType,
@@ -158,13 +159,11 @@ impl Node<CallExpressionKw> {
             let value_cf = ctx
                 .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
-            if value_cf.is_some_return() {
-                return Ok(value_cf);
-            }
+            let value = control_continue!(value_cf);
 
             let label = arg_expr.ident_name().map(str::to_owned);
 
-            unlabeled.push((label, Arg::new(value_cf.value, source_range)))
+            unlabeled.push((label, Arg::new(value, source_range)))
         }
 
         for arg_expr in &self.arguments {
@@ -173,10 +172,8 @@ impl Node<CallExpressionKw> {
             let value_cf = ctx
                 .execute_expr(&arg_expr.arg, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
-            if value_cf.is_some_return() {
-                return Ok(value_cf);
-            }
-            let arg = Arg::new(value_cf.value, source_range);
+            let value = control_continue!(value_cf);
+            let arg = Arg::new(value, source_range);
             match &arg_expr.label {
                 Some(l) => {
                     fn_args.insert(l.name.clone(), arg);
