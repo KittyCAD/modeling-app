@@ -46,6 +46,7 @@ import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { toUtf16 } from '@src/lang/errors'
 
 export function addExtrude({
   ast,
@@ -691,7 +692,7 @@ export function retrieveTagDeclaratorFromOpArg(
 ): string {
   const dollarSignOffset = 1
   return code.slice(
-    opArg.sourceRange[0] + dollarSignOffset,
-    opArg.sourceRange[1]
+    toUtf16(opArg.sourceRange[0], code) + dollarSignOffset,
+    toUtf16(opArg.sourceRange[1], code)
   )
 }
