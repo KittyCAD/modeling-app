@@ -148,23 +148,36 @@ function defaultFindPointSegmentElement(segmentId: number): HTMLElement | null {
 }
 
 /**
+ * State object for drag and selection operations
+ */
+export type DragState = {
+  isSolveInProgress: boolean
+  lastHoveredMesh: Mesh | null
+  lastSuccessfulDragFromPoint: Vector2
+  draggingPointElement: HTMLElement | null
+  selectionBoxObject: CSS2DObject | null
+  selectionBoxGroup: Group | null
+  labelsWrapper: HTMLElement | null
+  boxDiv: HTMLElement | null
+  verticalLine: HTMLElement | null
+  horizontalLine: HTMLElement | null
+}
+
+/**
  * Creates the onDragStart callback for sketch solve drag operations.
  * Handles initialization of drag state and point segment visual feedback.
  *
- * @param setLastSuccessfulDragFromPoint - Setter for the last successful drag start point
- * @param setDraggingPointElement - Setter for the currently dragging point element
- * @param getDraggingPointElement - Getter for the currently dragging point element
+ * @param getState - Getter for the drag state
+ * @param setState - Setter for the drag state
  * @param findPointSegmentElement - Function to find a point segment element by ID (defaults to DOM query)
  */
 export function createOnDragStartCallback({
-  setLastSuccessfulDragFromPoint,
-  setDraggingPointElement,
-  getDraggingPointElement,
+  getState,
+  setState,
   findPointSegmentElement = defaultFindPointSegmentElement,
 }: {
-  setLastSuccessfulDragFromPoint: (point: Vector2) => void
-  setDraggingPointElement: (element: HTMLElement | null) => void
-  getDraggingPointElement: () => HTMLElement | null
+  getState: () => DragState
+  setState: (state: Partial<DragState>) => void
   findPointSegmentElement?: (segmentId: number) => HTMLElement | null
 }): (arg: {
   intersectionPoint: { twoD: Vector2; threeD: Vector3 }
@@ -174,7 +187,9 @@ export function createOnDragStartCallback({
 }) => void | Promise<void> {
   return ({ intersectionPoint, selected }) => {
     // reset on drag start
-    setLastSuccessfulDragFromPoint(intersectionPoint.twoD.clone())
+    setState({
+      lastSuccessfulDragFromPoint: intersectionPoint.twoD.clone(),
+    })
 
     // Check if we're starting a drag on a point segment (CSS2DObject)
     // sceneInfra now sets selected to the parent Group for CSS2DObjects
@@ -186,9 +201,12 @@ export function createOnDragStartCallback({
           (child) => child.userData?.type === 'handle'
         )
         if (hasCSS2DObject) {
-          setDraggingPointElement(findPointSegmentElement(segmentId))
+          const element = findPointSegmentElement(segmentId)
+          setState({
+            draggingPointElement: element,
+            lastSuccessfulDragFromPoint: intersectionPoint.twoD.clone(),
+          })
           // Set opacity to indicate dragging
-          const element = getDraggingPointElement()
           if (element) {
             const innerCircle = element.querySelector('div')
             if (innerCircle) {
@@ -199,7 +217,10 @@ export function createOnDragStartCallback({
         }
       }
     }
-    setDraggingPointElement(null)
+    setState({
+      draggingPointElement: null,
+      lastSuccessfulDragFromPoint: intersectionPoint.twoD.clone(),
+    })
   }
 }
 
@@ -208,8 +229,8 @@ export function createOnDragStartCallback({
  * Restores visual feedback for point segments after dragging ends.
  * Also fires sketchExecuteMock one last time and sends the event to update the sketch outcome.
  *
- * @param getDraggingPointElement - Getter for the currently dragging point element
- * @param setDraggingPointElement - Setter to clear the dragging point element
+ * @param getState - Getter for the drag state
+ * @param setState - Setter for the drag state
  * @param getContextData - Function to get the current context data (selectedIds, sketchId, sketchExecOutcome, kclManager)
  * @param sketchExecuteMock - Function to execute sketch in mock mode
  * @param onNewSketchOutcome - Callback function called when a new sketch outcome is available
@@ -217,8 +238,8 @@ export function createOnDragStartCallback({
  * @param findInnerCircle - Function to find the inner circle element within a point element (defaults to querying by data attribute)
  */
 export function createOnDragEndCallback({
-  getDraggingPointElement,
-  setDraggingPointElement,
+  getState,
+  setState,
   getContextData = () => ({
     selectedIds: [],
     sketchId: 0,
@@ -239,8 +260,8 @@ export function createOnDragEndCallback({
     return null
   },
 }: {
-  getDraggingPointElement: () => HTMLElement | null
-  setDraggingPointElement: (element: HTMLElement | null) => void
+  getState: () => DragState
+  setState: (state: Partial<DragState>) => void
   getContextData?: () => {
     selectedIds: Array<number>
     sketchId: number
@@ -273,8 +294,9 @@ export function createOnDragEndCallback({
   intersects: Array<any>
 }) => void | Promise<void> {
   return async () => {
+    const state = getState()
     // Restore opacity for point segment if we were dragging one
-    const element = getDraggingPointElement()
+    const element = state.draggingPointElement
     if (element) {
       const innerCircle = findInnerCircle(element)
       if (innerCircle) {
@@ -284,7 +306,9 @@ export function createOnDragEndCallback({
     }
     // Always clear the dragging state, even if no element was being dragged
     // This ensures state is always clean after drag ends
-    setDraggingPointElement(null)
+    setState({
+      draggingPointElement: null,
+    })
 
     // Fire sketchExecuteMock one last time and send the event to update the sketch outcome
     const contextData = getContextData()
@@ -380,17 +404,21 @@ export function findEntityUnderCursorId(
  * Creates the onMouseEnter callback for sketch solve hover operations.
  * Handles highlighting line segments when the mouse enters them to provide visual feedback.
  *
+ * @param getState - Getter for the drag state
+ * @param setState - Setter for the drag state
  * @param updateLineSegmentHover - Function to update the hover state of a line segment
  * @param getSelectedIds - Function to get all selected IDs (selectedIds + duringAreaSelectIds)
- * @param setLastHoveredMesh - Function to store the currently hovered mesh
  * @returns The onMouseEnter callback function
  */
 export function createOnMouseEnterCallback({
+  getState,
+  setState,
   updateLineSegmentHover,
   getSelectedIds,
-  setLastHoveredMesh,
   getDraftEntityIds,
 }: {
+  getState: () => DragState
+  setState: (state: Partial<DragState>) => void
   updateLineSegmentHover: (
     mesh: Mesh,
     isHovering: boolean,
@@ -398,7 +426,6 @@ export function createOnMouseEnterCallback({
     draftEntityIds?: Array<number>
   ) => void
   getSelectedIds: () => Array<number>
-  setLastHoveredMesh: (mesh: Mesh | null) => void
   getDraftEntityIds?: () => Array<number> | undefined
 }): (arg: {
   selected?: Object3D
@@ -416,12 +443,15 @@ export function createOnMouseEnterCallback({
     // Only highlight line segment meshes (not point segments or other objects)
     const mesh = selected
     if (mesh.userData?.type === STRAIGHT_SEGMENT_BODY && mesh instanceof Mesh) {
+      const state = getState()
       const allSelectedIds = getSelectedIds()
       const draftEntityIds = getDraftEntityIds?.()
       // Highlight the line segment to show it's interactive
       updateLineSegmentHover(mesh, true, allSelectedIds, draftEntityIds)
       // Store the hovered mesh so we can clear it on mouse leave
-      setLastHoveredMesh(mesh)
+      setState({
+        lastHoveredMesh: mesh,
+      })
     }
   }
 }
@@ -430,19 +460,21 @@ export function createOnMouseEnterCallback({
  * Creates the onMouseLeave callback for sketch solve hover operations.
  * Handles clearing hover highlighting when the mouse leaves line segments.
  *
+ * @param getState - Getter for the drag state
+ * @param setState - Setter for the drag state
  * @param updateLineSegmentHover - Function to update the hover state of a line segment
  * @param getSelectedIds - Function to get all selected IDs (selectedIds + duringAreaSelectIds)
- * @param getLastHoveredMesh - Function to get the previously hovered mesh
- * @param setLastHoveredMesh - Function to clear the stored hovered mesh
  * @returns The onMouseLeave callback function
  */
 export function createOnMouseLeaveCallback({
+  getState,
+  setState,
   updateLineSegmentHover,
   getSelectedIds,
-  getLastHoveredMesh,
-  setLastHoveredMesh,
   getDraftEntityIds,
 }: {
+  getState: () => DragState
+  setState: (state: Partial<DragState>) => void
   updateLineSegmentHover: (
     mesh: Mesh,
     isHovering: boolean,
@@ -450,8 +482,6 @@ export function createOnMouseLeaveCallback({
     draftEntityIds?: Array<number>
   ) => void
   getSelectedIds: () => Array<number>
-  getLastHoveredMesh: () => Mesh | null
-  setLastHoveredMesh: (mesh: Mesh | null) => void
   getDraftEntityIds?: () => Array<number> | undefined
 }): (arg: {
   selected?: Object3D
@@ -465,14 +495,17 @@ export function createOnMouseLeaveCallback({
       return
     }
 
+    const state = getState()
     // Clear hover state for the previously hovered mesh
-    const hoveredMesh = getLastHoveredMesh()
+    const hoveredMesh = state.lastHoveredMesh
     if (hoveredMesh) {
       const allSelectedIds = getSelectedIds()
       const draftEntityIds = getDraftEntityIds?.()
       // Remove hover highlighting from the previously hovered segment
       updateLineSegmentHover(hoveredMesh, false, allSelectedIds, draftEntityIds)
-      setLastHoveredMesh(null)
+      setState({
+        lastHoveredMesh: null,
+      })
     }
 
     // Also handle if selected is provided (for safety, in case the mesh wasn't tracked)
@@ -544,10 +577,8 @@ export function createOnClickCallback({
  * Creates the onDrag callback for sketch solve drag operations.
  * Handles dragging segments by calculating drag vectors and updating segment positions.
  *
- * @param getIsSolveInProgress - Getter to check if a solve is already in progress
- * @param setIsSolveInProgress - Setter to mark solve as in progress/complete
- * @param getLastSuccessfulDragFromPoint - Getter for the last successful drag start point
- * @param setLastSuccessfulDragFromPoint - Setter to update the last successful drag start point
+ * @param getState - Getter for the drag state
+ * @param setState - Setter for the drag state
  * @param getContextData - Function to get the current context data (selectedIds, sketchId, sketchExecOutcome)
  * @param editSegments - Function to edit segments via Rust context
  * @param onNewSketchOutcome - Callback function called when a new sketch outcome is available
@@ -555,20 +586,16 @@ export function createOnClickCallback({
  * @param getJsAppSettings - Function to get app settings (async)
  */
 export function createOnDragCallback({
-  getIsSolveInProgress,
-  setIsSolveInProgress,
-  getLastSuccessfulDragFromPoint,
-  setLastSuccessfulDragFromPoint,
+  getState,
+  setState,
   getContextData,
   editSegments,
   onNewSketchOutcome,
   getDefaultLengthUnit,
   getJsAppSettings,
 }: {
-  getIsSolveInProgress: () => boolean
-  setIsSolveInProgress: (value: boolean) => void
-  getLastSuccessfulDragFromPoint: () => Vector2
-  setLastSuccessfulDragFromPoint: (point: Vector2) => void
+  getState: () => DragState
+  setState: (state: Partial<DragState>) => void
   getContextData: () => {
     selectedIds: Array<number>
     sketchId: number
@@ -599,8 +626,9 @@ export function createOnDragCallback({
   intersects: Array<unknown>
 }) => Promise<void> {
   return async ({ selected, intersectionPoint }) => {
+    const state = getState()
     // Prevent concurrent drag operations
-    if (getIsSolveInProgress()) {
+    if (state.isSolveInProgress) {
       return
     }
 
@@ -623,11 +651,13 @@ export function createOnDragCallback({
       return
     }
 
-    setIsSolveInProgress(true)
+    setState({
+      isSolveInProgress: true,
+    })
     try {
       const twoD = intersectionPoint.twoD
       // Calculate drag vector from last successful drag point to current position
-      const dragVec = twoD.clone().sub(getLastSuccessfulDragFromPoint())
+      const dragVec = twoD.clone().sub(state.lastSuccessfulDragFromPoint)
 
       const objects = sceneGraphDelta.new_graph.objects
       const segmentsToEdit: ExistingSegmentCtor[] = []
@@ -672,7 +702,9 @@ export function createOnDragCallback({
       }
 
       if (segmentsToEdit.length === 0) {
-        setIsSolveInProgress(false)
+        setState({
+          isSolveInProgress: false,
+        })
         return
       }
 
@@ -692,14 +724,20 @@ export function createOnDragCallback({
 
       // After successful drag, update the lastSuccessfulDragFromPoint
       // This ensures the next drag calculates from the correct starting point
-      setLastSuccessfulDragFromPoint(twoD.clone())
+      setState({
+        lastSuccessfulDragFromPoint: twoD.clone(),
+        isSolveInProgress: false,
+      })
 
       // Notify about new sketch outcome if edit was successful
       if (result) {
         onNewSketchOutcome({ ...result, writeToDisk: false })
       }
-    } finally {
-      setIsSolveInProgress(false)
+    } catch (err) {
+      setState({
+        isSolveInProgress: false,
+      })
+      // Error is already logged by editSegments catch handler
     }
   }
 }
@@ -708,40 +746,25 @@ export function setUpOnDragAndSelectionClickCallbacks({
   self,
   context,
 }: SolveActionArgs): void {
-  const createGetSet = <T>(initial: T): [() => T, (a: T) => void] => {
-    let value: T = initial
-    return [
-      () => value,
-      (newValue: T) => {
-        value = newValue
-      },
-    ]
-  }
-  // Closure-scoped mutex to prevent concurrent async editSegment operations.
+  // Closure-scoped state for drag and selection operations.
   // Not in XState context since it's purely an implementation detail for race condition prevention.
-  const [getIsSolveInProgress, setIsSolveInProgress] = createGetSet(false)
-  const [getLastHoveredMesh, setLastHoveredMesh] = createGetSet<Mesh | null>(
-    null
-  )
-  const [getLastSuccessfulDragFromPoint, setLastSuccessfulDragFromPoint] =
-    createGetSet<Vector2>(new Vector2())
-  const [getDraggingPointElement, setDraggingPointElement] =
-    createGetSet<HTMLElement | null>(null)
+  let dragState: DragState = {
+    isSolveInProgress: false,
+    lastHoveredMesh: null,
+    lastSuccessfulDragFromPoint: new Vector2(),
+    draggingPointElement: null,
+    selectionBoxObject: null,
+    selectionBoxGroup: null,
+    labelsWrapper: null,
+    boxDiv: null,
+    verticalLine: null,
+    horizontalLine: null,
+  }
 
-  // Selection box visual element
-  const [getSelectionBoxObject, setSelectionBoxObject] =
-    createGetSet<CSS2DObject | null>(null)
-  const [getSelectionBoxGroup, setSelectionBoxGroup] =
-    createGetSet<Group | null>(null)
-  const [getLabelsWrapper, setLabelsWrapper] = createGetSet<HTMLElement | null>(
-    null
-  )
-  const [getBoxDiv, setBoxDiv] = createGetSet<HTMLElement | null>(null)
-  const [getVerticalLine, setVerticalLine] = createGetSet<HTMLElement | null>(
-    null
-  )
-  const [getHorizontalLine, setHorizontalLine] =
-    createGetSet<HTMLElement | null>(null)
+  const getState = (): DragState => dragState
+  const setState = (partialState: Partial<DragState>): void => {
+    dragState = { ...dragState, ...partialState }
+  }
 
   /**
    * Mutation function: Creates selection box DOM elements
@@ -986,34 +1009,39 @@ export function setUpOnDragAndSelectionClickCallbacks({
     const sketchSceneGroup =
       sketchSceneObject instanceof Group ? sketchSceneObject : null
 
-    if (!getSelectionBoxGroup()) {
+    const state = getState()
+    if (!state.selectionBoxGroup) {
       // Create the selection box group and CSS2DObject
       const newSelectionBoxGroup = new Group()
       newSelectionBoxGroup.name = 'selectionBox'
       newSelectionBoxGroup.userData.type = 'selectionBox'
-      setSelectionBoxGroup(newSelectionBoxGroup)
 
       // Create DOM elements using mutation function
       const elements = createSelectionBoxElements(properties.borderStyle)
-      setBoxDiv(elements.boxDiv)
-      setVerticalLine(elements.verticalLine)
-      setHorizontalLine(elements.horizontalLine)
-      setLabelsWrapper(elements.labelsWrapper)
 
       const newSelectionBoxObject = new CSS2DObject(elements.boxDiv)
       newSelectionBoxObject.userData.type = 'selectionBox'
-      setSelectionBoxObject(newSelectionBoxObject)
-      getSelectionBoxGroup()?.add(newSelectionBoxObject)
+      newSelectionBoxGroup.add(newSelectionBoxObject)
 
       // Add to sketch solve group (will inherit its rotation)
       if (sketchSceneGroup) {
-        sketchSceneGroup.add(getSelectionBoxGroup()!)
-        getSelectionBoxGroup()!.layers.set(SKETCH_LAYER)
+        sketchSceneGroup.add(newSelectionBoxGroup)
+        newSelectionBoxGroup.layers.set(SKETCH_LAYER)
         newSelectionBoxObject.layers.set(SKETCH_LAYER)
       }
+
+      setState({
+        selectionBoxGroup: newSelectionBoxGroup,
+        selectionBoxObject: newSelectionBoxObject,
+        boxDiv: elements.boxDiv,
+        verticalLine: elements.verticalLine,
+        horizontalLine: elements.horizontalLine,
+        labelsWrapper: elements.labelsWrapper,
+      })
     }
 
-    const currentSelectionBoxObject = getSelectionBoxObject()
+    const currentState = getState()
+    const currentSelectionBoxObject = currentState.selectionBoxObject
     if (
       currentSelectionBoxObject &&
       currentSelectionBoxObject.element instanceof HTMLElement
@@ -1026,7 +1054,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       updateSelectionBoxPosition(currentSelectionBoxObject, localCenter)
 
       // Update box size and border
-      const boxDivElement = getBoxDiv()
+      const boxDivElement = currentState.boxDiv
       if (boxDivElement) {
         updateSelectionBoxSizeAndBorder(
           boxDivElement,
@@ -1046,7 +1074,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
       // Update label styles using pure function
       const labelStyles = calculateLabelStyles(properties.isIntersectionBox)
-      const currentLabelsWrapper = getLabelsWrapper()
+      const currentLabelsWrapper = currentState.labelsWrapper
       if (currentLabelsWrapper) {
         updateLabelStyles(currentLabelsWrapper, labelStyles)
         updateLabelPosition(
@@ -1065,8 +1093,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
       )
 
       // Update corner line positions
-      const currentVerticalLine = getVerticalLine()
-      const currentHorizontalLine = getHorizontalLine()
+      const currentVerticalLine = currentState.verticalLine
+      const currentHorizontalLine = currentState.horizontalLine
       if (
         currentVerticalLine &&
         currentVerticalLine instanceof HTMLElement &&
@@ -1086,16 +1114,19 @@ export function setUpOnDragAndSelectionClickCallbacks({
    * Helper function to remove the selection box visual
    */
   function removeSelectionBox(): void {
-    const currentSelectionBoxGroup = getSelectionBoxGroup()
+    const state = getState()
+    const currentSelectionBoxGroup = state.selectionBoxGroup
     if (currentSelectionBoxGroup) {
       currentSelectionBoxGroup.removeFromParent()
-      const currentSelectionBoxObject = getSelectionBoxObject()
+      const currentSelectionBoxObject = state.selectionBoxObject
       if (currentSelectionBoxObject?.element instanceof HTMLElement) {
         currentSelectionBoxObject.element.remove()
       }
-      setSelectionBoxGroup(null)
-      setSelectionBoxObject(null)
-      setLabelsWrapper(null)
+      setState({
+        selectionBoxGroup: null,
+        selectionBoxObject: null,
+        labelsWrapper: null,
+      })
     }
   }
 
@@ -1411,8 +1442,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
   }
 
   const onDragEndCallback = createOnDragEndCallback({
-    getDraggingPointElement,
-    setDraggingPointElement,
+    getState,
+    setState,
     getContextData: () => {
       const snapshot = self.getSnapshot()
       return {
@@ -1439,16 +1470,13 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
   context.sceneInfra.setCallbacks({
     onDragStart: createOnDragStartCallback({
-      setLastSuccessfulDragFromPoint,
-      setDraggingPointElement,
-      getDraggingPointElement,
+      getState,
+      setState,
     }),
     onDragEnd: onDragEndCallback,
     onDrag: createOnDragCallback({
-      getIsSolveInProgress,
-      setIsSolveInProgress,
-      getLastSuccessfulDragFromPoint,
-      setLastSuccessfulDragFromPoint,
+      getState,
+      setState,
       getContextData: () => {
         const snapshot = self.getSnapshot()
         return {
@@ -1488,6 +1516,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
       }) => self.send({ type: 'update selected ids', data }),
     }),
     onMouseEnter: createOnMouseEnterCallback({
+      getState,
+      setState,
       updateLineSegmentHover,
       getSelectedIds: () => {
         const snapshot = self.getSnapshot()
@@ -1499,7 +1529,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
           ])
         )
       },
-      setLastHoveredMesh,
       getDraftEntityIds: () => {
         const snapshot = self.getSnapshot()
         return snapshot.context.draftEntities
@@ -1508,6 +1537,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
       },
     }),
     onMouseLeave: createOnMouseLeaveCallback({
+      getState,
+      setState,
       updateLineSegmentHover,
       getSelectedIds: () => {
         const snapshot = self.getSnapshot()
@@ -1519,8 +1550,6 @@ export function setUpOnDragAndSelectionClickCallbacks({
           ])
         )
       },
-      getLastHoveredMesh,
-      setLastHoveredMesh,
       getDraftEntityIds: () => {
         const snapshot = self.getSnapshot()
         return snapshot.context.draftEntities
