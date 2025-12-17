@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
@@ -28,6 +28,7 @@ import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
+  DEFAULT_EXPERIMENTAL_FEATURES,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
@@ -54,7 +55,12 @@ import {
   TutorialRequestToast,
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
-import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
+import {
+  defaultLayout,
+  DefaultLayoutPaneID,
+  getOpenPanes,
+  LayoutRootNode,
+} from '@src/lib/layout'
 import { defaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { defaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { getResolvedTheme } from '@src/lib/theme'
@@ -65,6 +71,7 @@ import {
 import { useSignalEffect } from '@preact/signals-react'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
+import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -236,6 +243,33 @@ export function App() {
         .catch(reportRejection)
     }
   }, [])
+
+  const experimentalFeaturesLevel =
+    kclManager.fileSettings.experimentalFeatures ??
+    DEFAULT_EXPERIMENTAL_FEATURES
+  const experimentalFeaturesLocalStatusBarItems: StatusBarItemType[] =
+    experimentalFeaturesLevel.type !== 'Deny'
+      ? [
+          {
+            id: 'experimental-features',
+            component: ExperimentalFeaturesMenu,
+          },
+        ]
+      : []
+
+  const zookeeperLocalStatusBarItems: StatusBarItemType[] = useMemo(
+    () =>
+      getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.TTC)
+        ? [
+            {
+              id: 'zookeeper-credits',
+              component: ZookeeperCreditsMenu,
+            },
+          ]
+        : [],
+    [layout]
+  )
+
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
       <div className="relative flex flex-1 flex-col">
@@ -306,10 +340,8 @@ export function App() {
               id: 'units',
               component: UnitsMenu,
             },
-            {
-              id: 'experimental-features',
-              component: ExperimentalFeaturesMenu,
-            },
+            ...experimentalFeaturesLocalStatusBarItems,
+            ...zookeeperLocalStatusBarItems,
             ...defaultLocalStatusBarItems,
           ]}
         />

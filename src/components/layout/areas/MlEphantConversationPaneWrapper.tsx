@@ -1,5 +1,4 @@
 import {
-  billingActor,
   kclManager,
   systemIOActor,
   useSettings,
@@ -39,7 +38,6 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
       <MlEphantConversationPane2
         {...{
           mlEphantManagerActor: mlEphantManagerActor2,
-          billingActor,
           systemIOActor,
           kclManager,
           contextModeling,
