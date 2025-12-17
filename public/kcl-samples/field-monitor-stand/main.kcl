@@ -1,91 +1,98 @@
 // Field monitor stand
 // Stand for a Feelworld FW760 7 inch Field Monitor
 
+// Set units
+@settings(defaultLengthUnit = mm)
 
-plate_length = 121
-plate_length_base = 60
+// Define parameters
+plateLength = 121
+plateLengthBase = 60
 
 width = 3
 
-plate_width = 62 + 4
-hole_radius = 4 / 2 // 2.84
-hole_distance_y = 52.1 + 2 * hole_radius
-hole_distance_x = 75.2 + 2 * hole_radius
+plateWidth = 62 + 4
+holeRadius = 4 / 2 // 2.84
+holeDistanceY = 52.1 + 2 * holeRadius
+holeDistanceX = 75.2 + 2 * holeRadius
 
-plate_hole_distance_y_1 = plate_width / 2 + hole_distance_y / 2
-plate_hole_distance_y_2 = plate_width / 2 - (hole_distance_y / 2)
-plate_hole_distance_x_1 = plate_length - 21 - 0
-plate_hole_distance_x_2 = plate_length - 21 - hole_distance_x
+plateHoleDistanceY1 = plateWidth / 2 + holeDistanceY / 2
+plateHoleDistanceY2 = plateWidth / 2 - (holeDistanceY / 2)
+plateHoleDistanceX1 = plateLength - 21 - 0
+plateHoleDistanceX2 = plateLength - 21 - holeDistanceX
 
 angle = 110deg
 
-// Plates
-sketch001 = startSketchOn(YZ)
-profile001 = startProfile(sketch001, at = [-plate_length_base, 0])
-  |> xLine(length = plate_length_base)
-  |> angledLine(angle = angle, length = plate_length, tag = $seg01)
+// Model the base extrusion of the part
+baseSketch = startSketchOn(YZ)
+bodyProfile = startProfile(baseSketch, at = [-plateLengthBase, 0])
+  |> xLine(length = plateLengthBase)
+  |> angledLine(angle = angle, length = plateLength, tag = $seg01)
   |> angledLine(angle = angle + 90deg, length = width, tag = $seg02)
   |> angledLine(angle = angle + 90deg + 90deg, endAbsoluteY = width, tag = $seg03)
-  |> angledLine(angle = 180deg, endAbsoluteX = -plate_length_base, tag = $seg04)
-  |> line(endAbsolute = [-plate_length_base, 0], tag = $seg05)
-profile002 = startProfile(sketch001, at = [0, 0])
+  |> angledLine(angle = 180deg, endAbsoluteX = -plateLengthBase, tag = $seg04)
+  |> line(endAbsolute = [-plateLengthBase, 0], tag = $seg05)
+
+// Model a supporting gusset on the interior
+gussetProfile = startProfile(baseSketch, at = segEnd(seg03))
   |> xLine(length = -15)
-  |> line(end = [0, 35])
+  |> angledLineThatIntersects(angle = 90deg, intersectTag = seg03)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(
-  profile001,
-  length = plate_width,
+
+// Extrude the body of the mount to desired width
+body = extrude(
+  bodyProfile,
+  length = plateWidth,
   tagStart = $capStart001,
   tagEnd = $capEnd001,
 )
 
-extrude002 = extrude(profile002, length = 2)
+// Extrude the gusset to desired thickness
+gusset = extrude(gussetProfile, length = 2)
 
-// Holes
-sketch003 = startSketchOn(extrude001, face = seg01)
-hole1 = circle(
-  sketch003,
-  center = [
-    plate_hole_distance_x_1,
-    plate_hole_distance_y_1
-  ],
-  radius = hole_radius,
-)
-hole2 = circle(
-  sketch003,
-  center = [
-    plate_hole_distance_x_1,
-    plate_hole_distance_y_2
-  ],
-  radius = hole_radius,
-)
-hole3 = circle(
-  sketch003,
-  center = [
-    plate_hole_distance_x_2,
-    plate_hole_distance_y_1
-  ],
-  radius = hole_radius,
-)
-hole4 = circle(
-  sketch003,
-  center = [
-    plate_hole_distance_x_2,
-    plate_hole_distance_y_2
-  ],
-  radius = hole_radius,
+// Model the mounting holes
+sketch003 = startSketchOn(body, face = seg01)
+
+// Identify hole positions
+holeCenters = [
+  [
+  plateHoleDistanceX1,
+  plateHoleDistanceY1
+],
+  [
+  plateHoleDistanceX1,
+  plateHoleDistanceY2
+],
+  [
+  plateHoleDistanceX2,
+  plateHoleDistanceY1
+],
+  [
+  plateHoleDistanceX2,
+  plateHoleDistanceY2
+]
+]
+
+// Place a hole at each position
+holes = map(
+  holeCenters,
+  f = fn(@pt) {
+    return circle(sketch003, center = pt, radius = holeRadius)
+  },
 )
 
-hole1_e = extrude(hole1, length = -10, method = NEW)
-hole2_e = extrude(hole2, length = -10, method = NEW)
-hole3_e = extrude(hole3, length = -10, method = NEW)
+// Extrude all holes, then subtract
+holeExtrusions = extrude(holes, length = -10, method = NEW)
+subtract = subtract(body, tools = holeExtrusions)
 
-hole4_e = extrude(hole4, length = -10, method = NEW)
-
-subtract = subtract(extrude001, tools = [hole1_e, hole2_e, hole3_e, hole4_e])
-fillet(subtract, tags = getCommonEdge(faces = [seg02, capStart001]), radius = 5)
-fillet(subtract, tags = getCommonEdge(faces = [seg02, capEnd001]), radius = 5)
-fillet(subtract, tags = getCommonEdge(faces = [seg05, capStart001]), radius = 5)
-fillet(subtract, tags = getCommonEdge(faces = [seg05, capEnd001]), radius = 5)
-
+// Fillet the exterior edges
+fillet(
+  subtract,
+  tags = [
+    getCommonEdge(faces = [seg02, capStart001]),
+    getCommonEdge(faces = [seg02, capEnd001]),
+    getCommonEdge(faces = [seg05, capStart001]),
+    getCommonEdge(faces = [seg05, capEnd001])
+  ],
+  radius = 5,
+)
