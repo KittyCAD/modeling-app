@@ -2,3 +2,4 @@
 /docs/ @KittyCAD/kcl
 /src/ @KittyCAD/frontend
 /rust/ @KittyCAD/kcl
+e2e/playwright/mecheng-approved-paths @nicboone8 @max-mrgrsk
