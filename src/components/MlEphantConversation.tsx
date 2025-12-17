@@ -9,7 +9,7 @@ import { ExchangeCard } from '@src/components/ExchangeCard'
 import type {
   Conversation,
   Exchange,
-} from '@src/machines/mlEphantManagerMachine2'
+} from '@src/machines/mlEphantManagerMachine'
 import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
@@ -286,7 +286,7 @@ const StarterCard = ({ text }: { text: string }) => {
   )
 }
 
-export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
+export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState<boolean>(true)
 

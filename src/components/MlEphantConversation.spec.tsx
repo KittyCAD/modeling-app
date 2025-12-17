@@ -1,12 +1,12 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { expect, vi, describe, test } from 'vitest'
 
-import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
-import type { Conversation } from '@src/machines/mlEphantManagerMachine2'
+import { MlEphantConversation } from '@src/components/MlEphantConversation'
+import type { Conversation } from '@src/machines/mlEphantManagerMachine'
 import type { MlCopilotMode } from '@kittycad/lib'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 
-describe('MlEphantConversation2', () => {
+describe('MlEphantConversation', () => {
   function rendersRequestBubbleThenDisplayResponse(
     mode: MlCopilotMode = DEFAULT_ML_COPILOT_MODE
   ) {
@@ -34,7 +34,7 @@ describe('MlEphantConversation2', () => {
       hasPromptCompleted = true
     ) => {
       return (
-        <MlEphantConversation2
+        <MlEphantConversation
           isLoading={false}
           conversation={conversation}
           onProcess={handleProcess}
@@ -145,7 +145,7 @@ describe('MlEphantConversation2', () => {
     }
 
     render(
-      <MlEphantConversation2
+      <MlEphantConversation
         isLoading={false}
         conversation={conversation}
         onProcess={vi.fn()}
