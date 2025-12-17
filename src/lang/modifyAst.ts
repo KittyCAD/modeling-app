@@ -590,7 +590,7 @@ export function deleteSegmentOrProfileFromPipeExpression(
   getConstraintInfoKw: typeof GetConstraintInfoKwFn,
   removeSingleConstraint: typeof RemoveSingleConstraintFn,
   transformAstSketchLines: typeof TransformAstSketchLinesFn,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): Node<Program> | Error {
   let _modifiedAst = structuredClone(modifiedAst)
 
