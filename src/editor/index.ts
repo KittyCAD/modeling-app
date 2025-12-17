@@ -40,6 +40,7 @@ import { lineHighlightField } from '@src/editor/highlightextension'
 import { onMouseDragRegex, onMouseDragMakeANewNumber } from '@src/lib/utils'
 import { themeCompartment } from '@src/editor/plugins/theme'
 import { kclAstExtension } from '@src/editor/plugins/ast'
+import { artifactAnnotationsExtension } from './plugins/artifacts'
 
 export const lineWrappingCompartment = new Compartment()
 export const cursorBlinkingCompartment = new Compartment()
@@ -62,6 +63,7 @@ export function baseEditorExtensions() {
     lineHighlightField,
     historyCompartment.of(history()),
     kclAstExtension(),
+    artifactAnnotationsExtension(),
     closeBrackets(),
     codeFolding(),
     keymap.of([

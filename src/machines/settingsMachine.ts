@@ -175,7 +175,6 @@ export const settingsMachine = setup({
         addCommands(commandBarActor)
       })
 
-      console.log('commands bs', input)
       commands = updateCommands(input.settings)
     }),
   },

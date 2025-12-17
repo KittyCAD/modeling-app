@@ -100,5 +100,5 @@ function buildArtifactDecorations(
 }
 
 export function artifactAnnotationsExtension(): Extension {
-  return [artifactGraphField]
+  return [artifactGraphField, artifactDecorationsField]
 }
