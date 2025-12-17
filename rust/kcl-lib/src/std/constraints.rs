@@ -296,7 +296,6 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let end: Vec<KclValue> = args.get_kw_arg("end", &RuntimeType::point2d(), exec_state)?;
     // TODO: make this optional and add interior.
     let center: Vec<KclValue> = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
-    let ccw_kwarg: Option<bool> = args.get_kw_arg_opt("ccw", &RuntimeType::bool(), exec_state)?;
 
     let [start_x_value, start_y_value]: [KclValue; 2] = start.try_into().map_err(|_| {
         KclError::new_semantic(KclErrorDetails::new(
@@ -354,45 +353,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         )));
     };
 
-    // Calculate CCW from initial values if not provided
-    let ccw = if let Some(ccw_val) = ccw_kwarg {
-        ccw_val
-    } else {
-        // Calculate from initial values to determine shortest path
-        // Get initial numeric values for calculation
-        let start_x_init = start_x_value.as_ty_f64().map(|n| n.n).unwrap_or(0.0);
-        let start_y_init = start_y_value.as_ty_f64().map(|n| n.n).unwrap_or(0.0);
-        let end_x_init = end_x_value.as_ty_f64().map(|n| n.n).unwrap_or(0.0);
-        let end_y_init = end_y_value.as_ty_f64().map(|n| n.n).unwrap_or(0.0);
-        let center_x_init = center_x_value.as_ty_f64().map(|n| n.n).unwrap_or(0.0);
-        let center_y_init = center_y_value.as_ty_f64().map(|n| n.n).unwrap_or(0.0);
-
-        // Calculate angles
-        let start_angle = libm::atan2(start_y_init - center_y_init, start_x_init - center_x_init);
-        let end_angle = libm::atan2(end_y_init - center_y_init, end_x_init - center_x_init);
-
-        // Normalize angles to [0, 2π]
-        let mut normalized_start_angle = start_angle;
-        let mut normalized_end_angle = end_angle;
-        while normalized_start_angle < 0.0 {
-            normalized_start_angle += 2.0 * std::f64::consts::PI;
-        }
-        while normalized_end_angle < 0.0 {
-            normalized_end_angle += 2.0 * std::f64::consts::PI;
-        }
-
-        // Calculate arc angle difference
-        let mut arc_angle = normalized_end_angle - normalized_start_angle;
-        // If the angle is > π, go the other way (shorter path)
-        if arc_angle > std::f64::consts::PI {
-            arc_angle = arc_angle - 2.0 * std::f64::consts::PI;
-        } else if arc_angle < -std::f64::consts::PI {
-            arc_angle = arc_angle + 2.0 * std::f64::consts::PI;
-        }
-        // CCW is positive angle
-        arc_angle > 0.0
-    };
-
+    // ezpz solver always goes CCW from start to end, so no ccw parameter needed
     let ctor = ArcCtor {
         start: Point2d {
             x: start_x_value.to_sketch_expr().ok_or_else(|| {
@@ -436,7 +397,6 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
                 ))
             })?,
         },
-        ccw,
     };
 
     // Order of ID generation is important.
@@ -547,15 +507,15 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     };
 
     // Build the implicit arc constraint.
+    // ezpz solver always goes CCW from start to end, so no ccw parameter needed
     let range = args.source_range;
     let constraint = kcl_ezpz::Constraint::Arc(kcl_ezpz::datatypes::CircularArc {
         center: kcl_ezpz::datatypes::DatumPoint::new_xy(
             center_x.to_constraint_id(range)?,
             center_y.to_constraint_id(range)?,
         ),
-        a: kcl_ezpz::datatypes::DatumPoint::new_xy(start_x.to_constraint_id(range)?, start_y.to_constraint_id(range)?),
-        b: kcl_ezpz::datatypes::DatumPoint::new_xy(end_x.to_constraint_id(range)?, end_y.to_constraint_id(range)?),
-        ccw,
+        start: kcl_ezpz::datatypes::DatumPoint::new_xy(start_x.to_constraint_id(range)?, start_y.to_constraint_id(range)?),
+        end: kcl_ezpz::datatypes::DatumPoint::new_xy(end_x.to_constraint_id(range)?, end_y.to_constraint_id(range)?),
     });
 
     let Some(sketch_state) = exec_state.sketch_block_mut() else {

@@ -123,7 +123,6 @@ function createArcApiObject({
             x: { type: 'Var', value: 0, units: 'Mm' },
             y: { type: 'Var', value: 0, units: 'Mm' },
           },
-          ccw: true,
         },
         ctor_applicable: false,
       },
@@ -422,7 +421,7 @@ describe('centerArcTool - XState', () => {
       actor.stop()
     })
 
-    it('should transition to unequipping after finalizing arc', async () => {
+    it('should transition to ready for center click after finalizing arc', async () => {
       const centerPoint = createPointApiObject({ id: 1, x: 10, y: 20 })
       const startPoint = createPointApiObject({ id: 2, x: 30, y: 40 })
       const endPoint = createPointApiObject({ id: 3, x: 30, y: 40 })
@@ -466,7 +465,10 @@ describe('centerArcTool - XState', () => {
       // Third click
       actor.send({ type: 'add point', data: [50, 60], clickNumber: 3 })
       await waitFor(actor, (state) => state.matches('Finalizing arc' as any))
-      await waitFor(actor, (state) => state.matches('unequipping' as any))
+      // After finalizing, the tool returns to 'ready for center click' to allow creating another arc
+      await waitFor(actor, (state) =>
+        state.matches('ready for center click' as any)
+      )
 
       actor.stop()
     })

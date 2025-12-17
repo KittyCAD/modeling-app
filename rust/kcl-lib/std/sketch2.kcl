@@ -17,16 +17,13 @@ export fn line(
   midpoint?: Point2d,
 ): Segment {}
 
-/// A circular arc. The arc segment sweeps in the direction specified by `ccw`.
-/// If `ccw` is true, the arc sweeps counterclockwise from start to end.
-/// If `ccw` is false, the arc sweeps clockwise from start to end.
-/// If `ccw` is not specified, it defaults to the shortest path (counterclockwise if the angle difference is positive, clockwise otherwise).
+/// A circular arc. The arc segment always sweeps counterclockwise from start to end.
+/// To change direction, swap the start and end points.
 @(impl = std_rust_constrainable, experimental = true, feature_tree = false)
 export fn arc(
   start: Point2d,
   end: Point2d,
   center: Point2d,
-  ccw?: bool,
 ): Segment {}
 
 /// Constrain points, or a point and a segment to be coincident.

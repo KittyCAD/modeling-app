@@ -226,7 +226,6 @@ pub struct ArcCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
     pub center: Point2d<Expr>,
-    pub ccw: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

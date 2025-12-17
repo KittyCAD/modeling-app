@@ -229,21 +229,12 @@ export function buildSegmentCtorFromObject(
       console.error('Failed to find linked points for Arc segment', obj)
       return null
     }
-    // Extract ccw from the ctor if available, otherwise default to true (CCW)
-    let ccw = true
-    if (
-      obj.kind.segment.ctor &&
-      obj.kind.segment.ctor.type === 'Arc' &&
-      'ccw' in obj.kind.segment.ctor
-    ) {
-      ccw = obj.kind.segment.ctor.ccw
-    }
+    // ezpz always goes CCW from start to end, so no ccw field needed
     return {
       type: 'Arc',
       center: centerPoint,
       start: startPoint,
       end: endPoint,
-      ccw,
     }
   }
   return null

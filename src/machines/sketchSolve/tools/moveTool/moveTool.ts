@@ -41,8 +41,7 @@ import {
   buildSegmentCtorFromObject,
   type SolveActionArgs,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { applyVectorToPoint2D, getNumericValue } from '@src/lib/kclHelpers'
-import { shouldFlipCcwWithPrevious } from '@src/machines/sketchSolve/tools/centerArcToolImpl'
+import { applyVectorToPoint2D } from '@src/lib/kclHelpers'
 import {
   AREA_SELECT_BORDER_WIDTH,
   LINE_EXTENSION_SIZE,
@@ -132,15 +131,14 @@ function buildSegmentCtorWithDrag({
     const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
     const newEnd = applyVectorToPoint2D(baseCtor.end, dragVec)
 
-    // When dragging the arc body (all points translate), we don't need to flip ccw
-    // The ccw flag remains the same since all points move together
+    // When dragging the arc body (all points translate), we don't need to swap start/end
+    // All points move together, so the relative positions stay the same
 
     return {
       type: 'Arc',
       center: newCenter,
       start: newStart,
       end: newEnd,
-      ccw: baseCtor.ccw,
     }
   }
 
@@ -597,11 +595,6 @@ export function createOnDragCallback({
 
       // Build ctors for each segment with drag applied
       const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
-      // Track arcs that need ccw updates: map from arcId to {pointId, isStart}
-      const arcsToUpdate = new Map<
-        number,
-        { pointId: number; isStart: boolean }
-      >()
 
       for (const id of idsToEdit) {
         const obj = objects[id]
@@ -616,27 +609,6 @@ export function createOnDragCallback({
 
         const isEntityUnderCursor = id === entityUnderCursorId
 
-        // If dragging a point that belongs to an arc, track the arc for ccw update
-        if (
-          obj.kind.segment.type === 'Point' &&
-          obj.kind.segment.owner !== null &&
-          obj.kind.segment.owner !== undefined
-        ) {
-          const ownerId = obj.kind.segment.owner
-          const ownerObj = objects[ownerId]
-          if (
-            ownerObj?.kind.type === 'Segment' &&
-            ownerObj.kind.segment.type === 'Arc'
-          ) {
-            // Determine if this is the start or end point
-            const isStart = ownerObj.kind.segment.start === id
-            const isEnd = ownerObj.kind.segment.end === id
-            if (isStart || isEnd) {
-              arcsToUpdate.set(ownerId, { pointId: id, isStart })
-            }
-          }
-        }
-
         const ctor = buildSegmentCtorWithDrag({
           objUnderCursor: obj,
           selectedObjects: objects,
@@ -648,96 +620,6 @@ export function createOnDragCallback({
 
         if (ctor) {
           segmentsToEdit.push({ id, ctor })
-        }
-      }
-
-      // Also update arcs whose endpoints are being dragged
-      for (const [arcId, { pointId, isStart }] of arcsToUpdate) {
-        // Skip if arc is already being edited directly
-        if (idsToEdit.has(arcId)) {
-          continue
-        }
-
-        const arcObj = objects[arcId]
-        if (
-          !arcObj ||
-          arcObj.kind.type !== 'Segment' ||
-          arcObj.kind.segment.type !== 'Arc'
-        ) {
-          continue
-        }
-
-        // Get previous arc state BEFORE drag (from scene graph)
-        const prevArcCtor = buildSegmentCtorFromObject(arcObj, objects)
-        if (!prevArcCtor || prevArcCtor.type !== 'Arc') {
-          continue
-        }
-
-        // Get the new point position AFTER drag (from updated points in segmentsToEdit)
-        const updatedPointCtor = segmentsToEdit.find(
-          (s) => s.id === pointId
-        )?.ctor
-        if (!updatedPointCtor || updatedPointCtor.type !== 'Point') {
-          continue
-        }
-
-        // Extract numeric values from previous arc state
-        const centerX = getNumericValue(prevArcCtor.center.x)
-        const centerY = getNumericValue(prevArcCtor.center.y)
-        const prevStartX = getNumericValue(prevArcCtor.start.x)
-        const prevStartY = getNumericValue(prevArcCtor.start.y)
-        const prevEndX = getNumericValue(prevArcCtor.end.x)
-        const prevEndY = getNumericValue(prevArcCtor.end.y)
-        const newPointX = getNumericValue(updatedPointCtor.position.x)
-        const newPointY = getNumericValue(updatedPointCtor.position.y)
-
-        let shouldFlip = false
-        if (isStart) {
-          // Dragging start point: use end as fixed, swap start/end, and invert ccw logic
-          const previousStart: [number, number] = [prevStartX, prevStartY]
-          const newStart: [number, number] = [newPointX, newPointY]
-          const fixedEnd: [number, number] = [prevEndX, prevEndY]
-
-          // Swap start/end and invert ccw for the check
-          shouldFlip = shouldFlipCcwWithPrevious({
-            currentCcw: !prevArcCtor.ccw, // Invert ccw when dragging start
-            center: [centerX, centerY],
-            start: fixedEnd, // End becomes the fixed point
-            end: newStart, // New start position
-            previousEnd: previousStart, // Previous start position
-          })
-        } else {
-          // Dragging end point: use start as fixed (normal case)
-          const previousEnd: [number, number] = [prevEndX, prevEndY]
-          const newEnd: [number, number] = [newPointX, newPointY]
-          const fixedStart: [number, number] = [prevStartX, prevStartY]
-
-          shouldFlip = shouldFlipCcwWithPrevious({
-            currentCcw: prevArcCtor.ccw,
-            center: [centerX, centerY],
-            start: fixedStart,
-            end: newEnd,
-            previousEnd,
-          })
-        }
-
-        if (shouldFlip) {
-          // Find or create the arc ctor to update
-          let arcCtorToUpdate = segmentsToEdit.find((s) => s.id === arcId)?.ctor
-          if (!arcCtorToUpdate || arcCtorToUpdate.type !== 'Arc') {
-            arcCtorToUpdate = { ...prevArcCtor }
-            segmentsToEdit.push({ id: arcId, ctor: arcCtorToUpdate })
-          }
-          arcCtorToUpdate.ccw = !arcCtorToUpdate.ccw
-          if (isStart) {
-            // Update start coordinates with newStart
-            arcCtorToUpdate.start.x = { type: 'Var', value: newPointX, units }
-            arcCtorToUpdate.start.y = { type: 'Var', value: newPointY, units }
-          } else {
-            // Update end coordinates with newEnd
-            arcCtorToUpdate.end.x = { type: 'Var', value: newPointX, units }
-            arcCtorToUpdate.end.y = { type: 'Var', value: newPointY, units }
-          }
         }
       }
 
@@ -1318,6 +1200,55 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
+      // Check if this group has an arc segment mesh
+      const arcMesh = child.children.find(
+        (c) => c instanceof Mesh && c.userData?.type === ARC_SEGMENT_BODY
+      )
+
+      if (arcMesh && arcMesh instanceof Mesh) {
+        // Handle arc segment
+        // Get the bounding box of the mesh in world space
+        arcMesh.updateMatrixWorld()
+        const box = new Box3().setFromObject(arcMesh)
+
+        // Get the 8 corners of the bounding box
+        const min = box.min
+        const max = box.max
+
+        // Generate all 8 corners of the bounding box (already in world space)
+        const corners = [
+          new Vector3(min.x, min.y, min.z),
+          new Vector3(max.x, min.y, min.z),
+          new Vector3(min.x, max.y, min.z),
+          new Vector3(max.x, max.y, min.z),
+          new Vector3(min.x, min.y, max.z),
+          new Vector3(max.x, min.y, max.z),
+          new Vector3(min.x, max.y, max.z),
+          new Vector3(max.x, max.y, max.z),
+        ]
+
+        // Project to screen space
+        const screenCorners = corners.map((corner) => {
+          const projected = corner.clone().project(camera)
+          return new Vector2(
+            ((projected.x + 1) / 2) * viewportSize.x,
+            ((1 - projected.y) / 2) * viewportSize.y
+          )
+        })
+
+        // For "contains" selection, check if ALL corners are within the selection box
+        const allCornersContained = areAllPointsContained(
+          screenCorners,
+          boxMinPx,
+          boxMaxPx
+        )
+
+        if (allCornersContained) {
+          containedIds.push(segmentId)
+        }
+        return
+      }
+
       // Check if this group has a CSS2DObject (point segment)
       const css2dObject = child.children.find(
         (c) => c instanceof CSS2DObject && c.userData?.type === 'handle'
@@ -1343,7 +1274,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
   }
 
   /**
-   * Helper function to find segments (line segments and point segments) that intersect with the selection box
+   * Helper function to find segments (line segments, arc segments, and point segments) that intersect with the selection box
    * Uses improved intersection logic: checks bounding box containment first, then polygon intersection
    */
   function findIntersectingSegments(
@@ -1437,6 +1368,74 @@ export function setUpOnDragAndSelectionClickCallbacks({
         // Extract triangles from the mesh
         const triangles = extractTrianglesFromMesh(
           lineMesh,
+          camera,
+          viewportSize
+        )
+
+        // Use improved intersection logic
+        const intersects = doesSegmentIntersectSelectionBox(
+          segmentMinPx,
+          segmentMaxPx,
+          boxMinPx,
+          boxMaxPx,
+          triangles
+        )
+
+        if (intersects) {
+          intersectingIds.push(segmentId)
+        }
+        return
+      }
+
+      // Check if this group has an arc segment mesh
+      const arcMesh = child.children.find(
+        (c) => c instanceof Mesh && c.userData?.type === ARC_SEGMENT_BODY
+      )
+
+      if (arcMesh && arcMesh instanceof Mesh) {
+        // Handle arc segment
+        // Get the bounding box of the mesh in world space
+        arcMesh.updateMatrixWorld()
+        const box = new Box3().setFromObject(arcMesh)
+
+        // Get the 8 corners of the bounding box
+        const min = box.min
+        const max = box.max
+
+        // Generate all 8 corners of the bounding box (already in world space)
+        const corners = [
+          new Vector3(min.x, min.y, min.z),
+          new Vector3(max.x, min.y, min.z),
+          new Vector3(min.x, max.y, min.z),
+          new Vector3(max.x, max.y, min.z),
+          new Vector3(min.x, min.y, max.z),
+          new Vector3(max.x, min.y, max.z),
+          new Vector3(min.x, max.y, max.z),
+          new Vector3(max.x, max.y, max.z),
+        ]
+
+        // Project to screen space
+        const screenCorners = corners.map((corner) => {
+          const projected = corner.clone().project(camera)
+          return new Vector2(
+            ((projected.x + 1) / 2) * viewportSize.x,
+            ((1 - projected.y) / 2) * viewportSize.y
+          )
+        })
+
+        // Compute the bounding box of the arc segment in screen space
+        const segmentMinPx = new Vector2(
+          Math.min(...screenCorners.map((c) => c.x)),
+          Math.min(...screenCorners.map((c) => c.y))
+        )
+        const segmentMaxPx = new Vector2(
+          Math.max(...screenCorners.map((c) => c.x)),
+          Math.max(...screenCorners.map((c) => c.y))
+        )
+
+        // Extract triangles from the mesh
+        const triangles = extractTrianglesFromMesh(
+          arcMesh,
           camera,
           viewportSize
         )

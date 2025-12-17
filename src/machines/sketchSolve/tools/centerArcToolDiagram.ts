@@ -57,7 +57,7 @@ export const machine = setup({
     arcId: undefined,
     arcEndPointId: undefined,
     arcStartPoint: undefined,
-    arcCcw: undefined,
+    arcIsSwapped: undefined,
     sceneGraphDelta: {} as SceneGraphDelta,
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
@@ -149,11 +149,11 @@ export const machine = setup({
       entry: 'animate arc end point listener',
       exit: 'remove point listener',
       on: {
-        'update arc ccw': {
+        'update arc swapped': {
           actions: assign(({ event }) => {
-            if (event.type !== 'update arc ccw') return {}
+            if (event.type !== 'update arc swapped') return {}
             return {
-              arcCcw: event.data,
+              arcIsSwapped: event.data,
             }
           }),
         },
@@ -203,7 +203,7 @@ export const machine = setup({
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
-            arcCcw: context.arcCcw,
+            arcIsSwapped: context.arcIsSwapped,
           }
         },
         onDone: {
@@ -221,7 +221,7 @@ export const machine = setup({
               arcId: undefined,
               arcEndPointId: undefined,
               arcStartPoint: undefined,
-              arcCcw: undefined,
+              arcIsSwapped: undefined,
             }),
           ],
         },
