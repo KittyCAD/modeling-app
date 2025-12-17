@@ -2,4 +2,6 @@
 /docs/ @KittyCAD/kcl
 /src/ @KittyCAD/frontend
 /rust/ @KittyCAD/kcl
-e2e/playwright/mecheng-approved-paths @nicboone8 @max-mrgrsk
+
+# Replace with @kittycad/meche once available, see https://github.com/KittyCAD/configs/issues/272
+e2e/playwright/benchmark @nicboone8 @max-mrgrsk

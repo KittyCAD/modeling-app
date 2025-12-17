@@ -1,7 +1,13 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.describe('Mecheng approved paths', () => {
+/**
+ * Benchmark tests for the first things an user would do in the app.
+ * This is meant to represent user behavior, and changes to that are owned by our group of
+ * mechanical engineers. See .github/CODEOWNERS for more details.
+ */
+
+test.describe('Hot path', () => {
   test(`Draw a circle and extrude it`, async ({
     page,
     homePage,
