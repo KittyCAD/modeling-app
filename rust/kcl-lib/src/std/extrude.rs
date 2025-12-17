@@ -107,7 +107,7 @@ async fn inner_extrude(
         && let Some(open_profile) = sketches.iter().find(|sk| matches!(sk.is_closed, ProfileClosed::No))
     {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Cannot solid extrude an open profile. Either close the profile, or use a a surface extrude.".to_owned(),
+            "Cannot solid extrude an open profile. Either close the profile, or use a surface extrude.".to_owned(),
             open_profile.meta.iter().map(|m| m.source_range).collect(),
         )));
     }

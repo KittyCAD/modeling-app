@@ -363,13 +363,7 @@ async fn straight_line(
     };
 
     // Does it loop back on itself?
-    let end_x = end[0];
-    let end_y = end[1];
-    let start_x = sketch.start.from[0];
-    let start_y = sketch.start.from[1];
-    let same_x = (end_x - start_x).abs() < EQUAL_POINTS_DIST_EPSILON;
-    let same_y = (end_y - start_y).abs() < EQUAL_POINTS_DIST_EPSILON;
-    let loops_back_to_start = same_x && same_y;
+    let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
 
     let current_path = Path::ToPoint {
         base: BasePath {
@@ -395,6 +389,12 @@ async fn straight_line(
     new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
+}
+
+fn does_segment_close_sketch(end: [f64; 2], from: [f64; 2]) -> bool {
+    let same_x = (end[0] - from[0]).abs() < EQUAL_POINTS_DIST_EPSILON;
+    let same_y = (end[1] - from[1]).abs() < EQUAL_POINTS_DIST_EPSILON;
+    same_x && same_y
 }
 
 /// Draw a line on the x-axis.
@@ -1737,6 +1737,7 @@ async fn inner_tangential_arc_to_point(
     } else {
         [from.x + point[0], from.y + point[1]]
     };
+    let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
     let [to_x, to_y] = to;
     let result = get_tangential_arc_to_info(TangentialArcInfoInput {
         arc_start_point: [from.x, from.y],
@@ -1790,6 +1791,9 @@ async fn inner_tangential_arc_to_point(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
