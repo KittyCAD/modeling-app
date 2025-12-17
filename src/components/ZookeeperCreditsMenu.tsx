@@ -28,7 +28,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
         />
         {!props.billingContext.error && (
           <Tooltip
-            position="left"
+            position="top"
             contentClassName="text-xs"
             hoverOnly
             wrapperClassName="ui-open:!hidden"
