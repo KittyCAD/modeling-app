@@ -194,7 +194,7 @@ export const sketchSolveMachine = setup({
             type: 'Coincident',
             segments: context.selectedIds,
           },
-          await jsAppSettings()
+          await jsAppSettings(context.rustContext.settingsActor)
         )
         if (result) {
           self.send({
@@ -267,7 +267,7 @@ export const sketchSolveMachine = setup({
             distance: { value: distance, units },
             points: segmentsToConstrain,
           },
-          await jsAppSettings()
+          await jsAppSettings(context.rustContext.settingsActor)
         )
         if (result) {
           self.send({
@@ -287,7 +287,7 @@ export const sketchSolveMachine = setup({
             type: 'Parallel',
             lines: context.selectedIds,
           },
-          await jsAppSettings()
+          await jsAppSettings(context.rustContext.settingsActor)
         )
         if (result) {
           self.send({
@@ -307,7 +307,7 @@ export const sketchSolveMachine = setup({
             type: 'LinesEqualLength',
             lines: context.selectedIds,
           },
-          await jsAppSettings()
+          await jsAppSettings(context.rustContext.settingsActor)
         )
         if (result) {
           self.send({
@@ -329,7 +329,7 @@ export const sketchSolveMachine = setup({
               type: 'Vertical',
               line: id,
             },
-            await jsAppSettings()
+            await jsAppSettings(context.rustContext.settingsActor)
           )
         }
         if (result) {
@@ -352,7 +352,7 @@ export const sketchSolveMachine = setup({
               type: 'Horizontal',
               line: id,
             },
-            await jsAppSettings()
+            await jsAppSettings(context.rustContext.settingsActor)
           )
         }
         if (result) {
@@ -382,7 +382,7 @@ export const sketchSolveMachine = setup({
             context.sketchId,
             [],
             selectedIds,
-            await jsAppSettings()
+            await jsAppSettings(context.rustContext.settingsActor)
           )
           .catch((err) => {
             console.error('failed to delete objects', err)

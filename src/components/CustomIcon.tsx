@@ -138,6 +138,51 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  arrowShortDown: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow short down"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4.5 8.79294L9.14648 13.4394V4.64645H10.1465V13.4394L14.793 8.79294L15.5 9.49997L9.64648 15.3535L3.79297 9.49997L4.5 8.79294Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  arrowShortLeft: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow short left"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.8535 4.85349L6.20697 9.49997H14.9999V10.5H6.20697L10.8535 15.1465L10.1464 15.8535L4.29291 9.99997L10.1464 4.14645L10.8535 4.85349Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  arrowShortRight: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow short right"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M15.707 9.99997L9.85352 15.8535L9.14648 15.1465L13.793 10.5H5V9.49997H13.793L9.14648 4.85349L9.85352 4.14645L15.707 9.99997Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   arrowShortUp: (
     <svg
       viewBox="0 0 20 20"

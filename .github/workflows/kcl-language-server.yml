@@ -117,6 +117,7 @@ jobs:
         with:
           cache: rust
           components: rust-src
+          rustflags: '' # Use .cargo/config.toml
           target: ${{ matrix.target }}
       - name: Install Node.js
         uses: actions/setup-node@v6
@@ -231,6 +232,7 @@ jobs:
         with:
           cache: rust
           components: rust-src
+          rustflags: '' # Use .cargo/config.toml
           target: ${{ matrix.target }}
       - name: build
         run: |

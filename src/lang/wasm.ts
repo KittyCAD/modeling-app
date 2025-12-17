@@ -216,7 +216,7 @@ export function resultIsOk(result: ParseResult): result is SuccessParseResult {
 
 export const parse = (
   code: string | Error,
-  instance?: ModuleType
+  instance: ModuleType
 ): ParseResult | Error => {
   if (err(code)) return code
 
@@ -248,10 +248,7 @@ export const parse = (
 /**
  * Parse and throw an exception if there are any errors (probably not suitable for use outside of testing).
  */
-export function assertParse(
-  code: string,
-  instance?: ModuleType
-): Node<Program> {
+export function assertParse(code: string, instance: ModuleType): Node<Program> {
   const result = parse(code, instance)
   // eslint-disable-next-line suggest-no-throw/suggest-no-throw
   if (err(result)) throw result
@@ -923,7 +920,7 @@ export function base64Decode(base64: string): ArrayBuffer | Error {
  */
 export function kclSettings(
   kcl: string | Node<Program>,
-  instance?: ModuleType
+  instance: ModuleType
 ): MetaSettings | null | Error {
   let program: Node<Program>
   if (typeof kcl === 'string') {

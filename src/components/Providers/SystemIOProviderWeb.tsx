@@ -3,7 +3,7 @@ import {
   DEFAULT_PROJECT_KCL_FILE,
 } from '@src/lib/constants'
 import { systemIOActor, useSettings } from '@src/lib/singletons'
-import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useClearURLParams,
   useProjectIdToConversationId,

@@ -40,8 +40,10 @@ import { getModule } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { Signal } from '@src/lib/signal'
 import type { ExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export default class RustContext {
+  private readonly _wasmInstancePromise: Promise<ModuleType>
   private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
@@ -49,20 +51,29 @@ export default class RustContext {
   private projectId = 0
   public readonly planesCreated = new Signal()
 
+  private _settingsActor: SettingsActorType
+  get settingsActor() {
+    return this._settingsActor
+  }
+  set settingsActor(settingsActor: SettingsActorType) {
+    this._settingsActor = settingsActor
+  }
+
   constructor(
     engineCommandManager: ConnectionManager,
-    instance: Promise<ModuleType | string>
+    wasmInstancePromise: Promise<ModuleType>,
+    /**
+     * TODO: move settings system upstream of KclManager so this hack isn't necessary.
+     * We pass in a dummy settingsActor, then assign our real one later in singletons.ts using the setter
+     */
+    dummySettingsActor: SettingsActorType
   ) {
     this.engineCommandManager = engineCommandManager
+    this._wasmInstancePromise = wasmInstancePromise
+    this._settingsActor = dummySettingsActor
 
-    instance
-      .then((wasmInstance) => {
-        if (typeof wasmInstance !== 'string') {
-          this.createFromInstance(wasmInstance)
-        } else {
-          return new Error(wasmInstance)
-        }
-      })
+    wasmInstancePromise
+      .then((instance) => this.createFromInstance(instance))
       .catch(reportRejection)
   }
 
@@ -78,8 +89,8 @@ export default class RustContext {
     return ctxInstance
   }
 
-  getRustInstance() {
-    return this.rustInstance || undefined
+  get wasmInstancePromise() {
+    return this._wasmInstancePromise
   }
 
   private createFromInstance(instance: ModuleType) {

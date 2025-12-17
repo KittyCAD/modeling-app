@@ -22,7 +22,8 @@ use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, ProfileClosed, Sketch,
+        SketchSurface, Solid,
         types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -399,7 +400,7 @@ pub(crate) async fn do_post_extrude<'a>(
     let mut sketch = sketch.clone();
     match body_type {
         BodyType::Solid => {
-            sketch.is_closed = true;
+            sketch.is_closed = ProfileClosed::Explicitly;
         }
         BodyType::Surface => {}
     }

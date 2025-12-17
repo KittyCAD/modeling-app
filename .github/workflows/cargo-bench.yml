@@ -41,6 +41,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: rust
+          rustflags: '' # Use .cargo/config.toml
       - name: Install dependencies
         run: |
           cargo install cargo-criterion
