@@ -1,7 +1,7 @@
 // wsReasoning.ts
 // Logs every frame with the async-op `id`, closes on {"type":"end_of_stream"}
 
-import { withWebSocketURL } from '@src/lib/withBaseURL'
+import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 
 export function connectReasoningStream(
   token: string,
@@ -15,7 +15,7 @@ export function connectReasoningStream(
     }
   }
 ): void {
-  const url = withWebSocketURL('').replace(
+  const url = withKittycadWebSocketURL('').replace(
     '/ws/modeling/commands',
     `/ws/ml/reasoning/${id}`
   )
