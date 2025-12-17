@@ -71,6 +71,69 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
+pub(crate) enum ControlFlowKind {
+    #[default]
+    Continue,
+    #[expect(dead_code)]
+    Exit,
+}
+
+impl ControlFlowKind {
+    /// Returns true if this is any kind of early return.
+    pub fn is_some_return(&self) -> bool {
+        match self {
+            ControlFlowKind::Continue => false,
+            ControlFlowKind::Exit => true,
+        }
+    }
+}
+
+#[must_use = "You should always handle the control flow value when it is returned"]
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub(crate) struct KclValueControlFlow {
+    value: KclValue,
+    pub control: ControlFlowKind,
+}
+
+impl KclValue {
+    pub(crate) fn continue_(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: self,
+            control: ControlFlowKind::Continue,
+        }
+    }
+}
+
+impl From<KclValue> for KclValueControlFlow {
+    fn from(value: KclValue) -> Self {
+        value.continue_()
+    }
+}
+
+impl From<KclValueControlFlow> for KclValue {
+    fn from(value_cf: KclValueControlFlow) -> Self {
+        value_cf.into_value()
+    }
+}
+
+impl From<KclValueControlFlow> for (KclValue, ControlFlowKind) {
+    fn from(value_cf: KclValueControlFlow) -> Self {
+        (value_cf.value, value_cf.control)
+    }
+}
+
+impl KclValueControlFlow {
+    /// Returns true if this is any kind of early return.
+    pub fn is_some_return(&self) -> bool {
+        self.control.is_some_return()
+    }
+
+    pub(crate) fn into_value(self) -> KclValue {
+        self.value
+    }
+}
+
 pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
