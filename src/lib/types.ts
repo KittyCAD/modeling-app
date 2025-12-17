@@ -141,7 +141,7 @@ export type AppMachineContext = {
   authActor?: ActorRefFrom<typeof authMachine>
   settingsActor?: ActorRefFrom<typeof settingsMachine>
   systemIOActor?: ActorRefFrom<typeof systemIOMachine>
-  commandBarActor?: ActorRefFrom<typeof commandBarMachine>
+  commandBarActor: ActorRefFrom<typeof commandBarMachine>
   billingActor?: ActorRefFrom<typeof billingMachine>
   layout: Layout
 }
