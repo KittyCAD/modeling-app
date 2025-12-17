@@ -21,15 +21,17 @@ import {
   isPathToNode,
 } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
+import type { KclManager } from '@src/lang/KclManager'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
 export function angleBetweenInfo({
   selectionRanges,
+  kclManager,
 }: {
   selectionRanges: Selections
+  kclManager: KclManager
 }):
   | {
       transforms: TransformInfo[]
@@ -89,14 +91,16 @@ export function angleBetweenInfo({
 
 export async function applyConstraintAngleBetween({
   selectionRanges,
+  kclManager,
 }: {
   selectionRanges: Selections
+  kclManager: KclManager
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
   exprInsertIndex: number
 }> {
-  const info = angleBetweenInfo({ selectionRanges })
+  const info = angleBetweenInfo({ selectionRanges, kclManager })
   if (err(info)) return Promise.reject(info)
   const transformInfos = info.transforms
 
@@ -105,6 +109,7 @@ export async function applyConstraintAngleBetween({
     selectionRanges,
     transformInfos,
     memVars: kclManager.variables,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(transformed1)) return Promise.reject(transformed1)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
@@ -138,7 +143,12 @@ export async function applyConstraintAngleBetween({
 
   if (!isExprBinaryPart(valueNode))
     return Promise.reject('Invalid valueNode, is not a BinaryPart')
-  const finalValue = removeDoubleNegatives(valueNode, sign, variableName)
+  const finalValue = removeDoubleNegatives(
+    valueNode,
+    sign,
+    await kclManager.wasmInstancePromise,
+    variableName
+  )
   // transform again but forcing certain values
   const transformed2 = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
@@ -147,6 +157,7 @@ export async function applyConstraintAngleBetween({
     memVars: kclManager.variables,
     forceSegName: segName,
     forceValueUsedInTransform: finalValue,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(transformed2)) return Promise.reject(transformed2)
   const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =

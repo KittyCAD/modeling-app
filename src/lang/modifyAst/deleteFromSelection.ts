@@ -36,12 +36,14 @@ import type { Selection } from '@src/machines/modelingSharedTypes'
 import { err, reportRejection } from '@src/lib/trap'
 import { isArray, roundOff } from '@src/lib/utils'
 import { deleteEdgeTreatment } from '@src/lang/modifyAst/edges'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export async function deleteFromSelection(
   ast: Node<Program>,
   selection: Selection,
   variables: VariableMap,
   artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType,
   getFaceDetails: (id: string) => Promise<FaceIsPlanar> = () => ({}) as any
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
@@ -232,7 +234,8 @@ export async function deleteFromSelection(
               variable: KclValue
             }
           } = {}
-          const roundLiteral = (x: number) => createLiteral(roundOff(x))
+          const roundLiteral = (x: number) =>
+            createLiteral(roundOff(x), wasmInstance)
           const modificationDetails: {
             parentPipe: PipeExpression['body']
             parentInit: VariableDeclarator

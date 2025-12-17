@@ -472,6 +472,7 @@ part001 = startSketchOn(XY)
       transformInfos,
       memVars: execState.variables,
       referenceSegName: '',
+      wasmInstance: instanceInThisFile,
     })
     if (err(newAst)) return Promise.reject(newAst)
 
@@ -532,6 +533,7 @@ part001 = startSketchOn(XY)
       transformInfos,
       memVars: execState.variables,
       referenceSegName: '',
+      wasmInstance: instanceInThisFile,
     })
     if (err(newAst)) return Promise.reject(newAst)
 
@@ -626,6 +628,7 @@ async function helperThing(
     selectionRanges: makeSelections(selectionRanges),
     transformInfos,
     memVars: execState.variables,
+    wasmInstance: instanceInThisFile,
   })
 
   if (err(newAst)) return Promise.reject(newAst)

@@ -434,44 +434,56 @@ export const modelingMachine = setup({
         kclManager,
       })
     },
-    'Can make selection horizontal': ({ context: { selectionRanges } }) => {
-      const info = horzVertInfo(selectionRanges, 'horizontal')
+    'Can make selection horizontal': ({ context }) => {
+      const info = horzVertInfo(
+        context.selectionRanges,
+        'horizontal',
+        context.kclManager.ast
+      )
       if (err(info)) return false
       return info.enabled
     },
-    'Can make selection vertical': ({ context: { selectionRanges } }) => {
-      const info = horzVertInfo(selectionRanges, 'vertical')
+    'Can make selection vertical': ({ context }) => {
+      const info = horzVertInfo(
+        context.selectionRanges,
+        'vertical',
+        context.kclManager.ast
+      )
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain horizontal distance': ({ context: { selectionRanges } }) => {
+    'Can constrain horizontal distance': ({ context }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges: selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'setHorzDistance',
+        kclManager: context.kclManager,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain vertical distance': ({ context: { selectionRanges } }) => {
+    'Can constrain vertical distance': ({ context }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges: selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'setVertDistance',
+        kclManager: context.kclManager,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain ABS X': ({ context: { selectionRanges } }) => {
+    'Can constrain ABS X': ({ context }) => {
       const info = absDistanceInfo({
-        selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'xAbs',
+        kclManager: context.kclManager,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain ABS Y': ({ context: { selectionRanges } }) => {
+    'Can constrain ABS Y': ({ context }) => {
       const info = absDistanceInfo({
-        selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'yAbs',
+        kclManager: context.kclManager,
       })
       if (err(info)) return false
       return info.enabled
@@ -479,6 +491,7 @@ export const modelingMachine = setup({
     'Can constrain angle': ({ context: { selectionRanges, kclManager } }) => {
       const angleBetween = angleBetweenInfo({
         selectionRanges,
+        kclManager,
       })
       if (err(angleBetween)) return false
       const angleLength = angleLengthInfo({
@@ -497,55 +510,61 @@ export const modelingMachine = setup({
       if (err(angleLength)) return false
       return angleLength.enabled
     },
-    'Can constrain perpendicular distance': ({
-      context: { selectionRanges },
-    }) => {
-      const info = intersectInfo({ selectionRanges })
-      if (err(info)) return false
-      return info.enabled
-    },
-    'Can constrain horizontally align': ({ context: { selectionRanges } }) => {
-      const info = horzVertDistanceInfo({
-        selectionRanges: selectionRanges,
-        constraint: 'setHorzDistance',
+    'Can constrain perpendicular distance': ({ context }) => {
+      const info = intersectInfo({
+        selectionRanges: context.selectionRanges,
+        kclManager: context.kclManager,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain vertically align': ({ context: { selectionRanges } }) => {
+    'Can constrain horizontally align': ({ context }) => {
       const info = horzVertDistanceInfo({
-        selectionRanges: selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'setHorzDistance',
+        kclManager: context.kclManager,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain snap to X': ({ context: { selectionRanges } }) => {
+    'Can constrain vertically align': ({ context }) => {
+      const info = horzVertDistanceInfo({
+        selectionRanges: context.selectionRanges,
+        constraint: 'setHorzDistance',
+        kclManager: context.kclManager,
+      })
+      if (err(info)) return false
+      return info.enabled
+    },
+    'Can constrain snap to X': ({ context }) => {
       const info = absDistanceInfo({
-        selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'snapToXAxis',
+        kclManager: context.kclManager,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain snap to Y': ({ context: { selectionRanges } }) => {
+    'Can constrain snap to Y': ({ context }) => {
       const info = absDistanceInfo({
-        selectionRanges,
+        selectionRanges: context.selectionRanges,
         constraint: 'snapToYAxis',
+        kclManager: context.kclManager,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain equal length': ({ context: { selectionRanges } }) => {
+    'Can constrain equal length': ({ context }) => {
       const info = setEqualLengthInfo({
-        selectionRanges,
+        selectionRanges: context.selectionRanges,
+        ast: context.kclManager.ast,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain parallel': ({ context: { selectionRanges } }) => {
+    'Can constrain parallel': ({ context }) => {
       const info = equalAngleInfo({
-        selectionRanges,
+        selectionRanges: context.selectionRanges,
       })
       if (err(info)) return false
       return info.enabled
@@ -1677,7 +1696,8 @@ export const modelingMachine = setup({
           selectionRanges,
           'horizontal',
           kclManager.ast,
-          kclManager.variables
+          kclManager.variables,
+          await kclManager.wasmInstancePromise
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1732,7 +1752,8 @@ export const modelingMachine = setup({
           selectionRanges,
           'vertical',
           kclManager.ast,
-          kclManager.variables
+          kclManager.variables,
+          await kclManager.wasmInstancePromise
         )
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1784,8 +1805,10 @@ export const modelingMachine = setup({
         >
       }) => {
         const constraint = applyConstraintHorzVertAlign({
-          selectionRanges: selectionRanges,
+          selectionRanges,
           constraint: 'setVertDistance',
+          kclManager: kclManager,
+          wasmInstance: await kclManager.wasmInstancePromise,
         })
         if (trap(constraint)) return
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1838,8 +1861,10 @@ export const modelingMachine = setup({
         >
       }) => {
         const constraint = applyConstraintHorzVertAlign({
-          selectionRanges: selectionRanges,
+          selectionRanges,
           constraint: 'setHorzDistance',
+          kclManager: kclManager,
+          wasmInstance: await kclManager.wasmInstancePromise,
         })
         if (trap(constraint)) return
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1894,6 +1919,8 @@ export const modelingMachine = setup({
         const constraint = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToXAxis',
+          kclManager: kclManager,
+          wasmInstance: await kclManager.wasmInstancePromise,
         })
         if (err(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -1948,6 +1975,8 @@ export const modelingMachine = setup({
         const constraint = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToYAxis',
+          kclManager: kclManager,
+          wasmInstance: await kclManager.wasmInstancePromise,
         })
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -2000,6 +2029,7 @@ export const modelingMachine = setup({
       }) => {
         const constraint = applyConstraintEqualAngle({
           selectionRanges,
+          wasmInstance: await kclManager.wasmInstancePromise,
         })
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -2062,6 +2092,9 @@ export const modelingMachine = setup({
       }) => {
         const constraint = applyConstraintEqualLength({
           selectionRanges,
+          ast: kclManager.ast,
+          variables: kclManager.variables,
+          wasmInstance: await kclManager.wasmInstancePromise,
         })
         if (trap(constraint)) return false
         const { modifiedAst, pathToNodeMap } = constraint
@@ -2100,35 +2133,50 @@ export const modelingMachine = setup({
      * which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
     'Get vertical info': fromPromise(
       async (_: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
+        >
       }) => {
         return {} as SetSelections
       }
     ),
     'Get ABS X info': fromPromise(
       async (_: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
+        >
       }) => {
         return {} as SetSelections
       }
     ),
     'Get ABS Y info': fromPromise(
       async (_: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
+        >
       }) => {
         return {} as SetSelections
       }
     ),
     'Get angle info': fromPromise(
       async (_: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
+        >
       }) => {
         return {} as SetSelections
       }
     ),
     'Get perpendicular distance info': fromPromise(
       async (_: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'kclManager'
+        >
       }) => {
         return {} as SetSelections
       }
@@ -2166,7 +2214,10 @@ export const modelingMachine = setup({
     ),
     'Get horizontal info': fromPromise(
       async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
+        input: Pick<
+          ModelingMachineContext,
+          'sketchDetails' | 'selectionRanges' | 'kclManager'
+        >
       }) => {
         return {} as SetSelections
       }
@@ -2175,7 +2226,7 @@ export const modelingMachine = setup({
       async (_: {
         input: Pick<
           ModelingMachineContext,
-          'sketchDetails' | 'selectionRanges'
+          'sketchDetails' | 'selectionRanges' | 'kclManager'
         > & {
           lengthValue?: KclCommandValue
         }
@@ -2602,6 +2653,7 @@ export const modelingMachine = setup({
         const astResult = addExtrude({
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
           ...input.data,
         })
         if (err(astResult)) {
@@ -2642,6 +2694,7 @@ export const modelingMachine = setup({
         const astResult = addSweep({
           ...input.data,
           ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2677,7 +2730,11 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
         const { ast } = input.kclManager
-        const astResult = addLoft({ ast, ...input.data })
+        const astResult = addLoft({
+          ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
+          ...input.data,
+        })
         if (err(astResult)) {
           return Promise.reject(astResult)
         }
@@ -2715,6 +2772,7 @@ export const modelingMachine = setup({
         const { ast } = input.kclManager
         const astResult = addRevolve({
           ast,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
           ...input.data,
         })
         if (err(astResult)) {
@@ -2757,6 +2815,7 @@ export const modelingMachine = setup({
           ast,
           artifactGraph,
           variables,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2797,6 +2856,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2837,6 +2897,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2876,6 +2937,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast: input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -3035,6 +3097,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3074,6 +3137,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3112,6 +3176,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3152,6 +3217,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3247,6 +3313,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast: astWithNewSetting ?? input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3304,6 +3371,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast: astWithNewSetting ?? input.kclManager.ast,
           artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3473,6 +3541,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3513,6 +3582,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: await input.kclManager.wasmInstancePromise,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3942,9 +4012,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Get horizontal info',
             id: 'get-horizontal-info',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3958,9 +4031,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Get vertical info',
             id: 'get-vertical-info',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3974,9 +4050,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Get ABS X info',
             id: 'get-abs-x-info',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -3990,9 +4069,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Get ABS Y info',
             id: 'get-abs-y-info',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -4006,9 +4088,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Get angle info',
             id: 'get-angle-info',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -4022,12 +4107,16 @@ export const modelingMachine = setup({
           invoke: {
             src: 'astConstrainLength',
             id: 'AST-constrain-length',
-            input: ({ context: { selectionRanges, sketchDetails }, event }) => {
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+              event,
+            }) => {
               const data =
                 event.type === 'Constrain length' ? event.data : undefined
               return {
                 selectionRanges,
                 sketchDetails,
+                kclManager,
                 lengthValue: data?.length,
               }
             },
@@ -4043,9 +4132,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Get perpendicular distance info',
             id: 'get-perpendicular-distance-info',
-            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+            input: ({
+              context: { selectionRanges, sketchDetails, kclManager },
+            }) => ({
               selectionRanges,
               sketchDetails,
+              kclManager,
             }),
             onDone: {
               target: 'SketchIdle',

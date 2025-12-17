@@ -156,7 +156,8 @@ describe('testing changeSketchArguments', () => {
         type: 'straight-segment',
         from: [0, 0],
         to: [2, 3],
-      }
+      },
+      instanceInThisFile
     )
     if (err(changeSketchArgsRetVal)) return changeSketchArgsRetVal
     expect(recast(changeSketchArgsRetVal.modifiedAst, instanceInThisFile)).toBe(

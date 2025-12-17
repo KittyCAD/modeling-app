@@ -18,7 +18,7 @@ import {
 import { isPathToNode, type Expr, type Program } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { kclManager } from '@src/lib/singletons'
+import type { KclManager } from '@src/lang/KclManager'
 import { err } from '@src/lib/trap'
 import { normaliseAngle } from '@src/lib/utils'
 
@@ -27,9 +27,11 @@ const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 export async function applyConstraintLength({
   length,
   selectionRanges,
+  kclManager,
 }: {
   length: KclCommandValue
   selectionRanges: Selections
+  kclManager: KclManager
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
@@ -68,6 +70,7 @@ export async function applyConstraintLength({
     memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: distanceExpression,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(retval)) return Promise.reject(retval)
 
@@ -88,9 +91,11 @@ export async function applyConstraintLength({
 export async function applyConstraintAngleLength({
   selectionRanges,
   angleOrLength = 'setLength',
+  kclManager,
 }: {
   selectionRanges: Selections
   angleOrLength?: 'setLength' | 'setAngle'
+  kclManager: KclManager
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
@@ -110,6 +115,7 @@ export async function applyConstraintAngleLength({
     transformInfos: transforms,
     memVars: kclManager.variables,
     referenceSegName: '',
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(sketched)) return Promise.reject(sketched)
   const { valueUsedInTransform } = sketched
@@ -163,7 +169,12 @@ export async function applyConstraintAngleLength({
     })
   if (!isExprBinaryPart(valueNode))
     return Promise.reject('Invalid valueNode, is not a BinaryPart')
-  let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
+  let finalValue = removeDoubleNegatives(
+    valueNode,
+    sign,
+    await kclManager.wasmInstancePromise,
+    variableName
+  )
   if (
     isReferencingYAxisAngle ||
     (isReferencingXAxisAngle && calcIdentifier.name.name !== 'ZERO')
@@ -178,6 +189,7 @@ export async function applyConstraintAngleLength({
     memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(retval)) return Promise.reject(retval)
 

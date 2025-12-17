@@ -1014,7 +1014,11 @@ plane001 = offsetPlane(YZ, offset = 10)
       graphSelections: [],
     }
 
-    const result = getSelectedPlaneAsNode(selections, variables)
+    const result = getSelectedPlaneAsNode(
+      selections,
+      variables,
+      instanceInThisFile
+    )
     expect(result).toBeTruthy()
     expect(result?.type).toBe('Literal')
     if (result?.type !== 'Literal') {

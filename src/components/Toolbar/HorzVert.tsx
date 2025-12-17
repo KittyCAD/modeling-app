@@ -10,12 +10,13 @@ import {
 import type { TransformInfo } from '@src/lang/std/stdTypes'
 import type { Expr, Program, VariableMap } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function horzVertInfo(
   selectionRanges: Selections,
-  horOrVert: 'vertical' | 'horizontal'
+  horOrVert: 'vertical' | 'horizontal',
+  ast: Node<Program>
 ):
   | {
       transforms: TransformInfo[]
@@ -23,7 +24,7 @@ export function horzVertInfo(
     }
   | Error {
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
+    const tmp = getNodeFromPath<Expr>(ast, codeRef.pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -37,11 +38,7 @@ export function horzVertInfo(
       toolTips.includes(node.callee.name.name as any)
   )
 
-  const theTransforms = getTransformInfos(
-    selectionRanges,
-    kclManager.ast,
-    horOrVert
-  )
+  const theTransforms = getTransformInfos(selectionRanges, ast, horOrVert)
   if (err(theTransforms)) return theTransforms
 
   const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
@@ -52,14 +49,15 @@ export function applyConstraintHorzVert(
   selectionRanges: Selections,
   horOrVert: 'vertical' | 'horizontal',
   ast: Node<Program>,
-  memVars: VariableMap
+  memVars: VariableMap,
+  wasmInstance: ModuleType
 ):
   | {
       modifiedAst: Node<Program>
       pathToNodeMap: PathToNodeMap
     }
   | Error {
-  const info = horzVertInfo(selectionRanges, horOrVert)
+  const info = horzVertInfo(selectionRanges, horOrVert, ast)
   if (err(info)) return info
   const transformInfos = info.transforms
 
@@ -69,5 +67,6 @@ export function applyConstraintHorzVert(
     transformInfos,
     memVars,
     referenceSegName: '',
+    wasmInstance,
   })
 }

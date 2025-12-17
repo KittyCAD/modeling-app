@@ -739,6 +739,7 @@ export const ModelingMachineProvider = ({
                     input.sketchPathToNode,
                     input.extrudePathToNode,
                     addTagForSketchOnFace,
+                    await kclManager.wasmInstancePromise,
                     input.faceInfo
                   )
                 : sketchOnOffsetPlane(
@@ -778,7 +779,8 @@ export const ModelingMachineProvider = ({
           }
           const { modifiedAst, pathToNode } = startSketchOnDefault(
             kclManager.ast,
-            input.plane
+            input.plane,
+            await kclManager.wasmInstancePromise
           )
           await kclManager.updateAst(modifiedAst, false)
           sceneInfra.camControls.enableRotate =
@@ -801,11 +803,12 @@ export const ModelingMachineProvider = ({
           }
         }),
         'Get horizontal info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
+          async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setHorzDistance',
                 selectionRanges,
+                kclManager,
               })
             const pResult = parse(
               recast(modifiedAst),
@@ -864,11 +867,12 @@ export const ModelingMachineProvider = ({
           }
         ),
         'Get vertical info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
+          async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setVertDistance',
                 selectionRanges,
+                kclManager,
               })
             const pResult = parse(
               recast(modifiedAst),
@@ -926,19 +930,22 @@ export const ModelingMachineProvider = ({
           }
         ),
         'Get angle info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
+          async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
             const info = angleBetweenInfo({
               selectionRanges,
+              kclManager,
             })
             if (err(info)) return Promise.reject(info)
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await (info.enabled
                 ? applyConstraintAngleBetween({
                     selectionRanges,
+                    kclManager,
                   })
                 : applyConstraintAngleLength({
                     selectionRanges,
                     angleOrLength: 'setAngle',
+                    kclManager,
                   }))
             const pResult = parse(
               recast(modifiedAst),
@@ -999,13 +1006,14 @@ export const ModelingMachineProvider = ({
         ),
         astConstrainLength: fromPromise(
           async ({
-            input: { selectionRanges, sketchDetails, lengthValue },
+            input: { selectionRanges, sketchDetails, lengthValue, kclManager },
           }) => {
             if (!lengthValue)
               return Promise.reject(new Error('No length value'))
             const constraintResult = await applyConstraintLength({
               selectionRanges,
               length: lengthValue,
+              kclManager,
             })
             if (err(constraintResult)) return Promise.reject(constraintResult)
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
@@ -1065,10 +1073,11 @@ export const ModelingMachineProvider = ({
           }
         ),
         'Get perpendicular distance info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
+          async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintIntersect({
                 selectionRanges,
+                kclManager,
               })
             const pResult = parse(
               recast(modifiedAst),
@@ -1125,11 +1134,12 @@ export const ModelingMachineProvider = ({
           }
         ),
         'Get ABS X info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
+          async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintAbsDistance({
                 constraint: 'xAbs',
                 selectionRanges,
+                kclManager,
               })
             const pResult = parse(
               recast(modifiedAst),
@@ -1186,11 +1196,12 @@ export const ModelingMachineProvider = ({
           }
         ),
         'Get ABS Y info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
+          async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintAbsDistance({
                 constraint: 'yAbs',
                 selectionRanges,
+                kclManager,
               })
             const pResult = parse(
               recast(modifiedAst),

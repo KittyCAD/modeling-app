@@ -17,8 +17,9 @@ import {
 import type { TransformInfo } from '@src/lang/std/stdTypes'
 import { isPathToNode, type Expr, type Program } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { kclManager } from '@src/lib/singletons'
+import type { KclManager } from '@src/lang/KclManager'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
@@ -27,9 +28,11 @@ type Constraint = 'xAbs' | 'yAbs' | 'snapToYAxis' | 'snapToXAxis'
 export function absDistanceInfo({
   selectionRanges,
   constraint,
+  kclManager,
 }: {
   selectionRanges: Selections
   constraint: Constraint
+  kclManager: KclManager
 }):
   | {
       transforms: TransformInfo[]
@@ -83,9 +86,11 @@ export function absDistanceInfo({
 export async function applyConstraintAbsDistance({
   selectionRanges,
   constraint,
+  kclManager,
 }: {
   selectionRanges: Selections
   constraint: 'xAbs' | 'yAbs'
+  kclManager: KclManager
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
@@ -94,6 +99,7 @@ export async function applyConstraintAbsDistance({
   const info = absDistanceInfo({
     selectionRanges,
     constraint,
+    kclManager,
   })
   if (err(info)) return Promise.reject(info)
   const transformInfos = info.transforms
@@ -104,6 +110,7 @@ export async function applyConstraintAbsDistance({
     transformInfos,
     memVars: kclManager.variables,
     referenceSegName: '',
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(transform1)) return Promise.reject(transform1)
   const { valueUsedInTransform } = transform1
@@ -117,7 +124,12 @@ export async function applyConstraintAbsDistance({
     })
   if (!isExprBinaryPart(valueNode))
     return Promise.reject('Invalid valueNode, is not a BinaryPart')
-  let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
+  let finalValue = removeDoubleNegatives(
+    valueNode,
+    sign,
+    await kclManager.wasmInstancePromise,
+    variableName
+  )
 
   const transform2 = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
@@ -126,6 +138,7 @@ export async function applyConstraintAbsDistance({
     memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(transform2)) return Promise.reject(transform2)
   const { modifiedAst: _modifiedAst, pathToNodeMap } = transform2
@@ -153,9 +166,13 @@ export async function applyConstraintAbsDistance({
 export function applyConstraintAxisAlign({
   selectionRanges,
   constraint,
+  kclManager,
+  wasmInstance,
 }: {
   selectionRanges: Selections
   constraint: 'snapToYAxis' | 'snapToXAxis'
+  kclManager: KclManager
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -165,6 +182,7 @@ export function applyConstraintAxisAlign({
   const info = absDistanceInfo({
     selectionRanges,
     constraint,
+    kclManager,
   })
   if (err(info)) return info
   const transformInfos = info.transforms
@@ -178,5 +196,6 @@ export function applyConstraintAxisAlign({
     memVars: kclManager.variables,
     referenceSegName: '',
     forceValueUsedInTransform: finalValue,
+    wasmInstance,
   })
 }

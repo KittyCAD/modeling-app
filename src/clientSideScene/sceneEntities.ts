@@ -811,7 +811,8 @@ export class SceneEntities {
           sketchDetails.sketchNodePaths,
           sketchDetails.planeNodePath,
           startPoint,
-          'end'
+          'end',
+          await this.kclManager.wasmInstancePromise
         )
 
         if (trap(inserted)) return
@@ -1167,6 +1168,7 @@ export class SceneEntities {
       },
       fnName: segmentName,
       pathToNode: sketchEntryNodePath,
+      wasmInstance: await this.kclManager.wasmInstancePromise,
     })
     if (trap(mod)) return Promise.reject(mod)
     const pResult = parse(
@@ -1346,6 +1348,7 @@ export class SceneEntities {
               fnName: resolvedFunctionName,
               pathToNode: sketchEntryNodePath,
               snaps,
+              wasmInstance: await this.kclManager.wasmInstancePromise,
             })
             if (trap(tmp)) return Promise.reject(tmp)
             modifiedAst = tmp.modifiedAst
@@ -1442,8 +1445,14 @@ export class SceneEntities {
           createLabeledArg(
             ARG_AT,
             createArrayExpression([
-              createLiteral(roundOff(rectangleOrigin[0])),
-              createLiteral(roundOff(rectangleOrigin[1])),
+              createLiteral(
+                roundOff(rectangleOrigin[0]),
+                await this.kclManager.wasmInstancePromise
+              ),
+              createLiteral(
+                roundOff(rectangleOrigin[1]),
+                await this.kclManager.wasmInstancePromise
+              ),
             ])
           ),
         ]
@@ -1483,7 +1492,10 @@ export class SceneEntities {
     // as draft segments
     startProfileAt.init = createPipeExpression([
       startProfileAt?.init,
-      ...getRectangleCallExpressions(tag),
+      ...getRectangleCallExpressions(
+        tag,
+        await this.kclManager.wasmInstancePromise
+      ),
     ])
 
     const code = recast(_ast)
@@ -1530,7 +1542,13 @@ export class SceneEntities {
         const y = snappedPoint[1] - rectangleOrigin[1]
 
         if (sketchInit.type === 'PipeExpression') {
-          updateRectangleSketch(sketchInit, x, y, tag)
+          updateRectangleSketch(
+            sketchInit,
+            x,
+            y,
+            tag,
+            await this.kclManager.wasmInstancePromise
+          )
         }
 
         const { execState } = await executeAstMock({
@@ -1586,7 +1604,13 @@ export class SceneEntities {
           return
         }
 
-        updateRectangleSketch(sketchInit, x, y, tag)
+        updateRectangleSketch(
+          sketchInit,
+          x,
+          y,
+          tag,
+          await this.kclManager.wasmInstancePromise
+        )
 
         const newCode = recast(_ast)
         const pResult = parse(
@@ -1648,8 +1672,14 @@ export class SceneEntities {
           createLabeledArg(
             ARG_AT,
             createArrayExpression([
-              createLiteral(roundOff(rectangleOrigin[0])),
-              createLiteral(roundOff(rectangleOrigin[1])),
+              createLiteral(
+                roundOff(rectangleOrigin[0]),
+                await this.kclManager.wasmInstancePromise
+              ),
+              createLiteral(
+                roundOff(rectangleOrigin[1]),
+                await this.kclManager.wasmInstancePromise
+              ),
             ])
           ),
         ]
@@ -1688,7 +1718,10 @@ export class SceneEntities {
     // as draft segments
     startProfileAt.init = createPipeExpression([
       startProfileAt?.init,
-      ...getRectangleCallExpressions(tag),
+      ...getRectangleCallExpressions(
+        tag,
+        await this.kclManager.wasmInstancePromise
+      ),
     ])
     const code = recast(_ast)
     __recastAst = parse(code, await this.kclManager.wasmInstancePromise)
@@ -1937,7 +1970,8 @@ export class SceneEntities {
                 args.intersects,
                 args.mouseEvent
               ).snappedPoint,
-            }
+            },
+            await this.kclManager.wasmInstancePromise
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
@@ -2002,7 +2036,8 @@ export class SceneEntities {
                 args.intersects,
                 args.mouseEvent
               ).snappedPoint,
-            }
+            },
+            await this.kclManager.wasmInstancePromise
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
@@ -2083,6 +2118,7 @@ export class SceneEntities {
       },
       fnName: 'arc' as ToolTip,
       pathToNode: sketchEntryNodePath,
+      wasmInstance: await this.kclManager.wasmInstancePromise,
     })
 
     if (trap(mod)) return Promise.reject(mod)
@@ -2152,7 +2188,8 @@ export class SceneEntities {
               center: center,
               radius: radius,
               ccw: true,
-            }
+            },
+            await this.kclManager.wasmInstancePromise
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
@@ -2229,7 +2266,8 @@ export class SceneEntities {
               center: center,
               radius: radius,
               ccw: true,
-            }
+            },
+            await this.kclManager.wasmInstancePromise
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
@@ -2300,6 +2338,7 @@ export class SceneEntities {
       },
       fnName: 'arcTo',
       pathToNode: sketchEntryNodePath,
+      wasmInstance: await this.kclManager.wasmInstancePromise,
     })
 
     if (trap(mod)) return Promise.reject(mod)
@@ -2374,10 +2413,12 @@ export class SceneEntities {
               p1,
               p2,
               p3: [maybeSnapToProfileStart.x, maybeSnapToProfileStart.y],
-            }
+            },
+            await this.kclManager.wasmInstancePromise
           )
           if (err(moddedResult)) return
-          modded = moddedResult.modifiedAst
+          ;(modded = moddedResult.modifiedAst),
+            await this.kclManager.wasmInstancePromise
         }
         const { execState } = await executeAstMock({
           ast: modded,
@@ -2447,7 +2488,8 @@ export class SceneEntities {
                 args.intersects,
                 args.mouseEvent
               ).snappedPoint,
-            }
+            },
+            await this.kclManager.wasmInstancePromise
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
@@ -2540,11 +2582,20 @@ export class SceneEntities {
           createLabeledArg(
             'center',
             createArrayExpression([
-              createLiteral(roundOff(circleCenter[0])),
-              createLiteral(roundOff(circleCenter[1])),
+              createLiteral(
+                roundOff(circleCenter[0]),
+                await this.kclManager.wasmInstancePromise
+              ),
+              createLiteral(
+                roundOff(circleCenter[1]),
+                await this.kclManager.wasmInstancePromise
+              ),
             ])
           ),
-          createLabeledArg('radius', createLiteral(1)),
+          createLabeledArg(
+            'radius',
+            createLiteral(1, await this.kclManager.wasmInstancePromise)
+          ),
         ]
       )
     )
@@ -2614,7 +2665,8 @@ export class SceneEntities {
               from: circleCenter,
               to: circleCenter, // Same as from for a full circle
               ccw: true,
-            }
+            },
+            await this.kclManager.wasmInstancePromise
           )
           if (err(moddedResult)) {
             return
@@ -2682,7 +2734,8 @@ export class SceneEntities {
               from: circleCenter,
               to: circleCenter, // Same as from for a full circle
               ccw: true,
-            }
+            },
+            await this.kclManager.wasmInstancePromise
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
@@ -2801,6 +2854,7 @@ export class SceneEntities {
               fnName: 'line',
               pathToNode: pathToNode,
               spliceBetween: true,
+              wasmInstance: await this.kclManager.wasmInstancePromise,
             })
             addingNewSegmentStatus = 'pending'
             if (trap(mod)) return
@@ -3374,6 +3428,7 @@ export class SceneEntities {
           from,
         },
         variables: this.kclManager.variables,
+        wasmInstance: await this.kclManager.wasmInstancePromise,
       })
     } else {
       modded = changeSketchArguments(
@@ -3383,7 +3438,8 @@ export class SceneEntities {
           type: 'sourceRange',
           sourceRange: topLevelRange(node.start, node.end),
         },
-        getChangeSketchInput()
+        getChangeSketchInput(),
+        await this.kclManager.wasmInstancePromise
       )
     }
     if (trap(modded)) return
@@ -4061,7 +4117,10 @@ function prepareTruncatedAst(
       newSegment = createCallExpressionStdLibKw('line', null, [
         createLabeledArg(
           ARG_END,
-          createArrayExpression([createLiteral(0), createLiteral(0)])
+          createArrayExpression([
+            createLiteral(0, wasmInstance),
+            createLiteral(0, wasmInstance),
+          ])
         ),
       ])
     } else {
@@ -4069,8 +4128,8 @@ function prepareTruncatedAst(
         createLabeledArg(
           ARG_END_ABSOLUTE,
           createArrayExpression([
-            createLiteral(lastSeg.to[0]),
-            createLiteral(lastSeg.to[1]),
+            createLiteral(lastSeg.to[0], wasmInstance),
+            createLiteral(lastSeg.to[1], wasmInstance),
           ])
         ),
       ])

@@ -106,11 +106,12 @@ export interface addCall extends ModifyAstBase {
     xAxis?: boolean
     yAxis?: boolean
   }
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 }
 
 interface updateArgs extends ModifyAstBase {
   input: SegmentInputs
+  wasmInstance: ModuleType
 }
 
 export type InputArgKeys =
@@ -265,7 +266,7 @@ export type CreateStdLibSketchCallExpr = (args: {
   tag?: Node<Expr>
   forceValueUsedInTransform?: BinaryPart
   referencedSegment?: Path
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 }) => CreatedSketchExprResult | Error
 
 export type TransformInfo = {

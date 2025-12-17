@@ -25,15 +25,17 @@ import {
   type VariableDeclarator,
 } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
+import type { KclManager } from '@src/lang/KclManager'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
 export function intersectInfo({
   selectionRanges,
+  kclManager,
 }: {
   selectionRanges: Selections
+  kclManager: KclManager
 }):
   | {
       transforms: TransformInfo[]
@@ -136,8 +138,10 @@ export function intersectInfo({
 
 export async function applyConstraintIntersect({
   selectionRanges,
+  kclManager,
 }: {
   selectionRanges: Selections
+  kclManager: KclManager
 }): Promise<{
   modifiedAst: Node<Program>
   pathToNodeMap: PathToNodeMap
@@ -145,6 +149,7 @@ export async function applyConstraintIntersect({
 }> {
   const info = intersectInfo({
     selectionRanges,
+    kclManager,
   })
   if (err(info)) return Promise.reject(info)
   const { transforms, forcedSelectionRanges } = info
@@ -154,6 +159,7 @@ export async function applyConstraintIntersect({
     selectionRanges: forcedSelectionRanges,
     transformInfos: transforms,
     memVars: kclManager.variables,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(transform1)) return Promise.reject(transform1)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
@@ -187,7 +193,12 @@ export async function applyConstraintIntersect({
   // transform again but forcing certain values
   if (!isExprBinaryPart(valueNode))
     return Promise.reject('Invalid valueNode, is not a BinaryPart')
-  const finalValue = removeDoubleNegatives(valueNode, sign, variableName)
+  const finalValue = removeDoubleNegatives(
+    valueNode,
+    sign,
+    await kclManager.wasmInstancePromise,
+    variableName
+  )
   const transform2 = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
     selectionRanges: forcedSelectionRanges,
@@ -195,6 +206,7 @@ export async function applyConstraintIntersect({
     memVars: kclManager.variables,
     forceSegName: segName,
     forceValueUsedInTransform: finalValue,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(transform2)) return Promise.reject(transform2)
   const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =

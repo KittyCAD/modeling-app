@@ -68,6 +68,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 export function startSketchOnDefault(
   node: Node<Program>,
   axis: DefaultPlaneStr,
+  wasmInstance: ModuleType,
   name = ''
 ): { modifiedAst: Node<Program>; id: string; pathToNode: PathToNode } {
   const _node = { ...node }
@@ -76,7 +77,7 @@ export function startSketchOnDefault(
 
   const startSketchOn = createCallExpressionStdLibKw(
     'startSketchOn',
-    createLiteral(axis),
+    createLiteral(axis, wasmInstance),
     []
   )
 
@@ -103,7 +104,8 @@ export function insertNewStartProfileAt(
   sketchNodePaths: PathToNode[],
   planeNodePath: PathToNode,
   at: Coords2d,
-  insertType: 'start' | 'end' = 'end'
+  insertType: 'start' | 'end' = 'end',
+  wasmInstance: ModuleType
 ):
   | {
       modifiedAst: Node<Program>
@@ -128,8 +130,8 @@ export function insertNewStartProfileAt(
         createLabeledArg(
           ARG_AT,
           createArrayExpression([
-            createLiteral(roundOff(at[0])),
-            createLiteral(roundOff(at[1])),
+            createLiteral(roundOff(at[0]), wasmInstance),
+            createLiteral(roundOff(at[1]), wasmInstance),
           ])
         ),
       ]
@@ -157,6 +159,7 @@ export function insertNewStartProfileAt(
 export function addSketchTo(
   node: Node<Program>,
   axis: 'xy' | 'xz' | 'yz',
+  wasmInstance: ModuleType,
   name = ''
 ): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
   const _node = { ...node }
@@ -165,16 +168,16 @@ export function addSketchTo(
 
   const startSketchOn = createCallExpressionStdLibKw(
     'startSketchOn',
-    createLiteral(axis.toUpperCase()),
+    createLiteral(axis.toUpperCase(), wasmInstance),
     []
   )
   const startProfile = createCallExpressionStdLibKw('startProfile', null, [
-    createLabeledArg(ARG_AT, createLiteral('default')),
+    createLabeledArg(ARG_AT, createLiteral('default', wasmInstance)),
   ])
   const initialLineTo = createCallExpressionStdLibKw(
     'line',
     null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
-    [createLabeledArg('end', createLiteral('default'))]
+    [createLabeledArg('end', createLiteral('default', wasmInstance))]
   )
 
   const pipeBody = [startSketchOn, startProfile, initialLineTo]
@@ -283,6 +286,7 @@ export function sketchOnExtrudedFace(
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
   addTagForSketchOnFace: typeof AddTagForSketchOnFaceFn,
+  wasmInstance: ModuleType,
   info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   let _node = { ...node }
@@ -330,7 +334,7 @@ export function sketchOnExtrudedFace(
     _tag = createLocalName(tag)
     _node = modifiedAst
   } else {
-    _tag = createLiteral(info.subType.toUpperCase())
+    _tag = createLiteral(info.subType.toUpperCase(), wasmInstance)
   }
   const newSketch = createVariableDeclaration(
     newSketchName,
@@ -1086,7 +1090,8 @@ export function setCallInAst({
 }
 
 export function createPoint2dExpression(
-  value: KclExpression
+  value: KclExpression,
+  wasmInstance: ModuleType
 ): Node<Expr> | Error {
   let expr: Node<Expr> | undefined
   if ('value' in value && isArray(value.value)) {
@@ -1098,7 +1103,7 @@ export function createPoint2dExpression(
         typeof val === 'string' ||
         typeof val === 'boolean'
       ) {
-        arrayElements.push(createLiteral(val))
+        arrayElements.push(createLiteral(val, wasmInstance))
       } else {
         return new Error('Invalid value type for point2d')
       }

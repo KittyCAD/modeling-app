@@ -12,6 +12,7 @@ import type { Expr, Program, VariableDeclarator } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function equalAngleInfo({
   selectionRanges,
@@ -79,8 +80,10 @@ export function equalAngleInfo({
 
 export function applyConstraintEqualAngle({
   selectionRanges,
+  wasmInstance,
 }: {
   selectionRanges: Selections
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Program
@@ -96,6 +99,7 @@ export function applyConstraintEqualAngle({
     selectionRanges,
     transformInfos: transforms,
     memVars: kclManager.variables,
+    wasmInstance,
   })
   if (err(transform)) return transform
   const { modifiedAst, pathToNodeMap } = transform

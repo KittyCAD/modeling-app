@@ -57,12 +57,14 @@ export function addShell({
   faces,
   thickness,
   nodeToEdit,
+  wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   faces: Selections
   thickness: KclCommandValue
   nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -81,6 +83,7 @@ export function addShell({
     faces,
     artifactGraph,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup
   )
@@ -139,6 +142,7 @@ export function addHole({
   holeBottom,
   drillPointAngle,
   nodeToEdit,
+  wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
@@ -155,6 +159,7 @@ export function addHole({
   holeBottom: HoleBottom
   drillPointAngle?: KclCommandValue
   nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -171,6 +176,7 @@ export function addHole({
     face,
     artifactGraph,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     ['compositeSolid', 'sweep']
@@ -266,7 +272,7 @@ export function addHole({
     return new Error('Unsupported hole type or missing parameters')
   }
 
-  let cutAtExpr = createPoint2dExpression(cutAt)
+  let cutAtExpr = createPoint2dExpression(cutAt, wasmInstance)
   if (err(cutAtExpr)) return cutAtExpr
 
   const call = createCallExpressionStdLibKw(
@@ -605,6 +611,7 @@ export function addOffsetPlane({
   plane,
   offset,
   nodeToEdit,
+  wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
@@ -612,6 +619,7 @@ export function addOffsetPlane({
   plane: Selections
   offset: KclCommandValue
   nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -635,6 +643,7 @@ export function addOffsetPlane({
       plane,
       artifactGraph,
       modifiedAst,
+      wasmInstance,
       mNodeToEdit
     )
     if (err(result)) {
@@ -646,7 +655,7 @@ export function addOffsetPlane({
       createLabeledArg('face', facesExpr),
     ])
   } else {
-    planeExpr = getSelectedPlaneAsNode(plane, variables)
+    planeExpr = getSelectedPlaneAsNode(plane, variables, wasmInstance)
     if (!planeExpr) {
       return new Error('No plane found in the selection')
     }
@@ -685,7 +694,8 @@ export function addOffsetPlane({
 function getFacesExprsFromSelection(
   ast: Node<Program>,
   faces: Selections,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
 ) {
   return faces.graphSelections.flatMap((face) => {
     if (!face.artifact) {
@@ -694,7 +704,7 @@ function getFacesExprsFromSelection(
     }
     const artifact = face.artifact
     if (artifact.type === 'cap') {
-      return createLiteral(artifact.subType)
+      return createLiteral(artifact.subType, wasmInstance)
     } else if (artifact.type === 'wall' || artifact.type === 'edgeCut') {
       let targetArtifact: Artifact | undefined
       let edgeCutMeta: EdgeCutInfo | null = null
@@ -904,6 +914,7 @@ export function buildSolidsAndFacesExprs(
   faces: Selections,
   artifactGraph: ArtifactGraph,
   modifiedAst: Node<Program>,
+  wasmInstance: ModuleType,
   nodeToEdit?: PathToNode,
   lastChildLookup = true,
   artifactTypeFilter: Array<Artifact['type']> = ['sweep']
@@ -941,7 +952,8 @@ export function buildSolidsAndFacesExprs(
   const facesExprs = getFacesExprsFromSelection(
     modifiedAst,
     faces,
-    artifactGraph
+    artifactGraph,
+    wasmInstance
   )
   const facesExpr = createVariableExpressionsArray(facesExprs)
   if (!facesExpr) {

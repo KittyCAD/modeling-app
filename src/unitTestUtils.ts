@@ -64,7 +64,7 @@ export async function buildTheWorldAndConnectToEngine() {
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
   const engineCommandManager = new ConnectionManager()
   const commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [] },
+    input: { commands: [], wasmInstancePromise: instancePromise },
   }).start()
   const settingsActor = createActor(settingsMachine, {
     input: { commandBarActor, ...createSettings() },
@@ -136,7 +136,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     : loadWasm()
   const engineCommandManager = new ConnectionManager()
   const commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [] },
+    input: { commands: [], wasmInstancePromise: instancePromise },
   }).start()
   const settingsActor = createActor(settingsMachine, {
     input: { commandBarActor, ...createSettings() },

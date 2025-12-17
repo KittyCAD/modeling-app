@@ -1156,12 +1156,12 @@ p3 = [342.51, 216.38],
                   valueCalculated: '20',
                   variableDeclarationAst: createVariableDeclaration(
                     'test_variable',
-                    createLiteral('20')
+                    createLiteral('20', instanceInThisFile)
                   ),
                   variableIdentifierAst: createIdentifier(
                     'test_variable'
                   ) as any,
-                  valueAst: createLiteral('20'),
+                  valueAst: createLiteral('20', instanceInThisFile),
                 },
               },
             })

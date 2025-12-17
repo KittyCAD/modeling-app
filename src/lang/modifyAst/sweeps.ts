@@ -45,11 +45,13 @@ import {
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function addExtrude({
   ast,
   artifactGraph,
   sketches,
+  wasmInstance,
   length,
   to,
   symmetric,
@@ -66,6 +68,7 @@ export function addExtrude({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   sketches: Selections
+  wasmInstance: ModuleType
   length?: KclCommandValue
   to?: Selections
   symmetric?: boolean
@@ -115,7 +118,7 @@ export function addExtrude({
     toExpr = [createLabeledArg('to', createLocalName(tagResult.tags[0]))]
   }
   const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric))]
+    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
     : []
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
@@ -139,7 +142,10 @@ export function addExtrude({
     : []
   let twistCenterExpr: LabeledArg[] = []
   if (twistCenter) {
-    const twistCenterExpression = createPoint2dExpression(twistCenter)
+    const twistCenterExpression = createPoint2dExpression(
+      twistCenter,
+      wasmInstance
+    )
     if (err(twistCenterExpression)) return twistCenterExpression
     twistCenterExpr = [createLabeledArg('twistCenter', twistCenterExpression)]
   }
@@ -229,6 +235,7 @@ export function addSweep({
   ast,
   sketches,
   path,
+  wasmInstance,
   sectional,
   relativeTo,
   tagStart,
@@ -238,6 +245,7 @@ export function addSweep({
   ast: Node<Program>
   sketches: Selections
   path: Selections
+  wasmInstance: ModuleType
   sectional?: boolean
   relativeTo?: SweepRelativeTo
   tagStart?: string
@@ -274,7 +282,7 @@ export function addSweep({
   // Extra labeled args expressions
   const pathExpr = createLocalName(pathDeclaration.node.declaration.id.name)
   const sectionalExpr = sectional
-    ? [createLabeledArg('sectional', createLiteral(sectional))]
+    ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
     : []
   const relativeToExpr = relativeTo
     ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
@@ -317,6 +325,7 @@ export function addSweep({
 export function addLoft({
   ast,
   sketches,
+  wasmInstance,
   vDegree,
   bezApproximateRational,
   baseCurveIndex,
@@ -326,6 +335,7 @@ export function addLoft({
 }: {
   ast: Node<Program>
   sketches: Selections
+  wasmInstance: ModuleType
   vDegree?: KclCommandValue
   bezApproximateRational?: boolean
   baseCurveIndex?: KclCommandValue
@@ -357,7 +367,7 @@ export function addLoft({
     ? [
         createLabeledArg(
           'bezApproximateRational',
-          createLiteral(bezApproximateRational)
+          createLiteral(bezApproximateRational, wasmInstance)
         ),
       ]
     : []
@@ -415,6 +425,7 @@ export function addRevolve({
   ast,
   sketches,
   angle,
+  wasmInstance,
   axis,
   edge,
   symmetric,
@@ -426,6 +437,7 @@ export function addRevolve({
   ast: Node<Program>
   sketches: Selections
   angle: KclCommandValue
+  wasmInstance: ModuleType
   axis?: string
   edge?: Selections
   symmetric?: boolean
@@ -458,7 +470,7 @@ export function addRevolve({
 
   // Extra labeled args expressions
   const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric))]
+    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
     : []
   const bidirectionalAngleExpr = bidirectionalAngle
     ? [

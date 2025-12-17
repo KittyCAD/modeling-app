@@ -1284,7 +1284,8 @@ export function getSelectedSketchTarget(
 
 export function getSelectedPlaneAsNode(
   selection: Selections,
-  variables: VariableMap
+  variables: VariableMap,
+  wasmInstance: ModuleType
 ): Node<Name> | Node<Literal> | undefined {
   const defaultPlane = selection.otherSelections.find(
     (selection) => typeof selection === 'object' && 'name' in selection
@@ -1294,7 +1295,7 @@ export function getSelectedPlaneAsNode(
     defaultPlane instanceof Object &&
     'name' in defaultPlane
   ) {
-    return createLiteral(defaultPlane.name.toUpperCase())
+    return createLiteral(defaultPlane.name.toUpperCase(), wasmInstance)
   }
 
   const offsetPlane = selection.graphSelections.find(

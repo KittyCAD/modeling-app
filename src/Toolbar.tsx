@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useRef, useState } from 'react'
+import { memo, use, useCallback, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useAppState } from '@src/AppState'
@@ -25,11 +25,13 @@ import type {
 } from '@src/lib/toolbar'
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
 import { EngineConnectionStateType } from '@src/network/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function Toolbar({
   className = '',
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const { state, send, context } = useModelingContext()
 
   const iconClassName =
@@ -151,15 +153,18 @@ export function Toolbar({
       } else if (isToolbarDropdown(maybeIconConfig)) {
         return {
           id: maybeIconConfig.id,
-          array: maybeIconConfig.array.map((item) => resolveItemConfig(item)),
+          array: maybeIconConfig.array.map((item) =>
+            resolveItemConfig(item, wasmInstance)
+          ),
         }
       } else {
-        return resolveItemConfig(maybeIconConfig)
+        return resolveItemConfig(maybeIconConfig, wasmInstance)
       }
     })
 
     function resolveItemConfig(
-      maybeIconConfig: ToolbarItem
+      maybeIconConfig: ToolbarItem,
+      wasmInstance: ModuleType
     ): ToolbarItemResolved {
       const isConfiguredAvailable = ['available', 'experimental'].includes(
         maybeIconConfig.status
@@ -167,7 +172,7 @@ export function Toolbar({
       const isDisabled =
         disableAllButtons ||
         !isConfiguredAvailable ||
-        maybeIconConfig.disabled?.(state) === true
+        maybeIconConfig.disabled?.(state, wasmInstance) === true
 
       // Calculate the isActive state for this specific item
       const itemIsActive = maybeIconConfig.isActive?.(state) || false
@@ -203,7 +208,7 @@ export function Toolbar({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [currentMode, disableAllButtons, configCallbackProps])
+  }, [currentMode, disableAllButtons, configCallbackProps, wasmInstance])
 
   // To remember the last selected item in an ActionButtonDropdown
   const [lastSelectedMultiActionItem, _] = useState(

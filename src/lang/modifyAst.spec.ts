@@ -82,21 +82,21 @@ afterAll(() => {
 
 describe('Testing createLiteral', () => {
   it('should create a literal number without units', () => {
-    const result = createLiteral(5, undefined, instanceInThisFile)
+    const result = createLiteral(5, instanceInThisFile)
     expect(result.type).toBe('Literal')
     expect((result as any).value.value).toBe(5)
     expect((result as any).value.suffix).toBe('None')
     expect((result as Literal).raw).toBe('5')
   })
   it('should create a literal number with units', () => {
-    const result = createLiteral(5, 'Mm', instanceInThisFile)
+    const result = createLiteral(5, instanceInThisFile, 'Mm')
     expect(result.type).toBe('Literal')
     expect((result as any).value.value).toBe(5)
     expect((result as any).value.suffix).toBe('Mm')
     expect((result as Literal).raw).toBe('5mm')
   })
   it('should create a literal boolean', () => {
-    const result = createLiteral(false, undefined, instanceInThisFile)
+    const result = createLiteral(false, instanceInThisFile)
     expect(result.type).toBe('Literal')
     expect((result as Literal).value).toBe(false)
     expect((result as Literal).raw).toBe('false')
@@ -112,7 +112,7 @@ describe('Testing createIdentifier', () => {
 describe('Testing createObjectExpression', () => {
   it('should create an object expression', () => {
     const result = createObjectExpression({
-      myProp: createLiteral(5, undefined, instanceInThisFile),
+      myProp: createLiteral(5, instanceInThisFile),
     })
     expect(result.type).toBe('ObjectExpression')
     expect(result.properties[0].type).toBe('ObjectProperty')
@@ -123,9 +123,7 @@ describe('Testing createObjectExpression', () => {
 })
 describe('Testing createArrayExpression', () => {
   it('should create an array expression', () => {
-    const result = createArrayExpression([
-      createLiteral(5, undefined, instanceInThisFile),
-    ])
+    const result = createArrayExpression([createLiteral(5, instanceInThisFile)])
     expect(result.type).toBe('ArrayExpression')
     expect(result.elements[0].type).toBe('Literal')
     expect((result.elements[0] as any).value.value).toBe(5)
@@ -141,7 +139,7 @@ describe('Testing createVariableDeclaration', () => {
   it('should create a variable declaration', () => {
     const result = createVariableDeclaration(
       'myVar',
-      createLiteral(5, undefined, instanceInThisFile)
+      createLiteral(5, instanceInThisFile)
     )
     expect(result.type).toBe('VariableDeclaration')
     expect(result.declaration.type).toBe('VariableDeclarator')
@@ -153,9 +151,7 @@ describe('Testing createVariableDeclaration', () => {
 })
 describe('Testing createPipeExpression', () => {
   it('should create a pipe expression', () => {
-    const result = createPipeExpression([
-      createLiteral(5, undefined, instanceInThisFile),
-    ])
+    const result = createPipeExpression([createLiteral(5, instanceInThisFile)])
     expect(result.type).toBe('PipeExpression')
     expect(result.body[0].type).toBe('Literal')
     expect((result.body[0] as any).value.value).toBe(5)
@@ -278,7 +274,8 @@ describe('Testing addSketchTo', () => {
         preComments: [],
         commentStart: 0,
       },
-      'yz'
+      'yz',
+      instanceInThisFile
     )
     const str = recast(result.modifiedAst, instanceInThisFile)
     expect(str).toBe(`sketch001 = startSketchOn(YZ)
@@ -467,7 +464,8 @@ describe('testing sketchOnExtrudedFace', () => {
       ast,
       segmentPathToNode,
       extrudePathToNode,
-      addTagForSketchOnFace
+      addTagForSketchOnFace,
+      instanceInThisFile
     )
     if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
@@ -506,7 +504,8 @@ sketch001 = startSketchOn(part001, face = seg01)`)
       ast,
       segmentPathToNode,
       extrudePathToNode,
-      addTagForSketchOnFace
+      addTagForSketchOnFace,
+      instanceInThisFile
     )
     if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
@@ -546,6 +545,7 @@ sketch001 = startSketchOn(part001, face = seg01)`)
       sketchPathToNode,
       extrudePathToNode,
       addTagForSketchOnFace,
+      instanceInThisFile,
       { type: 'cap', subType: 'end' }
     )
     if (err(extruded)) throw extruded
@@ -593,7 +593,8 @@ sketch001 = startSketchOn(part001, face = END)`)
       ast,
       segmentPathToNode,
       extrudePathToNode,
-      addTagForSketchOnFace
+      addTagForSketchOnFace,
+      instanceInThisFile
     )
     if (err(updatedAst)) throw updatedAst
     const newCode = recast(updatedAst.modifiedAst, instanceInThisFile)
@@ -900,6 +901,7 @@ sketch003 = startSketchOn(XZ)
         },
         execState.variables,
         execState.artifactGraph,
+        instanceInThisFile,
         async () => {
           await new Promise((resolve) => setTimeout(resolve, 100))
           return {
@@ -1126,10 +1128,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       createLocalName('profile001'),
     ])
     const call = createCallExpressionStdLibKw('extrude', exprs, [
-      createLabeledArg(
-        'length',
-        createLiteral(5, undefined, instanceInThisFile)
-      ),
+      createLabeledArg('length', createLiteral(5, instanceInThisFile)),
     ])
     const pathToNode = setCallInAst({ ast, call, variableIfNewDecl: 'extrude' })
     if (err(pathToNode)) {
@@ -1166,10 +1165,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     if (err(vars)) throw vars
     const exprs = createVariableExpressionsArray(vars.exprs)
     const call = createCallExpressionStdLibKw('extrude', exprs, [
-      createLabeledArg(
-        'length',
-        createLiteral(5, undefined, instanceInThisFile)
-      ),
+      createLabeledArg('length', createLiteral(5, instanceInThisFile)),
     ])
     const pathToNode = setCallInAst({
       ast,
@@ -1210,10 +1206,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     if (err(vars)) throw vars
     const exprs = createVariableExpressionsArray(vars.exprs)
     const call = createCallExpressionStdLibKw('extrude', exprs, [
-      createLabeledArg(
-        'length',
-        createLiteral(5, undefined, instanceInThisFile)
-      ),
+      createLabeledArg('length', createLiteral(5, instanceInThisFile)),
     ])
     const pathToNode = setCallInAst({
       ast,

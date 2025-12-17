@@ -107,5 +107,6 @@ export function applyRemoveConstrainingValues({
     transformInfos: transforms,
     memVars: kclManager.variables,
     referenceSegName: '',
+    wasmInstance,
   })
 }

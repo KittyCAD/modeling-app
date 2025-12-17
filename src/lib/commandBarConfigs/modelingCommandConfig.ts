@@ -558,6 +558,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Extrude']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -652,6 +653,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addSweep({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Sweep']),
         ast: kclManager.ast,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -714,6 +716,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addLoft({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Loft']),
         ast: kclManager.ast,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -768,6 +771,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const modRes = addRevolve({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Revolve']),
         ast: kclManager.ast,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -857,6 +861,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Shell']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -898,6 +903,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Hole']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1135,6 +1141,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
         variables: kclManager.variables,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1175,6 +1182,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Helix']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1377,7 +1385,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         required: true,
         createVariable: 'byDefault',
-        defaultValue(_, machineContext) {
+        defaultValue(_, machineContext, wasmInstance) {
           const selectionRanges = machineContext?.selectionRanges
           if (!selectionRanges) return KCL_DEFAULT_LENGTH
           const angleLength = angleLengthInfo({
@@ -1385,7 +1393,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             angleOrLength: 'setLength',
             kclManager,
           })
-          if (err(angleLength)) return KCL_DEFAULT_LENGTH
+          if (err(angleLength) || !wasmInstance) return KCL_DEFAULT_LENGTH
           const { transforms } = angleLength
 
           // QUESTION: is it okay to reference kclManager here? will its state be up to date?
@@ -1395,6 +1403,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             transformInfos: transforms,
             memVars: kclManager.variables,
             referenceSegName: '',
+            wasmInstance,
           })
           if (err(sketched)) return KCL_DEFAULT_LENGTH
           const { valueUsedInTransform } = sketched
@@ -1459,6 +1468,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Appearance']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1507,6 +1517,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Translate']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1560,6 +1571,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Rotate']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1613,6 +1625,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Scale']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1729,6 +1742,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Pattern Circular 3D']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1796,6 +1810,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Pattern Linear 3D']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1855,6 +1870,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Flatness']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1926,6 +1942,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Datum']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await context.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(

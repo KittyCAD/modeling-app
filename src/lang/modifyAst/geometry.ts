@@ -25,10 +25,12 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function addHelix({
   ast,
   artifactGraph,
+  wasmInstance,
   axis,
   edge,
   cylinder,
@@ -41,6 +43,7 @@ export function addHelix({
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
   axis?: string
   cylinder?: Selections
   edge?: Selections
@@ -90,7 +93,9 @@ export function addHelix({
   }
 
   // Optional args
-  const ccwExpr = ccw ? [createLabeledArg('ccw', createLiteral(ccw))] : []
+  const ccwExpr = ccw
+    ? [createLabeledArg('ccw', createLiteral(ccw, wasmInstance))]
+    : []
   const radiusExpr = radius
     ? [createLabeledArg('radius', valueOrVariable(radius))]
     : []

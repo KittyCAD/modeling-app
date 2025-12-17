@@ -21,6 +21,7 @@ import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /**
  * Adds flatness GD&T annotation(s) to the AST.
@@ -44,6 +45,7 @@ export function addFlatnessGdt({
   artifactGraph,
   faces,
   tolerance,
+  wasmInstance,
   precision,
   framePosition,
   framePlane,
@@ -55,6 +57,7 @@ export function addFlatnessGdt({
   artifactGraph: ArtifactGraph
   faces: Selections
   tolerance: KclCommandValue
+  wasmInstance: ModuleType
   precision?: KclCommandValue
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
@@ -123,6 +126,7 @@ export function addFlatnessGdt({
   const styleResult = processGdtStyleParameters({
     modifiedAst,
     nodeToEdit,
+    wasmInstance,
     framePosition,
     framePlane,
     fontPointSize,
@@ -212,6 +216,7 @@ export function addDatumGdt({
   artifactGraph,
   faces,
   name,
+  wasmInstance,
   framePosition,
   framePlane,
   fontPointSize,
@@ -222,6 +227,7 @@ export function addDatumGdt({
   artifactGraph: ArtifactGraph
   faces: Selections
   name: string
+  wasmInstance: ModuleType
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
   fontPointSize?: KclCommandValue
@@ -278,6 +284,7 @@ export function addDatumGdt({
   // Process common GDT style parameters
   const styleResult = processGdtStyleParameters({
     modifiedAst,
+    wasmInstance,
     nodeToEdit: mNodeToEdit,
     framePosition,
     framePlane,
@@ -289,7 +296,7 @@ export function addDatumGdt({
   // Build labeled arguments starting with function-specific parameters
   const labeledArgs = [
     createLabeledArg('face', faceExpr),
-    createLabeledArg('name', createLiteral(name)),
+    createLabeledArg('name', createLiteral(name, wasmInstance)),
   ]
 
   // Add common style parameter labeled arguments
@@ -400,7 +407,13 @@ export function getUsedDatumNames(ast: Node<Program>): string[] {
  * @param ast - The AST program node to scan for existing datum names
  * @returns The next available datum character, or 'A' as fallback if all letters are used
  */
-export function getNextAvailableDatumName(ast: Node<Program>): string {
+export function getNextAvailableDatumName(ast?: Node<Program>): string {
+  // Fallback if all A-Z are used (unlikely but safe)
+  const fallback = 'A'
+  if (!ast) {
+    return fallback
+  }
+
   const usedNames = getUsedDatumNames(ast)
   const usedNamesSet = new Set(usedNames.map((name) => name.toUpperCase()))
 
@@ -412,8 +425,7 @@ export function getNextAvailableDatumName(ast: Node<Program>): string {
     }
   }
 
-  // Fallback if all A-Z are used (unlikely but safe)
-  return 'A'
+  return fallback
 }
 
 /**
@@ -431,6 +443,7 @@ export function getNextAvailableDatumName(ast: Node<Program>): string {
  */
 function processGdtStyleParameters({
   modifiedAst,
+  wasmInstance,
   nodeToEdit,
   framePosition,
   framePlane,
@@ -438,6 +451,7 @@ function processGdtStyleParameters({
   fontScale,
 }: {
   modifiedAst: Node<Program>
+  wasmInstance: ModuleType
   nodeToEdit?: PathToNode
   framePosition?: KclCommandValue
   framePlane?: KclCommandValue | string
@@ -491,7 +505,10 @@ function processGdtStyleParameters({
 
   // Handle framePosition parameter - should be Point2d [x, y]
   if (framePosition) {
-    const framePositionExpr = createPoint2dExpression(framePosition)
+    const framePositionExpr = createPoint2dExpression(
+      framePosition,
+      wasmInstance
+    )
     if (err(framePositionExpr)) return framePositionExpr
     labeledArgs.push(createLabeledArg('framePosition', framePositionExpr))
   }

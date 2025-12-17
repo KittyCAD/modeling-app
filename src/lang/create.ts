@@ -35,8 +35,8 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
  */
 export function createLiteral(
   value: number | string | boolean,
-  suffix?: NumericSuffix,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType,
+  suffix?: NumericSuffix
 ): Node<Literal> {
   return {
     type: 'Literal',
