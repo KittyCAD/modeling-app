@@ -140,7 +140,7 @@ export function updateCenterRectangleSketch(
   tag: string,
   originX: number,
   originY: number,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): undefined | Error {
   let startX = originX - Math.abs(deltaX)
   let startY = originY - Math.abs(deltaY)

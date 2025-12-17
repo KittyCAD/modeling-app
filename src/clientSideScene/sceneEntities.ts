@@ -1745,7 +1745,8 @@ export class SceneEntities {
             y,
             tag,
             rectangleOrigin[0],
-            rectangleOrigin[1]
+            rectangleOrigin[1],
+            await this.kclManager.wasmInstancePromise
           )
           if (err(maybeError)) {
             return Promise.reject(maybeError)
@@ -1808,7 +1809,8 @@ export class SceneEntities {
             y,
             tag,
             rectangleOrigin[0],
-            rectangleOrigin[1]
+            rectangleOrigin[1],
+            await this.kclManager.wasmInstancePromise
           )
           if (err(maybeError)) {
             return Promise.reject(maybeError)
