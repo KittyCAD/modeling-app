@@ -37,6 +37,7 @@ jobs:
         with:
           cache-workspaces: rust
           components: rustfmt
+          rustflags: '' # Use .cargo/config.toml
 
       - name: Run nightly cargo fmt
         run: |
