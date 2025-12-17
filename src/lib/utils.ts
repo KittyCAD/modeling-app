@@ -169,7 +169,7 @@ export function throttle<T>(
 }
 
 // takes a function and executes it after the wait time, if the function is called again before the wait time is up, the timer is reset
-export function deferExecution<T>(func: (args: T) => any, wait: number) {
+export function deferredCallback<T>(func: (args: T) => any, wait: number) {
   let timeout: ReturnType<typeof setTimeout> | null
   let latestArgs: T
 

@@ -244,7 +244,7 @@ export const ThoughtContent = (props: {
       return
     }
     const bb = refDivChildren.current.getBoundingClientRect()
-    const style = getComputedStyle(refDivChildren.current)
+    const style = globalThis?.getComputedStyle(refDivChildren.current)
     if (bb.height > parseFloat(style.lineHeight) * HEIGHT_LINE_MAX_CONTENT) {
       setNeedsExpansion(true)
     }
