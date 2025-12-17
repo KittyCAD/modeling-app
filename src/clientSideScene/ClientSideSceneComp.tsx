@@ -595,7 +595,8 @@ const ConstraintSymbol = ({
                 kclManager.ast,
                 kclManager.variables,
                 removeSingleConstraint,
-                transformAstSketchLines
+                transformAstSketchLines,
+                await kclManager.wasmInstancePromise
               )
 
               if (!transform) return

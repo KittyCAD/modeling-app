@@ -69,7 +69,8 @@ export async function deleteSegmentsOrProfiles({
     pathToNodes,
     getConstraintInfoKw,
     removeSingleConstraint,
-    transformAstSketchLines
+    transformAstSketchLines,
+    await dependencies.kclManager.wasmInstancePromise
   )
   if (err(modifiedAst)) {
     return Promise.reject(modifiedAst)

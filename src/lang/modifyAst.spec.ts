@@ -625,7 +625,8 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
       [pathToNode],
       getConstraintInfoKw,
       removeSingleConstraint,
-      transformAstSketchLines
+      transformAstSketchLines,
+      instanceInThisFile
     )
     if (err(modifiedAst)) throw modifiedAst
     const newCode = recast(modifiedAst, instanceInThisFile)

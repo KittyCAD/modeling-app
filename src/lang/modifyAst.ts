@@ -739,7 +739,7 @@ export function removeSingleConstraintInfo(
   memVars: VariableMap,
   removeSingleConstraint: typeof RemoveSingleConstraintFn,
   transformAstSketchLines: typeof TransformAstSketchLinesFn,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ):
   | {
       modifiedAst: Node<Program>
