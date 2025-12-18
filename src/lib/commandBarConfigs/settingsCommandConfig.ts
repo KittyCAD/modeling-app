@@ -18,17 +18,14 @@ import type {
 } from '@src/lib/settings/settingsTypes'
 import type { PathValue } from '@src/lib/types'
 import type { settingsMachine } from '@src/machines/settingsMachine'
+import { hiddenOnPlatform } from '@src/lib/settings/settingsUtils'
 
 // An array of the paths to all of the settings that have commandConfigs
 export const settingsWithCommandConfigs = (s: SettingsType) =>
   Object.entries(s).flatMap(([categoryName, categorySettings]) =>
     Object.entries(categorySettings)
-      .filter(([_, s]) => s.commandConfig !== undefined)
-      .filter(
-        ([_, s]) =>
-          s.hideOnPlatform !== 'both' &&
-          s.hideOnPlatform !== (isDesktop() ? 'desktop' : 'web')
-      )
+      .filter(([_, setting]) => setting.commandConfig !== undefined)
+      .filter(([_, setting]) => !hiddenOnPlatform(setting, isDesktop()))
       .map(([settingName]) => `${categoryName}.${settingName}`)
   ) as SettingsPaths[]
 
