@@ -21,8 +21,9 @@ import {
 } from '@src/machines/sketchSolve/tools/centerArcToolImpl'
 
 // This might seem a bit redundant, but this xstate visualizer stops working
-// when I use TOOL_ID and constants directly when they're imported.
+// when TOOL_ID and constants are imported directly
 export const toolId: typeof TOOL_ID = 'Center arc tool'
+
 export const showingRadiusPreview: typeof SHOWING_RADIUS_PREVIEW =
   'Showing radius preview'
 export const animatingArc: typeof ANIMATING_ARC = 'Animating arc'
@@ -51,6 +52,7 @@ export const machine = setup({
     finalizeArc: fromPromise(finalizeArcActor),
   },
 }).createMachine({
+  /** @xstate-layout N4IgpgJg5mDOIC5QGEwDsAuYBOACAhtgMa4YD2ZANgMQCuaYAjrQJYAOA2gAwC6iobMrBYYWZNPxAAPRABYATABoQAT0QBOAIwBWAHSaFmgBzGuRrgGYAbLIC+t5akw4CxUhUq7sYfBBW4AMzI8InQsEMoWIgBral8IXEEWTG4+JBBBYVFxSRkEWWNdLmKuWSN5eUt1eQtlNXztLl11I3VtI21tK00LIxM7BxAncNcSciovHz9A4NxQ5wio2LgifDYwVMlMkTEJdLyCoyKSsoqqmrrEC3kAdl0O9V7NdRvnzS5Ne0cwl0Ixj10AGUABZkADuySguGwvhYtFgiW8ADcWGAwXEIAkkileFshDscvtEI09PIFLIuF1Kh0zLVVIgblYLLpGa91GYmUYmRYvkMfng-u4JiDwZDobD4YiwCi0dQVmsNrj0ttsntQHl3vIrLoyTVqpobNodFZLggbkZZPd9dVKtotWVecNfm5xp5kN58KI0FC-tQIOIwLpkkiyNFA06BS6Ae6fF6fcQEMGyKtValNsr8arcnJCiVSuVKhZqnT6tpZHdZApXtcyeaLDdHfzRkK3R646M5dhsMFdGxKJ6gtgALa6CPN12jttiv6JtAhlO7NNKgSZ3bZ-K5k4F84lxD9HVWV5GG4feTqLSfQZjwUTgCCaBYQ890+IdDYEE9YGbsDBa3WEHTFcsjXIkzW0Zlj3ZUoi3UKwuBuWRTVkGxdAsbRHnMTRGWqPpGwWccAXvR9n29Dt4kSMhkgwQCMlXQl1UQTVtV1It5ANWQjS6U0y00XQynQikbjPCwOPUPCRhvQiHyfdtfXldYaJVECGIQJidQUVj2M4k16QQKw+j4osuENQ4rHUAZvnwySJiImSXyIOgGGYdhFLotVpEYrgtXUvU2MNY1uK0ZoHmsY8LRuetxOdf4JgAMWSfBIgAL3sv0AyDOdQ3DJtrM8eK0ESlgUtImckwXcQlzSICCXcjUvOYjT9X8rjdM0by82MtpSg+V4osjGK8oS5LUpwbtsF7fsMEHEdryjOKhqK+zZ3nZ8Kt4VzgPojzVMpS1SjMixjMrCxem0JDHmCgSPnrZCHV5NAyAgOBJFmga8U22rEAAWh0+ofr6giJg9aZBzmJsiEiGJ3pq9csPUVCEJaeCvMZA1TQsQp3keCK2oMESLL5Ky5s8EUIVImEIDhBE2GRVEwWhrNQJPS0MasLouhuG0ylNBCjlaNjYIqA0KgbK8cuJydY3shnlO2oXdH03nMLtckzt0hCmlZYxjHKR55CMAHct0WySPjIgZa2vIT3kQzGUqc9kLa9RuLZ+42sac0KWuWQeTFomBt0fLCuKs2Lc+1StWYkwMaMETineX65BaVC4Jws4rH0y9LIkiX6CYVg2DYSEw9hyOdWj4w44+YzTVjisbk6LCCgNCL5HsewgA */
   context: ({ input }): ToolContext => ({
     centerPointId: undefined,
     centerPoint: undefined,

@@ -35,18 +35,20 @@ export function shouldSwapStartEnd({
   if (!previousEnd) return false
   const τ = 2 * Math.PI
   const norm = (a: number) => ((a % τ) + τ) % τ
-  const θS = norm(Math.atan2(start[1] - center[1], start[0] - center[0]))
-  const θP = norm(
+  const startPointAngle = norm(
+    Math.atan2(start[1] - center[1], start[0] - center[0])
+  )
+  const prevEndPointAngle = norm(
     Math.atan2(previousEnd[1] - center[1], previousEnd[0] - center[0])
   )
-  const θN = norm(Math.atan2(end[1] - center[1], end[0] - center[0]))
+  const endPointAngle = norm(Math.atan2(end[1] - center[1], end[0] - center[0]))
 
   // Calculate CCW arc-lengths from start to each endpoint
-  const ΔP = (θP - θS + τ) % τ
-  const ΔN = (θN - θS + τ) % τ
+  const ΔPrevious = (prevEndPointAngle - startPointAngle + τ) % τ
+  const ΔCurrent = (endPointAngle - startPointAngle + τ) % τ
 
-  // Calculate the raw change in arc-length
-  let rawDiff = ΔN - ΔP
+  // Calculate the raw change angle
+  let rawDiff = ΔCurrent - ΔPrevious
 
   // Check if we crossed the 0/360° seam: if |rawDiff| > π, we crossed
   const crossed = Math.abs(rawDiff) > Math.PI

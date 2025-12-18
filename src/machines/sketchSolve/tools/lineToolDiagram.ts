@@ -25,8 +25,9 @@ import {
 } from '@src/machines/sketchSolve/tools/lineToolImpl'
 
 // This might seem a bit redundant, but this xstate visualizer stops working
-// when I use TOOL_ID and CONFIRMING_DIMENSIONS directly when they're imported.
+// when TOOL_ID and constants are imported directly
 export const toolId: typeof TOOL_ID = 'Line tool'
+
 export const confirmingDimensions: typeof CONFIRMING_DIMENSIONS =
   'Confirming dimensions'
 

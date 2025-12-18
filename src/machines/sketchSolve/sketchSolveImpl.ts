@@ -229,7 +229,6 @@ export function buildSegmentCtorFromObject(
       console.error('Failed to find linked points for Arc segment', obj)
       return null
     }
-    // ezpz always goes CCW from start to end, so no ccw field needed
     return {
       type: 'Arc',
       center: centerPoint,

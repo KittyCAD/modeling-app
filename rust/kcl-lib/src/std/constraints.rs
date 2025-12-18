@@ -353,7 +353,6 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         )));
     };
 
-    // ezpz solver always goes CCW from start to end, so no ccw parameter needed
     let ctor = ArcCtor {
         start: Point2d {
             x: start_x_value.to_sketch_expr().ok_or_else(|| {
@@ -507,14 +506,16 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     };
 
     // Build the implicit arc constraint.
-    // ezpz solver always goes CCW from start to end, so no ccw parameter needed
     let range = args.source_range;
     let constraint = kcl_ezpz::Constraint::Arc(kcl_ezpz::datatypes::CircularArc {
         center: kcl_ezpz::datatypes::DatumPoint::new_xy(
             center_x.to_constraint_id(range)?,
             center_y.to_constraint_id(range)?,
         ),
-        start: kcl_ezpz::datatypes::DatumPoint::new_xy(start_x.to_constraint_id(range)?, start_y.to_constraint_id(range)?),
+        start: kcl_ezpz::datatypes::DatumPoint::new_xy(
+            start_x.to_constraint_id(range)?,
+            start_y.to_constraint_id(range)?,
+        ),
         end: kcl_ezpz::datatypes::DatumPoint::new_xy(end_x.to_constraint_id(range)?, end_y.to_constraint_id(range)?),
     });
 

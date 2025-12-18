@@ -210,6 +210,17 @@ function extractNumericValue(
 }
 
 /**
+ * Checks if an Expr has a numeric value (is a Number or Var type).
+ * Returns true if the Expr contains a numeric value, false otherwise.
+ * This is a type predicate that narrows the type for TypeScript.
+ */
+export function hasNumericValue(
+  expr: Expr
+): expr is Extract<Expr, { type: 'Number' | 'Var' }> {
+  return expr.type === 'Number' || expr.type === 'Var'
+}
+
+/**
  * Extracts the numeric value from an Expr (Number or Var type).
  * Returns the value if the Expr is a Number or Var, otherwise returns the default value (0).
  */

@@ -6,6 +6,7 @@ import {
 } from '@src/clientSideScene/sceneUtils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { type Themes } from '@src/lib/theme'
+import { hasNumericValue } from '@src/lib/kclHelpers'
 import {
   BufferGeometry,
   ExtrudeGeometry,
@@ -232,7 +233,7 @@ class PointSegment implements SketchEntityUtils {
     }
     const { input, group, scale, selectedIds, id, isDraft } = args
     const { x, y } = input.position
-    if (!('value' in x && 'value' in y)) {
+    if (!(hasNumericValue(x) && hasNumericValue(y))) {
       return new Error('Invalid position values for PointSegment')
     }
     group.scale.set(scale, scale, scale)
@@ -299,10 +300,10 @@ class LineSegment implements SketchEntityUtils {
     const { input, theme, id, scale } = args
     if (
       !(
-        'value' in input.start.x &&
-        'value' in input.start.y &&
-        'value' in input.end.x &&
-        'value' in input.end.y
+        hasNumericValue(input.start.x) &&
+        hasNumericValue(input.start.y) &&
+        hasNumericValue(input.end.x) &&
+        hasNumericValue(input.end.y)
       )
     ) {
       return new Error('Invalid position values for LineSegment')
@@ -352,10 +353,10 @@ class LineSegment implements SketchEntityUtils {
     const { input, group, id, scale, selectedIds, isDraft } = args
     if (
       !(
-        'value' in input.start.x &&
-        'value' in input.start.y &&
-        'value' in input.end.x &&
-        'value' in input.end.y
+        hasNumericValue(input.start.x) &&
+        hasNumericValue(input.start.y) &&
+        hasNumericValue(input.end.x) &&
+        hasNumericValue(input.end.y)
       )
     ) {
       return new Error('Invalid position values for LineSegment')
@@ -390,6 +391,77 @@ class LineSegment implements SketchEntityUtils {
 }
 
 class ArcSegment implements SketchEntityUtils {
+  /**
+   * Validates and extracts arc data from input, calculating radius and angles.
+   * Returns an error if validation fails, otherwise returns the calculated values.
+   */
+  private extractArcData(input: SegmentCtor):
+    | Error
+    | {
+        centerX: number
+        centerY: number
+        startX: number
+        startY: number
+        endX: number
+        endY: number
+        radius: number
+        startAngle: number
+        endAngle: number
+      } {
+    if (input.type !== 'Arc') {
+      return new Error('Invalid input type for ArcSegment')
+    }
+
+    if (
+      !(
+        hasNumericValue(input.center.x) &&
+        hasNumericValue(input.center.y) &&
+        hasNumericValue(input.start.x) &&
+        hasNumericValue(input.start.y) &&
+        hasNumericValue(input.end.x) &&
+        hasNumericValue(input.end.y)
+      )
+    ) {
+      return new Error('Invalid position values for ArcSegment')
+    }
+
+    const centerX = input.center.x.value
+    const centerY = input.center.y.value
+    const startX = input.start.x.value
+    const startY = input.start.y.value
+    const endX = input.end.x.value
+    const endY = input.end.y.value
+
+    // Calculate radius (distance from center to start/end points)
+    // For a center arc, both start and end should be at the same radius from center
+    const dxStart = startX - centerX
+    const dyStart = startY - centerY
+    const radiusStart = Math.hypot(dxStart, dyStart)
+
+    const dxEnd = endX - centerX
+    const dyEnd = endY - centerY
+    const radiusEnd = Math.hypot(dxEnd, dyEnd)
+
+    // Use average radius in case of small floating point differences
+    const radius = (radiusStart + radiusEnd) / 2
+
+    // Calculate angles
+    const startAngle = Math.atan2(startY - centerY, startX - centerX)
+    const endAngle = Math.atan2(endY - centerY, endX - centerX)
+
+    return {
+      centerX,
+      centerY,
+      startX,
+      startY,
+      endX,
+      endY,
+      radius,
+      startAngle,
+      endAngle,
+    }
+  }
+
   /**
    * Updates the arc segment mesh color based on selection and hover state
    */
@@ -477,46 +549,13 @@ class ArcSegment implements SketchEntityUtils {
   }
 
   init = (args: CreateSegmentArgs) => {
-    if (args.input.type !== 'Arc') {
-      return new Error('Invalid input type for ArcSegment')
-    }
     const { input, theme, id, scale } = args
-    if (
-      !(
-        'value' in input.center.x &&
-        'value' in input.center.y &&
-        'value' in input.start.x &&
-        'value' in input.start.y &&
-        'value' in input.end.x &&
-        'value' in input.end.y
-      )
-    ) {
-      return new Error('Invalid position values for ArcSegment')
+    const arcData = this.extractArcData(input)
+    if (arcData instanceof Error) {
+      return arcData
     }
 
-    const centerX = input.center.x.value
-    const centerY = input.center.y.value
-    const startX = input.start.x.value
-    const startY = input.start.y.value
-    const endX = input.end.x.value
-    const endY = input.end.y.value
-
-    // Calculate radius (distance from center to start point)
-    // For a center arc, both start and end should be at the same radius from center
-    const dxStart = startX - centerX
-    const dyStart = startY - centerY
-    const radiusStart = Math.sqrt(dxStart * dxStart + dyStart * dyStart)
-
-    const dxEnd = endX - centerX
-    const dyEnd = endY - centerY
-    const radiusEnd = Math.sqrt(dxEnd * dxEnd + dyEnd * dyEnd)
-
-    // Use average radius in case of small floating point differences
-    const radius = (radiusStart + radiusEnd) / 2
-
-    // Calculate angles
-    const startAngle = Math.atan2(startY - centerY, startX - centerX)
-    const endAngle = Math.atan2(endY - centerY, endX - centerX)
+    const { centerX, centerY, radius, startAngle, endAngle } = arcData
 
     // Always draw arcs CCW from start to end.
     // The solver also uses a CCW convention from start to end, so we keep
@@ -562,46 +601,13 @@ class ArcSegment implements SketchEntityUtils {
   }
 
   update(args: UpdateSegmentArgs) {
-    if (args.input.type !== 'Arc') {
-      return new Error('Invalid input type for ArcSegment')
-    }
     const { input, group, id, scale, selectedIds, isDraft } = args
-    if (
-      !(
-        'value' in input.center.x &&
-        'value' in input.center.y &&
-        'value' in input.start.x &&
-        'value' in input.start.y &&
-        'value' in input.end.x &&
-        'value' in input.end.y
-      )
-    ) {
-      return new Error('Invalid position values for ArcSegment')
+    const arcData = this.extractArcData(input)
+    if (arcData instanceof Error) {
+      return arcData
     }
 
-    const centerX = input.center.x.value
-    const centerY = input.center.y.value
-    const startX = input.start.x.value
-    const startY = input.start.y.value
-    const endX = input.end.x.value
-    const endY = input.end.y.value
-
-    // Calculate radius (distance from center to start/end points)
-    // For a center arc, both start and end should be at the same radius from center
-    const dxStart = startX - centerX
-    const dyStart = startY - centerY
-    const radiusStart = Math.sqrt(dxStart * dxStart + dyStart * dyStart)
-
-    const dxEnd = endX - centerX
-    const dyEnd = endY - centerY
-    const radiusEnd = Math.sqrt(dxEnd * dxEnd + dyEnd * dyEnd)
-
-    // Use average radius in case of small floating point differences
-    const radius = (radiusStart + radiusEnd) / 2
-
-    // Calculate angles
-    const startAngle = Math.atan2(startY - centerY, startX - centerX)
-    const endAngle = Math.atan2(endY - centerY, endX - centerX)
+    const { centerX, centerY, radius, startAngle, endAngle } = arcData
 
     // Always draw arcs CCW from start to end to match the solver.
     const ccw = true

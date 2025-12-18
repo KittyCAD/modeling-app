@@ -1146,70 +1146,19 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      // Check if this group has a line segment mesh
-      const lineMesh = child.children.find(
-        (c) => c instanceof Mesh && c.userData?.type === STRAIGHT_SEGMENT_BODY
+      // Check if this group has a line or arc segment mesh
+      const segmentMesh = child.children.find(
+        (c) =>
+          c instanceof Mesh &&
+          (c.userData?.type === STRAIGHT_SEGMENT_BODY ||
+            c.userData?.type === ARC_SEGMENT_BODY)
       )
 
-      if (lineMesh && lineMesh instanceof Mesh) {
-        // Handle line segment
-        const geometry = lineMesh.geometry
-        if (!(geometry instanceof ExtrudeGeometry)) {
-          return
-        }
-
+      if (segmentMesh && segmentMesh instanceof Mesh) {
+        // Handle line or arc segment (same logic for both)
         // Get the bounding box of the mesh in world space
-        lineMesh.updateMatrixWorld()
-        const box = new Box3().setFromObject(lineMesh)
-
-        // Get the 8 corners of the bounding box
-        const min = box.min
-        const max = box.max
-
-        // Generate all 8 corners of the bounding box (already in world space)
-        const corners = [
-          new Vector3(min.x, min.y, min.z),
-          new Vector3(max.x, min.y, min.z),
-          new Vector3(min.x, max.y, min.z),
-          new Vector3(max.x, max.y, min.z),
-          new Vector3(min.x, min.y, max.z),
-          new Vector3(max.x, min.y, max.z),
-          new Vector3(min.x, max.y, max.z),
-          new Vector3(max.x, max.y, max.z),
-        ]
-
-        // Project to screen space
-        const screenCorners = corners.map((corner) => {
-          const projected = corner.clone().project(camera)
-          return new Vector2(
-            ((projected.x + 1) / 2) * viewportSize.x,
-            ((1 - projected.y) / 2) * viewportSize.y
-          )
-        })
-
-        // For "contains" selection, check if ALL corners are within the selection box
-        const allCornersContained = areAllPointsContained(
-          screenCorners,
-          boxMinPx,
-          boxMaxPx
-        )
-
-        if (allCornersContained) {
-          containedIds.push(segmentId)
-        }
-        return
-      }
-
-      // Check if this group has an arc segment mesh
-      const arcMesh = child.children.find(
-        (c) => c instanceof Mesh && c.userData?.type === ARC_SEGMENT_BODY
-      )
-
-      if (arcMesh && arcMesh instanceof Mesh) {
-        // Handle arc segment
-        // Get the bounding box of the mesh in world space
-        arcMesh.updateMatrixWorld()
-        const box = new Box3().setFromObject(arcMesh)
+        segmentMesh.updateMatrixWorld()
+        const box = new Box3().setFromObject(segmentMesh)
 
         // Get the 8 corners of the bounding box
         const min = box.min
@@ -1314,21 +1263,27 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      // Check if this group has a line segment mesh
-      const lineMesh = child.children.find(
-        (c) => c instanceof Mesh && c.userData?.type === STRAIGHT_SEGMENT_BODY
+      // Check if this group has a line or arc segment mesh
+      const segmentMesh = child.children.find(
+        (c) =>
+          c instanceof Mesh &&
+          (c.userData?.type === STRAIGHT_SEGMENT_BODY ||
+            c.userData?.type === ARC_SEGMENT_BODY)
       )
 
-      if (lineMesh && lineMesh instanceof Mesh) {
-        // Handle line segment
-        const geometry = lineMesh.geometry
-        if (!(geometry instanceof ExtrudeGeometry)) {
-          return
+      if (segmentMesh && segmentMesh instanceof Mesh) {
+        // Handle line or arc segment (same logic for both)
+        // For line segments, check geometry type
+        if (segmentMesh.userData?.type === STRAIGHT_SEGMENT_BODY) {
+          const geometry = segmentMesh.geometry
+          if (!(geometry instanceof ExtrudeGeometry)) {
+            return
+          }
         }
 
         // Get the bounding box of the mesh in world space
-        lineMesh.updateMatrixWorld()
-        const box = new Box3().setFromObject(lineMesh)
+        segmentMesh.updateMatrixWorld()
+        const box = new Box3().setFromObject(segmentMesh)
 
         // Get the 8 corners of the bounding box
         const min = box.min
@@ -1355,7 +1310,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           )
         })
 
-        // Compute the bounding box of the line segment in screen space
+        // Compute the bounding box of the segment in screen space
         const segmentMinPx = new Vector2(
           Math.min(...screenCorners.map((c) => c.x)),
           Math.min(...screenCorners.map((c) => c.y))
@@ -1367,75 +1322,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
         // Extract triangles from the mesh
         const triangles = extractTrianglesFromMesh(
-          lineMesh,
-          camera,
-          viewportSize
-        )
-
-        // Use improved intersection logic
-        const intersects = doesSegmentIntersectSelectionBox(
-          segmentMinPx,
-          segmentMaxPx,
-          boxMinPx,
-          boxMaxPx,
-          triangles
-        )
-
-        if (intersects) {
-          intersectingIds.push(segmentId)
-        }
-        return
-      }
-
-      // Check if this group has an arc segment mesh
-      const arcMesh = child.children.find(
-        (c) => c instanceof Mesh && c.userData?.type === ARC_SEGMENT_BODY
-      )
-
-      if (arcMesh && arcMesh instanceof Mesh) {
-        // Handle arc segment
-        // Get the bounding box of the mesh in world space
-        arcMesh.updateMatrixWorld()
-        const box = new Box3().setFromObject(arcMesh)
-
-        // Get the 8 corners of the bounding box
-        const min = box.min
-        const max = box.max
-
-        // Generate all 8 corners of the bounding box (already in world space)
-        const corners = [
-          new Vector3(min.x, min.y, min.z),
-          new Vector3(max.x, min.y, min.z),
-          new Vector3(min.x, max.y, min.z),
-          new Vector3(max.x, max.y, min.z),
-          new Vector3(min.x, min.y, max.z),
-          new Vector3(max.x, min.y, max.z),
-          new Vector3(min.x, max.y, max.z),
-          new Vector3(max.x, max.y, max.z),
-        ]
-
-        // Project to screen space
-        const screenCorners = corners.map((corner) => {
-          const projected = corner.clone().project(camera)
-          return new Vector2(
-            ((projected.x + 1) / 2) * viewportSize.x,
-            ((1 - projected.y) / 2) * viewportSize.y
-          )
-        })
-
-        // Compute the bounding box of the arc segment in screen space
-        const segmentMinPx = new Vector2(
-          Math.min(...screenCorners.map((c) => c.x)),
-          Math.min(...screenCorners.map((c) => c.y))
-        )
-        const segmentMaxPx = new Vector2(
-          Math.max(...screenCorners.map((c) => c.x)),
-          Math.max(...screenCorners.map((c) => c.y))
-        )
-
-        // Extract triangles from the mesh
-        const triangles = extractTrianglesFromMesh(
-          arcMesh,
+          segmentMesh,
           camera,
           viewportSize
         )

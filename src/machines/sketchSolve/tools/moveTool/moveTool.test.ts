@@ -1492,13 +1492,13 @@ describe('createOnClickCallback', () => {
 
 describe('createOnMouseEnterCallback', () => {
   it('should highlight line segments on hover to provide visual feedback', () => {
-    const updateLineSegmentHover = vi.fn()
+    const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [])
     const setLastHoveredMesh = vi.fn()
     const lineMesh = createLineSegmentMesh({ segmentId: 5 })
 
     const callback = createOnMouseEnterCallback({
-      updateSegmentHover: updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
     })
@@ -1510,7 +1510,7 @@ describe('createOnMouseEnterCallback', () => {
     })
 
     // Hovering over a line segment should highlight it to show it's interactive
-    expect(updateLineSegmentHover).toHaveBeenCalledWith(
+    expect(updateSegmentHover).toHaveBeenCalledWith(
       lineMesh,
       true,
       [],
@@ -1520,13 +1520,13 @@ describe('createOnMouseEnterCallback', () => {
   })
 
   it('should not highlight during area select to avoid visual conflicts', () => {
-    const updateLineSegmentHover = vi.fn()
+    const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [])
     const setLastHoveredMesh = vi.fn()
     const lineMesh = createLineSegmentMesh({ segmentId: 5 })
 
     const callback = createOnMouseEnterCallback({
-      updateSegmentHover: updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
     })
@@ -1538,18 +1538,18 @@ describe('createOnMouseEnterCallback', () => {
     })
 
     // Should not highlight during area select to keep the UI clean
-    expect(updateLineSegmentHover).not.toHaveBeenCalled()
+    expect(updateSegmentHover).not.toHaveBeenCalled()
     expect(setLastHoveredMesh).not.toHaveBeenCalled()
   })
 
   it('should ignore non-line-segment objects to only highlight relevant segments', () => {
-    const updateLineSegmentHover = vi.fn()
+    const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [])
     const setLastHoveredMesh = vi.fn()
     const pointGroup = createPointSegmentGroup({ segmentId: 3 })
 
     const callback = createOnMouseEnterCallback({
-      updateSegmentHover: updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
     })
@@ -1561,18 +1561,18 @@ describe('createOnMouseEnterCallback', () => {
     })
 
     // Point segments should not trigger hover highlighting
-    expect(updateLineSegmentHover).not.toHaveBeenCalled()
+    expect(updateSegmentHover).not.toHaveBeenCalled()
     expect(setLastHoveredMesh).not.toHaveBeenCalled()
   })
 
   it('should include selected IDs when highlighting to show selection state', () => {
-    const updateLineSegmentHover = vi.fn()
+    const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [5, 13])
     const setLastHoveredMesh = vi.fn()
     const lineMesh = createLineSegmentMesh({ segmentId: 7 })
 
     const callback = createOnMouseEnterCallback({
-      updateSegmentHover: updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
     })
@@ -1584,7 +1584,7 @@ describe('createOnMouseEnterCallback', () => {
     })
 
     // Highlighting should include selected IDs so the hover effect respects selection state
-    expect(updateLineSegmentHover).toHaveBeenCalledWith(
+    expect(updateSegmentHover).toHaveBeenCalledWith(
       lineMesh,
       true,
       [5, 13],
@@ -1593,12 +1593,12 @@ describe('createOnMouseEnterCallback', () => {
   })
 
   it('should handle undefined selected gracefully', () => {
-    const updateLineSegmentHover = vi.fn()
+    const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [])
     const setLastHoveredMesh = vi.fn()
 
     const callback = createOnMouseEnterCallback({
-      updateSegmentHover: updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds,
       setLastHoveredMesh,
     })
@@ -1610,21 +1610,21 @@ describe('createOnMouseEnterCallback', () => {
     })
 
     // Should not crash when nothing is selected
-    expect(updateLineSegmentHover).not.toHaveBeenCalled()
+    expect(updateSegmentHover).not.toHaveBeenCalled()
     expect(setLastHoveredMesh).not.toHaveBeenCalled()
   })
 })
 
 describe('createOnMouseLeaveCallback', () => {
   it('should clear hover highlighting when leaving a line segment', () => {
-    const updateLineSegmentHover = vi.fn()
+    const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [])
     const lineMesh = createLineSegmentMesh({ segmentId: 5 })
     const getLastHoveredMesh = vi.fn(() => lineMesh)
     const setLastHoveredMesh = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
-      updateSegmentHover: updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
@@ -1637,7 +1637,7 @@ describe('createOnMouseLeaveCallback', () => {
     })
 
     // Leaving a hovered segment should clear the highlight to restore normal appearance
-    expect(updateLineSegmentHover).toHaveBeenCalledWith(
+    expect(updateSegmentHover).toHaveBeenCalledWith(
       lineMesh,
       false,
       [],
@@ -1647,14 +1647,14 @@ describe('createOnMouseLeaveCallback', () => {
   })
 
   it('should not clear hover during area select to avoid visual conflicts', () => {
-    const updateLineSegmentHover = vi.fn()
+    const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [])
     const lineMesh = createLineSegmentMesh({ segmentId: 5 })
     const getLastHoveredMesh = vi.fn(() => lineMesh)
     const setLastHoveredMesh = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
-      updateSegmentHover: updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
@@ -1667,19 +1667,19 @@ describe('createOnMouseLeaveCallback', () => {
     })
 
     // Should not modify hover state during area select
-    expect(updateLineSegmentHover).not.toHaveBeenCalled()
+    expect(updateSegmentHover).not.toHaveBeenCalled()
     expect(setLastHoveredMesh).not.toHaveBeenCalled()
   })
 
   it('should include selected IDs when clearing hover to maintain selection state', () => {
-    const updateLineSegmentHover = vi.fn()
+    const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [5, 13])
     const lineMesh = createLineSegmentMesh({ segmentId: 7 })
     const getLastHoveredMesh = vi.fn(() => lineMesh)
     const setLastHoveredMesh = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
-      updateSegmentHover: updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
@@ -1692,7 +1692,7 @@ describe('createOnMouseLeaveCallback', () => {
     })
 
     // Clearing hover should include selected IDs to maintain proper visual state
-    expect(updateLineSegmentHover).toHaveBeenCalledWith(
+    expect(updateSegmentHover).toHaveBeenCalledWith(
       lineMesh,
       false,
       [5, 13],
@@ -1701,13 +1701,13 @@ describe('createOnMouseLeaveCallback', () => {
   })
 
   it('should handle case where no mesh was previously hovered', () => {
-    const updateLineSegmentHover = vi.fn()
+    const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [])
     const getLastHoveredMesh = vi.fn(() => null)
     const setLastHoveredMesh = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
-      updateSegmentHover: updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
@@ -1720,19 +1720,19 @@ describe('createOnMouseLeaveCallback', () => {
     })
 
     // Should not crash when no mesh was hovered
-    expect(updateLineSegmentHover).not.toHaveBeenCalled()
+    expect(updateSegmentHover).not.toHaveBeenCalled()
     expect(setLastHoveredMesh).not.toHaveBeenCalled()
   })
 
   it('should ignore non-line-segment objects when clearing hover', () => {
-    const updateLineSegmentHover = vi.fn()
+    const updateSegmentHover = vi.fn()
     const getSelectedIds = vi.fn(() => [])
     const pointGroup = createPointSegmentGroup({ segmentId: 3 })
     const getLastHoveredMesh = vi.fn(() => null)
     const setLastHoveredMesh = vi.fn()
 
     const callback = createOnMouseLeaveCallback({
-      updateSegmentHover: updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds,
       getLastHoveredMesh,
       setLastHoveredMesh,
@@ -1745,6 +1745,6 @@ describe('createOnMouseLeaveCallback', () => {
     })
 
     // Point segments should not trigger hover clearing
-    expect(updateLineSegmentHover).not.toHaveBeenCalled()
+    expect(updateSegmentHover).not.toHaveBeenCalled()
   })
 })
