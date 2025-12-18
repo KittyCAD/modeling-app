@@ -81,6 +81,16 @@ pub trait SketchApi {
         constraint: Constraint,
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
+    async fn chain_segment(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        previous_segment_end_point_id: ObjectId,
+        segment: SegmentCtor,
+        label: Option<String>,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+
     async fn edit_constraint(
         &mut self,
         ctx: &ExecutorContext,
