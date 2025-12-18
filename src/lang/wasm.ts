@@ -50,7 +50,6 @@ import {
   get_kcl_version,
   is_kcl_empty_or_only_settings,
   kcl_settings,
-  node_path_from_range,
   parse_app_settings,
   parse_project_settings,
   parse_wasm,
@@ -403,7 +402,7 @@ export const kclLint = async (
 export async function rustImplPathToNode(
   ast: Program,
   range: SourceRange,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): Promise<PathToNode> {
   const nodePath = await nodePathFromRange(ast, range, wasmInstance)
   if (!nodePath) {
@@ -416,12 +415,10 @@ export async function rustImplPathToNode(
 export async function nodePathFromRange(
   ast: Program,
   range: SourceRange,
-  instance?: ModuleType
+  instance: ModuleType
 ): Promise<NodePath | null> {
   try {
-    const node_path_from_range_fn = instance
-      ? instance.node_path_from_range
-      : node_path_from_range
+    const node_path_from_range_fn = instance.node_path_from_range
     const nodePath: NodePath | null = await node_path_from_range_fn(
       JSON.stringify(ast),
       JSON.stringify(range)
