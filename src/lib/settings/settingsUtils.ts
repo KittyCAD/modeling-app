@@ -724,3 +724,10 @@ export async function jsAppSettings(s: SettingsType | SettingsActorType) {
   const settings = 'send' in s ? getSettingsFromActorContext(s) : s
   return settingsPayloadToConfiguration(getAllCurrentSettings(settings))
 }
+
+export function hiddenOnPlatform(setting: Setting, desktop: boolean) {
+  return (
+    setting.hideOnPlatform === 'both' ||
+    setting.hideOnPlatform === (desktop ? 'desktop' : 'web')
+  )
+}

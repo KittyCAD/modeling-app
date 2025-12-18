@@ -320,21 +320,21 @@ export default class RustContext {
     sketch: ApiObjectId,
     settings: DeepPartial<Configuration>
   ): Promise<{
-    sceneGraph: SceneGraph
-    execOutcome: ExecOutcome
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
   }> {
     const instance = await this._checkContextInstance()
 
     try {
-      const result: [SceneGraph, ExecOutcome] =
+      const result: [SourceDelta, SceneGraphDelta] =
         await instance.sketch_execute_mock(
           JSON.stringify(version),
           JSON.stringify(sketch),
           JSON.stringify(settings)
         )
       return {
-        sceneGraph: result[0],
-        execOutcome: result[1],
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
       }
     } catch (e: any) {
       // TODO: sketch-api: const err = errFromErrWithOutputs(e)

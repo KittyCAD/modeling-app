@@ -10,7 +10,6 @@ import type { Themes } from '@src/lib/theme'
 import type { AtLeast, PathValue, Paths } from '@src/lib/types'
 
 export interface SettingsViaQueryString {
-  pool: string | null
   theme: Themes
   highlightEdges: boolean
   enableSSAO: boolean

@@ -714,7 +714,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             state.matches({ Sketch: 'SketchIdle' }) ||
             state.matches('Sketch no face')
           ),
-        icon: 'arrowLeft',
+        icon: 'arrowShortLeft',
         status: 'available',
         title: 'Exit sketch',
         showTitle: true,
@@ -1243,7 +1243,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           modelingSend({
             type: 'Exit sketch',
           }),
-        icon: 'arrowLeft',
+        icon: 'arrowShortLeft',
         status: 'available',
         title: 'Exit sketch',
         showTitle: true,

@@ -809,18 +809,18 @@ export const writeEnvironmentConfigurationToken = async (
   return result
 }
 
-export const writeEnvironmentConfigurationPool = async (
+export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
   electron: IElectronAPI,
   environmentName: string,
-  pool: string
+  kittycadWebSocketUrl: string
 ) => {
-  pool = pool.trim()
+  kittycadWebSocketUrl = kittycadWebSocketUrl.trim()
   const path = await getEnvironmentConfigurationPath(electron, environmentName)
   const environmentConfiguration = await getEnvironmentConfigurationObject(
     electron,
     environmentName
   )
-  environmentConfiguration.pool = pool
+  environmentConfiguration.kittycadWebSocketUrl = kittycadWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
   const result = await electron.writeFile(path, requestedConfiguration)
   console.log(`wrote ${environmentName}.json to disk`)
@@ -838,24 +838,11 @@ export const getEnvironmentConfigurationObject = async (
   if (environmentConfiguration === null) {
     const initialConfiguration: EnvironmentConfiguration = {
       token: '',
-      pool: '',
       domain: environmentName,
     }
     environmentConfiguration = initialConfiguration
   }
   return environmentConfiguration
-}
-
-export const readEnvironmentConfigurationPool = async (
-  electron: IElectronAPI,
-  environmentName: string
-) => {
-  const environmentConfiguration = await readEnvironmentConfigurationFile(
-    electron,
-    environmentName
-  )
-  if (!environmentConfiguration?.pool) return ''
-  return environmentConfiguration.pool.trim()
 }
 
 export const readEnvironmentConfigurationToken = async (
@@ -868,6 +855,18 @@ export const readEnvironmentConfigurationToken = async (
   )
   if (!environmentConfiguration?.token) return ''
   return environmentConfiguration.token.trim()
+}
+
+export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
+  electron: IElectronAPI,
+  environmentName: string
+) => {
+  const environmentConfiguration = await readEnvironmentConfigurationFile(
+    electron,
+    environmentName
+  )
+  if (!environmentConfiguration?.kittycadWebSocketUrl) return ''
+  return environmentConfiguration.kittycadWebSocketUrl.trim()
 }
 
 export const readEnvironmentFile = async (electron: IElectronAPI) => {
