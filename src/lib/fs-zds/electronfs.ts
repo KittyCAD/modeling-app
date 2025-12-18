@@ -1,14 +1,20 @@
 // This filesystem derives its functions from the electron boundary.
 // Really, they are nodejs functions, but can only be accessed this way.
 import { IZooDesignStudioFS } from './interface'
+import noopfs from './noopfs'
 
 const attach = async () => {}
 const detach = async () => {}
 
 export type ElectronFSOptions = {}
 
-// trust me
-const impl: IZooDesignStudioFS = {
+// In a web worker context (which our wasm blob lives in and needs fs access),
+// window is not available. Not even the variable name is. 
+
+const impl: IZooDesignStudioFS = typeof window === 'undefined' ?
+noopfs.impl
+ :
+{
   getPath: window.electron?.getPath,
   access: window.electron?.access,
   cp: window.electron?.cp,

@@ -2,7 +2,9 @@ import type { Abortable } from 'events'
 import type { ObjectEncodingOptions, OpenMode } from 'fs'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import path from 'path'
-import noopfs from '@src/lib/fs-zds/noopfs'
+
+import electronfs from '@src/lib/fs-zds/electronfs'
+import opfs from '@src/lib/fs-zds/opfs'
 
 /// FileSystemManager is a class that provides a way to read files from the
 /// local file system. The module's singleton instance assumes that you are in a
@@ -11,11 +13,7 @@ export class FileSystemManager {
   private _fs: IZooDesignStudioFS
   private _dir: string | null = null
 
-  constructor() {
-    this._fs = noopfs.impl
-  }
-
-  setFsProvider(fs: IZooDesignStudioFS) {
+  constructor(fs: IZooDesignStudioFS) {
     this._fs = fs
   }
 
@@ -68,7 +66,8 @@ export class FileSystemManager {
       | null
   ): Promise<string | Buffer> {
     const filePath = this.join(this.dir, targetPath)
-    return this._fs.readFile(filePath, options)
+    const data = await this._fs.readFile(filePath, options)
+    return data
   }
 
   /**
@@ -102,9 +101,13 @@ export class FileSystemManager {
   }
 }
 
-export const fsManager = new FileSystemManager()
+// A similar initialization happens in @src/index.ts. It has to happen here too
+// because this code runs in a web worker.
+const fsInstance = (typeof window !== 'undefined' && window.electron !== undefined) ? electronfs.impl : opfs.impl
+
+export const fsManager = new FileSystemManager(fsInstance)
 
 /**
  * The project directory is set on this.
  */
-export const projectFsManager = new FileSystemManager()
+export const projectFsManager = new FileSystemManager(fsInstance)
