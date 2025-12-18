@@ -316,7 +316,7 @@ export function readLocalStorageProjectSettingsFile(
     return defaultProjectSettings(wasmInstance)
   }
 
-  const projectSettings = parseProjectSettings(stored)
+  const projectSettings = parseProjectSettings(stored, wasmInstance)
   if (err(projectSettings)) {
     const settings = defaultProjectSettings(wasmInstance)
     if (err(settings)) return settings
@@ -374,7 +374,11 @@ export async function loadAndValidateSettings(
   // Load the project settings if they exist
   if (projectPath) {
     let projectSettings = window.electron
-      ? await readProjectSettingsFile(window.electron, projectPath)
+      ? await readProjectSettingsFile(
+          window.electron,
+          projectPath,
+          wasmInstance
+        )
       : readLocalStorageProjectSettingsFile(wasmInstance)
 
     // An id was missing. Create one and write it to disk immediately.

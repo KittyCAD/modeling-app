@@ -42,7 +42,6 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
-  parse_project_settings,
   serialize_configuration,
   serialize_project_configuration,
 } from '@src/lib/wasm_lib_wrapper'
@@ -891,9 +890,10 @@ export function defaultProjectSettings(
 }
 
 export function parseProjectSettings(
-  toml: string
+  toml: string,
+  wasmInstance: ModuleType
 ): DeepPartial<ProjectConfiguration> | Error {
-  return parse_project_settings(toml)
+  return wasmInstance.parse_project_settings(toml)
 }
 
 export function base64Decode(

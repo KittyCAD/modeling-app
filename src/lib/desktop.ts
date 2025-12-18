@@ -678,7 +678,8 @@ export const getInitialDefaultDir = async (electron: IElectronAPI) => {
 
 export const readProjectSettingsFile = async (
   electron: IElectronAPI,
-  projectPath: string
+  projectPath: string,
+  wasmInstance: ModuleType
 ): Promise<DeepPartial<ProjectConfiguration>> => {
   let settingsPath = await getProjectSettingsFilePath(electron, projectPath)
 
@@ -694,7 +695,7 @@ export const readProjectSettingsFile = async (
   const configToml = await fsManager.readFile(settingsPath, {
     encoding: 'utf-8',
   })
-  const configObj = parseProjectSettings(configToml)
+  const configObj = parseProjectSettings(configToml, wasmInstance)
   if (err(configObj)) {
     return Promise.reject(configObj)
   }
