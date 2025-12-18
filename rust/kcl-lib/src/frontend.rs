@@ -430,6 +430,105 @@ impl SketchApi for FrontendState {
             .await
     }
 
+    async fn chain_segment(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        previous_segment_end_point_id: ObjectId,
+        segment: SegmentCtor,
+        _label: Option<String>,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        
+        // First, add the segment (line) to get its start point ID
+        let SegmentCtor::Line(line_ctor) = segment else {
+            return Err(Error {
+                msg: format!("chain_segment currently only supports Line segments, got: {segment:?}"),
+            });
+        };
+        
+        // Add the line segment first - this updates self.program and self.scene_graph
+        let (_first_src_delta, first_scene_delta) = self.add_line(ctx, sketch, line_ctor).await?;
+        
+        // Find the new line's start point ID from the updated scene graph
+        // add_line updates self.scene_graph, so we can use that
+        let new_line_id = first_scene_delta.new_objects.iter().find(|&obj_id| {
+            let obj = self.scene_graph.objects.get(obj_id.0);
+            if let Some(obj) = obj {
+                matches!(&obj.kind, ObjectKind::Segment { segment: Segment::Line(_) })
+            } else {
+                false
+            }
+        }).ok_or_else(|| Error {
+            msg: "Failed to find new line segment in scene graph".to_string(),
+        })?;
+        
+        let new_line_obj = self.scene_graph.objects.get(new_line_id.0).ok_or_else(|| Error {
+            msg: format!("New line object not found: {new_line_id:?}"),
+        })?;
+        
+        let ObjectKind::Segment { segment: new_line_segment } = &new_line_obj.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {new_line_obj:?}"),
+            });
+        };
+        
+        let Segment::Line(new_line) = new_line_segment else {
+            return Err(Error {
+                msg: format!("Segment is not a line: {new_line_segment:?}"),
+            });
+        };
+        
+        let new_line_start_point_id = new_line.start;
+        
+        // Now add the coincident constraint between the previous end point and the new line's start point.
+        //
+        // Note: We want the final SceneGraphDelta returned from this helper to include
+        // ALL newly created objects (the new line's start/end points, the line itself,
+        // and the coincident constraint), so the frontend can treat them as draft
+        // entities. However, execute_after_add_constraint currently does not populate
+        // `new_objects` in its SceneGraphDelta. To work around this, we:
+        // - Remember the number of objects after adding the line
+        // - Call add_constraint (which updates self.scene_graph)
+        // - Diff the object list length to find newly added constraint objects
+        //
+        // Combined with the `new_objects` from `add_line` this gives the caller a
+        // complete list of all new entities created by this operation.
+        let objects_len_after_line = self.scene_graph.objects.len();
+
+        let coincident = Coincident {
+            segments: vec![previous_segment_end_point_id, new_line_start_point_id],
+        };
+        
+        let (final_src_delta, _final_scene_delta) =
+            self.add_constraint(ctx, version, sketch, Constraint::Coincident(coincident)).await?;
+
+        // Collect IDs of any objects created by the constraint addition.
+        let mut new_constraint_object_ids = Vec::new();
+        let objects_len_after_constraint = self.scene_graph.objects.len();
+        if objects_len_after_constraint > objects_len_after_line {
+            for idx in objects_len_after_line..objects_len_after_constraint {
+                if let Some(obj) = self.scene_graph.objects.get(idx) {
+                    new_constraint_object_ids.push(obj.id);
+                }
+            }
+        }
+
+        // Combine new objects from the line addition and the constraint addition.
+        let mut combined_new_objects = first_scene_delta.new_objects.clone();
+        combined_new_objects.extend(new_constraint_object_ids);
+
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            invalidates_ids: false,
+            new_objects: combined_new_objects,
+            exec_outcome: _final_scene_delta.exec_outcome,
+        };
+
+        Ok((final_src_delta, scene_graph_delta))
+    }
+
     async fn edit_constraint(
         &mut self,
         _ctx: &ExecutorContext,
