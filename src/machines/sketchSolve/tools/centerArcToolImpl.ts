@@ -265,7 +265,6 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
             type: 'update arc swapped',
             data: isSwapped,
           })
-          await new Promise((resolve) => requestAnimationFrame(resolve))
         } catch (err) {
           console.error('failed to edit arc segment', err)
         } finally {

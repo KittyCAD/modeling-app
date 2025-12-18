@@ -111,7 +111,6 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
             type: 'update sketch outcome',
             data: { ...result, writeToDisk: false },
           })
-          await new Promise((resolve) => requestAnimationFrame(resolve))
         } catch (err) {
           console.error('failed to edit segment', err)
         } finally {

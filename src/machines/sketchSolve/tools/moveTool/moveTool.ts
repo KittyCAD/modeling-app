@@ -649,7 +649,6 @@ export function createOnDragCallback({
       // Notify about new sketch outcome if edit was successful
       if (result) {
         onNewSketchOutcome({ ...result, writeToDisk: false })
-        await new Promise((resolve) => requestAnimationFrame(resolve))
       }
     } finally {
       setIsSolveInProgress(false)
