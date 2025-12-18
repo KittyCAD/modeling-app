@@ -452,7 +452,6 @@ const Toolbar_ = memo(
       </menu>
     )
   },
-  () => true
 )
 
 interface ToolbarItemContentsProps extends React.PropsWithChildren {
@@ -653,7 +652,14 @@ const ToolbarItemTooltipRichContent = memo(
         )}
       </>
     )
-  }
+  },
+  (oldP, newP) => oldP.state.value === newP.state.value
+  && oldP.overallState === newP.overallState
+  && oldP.immediateState?.type === newP.immediateState?.type
+  && oldP.isStreamReady === newP.immediateState
+  && oldP.isStreamAcceptingInput === newP.isStreamAcceptingInput
+  && oldP.context?.currentMode === newP.context?.currentMode
+  && oldP.context?.currentTool === newP.context?.currentTool
 )
 
 // Making this toplevel Toolbar memo'd is no-op, because we use context
