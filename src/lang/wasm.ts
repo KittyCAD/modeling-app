@@ -44,7 +44,6 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   base64_decode,
   change_default_units,
-  change_experimental_features,
   coredump,
   default_app_settings,
   default_project_settings,
@@ -962,13 +961,11 @@ export function changeDefaultUnits(
 export function changeExperimentalFeatures(
   kcl: string,
   warningLevel: WarningLevel | null = null,
-  instance?: ModuleType
+  instance: ModuleType
 ): string | Error {
   try {
     const level = JSON.stringify(warningLevel)
-    return instance
-      ? instance.change_experimental_features(kcl, level)
-      : change_experimental_features(kcl, level)
+    return instance.change_experimental_features(kcl, level)
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })
