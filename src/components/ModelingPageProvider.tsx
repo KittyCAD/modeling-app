@@ -7,7 +7,7 @@ import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsCo
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { kclCommands } from '@src/lib/kclCommands'
-import { BROWSER_PATH, PATHS } from '@src/lib/paths'
+import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import {
   engineCommandManager,
@@ -80,7 +80,7 @@ export const ModelingPageProvider = ({
   // This will register the commands to route to Telemetry, Home, and Settings.
   useEffect(() => {
     const filePath =
-      PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
+      PATHS.FILE + '/' + encodeURIComponent(file?.path)
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)
     commandBarActor.send({

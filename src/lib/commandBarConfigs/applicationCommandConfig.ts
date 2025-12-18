@@ -580,6 +580,12 @@ export function createApplicationCommands({
         switchEnvironmentsCommand,
         overrideEngineCommand,
         overrideZookeeperCommand,
+    : [
+        textToCADCommand,
+        addKCLFileToProject,
+        resetLayoutCommand,
+        setLayoutCommand,
+        createASampleDesktopOnly,
       ]
     : [addKCLFileToProject, resetLayoutCommand, setLayoutCommand]
 }

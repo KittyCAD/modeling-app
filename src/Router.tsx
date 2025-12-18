@@ -58,19 +58,16 @@ const router = createRouter([
         path: PATHS.INDEX,
         errorElement: <ErrorPage />,
         loader: async ({ request }) => {
-          const onDesktop = isDesktop()
           const url = new URL(request.url)
-          if (onDesktop) {
-            return redirect(PATHS.HOME + (url.search || ''))
-          } else {
-            const searchParams = new URLSearchParams(url.search)
-            if (!searchParams.has(ASK_TO_OPEN_QUERY_PARAM)) {
-              return redirect(
-                PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
-              )
-            }
+          const searchParams = new URLSearchParams(url.search)
+
+          if (searchParams.has(ASK_TO_OPEN_QUERY_PARAM)) {
+            return redirect(
+              PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
+            )
           }
-          return null
+
+          return redirect(PATHS.HOME + (url.search || ''))
         },
       },
       {
