@@ -495,48 +495,24 @@ impl SketchApi for FrontendState {
         let new_line_start_point_id = new_line.start;
 
         // Now add the coincident constraint between the previous end point and the new line's start point.
-        //
-        // Note: We want the final SceneGraphDelta returned from this helper to include
-        // ALL newly created objects (the new line's start/end points, the line itself,
-        // and the coincident constraint), so the frontend can treat them as draft
-        // entities. However, execute_after_add_constraint currently does not populate
-        // `new_objects` in its SceneGraphDelta. To work around this, we:
-        // - Remember the number of objects after adding the line
-        // - Call add_constraint (which updates self.scene_graph)
-        // - Diff the object list length to find newly added constraint objects
-        //
-        // Combined with the `new_objects` from `add_line` this gives the caller a
-        // complete list of all new entities created by this operation.
-        let objects_len_after_line = self.scene_graph.objects.len();
-
         let coincident = Coincident {
             segments: vec![previous_segment_end_point_id, new_line_start_point_id],
         };
 
-        let (final_src_delta, _final_scene_delta) = self
+        let (final_src_delta, final_scene_delta) = self
             .add_constraint(ctx, version, sketch, Constraint::Coincident(coincident))
             .await?;
 
-        // Collect IDs of any objects created by the constraint addition.
-        let mut new_constraint_object_ids = Vec::new();
-        let objects_len_after_constraint = self.scene_graph.objects.len();
-        if objects_len_after_constraint > objects_len_after_line {
-            for idx in objects_len_after_line..objects_len_after_constraint {
-                if let Some(obj) = self.scene_graph.objects.get(idx) {
-                    new_constraint_object_ids.push(obj.id);
-                }
-            }
-        }
-
         // Combine new objects from the line addition and the constraint addition.
+        // Both add_line and add_constraint now populate new_objects correctly.
         let mut combined_new_objects = first_scene_delta.new_objects.clone();
-        combined_new_objects.extend(new_constraint_object_ids);
+        combined_new_objects.extend(final_scene_delta.new_objects);
 
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
             new_objects: combined_new_objects,
-            exec_outcome: _final_scene_delta.exec_outcome,
+            exec_outcome: final_scene_delta.exec_outcome,
         };
 
         Ok((final_src_delta, scene_graph_delta))
@@ -1783,7 +1759,7 @@ impl FrontendState {
                 msg: "No AST produced after adding constraint".to_string(),
             });
         };
-        let _constraint_source_range =
+        let constraint_source_range =
             find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
                 msg: format!(
                     "Source range of new constraint not found in sketch block: {sketch_block_range:?}; {err:?}"
@@ -1806,12 +1782,27 @@ impl FrontendState {
             }
         })?;
 
+        #[cfg(not(feature = "artifact-graph"))]
+        let new_object_ids = Vec::new();
+        #[cfg(feature = "artifact-graph")]
+        let new_object_ids = {
+            // Extract the constraint ID from the execution outcome using source_range_to_object
+            let constraint_id = outcome
+                .source_range_to_object
+                .get(&constraint_source_range)
+                .copied()
+                .ok_or_else(|| Error {
+                    msg: format!("Source range of constraint not found: {constraint_source_range:?}"),
+                })?;
+            vec![constraint_id]
+        };
+
         let src_delta = SourceDelta { text: new_source };
         let outcome = self.update_state_after_exec(outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
-            new_objects: Vec::new(),
+            new_objects: new_object_ids,
             exec_outcome: outcome,
         };
         Ok((src_delta, scene_graph_delta))
