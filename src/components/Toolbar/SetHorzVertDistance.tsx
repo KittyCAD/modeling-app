@@ -46,7 +46,11 @@ export function horzVertDistanceInfo({
     }
   | Error {
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
+    const tmp = getNodeFromPath<Expr>(
+      kclManager.ast,
+      codeRef.pathToNode,
+      wasmInstance
+    )
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -59,6 +63,7 @@ export function horzVertDistanceInfo({
     const tmp = getNodeFromPath<VariableDeclarator>(
       kclManager.ast,
       codeRef.pathToNode,
+      wasmInstance,
       'VariableDeclarator'
     )
     if (err(tmp)) return tmp

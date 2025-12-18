@@ -74,7 +74,7 @@ describe('useOnFileRoute', () => {
         initWasmMock,
         settingsActor
       )
-      const sceneInfra = new SceneInfra(engineCommandManager)
+      const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
@@ -129,7 +129,7 @@ describe('useOnFileRoute', () => {
         initWasmMock,
         settingsActor
       )
-      const sceneInfra = new SceneInfra(engineCommandManager)
+      const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
@@ -196,7 +196,7 @@ describe('useOnFileRoute', () => {
         initWasmMock,
         settingsActor
       )
-      const sceneInfra = new SceneInfra(engineCommandManager)
+      const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
@@ -265,7 +265,7 @@ describe('useOnFileRoute', () => {
         initWasmMock,
         settingsActor
       )
-      const sceneInfra = new SceneInfra(engineCommandManager)
+      const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,

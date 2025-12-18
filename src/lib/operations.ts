@@ -56,6 +56,7 @@ import {
   type KclPreludeExtrudeMethod,
 } from '@src/lib/constants'
 import { toUtf16 } from '@src/lang/errors'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -2101,7 +2102,8 @@ export function getOperationCalculatedDisplay(op: OpKclValue): string {
  */
 export function getOperationVariableName(
   op: Operation,
-  program: Program
+  program: Program,
+  wasmInstance: ModuleType
 ): string | undefined {
   if (op.type === 'VariableDeclaration') {
     return op.name
@@ -2135,6 +2137,7 @@ export function getOperationVariableName(
     const statement = getNodeFromPath<ImportStatement>(
       program,
       pathToNode,
+      wasmInstance,
       'ImportStatement'
     )
     if (
@@ -2153,6 +2156,7 @@ export function getOperationVariableName(
   const call = getNodeFromPath<CallExpressionKw>(
     program,
     pathToNode,
+    wasmInstance,
     'CallExpressionKw'
   )
   if (err(call) || call.node.type !== 'CallExpressionKw') {
@@ -2162,6 +2166,7 @@ export function getOperationVariableName(
   const varDec = getNodeFromPath<VariableDeclaration>(
     program,
     pathToNode,
+    wasmInstance,
     'VariableDeclaration'
   )
   if (err(varDec)) {
@@ -2181,6 +2186,7 @@ export function getOperationVariableName(
   const pipe = getNodeFromPath<PipeExpression>(
     program,
     pathToNode,
+    wasmInstance,
     'PipeExpression'
   )
   if (err(pipe)) {

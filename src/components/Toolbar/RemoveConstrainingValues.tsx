@@ -28,15 +28,7 @@ export function removeConstrainingValuesInfo(
     }
   | Error {
   const _nodes = pathToNodes.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(
-      kclManager.ast,
-      pathToNode,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      wasmInstance
-    )
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode, wasmInstance)
     if (tmp instanceof Error) return tmp
     return tmp.node
   })

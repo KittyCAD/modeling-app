@@ -110,6 +110,7 @@ export function addShell({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SHELL,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -368,6 +369,7 @@ export function addHole({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HOLE,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -678,6 +680,7 @@ export function addOffsetPlane({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: undefined,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PLANE,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -722,12 +725,13 @@ function getFacesExprsFromSelection(
         targetArtifact = segmentArtifact
       } else {
         targetArtifact = artifact
-        edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph)
+        edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph, wasmInstance)
       }
 
       const tagResult = mutateAstWithTagForSketchSegment(
         ast,
         targetArtifact.codeRef.pathToNode,
+        wasmInstance,
         edgeCutMeta
       )
       if (err(tagResult)) {
@@ -938,6 +942,7 @@ export function buildSolidsAndFacesExprs(
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
+    wasmInstance,
     nodeToEdit,
     lastChildLookup,
     artifactGraph,

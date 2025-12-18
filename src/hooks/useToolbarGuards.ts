@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 
 import {
   SetVarNameModal,
@@ -19,6 +19,7 @@ export function useConvertToVariable(
   kclManager: KclManager,
   range?: SourceRange
 ) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const ast = kclManager.astSignal.value
   const { context } = useModelingContext()
   const [enable, setEnabled] = useState(false)
@@ -36,7 +37,8 @@ export function useConvertToVariable(
       parsed,
       range ||
         context.selectionRanges.graphSelections?.[0]?.codeRef?.range ||
-        []
+        [],
+      wasmInstance
     )
     if (trap(meta)) return
 
@@ -63,7 +65,8 @@ export function useConvertToVariable(
           ast,
           kclManager.variables,
           range || context.selectionRanges.graphSelections[0]?.codeRef?.range,
-          variableName
+          variableName,
+          wasmInstance
         )
 
       await kclManager.updateAst(_modifiedAst, true)

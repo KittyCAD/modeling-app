@@ -683,7 +683,8 @@ part001 = startSketchOn(XY)
         const offsetIndex = index - 7
         const expectedConstraintLevel = getConstraintLevelFromSourceRange(
           topLevelRange(offsetIndex, offsetIndex),
-          ast
+          ast,
+          instanceInThisFile
         )
         if (err(expectedConstraintLevel)) {
           throw expectedConstraintLevel

@@ -61,7 +61,8 @@ export function intersectInfo({
       kclManager.artifactGraph,
       kclManager.variables,
       selectionRanges.graphSelections[0],
-      selectionRanges.graphSelections[1]
+      selectionRanges.graphSelections[1],
+      wasmInstance
     )
 
   if (err(previousSegment)) return previousSegment
@@ -83,7 +84,11 @@ export function intersectInfo({
   }
 
   const _nodes = _forcedSelectionRanges.graphSelections.map(({ codeRef }) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
+    const tmp = getNodeFromPath<Expr>(
+      kclManager.ast,
+      codeRef.pathToNode,
+      wasmInstance
+    )
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -95,6 +100,7 @@ export function intersectInfo({
     const tmp = getNodeFromPath<VariableDeclarator>(
       kclManager.ast,
       codeRef.pathToNode,
+      wasmInstance,
       'VariableDeclarator'
     )
     if (err(tmp)) return tmp

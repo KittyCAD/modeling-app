@@ -153,6 +153,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type ModelingMachineEvent =
   | {
@@ -392,7 +393,7 @@ export const modelingMachine = setup({
       return isSketchBlockSelected(selectionRanges)
     },
     'Selection is on face': ({
-      context: { selectionRanges, kclManager },
+      context: { selectionRanges, kclManager, wasmInstance },
       event,
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
@@ -410,7 +411,8 @@ export const modelingMachine = setup({
       if (
         isCursorInFunctionDefinition(
           kclManager.ast,
-          selectionRanges.graphSelections[0]
+          selectionRanges.graphSelections[0],
+          wasmInstance
         )
       ) {
         return false
@@ -427,11 +429,12 @@ export const modelingMachine = setup({
       return kclManager.errors.length === 0 && !kclManager.hasErrors()
     },
     'is editing existing sketch': ({
-      context: { sketchDetails, kclManager },
+      context: { sketchDetails, kclManager, wasmInstance },
     }) => {
       return isEditingExistingSketch({
         sketchDetails,
         kclManager,
+        wasmInstance,
       })
     },
     'Can make selection horizontal': ({ context }) => {
@@ -620,18 +623,18 @@ export const modelingMachine = setup({
       if (err(ast) || !ast.program || ast.errors.length > 0) return false
       const isSafeRetVal = isNodeSafeToReplacePath(
         ast.program,
-
-        event.data.currentValue.pathToNode
+        event.data.currentValue.pathToNode,
+        context.wasmInstance
       )
       if (err(isSafeRetVal)) return false
       return isSafeRetVal.isSafe
     },
     'next is tangential arc': ({
-      context: { sketchDetails, currentTool, kclManager },
+      context: { sketchDetails, currentTool, kclManager, wasmInstance },
     }) => {
       return (
         currentTool === 'tangentialArc' &&
-        isEditingExistingSketch({ sketchDetails, kclManager })
+        isEditingExistingSketch({ sketchDetails, kclManager, wasmInstance })
       )
     },
     'next is rectangle': ({ context: { currentTool } }) =>
@@ -1142,13 +1145,15 @@ export const modelingMachine = setup({
     'set selection filter to faces only': ({ context }) => {
       context.kclManager.setSelectionFilter(
         ['face', 'object'],
-        context.sceneEntitiesManager
+        context.sceneEntitiesManager,
+        context.wasmInstance
       )
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to defaults': ({ context }) => {
       context.kclManager.setSelectionFilterToDefault(
-        context.sceneEntitiesManager
+        context.sceneEntitiesManager,
+        context.wasmInstance
       )
     },
     'Delete segments': ({
@@ -1217,6 +1222,7 @@ export const modelingMachine = setup({
       const varDec = getNodeFromPath<VariableDeclaration>(
         context.kclManager.ast,
         sketchEntryNodePath,
+        context.wasmInstance,
         'VariableDeclaration'
       )
       if (err(varDec)) return
@@ -1280,6 +1286,7 @@ export const modelingMachine = setup({
           sceneEntitiesManager,
           kclManager,
           kclEditorMachine: providedKclEditorMachine,
+          wasmInstance,
         },
         event,
       }) => {
@@ -1404,6 +1411,7 @@ export const modelingMachine = setup({
               systemDeps: {
                 engineCommandManager,
                 sceneEntitiesManager,
+                wasmInstance,
               },
             })
           if (codeMirrorSelection) {
@@ -1472,6 +1480,7 @@ export const modelingMachine = setup({
             systemDeps: {
               engineCommandManager,
               sceneEntitiesManager,
+              wasmInstance,
             },
           })
           updateSceneObjectColors()
@@ -1690,7 +1699,8 @@ export const modelingMachine = setup({
             pathToNodeMap,
             selectionRanges,
             updatedAst.newAst,
-            kclManager.artifactGraph
+            kclManager.artifactGraph,
+            wasmInstance
           ),
         }
       }
@@ -1702,6 +1712,7 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
+          wasmInstance,
         },
       }: {
         input: Pick<
@@ -1746,7 +1757,8 @@ export const modelingMachine = setup({
             pathToNodeMap,
             selectionRanges,
             updatedAst.newAst,
-            kclManager.artifactGraph
+            kclManager.artifactGraph,
+            wasmInstance
           ),
         }
       }
@@ -1758,6 +1770,7 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
+          wasmInstance,
         },
       }: {
         input: Pick<
@@ -1802,7 +1815,8 @@ export const modelingMachine = setup({
             pathToNodeMap,
             selectionRanges,
             updatedAst.newAst,
-            kclManager.artifactGraph
+            kclManager.artifactGraph,
+            wasmInstance
           ),
         }
       }
@@ -1814,6 +1828,7 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
+          wasmInstance,
         },
       }: {
         input: Pick<
@@ -1855,7 +1870,8 @@ export const modelingMachine = setup({
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph
+          kclManager.artifactGraph,
+          wasmInstance
         )
         return {
           selectionType: 'completeSelection',
@@ -1870,6 +1886,7 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
+          wasmInstance,
         },
       }: {
         input: Pick<
@@ -1911,7 +1928,8 @@ export const modelingMachine = setup({
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph
+          kclManager.artifactGraph,
+          wasmInstance
         )
         return {
           selectionType: 'completeSelection',
@@ -1926,6 +1944,7 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
+          wasmInstance,
         },
       }: {
         input: Pick<
@@ -1967,7 +1986,8 @@ export const modelingMachine = setup({
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph
+          kclManager.artifactGraph,
+          wasmInstance
         )
         return {
           selectionType: 'completeSelection',
@@ -1982,6 +2002,7 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
+          wasmInstance,
         },
       }: {
         input: Pick<
@@ -2023,7 +2044,8 @@ export const modelingMachine = setup({
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph
+          kclManager.artifactGraph,
+          wasmInstance
         )
         return {
           selectionType: 'completeSelection',
@@ -2038,6 +2060,7 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
+          wasmInstance,
         },
       }: {
         input: Pick<
@@ -2046,6 +2069,7 @@ export const modelingMachine = setup({
           | 'sketchDetails'
           | 'kclManager'
           | 'sceneEntitiesManager'
+          | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintEqualAngle({
@@ -2060,7 +2084,6 @@ export const modelingMachine = setup({
           trap(new Error('No sketch details'))
           return
         }
-        const wasmInstance = await kclManager.wasmInstancePromise
         const recastAst = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (err(recastAst) || !resultIsOk(recastAst)) return
 
@@ -2086,7 +2109,8 @@ export const modelingMachine = setup({
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph
+          kclManager.artifactGraph,
+          wasmInstance
         )
         return {
           selectionType: 'completeSelection',
@@ -2101,6 +2125,7 @@ export const modelingMachine = setup({
           sketchDetails,
           kclManager,
           sceneEntitiesManager,
+          wasmInstance,
         },
       }: {
         input: Pick<
@@ -2142,7 +2167,8 @@ export const modelingMachine = setup({
           pathToNodeMap,
           selectionRanges,
           updatedAst.newAst,
-          kclManager.artifactGraph
+          kclManager.artifactGraph,
+          wasmInstance
         )
         return {
           selectionType: 'completeSelection',
@@ -2487,6 +2513,7 @@ export const modelingMachine = setup({
             ast: parsed,
             pathToNode: data.currentValue.pathToNode,
             newExpressionString: data.namedValue.variableName,
+            wasmInstance,
           })
           if (trap(astAfterReplacement)) {
             return Promise.reject(astAfterReplacement)
@@ -2520,6 +2547,7 @@ export const modelingMachine = setup({
             ast: parsed,
             pathToNode: data.currentValue.pathToNode,
             newExpressionString: data.namedValue.valueText,
+            wasmInstance,
           })
           if (trap(astAfterReplacement)) {
             return Promise.reject(astAfterReplacement)
@@ -2576,7 +2604,8 @@ export const modelingMachine = setup({
           { 0: result.pathToReplaced },
           selectionRanges,
           updatedAst.newAst,
-          input.kclManager.artifactGraph
+          input.kclManager.artifactGraph,
+          wasmInstance
         )
         if (err(selection)) return Promise.reject(selection)
         return {
@@ -2989,6 +3018,7 @@ export const modelingMachine = setup({
               kclManager: KclManager
               rustContext: RustContext
               engineCommandManager: ConnectionManager
+              wasmInstance: ModuleType
             }
           | undefined
       }) => {
@@ -3001,6 +3031,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: input.wasmInstance,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -3031,6 +3062,7 @@ export const modelingMachine = setup({
               kclManager: KclManager
               rustContext: RustContext
               engineCommandManager: ConnectionManager
+              wasmInstance: ModuleType
             }
           | undefined
       }) => {
@@ -3043,6 +3075,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: input.wasmInstance,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -3267,6 +3300,7 @@ export const modelingMachine = setup({
               data: ModelingCommandSchema['Clone'] | undefined
               kclManager: KclManager
               rustContext: RustContext
+              wasmInstance: ModuleType
             }
           | undefined
       }) => {
@@ -3279,6 +3313,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: input.wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3435,6 +3470,7 @@ export const modelingMachine = setup({
               data: ModelingCommandSchema['Boolean Subtract'] | undefined
               kclManager: KclManager
               rustContext: RustContext
+              wasmInstance: ModuleType
             }
           | undefined
       }) => {
@@ -3447,6 +3483,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: input.wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3473,6 +3510,7 @@ export const modelingMachine = setup({
               data: ModelingCommandSchema['Boolean Union'] | undefined
               kclManager: KclManager
               rustContext: RustContext
+              wasmInstance: ModuleType
             }
           | undefined
       }) => {
@@ -3485,6 +3523,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: input.wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(result)
@@ -3511,6 +3550,7 @@ export const modelingMachine = setup({
               data: ModelingCommandSchema['Boolean Intersect'] | undefined
               kclManager: KclManager
               rustContext: RustContext
+              wasmInstance: ModuleType
             }
           | undefined
       }) => {
@@ -3524,6 +3564,7 @@ export const modelingMachine = setup({
           ...input.data,
           ast,
           artifactGraph,
+          wasmInstance: input.wasmInstance,
         })
         if (err(result)) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -3626,9 +3667,12 @@ export const modelingMachine = setup({
     /* Pierre: looks like somewhat of a one-off */
     'reeval-node-paths': fromPromise(
       async ({
-        input: { sketchDetails, kclManager },
+        input: { sketchDetails, kclManager, wasmInstance },
       }: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'>
+        input: Pick<
+          ModelingMachineContext,
+          'sketchDetails' | 'kclManager' | 'wasmInstance'
+        >
       }) => {
         const errorMessage =
           'Unable to maintain sketch mode - code changes affected sketch references. Please re-enter.'
@@ -3650,7 +3694,8 @@ export const modelingMachine = setup({
         const updatedPlaneNodePath = updatePathToNodesAfterEdit(
           kclManager._lastAst,
           kclManager.ast,
-          sketchDetails.planeNodePath
+          sketchDetails.planeNodePath,
+          wasmInstance
         )
 
         if (err(updatedPlaneNodePath)) {
@@ -4494,9 +4539,12 @@ export const modelingMachine = setup({
           invoke: {
             src: 'reeval-node-paths',
             id: 'reeval-node-paths',
-            input: ({ context: { sketchDetails, kclManager } }) => ({
+            input: ({
+              context: { sketchDetails, kclManager, wasmInstance },
+            }) => ({
               sketchDetails,
               kclManager,
+              wasmInstance,
             }),
 
             onDone: {
@@ -5553,6 +5601,7 @@ export const modelingMachine = setup({
             kclManager: context.kclManager,
             engineCommandManager: context.engineCommandManager,
             rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
           }
         },
         onDone: ['idle'],
@@ -5574,6 +5623,7 @@ export const modelingMachine = setup({
             kclManager: context.kclManager,
             engineCommandManager: context.engineCommandManager,
             rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
           }
         },
         onDone: ['idle'],
@@ -5723,6 +5773,7 @@ export const modelingMachine = setup({
             data: event.data,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
           }
         },
         onDone: ['idle'],
@@ -5812,6 +5863,7 @@ export const modelingMachine = setup({
             data: event.data,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
           }
         },
         onDone: 'idle',
@@ -5832,6 +5884,7 @@ export const modelingMachine = setup({
             data: event.data,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
           }
         },
         onDone: 'idle',
@@ -5852,6 +5905,7 @@ export const modelingMachine = setup({
             data: event.data,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
+            wasmInstance: context.wasmInstance,
           }
         },
         onDone: 'idle',
@@ -6044,9 +6098,11 @@ function listenForOriginMove(
 export function isEditingExistingSketch({
   sketchDetails,
   kclManager,
+  wasmInstance,
 }: {
   sketchDetails: SketchDetails | null
   kclManager: KclManager
+  wasmInstance: ModuleType
 }): boolean {
   // should check that the variable declaration is a pipeExpression
   // and that the pipeExpression contains a "startProfile" callExpression
@@ -6054,6 +6110,7 @@ export function isEditingExistingSketch({
   const variableDeclaration = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
     sketchDetails.sketchEntryNodePath,
+    wasmInstance,
     'VariableDeclarator',
     false,
     true // suppress noise because we know sketchEntryNodePath might not match up to the ast if the user changed the code
@@ -6091,14 +6148,17 @@ export function isEditingExistingSketch({
 export function pipeHasCircle({
   sketchDetails,
   kclManager,
+  wasmInstance,
 }: {
   sketchDetails: SketchDetails | null
   kclManager: KclManager
+  wasmInstance: ModuleType
 }): boolean {
   if (!sketchDetails?.sketchEntryNodePath) return false
   const variableDeclaration = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
     sketchDetails.sketchEntryNodePath,
+    wasmInstance,
     'VariableDeclarator'
   )
   if (err(variableDeclaration)) return false

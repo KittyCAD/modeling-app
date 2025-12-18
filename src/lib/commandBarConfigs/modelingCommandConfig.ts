@@ -1037,6 +1037,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Subtract']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await kclManager.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1076,6 +1077,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Union']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await kclManager.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1108,6 +1110,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Intersect']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await kclManager.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1283,6 +1286,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Fillet']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await kclManager.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1328,6 +1332,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Chamfer']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await kclManager.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1685,6 +1690,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ...(context.argumentsToSubmit as ModelingCommandSchema['Clone']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
+        wasmInstance: await kclManager.wasmInstancePromise,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(

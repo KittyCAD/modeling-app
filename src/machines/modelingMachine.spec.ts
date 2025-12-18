@@ -993,6 +993,7 @@ p3 = [342.51, 216.38],
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
               artifact.codeRef.pathToNode,
+              instanceInThisFile,
               'CallExpressionKw'
             )
             if (err(callExp)) {
@@ -1126,6 +1127,7 @@ p3 = [342.51, 216.38],
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
               artifact.codeRef.pathToNode,
+              instanceInThisFile,
               'CallExpressionKw'
             )
             if (err(callExp)) {
@@ -1273,6 +1275,7 @@ p3 = [342.51, 216.38],
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
               artifact.codeRef.pathToNode,
+              instanceInThisFile,
               'CallExpressionKw'
             )
             if (err(callExp)) {
@@ -1404,6 +1407,7 @@ p3 = [342.51, 216.38],
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
               artifact.codeRef.pathToNode,
+              instanceInThisFile,
               'CallExpressionKw'
             )
             if (err(callExp)) {

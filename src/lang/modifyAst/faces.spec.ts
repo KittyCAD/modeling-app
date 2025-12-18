@@ -1269,7 +1269,12 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       const artifact = [...artifactGraph.values()].find(
         (a) => a.type === 'edgeCut'
       )
-      const result = getEdgeCutMeta(artifact!, ast, artifactGraph)
+      const result = getEdgeCutMeta(
+        artifact!,
+        ast,
+        artifactGraph,
+        instanceInThisFile
+      )
       expect(result?.type).toEqual('edgeCut')
       expect(result?.subType).toEqual('opposite')
       expect(result?.tagName).toEqual('seg01')
@@ -1284,7 +1289,12 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       const artifact = [...artifactGraph.values()].find(
         (a) => a.type === 'edgeCut'
       )
-      const result = getEdgeCutMeta(artifact!, ast, artifactGraph)
+      const result = getEdgeCutMeta(
+        artifact!,
+        ast,
+        artifactGraph,
+        instanceInThisFile
+      )
       expect(result?.type).toEqual('edgeCut')
       expect(result?.subType).toEqual('adjacent')
       expect(result?.tagName).toEqual('seg01')

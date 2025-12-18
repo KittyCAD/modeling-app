@@ -39,6 +39,7 @@ export interface ModifyAstBase {
 export interface AddTagInfo {
   node: Node<Program>
   pathToNode: PathToNode
+  wasmInstance: ModuleType
 }
 
 /** Inputs for all straight segments, to and from are absolute values, as this gives a

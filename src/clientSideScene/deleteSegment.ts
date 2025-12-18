@@ -30,6 +30,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export async function deleteSegmentsOrProfiles({
   pathToNodes,
@@ -46,8 +47,9 @@ export async function deleteSegmentsOrProfiles({
   }
 }) {
   let modifiedAst: Node<Program> | Error = dependencies.kclManager.ast
+  const wasmInstance = await dependencies.kclManager.wasmInstancePromise
   const dependentRanges = pathToNodes.flatMap((pathToNode) =>
-    findUsesOfTagInPipe(dependencies.kclManager.ast, pathToNode)
+    findUsesOfTagInPipe(dependencies.kclManager.ast, pathToNode, wasmInstance)
   )
 
   const shouldContinueSegDelete = dependentRanges.length
@@ -76,7 +78,6 @@ export async function deleteSegmentsOrProfiles({
     return Promise.reject(modifiedAst)
   }
 
-  const wasmInstance = await dependencies.kclManager.wasmInstancePromise
   const newCode = recast(modifiedAst, wasmInstance)
   const pResult = parse(newCode, wasmInstance)
   if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
@@ -99,7 +100,8 @@ export async function deleteSegmentsOrProfiles({
   sketchDetails = updateSketchDetails(
     modifiedAst,
     testExecute.execState.artifactGraph,
-    sketchDetails
+    sketchDetails,
+    await dependencies.kclManager.wasmInstancePromise
   )
 
   await dependencies.sceneEntitiesManager.updateAstAndRejigSketch(
@@ -131,7 +133,8 @@ export async function deleteSegmentsOrProfiles({
 function updateSketchDetails(
   modifiedAst: Node<Program>,
   artifactGraph: ArtifactGraph,
-  sketchDetails: SketchDetails
+  sketchDetails: SketchDetails,
+  wasmInstance: ModuleType
 ): SketchDetails {
   const planeNodePath = stringifyPathToNode(sketchDetails.planeNodePath)
   let planeArtifact = artifactGraph.values().find((artifact) => {
@@ -159,6 +162,7 @@ function updateSketchDetails(
     const entryNode = getNodeFromPath(
       modifiedAst,
       sketchEntryNodePath,
+      wasmInstance,
       undefined,
       undefined,
       true

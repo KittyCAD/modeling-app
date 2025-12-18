@@ -87,7 +87,8 @@ export function addFlatnessGdt({
     const tagResult = modifyAstWithTagsForSelection(
       modifiedAst,
       faceSelection,
-      artifactGraph
+      artifactGraph,
+      wasmInstance
     )
     if (err(tagResult)) {
       console.warn('Failed to add tag for face selection', tagResult)
@@ -177,6 +178,7 @@ export function addFlatnessGdt({
       pathToEdit: nodeToEdit,
       pathIfNewPipe: undefined, // GDT annotations don't pipe
       variableIfNewDecl: undefined, // Creates expression statement at the end
+      wasmInstance,
     })
     if (err(pathToNode)) {
       return pathToNode
@@ -269,7 +271,8 @@ export function addDatumGdt({
   const tagResult = modifyAstWithTagsForSelection(
     modifiedAst,
     faceSelection,
-    artifactGraph
+    artifactGraph,
+    wasmInstance
   )
   if (err(tagResult)) {
     return tagResult
@@ -320,6 +323,7 @@ export function addDatumGdt({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: undefined, // GDT annotations don't pipe
     variableIfNewDecl: undefined, // Creates expression statement at the end
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode

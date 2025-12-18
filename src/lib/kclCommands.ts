@@ -358,10 +358,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         nodeToEdit: {
           displayName: 'Name',
           inputType: 'options',
-          valueSummary: (nodeToEdit: PathToNode) => {
+          valueSummary: (nodeToEdit: PathToNode, wasmInstance) => {
+            if (!wasmInstance) {
+              return 'Error'
+            }
             const node = getNodeFromPath<VariableDeclarator>(
               commandProps.kclManager.ast,
               nodeToEdit,
+              wasmInstance,
               'VariableDeclarator',
               true
             )
@@ -387,12 +391,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         value: {
           inputType: 'kcl',
           required: true,
-          defaultValue(commandBarContext) {
+          defaultValue(commandBarContext, _, wasmInstance) {
             const nodeToEdit = commandBarContext.argumentsToSubmit.nodeToEdit
-            if (!nodeToEdit || !isPathToNode(nodeToEdit)) return '5'
+            if (!nodeToEdit || !isPathToNode(nodeToEdit) || !wasmInstance)
+              return '5'
             const node = getNodeFromPath<VariableDeclarator>(
               commandProps.kclManager.ast,
-              nodeToEdit
+              nodeToEdit,
+              wasmInstance
             )
             if (err(node) || node.node.type !== 'VariableDeclarator')
               return 'Error'
@@ -412,8 +418,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           createVariable: 'disallow',
         },
       },
-      onSubmit: (data) => {
-        if (!data) {
+      onSubmit: (data, wasmInstance) => {
+        if (!data || !wasmInstance) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
 
@@ -422,7 +428,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         const newAst = structuredClone(commandProps.kclManager.ast)
         const variableNode = getNodeFromPath<Node<VariableDeclarator>>(
           newAst,
-          nodeToEdit
+          nodeToEdit,
+          wasmInstance
         )
 
         if (

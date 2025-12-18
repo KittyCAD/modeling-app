@@ -182,7 +182,11 @@ export async function exportSketchToDxf(
     const decodedData = new Uint8Array(decodedBuf)
 
     // Generate meaningful filename from sketch name
-    const sketchName = getOperationVariableName(operation, kclManager.ast)
+    const sketchName = getOperationVariableName(
+      operation,
+      kclManager.ast,
+      await kclManager.wasmInstancePromise
+    )
     const fileName = `${sketchName || 'sketch'}.dxf`
 
     if (window.electron) {

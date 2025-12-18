@@ -75,11 +75,11 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 export function getNodeFromPath<T>(
   node: Program,
   path: PathToNode,
+  wasmInstance: ModuleType,
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly = false,
   suppressNoise = false,
-  replacement?: any,
-  wasmInstance?: ModuleType
+  replacement?: any
 ):
   | {
       node: T
@@ -201,11 +201,9 @@ export function getNodeFromPathCurry(
     const _node1 = getNodeFromPath<T>(
       node,
       path,
+      wasmInstance,
       stopAt,
-      returnEarly,
-      undefined,
-      undefined,
-      wasmInstance
+      returnEarly
     )
     if (err(_node1)) return _node1
     const { node: _node, shallowPath } = _node1
@@ -338,13 +336,14 @@ export function findAllPreviousVariablesPath(
   ast: Program,
   memVars: VariableMap,
   path: PathToNode,
+  wasmInstance: ModuleType,
   type: 'number' | 'string' = 'number'
 ): {
   variables: PrevVariable<typeof type extends 'number' ? number : string>[]
   bodyPath: PathToNode
   insertIndex: number
 } {
-  const _node1 = getNodeFromPath(ast, path, 'VariableDeclaration')
+  const _node1 = getNodeFromPath(ast, path, wasmInstance, 'VariableDeclaration')
   if (err(_node1)) {
     console.error(_node1)
     return {
@@ -359,7 +358,7 @@ export function findAllPreviousVariablesPath(
 
   const { index: insertIndex, path: bodyPath } = splitPathAtLastIndex(pathToDec)
 
-  const _node2 = getNodeFromPath<Program['body']>(ast, bodyPath)
+  const _node2 = getNodeFromPath<Program['body']>(ast, bodyPath, wasmInstance)
   if (err(_node2)) {
     console.error(_node2)
     return {
@@ -394,6 +393,7 @@ export function findAllPreviousVariables(
   ast: Program,
   memVars: VariableMap,
   sourceRange: SourceRange,
+  wasmInstance: ModuleType,
   type: 'number' | 'string' = 'number'
 ): {
   variables: PrevVariable<typeof type extends 'number' ? number : string>[]
@@ -401,7 +401,7 @@ export function findAllPreviousVariables(
   insertIndex: number
 } {
   const path = getNodePathFromSourceRange(ast, sourceRange)
-  return findAllPreviousVariablesPath(ast, memVars, path, type)
+  return findAllPreviousVariablesPath(ast, memVars, path, wasmInstance, type)
 }
 
 type ReplacerFn = (
@@ -417,7 +417,8 @@ type ReplacerFn = (
 
 export function isNodeSafeToReplacePath(
   ast: Program,
-  path: PathToNode
+  path: PathToNode,
+  wasmInstance: ModuleType
 ):
   | {
       isSafe: boolean
@@ -437,11 +438,11 @@ export function isNodeSafeToReplacePath(
   ]
   const _node1 = getNodeFromPath<
     BinaryExpression | Name | CallExpressionKw | Literal | UnaryExpression
-  >(ast, path, acceptedNodeTypes)
+  >(ast, path, wasmInstance, acceptedNodeTypes)
   if (err(_node1)) return _node1
   const { node: value, deepPath: outPath } = _node1
 
-  const _node2 = getNodeFromPath(ast, path, 'BinaryExpression')
+  const _node2 = getNodeFromPath(ast, path, wasmInstance, 'BinaryExpression')
   if (err(_node2)) return _node2
   const { node: binValue, shallowPath: outBinPath } = _node2
 
@@ -463,7 +464,7 @@ export function isNodeSafeToReplacePath(
     }
     pathToReplaced[1][0] = index + 1
     const startPath = finPath.slice(0, -1)
-    const _nodeToReplace = getNodeFromPath(_ast, startPath)
+    const _nodeToReplace = getNodeFromPath(_ast, startPath, wasmInstance)
     if (err(_nodeToReplace)) return _nodeToReplace
     const nodeToReplace = _nodeToReplace.node as any
     nodeToReplace[last[0]] = identifier
@@ -489,7 +490,8 @@ export function isNodeSafeToReplacePath(
 
 export function isNodeSafeToReplace(
   ast: Node<Program>,
-  sourceRange: SourceRange
+  sourceRange: SourceRange,
+  wasmInstance: ModuleType
 ):
   | {
       isSafe: boolean
@@ -498,7 +500,7 @@ export function isNodeSafeToReplace(
     }
   | Error {
   let path = getNodePathFromSourceRange(ast, sourceRange)
-  return isNodeSafeToReplacePath(ast, path)
+  return isNodeSafeToReplacePath(ast, path, wasmInstance)
 }
 
 export function isTypeInValue(node: Expr, syntaxType: SyntaxType): boolean {
@@ -551,7 +553,8 @@ export function isLinesParallelAndConstrained(
   artifactGraph: ArtifactGraph,
   memVars: VariableMap,
   primaryLine: Selection,
-  secondaryLine: Selection
+  secondaryLine: Selection,
+  wasmInstance: ModuleType
 ):
   | {
       isParallelAndConstrained: boolean
@@ -571,11 +574,17 @@ export function isLinesParallelAndConstrained(
     const _secondaryNode = getNodeFromPath<CallExpressionKw>(
       ast,
       secondaryPath,
+      wasmInstance,
       ['CallExpressionKw']
     )
     if (err(_secondaryNode)) return _secondaryNode
     const secondaryNode = _secondaryNode.node
-    const _varDec = getNodeFromPath(ast, primaryPath, 'VariableDeclaration')
+    const _varDec = getNodeFromPath(
+      ast,
+      primaryPath,
+      wasmInstance,
+      'VariableDeclaration'
+    )
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
     const varName = (varDec as VariableDeclaration)?.declaration.id?.name
@@ -588,7 +597,12 @@ export function isLinesParallelAndConstrained(
     if (err(_primarySegment)) return _primarySegment
     const primarySegment = _primarySegment.segment
 
-    const _varDec2 = getNodeFromPath(ast, secondaryPath, 'VariableDeclaration')
+    const _varDec2 = getNodeFromPath(
+      ast,
+      secondaryPath,
+      wasmInstance,
+      'VariableDeclaration'
+    )
     if (err(_varDec2)) return _varDec2
     const varDec2 = _varDec2.node
     const varName2 = (varDec2 as VariableDeclaration)?.declaration.id?.name
@@ -624,7 +638,8 @@ export function isLinesParallelAndConstrained(
 
     const constraintLevelMeta = getConstraintLevelFromSourceRange(
       secondaryLine?.codeRef.range,
-      ast
+      ast,
+      wasmInstance
     )
     if (err(constraintLevelMeta)) {
       console.error(constraintLevelMeta)
@@ -685,7 +700,8 @@ export function isSingleCursorInPipe(
 
 export function findUsesOfTagInPipe(
   ast: Program,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  wasmInstance: ModuleType
 ): SourceRange[] {
   const stdlibFunctionsThatTakeTagInputs = [
     'segAng',
@@ -693,9 +709,12 @@ export function findUsesOfTagInPipe(
     'segEndY',
     'segLen',
   ]
-  const nodeMeta = getNodeFromPath<CallExpressionKw>(ast, pathToNode, [
-    'CallExpressionKw',
-  ])
+  const nodeMeta = getNodeFromPath<CallExpressionKw>(
+    ast,
+    pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
   if (err(nodeMeta)) {
     console.error(nodeMeta)
     return []
@@ -714,6 +733,7 @@ export function findUsesOfTagInPipe(
   const varDec = getNodeFromPath<Node<VariableDeclaration>>(
     ast,
     pathToNode,
+    wasmInstance,
     'VariableDeclaration'
   )
   if (err(varDec)) {
@@ -753,10 +773,15 @@ export function findUsesOfTagInPipe(
   return dependentRanges
 }
 
-export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
+export function hasSketchPipeBeenExtruded(
+  selection: Selection,
+  ast: Program,
+  wasmInstance: ModuleType
+) {
   const _node = getNodeFromPath<Node<PipeExpression>>(
     ast,
     selection.codeRef.pathToNode,
+    wasmInstance,
     'PipeExpression'
   )
   if (err(_node)) return false
@@ -765,6 +790,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
   const _varDec = getNodeFromPath<VariableDeclarator>(
     ast,
     selection.codeRef.pathToNode,
+    wasmInstance,
     'VariableDeclarator'
   )
   if (err(_varDec)) return false
@@ -914,13 +940,15 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
 
 export function isCursorInFunctionDefinition(
   ast: Node<Program>,
-  selectionRanges: Selection
+  selectionRanges: Selection,
+  wasmInstance: ModuleType
 ): boolean {
   if (ast.body.length === 0) return false
   if (!selectionRanges?.codeRef?.pathToNode) return false
   const node = getNodeFromPath<FunctionExpression>(
     ast,
     selectionRanges.codeRef.pathToNode,
+    wasmInstance,
     'FunctionExpression'
   )
   if (err(node)) return false
@@ -946,11 +974,13 @@ export function isCallExprWithName(
 
 export function doesSketchPipeNeedSplitting(
   ast: Node<Program>,
-  pathToPipe: PathToNode
+  pathToPipe: PathToNode,
+  wasmInstance: ModuleType
 ): boolean | Error {
   const varDec = getNodeFromPath<VariableDeclarator>(
     ast,
     pathToPipe,
+    wasmInstance,
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
@@ -1007,7 +1037,8 @@ export function stringifyPathToNode(pathToNode: PathToNode): string {
 export function updatePathToNodesAfterEdit(
   oldAst: Node<Program>,
   newAst: Node<Program>,
-  pathToUpdate: PathToNode
+  pathToUpdate: PathToNode,
+  wasmInstance: ModuleType
 ): PathToNode | Error {
   // First, let's find all topLevel the variable declarations in both ASTs
   // and map their name to their body index
@@ -1030,6 +1061,7 @@ export function updatePathToNodesAfterEdit(
   const oldNodeResult = getNodeFromPath<VariableDeclaration>(
     oldAst,
     pathToUpdate,
+    wasmInstance,
     'VariableDeclaration'
   )
   if (err(oldNodeResult)) return oldNodeResult
@@ -1062,6 +1094,7 @@ export const valueOrVariable = (variable: KclCommandValue) => {
 export function getVariableExprsFromSelection(
   selection: Selections,
   ast: Node<Program>,
+  wasmInstance: ModuleType,
   nodeToEdit?: PathToNode,
   lastChildLookup = false,
   artifactGraph?: ArtifactGraph,
@@ -1086,6 +1119,7 @@ export function getVariableExprsFromSelection(
       const lastChildVariable = getLastVariable(
         children,
         ast,
+        wasmInstance,
         artifactTypeFilter,
         nodeToEdit
       )
@@ -1098,6 +1132,7 @@ export function getVariableExprsFromSelection(
       const directLookup = getNodeFromPath<VariableDeclaration>(
         ast,
         s.codeRef.pathToNode,
+        wasmInstance,
         'VariableDeclaration'
       )
       if (err(directLookup)) {
@@ -1113,6 +1148,7 @@ export function getVariableExprsFromSelection(
         const result = getNodeFromPath<VariableDeclaration>(
           ast,
           nodeToEdit,
+          wasmInstance,
           'VariableDeclaration'
         )
         if (
@@ -1142,7 +1178,11 @@ export function getVariableExprsFromSelection(
     }
 
     // import case
-    const importNodeAndAlias = findImportNodeAndAlias(ast, s.codeRef.pathToNode)
+    const importNodeAndAlias = findImportNodeAndAlias(
+      ast,
+      s.codeRef.pathToNode,
+      wasmInstance
+    )
     if (importNodeAndAlias) {
       exprs.push(createLocalName(importNodeAndAlias.alias))
       continue
@@ -1315,11 +1355,13 @@ export function getSelectedPlaneAsNode(
 
 export function locateVariableWithCallOrPipe(
   ast: Program,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  wasmInstance: ModuleType
 ): { variableDeclarator: VariableDeclarator; shallowPath: PathToNode } | Error {
   const variableDeclarationNode = getNodeFromPath<VariableDeclaration>(
     ast,
     pathToNode,
+    wasmInstance,
     'VariableDeclaration'
   )
   if (err(variableDeclarationNode)) return variableDeclarationNode
@@ -1350,11 +1392,15 @@ export function locateVariableWithCallOrPipe(
 
 export function findImportNodeAndAlias(
   ast: Node<Program>,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  wasmInstance: ModuleType
 ) {
-  const importNode = getNodeFromPath<ImportStatement>(ast, pathToNode, [
-    'ImportStatement',
-  ])
+  const importNode = getNodeFromPath<ImportStatement>(
+    ast,
+    pathToNode,
+    wasmInstance,
+    ['ImportStatement']
+  )
   if (
     !err(importNode) &&
     importNode.node.type === 'ImportStatement' &&
@@ -1379,10 +1425,15 @@ export function findImportNodeAndAlias(
 export function findPipesWithImportAlias(
   ast: Node<Program>,
   pathToNode: PathToNode,
+  wasmInstance: ModuleType,
   callInPipe?: string
 ) {
   let pipes: { expression: PipeExpression; pathToNode: PathToNode }[] = []
-  const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
+  const importNodeAndAlias = findImportNodeAndAlias(
+    ast,
+    pathToNode,
+    wasmInstance
+  )
   const callInPipeFilter = callInPipe
     ? (v: Expr) =>
         v.type === 'CallExpressionKw' && v.callee.name.name === callInPipe
@@ -1555,6 +1606,7 @@ export function findAllChildrenAndOrderByPlaceInCode(
 export function getLastVariable(
   orderedDescArtifacts: Artifact[],
   ast: Node<Program>,
+  wasmInstance: ModuleType,
   typeFilter?: Array<Artifact['type']>,
   nodeToEdit?: PathToNode
 ) {
@@ -1573,6 +1625,7 @@ export function getLastVariable(
         const varDec = getNodeFromPath<VariableDeclaration>(
           ast,
           pathToNode,
+          wasmInstance,
           'VariableDeclaration'
         )
         if (!err(varDec)) {
@@ -1591,7 +1644,8 @@ export function getLastVariable(
 export function getEdgeCutMeta(
   artifact: Artifact,
   ast: Node<Program>,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
 ): null | EdgeCutInfo {
   let edgeCutInfo: {
     segment: SegmentArtifact
@@ -1631,6 +1685,7 @@ export function getEdgeCutMeta(
   const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
     ast,
     edgeCutInfo?.segment.codeRef.pathToNode || [],
+    wasmInstance,
     ['CallExpressionKw']
   )
   if (err(segmentCallExpr)) return null

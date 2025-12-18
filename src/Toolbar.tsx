@@ -51,7 +51,8 @@ export function Toolbar({
     if (
       isCursorInFunctionDefinition(
         kclManager.ast,
-        context.selectionRanges.graphSelections[0]
+        context.selectionRanges.graphSelections[0],
+        wasmInstance
       )
     )
       return false

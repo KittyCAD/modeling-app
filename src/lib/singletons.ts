@@ -87,7 +87,7 @@ declare global {
 // Accessible for tests mostly
 window.engineCommandManager = engineCommandManager
 
-export const sceneInfra = new SceneInfra(engineCommandManager)
+export const sceneInfra = new SceneInfra(engineCommandManager, initPromise)
 export const kclManager = new KclManager(engineCommandManager, initPromise, {
   rustContext,
   sceneInfra,

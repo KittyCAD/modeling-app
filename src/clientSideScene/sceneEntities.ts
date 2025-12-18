@@ -871,6 +871,7 @@ export class SceneEntities {
       sketchNodePaths,
       variables: execState.variables,
       kclManager: this.kclManager,
+      wasmInstance: await this.kclManager.wasmInstancePromise,
     })
 
     const group = new Group()
@@ -966,6 +967,7 @@ export class SceneEntities {
         const _node1 = getNodeFromPath<Node<CallExpressionKw>>(
           maybeModdedAst,
           segPathToNode,
+          wasmInstance,
           ['CallExpressionKw']
         )
         if (err(_node1)) {
@@ -1145,6 +1147,7 @@ export class SceneEntities {
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
       sketchEntryNodePath || [],
+      await this.kclManager.wasmInstancePromise,
       'VariableDeclaration'
     )
     if (trap(_node1)) return Promise.reject(_node1)
@@ -1214,9 +1217,11 @@ export class SceneEntities {
           pathToNode: sketchEntryNodePath,
           variables: this.kclManager.variables,
           kclManager: this.kclManager,
+          wasmInstance: await this.kclManager.wasmInstancePromise,
         })
         if (err(sketch)) return Promise.reject(sketch)
         if (!sketch) return Promise.reject(new Error('No sketch found'))
+        const wasmInstance = await this.kclManager.wasmInstancePromise
 
         let intersectsProfileStart = false
         if (intersection2d) {
@@ -1265,12 +1270,14 @@ export class SceneEntities {
                       createLabeledArg(ARG_END_ABSOLUTE, originCoords),
                     ]),
               ],
+              wasmInstance,
             })
             if (trap(modifiedAst)) return Promise.reject(modifiedAst)
             modifiedAst = addCloseToPipe({
               node: modifiedAst,
               variables: this.kclManager.variables,
               pathToNode: sketchEntryNodePath,
+              wasmInstance,
             })
             if (trap(modifiedAst)) return Promise.reject(modifiedAst)
           } else {
@@ -1319,7 +1326,8 @@ export class SceneEntities {
               )
               const taggedAstResult = mutateAstWithTagForSketchSegment(
                 modifiedAst,
-                previousSegmentPathToNode
+                previousSegmentPathToNode,
+                wasmInstance
               )
               if (trap(taggedAstResult)) return Promise.reject(taggedAstResult)
 
@@ -1426,6 +1434,7 @@ export class SceneEntities {
     const varDec = getNodeFromPath<VariableDeclarator>(
       _ast,
       planeNodePath,
+      await this.kclManager.wasmInstancePromise,
       'VariableDeclarator'
     )
 
@@ -1484,6 +1493,7 @@ export class SceneEntities {
     const justCreatedNode = getNodeFromPath<VariableDeclaration>(
       _ast,
       updatedEntryNodePath,
+      await this.kclManager.wasmInstancePromise,
       'VariableDeclaration'
     )
 
@@ -1528,6 +1538,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
+          await this.kclManager.wasmInstancePromise,
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
@@ -1606,6 +1617,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
           updatedEntryNodePath,
+          await this.kclManager.wasmInstancePromise,
           'VariableDeclaration'
         )
         if (trap(_node)) return
@@ -1663,6 +1675,7 @@ export class SceneEntities {
     const varDec = getNodeFromPath<VariableDeclarator>(
       _ast,
       planeNodePath,
+      await this.kclManager.wasmInstancePromise,
       'VariableDeclarator'
     )
 
@@ -1720,6 +1733,7 @@ export class SceneEntities {
     const justCreatedNode = getNodeFromPath<VariableDeclaration>(
       _ast,
       updatedEntryNodePath,
+      await this.kclManager.wasmInstancePromise,
       'VariableDeclaration'
     )
 
@@ -1763,6 +1777,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
+          await this.kclManager.wasmInstancePromise,
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
@@ -1845,6 +1860,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
           updatedEntryNodePath,
+          await this.kclManager.wasmInstancePromise,
           'VariableDeclaration'
         )
         if (trap(_node)) return
@@ -1905,6 +1921,7 @@ export class SceneEntities {
     const varDec = getNodeFromPath<VariableDeclarator>(
       _ast,
       planeNodePath,
+      await this.kclManager.wasmInstancePromise,
       'VariableDeclarator'
     )
 
@@ -1968,6 +1985,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
+          await this.kclManager.wasmInstancePromise,
           'VariableDeclaration'
         )
         let modded = structuredClone(truncatedAst)
@@ -2044,6 +2062,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
           updatedEntryNodePath || [],
+          await this.kclManager.wasmInstancePromise,
           'VariableDeclaration'
         )
         if (trap(_node)) return
@@ -2111,6 +2130,7 @@ export class SceneEntities {
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
       sketchEntryNodePath || [],
+      await this.kclManager.wasmInstancePromise,
       'VariableDeclaration'
     )
     if (trap(_node1)) return Promise.reject(_node1)
@@ -2186,6 +2206,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
+          await this.kclManager.wasmInstancePromise,
           'VariableDeclaration'
         )
         let modded = structuredClone(truncatedAst)
@@ -2274,6 +2295,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
           sketchEntryNodePath || [],
+          await this.kclManager.wasmInstancePromise,
           'VariableDeclaration'
         )
         if (trap(_node)) return
@@ -2351,6 +2373,7 @@ export class SceneEntities {
     const _node1 = getNodeFromPath<VariableDeclaration>(
       _ast,
       sketchEntryNodePath || [],
+      await this.kclManager.wasmInstancePromise,
       'VariableDeclaration'
     )
     if (trap(_node1)) return Promise.reject(_node1)
@@ -2421,6 +2444,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
+          await this.kclManager.wasmInstancePromise,
           'VariableDeclaration'
         )
         let modded = structuredClone(truncatedAst)
@@ -2506,10 +2530,12 @@ export class SceneEntities {
         // Commit the arc to the full AST/code and return to sketch.idle
         const mousePoint = args.intersectionPoint?.twoD
         if (!mousePoint || args.mouseEvent.button !== 0) return
+        const wasmInstance = await this.kclManager.wasmInstancePromise
 
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
           sketchEntryNodePath || [],
+          wasmInstance,
           'VariableDeclaration'
         )
         if (trap(_node)) return
@@ -2561,6 +2587,7 @@ export class SceneEntities {
             const arcToCallExp = getNodeFromPath<CallExpressionKw>(
               modded,
               mod.pathToNode,
+              wasmInstance,
               'CallExpressionKw'
             )
             if (err(arcToCallExp)) return
@@ -2570,6 +2597,7 @@ export class SceneEntities {
               node: modded,
               variables: this.kclManager.variables,
               pathToNode: sketchEntryNodePath,
+              wasmInstance,
             })
             if (err(moddedResult)) return
             modded = moddedResult
@@ -2617,6 +2645,7 @@ export class SceneEntities {
     const varDec = getNodeFromPath<VariableDeclarator>(
       _ast,
       planeNodePath,
+      await this.kclManager.wasmInstancePromise,
       'VariableDeclarator'
     )
 
@@ -2692,6 +2721,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
+          await this.kclManager.wasmInstancePromise,
           'VariableDeclaration'
         )
         let modded = structuredClone(truncatedAst)
@@ -2774,6 +2804,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
           updatedEntryNodePath || [],
+          await this.kclManager.wasmInstancePromise,
           'VariableDeclaration'
         )
         if (trap(_node)) return
@@ -2891,6 +2922,7 @@ export class SceneEntities {
             pathToNode,
             variables: this.kclManager.variables,
             kclManager: this.kclManager,
+            wasmInstance: await this.kclManager.wasmInstancePromise,
           })
           if (trap(sketch)) return
           if (!sketch) {
@@ -2981,7 +3013,8 @@ export class SceneEntities {
         const event = getEventForSegmentSelection(
           selected,
           this.kclManager.ast,
-          this.kclManager.artifactGraph
+          this.kclManager.artifactGraph,
+          args.wasmInstance
         )
         if (!event) return
         this.sceneInfra.modelingSend(event)
@@ -3323,6 +3356,7 @@ export class SceneEntities {
     const _node = getNodeFromPath<Node<CallExpressionKw>>(
       modifiedAst,
       draftInfo ? nodePathWithCorrectedIndexForTruncatedAst : pathToNode,
+      await this.kclManager.wasmInstancePromise,
       ['CallExpressionKw']
     )
     if (trap(_node)) return
@@ -3537,6 +3571,7 @@ export class SceneEntities {
         sketchNodePaths,
         variables,
         kclManager: this.kclManager,
+        wasmInstance: await this.kclManager.wasmInstancePromise,
       })
       const callbacks: (() => SegmentOverlayPayload | null)[] = []
       for (const sketchInfo of sketchesInfo) {
@@ -3791,6 +3826,7 @@ export class SceneEntities {
           const _node = getNodeFromPath<Node<CallExpressionKw>>(
             updatedAst,
             parent.userData.pathToNode,
+            await this.kclManager.wasmInstancePromise,
             ['CallExpressionKw']
           )
           if (trap(_node, { suppress: true })) return
@@ -4171,6 +4207,7 @@ function prepareTruncatedAst(
   const _node = getNodeFromPath<Node<VariableDeclaration>>(
     _ast,
     sketchNodePaths[0] || [],
+    wasmInstance,
     'VariableDeclaration'
   )
   if (err(_node)) return _node
@@ -4249,14 +4286,17 @@ function sketchFromPathToNode({
   pathToNode,
   variables,
   kclManager,
+  wasmInstance,
 }: {
   pathToNode: PathToNode
   variables: VariableMap
   kclManager: KclManager
+  wasmInstance: ModuleType
 }): Sketch | null | Error {
   const _varDec = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
     pathToNode,
+    wasmInstance,
     'VariableDeclarator'
   )
   if (err(_varDec)) return _varDec
@@ -4323,10 +4363,12 @@ function getSketchesInfo({
   sketchNodePaths,
   variables,
   kclManager,
+  wasmInstance,
 }: {
   sketchNodePaths: PathToNode[]
   variables: VariableMap
   kclManager: KclManager
+  wasmInstance: ModuleType
 }): {
   sketch: Sketch
   pathToNode: PathToNode
@@ -4340,6 +4382,7 @@ function getSketchesInfo({
       pathToNode: path,
       variables,
       kclManager,
+      wasmInstance,
     })
     if (err(sketch)) continue
     if (!sketch) continue

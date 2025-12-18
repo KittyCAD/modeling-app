@@ -1,7 +1,7 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { useMachine, useSelector } from '@xstate/react'
 import type { ComponentProps } from 'react'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { use, useCallback, useEffect, useMemo, useRef } from 'react'
 import type { Actor, Prop } from 'xstate'
 
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -533,14 +533,15 @@ interface OperationProps {
 const OperationItem = (props: OperationProps) => {
   const diagnostics = kclManager.diagnosticsSignal.value
   const ast = kclManager.astSignal.value
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const name = getOperationLabel(props.item)
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(props.item, props.code)
   }, [props.item, props.code])
 
   const variableName = useMemo(() => {
-    return getOperationVariableName(props.item, ast)
-  }, [props.item, ast])
+    return getOperationVariableName(props.item, ast, wasmInstance)
+  }, [props.item, ast, wasmInstance])
 
   const errors = useMemo(() => {
     return diagnostics.filter(

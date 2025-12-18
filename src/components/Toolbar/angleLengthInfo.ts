@@ -25,7 +25,7 @@ export function angleLengthInfo({
     }
   | Error {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, [
+    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, wasmInstance, [
       'CallExpressionKw',
     ])
   )

@@ -295,7 +295,7 @@ function giveSketchFnCallTagTestHelper(
   const ast = assertParse(code, instanceInThisFile)
   const start = code.indexOf(searchStr)
   const range = topLevelRange(start, start + searchStr.length)
-  const sketchRes = giveSketchFnCallTag(ast, range)
+  const sketchRes = giveSketchFnCallTag(ast, range, instanceInThisFile)
   if (err(sketchRes)) throw sketchRes
   const { modifiedAst, tag, isTagExisting } = sketchRes
   const newCode = recast(modifiedAst, instanceInThisFile)
@@ -373,7 +373,8 @@ yo2 = hmm([identifierGuy + 5])`
       ast,
       execState.variables,
       topLevelRange(startIndex, startIndex),
-      'newVar'
+      'newVar',
+      instanceInThisFile
     )
     const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`newVar = 100deg + 100deg`)
@@ -387,7 +388,8 @@ yo2 = hmm([identifierGuy + 5])`
       ast,
       execState.variables,
       topLevelRange(startIndex, startIndex),
-      'newVar'
+      'newVar',
+      instanceInThisFile
     )
     const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`newVar = 2.8`)
@@ -401,7 +403,8 @@ yo2 = hmm([identifierGuy + 5])`
       ast,
       execState.variables,
       topLevelRange(startIndex, startIndex),
-      'newVar'
+      'newVar',
+      instanceInThisFile
     )
     const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`newVar = def(yo)`)
@@ -415,7 +418,8 @@ yo2 = hmm([identifierGuy + 5])`
       ast,
       execState.variables,
       topLevelRange(startIndex, startIndex),
-      'newVar'
+      'newVar',
+      instanceInThisFile
     )
     const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`newVar = jkl(yo) + 2deg`)
@@ -429,7 +433,8 @@ yo2 = hmm([identifierGuy + 5])`
       ast,
       execState.variables,
       topLevelRange(startIndex, startIndex),
-      'newVar'
+      'newVar',
+      instanceInThisFile
     )
     const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`newVar = identifierGuy + 5`)
@@ -706,7 +711,11 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${
       expect(start).toBeGreaterThanOrEqual(0)
       const range = topLevelRange(start, start + lineOfInterest.length)
       const pathToNode = getNodePathFromSourceRange(ast, range)
-      const dependentSegments = findUsesOfTagInPipe(ast, pathToNode)
+      const dependentSegments = findUsesOfTagInPipe(
+        ast,
+        pathToNode,
+        instanceInThisFile
+      )
       const modifiedAst = deleteSegmentOrProfileFromPipeExpression(
         dependentSegments,
         ast,
@@ -953,7 +962,7 @@ extrude001 = extrude(part001, length = 5)
     ]
     const pathToPipe = getNodePathFromSourceRange(ast, range)
 
-    const result = splitPipedProfile(ast, pathToPipe)
+    const result = splitPipedProfile(ast, pathToPipe, instanceInThisFile)
 
     if (err(result)) throw result
 
@@ -980,7 +989,7 @@ extrude001 = extrude(part001, length = 5)
     ]
     const pathToPipe = getNodePathFromSourceRange(ast, range)
 
-    const result = splitPipedProfile(ast, pathToPipe)
+    const result = splitPipedProfile(ast, pathToPipe, instanceInThisFile)
     expect(result instanceof Error).toBe(true)
   })
 })
@@ -1071,15 +1080,7 @@ extrude001 = extrude(profile001, length = 5)
     expect(path.length).toEqual(4)
 
     // Verify we can get the right node
-    const node = getNodeFromPath<any>(
-      ast,
-      path,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      instanceInThisFile
-    )
+    const node = getNodeFromPath<any>(ast, path, instanceInThisFile)
     if (err(node)) {
       throw node
     }
@@ -1099,15 +1100,7 @@ extrude001 = extrude(profile001, length = 123)
     expect(path.length).toEqual(7)
 
     // Verify we can get the right node
-    const node = getNodeFromPath<any>(
-      ast,
-      path,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      instanceInThisFile
-    )
+    const node = getNodeFromPath<any>(ast, path, instanceInThisFile)
     if (err(node)) {
       throw node
     }
@@ -1130,7 +1123,12 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const call = createCallExpressionStdLibKw('extrude', exprs, [
       createLabeledArg('length', createLiteral(5, instanceInThisFile)),
     ])
-    const pathToNode = setCallInAst({ ast, call, variableIfNewDecl: 'extrude' })
+    const pathToNode = setCallInAst({
+      ast,
+      call,
+      variableIfNewDecl: 'extrude',
+      wasmInstance: instanceInThisFile,
+    })
     if (err(pathToNode)) {
       throw pathToNode
     }
@@ -1161,7 +1159,11 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       ],
       otherSelections: [],
     }
-    const vars = getVariableExprsFromSelection(selections, ast)
+    const vars = getVariableExprsFromSelection(
+      selections,
+      ast,
+      instanceInThisFile
+    )
     if (err(vars)) throw vars
     const exprs = createVariableExpressionsArray(vars.exprs)
     const call = createCallExpressionStdLibKw('extrude', exprs, [
@@ -1171,6 +1173,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       ast,
       call,
       pathIfNewPipe: vars.pathIfPipe,
+      wasmInstance: instanceInThisFile,
     })
     if (err(pathToNode)) {
       throw pathToNode
@@ -1202,7 +1205,11 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       ],
       otherSelections: [],
     }
-    const vars = getVariableExprsFromSelection(selections, ast)
+    const vars = getVariableExprsFromSelection(
+      selections,
+      ast,
+      instanceInThisFile
+    )
     if (err(vars)) throw vars
     const exprs = createVariableExpressionsArray(vars.exprs)
     const call = createCallExpressionStdLibKw('extrude', exprs, [
@@ -1213,6 +1220,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       call,
       pathIfNewPipe: vars.pathIfPipe,
       variableIfNewDecl: 'extrude',
+      wasmInstance: instanceInThisFile,
     })
     if (err(pathToNode)) {
       throw pathToNode

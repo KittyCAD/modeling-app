@@ -58,6 +58,7 @@ export function addPatternCircular3D({
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -181,6 +182,7 @@ export function addPatternCircular3D({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PATTERN,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -222,6 +224,7 @@ export function addPatternLinear3D({
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -301,6 +304,7 @@ export function addPatternLinear3D({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PATTERN,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode

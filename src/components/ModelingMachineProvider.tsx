@@ -494,6 +494,7 @@ export const ModelingMachineProvider = ({
               const varDec = getNodeFromPath<VariableDeclaration>(
                 newAst,
                 sketchDetails.planeNodePath,
+                await kclManager.wasmInstancePromise,
                 'VariableDeclaration'
               )
               if (err(varDec)) return reject(new Error('No varDec'))
@@ -570,7 +571,7 @@ export const ModelingMachineProvider = ({
                 kclManager.artifactGraph,
                 kclManager.astSignal.value,
                 kclManager.execState,
-                systemDeps
+                { ...systemDeps, wasmInstance }
               )
               if (sweepFaceSelected) {
                 result = sweepFaceSelected
@@ -745,7 +746,8 @@ export const ModelingMachineProvider = ({
                 : sketchOnOffsetPlane(
                     kclManager.ast,
                     input.pathToNode,
-                    input.negated
+                    input.negated,
+                    wasmInstance
                   )
             if (err(sketched)) {
               const sketchedError = new Error(
@@ -854,7 +856,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -917,7 +920,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -993,7 +997,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -1061,7 +1066,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -1122,7 +1128,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -1184,7 +1191,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -1246,7 +1254,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -1392,7 +1401,8 @@ export const ModelingMachineProvider = ({
             }
             const doesNeedSplitting = doesSketchPipeNeedSplitting(
               kclManager.ast,
-              sketchDetails.sketchEntryNodePath
+              sketchDetails.sketchEntryNodePath,
+              wasmInstance
             )
             if (err(doesNeedSplitting)) return reject(doesNeedSplitting)
             let moddedAst: Node<Program> = structuredClone(kclManager.ast)
@@ -1401,7 +1411,8 @@ export const ModelingMachineProvider = ({
             if (doesNeedSplitting) {
               const splitResult = splitPipedProfile(
                 moddedAst,
-                sketchDetails.sketchEntryNodePath
+                sketchDetails.sketchEntryNodePath,
+                wasmInstance
               )
               if (err(splitResult)) return reject(splitResult)
               moddedAst = splitResult.modifiedAst
@@ -1419,6 +1430,7 @@ export const ModelingMachineProvider = ({
               const pipe = getNodeFromPath<PipeExpression>(
                 moddedAst,
                 pathToProfile,
+                await kclManager.wasmInstancePromise,
                 'PipeExpression'
               )
               if (err(pipe)) {

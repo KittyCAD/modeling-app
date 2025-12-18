@@ -73,6 +73,7 @@ export function addHelix({
     const vars = getVariableExprsFromSelection(
       cylinder,
       modifiedAst,
+      wasmInstance,
       mNodeToEdit,
       lastChildLookup,
       artifactGraph
@@ -83,7 +84,12 @@ export function addHelix({
     cylinderExpr.push(createLabeledArg('cylinder', vars.exprs[0]))
     pathIfNewPipe = vars.pathIfPipe
   } else if (axis || edge) {
-    const result = getAxisExpressionAndIndex(axis, edge, modifiedAst)
+    const result = getAxisExpressionAndIndex(
+      axis,
+      edge,
+      modifiedAst,
+      wasmInstance
+    )
     if (err(result)) {
       return result
     }
@@ -139,6 +145,7 @@ export function addHelix({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HELIX,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode

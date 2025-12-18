@@ -797,11 +797,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 (!isEditingExistingSketch({
                   sketchDetails: state.context.sketchDetails,
                   kclManager: state.context.kclManager,
+                  wasmInstance: state.context.wasmInstance,
                 }) &&
                   !state.matches({ Sketch: 'Tangential arc to' })) ||
                 pipeHasCircle({
                   sketchDetails: state.context.sketchDetails,
                   kclManager: state.context.kclManager,
+                  wasmInstance: state.context.wasmInstance,
                 })
               )
             },
@@ -809,6 +811,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               return !isEditingExistingSketch({
                 sketchDetails: state.context.sketchDetails,
                 kclManager: state.context.kclManager,
+                wasmInstance: state.context.wasmInstance,
               }) && !state.matches({ Sketch: 'Tangential arc to' })
                 ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."
                 : undefined

@@ -1402,14 +1402,19 @@ export function removeSingleConstraint({
   pathToCallExp,
   inputDetails: inputToReplace,
   ast,
+  wasmInstance,
 }: {
   pathToCallExp: PathToNode
   inputDetails: SimplifiedArgDetails
   ast: Program
+  wasmInstance: ModuleType
 }): TransformInfo | false {
-  const callExp = getNodeFromPath<CallExpressionKw>(ast, pathToCallExp, [
-    'CallExpressionKw',
-  ])
+  const callExp = getNodeFromPath<CallExpressionKw>(
+    ast,
+    pathToCallExp,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
   if (err(callExp)) {
     console.error(callExp)
     return false
@@ -1825,15 +1830,9 @@ export function getTransformInfos(
   wasmInstance: ModuleType
 ): TransformInfo[] {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(
-      ast,
-      codeRef.pathToNode,
-      ['CallExpressionKw'],
-      undefined,
-      undefined,
-      undefined,
-      wasmInstance
-    )
+    getNodeFromPath<Expr>(ast, codeRef.pathToNode, wasmInstance, [
+      'CallExpressionKw',
+    ])
   )
 
   try {
@@ -1861,18 +1860,10 @@ export function getTransformInfos(
 export function getRemoveConstraintsTransforms(
   selectionRanges: Selections,
   ast: Program,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): TransformInfo[] | Error {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(
-      ast,
-      codeRef.pathToNode,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      wasmInstance
-    )
+    getNodeFromPath<Expr>(ast, codeRef.pathToNode, wasmInstance)
   )
 
   const theTransforms = nodes.map((nodeMeta) => {
@@ -1930,7 +1921,12 @@ export function transformSecondarySketchLinesTagFirst({
   const primarySelection = sortedCodeBasedSelections[0]?.codeRef?.range
   const secondarySelections = sortedCodeBasedSelections.slice(1)
 
-  const _tag = giveSketchFnCallTag(ast, primarySelection, forceSegName)
+  const _tag = giveSketchFnCallTag(
+    ast,
+    primarySelection,
+    wasmInstance,
+    forceSegName
+  )
   if (err(_tag)) return _tag
   const { modifiedAst, tag, isTagExisting, pathToNode } = _tag
 
@@ -2037,15 +2033,7 @@ export function transformAstSketchLines({
       )
         return
 
-      const nodeMeta = getNodeFromPath<Expr>(
-        ast,
-        a.pathToNode,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        wasmInstance
-      )
+      const nodeMeta = getNodeFromPath<Expr>(ast, a.pathToNode, wasmInstance)
       if (err(nodeMeta)) return
 
       switch (a?.argPosition?.type) {
@@ -2118,7 +2106,12 @@ export function transformAstSketchLines({
         return
       }
     }
-    const segMeta = getSketchSegmentFromPathToNode(sketch, ast, _pathToNode)
+    const segMeta = getSketchSegmentFromPathToNode(
+      sketch,
+      ast,
+      _pathToNode,
+      wasmInstance
+    )
     if (err(segMeta)) return segMeta
 
     const seg = segMeta.segment
@@ -2258,14 +2251,18 @@ export type ConstraintLevel = 'free' | 'partial' | 'full'
 
 export function getConstraintLevelFromSourceRange(
   cursorRange: SourceRange,
-  ast: Program | Error
+  ast: Program | Error,
+  wasmInstance: ModuleType
 ): Error | { range: [number, number]; level: ConstraintLevel } {
   if (err(ast)) return ast
   let partsOfCallNode = (() => {
     const path = getNodePathFromSourceRange(ast, cursorRange)
-    const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(ast, path, [
-      'CallExpressionKw',
-    ])
+    const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(
+      ast,
+      path,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
     if (err(nodeMeta)) return nodeMeta
 
     const { node: sketchFnExp } = nodeMeta

@@ -32,7 +32,7 @@ export function equalAngleInfo({
     getNodePathFromSourceRange(kclManager.ast, codeRef.range)
   )
   const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode, wasmInstance)
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -44,6 +44,7 @@ export function equalAngleInfo({
     const tmp = getNodeFromPath<VariableDeclarator>(
       kclManager.ast,
       pathToNode,
+      wasmInstance,
       'VariableDeclarator'
     )
     if (err(tmp)) return tmp

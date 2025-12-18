@@ -1038,7 +1038,12 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
       async (axis) => {
         const { instance } = await buildTheWorldAndNoEngineConnection()
         const ast = assertParse('', instance)
-        const result = getAxisExpressionAndIndex(axis, undefined, ast)
+        const result = getAxisExpressionAndIndex(
+          axis,
+          undefined,
+          ast,
+          instanceInThisFile
+        )
         if (err(result)) throw result
         expect(result.generatedAxis.type).toEqual('Name')
         expect((result.generatedAxis as Node<Name>).name.name).toEqual(axis)
@@ -1057,7 +1062,12 @@ profile001 = startProfile(sketch001, at = [0, 0])
         (a) => a.type === 'segment'
       )
       const edge: Selections = createSelectionFromPathArtifact([edgeArtifact!])
-      const result = getAxisExpressionAndIndex(undefined, edge, ast)
+      const result = getAxisExpressionAndIndex(
+        undefined,
+        edge,
+        ast,
+        instanceInThisFile
+      )
       if (err(result)) throw result
       expect(result.generatedAxis.type).toEqual('Name')
       expect((result.generatedAxis as Node<Name>).name.name).toEqual('seg01')
@@ -1071,7 +1081,8 @@ profile001 = startProfile(sketch001, at = [0, 0])
       const result = getAxisExpressionAndIndex(
         undefined,
         undefined,
-        assertParse('', instance)
+        assertParse('', instance),
+        instanceInThisFile
       )
       expect(result).toBeInstanceOf(Error)
     })

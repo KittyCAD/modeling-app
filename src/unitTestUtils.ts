@@ -74,7 +74,7 @@ export async function buildTheWorldAndConnectToEngine() {
     instancePromise,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager)
+  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
   const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
     sceneInfra,
@@ -146,7 +146,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     instancePromise,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager)
+  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
   const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
     sceneInfra,

@@ -624,6 +624,7 @@ rotate(
         artifactGraph,
         objects,
         variableName: 'yoyoyo',
+        wasmInstance: instance,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)

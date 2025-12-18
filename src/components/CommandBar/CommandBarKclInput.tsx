@@ -8,7 +8,7 @@ import {
 import type { ViewUpdate } from '@codemirror/view'
 import { EditorView, keymap } from '@codemirror/view'
 import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
@@ -52,6 +52,7 @@ function CommandBarKclInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const commandBarState = useCommandBarState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
@@ -68,7 +69,11 @@ function CommandBarKclInput({
     const nodeToEdit = commandBarState.context.argumentsToSubmit.nodeToEdit
     const pathToNode = isPathToNode(nodeToEdit) ? nodeToEdit : undefined
     const node = pathToNode
-      ? getNodeFromPath<Node<VariableDeclarator>>(kclManager.ast, pathToNode)
+      ? getNodeFromPath<Node<VariableDeclarator>>(
+          kclManager.ast,
+          pathToNode,
+          wasmInstance
+        )
       : undefined
     return !err(node) && node && node.node.type === 'VariableDeclarator'
       ? [node.node.start, node.node.end, node.node.moduleId]

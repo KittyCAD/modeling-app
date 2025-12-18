@@ -1,5 +1,5 @@
 import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
@@ -33,6 +33,7 @@ export default function CommandBarSelectionMixedInput({
   stepBack: () => void
   onSubmit: (data: unknown) => void
 }) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = useCommandBarState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -143,6 +144,7 @@ export default function CommandBarSelectionMixedInput({
         sceneEntitiesManager,
         selectionsToRestore: selection,
         handleSelectionBatchFn: handleSelectionBatch,
+        wasmInstance,
       })
     }
     return () => {
@@ -154,10 +156,11 @@ export default function CommandBarSelectionMixedInput({
           sceneEntitiesManager,
           selectionsToRestore: selection,
           handleSelectionBatchFn: handleSelectionBatch,
+          wasmInstance,
         })
       }
     }
-  }, [arg.selectionFilter, selection, hasCoercedSelections])
+  }, [arg.selectionFilter, selection, hasCoercedSelections, wasmInstance])
 
   // Watch for outside teardowns of this component
   // (such as clicking another argument in the command palette header)

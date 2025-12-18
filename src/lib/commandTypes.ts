@@ -81,7 +81,7 @@ export type Command<
     | ((commandBarContext: CommandBarContext) => ReactNode)
   reviewValidation?: (context: CommandBarContext) => Promise<undefined | Error>
   machineActor?: Actor<T>
-  onSubmit: (data?: CommandSchema) => void
+  onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => void
   onCancel?: () => void
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgument<CommandSchema[ArgName], T>
@@ -334,7 +334,7 @@ export type CommandArgument<
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */
-  valueSummary?: (value: OutputType) => string
+  valueSummary?: (value: OutputType, wasmInstance?: ModuleType) => string
 } & (
   | {
       inputType: Extract<CommandInputType, 'options'>

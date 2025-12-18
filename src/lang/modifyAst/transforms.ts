@@ -53,6 +53,7 @@ export function addTranslate({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -95,6 +96,7 @@ export function addTranslate({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: undefined, // No variable declaration for translate
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -137,6 +139,7 @@ export function addRotate({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -181,6 +184,7 @@ export function addRotate({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: undefined, // No variable declaration for transforms
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -225,6 +229,7 @@ export function addScale({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -274,6 +279,7 @@ export function addScale({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: undefined, // No variable declaration for translate
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -291,12 +297,14 @@ export function addClone({
   objects,
   variableName,
   nodeToEdit,
+  wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
   variableName: string
   nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
@@ -308,6 +316,7 @@ export function addClone({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -364,6 +373,7 @@ export function addAppearance({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -404,6 +414,7 @@ export function addAppearance({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: undefined, // No variable declaration for transforms
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode

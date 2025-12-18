@@ -116,6 +116,7 @@ export function insertNewStartProfileAt(
   const varDec = getNodeFromPath<VariableDeclarator>(
     node,
     planeNodePath,
+    wasmInstance,
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
@@ -297,6 +298,7 @@ export function sketchOnExtrudedFace(
   const _node1 = getNodeFromPath<VariableDeclarator>(
     _node,
     sketchPathToNode,
+    wasmInstance,
     'VariableDeclarator',
     true
   )
@@ -304,15 +306,19 @@ export function sketchOnExtrudedFace(
   const { node: oldSketchNode } = _node1
 
   const oldSketchName = oldSketchNode.id.name
-  const _node2 = getNodeFromPath<CallExpressionKw>(_node, sketchPathToNode, [
-    'CallExpressionKw',
-  ])
+  const _node2 = getNodeFromPath<CallExpressionKw>(
+    _node,
+    sketchPathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
   if (err(_node2)) return _node2
   const { node: expression } = _node2
 
   const _node3 = getNodeFromPath<VariableDeclarator>(
     _node,
     extrudePathToNode,
+    wasmInstance,
     'VariableDeclarator'
   )
   if (err(_node3)) return _node3
@@ -325,9 +331,11 @@ export function sketchOnExtrudedFace(
       {
         pathToNode: sketchPathToNode,
         node: _node,
+        wasmInstance,
       },
       expression.callee.name.name,
-      info.type === 'edgeCut' ? info : null
+      info.type === 'edgeCut' ? info : null,
+      wasmInstance
     )
     if (err(__tag)) return __tag
     const { modifiedAst, tag } = __tag
@@ -432,7 +440,8 @@ export function insertNamedConstant({
 export function sketchOnOffsetPlane(
   node: Node<Program>,
   offsetPathToNode: PathToNode,
-  negated: boolean = false
+  negated: boolean = false,
+  wasmInstance: ModuleType
 ) {
   let _node = { ...node }
 
@@ -440,6 +449,7 @@ export function sketchOnOffsetPlane(
   const offsetPlaneDeclarator = getNodeFromPath<VariableDeclarator>(
     _node,
     offsetPathToNode,
+    wasmInstance,
     'VariableDeclarator',
     true
   )
@@ -534,12 +544,18 @@ export function replaceValueAtNodePath({
   ast,
   pathToNode,
   newExpressionString,
+  wasmInstance,
 }: {
   ast: Node<Program>
   pathToNode: PathToNode
   newExpressionString: string
+  wasmInstance: ModuleType
 }) {
-  const replaceCheckResult = isNodeSafeToReplacePath(ast, pathToNode)
+  const replaceCheckResult = isNodeSafeToReplacePath(
+    ast,
+    pathToNode,
+    wasmInstance
+  )
   if (err(replaceCheckResult)) {
     return replaceCheckResult
   }
@@ -556,17 +572,23 @@ export function moveValueIntoNewVariable(
   ast: Node<Program>,
   memVars: VariableMap,
   sourceRange: SourceRange,
-  variableName: string
+  variableName: string,
+  wasmInstance: ModuleType
 ): {
   modifiedAst: Node<Program>
   pathToReplacedNode?: PathToNode
 } {
-  const meta = isNodeSafeToReplace(ast, sourceRange)
+  const meta = isNodeSafeToReplace(ast, sourceRange, wasmInstance)
   if (trap(meta)) return { modifiedAst: ast }
   const { isSafe, value, replacer } = meta
   if (!isSafe || value.type === 'Name') return { modifiedAst: ast }
 
-  const { insertIndex } = findAllPreviousVariables(ast, memVars, sourceRange)
+  const { insertIndex } = findAllPreviousVariables(
+    ast,
+    memVars,
+    sourceRange,
+    wasmInstance
+  )
   let _node = structuredClone(ast)
   const replaced = replacer(_node, variableName)
   if (trap(replaced)) return { modifiedAst: ast }
@@ -604,11 +626,9 @@ export function deleteSegmentOrProfileFromPipeExpression(
     const callExp = getNodeFromPath<Node<CallExpressionKw>>(
       _modifiedAst,
       path,
+      wasmInstance,
       ['CallExpressionKw'],
-      true,
-      undefined,
-      undefined,
-      wasmInstance
+      true
     )
     if (err(callExp)) return callExp
 
@@ -635,6 +655,7 @@ export function deleteSegmentOrProfileFromPipeExpression(
     const expr = getNodeFromPath<PipeExpression | CallExpressionKw>(
       _modifiedAst,
       pathToNode,
+      wasmInstance,
       'PipeExpression'
     )
     if (err(expr)) {
@@ -754,6 +775,7 @@ export function removeSingleConstraintInfo(
     pathToCallExp,
     inputDetails: argDetails,
     ast,
+    wasmInstance,
   })
   if (!transform) return false
   const retval = transformAstSketchLines({
@@ -850,7 +872,8 @@ making it safe for later code that uses part001 (the extrude in this example)
  */
 export function splitPipedProfile(
   ast: Node<Program>,
-  pathToPipe: PathToNode
+  pathToPipe: PathToNode,
+  wasmInstance: ModuleType
 ):
   | {
       modifiedAst: Node<Program>
@@ -862,6 +885,7 @@ export function splitPipedProfile(
   const varDec = getNodeFromPath<Node<VariableDeclaration>>(
     _ast,
     pathToPipe,
+    wasmInstance,
     'VariableDeclaration'
   )
   if (err(varDec)) return varDec
@@ -1020,18 +1044,21 @@ export function setCallInAst({
   pathToEdit,
   pathIfNewPipe,
   variableIfNewDecl,
+  wasmInstance,
 }: {
   ast: Node<Program>
   call: Node<CallExpressionKw>
   pathToEdit?: PathToNode
   pathIfNewPipe?: PathToNode
   variableIfNewDecl?: string
+  wasmInstance: ModuleType
 }): Error | PathToNode {
   let pathToNode: PathToNode | undefined
   if (pathToEdit) {
     const result = getNodeFromPath<CallExpressionKw>(
       ast,
       pathToEdit,
+      wasmInstance,
       'CallExpressionKw'
     )
     if (err(result)) {
@@ -1044,6 +1071,7 @@ export function setCallInAst({
     const pipe = getNodeFromPath<PipeExpression>(
       ast,
       pathIfNewPipe,
+      wasmInstance,
       'PipeExpression'
     )
     if (err(pipe)) {
@@ -1055,6 +1083,7 @@ export function setCallInAst({
       const expression = getNodeFromPath<ExpressionStatement>(
         ast,
         pathIfNewPipe,
+        wasmInstance,
         'ExpressionStatement'
       )
       if (err(expression) || expression.node.type !== 'ExpressionStatement') {

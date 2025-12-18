@@ -187,7 +187,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         selection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) return result
       const { modifiedAst, tags } = result
@@ -218,7 +219,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         selection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) return result
       const { modifiedAst, tags } = result
@@ -249,7 +251,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         selection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) return result
       const { modifiedAst, tags } = result
@@ -282,6 +285,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         ast,
         selection,
         artifactGraph,
+        instanceInThisFile,
         ['oppositeAndAdjacentEdges']
       )
       if (err(result)) return result
@@ -312,6 +316,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         ast,
         selection,
         artifactGraph,
+        instanceInThisFile,
         ['oppositeAndAdjacentEdges']
       )
       if (err(result)) return result
@@ -343,6 +348,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         ast,
         selection,
         artifactGraph,
+        instanceInThisFile,
         ['oppositeAndAdjacentEdges']
       )
       if (err(result)) return result
@@ -379,7 +385,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         wallFaceSelection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) throw result
       const { modifiedAst, tags } = result
@@ -410,7 +417,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         capFaceSelection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) throw result
       const { modifiedAst, tags } = result
@@ -444,7 +452,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         edgeCutFaceSelection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) throw result
       const { modifiedAst, tags } = result
@@ -478,7 +487,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         chamferFaceSelection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
       if (err(result)) throw result
       const { modifiedAst, tags } = result
@@ -510,7 +520,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = modifyAstWithTagsForSelection(
         ast,
         filletFaceSelection,
-        artifactGraph
+        artifactGraph,
+        instanceInThisFile
       )
 
       // This should now succeed with our fix
