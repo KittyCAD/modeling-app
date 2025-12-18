@@ -306,19 +306,19 @@ export function readLocalStorageAppSettingsFile(
   }
 }
 
-export function readLocalStorageProjectSettingsFile():
-  | DeepPartial<ProjectConfiguration>
-  | Error {
+export function readLocalStorageProjectSettingsFile(
+  wasmInstance: ModuleType
+): DeepPartial<ProjectConfiguration> | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored = localStorage.getItem(localStorageProjectSettingsPath()) ?? ''
 
   if (stored === '') {
-    return defaultProjectSettings()
+    return defaultProjectSettings(wasmInstance)
   }
 
   const projectSettings = parseProjectSettings(stored)
   if (err(projectSettings)) {
-    const settings = defaultProjectSettings()
+    const settings = defaultProjectSettings(wasmInstance)
     if (err(settings)) return settings
     const tomlStr = serializeProjectConfiguration(settings)
     if (err(tomlStr)) return tomlStr
@@ -375,7 +375,7 @@ export async function loadAndValidateSettings(
   if (projectPath) {
     let projectSettings = window.electron
       ? await readProjectSettingsFile(window.electron, projectPath)
-      : readLocalStorageProjectSettingsFile()
+      : readLocalStorageProjectSettingsFile(wasmInstance)
 
     // An id was missing. Create one and write it to disk immediately.
     if (!err(projectSettings) && !projectSettings.settings?.meta?.id) {

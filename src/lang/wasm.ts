@@ -42,7 +42,6 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
-  default_project_settings,
   get_kcl_version,
   is_kcl_empty_or_only_settings,
   kcl_settings,
@@ -888,10 +887,10 @@ export function parseAppSettings(
   return parse_app_settings(toml)
 }
 
-export function defaultProjectSettings():
-  | DeepPartial<ProjectConfiguration>
-  | Error {
-  return default_project_settings()
+export function defaultProjectSettings(
+  wasmInstance: ModuleType
+): DeepPartial<ProjectConfiguration> | Error {
+  return wasmInstance.default_project_settings()
 }
 
 export function parseProjectSettings(

@@ -33,9 +33,11 @@ export const systemIOMachineWeb = systemIOMachine.provide({
           wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
+        const wasmInstance = await input.wasmInstancePromise
         // Browser version doesn't navigate, just overwrites the current file
         // clearImportSearchParams()
-        const projectSettings = readLocalStorageProjectSettingsFile()
+        const projectSettings =
+          readLocalStorageProjectSettingsFile(wasmInstance)
         if (err(projectSettings)) {
           return Promise.reject(
             'Unable to read project settings from local storage'
@@ -45,7 +47,7 @@ export const systemIOMachineWeb = systemIOMachine.provide({
           input.requestedCode,
           projectSettings?.settings?.modeling?.base_unit ||
             DEFAULT_DEFAULT_LENGTH_UNIT,
-          await input.wasmInstancePromise
+          wasmInstance
         )
         if (err(codeToWrite)) return Promise.reject(codeToWrite)
         input.rootContext.kclManager.updateCodeStateEditor(codeToWrite)
