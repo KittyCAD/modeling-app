@@ -103,7 +103,10 @@ export class FileSystemManager {
 
 // A similar initialization happens in @src/index.ts. It has to happen here too
 // because this code runs in a web worker.
-const fsInstance = (typeof window !== 'undefined' && window.electron !== undefined) ? electronfs.impl : opfs.impl
+const fsInstance =
+  typeof window !== 'undefined' && window.electron !== undefined
+    ? electronfs.impl
+    : opfs.impl
 
 export const fsManager = new FileSystemManager(fsInstance)
 
