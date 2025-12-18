@@ -110,9 +110,9 @@ description: Variables in memory after executing sketch_block_arc_using_center_s
                     "start_object_id": 1,
                     "end_object_id": 2,
                     "center_object_id": 3,
-                    "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "center_freedom": "Free"
+                    "start_freedom": null,
+                    "end_freedom": null,
+                    "center_freedom": null
                   }
                 }
               }

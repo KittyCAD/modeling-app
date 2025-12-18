@@ -79,7 +79,7 @@ description: Variables in memory after executing sketch_block_line_simple.kcl
                     },
                     "start_object_id": 1,
                     "end_object_id": 2,
-                    "start_freedom": "Free",
+                    "start_freedom": null,
                     "end_freedom": "Fixed"
                   }
                 }
