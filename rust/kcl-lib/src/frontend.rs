@@ -4023,4 +4023,236 @@ sketch(on = XY) {
         ctx.close().await;
         mock_ctx.close().await;
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_multiple_sketch_blocks() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+// Cube that requires the engine.
+width = 2
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = width, tag = $seg1)
+  |> xLine(length = width)
+  |> yLine(length = -width)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = width)
+
+// Get a value that requires the engine.
+x = segLen(seg1)
+
+// Triangle with side length 2*x.
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+  line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  sketch2::coincident([line1.end, line2.start])
+  line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  sketch2::coincident([line2.end, line3.start])
+  sketch2::coincident([line3.end, line1.start])
+  sketch2::equalLength([line3, line1])
+  sketch2::equalLength([line1, line2])
+sketch2::distance([line1.start, line1.end]) == 2*x
+}
+
+// Line segment with length x.
+sketch2 = sketch(on = XY) {
+  line1 = sketch2::line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+sketch2::distance([line1.start, line1.end]) == x
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_objects = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .filter(|obj| matches!(obj.kind, ObjectKind::Sketch(_)))
+            .collect::<Vec<_>>();
+        let sketch1_id = sketch_objects.first().unwrap().id;
+        let sketch2_id = sketch_objects.get(1).unwrap().id;
+        // First point in sketch1.
+        let point1_id = ObjectId(sketch1_id.0 + 1);
+        // First point in sketch2.
+        let point2_id = ObjectId(sketch2_id.0 + 1);
+
+        // Edit the first sketch. Objects from the second sketch should not be
+        // present since the program exits early after the first sketch block.
+        //
+        // - Plane 1
+        // - Sketch block 16
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch1_id)
+            .await
+            .unwrap();
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            17,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        // Edit a point in the first sketch.
+        let point_ctor = PointCtor {
+            position: Point2d {
+                x: Expr::Var(Number {
+                    value: 1.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 2.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+        };
+        let segments = vec![ExistingSegmentCtor {
+            id: point1_id,
+            ctor: SegmentCtor::Point(point_ctor),
+        }];
+        let (src_delta, _) = frontend
+            .edit_segments(&mock_ctx, version, sketch1_id, segments)
+            .await
+            .unwrap();
+        // Only the first sketch block changes.
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+// Cube that requires the engine.
+width = 2
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = width, tag = $seg1)
+  |> xLine(length = width)
+  |> yLine(length = -width)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = width)
+
+// Get a value that requires the engine.
+x = segLen(seg1)
+
+// Triangle with side length 2*x.
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 2.317mm, var -1.777mm])
+  line2 = sketch2::line(start = [var 2.317mm, var -1.777mm], end = [var -1.613mm, var -1.029mm])
+  sketch2::coincident([line1.end, line2.start])
+  line3 = sketch2::line(start = [var -1.613mm, var -1.029mm], end = [var 1mm, var 2mm])
+  sketch2::coincident([line2.end, line3.start])
+  sketch2::coincident([line3.end, line1.start])
+  sketch2::equalLength([line3, line1])
+  sketch2::equalLength([line1, line2])
+sketch2::distance([line1.start, line1.end]) == 2 * x
+}
+
+// Line segment with length x.
+sketch2 = sketch(on = XY) {
+  line1 = sketch2::line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+sketch2::distance([line1.start, line1.end]) == x
+}
+"
+        );
+
+        // Exit sketch. Objects from the entire program should be present.
+        //
+        // - Plane 1
+        // - Sketch block 16
+        // - Sketch block 5
+        let scene = frontend.exit_sketch(&ctx, version, sketch1_id).await.unwrap();
+        assert_eq!(scene.objects.len(), 22, "{:#?}", scene.objects);
+
+        // Edit the second sketch. Objects from the entire program should be
+        // present.
+        //
+        // - Plane 1
+        // - Sketch block 16
+        // - Sketch block 5
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch2_id)
+            .await
+            .unwrap();
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            22,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        // Edit a point in the second sketch.
+        let point_ctor = PointCtor {
+            position: Point2d {
+                x: Expr::Var(Number {
+                    value: 3.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 4.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+        };
+        let segments = vec![ExistingSegmentCtor {
+            id: point2_id,
+            ctor: SegmentCtor::Point(point_ctor),
+        }];
+        let (src_delta, _) = frontend
+            .edit_segments(&mock_ctx, version, sketch2_id, segments)
+            .await
+            .unwrap();
+        // Only the second sketch block changes.
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+// Cube that requires the engine.
+width = 2
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = width, tag = $seg1)
+  |> xLine(length = width)
+  |> yLine(length = -width)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = width)
+
+// Get a value that requires the engine.
+x = segLen(seg1)
+
+// Triangle with side length 2*x.
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.283mm, var -0.781mm])
+  line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  sketch2::coincident([line1.end, line2.start])
+  line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  sketch2::coincident([line2.end, line3.start])
+  sketch2::coincident([line3.end, line1.start])
+  sketch2::equalLength([line3, line1])
+  sketch2::equalLength([line1, line2])
+sketch2::distance([line1.start, line1.end]) == 2 * x
+}
+
+// Line segment with length x.
+sketch2 = sketch(on = XY) {
+  line1 = sketch2::line(start = [var 3mm, var 4mm], end = [var 2.324mm, var 2.118mm])
+sketch2::distance([line1.start, line1.end]) == x
+}
+"
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
 }
