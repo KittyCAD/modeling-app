@@ -4165,6 +4165,48 @@ sketch2::distance([line1.start, line1.end]) == x
 "
         );
 
+        // Execute mock to simulate drag end.
+        let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch1_id).await.unwrap();
+        // Only the first sketch block changes.
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+// Cube that requires the engine.
+width = 2
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = width, tag = $seg1)
+  |> xLine(length = width)
+  |> yLine(length = -width)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = width)
+
+// Get a value that requires the engine.
+x = segLen(seg1)
+
+// Triangle with side length 2*x.
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.283mm, var -0.781mm])
+  line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  sketch2::coincident([line1.end, line2.start])
+  line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  sketch2::coincident([line2.end, line3.start])
+  sketch2::coincident([line3.end, line1.start])
+  sketch2::equalLength([line3, line1])
+  sketch2::equalLength([line1, line2])
+sketch2::distance([line1.start, line1.end]) == 2 * x
+}
+
+// Line segment with length x.
+sketch2 = sketch(on = XY) {
+  line1 = sketch2::line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+sketch2::distance([line1.start, line1.end]) == x
+}
+"
+        );
         // Exit sketch. Objects from the entire program should be present.
         //
         // - Plane 1
@@ -4247,6 +4289,49 @@ sketch2::distance([line1.start, line1.end]) == 2 * x
 // Line segment with length x.
 sketch2 = sketch(on = XY) {
   line1 = sketch2::line(start = [var 3mm, var 4mm], end = [var 2.324mm, var 2.118mm])
+sketch2::distance([line1.start, line1.end]) == x
+}
+"
+        );
+
+        // Execute mock to simulate drag end.
+        let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch2_id).await.unwrap();
+        // Only the second sketch block changes.
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+// Cube that requires the engine.
+width = 2
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = width, tag = $seg1)
+  |> xLine(length = width)
+  |> yLine(length = -width)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = width)
+
+// Get a value that requires the engine.
+x = segLen(seg1)
+
+// Triangle with side length 2*x.
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.283mm, var -0.781mm])
+  line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  sketch2::coincident([line1.end, line2.start])
+  line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  sketch2::coincident([line2.end, line3.start])
+  sketch2::coincident([line3.end, line1.start])
+  sketch2::equalLength([line3, line1])
+  sketch2::equalLength([line1, line2])
+sketch2::distance([line1.start, line1.end]) == 2 * x
+}
+
+// Line segment with length x.
+sketch2 = sketch(on = XY) {
+  line1 = sketch2::line(start = [var 3mm, var 4mm], end = [var 1.283mm, var -0.781mm])
 sketch2::distance([line1.start, line1.end]) == x
 }
 "
