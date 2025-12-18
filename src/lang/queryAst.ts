@@ -181,7 +181,7 @@ export function getNodeFromPath<T>(
 export function getNodeFromPathCurry(
   node: Program,
   path: PathToNode,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
   // The generic type T is used to assert the return type is T instead of `any`
   // or `unknown`. This is unsafe!
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters

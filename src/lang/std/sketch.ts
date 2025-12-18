@@ -762,7 +762,7 @@ export const xLineTo: SketchLineHelperKw = {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { to } = segmentInput
     const _node = { ...node }
-    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const getNode = getNodeFromPathCurry(_node, pathToNode, wasmInstance)
     const _node1 = getNode<PipeExpression>('PipeExpression')
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
@@ -834,7 +834,7 @@ export const yLineTo: SketchLineHelperKw = {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { to } = segmentInput
     const _node = { ...node }
-    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const getNode = getNodeFromPathCurry(_node, pathToNode, wasmInstance)
     const _node1 = getNode<PipeExpression>('PipeExpression')
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
@@ -907,7 +907,7 @@ export const xLine: SketchLineHelperKw = {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { from, to } = segmentInput
     const _node = structuredClone(node)
-    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const getNode = getNodeFromPathCurry(_node, pathToNode, wasmInstance)
     const varDec = getNode<VariableDeclaration>('VariableDeclaration')
     if (err(varDec)) return varDec
     const dec = varDec.node.declaration
@@ -985,7 +985,7 @@ export const yLine: SketchLineHelperKw = {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { from, to } = segmentInput
     const _node = structuredClone(node)
-    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const getNode = getNodeFromPathCurry(_node, pathToNode, wasmInstance)
     const varDec = getNode<VariableDeclaration>('VariableDeclaration')
     if (err(varDec)) return varDec
     const dec = varDec.node.declaration
@@ -2460,7 +2460,7 @@ export const angledLine: SketchLineHelperKw = {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { from, to } = segmentInput
     const _node = { ...node }
-    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const getNode = getNodeFromPathCurry(_node, pathToNode, wasmInstance)
     const _node1 = getNode<PipeExpression>('PipeExpression')
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
@@ -4193,7 +4193,7 @@ const tangentialArcHelpers = {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { to, from } = segmentInput
     const _node = { ...node }
-    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const getNode = getNodeFromPathCurry(_node, pathToNode, wasmInstance)
     const _node1 = getNode<PipeExpression | CallExpressionKw>('PipeExpression')
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
