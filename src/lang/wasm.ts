@@ -47,7 +47,6 @@ import {
   coredump,
   default_app_settings,
   default_project_settings,
-  format_number_literal,
   get_kcl_version,
   is_kcl_empty_or_only_settings,
   kcl_settings,
@@ -448,13 +447,10 @@ export const recast = (ast: Program, instance?: ModuleType): string | Error => {
 export function formatNumberLiteral(
   value: number,
   suffix: NumericSuffix,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): string | Error {
   try {
-    const the_format_number_literal = wasmInstance
-      ? wasmInstance.format_number_literal
-      : format_number_literal
-    return the_format_number_literal(value, JSON.stringify(suffix))
+    return wasmInstance.format_number_literal(value, JSON.stringify(suffix))
   } catch (e) {
     return new Error(
       `Error formatting number literal: value=${value}, suffix=${suffix}`,
