@@ -107,6 +107,7 @@ export const machine = setup({
         input: {
           pointData: [number, number]
           id: number
+          lastLineEndPointId: number | undefined
           isDoubleClick: boolean
           rustContext: RustContext
           kclManager: KclManager
@@ -129,6 +130,7 @@ export const machine = setup({
         const {
           pointData,
           id,
+          lastLineEndPointId,
           isDoubleClick,
           rustContext,
           kclManager,
@@ -177,28 +179,30 @@ export const machine = setup({
               },
             }
 
-            // Add the new line segment
-            const lineResult = await rustContext.addSegment(
+            // Chain the new line segment to the previous segment's end point
+            // This adds the line and creates a coincident constraint in one operation
+            // Use lastLineEndPointId if available, otherwise fall back to id (draftPointId)
+            const previousEndPointId = lastLineEndPointId ?? id
+            if (!previousEndPointId) {
+              return {
+                error:
+                  'previousEndPointId should be defined when chaining segments. This indicates a logic error in the line tool state machine.',
+              }
+            }
+
+            const chainResult = await rustContext.chainSegment(
               0,
               sketchId,
+              previousEndPointId, // previous line's end point ID
               newLineCtor,
               'line-segment',
               await jsAppSettings(rustContext.settingsActor)
             )
 
-            // Extract point IDs from the new line segment
-            // new_objects contains [startPointId, endPointId, lineId]
-            const newLinePointIds =
-              lineResult.sceneGraphDelta.new_objects.filter((objId) => {
-                const obj = lineResult.sceneGraphDelta.new_graph.objects[objId]
-                return (
-                  obj?.kind.type === 'Segment' &&
-                  obj.kind.segment.type === 'Point'
-                )
-              })
-            const newLine = lineResult.sceneGraphDelta.new_objects.find(
+            // Extract the new line segment from the chained result
+            const newLine = chainResult.sceneGraphDelta.new_objects.find(
               (objId) => {
-                const obj = lineResult.sceneGraphDelta.new_graph.objects[objId]
+                const obj = chainResult.sceneGraphDelta.new_graph.objects[objId]
                 return (
                   obj?.kind.type === 'Segment' &&
                   obj.kind.segment.type === 'Line'
@@ -206,8 +210,27 @@ export const machine = setup({
               }
             )
 
-            const newLineStartPointId = newLinePointIds[0]
-            const newLineEndPointId = newLinePointIds[1]
+            // Get the end point ID from the line object itself
+            let newLineEndPointId: number | undefined
+            if (newLine !== undefined) {
+              const lineObj =
+                chainResult.sceneGraphDelta.new_graph.objects[newLine]
+              if (
+                lineObj?.kind.type === 'Segment' &&
+                lineObj.kind.segment.type === 'Line'
+              ) {
+                // The start and end point IDs are stored in the Line segment
+                // newLineStartPointId = lineObj.kind.segment.start
+                newLineEndPointId = lineObj.kind.segment.end
+              }
+            }
+
+            const constraintId = chainResult.sceneGraphDelta.new_objects.find(
+              (objId) => {
+                const obj = chainResult.sceneGraphDelta.new_graph.objects[objId]
+                return obj?.kind.type === 'Constraint'
+              }
+            )
 
             // Track newly created entities that might need to be deleted on double-click
             const newlyAddedEntities: {
@@ -223,57 +246,19 @@ export const machine = setup({
               newlyAddedEntities.segmentIds.push(newLine)
             }
 
-            // Make the previous line's end point (id) coincident with the new line's start point
-            if (newLineStartPointId !== undefined) {
-              const constraintResult = await rustContext.addConstraint(
-                0,
-                sketchId,
-                {
-                  type: 'Coincident',
-                  segments: [id, newLineStartPointId],
-                },
-                await jsAppSettings(rustContext.settingsActor)
-              )
-
-              if (constraintResult) {
-                // Find the constraint ID from the new objects
-                // objects array is indexed by ObjectId, so we can access directly
-                const constraintId =
-                  constraintResult.sceneGraphDelta.new_objects.find((objId) => {
-                    const obj =
-                      constraintResult.sceneGraphDelta.new_graph.objects[objId]
-                    return obj?.kind.type === 'Constraint'
-                  })
-
-                if (constraintId !== undefined) {
-                  newlyAddedEntities.constraintIds.push(constraintId)
-                }
-
-                // Merge all results: point update + new line + constraint
-                return {
-                  kclSource: constraintResult.kclSource,
-                  sceneGraphDelta: {
-                    ...constraintResult.sceneGraphDelta,
-                    new_objects: [
-                      ...result.sceneGraphDelta.new_objects,
-                      ...lineResult.sceneGraphDelta.new_objects,
-                      ...constraintResult.sceneGraphDelta.new_objects,
-                    ],
-                  },
-                  newLineEndPointId, // Return the new line's end point ID for context update
-                  newlyAddedEntities, // Track entities that might need deletion
-                }
-              }
+            // Add the constraint ID to tracking
+            if (constraintId !== undefined) {
+              newlyAddedEntities.constraintIds.push(constraintId)
             }
 
-            // If constraint failed, still return the line result
+            // Merge all results: point update + new line + constraint
             return {
-              kclSource: lineResult.kclSource,
+              kclSource: chainResult.kclSource,
               sceneGraphDelta: {
-                ...lineResult.sceneGraphDelta,
+                ...chainResult.sceneGraphDelta,
                 new_objects: [
                   ...result.sceneGraphDelta.new_objects,
-                  ...lineResult.sceneGraphDelta.new_objects,
+                  ...chainResult.sceneGraphDelta.new_objects,
                 ],
               },
               newLineEndPointId, // Return the new line's end point ID for context update
@@ -357,6 +342,7 @@ export const machine = setup({
           return {
             pointData: event.data,
             id: event.id || 0,
+            lastLineEndPointId: context.lastLineEndPointId,
             isDoubleClick: event.isDoubleClick || false,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
