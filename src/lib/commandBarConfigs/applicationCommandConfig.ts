@@ -431,20 +431,26 @@ export function createApplicationCommands({
         console.error(new Error('No file system present'))
         return
       }
-      if (data?.url) {
-        const environmentName = env().VITE_ZOO_BASE_DOMAIN
-        if (environmentName)
-          writeEnvironmentConfigurationKittycadWebSocketUrl(
-            window.electron,
-            environmentName,
-            data.url
-          )
-            .then(() => {
-              // Reload the application and it will trigger the correct sign in workflow for the new environment
-              window.location.reload()
-            })
-            .catch(reportRejection)
+      if (!data?.url) {
+        return
       }
+      try {
+        new URL(data.url)
+      } catch {
+        return
+      }
+      const environmentName = env().VITE_ZOO_BASE_DOMAIN
+      if (environmentName)
+        writeEnvironmentConfigurationKittycadWebSocketUrl(
+          window.electron,
+          environmentName,
+          data.url
+        )
+          .then(() => {
+            // Reload the application and it will trigger the correct sign in workflow for the new environment
+            window.location.reload()
+          })
+          .catch(reportRejection)
     },
     args: {
       url: {
@@ -473,20 +479,26 @@ export function createApplicationCommands({
         console.error(new Error('No file system present'))
         return
       }
-      if (data?.url) {
-        const environmentName = env().VITE_ZOO_BASE_DOMAIN
-        if (environmentName)
-          writeEnvironmentConfigurationMlephantWebSocketUrl(
-            window.electron,
-            environmentName,
-            data.url
-          )
-            .then(() => {
-              // Reload the application and it will trigger the correct sign in workflow for the new environment
-              window.location.reload()
-            })
-            .catch(reportRejection)
+      if (!data?.url) {
+        return
       }
+      try {
+        new URL(data.url)
+      } catch {
+        return
+      }
+      const environmentName = env().VITE_ZOO_BASE_DOMAIN
+      if (environmentName)
+        writeEnvironmentConfigurationMlephantWebSocketUrl(
+          window.electron,
+          environmentName,
+          data.url
+        )
+          .then(() => {
+            // Reload the application and it will trigger the correct sign in workflow for the new environment
+            window.location.reload()
+          })
+          .catch(reportRejection)
     },
     args: {
       url: {
