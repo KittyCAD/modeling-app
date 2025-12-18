@@ -128,24 +128,6 @@ impl KclValue {
     }
 }
 
-impl From<KclValue> for KclValueControlFlow {
-    fn from(value: KclValue) -> Self {
-        value.continue_()
-    }
-}
-
-impl From<KclValueControlFlow> for KclValue {
-    fn from(value_cf: KclValueControlFlow) -> Self {
-        value_cf.into_value()
-    }
-}
-
-impl From<KclValueControlFlow> for (KclValue, ControlFlowKind) {
-    fn from(value_cf: KclValueControlFlow) -> Self {
-        (value_cf.value, value_cf.control)
-    }
-}
-
 impl KclValueControlFlow {
     /// Returns true if this is any kind of early return.
     pub fn is_some_return(&self) -> bool {
