@@ -50,7 +50,6 @@ import {
   format_number_literal,
   format_number_value,
   get_kcl_version,
-  human_display_number,
   is_kcl_empty_or_only_settings,
   kcl_settings,
   node_path_from_range,
@@ -492,12 +491,10 @@ export function formatNumberValue(
 export function humanDisplayNumber(
   value: number,
   ty: NumericType,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): string | Error {
   try {
-    const the_human_display_number = wasmInstance
-      ? wasmInstance.human_display_number
-      : human_display_number
+    const the_human_display_number = wasmInstance.human_display_number
     return the_human_display_number(value, JSON.stringify(ty))
   } catch (e) {
     return new Error(
