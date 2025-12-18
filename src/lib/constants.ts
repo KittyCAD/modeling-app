@@ -2,6 +2,7 @@ import type { MlCopilotMode, WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
+import { type MarkedOptions, escape, unescape } from '@ts-stack/markdown'
 
 export const APP_NAME = 'Design Studio'
 /** Search string in new project names to increment as an index */
@@ -330,3 +331,11 @@ export const KCL_PRELUDE_EXTRUDE_METHOD_VALUES: KclPreludeExtrudeMethod[] = [
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
 ]
+
+export const MARKED_OPTIONS: MarkedOptions = {
+  gfm: true,
+  breaks: true,
+  sanitize: true,
+  unescape,
+  escape,
+}
