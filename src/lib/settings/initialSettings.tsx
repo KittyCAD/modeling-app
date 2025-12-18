@@ -3,7 +3,7 @@ import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { users } from '@kittycad/lib'
+import { type UserFeatureEntry, users } from '@kittycad/lib'
 
 import { NIL as uuidNIL } from 'uuid'
 
@@ -148,7 +148,7 @@ const MS_IN_MINUTE = 1000 * 60
  * @returns An async function that resolves to the hideOnPlatform value
  */
 function hideWithoutFeatureFlag(
-  featureFlagId: string,
+  featureFlagId: UserFeatureEntry['id'],
   defaultHide: HideOnPlatformValue = 'both'
 ): () => Promise<HideOnPlatformValue | null> {
   return async (): Promise<HideOnPlatformValue | null> => {
