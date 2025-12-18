@@ -42,7 +42,6 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
-  coredump,
   default_app_settings,
   default_project_settings,
   get_kcl_version,
@@ -702,11 +701,13 @@ export function getTangentialArcToInfo({
 
 export async function coreDump(
   coreDumpManager: CoreDumpManager,
+  wasmInstancePromise: Promise<ModuleType>,
   openGithubIssue: boolean = false
 ): Promise<CoreDumpInfo> {
   try {
     console.warn('CoreDump: Initializing core dump')
-    const dump: CoreDumpInfo = await coredump(coreDumpManager)
+    const wasmInstance = await wasmInstancePromise
+    const dump: CoreDumpInfo = await wasmInstance.coredump(coreDumpManager)
     /* NOTE: this console output of the coredump should include the field
        `github_issue_url` which is not in the uploaded coredump file.
        `github_issue_url` is added after the file is uploaded

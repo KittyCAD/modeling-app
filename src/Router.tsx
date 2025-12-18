@@ -193,7 +193,7 @@ function CoreDump() {
     () => {
       toast
         .promise(
-          coreDump(coreDumpManager, true),
+          coreDump(coreDumpManager, kclManager.wasmInstancePromise, true),
           {
             loading: 'Starting core dump...',
             success: 'Core dump completed successfully',
