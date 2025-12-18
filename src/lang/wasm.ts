@@ -42,7 +42,6 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
-  base64_decode,
   change_default_units,
   coredump,
   default_app_settings,
@@ -900,9 +899,12 @@ export function parseProjectSettings(
   return parse_project_settings(toml)
 }
 
-export function base64Decode(base64: string): ArrayBuffer | Error {
+export function base64Decode(
+  base64: string,
+  wasmInstance: ModuleType
+): ArrayBuffer | Error {
   try {
-    const decoded = base64_decode(base64)
+    const decoded = wasmInstance.base64_decode(base64)
     return new Uint8Array(decoded).buffer
   } catch (e) {
     console.error('Caught error decoding base64 string', e)
