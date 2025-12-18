@@ -23,7 +23,12 @@ import type { settingsMachine } from '@src/machines/settingsMachine'
 export const settingsWithCommandConfigs = (s: SettingsType) =>
   Object.entries(s).flatMap(([categoryName, categorySettings]) =>
     Object.entries(categorySettings)
-      .filter(([_, setting]) => setting.commandConfig !== undefined)
+      .filter(([_, s]) => s.commandConfig !== undefined)
+      .filter(
+        ([_, s]) =>
+          s.hideOnPlatform !== 'both' &&
+          s.hideOnPlatform !== (isDesktop() ? 'desktop' : 'web')
+      )
       .map(([settingName]) => `${categoryName}.${settingName}`)
   ) as SettingsPaths[]
 
