@@ -7,7 +7,7 @@ import {
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import { createActor, waitFor } from 'xstate'
-import { expect, describe, it } from 'vitest'
+import { expect, describe, it, beforeEach } from 'vitest'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 

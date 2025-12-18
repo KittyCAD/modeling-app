@@ -11,6 +11,9 @@ vi.mock('@src/lib/singletons', () => {
     kclManager: {
       setSelectionFilter: vi.fn(),
       defaultSelectionFilter: vi.fn(),
+      wasmInstancePromise: vi.importActual(
+        '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+      ),
     },
     commandBarActor: { send: vi.fn() },
     useCommandBarState: () => ({ context: { argumentsToSubmit: {} } }),
@@ -54,7 +57,9 @@ describe('CommandBarSelectionMixedInput', () => {
 
   describe('clearSelectionFirst behavior', () => {
     it('should send clear selection command when clearSelectionFirst is true', async () => {
-      const { engineCommandManager } = await import('@src/lib/singletons')
+      const { engineCommandManager, kclManager } = await import(
+        '@src/lib/singletons'
+      )
       const mockModelingSend = vi.mocked(engineCommandManager.modelingSend)
 
       const arg = createArg(true)
@@ -67,7 +72,8 @@ describe('CommandBarSelectionMixedInput', () => {
         />
       )
 
-      await waitFor(() => {
+      await waitFor(async () => {
+        await kclManager.wasmInstancePromise
         expect(mockModelingSend).toHaveBeenCalledWith({
           type: 'Set selection',
           data: { selectionType: 'singleCodeCursor' },
