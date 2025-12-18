@@ -249,6 +249,8 @@ test.describe('Point-and-click assemblies tests', () => {
             Objects: '1 other',
           },
           commandName: 'Translate',
+          reviewValidationError:
+            'semantic: Expected `x`, `y`, or `z` to be provided.',
         })
         await cmdBar.clickOptionalArgument('x')
         await cmdBar.expectState({
