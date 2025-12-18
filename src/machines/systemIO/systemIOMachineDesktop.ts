@@ -50,7 +50,7 @@ const sharedBulkCreateWorkflow = async ({
     override?: boolean
   }
 }) => {
-  const configuration = await readAppSettingsFile(electron)
+  const configuration = await readAppSettingsFile(electron, input.wasmInstance)
   for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
     const file = input.files[fileIndex]
     const requestedProjectName = file.requestedProjectName
@@ -305,6 +305,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           )
         }
 
+        const wasmInstance = await input.wasmInstancePromise
+
         const baseDir = window.electron.join(
           input.context.projectDirectoryPath,
           newProjectName
@@ -313,10 +315,13 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           electron: window.electron,
           entryName: requestedFileNameWithExtension,
           baseDir,
-          wasmInstance: await input.wasmInstancePromise,
+          wasmInstance,
         })
 
-        const configuration = await readAppSettingsFile(window.electron)
+        const configuration = await readAppSettingsFile(
+          window.electron,
+          wasmInstance
+        )
 
         // Create the project around the file if newProject
         await createNewProjectDirectory(

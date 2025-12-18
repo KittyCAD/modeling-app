@@ -140,7 +140,7 @@ export async function createNewProjectDirectory(
   overrideApplicationProjectDirectory?: string
 ): Promise<Project> {
   if (!configuration) {
-    configuration = await readAppSettingsFile(electron)
+    configuration = await readAppSettingsFile(electron, wasmInstance)
   }
 
   if (err(configuration)) return Promise.reject(configuration)
@@ -211,10 +211,12 @@ export async function listProjects(
   const wasmInstance = await initPromise
 
   if (configuration === undefined) {
-    configuration = await readAppSettingsFile(electron).catch((e) => {
-      console.error(e)
-      return e
-    })
+    configuration = await readAppSettingsFile(electron, wasmInstance).catch(
+      (e) => {
+        console.error(e)
+        return e
+      }
+    )
   }
 
   if (err(configuration) || !configuration) return Promise.reject(configuration)
@@ -702,7 +704,10 @@ export const readProjectSettingsFile = async (
 /**
  * Read the app settings file, or creates an initial one if it doesn't exist.
  */
-export const readAppSettingsFile = async (electron: IElectronAPI) => {
+export const readAppSettingsFile = async (
+  electron: IElectronAPI,
+  wasmInstance: ModuleType
+) => {
   let settingsPath = await getAppSettingsFilePath(electron)
   const initialProjectDirConfig: DeepPartial<
     NonNullable<Required<Configuration>['settings']['project']>
@@ -741,7 +746,7 @@ export const readAppSettingsFile = async (electron: IElectronAPI) => {
   }
 
   // The file doesn't exist, create a new one.
-  const defaultAppConfig = defaultAppSettings()
+  const defaultAppConfig = defaultAppSettings(wasmInstance)
   if (err(defaultAppConfig)) {
     return Promise.reject(defaultAppConfig)
   }

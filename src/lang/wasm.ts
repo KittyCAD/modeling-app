@@ -42,7 +42,6 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
-  default_app_settings,
   default_project_settings,
   get_kcl_version,
   is_kcl_empty_or_only_settings,
@@ -877,8 +876,10 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
   return pathToNode
 }
 
-export function defaultAppSettings(): DeepPartial<Configuration> | Error {
-  return default_app_settings()
+export function defaultAppSettings(
+  wasmInstance: ModuleType
+): DeepPartial<Configuration> | Error {
+  return wasmInstance.default_app_settings()
 }
 
 export function parseAppSettings(

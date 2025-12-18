@@ -279,9 +279,9 @@ function localStorageProjectSettingsPath() {
   return '/' + BROWSER_PROJECT_NAME + '/project.toml'
 }
 
-export function readLocalStorageAppSettingsFile():
-  | DeepPartial<Configuration>
-  | Error {
+export function readLocalStorageAppSettingsFile(
+  wasmInstance: ModuleType
+): DeepPartial<Configuration> | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored =
     localStorage.getItem(localStorageAppSettingsPath()) ??
@@ -289,14 +289,14 @@ export function readLocalStorageAppSettingsFile():
     ''
 
   if (stored === '') {
-    return defaultAppSettings()
+    return defaultAppSettings(wasmInstance)
   }
 
   try {
     return parseAppSettings(stored)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
-    const settings = defaultAppSettings()
+    const settings = defaultAppSettings(wasmInstance)
     if (err(settings)) return settings
     const tomlStr = serializeConfiguration(settings)
     if (err(tomlStr)) return tomlStr
@@ -347,12 +347,12 @@ export async function loadAndValidateSettings(
   projectPath?: string
 ): Promise<AppSettings> {
   // Make sure we have wasm initialized.
-  await initPromise
+  const wasmInstance = await initPromise
 
   // Load the app settings from the file system or localStorage.
   const appSettingsPayload = window.electron
-    ? await readAppSettingsFile(window.electron)
-    : readLocalStorageAppSettingsFile()
+    ? await readAppSettingsFile(window.electron, wasmInstance)
+    : readLocalStorageAppSettingsFile(wasmInstance)
 
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 

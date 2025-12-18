@@ -59,6 +59,7 @@ export const fileLoader =
     const projectPathData = await getProjectMetaByRouteId(
       readAppSettingsFile,
       readLocalStorageAppSettingsFile,
+      wasmInstance,
       params.id,
       settings.configuration
     )
