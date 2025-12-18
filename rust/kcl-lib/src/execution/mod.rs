@@ -108,6 +108,7 @@ impl ControlFlowKind {
 #[must_use = "You should always handle the control flow value when it is returned"]
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub(crate) struct KclValueControlFlow {
+    /// Use [control_continue] or [Self::into_value] to get the value.
     value: KclValue,
     pub control: ControlFlowKind,
 }
