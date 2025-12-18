@@ -42,7 +42,6 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
-  is_kcl_empty_or_only_settings,
   kcl_settings,
   parse_app_settings,
   parse_project_settings,
@@ -977,14 +976,17 @@ export function changeExperimentalFeatures(
  * Returns true if the given KCL is empty or only contains settings that would
  * be auto-generated.
  */
-export function isKclEmptyOrOnlySettings(kcl: string): boolean {
+export function isKclEmptyOrOnlySettings(
+  kcl: string,
+  wasmInstance: ModuleType
+): boolean {
   if (kcl === '') {
     // Fast path.
     return true
   }
 
   try {
-    return is_kcl_empty_or_only_settings(kcl)
+    return wasmInstance.is_kcl_empty_or_only_settings(kcl)
   } catch (e) {
     console.debug('Caught error checking if KCL is empty', e)
     // If there's a parse error, it can't be empty or auto-generated.

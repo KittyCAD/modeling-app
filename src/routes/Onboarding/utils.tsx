@@ -46,6 +46,7 @@ import {
 } from '@src/lib/layout'
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -297,7 +298,10 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     return Promise.resolve()
   }
 
-  const isCodeResettable = hasResetReadyCode(deps.kclManager)
+  const isCodeResettable = hasResetReadyCode(
+    deps.kclManager,
+    await deps.kclManager.wasmInstancePromise
+  )
   if (isCodeResettable) {
     return resetCodeAndAdvanceOnboarding(deps)
   }
@@ -329,9 +333,9 @@ export async function resetCodeAndAdvanceOnboarding({
   )
 }
 
-function hasResetReadyCode(kclManager: KclManager) {
+function hasResetReadyCode(kclManager: KclManager, wasmInstance: ModuleType) {
   return (
-    isKclEmptyOrOnlySettings(kclManager.codeSignal.value) ||
+    isKclEmptyOrOnlySettings(kclManager.codeSignal.value, wasmInstance) ||
     kclManager.codeSignal.value === browserAxialFan
   )
 }
