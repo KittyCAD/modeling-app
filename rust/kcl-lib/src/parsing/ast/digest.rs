@@ -546,6 +546,7 @@ impl SketchBlock {
             hasher.update(argument.arg.compute_digest());
         }
         hasher.update(slf.body.compute_digest());
+        hasher.update(if slf.is_being_edited { [1] } else { [0] });
     });
 }
 
