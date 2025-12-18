@@ -298,7 +298,7 @@ export function readLocalStorageAppSettingsFile(
   } catch (e) {
     const settings = defaultAppSettings(wasmInstance)
     if (err(settings)) return settings
-    const tomlStr = serializeConfiguration(settings)
+    const tomlStr = serializeConfiguration(settings, wasmInstance)
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageAppSettingsPath(), tomlStr)
@@ -515,12 +515,13 @@ export async function saveSettings(
   projectPath?: string
 ) {
   // Make sure we have wasm initialized.
-  await initPromise
+  const wasmInstance = await initPromise
 
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
   const appTomlString = serializeConfiguration(
-    settingsPayloadToConfiguration(jsAppSettings)
+    settingsPayloadToConfiguration(jsAppSettings),
+    wasmInstance
   )
   if (err(appTomlString)) return
 

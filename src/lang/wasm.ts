@@ -41,10 +41,7 @@ import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import {
-  serialize_configuration,
-  serialize_project_configuration,
-} from '@src/lib/wasm_lib_wrapper'
+import { serialize_project_configuration } from '@src/lib/wasm_lib_wrapper'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
@@ -1003,10 +1000,11 @@ export function getKclVersion(wasmInstance: ModuleType): string {
  * Serialize a project configuration to a TOML string.
  */
 export function serializeConfiguration(
-  configuration: DeepPartial<Configuration>
+  configuration: DeepPartial<Configuration>,
+  wasmInstance: ModuleType
 ): string | Error {
   try {
-    return serialize_configuration(configuration)
+    return wasmInstance.serialize_configuration(configuration)
   } catch (e: any) {
     return new Error(`Error serializing configuration: ${e}`)
   }
