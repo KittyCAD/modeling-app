@@ -440,48 +440,60 @@ impl SketchApi for FrontendState {
         _label: Option<String>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
-        
+
         // First, add the segment (line) to get its start point ID
         let SegmentCtor::Line(line_ctor) = segment else {
             return Err(Error {
                 msg: format!("chain_segment currently only supports Line segments, got: {segment:?}"),
             });
         };
-        
+
         // Add the line segment first - this updates self.program and self.scene_graph
         let (_first_src_delta, first_scene_delta) = self.add_line(ctx, sketch, line_ctor).await?;
-        
+
         // Find the new line's start point ID from the updated scene graph
         // add_line updates self.scene_graph, so we can use that
-        let new_line_id = first_scene_delta.new_objects.iter().find(|&obj_id| {
-            let obj = self.scene_graph.objects.get(obj_id.0);
-            if let Some(obj) = obj {
-                matches!(&obj.kind, ObjectKind::Segment { segment: Segment::Line(_) })
-            } else {
-                false
-            }
-        }).ok_or_else(|| Error {
-            msg: "Failed to find new line segment in scene graph".to_string(),
-        })?;
-        
+        let new_line_id = first_scene_delta
+            .new_objects
+            .iter()
+            .find(|&obj_id| {
+                let obj = self.scene_graph.objects.get(obj_id.0);
+                if let Some(obj) = obj {
+                    matches!(
+                        &obj.kind,
+                        ObjectKind::Segment {
+                            segment: Segment::Line(_)
+                        }
+                    )
+                } else {
+                    false
+                }
+            })
+            .ok_or_else(|| Error {
+                msg: "Failed to find new line segment in scene graph".to_string(),
+            })?;
+
         let new_line_obj = self.scene_graph.objects.get(new_line_id.0).ok_or_else(|| Error {
             msg: format!("New line object not found: {new_line_id:?}"),
         })?;
-        
-        let ObjectKind::Segment { segment: new_line_segment } = &new_line_obj.kind else {
+
+        let ObjectKind::Segment {
+            segment: new_line_segment,
+        } = &new_line_obj.kind
+        else {
             return Err(Error {
                 msg: format!("Object is not a segment: {new_line_obj:?}"),
             });
         };
-        
+
         let Segment::Line(new_line) = new_line_segment else {
             return Err(Error {
                 msg: format!("Segment is not a line: {new_line_segment:?}"),
             });
         };
-        
+
         let new_line_start_point_id = new_line.start;
-        
+
         // Now add the coincident constraint between the previous end point and the new line's start point.
         //
         // Note: We want the final SceneGraphDelta returned from this helper to include
@@ -500,9 +512,10 @@ impl SketchApi for FrontendState {
         let coincident = Coincident {
             segments: vec![previous_segment_end_point_id, new_line_start_point_id],
         };
-        
-        let (final_src_delta, _final_scene_delta) =
-            self.add_constraint(ctx, version, sketch, Constraint::Coincident(coincident)).await?;
+
+        let (final_src_delta, _final_scene_delta) = self
+            .add_constraint(ctx, version, sketch, Constraint::Coincident(coincident))
+            .await?;
 
         // Collect IDs of any objects created by the constraint addition.
         let mut new_constraint_object_ids = Vec::new();

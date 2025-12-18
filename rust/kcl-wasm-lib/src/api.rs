@@ -412,14 +412,15 @@ impl Context {
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
         let sketch: kcl_lib::front::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let previous_segment_end_point_id: kcl_lib::front::ObjectId = serde_json::from_str(previous_segment_end_point_id_json)
-            .map_err(|e| format!("Could not deserialize previous_segment_end_point_id: {e}"))?;
+        let previous_segment_end_point_id: kcl_lib::front::ObjectId =
+            serde_json::from_str(previous_segment_end_point_id_json)
+                .map_err(|e| format!("Could not deserialize previous_segment_end_point_id: {e}"))?;
         let segment: kcl_lib::front::SegmentCtor =
             serde_json::from_str(segment_json).map_err(|e| format!("Could not deserialize SegmentCtor: {e}"))?;
 
-        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
-            format!("Could not create KCL executor context for chain segment. {TRUE_BUG} Details: {e}")
-        })?;
+        let ctx = self
+            .create_executor_ctx(settings, None, true)
+            .map_err(|e| format!("Could not create KCL executor context for chain segment. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
