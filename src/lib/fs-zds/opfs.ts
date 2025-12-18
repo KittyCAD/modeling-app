@@ -139,7 +139,7 @@ const readFile = async <T extends ReadFileOptions>(
       return (await file.text()) as ReadFileReturn<T>
     }
 
-    return (new Uint8Array(await file.arrayBuffer())) as ReadFileReturn<T>
+    return new Uint8Array(await file.arrayBuffer()) as ReadFileReturn<T>
   }
 
   return Promise.reject()

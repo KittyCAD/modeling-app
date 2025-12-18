@@ -9,25 +9,25 @@ const detach = async () => {}
 export type ElectronFSOptions = {}
 
 // In a web worker context (which our wasm blob lives in and needs fs access),
-// window is not available. Not even the variable name is. 
+// window is not available. Not even the variable name is.
 
-const impl: IZooDesignStudioFS = typeof window === 'undefined' ?
-noopfs.impl
- :
-{
-  getPath: window.electron?.getPath,
-  access: window.electron?.access,
-  cp: window.electron?.cp,
-  readFile: window.electron?.readFile,
-  rename: window.electron?.rename,
-  writeFile: window.electron?.writeFile,
-  readdir: window.electron?.readdir,
-  stat: window.electron?.stat,
-  mkdir: window.electron?.mkdir,
-  rm: window.electron?.rm,
-  detach,
-  attach,
-}
+const impl: IZooDesignStudioFS =
+  typeof window === 'undefined'
+    ? noopfs.impl
+    : {
+        getPath: window.electron?.getPath,
+        access: window.electron?.access,
+        cp: window.electron?.cp,
+        readFile: window.electron?.readFile,
+        rename: window.electron?.rename,
+        writeFile: window.electron?.writeFile,
+        readdir: window.electron?.readdir,
+        stat: window.electron?.stat,
+        mkdir: window.electron?.mkdir,
+        rm: window.electron?.rm,
+        detach,
+        attach,
+      }
 
 export default {
   impl,
