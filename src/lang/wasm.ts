@@ -52,7 +52,6 @@ import {
   get_kcl_version,
   human_display_number,
   is_kcl_empty_or_only_settings,
-  is_points_ccw,
   kcl_settings,
   node_path_from_range,
   parse_app_settings,
@@ -508,8 +507,8 @@ export function humanDisplayNumber(
   }
 }
 
-export function isPointsCCW(points: Coords2d[], instance?: ModuleType): number {
-  const is_points_ccw_fn = instance ? instance.is_points_ccw : is_points_ccw
+export function isPointsCCW(points: Coords2d[], instance: ModuleType): number {
+  const is_points_ccw_fn = instance.is_points_ccw
   return is_points_ccw_fn(new Float64Array(points.flat()))
 }
 
