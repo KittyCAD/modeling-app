@@ -378,7 +378,7 @@ export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
 
 // TODO: proper dependency management
 sceneEntitiesManager.commandBarActor = commandBarActor
-commandBarActor.send({ type: 'Set kclMananger', data: kclManager })
+commandBarActor.send({ type: 'Set kclManager', data: kclManager })
 
 export const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
   (typeof appMachineActors)[typeof BILLING]

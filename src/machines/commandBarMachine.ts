@@ -91,7 +91,7 @@ export type CommandBarMachineEvent =
       data: { [x: string]: CommandArgumentWithName<unknown> }
     }
   | { type: 'Set machine manager'; data: MachineManager }
-  | { type: 'Set kclMananger'; data: KclManager }
+  | { type: 'Set kclManager'; data: KclManager }
 
 export const commandBarMachine = setup({
   types: {
@@ -120,7 +120,7 @@ export const commandBarMachine = setup({
     }),
     'Set kclManager': assign({
       kclManager: ({ event }) => {
-        assertEvent(event, 'Set kclMananger')
+        assertEvent(event, 'Set kclManager')
         return event.data
       },
     }),
