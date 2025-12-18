@@ -122,7 +122,7 @@ impl SketchApi for FrontendState {
         sketch: ObjectId,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         let mut truncated_program = self.program.clone();
-        self.truncate_after_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
+        self.exit_after_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
 
         // Execute.
         let outcome = ctx
@@ -165,6 +165,7 @@ impl SketchApi for FrontendState {
                 arg: plane_ast,
             }],
             body: Default::default(),
+            is_being_edited: false,
             non_code_meta: Default::default(),
             digest: None,
         };
@@ -285,7 +286,7 @@ impl SketchApi for FrontendState {
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = self.program.clone();
-        self.truncate_after_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
+        self.exit_after_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
 
         // Execute in mock mode to ensure state is up to date. The caller will
         // want freedom analysis to display segments correctly.
@@ -684,7 +685,7 @@ impl FrontendState {
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
-        self.truncate_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+        self.exit_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
 
         // Execute.
         let outcome = ctx
@@ -804,7 +805,7 @@ impl FrontendState {
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
-        self.truncate_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+        self.exit_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
 
         // Execute.
         let outcome = ctx
@@ -930,7 +931,7 @@ impl FrontendState {
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
-        self.truncate_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+        self.exit_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
 
         // Execute.
         let outcome = ctx
@@ -1290,7 +1291,7 @@ impl FrontendState {
             EditDeleteKind::DeleteSketch => new_program,
             EditDeleteKind::Edit | EditDeleteKind::DeleteNonSketch => {
                 let mut truncated_program = new_program;
-                self.truncate_after_sketch_block(sketch, edit_kind.to_change_kind(), &mut truncated_program.ast)?;
+                self.exit_after_sketch_block(sketch, edit_kind.to_change_kind(), &mut truncated_program.ast)?;
                 truncated_program
             }
         };
@@ -1858,7 +1859,7 @@ impl FrontendState {
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
-        self.truncate_after_sketch_block(sketch_id, ChangeKind::Add, &mut truncated_program.ast)?;
+        self.exit_after_sketch_block(sketch_id, ChangeKind::Add, &mut truncated_program.ast)?;
 
         // Execute.
         let mock_config = MockConfig {
@@ -1983,7 +1984,7 @@ impl FrontendState {
         }
     }
 
-    fn truncate_after_sketch_block(
+    fn exit_after_sketch_block(
         &self,
         sketch_id: ObjectId,
         edit_kind: ChangeKind,
@@ -1998,7 +1999,7 @@ impl FrontendState {
             });
         };
         let sketch_block_range = expect_single_source_range(&sketch_object.source)?;
-        truncate_after_sketch_block(ast, sketch_block_range, edit_kind)
+        exit_after_sketch_block(ast, sketch_block_range, edit_kind)
     }
 
     fn mutate_ast(
@@ -2036,7 +2037,7 @@ fn expect_single_source_range(source_ref: &SourceRef) -> api::Result<SourceRange
     }
 }
 
-fn truncate_after_sketch_block(
+fn exit_after_sketch_block(
     ast: &mut ast::Node<ast::Program>,
     sketch_block_range: SourceRange,
     edit_kind: ChangeKind,
@@ -2054,25 +2055,41 @@ fn truncate_after_sketch_block(
             ChangeKind::None => r1.module_id() == r2.module_id() && r1.start() == r2.start() && r1.end() == r2.end(),
         }
     };
-    let index = ast.body.iter().position(|item| match item {
-        ast::BodyItem::ImportStatement(_) => false,
-        ast::BodyItem::ExpressionStatement(node) => {
-            let r2 = SourceRange::from(node);
-            matches_range(r2) && matches!(node.expression, ast::Expr::SketchBlock(_))
+    let mut found = false;
+    for item in ast.body.iter_mut() {
+        match item {
+            ast::BodyItem::ImportStatement(_) => {}
+            ast::BodyItem::ExpressionStatement(node) => {
+                if matches_range(SourceRange::from(&*node))
+                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
+                {
+                    sketch_block.is_being_edited = true;
+                    found = true;
+                    break;
+                }
+            }
+            ast::BodyItem::VariableDeclaration(node) => {
+                if matches_range(SourceRange::from(&node.declaration.init))
+                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.declaration.init
+                {
+                    sketch_block.is_being_edited = true;
+                    found = true;
+                    break;
+                }
+            }
+            ast::BodyItem::TypeDeclaration(_) => {}
+            ast::BodyItem::ReturnStatement(node) => {
+                if matches_range(SourceRange::from(&node.argument))
+                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.argument
+                {
+                    sketch_block.is_being_edited = true;
+                    found = true;
+                    break;
+                }
+            }
         }
-        ast::BodyItem::VariableDeclaration(node) => {
-            let r2 = SourceRange::from(&node.declaration.init);
-            matches_range(r2) && matches!(node.declaration.init, ast::Expr::SketchBlock(_))
-        }
-        ast::BodyItem::TypeDeclaration(_) => false,
-        ast::BodyItem::ReturnStatement(node) => {
-            let r2 = SourceRange::from(&node.argument);
-            matches_range(r2) && matches!(node.argument, ast::Expr::SketchBlock(_))
-        }
-    });
-    if let Some(sketch_block_index) = index {
-        ast.body.truncate(sketch_block_index + 1);
-    } else {
+    }
+    if !found {
         return Err(Error {
             msg: format!("Sketch block source range not found in AST: {sketch_block_range:?}, edit_kind={edit_kind:?}"),
         });

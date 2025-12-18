@@ -1221,9 +1221,10 @@ impl Node<SketchBlock> {
         #[cfg(feature = "artifact-graph")]
         {
             // Store variable solutions so that the sketch refactoring API can
-            // write them back to the source. The frontend module truncates the
-            // AST so that the sketch block that we care about is always the
-            // last one. Therefore, we should overwrite any previous solutions.
+            // write them back to the source. When editing a sketch block, we
+            // exit early so that the sketch block that we're editing is always
+            // the last one. Therefore, we should overwrite any previous
+            // solutions.
             exec_state.mod_local.artifacts.var_solutions =
                 sketch_block_state.var_solutions(solve_outcome, solution_ty, SourceRange::from(self))?;
         }
@@ -1275,12 +1276,18 @@ impl Node<SketchBlock> {
         let metadata = Metadata {
             source_range: SourceRange::from(self),
         };
-        Ok(KclValue::Object {
+        let return_value = KclValue::Object {
             value: variables,
             constrainable: Default::default(),
             meta: vec![metadata],
-        }
-        .continue_())
+        };
+        Ok(if self.is_being_edited {
+            // When the sketch block is being edited, we exit the program
+            // immediately.
+            return_value.exit()
+        } else {
+            return_value.continue_()
+        })
     }
 }
 

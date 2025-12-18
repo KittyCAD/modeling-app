@@ -91,7 +91,6 @@ pub(crate) use control_continue;
 pub(crate) enum ControlFlowKind {
     #[default]
     Continue,
-    #[expect(dead_code)]
     Exit,
 }
 
@@ -118,6 +117,13 @@ impl KclValue {
         KclValueControlFlow {
             value: self,
             control: ControlFlowKind::Continue,
+        }
+    }
+
+    pub(crate) fn exit(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: self,
+            control: ControlFlowKind::Exit,
         }
     }
 }
