@@ -30,6 +30,7 @@ import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 import env from '@src/env'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
+import { getCookie } from '@src/machines/authMachine'
 
 /**
  * A setting that can be set at the user or project level
@@ -154,19 +155,8 @@ function hideWithoutFeatureFlag(
     try {
       // Try to get a token - check env first, then cookie for web
       const envToken = env().VITE_ZOO_API_TOKEN
-      let token = envToken || ''
-
-      // For web, try to get cookie token
-      if (!token && !isDesktop() && typeof document !== 'undefined') {
-        const cookies = document.cookie.split(';')
-        for (const cookie of cookies) {
-          const [name, value] = cookie.trim().split('=')
-          if (name && name.includes('token') && value) {
-            token = value
-            break
-          }
-        }
-      }
+      const cookieToken = getCookie()
+      const token = envToken || cookieToken || ''
 
       if (!token) {
         return defaultHide
