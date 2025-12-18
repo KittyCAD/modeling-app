@@ -688,41 +688,11 @@ export function setSettingsAtLevel(
 }
 
 /**
- * Returns true if the setting should be hidden
- * based on its config, the current settings level,
- * and the current platform.
- * Note: Async hideOnPlatform functions should have been resolved in loadAndValidateSettings,
- * so this works synchronously. This async version is kept for backwards compatibility.
- */
-export async function shouldHideSetting(
-  setting: Setting<unknown>,
-  settingsLevel: SettingsLevel
-): Promise<boolean> {
-  // Async functions should have been resolved, but handle them just in case
-  let hideOnPlatform = setting.hideOnPlatform
-  if (typeof hideOnPlatform === 'function') {
-    const resolved = await hideOnPlatform()
-    // Convert null to undefined since the type doesn't allow null
-    hideOnPlatform = resolved === null ? undefined : resolved
-  }
-
-  if (hideOnPlatform === undefined || hideOnPlatform === null) {
-    return setting.hideOnLevel === settingsLevel
-  }
-
-  return (
-    setting.hideOnLevel === settingsLevel ||
-    hideOnPlatform === 'both' ||
-    (isDesktop() ? hideOnPlatform === 'desktop' : hideOnPlatform === 'web')
-  )
-}
-
-/**
  * Synchronous version of shouldHideSetting
  * Async hideOnPlatform functions should have been resolved in loadAndValidateSettings,
  * so this works synchronously.
  */
-export function shouldHideSettingSync(
+export function shouldHideSetting(
   setting: Setting<unknown>,
   settingsLevel: SettingsLevel
 ): boolean {
@@ -743,38 +713,15 @@ export function shouldHideSettingSync(
 }
 
 /**
- * Returns true if the setting meets the requirements
- * to appear in the settings modal in this context
- * based on its config, the current settings level,
- * and the current platform
- */
-export async function shouldShowSettingInput(
-  setting: Setting<unknown>,
-  settingsLevel: SettingsLevel
-): Promise<boolean> {
-  const isHidden = await shouldHideSetting(setting, settingsLevel)
-  if (isHidden) return false
-
-  return !!(
-    setting.Component ||
-    ['string', 'boolean', 'number'].some((t) => typeof setting.default === t) ||
-    (setting.commandConfig?.inputType &&
-      ['string', 'options', 'boolean', 'number'].some(
-        (t) => setting.commandConfig?.inputType === t
-      ))
-  )
-}
-
-/**
  * Synchronous version of shouldShowSettingInput
  * Async hideOnPlatform functions should have been resolved in loadAndValidateSettings,
  * so this works synchronously.
  */
-export function shouldShowSettingInputSync(
+export function shouldShowSettingInput(
   setting: Setting<unknown>,
   settingsLevel: SettingsLevel
 ): boolean {
-  const isHidden = shouldHideSettingSync(setting, settingsLevel)
+  const isHidden = shouldHideSetting(setting, settingsLevel)
   if (isHidden) return false
 
   return !!(

@@ -1,7 +1,7 @@
 import decamelize from 'decamelize'
 
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { shouldHideSettingSync } from '@src/lib/settings/settingsUtils'
+import { shouldHideSetting } from '@src/lib/settings/settingsUtils'
 import { useSettings } from '@src/lib/singletons'
 
 interface SettingsSectionsListProps {
@@ -19,7 +19,7 @@ export function SettingsSectionsList({
     ([_, categorySettings]) =>
       // Filter out categories that don't have any non-hidden settings
       Object.values(categorySettings).some(
-        (setting) => !shouldHideSettingSync(setting, searchParamTab)
+        (setting) => !shouldHideSetting(setting, searchParamTab)
       )
   )
 

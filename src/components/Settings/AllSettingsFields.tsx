@@ -19,8 +19,8 @@ import type {
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
 import {
-  shouldHideSettingSync,
-  shouldShowSettingInputSync,
+  shouldHideSetting,
+  shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
 import {
   appActor,
@@ -91,7 +91,7 @@ export const AllSettingsFields = forwardRef(
             .filter(([_, categorySettings]) =>
               // Filter out categories that don't have any non-hidden settings
               Object.values(categorySettings).some(
-                (setting) => !shouldHideSettingSync(setting, searchParamTab)
+                (setting) => !shouldHideSetting(setting, searchParamTab)
               )
             )
             .map(([category, categorySettings]) => (
@@ -108,7 +108,7 @@ export const AllSettingsFields = forwardRef(
                     // or are hidden on the current level or the current platform
                     (item: [string, Setting<unknown>]) => {
                       const setting = item[1]
-                      if (!shouldShowSettingInputSync(setting, searchParamTab))
+                      if (!shouldShowSettingInput(setting, searchParamTab))
                         return false
 
                       // Check if setting has a Component or inputType
