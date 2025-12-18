@@ -253,7 +253,11 @@ export const sketchSolveMachine = setup({
               x: second.kind.segment.position.x,
               y: second.kind.segment.position.y,
             }
-            const distanceResult = distanceBetweenPoint2DExpr(point1, point2)
+            const distanceResult = distanceBetweenPoint2DExpr(
+              point1,
+              point2,
+              await context.kclManager.wasmInstancePromise
+            )
             if (!(distanceResult instanceof Error)) {
               distance = roundOff(distanceResult.distance)
             }

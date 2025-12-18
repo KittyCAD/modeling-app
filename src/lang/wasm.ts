@@ -52,8 +52,6 @@ import {
   kcl_settings,
   parse_app_settings,
   parse_project_settings,
-  parse_wasm,
-  point_to_unit,
   serialize_configuration,
   serialize_project_configuration,
 } from '@src/lib/wasm_lib_wrapper'
@@ -212,9 +210,8 @@ export const parse = (
   if (err(code)) return code
 
   try {
-    const parsed: [Node<Program>, CompilationError[]] = instance
-      ? instance.parse_wasm(code)
-      : parse_wasm(code)
+    const parsed: [Node<Program>, CompilationError[]] =
+      instance.parse_wasm(code)
     let errs = splitErrors(parsed[1])
     return new ParseResult(parsed[0], errs.errors, errs.warnings)
   } catch (e: any) {
@@ -502,10 +499,11 @@ export function isPointsCCW(points: Coords2d[], instance: ModuleType): number {
 function pointToUnit(
   point: [number, number],
   fromLenUnit: UnitLength,
-  toLenUnit: UnitLength
+  toLenUnit: UnitLength,
+  wasmInstance: ModuleType
 ): Coords2d | Error {
   try {
-    const result = point_to_unit(
+    const result = wasmInstance.point_to_unit(
       JSON.stringify(point),
       JSON.stringify(fromLenUnit),
       JSON.stringify(toLenUnit)
@@ -584,7 +582,8 @@ function unitLengthToNumericSuffix(unit: UnitLength): NumericSuffix {
  */
 export function distanceBetweenPoint2DExpr(
   point1: { x: Number; y: Number },
-  point2: { x: Number; y: Number }
+  point2: { x: Number; y: Number },
+  wasmInstance: ModuleType
 ): { distance: number; units: NumericSuffix } | Error {
   // Convert units to UnitLength
   const x1Unit = numericSuffixToUnitLength(point1.x.units)
@@ -608,10 +607,30 @@ export function distanceBetweenPoint2DExpr(
   }
 
   // Convert all coordinates to the target unit
-  const x1Converted = pointToUnit([point1.x.value, 0], x1Unit, targetUnit)
-  const y1Converted = pointToUnit([point1.y.value, 0], y1Unit, targetUnit)
-  const x2Converted = pointToUnit([point2.x.value, 0], x2Unit, targetUnit)
-  const y2Converted = pointToUnit([point2.y.value, 0], y2Unit, targetUnit)
+  const x1Converted = pointToUnit(
+    [point1.x.value, 0],
+    x1Unit,
+    targetUnit,
+    wasmInstance
+  )
+  const y1Converted = pointToUnit(
+    [point1.y.value, 0],
+    y1Unit,
+    targetUnit,
+    wasmInstance
+  )
+  const x2Converted = pointToUnit(
+    [point2.x.value, 0],
+    x2Unit,
+    targetUnit,
+    wasmInstance
+  )
+  const y2Converted = pointToUnit(
+    [point2.y.value, 0],
+    y2Unit,
+    targetUnit,
+    wasmInstance
+  )
 
   if (
     x1Converted instanceof Error ||
