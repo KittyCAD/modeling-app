@@ -133,6 +133,7 @@ export async function mkdirOrNOOP(
 export async function createNewProjectDirectory(
   electron: IElectronAPI,
   projectName: string,
+  wasmInstance: ModuleType,
   initialCode?: string,
   configuration?: DeepPartial<Configuration> | Error,
   initialFileName?: string,
@@ -171,7 +172,8 @@ export async function createNewProjectDirectory(
   // user's settings.
   const codeToWrite = newKclFile(
     initialCode,
-    configuration?.settings?.modeling?.base_unit ?? DEFAULT_DEFAULT_LENGTH_UNIT
+    configuration?.settings?.modeling?.base_unit ?? DEFAULT_DEFAULT_LENGTH_UNIT,
+    wasmInstance
   )
   if (err(codeToWrite)) return Promise.reject(codeToWrite)
   await electron.writeFile(projectFile, codeToWrite)

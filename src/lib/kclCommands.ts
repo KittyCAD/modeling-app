@@ -89,7 +89,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         if (typeof data === 'object' && 'unit' in data) {
           const newCode = changeDefaultUnits(
             commandProps.kclManager.code,
-            data.unit
+            data.unit,
+            commandProps.wasmInstance
           )
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)

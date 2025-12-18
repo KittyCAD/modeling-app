@@ -44,7 +44,8 @@ export const systemIOMachineWeb = systemIOMachine.provide({
         const codeToWrite = newKclFile(
           input.requestedCode,
           projectSettings?.settings?.modeling?.base_unit ||
-            DEFAULT_DEFAULT_LENGTH_UNIT
+            DEFAULT_DEFAULT_LENGTH_UNIT,
+          await input.wasmInstancePromise
         )
         if (err(codeToWrite)) return Promise.reject(codeToWrite)
         input.rootContext.kclManager.updateCodeStateEditor(codeToWrite)

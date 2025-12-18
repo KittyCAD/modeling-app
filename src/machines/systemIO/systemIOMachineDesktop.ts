@@ -96,6 +96,7 @@ const sharedBulkCreateWorkflow = async ({
     await createNewProjectDirectory(
       electron,
       newProjectName,
+      input.wasmInstance,
       requestedCode,
       configuration,
       fileName,
@@ -178,7 +179,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         const folders = input.context.folders
         const requestedProjectName = input.requestedProjectName
         const uniqueName = getUniqueProjectName(requestedProjectName, folders)
-        await createNewProjectDirectory(window.electron, uniqueName)
+        await createNewProjectDirectory(
+          window.electron,
+          uniqueName,
+          await input.context.wasmInstancePromise
+        )
         return {
           message: `Successfully created "${uniqueName}"`,
           name: uniqueName,
@@ -317,6 +322,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         await createNewProjectDirectory(
           window.electron,
           newProjectName,
+          await input.wasmInstancePromise,
           requestedCode,
           configuration,
           newFileName,

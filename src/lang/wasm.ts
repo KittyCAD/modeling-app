@@ -42,7 +42,6 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
-  change_default_units,
   coredump,
   default_app_settings,
   default_project_settings,
@@ -945,10 +944,11 @@ export function kclSettings(
  */
 export function changeDefaultUnits(
   kcl: string,
-  len: UnitLength | null
+  len: UnitLength | null,
+  wasmInstance: ModuleType
 ): string | Error {
   try {
-    return change_default_units(kcl, JSON.stringify(len))
+    return wasmInstance.change_default_units(kcl, JSON.stringify(len))
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })
