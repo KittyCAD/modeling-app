@@ -7,6 +7,7 @@ import { readLocalStorageProjectSettingsFile } from '@src/lib/settings/settingsU
 import { err } from '@src/lib/trap'
 import type { AppMachineContext } from '@src/lib/types'
 import { engineStreamZoomToFit } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
 import {
@@ -29,6 +30,7 @@ export const systemIOMachineWeb = systemIOMachine.provide({
           requestedCode: string
           rootContext: AppMachineContext
           requestedSubRoute?: string
+          wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
         // Browser version doesn't navigate, just overwrites the current file

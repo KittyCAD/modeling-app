@@ -1,7 +1,4 @@
-import {
-  import_file_extensions,
-  relevant_file_extensions,
-} from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { import_file_extensions } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule, init, reloadModule } from '@src/lib/wasm_lib_wrapper'
@@ -49,9 +46,6 @@ export function importFileExtensions(wasmInstance?: ModuleType): string[] {
 /**
  * All of these file extensions will be lowercase
  */
-export function relevantFileExtensions(wasmInstance?: ModuleType): string[] {
-  const the_relevant_file_extensions = wasmInstance
-    ? wasmInstance.relevant_file_extensions
-    : relevant_file_extensions
-  return the_relevant_file_extensions()
+export function relevantFileExtensions(wasmInstance: ModuleType): string[] {
+  return wasmInstance.relevant_file_extensions()
 }

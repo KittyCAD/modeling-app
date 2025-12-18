@@ -27,14 +27,16 @@ initializeWindowExceptionHandler(kclManager)
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.
 kclManager.wasmInstancePromise
-  .then(() => {
+  .then((wasmInstance) => {
     appActor.start()
     // Application commands must be created after the initPromise because
     // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency
     commandBarActor.send({
       type: 'Add commands',
       data: {
-        commands: [...createApplicationCommands({ systemIOActor })],
+        commands: [
+          ...createApplicationCommands({ systemIOActor, wasmInstance }),
+        ],
       },
     })
   })

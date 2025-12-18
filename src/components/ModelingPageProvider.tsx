@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { use, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
@@ -30,6 +30,7 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
   const token = useToken()
@@ -161,6 +162,7 @@ export const ModelingPageProvider = ({
       },
       specialPropsForInsertCommand: { providedOptions },
       project,
+      wasmInstance,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager, project, file])

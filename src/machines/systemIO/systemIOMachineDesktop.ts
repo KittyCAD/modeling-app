@@ -21,6 +21,7 @@ import {
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import type { AppMachineContext } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   RequestedKCLFile,
@@ -45,6 +46,7 @@ const sharedBulkCreateWorkflow = async ({
     context: SystemIOContext
     files: RequestedKCLFile[]
     rootContext: AppMachineContext
+    wasmInstance: ModuleType
     override?: boolean
   }
 }) => {
@@ -86,6 +88,7 @@ const sharedBulkCreateWorkflow = async ({
             electron,
             entryName: requestedFileName,
             baseDir,
+            wasmInstance: input.wasmInstance,
           })
         ).name
 
@@ -266,6 +269,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedCode: string
           rootContext: AppMachineContext
           requestedSubRoute?: string
+          wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
         if (!window.electron) {
@@ -304,6 +308,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           electron: window.electron,
           entryName: requestedFileNameWithExtension,
           baseDir,
+          wasmInstance: await input.wasmInstancePromise,
         })
 
         const configuration = await readAppSettingsFile(window.electron)
@@ -382,14 +387,20 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           context: SystemIOContext
           files: RequestedKCLFile[]
           rootContext: AppMachineContext
+          wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
         if (!window.electron) {
           return Promise.reject(new Error('No file system present'))
         }
+        const { wasmInstancePromise, ...otherInput } = input
+        const wasmInstance = await wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
           electron: window.electron,
-          input,
+          input: {
+            ...otherInput,
+            wasmInstance,
+          },
         })
         return {
           ...message,
@@ -408,15 +419,19 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedProjectName: string
           override?: boolean
           requestedSubRoute?: string
+          wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
         if (!window.electron) {
           return Promise.reject(new Error('No file system present'))
         }
+        const { wasmInstancePromise, ...otherInput } = input
+        const wasmInstance = await wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
           electron: window.electron,
           input: {
-            ...input,
+            ...otherInput,
+            wasmInstance,
             override: input.override,
           },
         })
@@ -444,10 +459,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         if (!window.electron) {
           return Promise.reject(new Error('No file system present'))
         }
+        const wasmInstance = await input.context.wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
           electron: window.electron,
           input: {
             ...input,
+            wasmInstance,
             override: input.override,
           },
         })

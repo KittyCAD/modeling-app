@@ -31,6 +31,7 @@ import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
 import type { Project } from '@src/lib/project'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -39,6 +40,7 @@ interface KclCommandConfig {
     providedOptions: CommandArgumentOption<string>[]
   }
   kclManager: KclManager
+  wasmInstance: ModuleType
   projectData: IndexLoaderData
   authToken: string
   settings: {
@@ -202,7 +204,9 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             const context = systemIOActor.getSnapshot().context
             const projectName = commandProps.project?.name
             const sep = window.electron?.sep
-            const relevantFiles = relevantFileExtensions()
+            const relevantFiles = relevantFileExtensions(
+              commandProps.wasmInstance
+            )
             if (projectName && sep) {
               const importableFiles = listAllImportFilesWithinProject(context, {
                 projectFolderName: projectName,
