@@ -135,7 +135,7 @@ export class Setting<T = unknown> {
 const MS_IN_MINUTE = 1000 * 60
 
 /**
- * Helper function to fetch user features and determine if newSketchMode should be visible
+ * Helper function to fetch user features and determine if the corresponding setting should be visible
  * Returns 'both' (hidden) if feature flag doesn't exist, or null (visible) if it does
  */
 /**
