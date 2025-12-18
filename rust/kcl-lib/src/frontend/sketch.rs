@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ExecOutcome, ExecutorContext,
+    ExecutorContext,
     frontend::api::{
         Expr, FileId, Number, ObjectId, Plane, ProjectId, Result, SceneGraph, SceneGraphDelta, SourceDelta, Version,
     },
@@ -17,7 +17,7 @@ pub trait SketchApi {
         ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
-    ) -> Result<(SceneGraph, ExecOutcome)>;
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn new_sketch(
         &mut self,
@@ -262,13 +262,14 @@ pub enum Constraint {
     Horizontal(Horizontal),
     LinesEqualLength(LinesEqualLength),
     Parallel(Parallel),
+    Perpendicular(Perpendicular),
     Vertical(Vertical),
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Coincident {
-    pub points: Vec<ObjectId>,
+    pub segments: Vec<ObjectId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -299,5 +300,11 @@ pub struct Vertical {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Parallel {
+    pub lines: Vec<ObjectId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", optional_fields)]
+pub struct Perpendicular {
     pub lines: Vec<ObjectId>,
 }

@@ -22,7 +22,8 @@ use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, ProfileClosed, Sketch,
+        SketchSurface, Solid,
         types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -101,12 +102,6 @@ async fn inner_extrude(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     let body_type = body_type.unwrap_or_default();
-    if matches!(body_type, BodyType::Surface) {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Surface extrude is not yet supported".to_owned(),
-            vec![args.source_range],
-        )));
-    }
 
     // Extrude the element(s).
     let mut solids = Vec::new();
@@ -405,7 +400,7 @@ pub(crate) async fn do_post_extrude<'a>(
     let mut sketch = sketch.clone();
     match body_type {
         BodyType::Solid => {
-            sketch.is_closed = true;
+            sketch.is_closed = ProfileClosed::Explicitly;
         }
         BodyType::Surface => {}
     }

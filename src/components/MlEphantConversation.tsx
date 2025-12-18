@@ -2,14 +2,6 @@ import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import Loading from '@src/components/Loading'
 import { type Selections } from '@src/machines/modelingSharedTypes'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import Tooltip from '@src/components/Tooltip'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import {
-  BillingDialog,
-  BillingRemaining,
-  BillingRemainingMode,
-} from '@kittycad/react-shared'
-import { type BillingContext } from '@src/machines/billingMachine'
 import type { MlCopilotMode } from '@kittycad/lib'
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -17,7 +9,7 @@ import { ExchangeCard } from '@src/components/ExchangeCard'
 import type {
   Conversation,
   Exchange,
-} from '@src/machines/mlEphantManagerMachine2'
+} from '@src/machines/mlEphantManagerMachine'
 import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
@@ -29,7 +21,6 @@ export interface MlEphantConversationProps {
   isLoading: boolean
   conversation?: Conversation
   contexts: MlEphantManagerPromptContext[]
-  billingContext: BillingContext
   onProcess: (request: string, mode: MlCopilotMode) => void
   onInterrupt: () => void
   onClickClearChat: () => void
@@ -38,6 +29,7 @@ export interface MlEphantConversationProps {
   needsReconnect: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
+  userBlockedOnPayment?: boolean
   defaultPrompt?: string
 }
 
@@ -166,7 +158,6 @@ const MlCopilotSelectionsContext = (props: {
 
 interface MlEphantConversationInputProps {
   contexts: MlEphantManagerPromptContext[]
-  billingContext: BillingContext
   onProcess: MlEphantConversationProps['onProcess']
   onReconnect: MlEphantConversationProps['onReconnect']
   onInterrupt: MlEphantConversationProps['onInterrupt']
@@ -175,43 +166,6 @@ interface MlEphantConversationInputProps {
   needsReconnect: boolean
   defaultPrompt?: string
   hasAlreadySentPrompts: boolean
-}
-
-function BillingStatusBarItem(props: { billingContext: BillingContext }) {
-  return (
-    <Popover className="relative flex items-stretch">
-      <Popover.Button
-        className="m-0 p-0 border-0 flex items-stretch"
-        data-testid="billing-remaining-bar"
-      >
-        <BillingRemaining
-          mode={BillingRemainingMode.ProgressBarFixed}
-          error={props.billingContext.error}
-          credits={props.billingContext.credits}
-          allowance={props.billingContext.allowance}
-        />
-        {!props.billingContext.error && (
-          <Tooltip
-            position="left"
-            contentClassName="text-xs"
-            hoverOnly
-            wrapperClassName="ui-open:!hidden"
-          >
-            Zookeeper credits
-          </Tooltip>
-        )}
-      </Popover.Button>
-      <Popover.Panel className="absolute right-0 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
-        <BillingDialog
-          upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-          upgradeClick={openExternalBrowserIfDesktop()}
-          error={props.billingContext.error}
-          credits={props.billingContext.credits}
-          allowance={props.billingContext.allowance}
-        />
-      </Popover.Panel>
-    </Popover>
-  )
 }
 
 export const MlEphantConversationInput = (
@@ -240,14 +194,6 @@ export const MlEphantConversationInput = (
 
   return (
     <div className="flex flex-col p-4 gap-2">
-      <div className="flex flex-row justify-between">
-        <div>
-          <div className="text-3 text-xs">
-            Zookeeper can make mistakes. Always verify information.
-          </div>
-        </div>
-        <BillingStatusBarItem billingContext={props.billingContext} />
-      </div>
       <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
         <textarea
           autoCapitalize="off"
@@ -281,7 +227,7 @@ export const MlEphantConversationInput = (
             onSetMode={setMode}
           />
           <div className="flex flex-row gap-1">
-            {props.needsReconnect && (
+            {!props.disabled && props.needsReconnect && (
               <div className="flex flex-col w-fit items-end">
                 <div className="pr-1 text-xs text-red-500 flex flex-row items-center h-5">
                   <CustomIcon name="close" className="w-7 h-7" />{' '}
@@ -311,11 +257,14 @@ export const MlEphantConversationInput = (
           </div>
         </div>
       </div>
+      <div className="text-3 text-xs">
+        Zookeeper can make mistakes. Always verify information.
+      </div>
     </div>
   )
 }
 
-export const StarterCard = () => {
+const StarterCard = ({ text }: { text: string }) => {
   const [, setTrigger] = useState<number>(0)
 
   useEffect(() => {
@@ -332,12 +281,12 @@ export const StarterCard = () => {
       onClickClearChat={() => {}}
       isLastResponse={false}
       responses={[]}
-      deltasAggregated="Try requesting a model, ask engineering questions, or let's explore ideas."
+      deltasAggregated={text}
     />
   )
 }
 
-export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
+export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
@@ -393,11 +342,15 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
         <div className="flex flex-col h-full">
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
-              {props.isLoading === false || props.needsReconnect ? (
+              {props.userBlockedOnPayment ? (
+                <StarterCard
+                  text={`Zookeeper is unavailable because you have run out of credits for the month. Please check your [account page](${withSiteBaseURL('/account/billing')}) to view usage or upgrade your plan.`}
+                />
+              ) : props.isLoading === false || props.needsReconnect ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
                   exchangeCards
                 ) : (
-                  <StarterCard />
+                  <StarterCard text="Try requesting a model, ask engineering questions, or let's explore ideas." />
                 )
               ) : (
                 <div className="text-center p-4">
@@ -409,13 +362,14 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
           <div className="border-t b-4">
             <MlEphantConversationInput
               contexts={props.contexts}
-              disabled={props.disabled || props.isLoading}
+              disabled={
+                props.userBlockedOnPayment || props.disabled || props.isLoading
+              }
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
               onProcess={onProcess}
               onReconnect={props.onReconnect}
               onInterrupt={props.onInterrupt}
-              billingContext={props.billingContext}
               defaultPrompt={props.defaultPrompt}
               hasAlreadySentPrompts={
                 exchangeCards !== undefined && exchangeCards.length > 0

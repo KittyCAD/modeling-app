@@ -452,6 +452,10 @@ impl KclError {
         KclError::Io { details }
     }
 
+    pub fn new_invalid_expression(details: KclErrorDetails) -> KclError {
+        KclError::InvalidExpression { details }
+    }
+
     pub fn new_engine(details: KclErrorDetails) -> KclError {
         KclError::Engine { details }
     }

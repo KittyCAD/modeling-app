@@ -27,9 +27,9 @@ export fn arc(
   center: Point2d,
 ): Segment {}
 
-/// Constrain points to be coincident.
+/// Constrain points, or a point and a segment to be coincident.
 ///
-/// Currently limited to two points.
+/// Supports two points, or one point and one segment (line/arc).
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn coincident(@points: [Segment; 2]) {}
 
@@ -48,6 +48,12 @@ export fn equalLength(@lines: [Segment; 2]) {}
 /// Currently limited to two lines.
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn parallel(@input: [Segment; 2+]) {}
+
+/// Constrain lines to be perpendicular.
+///
+/// Currently limited to two lines.
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn perpendicular(@input: [Segment; 2+]) {}
 
 /// Constrain a line to be horizontal.
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)

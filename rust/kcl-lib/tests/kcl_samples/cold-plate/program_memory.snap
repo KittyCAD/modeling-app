@@ -1531,7 +1531,7 @@ description: Variables in memory after executing cold-plate.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "in",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "seg01": {

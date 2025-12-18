@@ -112,7 +112,7 @@ export const machine = setup({
             sketchId, // sketchId from context
             segmentCtor,
             'point-tool-point', // label
-            await jsAppSettings()
+            await jsAppSettings(rustContext.settingsActor)
           )
 
           console.log('Point segment added successfully:', result)

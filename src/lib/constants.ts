@@ -268,8 +268,8 @@ export const OAUTH2_DEVICE_CLIENT_ID = '2af127fb-e14e-400a-9c57-a9ed08d1a5b7'
  */
 export type EnvironmentConfiguration = {
   domain: string // same name as the file development for development.json
-  pool: string // can be the empty string to indicate no pool for engine
   token: string // authentication token from signing in. Can be empty string
+  kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
 }
 
 /**
@@ -278,7 +278,7 @@ export type EnvironmentConfiguration = {
  */
 export type EnvironmentConfigurationRuntime = {
   domain: string // same name as the file development for development.json
-  pool: string // can be the empty string to indicate no pool for engine
+  kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
 }
 
 export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'
@@ -310,3 +310,23 @@ export const LAYOUT_SAVE_THROTTLE = 500
 
 // Copilot input
 export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
+
+/**
+ * KCL constants defined in rust/kcl-lib/std/prelude.kcl
+ * TODO: figure if how we could keep this in sync automatically
+ */
+export type KclPreludeBodyType = 'SURFACE' | 'SOLID'
+export const KCL_PRELUDE_BODY_TYPE_SURFACE: KclPreludeBodyType = 'SURFACE'
+export const KCL_PRELUDE_BODY_TYPE_SOLID: KclPreludeBodyType = 'SOLID'
+export const KCL_PRELUDE_BODY_TYPE_VALUES: KclPreludeBodyType[] = [
+  KCL_PRELUDE_BODY_TYPE_SURFACE,
+  KCL_PRELUDE_BODY_TYPE_SOLID,
+]
+
+export type KclPreludeExtrudeMethod = 'MERGE' | 'NEW'
+export const KCL_PRELUDE_EXTRUDE_METHOD_MERGE: KclPreludeExtrudeMethod = 'MERGE'
+export const KCL_PRELUDE_EXTRUDE_METHOD_NEW: KclPreludeExtrudeMethod = 'NEW'
+export const KCL_PRELUDE_EXTRUDE_METHOD_VALUES: KclPreludeExtrudeMethod[] = [
+  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
+  KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+]

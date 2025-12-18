@@ -181,7 +181,7 @@ export class KclPlugin implements PluginValue {
         await kclManager.executeCode()
         const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
           kclManager.ast,
-          await jsAppSettings()
+          await jsAppSettings(kclManager.singletons.rustContext.settingsActor)
         )
 
         // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine

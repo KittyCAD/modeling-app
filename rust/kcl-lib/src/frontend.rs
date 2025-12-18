@@ -8,7 +8,7 @@ use crate::{
     exec::WarningLevel,
     execution::MockConfig,
     fmt::format_number_literal,
-    front::{ArcCtor, Distance, Line, LinesEqualLength, Parallel, PointCtor},
+    front::{ArcCtor, Distance, Line, LinesEqualLength, Parallel, Perpendicular, PointCtor},
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
@@ -22,6 +22,7 @@ use crate::{
         traverse::{MutateBodyItem, TraversalReturn, Visitor, dfs_mut},
     },
     parsing::ast::types as ast,
+    std::constraints::LinesAtAngleKind,
     walk::{NodeMut, Visitable},
 };
 
@@ -44,7 +45,6 @@ const COINCIDENT_FN: &str = "coincident";
 const DISTANCE_FN: &str = "distance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
 const HORIZONTAL_FN: &str = "horizontal";
-const PARALLEL_FN: &str = "parallel";
 const VERTICAL_FN: &str = "vertical";
 
 const LINE_PROPERTY_START: &str = "start";
@@ -84,7 +84,7 @@ impl SketchApi for FrontendState {
         ctx: &ExecutorContext,
         _version: Version,
         _sketch: ObjectId,
-    ) -> api::Result<(SceneGraph, ExecOutcome)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Execute.
         let outcome = ctx
             .run_mock(&self.program, &MockConfig::default())
@@ -92,8 +92,16 @@ impl SketchApi for FrontendState {
             .map_err(|err| Error {
                 msg: err.error.message().to_owned(),
             })?;
+        let new_source = source_from_ast(&self.program.ast);
+        let src_delta = SourceDelta { text: new_source };
         let outcome = self.update_state_after_exec(outcome);
-        Ok((self.scene_graph.clone(), outcome))
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            new_objects: Default::default(),
+            invalidates_ids: false,
+            exec_outcome: outcome,
+        };
+        Ok((src_delta, scene_graph_delta))
     }
 
     async fn new_sketch(
@@ -413,6 +421,9 @@ impl SketchApi for FrontendState {
                     .await?
             }
             Constraint::Parallel(parallel) => self.add_parallel(sketch, parallel, &mut new_ast).await?,
+            Constraint::Perpendicular(perpendicular) => {
+                self.add_perpendicular(sketch, perpendicular, &mut new_ast).await?
+            }
             Constraint::Vertical(vertical) => self.add_vertical(sketch, vertical, &mut new_ast).await?,
         };
         self.execute_after_add_constraint(ctx, sketch, sketch_block_range, &mut new_ast)
@@ -1139,83 +1150,100 @@ impl FrontendState {
         coincident: Coincident,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        if coincident.points.len() != 2 {
+        let &[seg0_id, seg1_id] = coincident.segments.as_slice() else {
             return Err(Error {
                 msg: format!(
-                    "Coincident constraint must have exactly 2 points, got {}",
-                    coincident.points.len()
+                    "Coincident constraint must have exactly 2 segments, got {}",
+                    coincident.segments.len()
                 ),
             });
-        }
+        };
         let sketch_id = sketch;
 
-        // Map the runtime objects back to variable names.
-        let pt0_id = coincident.points[0];
-        let pt0_object = self.scene_graph.objects.get(pt0_id.0).ok_or_else(|| Error {
-            msg: format!("Point not found: {pt0_id:?}"),
+        // Get AST reference for first object (point or segment)
+        let seg0_object = self.scene_graph.objects.get(seg0_id.0).ok_or_else(|| Error {
+            msg: format!("Object not found: {seg0_id:?}"),
         })?;
-        let ObjectKind::Segment { segment: pt0_segment } = &pt0_object.kind else {
+        let ObjectKind::Segment { segment: seg0_segment } = &seg0_object.kind else {
             return Err(Error {
-                msg: format!("Object is not a segment: {pt0_object:?}"),
+                msg: format!("Object is not a segment: {seg0_object:?}"),
             });
         };
-        let Segment::Point(pt0) = pt0_segment else {
-            return Err(Error {
-                msg: format!("Only points are currently supported: {pt0_object:?}"),
-            });
-        };
-        // If the point is part of a line, refer to the line instead.
-        let pt0_ast = if let Some(line_id) = pt0.owner {
-            let line = self.expect_line(line_id)?;
-            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-            let property = if line.start == pt0_id {
-                LINE_PROPERTY_START
-            } else if line.end == pt0_id {
-                LINE_PROPERTY_END
-            } else {
+        let seg0_ast = match seg0_segment {
+            Segment::Point(point) => {
+                // If the point is part of a line, refer to the line's start/end property
+                if let Some(line_id) = point.owner {
+                    let line = self.expect_line(line_id)?;
+                    let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
+                    let property = if line.start == seg0_id {
+                        LINE_PROPERTY_START
+                    } else if line.end == seg0_id {
+                        LINE_PROPERTY_END
+                    } else {
+                        return Err(Error {
+                            msg: format!(
+                                "Internal: Point is not part of owner's line segment: point={seg0_id:?}, line={line_id:?}"
+                            ),
+                        });
+                    };
+                    get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
+                } else {
+                    // Standalone point
+                    get_or_insert_ast_reference(new_ast, &seg0_object.source, "point", None)?
+                }
+            }
+            Segment::Line(_) => {
+                // Reference the segment directly (for point-segment coincident)
+                get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?
+            }
+            Segment::Arc(_) | Segment::Circle(_) => {
                 return Err(Error {
-                    msg: format!(
-                        "Internal: Point is not part of owner's line segment: point={pt0_id:?}, line={line_id:?}"
-                    ),
+                    msg: "Coincident constraint with arcs or circles is not supported. Only points and line segments are.".to_owned(),
                 });
-            };
-            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-        } else {
-            get_or_insert_ast_reference(new_ast, &pt0_object.source, "point", None)?
+            }
         };
 
-        let pt1_id = coincident.points[1];
-        let pt1_object = self.scene_graph.objects.get(pt1_id.0).ok_or_else(|| Error {
-            msg: format!("Point not found: {pt1_id:?}"),
+        // Get AST reference for second object (point or segment)
+        let seg1_object = self.scene_graph.objects.get(seg1_id.0).ok_or_else(|| Error {
+            msg: format!("Object not found: {seg1_id:?}"),
         })?;
-        let ObjectKind::Segment { segment: pt1_segment } = &pt1_object.kind else {
+        let ObjectKind::Segment { segment: seg1_segment } = &seg1_object.kind else {
             return Err(Error {
-                msg: format!("Object is not a segment: {pt1_object:?}"),
+                msg: format!("Object is not a segment: {seg1_object:?}"),
             });
         };
-        let Segment::Point(pt1) = pt1_segment else {
-            return Err(Error {
-                msg: format!("Only points are currently supported: {pt1_object:?}"),
-            });
-        };
-        // If the point is part of a line, refer to the line instead.
-        let pt1_ast = if let Some(line_id) = pt1.owner {
-            let line = self.expect_line(line_id)?;
-            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-            let property = if line.start == pt1_id {
-                LINE_PROPERTY_START
-            } else if line.end == pt1_id {
-                LINE_PROPERTY_END
-            } else {
+        let seg1_ast = match seg1_segment {
+            Segment::Point(point) => {
+                // If the point is part of a line, refer to the line's start/end property
+                if let Some(line_id) = point.owner {
+                    let line = self.expect_line(line_id)?;
+                    let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
+                    let property = if line.start == seg1_id {
+                        LINE_PROPERTY_START
+                    } else if line.end == seg1_id {
+                        LINE_PROPERTY_END
+                    } else {
+                        return Err(Error {
+                            msg: format!(
+                                "Internal: Point is not part of owner's line segment: point={seg1_id:?}, line={line_id:?}"
+                            ),
+                        });
+                    };
+                    get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
+                } else {
+                    // Standalone point
+                    get_or_insert_ast_reference(new_ast, &seg1_object.source, "point", None)?
+                }
+            }
+            Segment::Line(_) => {
+                // Reference the segment directly (for point-segment coincident)
+                get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?
+            }
+            Segment::Arc(_) | Segment::Circle(_) => {
                 return Err(Error {
-                    msg: format!(
-                        "Internal: Point is not part of owner's line segment: point={pt1_id:?}, line={line_id:?}"
-                    ),
+                    msg: "Coincident constraint with arcs or circles is not supported. Only points and line segments are.".to_owned(),
                 });
-            };
-            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-        } else {
-            get_or_insert_ast_reference(new_ast, &pt1_object.source, "point", None)?
+            }
         };
 
         // Create the coincident() call.
@@ -1223,7 +1251,7 @@ impl FrontendState {
             callee: ast::Node::no_src(ast_sketch2_name(COINCIDENT_FN)),
             unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
                 ast::ArrayExpression {
-                    elements: vec![pt0_ast, pt1_ast],
+                    elements: vec![seg0_ast, seg1_ast],
                     digest: None,
                     non_code_meta: Default::default(),
                 },
@@ -1248,18 +1276,17 @@ impl FrontendState {
         distance: Distance,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        if distance.points.len() != 2 {
+        let &[pt0_id, pt1_id] = distance.points.as_slice() else {
             return Err(Error {
                 msg: format!(
                     "Distance constraint must have exactly 2 points, got {}",
                     distance.points.len()
                 ),
             });
-        }
+        };
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
-        let pt0_id = distance.points[0];
         let pt0_object = self.scene_graph.objects.get(pt0_id.0).ok_or_else(|| Error {
             msg: format!("Point not found: {pt0_id:?}"),
         })?;
@@ -1293,7 +1320,6 @@ impl FrontendState {
             get_or_insert_ast_reference(new_ast, &pt0_object.source, "point", None)?
         };
 
-        let pt1_id = distance.points[1];
         let pt1_object = self.scene_graph.objects.get(pt1_id.0).ok_or_else(|| Error {
             msg: format!("Point not found: {pt1_id:?}"),
         })?;
@@ -1415,19 +1441,18 @@ impl FrontendState {
         lines_equal_length: LinesEqualLength,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        if lines_equal_length.lines.len() != 2 {
+        let &[line0_id, line1_id] = lines_equal_length.lines.as_slice() else {
             return Err(Error {
                 msg: format!(
                     "Lines equal length constraint must have exactly 2 lines, got {}",
                     lines_equal_length.lines.len()
                 ),
             });
-        }
+        };
 
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
-        let line0_id = lines_equal_length.lines[0];
         let line0_object = self.scene_graph.objects.get(line0_id.0).ok_or_else(|| Error {
             msg: format!("Line not found: {line0_id:?}"),
         })?;
@@ -1443,7 +1468,6 @@ impl FrontendState {
         };
         let line0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
 
-        let line1_id = lines_equal_length.lines[1];
         let line1_object = self.scene_graph.objects.get(line1_id.0).ok_or_else(|| Error {
             msg: format!("Line not found: {line1_id:?}"),
         })?;
@@ -1489,19 +1513,40 @@ impl FrontendState {
         parallel: Parallel,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<SourceRange> {
-        if parallel.lines.len() != 2 {
+        self.add_lines_at_angle_constraint(sketch, LinesAtAngleKind::Parallel, parallel.lines, new_ast)
+            .await
+    }
+
+    async fn add_perpendicular(
+        &mut self,
+        sketch: ObjectId,
+        perpendicular: Perpendicular,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        self.add_lines_at_angle_constraint(sketch, LinesAtAngleKind::Perpendicular, perpendicular.lines, new_ast)
+            .await
+    }
+
+    async fn add_lines_at_angle_constraint(
+        &mut self,
+        sketch: ObjectId,
+        angle_kind: LinesAtAngleKind,
+        lines: Vec<ObjectId>,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        let &[line0_id, line1_id] = lines.as_slice() else {
             return Err(Error {
                 msg: format!(
-                    "Parallel constraint must have exactly 2 lines, got {}",
-                    parallel.lines.len()
+                    "{} constraint must have exactly 2 lines, got {}",
+                    angle_kind.to_function_name(),
+                    lines.len()
                 ),
             });
-        }
+        };
 
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
-        let line0_id = parallel.lines[0];
         let line0_object = self.scene_graph.objects.get(line0_id.0).ok_or_else(|| Error {
             msg: format!("Line not found: {line0_id:?}"),
         })?;
@@ -1512,12 +1557,14 @@ impl FrontendState {
         };
         let Segment::Line(_) = line0_segment else {
             return Err(Error {
-                msg: format!("Only lines can be made parallel: {line0_object:?}"),
+                msg: format!(
+                    "Only lines can be made {}: {line0_object:?}",
+                    angle_kind.to_function_name()
+                ),
             });
         };
         let line0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
 
-        let line1_id = parallel.lines[1];
         let line1_object = self.scene_graph.objects.get(line1_id.0).ok_or_else(|| Error {
             msg: format!("Line not found: {line1_id:?}"),
         })?;
@@ -1528,14 +1575,17 @@ impl FrontendState {
         };
         let Segment::Line(_) = line1_segment else {
             return Err(Error {
-                msg: format!("Only lines can be made parallel: {line1_object:?}"),
+                msg: format!(
+                    "Only lines can be made {}: {line1_object:?}",
+                    angle_kind.to_function_name()
+                ),
             });
         };
         let line1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
 
-        // Create the parallel() call.
-        let parallel_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
-            callee: ast::Node::no_src(ast_sketch2_name(PARALLEL_FN)),
+        // Create the parallel() or perpendicular() call.
+        let call_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(angle_kind.to_function_name())),
             unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
                 ast::ArrayExpression {
                     elements: vec![line0_ast, line1_ast],
@@ -1552,7 +1602,7 @@ impl FrontendState {
         let (sketch_block_range, _) = self.mutate_ast(
             new_ast,
             sketch_id,
-            AstMutateCommand::AddSketchBlockExprStmt { expr: parallel_ast },
+            AstMutateCommand::AddSketchBlockExprStmt { expr: call_ast },
         )?;
         Ok(sketch_block_range)
     }
@@ -1682,7 +1732,7 @@ impl FrontendState {
                 });
             };
             let depends_on_segment = match constraint {
-                Constraint::Coincident(c) => c.points.iter().any(|pt_id| {
+                Constraint::Coincident(c) => c.segments.iter().any(|pt_id| {
                     if segment_ids_set.contains(pt_id) {
                         return true;
                     }
@@ -1716,6 +1766,10 @@ impl FrontendState {
                 Constraint::Parallel(parallel) => {
                     parallel.lines.iter().any(|line_id| segment_ids_set.contains(line_id))
                 }
+                Constraint::Perpendicular(perpendicular) => perpendicular
+                    .lines
+                    .iter()
+                    .any(|line_id| segment_ids_set.contains(line_id)),
             };
             if depends_on_segment {
                 constraint_ids_set.insert(*constraint_id);
@@ -3310,7 +3364,7 @@ sketch(on = XY) {
         let point1_id = frontend.scene_graph.objects.get(2).unwrap().id;
 
         let constraint = Constraint::Coincident(Coincident {
-            points: vec![point0_id, point1_id],
+            segments: vec![point0_id, point1_id],
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
@@ -3364,7 +3418,7 @@ sketch(on = XY) {
         let point1_id = frontend.scene_graph.objects.get(4).unwrap().id;
 
         let constraint = Constraint::Coincident(Coincident {
-            points: vec![point0_id, point1_id],
+            segments: vec![point0_id, point1_id],
         });
         let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
@@ -3644,6 +3698,60 @@ sketch(on = XY) {
   line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
   line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
   sketch2::parallel([line1, line2])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            8,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_lines_perpendicular() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+        let line1_id = frontend.scene_graph.objects.get(3).unwrap().id;
+        let line2_id = frontend.scene_graph.objects.get(6).unwrap().id;
+
+        let constraint = Constraint::Perpendicular(Perpendicular {
+            lines: vec![line1_id, line2_id],
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+  sketch2::perpendicular([line1, line2])
 }
 "
         );

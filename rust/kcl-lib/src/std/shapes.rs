@@ -17,7 +17,7 @@ use crate::{
     SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface,
+        BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, ProfileClosed, Sketch, SketchSurface,
         types::{RuntimeType, adjust_length},
     },
     parsing::ast::types::TagNode,
@@ -125,7 +125,7 @@ async fn inner_rectangle(
 
     // Update the sketch in KCL memory.
     let mut new_sketch = sketch;
-    new_sketch.is_closed = true;
+    new_sketch.is_closed = ProfileClosed::Explicitly;
     fn add(a: [f64; 2], b: [f64; 2]) -> [f64; 2] {
         [a[0] + b[0], a[1] + b[1]]
     }
@@ -234,7 +234,7 @@ async fn inner_circle(
     };
 
     let mut new_sketch = sketch;
-    new_sketch.is_closed = true;
+    new_sketch.is_closed = ProfileClosed::Explicitly;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
@@ -337,7 +337,7 @@ async fn inner_circle_three_point(
     };
 
     let mut new_sketch = sketch;
-    new_sketch.is_closed = true;
+    new_sketch.is_closed = ProfileClosed::Explicitly;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
@@ -521,6 +521,7 @@ async fn inner_polygon(
     };
 
     sketch.paths.push(current_path);
+    sketch.is_closed = ProfileClosed::Explicitly;
 
     exec_state
         .batch_modeling_cmd(
@@ -643,7 +644,7 @@ async fn inner_ellipse(
     };
 
     let mut new_sketch = sketch;
-    new_sketch.is_closed = true;
+    new_sketch.is_closed = ProfileClosed::Explicitly;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }

@@ -1222,7 +1222,7 @@ description: Variables in memory after executing utility-sink.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "mm",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "handleProfileSection": {

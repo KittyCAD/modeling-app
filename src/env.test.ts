@@ -21,7 +21,6 @@ describe('@src/env', () => {
         VITE_ZOO_API_TOKEN: 'redacted',
         VITE_ZOO_SITE_BASE_URL: 'https://dev.zoo.dev',
         VITE_ZOO_SITE_APP_URL: 'https://app.dev.zoo.dev',
-        POOL: '',
       }
       const actual = env()
       //@ts-ignore I do not want this token in our logs for any reason.
