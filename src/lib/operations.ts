@@ -792,7 +792,7 @@ const prepareToEditHole: PrepareToEditCallback = async ({
   // 2.2 Handle the holeBody required 'mode' arg and its related optional args
   const body = await retrieveHoleBodyArgs(
     operation.labeledArgs?.holeBody,
-    undefined,
+    await rustContext.wasmInstancePromise,
     rustContext
   )
   if (err(body)) return { reason: body.message }
@@ -801,7 +801,7 @@ const prepareToEditHole: PrepareToEditCallback = async ({
   // 2.3 Handle the holeBottom required 'mode' arg and its related optional args
   const bottom = await retrieveHoleBottomArgs(
     operation.labeledArgs?.holeBottom,
-    undefined,
+    await rustContext.wasmInstancePromise,
     rustContext
   )
   if (err(bottom)) return { reason: bottom.message }
@@ -810,7 +810,7 @@ const prepareToEditHole: PrepareToEditCallback = async ({
   // 2.3 Handle the holeType required 'mode' arg and its related optional args
   const rType = await retrieveHoleTypeArgs(
     operation.labeledArgs?.holeType,
-    undefined,
+    await rustContext.wasmInstancePromise,
     rustContext
   )
   if (err(rType)) return { reason: rType.message }

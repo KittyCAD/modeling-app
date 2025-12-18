@@ -160,7 +160,7 @@ function CommandBarKclInput({
       if (typeof v.value !== 'number' || !v.ty) {
         return undefined
       }
-      const numWithUnits = formatNumberValue(v.value, v.ty)
+      const numWithUnits = formatNumberValue(v.value, v.ty, wasmInstance)
       if (err(numWithUnits)) {
         return undefined
       }

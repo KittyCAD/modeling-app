@@ -48,7 +48,6 @@ import {
   default_app_settings,
   default_project_settings,
   format_number_literal,
-  format_number_value,
   get_kcl_version,
   is_kcl_empty_or_only_settings,
   kcl_settings,
@@ -470,12 +469,10 @@ export function formatNumberLiteral(
 export function formatNumberValue(
   value: number,
   numericType: NumericType,
-  instance?: ModuleType
+  instance: ModuleType
 ): string | Error {
   try {
-    const format_number_value_fn = instance
-      ? instance.format_number_value
-      : format_number_value
+    const format_number_value_fn = instance.format_number_value
     return format_number_value_fn(value, JSON.stringify(numericType))
   } catch (e) {
     return new Error(

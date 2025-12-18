@@ -384,7 +384,7 @@ export function addHole({
 // Util functions for hole edit flows
 export async function retrieveHoleBodyArgs(
   opArg: OpArg | undefined,
-  instance?: ModuleType,
+  instance: ModuleType,
   providedRustContext?: RustContext
 ) {
   let holeBody: HoleBody | undefined
@@ -442,7 +442,7 @@ export async function retrieveHoleBodyArgs(
 
 export async function retrieveHoleBottomArgs(
   opArg: OpArg | undefined,
-  instance?: ModuleType,
+  instance: ModuleType,
   providedRustContext?: RustContext
 ) {
   let holeBottom: HoleBottom | undefined
@@ -486,7 +486,7 @@ export async function retrieveHoleBottomArgs(
 
 export async function retrieveHoleTypeArgs(
   opArg: OpArg | undefined,
-  instance?: ModuleType,
+  instance: ModuleType,
   providedRustContext?: RustContext
 ) {
   let holeType: HoleType | undefined
