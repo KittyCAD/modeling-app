@@ -42,7 +42,6 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
-  get_kcl_version,
   is_kcl_empty_or_only_settings,
   kcl_settings,
   parse_app_settings,
@@ -996,8 +995,8 @@ export function isKclEmptyOrOnlySettings(kcl: string): boolean {
 /**
  * Get the KCL version currently being used.
  */
-export function getKclVersion(): string {
-  return get_kcl_version()
+export function getKclVersion(wasmInstance: ModuleType): string {
+  return wasmInstance.get_kcl_version()
 }
 
 /**

@@ -338,7 +338,7 @@ export class KclManager extends EventTarget {
   // so we don't waste time getting it multiple times
   get kclVersion() {
     if (this._kclVersion === undefined) {
-      this._kclVersion = getKclVersion()
+      this._kclVersion = getKclVersion(this.wasmInstance)
       setKclVersion(this.kclVersion)
     }
     return this._kclVersion
@@ -483,7 +483,7 @@ export class KclManager extends EventTarget {
 
     this._wasmInstancePromise
       .then(async (wasmInstance) => {
-        this._kclVersion = getKclVersion()
+        this._kclVersion = getKclVersion(wasmInstance)
         if (typeof wasmInstance === 'string') {
           this.wasmInitFailed = true
         } else {
