@@ -19,8 +19,8 @@ import type {
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
 import {
-  shouldHideSetting,
-  shouldShowSettingInput,
+  shouldHideSettingSync,
+  shouldShowSettingInputSync,
 } from '@src/lib/settings/settingsUtils'
 import {
   appActor,
@@ -91,7 +91,7 @@ export const AllSettingsFields = forwardRef(
             .filter(([_, categorySettings]) =>
               // Filter out categories that don't have any non-hidden settings
               Object.values(categorySettings).some(
-                (setting) => !shouldHideSetting(setting, searchParamTab)
+                (setting) => !shouldHideSettingSync(setting, searchParamTab)
               )
             )
             .map(([category, categorySettings]) => (
@@ -106,8 +106,23 @@ export const AllSettingsFields = forwardRef(
                   .filter(
                     // Filter out settings that don't have a Component or inputType
                     // or are hidden on the current level or the current platform
-                    (item: [string, Setting<unknown>]) =>
-                      shouldShowSettingInput(item[1], searchParamTab)
+                    (item: [string, Setting<unknown>]) => {
+                      const setting = item[1]
+                      if (!shouldShowSettingInputSync(setting, searchParamTab))
+                        return false
+
+                      // Check if setting has a Component or inputType
+                      return !!(
+                        setting.Component ||
+                        ['string', 'boolean', 'number'].some(
+                          (t) => typeof setting.default === t
+                        ) ||
+                        (setting.commandConfig?.inputType &&
+                          ['string', 'options', 'boolean', 'number'].some(
+                            (t) => setting.commandConfig?.inputType === t
+                          ))
+                      )
+                    }
                   )
                   .map(([settingName, s]) => {
                     const setting = s as Setting

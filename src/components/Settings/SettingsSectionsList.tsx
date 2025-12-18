@@ -1,8 +1,7 @@
 import decamelize from 'decamelize'
 
-import type { Setting } from '@src/lib/settings/initialSettings'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { shouldHideSetting } from '@src/lib/settings/settingsUtils'
+import { shouldHideSettingSync } from '@src/lib/settings/settingsUtils'
 import { useSettings } from '@src/lib/singletons'
 
 interface SettingsSectionsListProps {
@@ -15,31 +14,33 @@ export function SettingsSectionsList({
   scrollRef,
 }: SettingsSectionsListProps) {
   const context = useSettings()
+
+  const visibleCategories = Object.entries(context).filter(
+    ([_, categorySettings]) =>
+      // Filter out categories that don't have any non-hidden settings
+      Object.values(categorySettings).some(
+        (setting) => !shouldHideSettingSync(setting, searchParamTab)
+      )
+  )
+
   return (
     <div className="flex w-32 flex-col gap-3 pr-2 py-1 border-0 border-r border-r-chalkboard-20 dark:border-r-chalkboard-90">
-      {Object.entries(context)
-        .filter(([_, categorySettings]) =>
-          // Filter out categories that don't have any non-hidden settings
-          Object.values(categorySettings).some(
-            (setting: Setting) => !shouldHideSetting(setting, searchParamTab)
-          )
-        )
-        .map(([category]) => (
-          <button
-            key={category}
-            onClick={() =>
-              scrollRef.current
-                ?.querySelector(`#category-${category}`)
-                ?.scrollIntoView({
-                  block: 'center',
-                  behavior: 'smooth',
-                })
-            }
-            className="capitalize text-left border-none px-1"
-          >
-            {decamelize(category, { separator: ' ' })}
-          </button>
-        ))}
+      {visibleCategories.map(([category]) => (
+        <button
+          key={category}
+          onClick={() =>
+            scrollRef.current
+              ?.querySelector(`#category-${category}`)
+              ?.scrollIntoView({
+                block: 'center',
+                behavior: 'smooth',
+              })
+          }
+          className="capitalize text-left border-none px-1"
+        >
+          {decamelize(category, { separator: ' ' })}
+        </button>
+      ))}
       <button
         onClick={() =>
           scrollRef.current?.querySelector(`#settings-resets`)?.scrollIntoView({

@@ -71,11 +71,16 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
   const valueArgPartialConfig = settingConfig['commandConfig']
   const shouldHideOnThisLevel =
     settingConfig?.hideOnLevel === 'user' && !isProjectAvailable
-  const shouldHideOnThisPlatform =
-    settingConfig.hideOnPlatform &&
-    (isDesktop()
-      ? settingConfig.hideOnPlatform === 'desktop'
-      : settingConfig.hideOnPlatform === 'web')
+
+  // Handle hideOnPlatform - can be sync value or async function
+  // Use the hiddenOnPlatform helper which handles async functions
+  // We need to cast to Setting<unknown> to access hideOnPlatform
+  const settingForVisibility = settingConfig as unknown as Setting<unknown>
+  const shouldHideOnThisPlatform = hiddenOnPlatform(
+    settingForVisibility,
+    isDesktop()
+  )
+
   if (
     !valueArgPartialConfig ||
     shouldHideOnThisLevel ||
