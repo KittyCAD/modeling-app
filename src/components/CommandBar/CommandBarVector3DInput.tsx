@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from 'react'
+import { useEffect, useRef, useState, useMemo, use } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import toast from 'react-hot-toast'
 import {
@@ -88,6 +88,7 @@ function CommandBarVector3DInput({
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
 }) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const commandBarState = useCommandBarState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
   const previouslySetValue = isKclCommandValue(argumentValue)
@@ -103,7 +104,7 @@ function CommandBarVector3DInput({
     // smart defaults
     if (arg.defaultValue) {
       return typeof arg.defaultValue === 'function'
-        ? arg.defaultValue(commandBarState.context, undefined)
+        ? arg.defaultValue(commandBarState.context, undefined, wasmInstance)
         : arg.defaultValue
     }
     // dumb defaults

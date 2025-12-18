@@ -1,9 +1,13 @@
 import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useRef } from 'react'
+import { use, useEffect, useMemo, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  kclManager,
+  useCommandBarState,
+} from '@src/lib/singletons'
 import { Marked } from '@ts-stack/markdown'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
@@ -23,6 +27,7 @@ function CommandBarBasicInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const commandBarState = useCommandBarState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
@@ -38,7 +43,11 @@ function CommandBarBasicInput({
       previouslySetValue ||
       (arg.defaultValue
         ? arg.defaultValue instanceof Function
-          ? arg.defaultValue(commandBarState.context, argMachineContext)
+          ? arg.defaultValue(
+              commandBarState.context,
+              argMachineContext,
+              wasmInstance
+            )
           : arg.defaultValue
         : ''),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -47,6 +56,7 @@ function CommandBarBasicInput({
       commandBarState.context,
       argMachineContext,
       previouslySetValue,
+      wasmInstance,
     ]
   )
 

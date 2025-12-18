@@ -84,11 +84,21 @@ function CommandBarKclInput({
     () =>
       arg.defaultValue
         ? arg.defaultValue instanceof Function
-          ? arg.defaultValue(commandBarState.context, argMachineContext)
+          ? arg.defaultValue(
+              commandBarState.context,
+              argMachineContext,
+              wasmInstance
+            )
           : arg.defaultValue
         : '',
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [arg.defaultValue, commandBarState.context, argMachineContext]
+    [
+      arg.defaultValue,
+      commandBarState.context,
+      argMachineContext,
+      argMachineContext,
+      wasmInstance,
+    ]
   )
   const initialVariableName = useMemo(() => {
     // Use the configured variable name if it exists

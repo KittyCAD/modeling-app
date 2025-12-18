@@ -359,14 +359,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         nodeToEdit: {
           displayName: 'Name',
           inputType: 'options',
-          valueSummary: (nodeToEdit: PathToNode, wasmInstance) => {
-            if (!wasmInstance) {
-              return 'Error'
-            }
+          valueSummary: (nodeToEdit: PathToNode) => {
             const node = getNodeFromPath<VariableDeclarator>(
               commandProps.kclManager.ast,
               nodeToEdit,
-              wasmInstance,
+              commandProps.wasmInstance,
               'VariableDeclarator',
               true
             )
@@ -392,14 +389,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         value: {
           inputType: 'kcl',
           required: true,
-          defaultValue(commandBarContext, _, wasmInstance) {
+          defaultValue(commandBarContext) {
             const nodeToEdit = commandBarContext.argumentsToSubmit.nodeToEdit
-            if (!nodeToEdit || !isPathToNode(nodeToEdit) || !wasmInstance)
-              return '5'
+            if (!nodeToEdit || !isPathToNode(nodeToEdit)) return '5'
             const node = getNodeFromPath<VariableDeclarator>(
               commandProps.kclManager.ast,
               nodeToEdit,
-              wasmInstance
+              commandProps.wasmInstance,
+              'VariableDeclarator'
             )
             if (err(node) || node.node.type !== 'VariableDeclarator')
               return 'Error'
@@ -419,8 +416,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           createVariable: 'disallow',
         },
       },
-      onSubmit: (data, wasmInstance) => {
-        if (!data || !wasmInstance) {
+      onSubmit: (data) => {
+        if (!data) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
 
@@ -430,7 +427,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         const variableNode = getNodeFromPath<Node<VariableDeclarator>>(
           newAst,
           nodeToEdit,
-          wasmInstance
+          commandProps.wasmInstance
         )
 
         if (

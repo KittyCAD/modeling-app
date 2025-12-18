@@ -411,7 +411,11 @@ export const commandBarMachine = setup({
             const resolvedDefaultValue =
               'defaultValue' in argConfig
                 ? typeof argConfig.defaultValue === 'function'
-                  ? argConfig.defaultValue(input)
+                  ? argConfig.defaultValue(
+                      input,
+                      argConfig.machineActor?.getSnapshot().context,
+                      await input.wasmInstancePromise
+                    )
                   : argConfig.defaultValue
                 : undefined
 
