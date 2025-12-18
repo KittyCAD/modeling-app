@@ -55,7 +55,6 @@ import {
   human_display_number,
   is_kcl_empty_or_only_settings,
   is_points_ccw,
-  kcl_lint,
   kcl_settings,
   node_path_from_range,
   parse_app_settings,
@@ -396,11 +395,10 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
 
 export const kclLint = async (
   ast: Program,
-  instance?: ModuleType
+  instance: ModuleType
 ): Promise<Array<Discovered>> => {
   try {
-    const theKclLint = instance ? instance.kcl_lint : kcl_lint
-    const discoveredFindings: Array<Discovered> = await theKclLint(
+    const discoveredFindings: Array<Discovered> = await instance.kcl_lint(
       JSON.stringify(ast)
     )
     return discoveredFindings
