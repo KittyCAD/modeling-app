@@ -102,7 +102,7 @@ const Toolbar_ = memo(
         props.send,
         commandBarActor.send,
         sketchPathId,
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         kclManager.getEditorView()?.hasFocus,
       ]
     )
@@ -453,6 +453,7 @@ const Toolbar_ = memo(
     )
   },
   (oldP, newP) =>
+    oldP.state.value === newP.state.value &&
     oldP.overallState === newP.overallState &&
     oldP.immediateState?.type === newP.immediateState?.type &&
     oldP.isStreamReady === newP.isStreamReady &&
@@ -660,7 +661,8 @@ const ToolbarItemTooltipRichContent = memo(
       </>
     )
   },
-  (oldP, newP) => oldP.state.value === newP.state.value
+  (oldP, newP) =>
+    oldP.state.value === newP.state.value && oldP.itemConfig === newP.itemConfig
 )
 
 // Making this toplevel Toolbar memo'd is no-op, because we use context

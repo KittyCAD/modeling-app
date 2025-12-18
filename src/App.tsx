@@ -308,6 +308,7 @@ export function App() {
             setLayout={setLayout}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
+            showDebugPanel={settings.app.showDebugPanel.current}
           />
         </section>
         <StatusBar

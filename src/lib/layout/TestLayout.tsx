@@ -20,6 +20,7 @@ export function TestLayout() {
       layoutName="test"
       areaLibrary={testAreaLibrary}
       enableContextMenus={true}
+      showDebugPanel={false}
     />
   )
 }

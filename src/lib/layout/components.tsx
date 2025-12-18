@@ -1,4 +1,5 @@
 import { LayoutType } from '@src/lib/layout/types'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type {
   SplitLayout as SplitLayoutType,
   PaneLayout as PaneLayoutType,
@@ -114,6 +115,8 @@ interface LayoutRootNodeProps {
   layout: Layout
   getLayout: () => Layout | undefined
   setLayout: (layout: Layout) => void
+  // Values that affect the layout (pane buttons, menus, etc).
+  showDebugPanel: SettingsType['app']['showDebugPanel']['current']
   layoutName?: string
   /** Kind of a feature flag, remove in future */
   enableContextMenus?: boolean
@@ -126,6 +129,7 @@ export const LayoutRootNode = memo(
     layout,
     getLayout,
     setLayout,
+    showDebugPanel,
     layoutName = 'default',
     enableContextMenus = false,
   }: LayoutRootNodeProps) {
@@ -178,7 +182,13 @@ export const LayoutRootNode = memo(
         // The other properties are all callbacks which are set once.
       }),
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [enableContextMenus]
+      [
+        enableContextMenus,
+        areaLibrary,
+        actionLibrary,
+        togglePane,
+        showDebugPanel,
+      ]
     )
 
     return (
@@ -189,7 +199,8 @@ export const LayoutRootNode = memo(
   },
   (oldProps, newProps) =>
     oldProps.layout === newProps.layout &&
-    oldProps.enableContextMenus === newProps.enableContextMenus
+    oldProps.enableContextMenus === newProps.enableContextMenus &&
+    oldProps.showDebugPanel === newProps.showDebugPanel
 )
 
 /*
