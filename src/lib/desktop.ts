@@ -718,7 +718,7 @@ export const readAppSettingsFile = async (
     const configToml = await fsManager.readFile(settingsPath, {
       encoding: 'utf-8',
     })
-    const parsedAppConfig = parseAppSettings(configToml)
+    const parsedAppConfig = parseAppSettings(configToml, wasmInstance)
     if (err(parsedAppConfig)) {
       return Promise.reject(parsedAppConfig)
     }

@@ -42,8 +42,6 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
-  kcl_settings,
-  parse_app_settings,
   parse_project_settings,
   serialize_configuration,
   serialize_project_configuration,
@@ -880,9 +878,10 @@ export function defaultAppSettings(
 }
 
 export function parseAppSettings(
-  toml: string
+  toml: string,
+  wasmInstance: ModuleType
 ): DeepPartial<Configuration> | Error {
-  return parse_app_settings(toml)
+  return wasmInstance.parse_app_settings(toml)
 }
 
 export function defaultProjectSettings(
@@ -930,8 +929,7 @@ export function kclSettings(
     program = kcl
   }
   try {
-    const theKclSettings = instance ? instance.kcl_settings : kcl_settings
-    return theKclSettings(JSON.stringify(program))
+    return instance.kcl_settings(JSON.stringify(program))
   } catch (e) {
     return new Error('Caught error getting kcl settings', { cause: e })
   }

@@ -293,7 +293,7 @@ export function readLocalStorageAppSettingsFile(
   }
 
   try {
-    return parseAppSettings(stored)
+    return parseAppSettings(stored, wasmInstance)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     const settings = defaultAppSettings(wasmInstance)
