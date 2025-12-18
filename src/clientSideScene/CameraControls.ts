@@ -1230,6 +1230,8 @@ export class CameraControls {
           this.useOrthographicCamera()
         } else if (toOrthographic) {
           await this.animateToOrthographic()
+        } else {
+          cameraAtTime(0.9999)
         }
         this.enableRotate = false
         this._isCamMovingCallback(false, true)
@@ -1239,15 +1241,14 @@ export class CameraControls {
       if (isReducedMotion()) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         onComplete()
-        return
+      } else {
+        new TWEEN.Tween({ t: 0 })
+          .to({ t: tweenEnd }, duration)
+          .easing(TWEEN.Easing.Quadratic.InOut)
+          .onUpdate(({ t }) => cameraAtTime(t))
+          .onComplete(toSync(onComplete, reportRejection))
+          .start()
       }
-
-      new TWEEN.Tween({ t: 0 })
-        .to({ t: tweenEnd }, duration)
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .onUpdate(({ t }) => cameraAtTime(t))
-        .onComplete(toSync(onComplete, reportRejection))
-        .start()
     })
   }
 
