@@ -256,12 +256,10 @@ const SketchSolveToolIconOverlay = () => {
 
   return (
     <div
-      className="fixed pointer-events-none z-[9999] w-5 h-5"
+      className="fixed pointer-events-none z-[9999] w-5 h-5 left-0 top-0"
       style={{
-        left: `${mousePosition.x + offsetX}px`,
-        top: `${mousePosition.y + offsetY}px`,
         opacity: 0.2,
-        transform: 'translate(0, 0)',
+        transform: `translate(${mousePosition.x + offsetX}px, ${mousePosition.y + offsetY}px)`,
       }}
     >
       <CustomIcon name={iconName} className="w-6 h-6" />
