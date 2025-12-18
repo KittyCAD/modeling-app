@@ -1238,6 +1238,7 @@ export class SceneEntities {
             intersection2d,
             args.intersects,
             args.mouseEvent,
+            wasmInstance,
             Object.values(this.activeSegments).at(-1),
             sketchEntryNodePath
           )
@@ -1543,11 +1544,13 @@ export class SceneEntities {
         )
         if (trap(_node)) return Promise.reject(_node)
         const sketchInit = _node.node?.declaration.init
+        const wasmInstance = await this.kclManager.wasmInstancePromise
 
         const snapRes = this.getSnappedDragPoint(
           args.intersectionPoint.twoD,
           args.intersects,
-          args.mouseEvent
+          args.mouseEvent,
+          wasmInstance
         )
         const { snappedPoint } = snapRes
         const x = snappedPoint[0] - rectangleOrigin[0]
@@ -1574,7 +1577,6 @@ export class SceneEntities {
 
         const varDecIndex = Number(updatedEntryNodePath[1][0])
 
-        const wasmInstance = await this.kclManager.wasmInstancePromise
         this.updateSegment(
           sketch.start,
           0,
@@ -1605,11 +1607,13 @@ export class SceneEntities {
         // Commit the rectangle to the full AST/code and return to sketch.idle
         const twoD = args.intersectionPoint?.twoD
         if (!twoD || args.mouseEvent.button !== 0) return
+        const wasmInstance = await this.kclManager.wasmInstancePromise
 
         const { snappedPoint } = this.getSnappedDragPoint(
           twoD,
           args.intersects,
-          args.mouseEvent
+          args.mouseEvent,
+          wasmInstance
         )
         const x = roundOff(snappedPoint[0] - rectangleOrigin[0])
         const y = roundOff(snappedPoint[1] - rectangleOrigin[1])
@@ -1617,7 +1621,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
           updatedEntryNodePath,
-          await this.kclManager.wasmInstancePromise,
+          wasmInstance,
           'VariableDeclaration'
         )
         if (trap(_node)) return
@@ -1627,13 +1631,7 @@ export class SceneEntities {
           return
         }
 
-        updateRectangleSketch(
-          sketchInit,
-          x,
-          y,
-          tag,
-          await this.kclManager.wasmInstancePromise
-        )
+        updateRectangleSketch(sketchInit, x, y, tag, wasmInstance)
 
         const newCode = recast(_ast)
         const pResult = parse(
@@ -1781,12 +1779,14 @@ export class SceneEntities {
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
+        const wasmInstance = await this.kclManager.wasmInstancePromise
         const sketchInit = _node.node?.declaration.init
 
         const { snappedPoint } = this.getSnappedDragPoint(
           args.intersectionPoint.twoD,
           args.intersects,
-          args.mouseEvent
+          args.mouseEvent,
+          wasmInstance
         )
         const x = snappedPoint[0] - rectangleOrigin[0]
         const y = snappedPoint[1] - rectangleOrigin[1]
@@ -1817,7 +1817,6 @@ export class SceneEntities {
 
         const varDecIndex = Number(updatedEntryNodePath[1][0])
 
-        const wasmInstance = await this.kclManager.wasmInstancePromise
         this.updateSegment(
           sketch.start,
           0,
@@ -1848,11 +1847,13 @@ export class SceneEntities {
         // Commit the rectangle to the full AST/code and return to sketch.idle
         const twoD = args.intersectionPoint?.twoD
         if (!twoD || args.mouseEvent.button !== 0) return
+        const wasmInstance = await this.kclManager.wasmInstancePromise
 
         const { snappedPoint } = this.getSnappedDragPoint(
           twoD,
           args.intersects,
-          args.mouseEvent
+          args.mouseEvent,
+          wasmInstance
         )
         const x = roundOff(snappedPoint[0] - rectangleOrigin[0])
         const y = roundOff(snappedPoint[1] - rectangleOrigin[1])
@@ -1860,7 +1861,7 @@ export class SceneEntities {
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
           updatedEntryNodePath,
-          await this.kclManager.wasmInstancePromise,
+          wasmInstance,
           'VariableDeclaration'
         )
         if (trap(_node)) return
@@ -1874,16 +1875,13 @@ export class SceneEntities {
             tag,
             rectangleOrigin[0],
             rectangleOrigin[1],
-            await this.kclManager.wasmInstancePromise
+            wasmInstance
           )
           if (err(maybeError)) {
             return Promise.reject(maybeError)
           }
 
-          const pResult = parse(
-            recast(_ast),
-            await this.kclManager.wasmInstancePromise
-          )
+          const pResult = parse(recast(_ast), wasmInstance)
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           _ast = pResult.program
@@ -1990,6 +1988,7 @@ export class SceneEntities {
         )
         let modded = structuredClone(truncatedAst)
         if (trap(_node)) return
+        const wasmInstance = await this.kclManager.wasmInstancePromise
         const sketchInit = _node.node.declaration.init
 
         if (sketchInit.type === 'CallExpressionKw') {
@@ -2007,10 +2006,11 @@ export class SceneEntities {
               p3: this.getSnappedDragPoint(
                 args.intersectionPoint.twoD,
                 args.intersects,
-                args.mouseEvent
+                args.mouseEvent,
+                wasmInstance
               ).snappedPoint,
             },
-            await this.kclManager.wasmInstancePromise
+            wasmInstance
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
@@ -2027,7 +2027,6 @@ export class SceneEntities {
 
         const varDecIndex = Number(updatedEntryNodePath[1][0])
 
-        const wasmInstance = await this.kclManager.wasmInstancePromise
         this.updateSegment(
           sketch.start,
           0,
@@ -2066,6 +2065,7 @@ export class SceneEntities {
           'VariableDeclaration'
         )
         if (trap(_node)) return
+        const wasmInstance = await this.kclManager.wasmInstancePromise
         const sketchInit = _node.node?.declaration.init
 
         let modded = structuredClone(_ast)
@@ -2084,20 +2084,18 @@ export class SceneEntities {
               p3: this.getSnappedDragPoint(
                 cornerPoint,
                 args.intersects,
-                args.mouseEvent
+                args.mouseEvent,
+                wasmInstance
               ).snappedPoint,
             },
-            await this.kclManager.wasmInstancePromise
+            wasmInstance
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
 
           const newCode = recast(modded)
           if (err(newCode)) return
-          const pResult = parse(
-            newCode,
-            await this.kclManager.wasmInstancePromise
-          )
+          const pResult = parse(newCode, wasmInstance)
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           _ast = pResult.program
@@ -2449,12 +2447,14 @@ export class SceneEntities {
         )
         let modded = structuredClone(truncatedAst)
         if (trap(_node)) return
+        const wasmInstance = await this.kclManager.wasmInstancePromise
         const sketchInit = _node.node.declaration.init
 
         const maybeSnapToAxis = this.getSnappedDragPoint(
           args.intersectionPoint.twoD,
           args.intersects,
-          args.mouseEvent
+          args.mouseEvent,
+          wasmInstance
         ).snappedPoint
 
         const maybeSnapToProfileStart = doNotSnapAsThreePointArcIsTheOnlySegment
@@ -2479,12 +2479,14 @@ export class SceneEntities {
               p2,
               p3: [maybeSnapToProfileStart.x, maybeSnapToProfileStart.y],
             },
-            await this.kclManager.wasmInstancePromise
+            wasmInstance
           )
-          if (err(moddedResult)) return
-          ;(modded = moddedResult.modifiedAst),
-            await this.kclManager.wasmInstancePromise
+          if (err(moddedResult)) {
+            return
+          }
+          modded = moddedResult.modifiedAst
         }
+
         const { execState } = await executeAstMock({
           ast: modded,
           rustContext: this.rustContext,
@@ -2499,7 +2501,6 @@ export class SceneEntities {
 
         const varDecIndex = Number(sketchEntryNodePath[1][0])
 
-        const wasmInstance = await this.kclManager.wasmInstancePromise
         this.updateSegment(
           sketch.start,
           0,
@@ -2563,10 +2564,11 @@ export class SceneEntities {
               p3: this.getSnappedDragPoint(
                 args.intersectionPoint.twoD,
                 args.intersects,
-                args.mouseEvent
+                args.mouseEvent,
+                wasmInstance
               ).snappedPoint,
             },
-            await this.kclManager.wasmInstancePromise
+            wasmInstance
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
@@ -3041,6 +3043,7 @@ export class SceneEntities {
     pos: Vector2,
     intersects: Intersection<Object3D<Object3DEventMap>>[],
     mouseEvent: MouseEvent,
+    wasmInstance: ModuleType,
     // During draft segment mouse move:
     //  - the  three.js object currently being dragged: the new draft segment or existing segment (may not be the last in activeSegments)
     // When placing the draft segment::
@@ -3078,7 +3081,7 @@ export class SceneEntities {
       ) {
         const prev = segments[currentIndex - 1]
         if (prev && ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
-          const snapDirection = findTangentDirection(prev)
+          const snapDirection = findTangentDirection(prev, wasmInstance)
           if (snapDirection) {
             const SNAP_TOLERANCE_PIXELS = 8 * window.devicePixelRatio
             const SNAP_MIN_DISTANCE_PIXELS = 10 * window.devicePixelRatio
@@ -3343,6 +3346,7 @@ export class SceneEntities {
       intersection2d,
       intersects,
       mouseEvent,
+      wasmInstance,
       object,
       sketchEntryNodePath
     )
@@ -3512,7 +3516,7 @@ export class SceneEntities {
         from,
         to: dragTo,
         previousEndTangent: previousSegment
-          ? findTangentDirection(previousSegment)
+          ? findTangentDirection(previousSegment, wasmInstance)
           : undefined,
       }
     }
@@ -4458,7 +4462,7 @@ function getGridScaleFactor(options: {
 }
 
 // Returns the 2D tangent direction vector at the end of the segmentGroup
-function findTangentDirection(segmentGroup: Group) {
+function findTangentDirection(segmentGroup: Group, wasmInstance: ModuleType) {
   let tangentDirection: Coords2d | undefined
   if (segmentGroup.userData.type === TANGENTIAL_ARC_TO_SEGMENT) {
     const prevSegment = segmentGroup.userData.prevSegment
@@ -4467,6 +4471,7 @@ function findTangentDirection(segmentGroup: Group) {
       arcEndPoint: segmentGroup.userData.to,
       tanPreviousPoint: getTanPreviousPoint(prevSegment),
       obtuse: true,
+      wasmInstance,
     })
     const tangentAngle =
       arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)

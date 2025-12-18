@@ -808,7 +808,12 @@ export const modelingMachine = setup({
       }
     ),
     'listen for rectangle origin': ({
-      context: { sketchDetails, sceneEntitiesManager, sceneInfra },
+      context: {
+        sketchDetails,
+        sceneEntitiesManager,
+        sceneInfra,
+        wasmInstance,
+      },
     }) => {
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
@@ -826,7 +831,12 @@ export const modelingMachine = setup({
 
       sceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails, sceneEntitiesManager)
+          listenForOriginMove(
+            args,
+            sketchDetails,
+            sceneEntitiesManager,
+            wasmInstance
+          )
         },
         onClick: (args) => {
           sceneEntitiesManager.removeDraftPoint()
@@ -839,7 +849,8 @@ export const modelingMachine = setup({
               data: sceneEntitiesManager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
-                args.mouseEvent
+                args.mouseEvent,
+                wasmInstance
               ).snappedPoint,
             })
           } else {
@@ -850,7 +861,12 @@ export const modelingMachine = setup({
     },
 
     'listen for center rectangle origin': ({
-      context: { sketchDetails, sceneEntitiesManager, sceneInfra },
+      context: {
+        sketchDetails,
+        sceneEntitiesManager,
+        sceneInfra,
+        wasmInstance,
+      },
     }) => {
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
@@ -867,7 +883,12 @@ export const modelingMachine = setup({
 
       sceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails, sceneEntitiesManager)
+          listenForOriginMove(
+            args,
+            sketchDetails,
+            sceneEntitiesManager,
+            wasmInstance
+          )
         },
         onClick: (args) => {
           sceneEntitiesManager.removeDraftPoint()
@@ -880,7 +901,8 @@ export const modelingMachine = setup({
               data: sceneEntitiesManager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
-                args.mouseEvent
+                args.mouseEvent,
+                wasmInstance
               ).snappedPoint,
             })
           } else {
@@ -891,7 +913,12 @@ export const modelingMachine = setup({
     },
 
     'listen for circle origin': ({
-      context: { sketchDetails, sceneEntitiesManager, sceneInfra },
+      context: {
+        sketchDetails,
+        sceneEntitiesManager,
+        sceneInfra,
+        wasmInstance,
+      },
     }) => {
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
@@ -909,7 +936,12 @@ export const modelingMachine = setup({
 
       sceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails, sceneEntitiesManager)
+          listenForOriginMove(
+            args,
+            sketchDetails,
+            sceneEntitiesManager,
+            wasmInstance
+          )
         },
         onClick: (args) => {
           if (!args) return
@@ -923,7 +955,8 @@ export const modelingMachine = setup({
               data: sceneEntitiesManager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
-                args.mouseEvent
+                args.mouseEvent,
+                wasmInstance
               ).snappedPoint,
             })
           } else {
@@ -933,7 +966,12 @@ export const modelingMachine = setup({
       })
     },
     'listen for circle first point': ({
-      context: { sketchDetails, sceneEntitiesManager, sceneInfra },
+      context: {
+        sketchDetails,
+        sceneEntitiesManager,
+        sceneInfra,
+        wasmInstance,
+      },
     }) => {
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
@@ -951,7 +989,12 @@ export const modelingMachine = setup({
 
       sceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails, sceneEntitiesManager)
+          listenForOriginMove(
+            args,
+            sketchDetails,
+            sceneEntitiesManager,
+            wasmInstance
+          )
         },
         onClick: (args) => {
           if (!args) return
@@ -965,7 +1008,8 @@ export const modelingMachine = setup({
               data: sceneEntitiesManager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
-                args.mouseEvent
+                args.mouseEvent,
+                wasmInstance
               ).snappedPoint,
             })
           } else {
@@ -975,7 +1019,12 @@ export const modelingMachine = setup({
       })
     },
     'listen for circle second point': ({
-      context: { sketchDetails, sceneEntitiesManager, sceneInfra },
+      context: {
+        sketchDetails,
+        sceneEntitiesManager,
+        sceneInfra,
+        wasmInstance,
+      },
       event,
     }) => {
       if (!sketchDetails) return
@@ -1009,7 +1058,12 @@ export const modelingMachine = setup({
 
       sceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails, sceneEntitiesManager)
+          listenForOriginMove(
+            args,
+            sketchDetails,
+            sceneEntitiesManager,
+            wasmInstance
+          )
         },
         onClick: (args) => {
           if (!args) return
@@ -1025,7 +1079,8 @@ export const modelingMachine = setup({
                 p2: sceneEntitiesManager.getSnappedDragPoint(
                   twoD,
                   args.intersects,
-                  args.mouseEvent
+                  args.mouseEvent,
+                  wasmInstance
                 ).snappedPoint,
               },
             })
@@ -1250,7 +1305,8 @@ export const modelingMachine = setup({
             sceneEntitiesManager.getSnappedDragPoint(
               intersectionPoint.twoD,
               args.intersects,
-              args.mouseEvent
+              args.mouseEvent,
+              context.wasmInstance
             )
           if (isSnapped) {
             sceneEntitiesManager.positionDraftPoint({
@@ -6073,7 +6129,8 @@ export const modelingMachine = setup({
 function listenForOriginMove(
   args: OnMoveCallbackArgs,
   sketchDetails: SketchDetails,
-  sceneEntitiesManager: SceneEntities
+  sceneEntitiesManager: SceneEntities,
+  wasmInstance: ModuleType
 ) {
   if (!args) return
   const { intersectionPoint } = args
@@ -6081,7 +6138,8 @@ function listenForOriginMove(
   const { snappedPoint, isSnapped } = sceneEntitiesManager.getSnappedDragPoint(
     intersectionPoint.twoD,
     args.intersects,
-    args.mouseEvent
+    args.mouseEvent,
+    wasmInstance
   )
   if (isSnapped) {
     sceneEntitiesManager.positionDraftPoint({

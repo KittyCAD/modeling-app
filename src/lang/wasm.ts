@@ -50,7 +50,6 @@ import {
   format_number_literal,
   format_number_value,
   get_kcl_version,
-  get_tangential_arc_to_info,
   human_display_number,
   is_kcl_empty_or_only_settings,
   is_points_ccw,
@@ -670,7 +669,7 @@ export function getTangentialArcToInfo({
   arcEndPoint: Coords2d
   tanPreviousPoint: Coords2d
   obtuse?: boolean
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 }): {
   center: Coords2d
   arcMidPoint: Coords2d
@@ -680,9 +679,7 @@ export function getTangentialArcToInfo({
   ccw: boolean
   arcLength: number
 } {
-  const the_get_tangential_arc_to_info = wasmInstance
-    ? wasmInstance.get_tangential_arc_to_info
-    : get_tangential_arc_to_info
+  const the_get_tangential_arc_to_info = wasmInstance.get_tangential_arc_to_info
   const result = the_get_tangential_arc_to_info(
     arcStartPoint[0],
     arcStartPoint[1],
