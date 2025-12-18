@@ -78,6 +78,7 @@ export const ConnectionStream = (props: {
       cameraProjection: settings.modeling.cameraProjection.current,
       cameraOrbit: settings.modeling.cameraOrbit.current,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       settings.app.theme.current,
       settings.modeling.enableSSAO.current,
@@ -104,7 +105,12 @@ export const ConnectionStream = (props: {
         }).catch(reportRejection)
       }
     },
-    [isNetworkOkay, modelingMachineState.value]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      isNetworkOkay,
+      modelingMachineState.value,
+      sceneInfra.camControls.wasDragging,
+    ]
   )
 
   /**
@@ -150,7 +156,13 @@ export const ConnectionStream = (props: {
           })
           .catch(reportRejection)
       },
-      [isNetworkOkay, modelingMachineState.value]
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [
+        isNetworkOkay,
+        modelingMachineState.value,
+        sceneInfra.camControls.wasDragging,
+        kclManager.artifactGraph,
+      ]
     )
 
   // TODO: Handle PingPong checks
@@ -186,12 +198,13 @@ export const ConnectionStream = (props: {
           })
       },
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       isConnecting.current,
       numberOfConnectionAttempts.current,
       props.authToken,
-      setIsSceneReady,
-      setAppState,
+      sceneInfra.camControls.wasDragging,
+      project?.path,
     ]
   )
 
@@ -206,6 +219,7 @@ export const ConnectionStream = (props: {
       engineCommandManager: engineCommandManager,
       sceneInfra: sceneInfra,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   )
   useOnPageExit(onPageExitParams)
@@ -247,6 +261,7 @@ export const ConnectionStream = (props: {
       console.warn(e)
       setShowManualConnect(true)
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnecting, numberOfConnectionAttempts, props.authToken])
 
   const onPageIdleParams = useMemo(
@@ -286,6 +301,7 @@ export const ConnectionStream = (props: {
       },
       engineCommandManager,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isConnecting, numberOfConnectionAttempts, props.authToken]
   )
   useOnWebsocketClose(onWebSocketCloseParams)
@@ -313,6 +329,7 @@ export const ConnectionStream = (props: {
         })
       },
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isConnecting, numberOfConnectionAttempts, props.authToken]
   )
   useOnVitestEngineOnline(onVitestEngineOnline)
@@ -340,6 +357,7 @@ export const ConnectionStream = (props: {
       },
       engineCommandManager,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isConnecting, numberOfConnectionAttempts, props.authToken]
   )
   useOnPeerConnectionClose(onPeerConnectionCloseParams)
@@ -374,6 +392,7 @@ export const ConnectionStream = (props: {
         })
       },
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isConnecting, numberOfConnectionAttempts, props.authToken]
   )
   useOnWindowOnlineOffline(onWindowOnlineOfflineParams)
@@ -408,6 +427,7 @@ export const ConnectionStream = (props: {
           ? 'rgb(250, 250, 250)'
           : 'rgb(30, 30, 30)',
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [settings.app.theme.current]
   )
 
