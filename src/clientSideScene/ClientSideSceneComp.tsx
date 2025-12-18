@@ -178,6 +178,11 @@ export const ClientSideScene = ({
     } else {
       cursor = 'default'
     }
+  } else if (
+    state.matches('sketchSolveMode') &&
+    context.sketchSolveToolName !== null
+  ) {
+    cursor = 'crosshair'
   }
 
   return (
@@ -195,7 +200,72 @@ export const ClientSideScene = ({
         }`}
       ></div>
       <Overlays />
+      <SketchSolveToolIconOverlay />
     </>
+  )
+}
+
+// Map sketchSolve tool names to their corresponding icon names
+const getToolIconName = (toolName: string | null): CustomIconName | null => {
+  if (!toolName) return null
+  const toolIconMap: Record<string, CustomIconName> = {
+    lineTool: 'line',
+    pointTool: 'oneDot',
+  }
+  return toolIconMap[toolName] || null
+}
+
+const SketchSolveToolIconOverlay = () => {
+  const { state, context } = useModelingContext()
+  const [mousePosition, setMousePosition] = useState<{
+    x: number
+    y: number
+  } | null>(null)
+
+  // Only show overlay when in sketchSolveMode with a tool equipped
+  const isToolEquipped =
+    state.matches('sketchSolveMode') && context.sketchSolveToolName !== null
+  const iconName = isToolEquipped
+    ? getToolIconName(context.sketchSolveToolName)
+    : null
+
+  useEffect(() => {
+    if (!isToolEquipped) {
+      setMousePosition(null)
+      return
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [isToolEquipped])
+
+  if (!isToolEquipped || !iconName || !mousePosition) {
+    return null
+  }
+
+  // Position icon below and to the right of cursor
+  // Offset: 16px right, 16px down (typical cursor size is ~16px)
+  const offsetX = 8
+  const offsetY = 8
+
+  return (
+    <div
+      className="fixed pointer-events-none z-[9999] w-5 h-5"
+      style={{
+        left: `${mousePosition.x + offsetX}px`,
+        top: `${mousePosition.y + offsetY}px`,
+        opacity: 0.2,
+        transform: 'translate(0, 0)',
+      }}
+    >
+      <CustomIcon name={iconName} className="w-6 h-6" />
+    </div>
   )
 }
 
