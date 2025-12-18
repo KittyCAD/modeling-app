@@ -320,7 +320,7 @@ export function readLocalStorageProjectSettingsFile(
   if (err(projectSettings)) {
     const settings = defaultProjectSettings(wasmInstance)
     if (err(settings)) return settings
-    const tomlStr = serializeProjectConfiguration(settings)
+    const tomlStr = serializeProjectConfiguration(settings, wasmInstance)
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
@@ -391,7 +391,10 @@ export async function loadAndValidateSettings(
         },
       }
       // Duplicated from settingsUtils.ts
-      const projectTomlString = serializeProjectConfiguration(projectSettings)
+      const projectTomlString = serializeProjectConfiguration(
+        projectSettings,
+        wasmInstance
+      )
       if (err(projectTomlString))
         return Promise.reject(new Error('Failed to serialize project settings'))
       if (window.electron) {
@@ -424,7 +427,8 @@ export async function loadAndValidateSettings(
 
       // Duplicated from settingsUtils.ts
       const projectTomlString = serializeProjectConfiguration(
-        settingsPayloadToProjectConfiguration(projectSettingsNew)
+        settingsPayloadToProjectConfiguration(projectSettingsNew),
+        wasmInstance
       )
       if (err(projectTomlString))
         return Promise.reject(
@@ -464,7 +468,8 @@ export async function loadAndValidateSettings(
 
       // Duplicated from settingsUtils.ts
       const projectTomlString = serializeProjectConfiguration(
-        settingsPayloadToProjectConfiguration(projectSettingsNew)
+        settingsPayloadToProjectConfiguration(projectSettingsNew),
+        wasmInstance
       )
 
       if (err(projectTomlString))
@@ -540,7 +545,8 @@ export async function saveSettings(
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
   const projectTomlString = serializeProjectConfiguration(
-    settingsPayloadToProjectConfiguration(jsProjectSettings)
+    settingsPayloadToProjectConfiguration(jsProjectSettings),
+    wasmInstance
   )
   if (err(projectTomlString)) return
 
