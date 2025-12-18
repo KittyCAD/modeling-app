@@ -806,6 +806,7 @@ export const ModelingMachineProvider = ({
         }),
         'Get horizontal info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
+            const wasmInstance = await kclManager.wasmInstancePromise
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setHorzDistance',
@@ -813,8 +814,8 @@ export const ModelingMachineProvider = ({
                 kclManager,
               })
             const pResult = parse(
-              recast(modifiedAst),
-              await kclManager.wasmInstancePromise
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
             )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
@@ -871,6 +872,7 @@ export const ModelingMachineProvider = ({
         ),
         'Get vertical info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
+            const wasmInstance = await kclManager.wasmInstancePromise
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setVertDistance',
@@ -878,8 +880,8 @@ export const ModelingMachineProvider = ({
                 kclManager,
               })
             const pResult = parse(
-              recast(modifiedAst),
-              await kclManager.wasmInstancePromise
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
             )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
@@ -953,8 +955,8 @@ export const ModelingMachineProvider = ({
                     kclManager,
                   }))
             const pResult = parse(
-              recast(modifiedAst),
-              await kclManager.wasmInstancePromise
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
             )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
@@ -1014,6 +1016,7 @@ export const ModelingMachineProvider = ({
           async ({
             input: { selectionRanges, sketchDetails, lengthValue, kclManager },
           }) => {
+            const wasmInstance = await kclManager.wasmInstancePromise
             if (!lengthValue)
               return Promise.reject(new Error('No length value'))
             const constraintResult = await applyConstraintLength({
@@ -1025,8 +1028,8 @@ export const ModelingMachineProvider = ({
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               constraintResult
             const pResult = parse(
-              recast(modifiedAst),
-              await kclManager.wasmInstancePromise
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
             )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
@@ -1081,14 +1084,15 @@ export const ModelingMachineProvider = ({
         ),
         'Get perpendicular distance info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
+            const wasmInstance = await kclManager.wasmInstancePromise
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintIntersect({
                 selectionRanges,
                 kclManager,
               })
             const pResult = parse(
-              recast(modifiedAst),
-              await kclManager.wasmInstancePromise
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
             )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
@@ -1143,6 +1147,7 @@ export const ModelingMachineProvider = ({
         ),
         'Get ABS X info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
+            const wasmInstance = await kclManager.wasmInstancePromise
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintAbsDistance({
                 constraint: 'xAbs',
@@ -1150,8 +1155,8 @@ export const ModelingMachineProvider = ({
                 kclManager,
               })
             const pResult = parse(
-              recast(modifiedAst),
-              await kclManager.wasmInstancePromise
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
             )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
@@ -1206,6 +1211,7 @@ export const ModelingMachineProvider = ({
         ),
         'Get ABS Y info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
+            const wasmInstance = await kclManager.wasmInstancePromise
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintAbsDistance({
                 constraint: 'yAbs',
@@ -1213,8 +1219,8 @@ export const ModelingMachineProvider = ({
                 kclManager,
               })
             const pResult = parse(
-              recast(modifiedAst),
-              await kclManager.wasmInstancePromise
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
             )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))

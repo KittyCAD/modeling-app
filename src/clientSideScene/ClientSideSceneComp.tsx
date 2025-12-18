@@ -579,10 +579,11 @@ const ConstraintSymbol = ({
               },
             })
           } else if (isConstrained) {
+            const wasmInstance = await kclManager.wasmInstancePromise
             try {
               const pResult = parse(
-                recast(kclManager.ast),
-                await kclManager.wasmInstancePromise
+                recast(kclManager.ast, wasmInstance),
+                wasmInstance
               )
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
@@ -605,7 +606,7 @@ const ConstraintSymbol = ({
                 kclManager.variables,
                 removeSingleConstraint,
                 transformAstSketchLines,
-                await kclManager.wasmInstancePromise
+                wasmInstance
               )
 
               if (!transform) return
@@ -614,7 +615,7 @@ const ConstraintSymbol = ({
               await kclManager.updateAst(modifiedAst, true)
 
               // Code editor will be updated in the modelingMachine.
-              const newCode = recast(modifiedAst)
+              const newCode = recast(modifiedAst, wasmInstance)
               if (err(newCode)) return
               kclManager.updateCodeEditor(newCode)
             } catch (e) {

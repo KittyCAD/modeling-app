@@ -71,7 +71,7 @@ export function useConvertToVariable(
 
       await kclManager.updateAst(_modifiedAst, true)
 
-      const newCode = recast(_modifiedAst)
+      const newCode = recast(_modifiedAst, await kclManager.wasmInstancePromise)
       if (err(newCode)) return
       kclManager.updateCodeEditor(newCode)
 

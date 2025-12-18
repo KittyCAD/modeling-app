@@ -846,7 +846,7 @@ export class KclManager extends EventTarget {
       this.clearAst()
       return
     }
-    const code = recast(ast)
+    const code = recast(ast, await this.wasmInstancePromise)
     if (err(code)) {
       console.error(code)
       return

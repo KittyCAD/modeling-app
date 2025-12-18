@@ -390,7 +390,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       if (err(result)) throw result
       const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst)
+      const newCode = recast(modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify results - should tag the underlying segment
@@ -422,7 +422,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       if (err(result)) throw result
       const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst)
+      const newCode = recast(modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify results - should tag the extrusion
@@ -457,7 +457,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       if (err(result)) throw result
       const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst)
+      const newCode = recast(modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify results - should tag the chamfer operation (edgeCut expression)
@@ -493,7 +493,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (err(result)) throw result
       const { modifiedAst, tags } = result
       const tag = tags[0]
-      const newCode = recast(modifiedAst)
+      const newCode = recast(modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify chamfer tagging worked
@@ -529,7 +529,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (!err(result)) {
         const { modifiedAst, tags } = result
         const tag = tags[0]
-        const newCode = recast(modifiedAst)
+        const newCode = recast(modifiedAst, instanceInThisFile)
         if (!err(newCode)) {
           // Verify fillet tagging worked
           expect(tag).toBeTruthy()

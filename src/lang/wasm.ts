@@ -55,7 +55,6 @@ import {
   parse_project_settings,
   parse_wasm,
   point_to_unit,
-  recast_wasm,
   serialize_configuration,
   serialize_project_configuration,
 } from '@src/lib/wasm_lib_wrapper'
@@ -435,10 +434,8 @@ export async function nodePathFromRange(
   }
 }
 
-export const recast = (ast: Program, instance?: ModuleType): string | Error => {
-  return instance
-    ? instance.recast_wasm(JSON.stringify(ast))
-    : recast_wasm(JSON.stringify(ast))
+export const recast = (ast: Program, instance: ModuleType): string | Error => {
+  return instance.recast_wasm(JSON.stringify(ast))
 }
 
 /**
