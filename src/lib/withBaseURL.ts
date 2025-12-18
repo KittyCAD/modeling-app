@@ -8,26 +8,21 @@ export function withSiteBaseURL(path: string): string {
   return env().VITE_ZOO_SITE_BASE_URL + path
 }
 
-export function withKittycadWebSocketURL(querystring: string): string {
-  const url = env().VITE_KITTYCAD_WEBSOCKET_URL
-  if (!url) {
-    return ''
-  }
-  // Append to existing query string if it exists
-  if (url.includes('?') && querystring.startsWith('?')) {
-    return url + querystring.replace(/^\?/, '&')
-  }
-  return url + querystring
+export function withKittycadWebSocketURL(qs: string): string {
+  return mergeQueryString(env().VITE_KITTYCAD_WEBSOCKET_URL, qs)
 }
 
-export function withMlephantWebSocketURL(querystring: string): string {
-  const url = env().VITE_MLEPHANT_WEBSOCKET_URL
+export function withMlephantWebSocketURL(qs: string): string {
+  return mergeQueryString(env().VITE_MLEPHANT_WEBSOCKET_URL, qs)
+}
+
+function mergeQueryString(url: string | undefined, qs: string): string {
   if (!url) {
     return ''
   }
   // Append to existing query string if it exists
-  if (url.includes('?') && querystring.startsWith('?')) {
-    return url + querystring.replace(/^\?/, '&')
+  if (url.includes('?') && qs.startsWith('?')) {
+    return url + qs.replace(/^\?/, '&')
   }
-  return url + querystring
+  return url + qs
 }

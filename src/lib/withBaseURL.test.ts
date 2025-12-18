@@ -64,7 +64,7 @@ describe('withBaseURL', () => {
     })
   })
 
-  describe('withWebSocketURL', () => {
+  describe('withKittycadWebSocketURL', () => {
     it('should return url', () => {
       const expected = 'wss://api.dev.zoo.dev/ws/modeling/commands'
       const actual = withKittycadWebSocketURL('')
