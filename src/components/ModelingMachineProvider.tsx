@@ -934,6 +934,7 @@ export const ModelingMachineProvider = ({
             const info = angleBetweenInfo({
               selectionRanges,
               kclManager,
+              wasmInstance: await kclManager.wasmInstancePromise,
             })
             if (err(info)) return Promise.reject(info)
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =

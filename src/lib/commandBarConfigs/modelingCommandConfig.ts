@@ -1387,11 +1387,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         createVariable: 'byDefault',
         defaultValue(_, machineContext, wasmInstance) {
           const selectionRanges = machineContext?.selectionRanges
-          if (!selectionRanges) return KCL_DEFAULT_LENGTH
+          if (!selectionRanges || !wasmInstance) return KCL_DEFAULT_LENGTH
           const angleLength = angleLengthInfo({
             selectionRanges,
             angleOrLength: 'setLength',
             kclManager,
+            wasmInstance,
           })
           if (err(angleLength) || !wasmInstance) return KCL_DEFAULT_LENGTH
           const { transforms } = angleLength

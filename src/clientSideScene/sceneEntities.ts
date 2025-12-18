@@ -1408,6 +1408,7 @@ export class SceneEntities {
             variableDeclarationName,
           },
           mouseEvent: args.mouseEvent,
+          wasmInstance: await this.kclManager.wasmInstancePromise,
         })
       },
     })
@@ -1562,16 +1563,26 @@ export class SceneEntities {
 
         const varDecIndex = Number(updatedEntryNodePath[1][0])
 
+        const wasmInstance = await this.kclManager.wasmInstancePromise
         this.updateSegment(
           sketch.start,
           0,
           varDecIndex,
           _ast,
           orthoFactor,
-          sketch
+          sketch,
+          wasmInstance
         )
         sgPaths.forEach((seg, index) =>
-          this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
+          this.updateSegment(
+            seg,
+            index,
+            varDecIndex,
+            _ast,
+            orthoFactor,
+            sketch,
+            wasmInstance
+          )
         )
       },
       onClick: async (args) => {
@@ -1791,16 +1802,26 @@ export class SceneEntities {
 
         const varDecIndex = Number(updatedEntryNodePath[1][0])
 
+        const wasmInstance = await this.kclManager.wasmInstancePromise
         this.updateSegment(
           sketch.start,
           0,
           varDecIndex,
           _ast,
           orthoFactor,
-          sketch
+          sketch,
+          wasmInstance
         )
         sgPaths.forEach((seg, index) =>
-          this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
+          this.updateSegment(
+            seg,
+            index,
+            varDecIndex,
+            _ast,
+            orthoFactor,
+            sketch,
+            wasmInstance
+          )
         )
       },
       onClick: async (args) => {
@@ -1988,16 +2009,26 @@ export class SceneEntities {
 
         const varDecIndex = Number(updatedEntryNodePath[1][0])
 
+        const wasmInstance = await this.kclManager.wasmInstancePromise
         this.updateSegment(
           sketch.start,
           0,
           varDecIndex,
           _ast,
           orthoFactor,
-          sketch
+          sketch,
+          wasmInstance
         )
         sgPaths.forEach((seg, index) =>
-          this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
+          this.updateSegment(
+            seg,
+            index,
+            varDecIndex,
+            _ast,
+            orthoFactor,
+            sketch,
+            wasmInstance
+          )
         )
       },
       onClick: async (args) => {
@@ -2208,16 +2239,26 @@ export class SceneEntities {
 
         const varDecIndex = Number(sketchEntryNodePath[1][0])
 
+        const wasmInstance = await this.kclManager.wasmInstancePromise
         this.updateSegment(
           sketch.start,
           0,
           varDecIndex,
           _ast,
           orthoFactor,
-          sketch
+          sketch,
+          wasmInstance
         )
         sgPaths.forEach((seg, index) =>
-          this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
+          this.updateSegment(
+            seg,
+            index,
+            varDecIndex,
+            _ast,
+            orthoFactor,
+            sketch,
+            wasmInstance
+          )
         )
       },
       onClick: async (args) => {
@@ -2434,16 +2475,26 @@ export class SceneEntities {
 
         const varDecIndex = Number(sketchEntryNodePath[1][0])
 
+        const wasmInstance = await this.kclManager.wasmInstancePromise
         this.updateSegment(
           sketch.start,
           0,
           varDecIndex,
           _ast,
           orthoFactor,
-          sketch
+          sketch,
+          wasmInstance
         )
         sgPaths.forEach((seg, index) =>
-          this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
+          this.updateSegment(
+            seg,
+            index,
+            varDecIndex,
+            _ast,
+            orthoFactor,
+            sketch,
+            wasmInstance
+          )
         )
       },
       onClick: async (args) => {
@@ -2685,16 +2736,26 @@ export class SceneEntities {
 
         const varDecIndex = Number(updatedEntryNodePath[1][0])
 
+        const wasmInstance = await this.kclManager.wasmInstancePromise
         this.updateSegment(
           sketch.start,
           0,
           varDecIndex,
           _ast,
           orthoFactor,
-          sketch
+          sketch,
+          wasmInstance
         )
         sgPaths.forEach((seg, index) =>
-          this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
+          this.updateSegment(
+            seg,
+            index,
+            varDecIndex,
+            _ast,
+            orthoFactor,
+            sketch,
+            wasmInstance
+          )
         )
       },
       onClick: async (args) => {
@@ -2883,6 +2944,7 @@ export class SceneEntities {
               intersection2d: intersectionPoint.twoD,
               intersects,
               mouseEvent: mouseEvent,
+              wasmInstance: await this.kclManager.wasmInstancePromise,
             })
           }
           return
@@ -2895,6 +2957,7 @@ export class SceneEntities {
           sketchNodePaths,
           sketchEntryNodePath,
           mouseEvent: mouseEvent,
+          wasmInstance: await this.kclManager.wasmInstancePromise,
         })
       },
       onMove: () => {},
@@ -3204,6 +3267,7 @@ export class SceneEntities {
     draftInfo,
     intersects,
     mouseEvent,
+    wasmInstance,
   }: {
     object: Object3D<Object3DEventMap>
     intersection2d: Vector2
@@ -3215,6 +3279,7 @@ export class SceneEntities {
       variableDeclarationName: string
     }
     mouseEvent: MouseEvent
+    wasmInstance: ModuleType
   }) {
     const group = getParentGroup(object, SEGMENT_BODIES_PLUS_PROFILE_START)
     const subGroup = getParentGroup(object, [
@@ -3490,6 +3555,7 @@ export class SceneEntities {
           modifiedAst,
           orthoFactor,
           sketch,
+          wasmInstance,
           snappedToTangent
         )
 
@@ -3514,6 +3580,7 @@ export class SceneEntities {
               modifiedAst,
               orthoFactor,
               sketch,
+              wasmInstance,
               snappedToTangent
             )
           )
@@ -3543,6 +3610,7 @@ export class SceneEntities {
     modifiedAst: Program,
     orthoFactor: number,
     sketch: Sketch,
+    wasmInstance: ModuleType,
     snappedToTangent: boolean = false
   ): (() => SegmentOverlayPayload | null) => {
     const segPathToNode = getNodePathFromSourceRange(
@@ -3636,6 +3704,7 @@ export class SceneEntities {
         scale: factor,
         prevSegment: sgPaths[index - 1],
         sceneInfra: this.sceneInfra,
+        wasmInstance,
       })
     if (callBack && !err(callBack)) return callBack
 
@@ -3799,12 +3868,13 @@ export class SceneEntities {
               group: parent,
               scale: factor,
               sceneInfra: this.sceneInfra,
+              wasmInstance: await this.kclManager.wasmInstancePromise,
             })
           return
         }
         this.kclManager.setHighlightRange([defaultSourceRange()])
       },
-      onMouseLeave: ({ selected }: OnMouseEnterLeaveArgs) => {
+      onMouseLeave: async ({ selected }: OnMouseEnterLeaveArgs) => {
         this.kclManager.setHighlightRange([defaultSourceRange()])
         const parent = getParentGroup(
           selected,
@@ -3876,6 +3946,7 @@ export class SceneEntities {
               group: parent,
               scale: factor,
               sceneInfra: this.sceneInfra,
+              wasmInstance: await this.kclManager.wasmInstancePromise,
             })
         }
         const isSelected = parent?.userData?.isSelected

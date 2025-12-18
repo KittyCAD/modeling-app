@@ -438,7 +438,8 @@ export const modelingMachine = setup({
       const info = horzVertInfo(
         context.selectionRanges,
         'horizontal',
-        context.kclManager.ast
+        context.kclManager.ast,
+        context.wasmInstance
       )
       if (err(info)) return false
       return info.enabled
@@ -447,7 +448,8 @@ export const modelingMachine = setup({
       const info = horzVertInfo(
         context.selectionRanges,
         'vertical',
-        context.kclManager.ast
+        context.kclManager.ast,
+        context.wasmInstance
       )
       if (err(info)) return false
       return info.enabled
@@ -457,6 +459,7 @@ export const modelingMachine = setup({
         selectionRanges: context.selectionRanges,
         constraint: 'setHorzDistance',
         kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
@@ -466,6 +469,7 @@ export const modelingMachine = setup({
         selectionRanges: context.selectionRanges,
         constraint: 'setVertDistance',
         kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
@@ -475,6 +479,7 @@ export const modelingMachine = setup({
         selectionRanges: context.selectionRanges,
         constraint: 'xAbs',
         kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
@@ -484,28 +489,36 @@ export const modelingMachine = setup({
         selectionRanges: context.selectionRanges,
         constraint: 'yAbs',
         kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
     },
-    'Can constrain angle': ({ context: { selectionRanges, kclManager } }) => {
+    'Can constrain angle': ({
+      context: { selectionRanges, kclManager, wasmInstance },
+    }) => {
       const angleBetween = angleBetweenInfo({
         selectionRanges,
         kclManager,
+        wasmInstance,
       })
       if (err(angleBetween)) return false
       const angleLength = angleLengthInfo({
         selectionRanges,
         angleOrLength: 'setAngle',
         kclManager,
+        wasmInstance,
       })
       if (err(angleLength)) return false
       return angleBetween.enabled || angleLength.enabled
     },
-    'Can constrain length': ({ context: { selectionRanges, kclManager } }) => {
+    'Can constrain length': ({
+      context: { selectionRanges, kclManager, wasmInstance },
+    }) => {
       const angleLength = angleLengthInfo({
         selectionRanges,
         kclManager,
+        wasmInstance,
       })
       if (err(angleLength)) return false
       return angleLength.enabled
@@ -514,6 +527,7 @@ export const modelingMachine = setup({
       const info = intersectInfo({
         selectionRanges: context.selectionRanges,
         kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
@@ -523,6 +537,7 @@ export const modelingMachine = setup({
         selectionRanges: context.selectionRanges,
         constraint: 'setHorzDistance',
         kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
@@ -532,6 +547,7 @@ export const modelingMachine = setup({
         selectionRanges: context.selectionRanges,
         constraint: 'setHorzDistance',
         kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
@@ -541,6 +557,7 @@ export const modelingMachine = setup({
         selectionRanges: context.selectionRanges,
         constraint: 'snapToXAxis',
         kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
@@ -550,6 +567,7 @@ export const modelingMachine = setup({
         selectionRanges: context.selectionRanges,
         constraint: 'snapToYAxis',
         kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
@@ -558,6 +576,7 @@ export const modelingMachine = setup({
       const info = setEqualLengthInfo({
         selectionRanges: context.selectionRanges,
         ast: context.kclManager.ast,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
@@ -565,6 +584,8 @@ export const modelingMachine = setup({
     'Can constrain parallel': ({ context }) => {
       const info = equalAngleInfo({
         selectionRanges: context.selectionRanges,
+        kclManager: context.kclManager,
+        wasmInstance: context.wasmInstance,
       })
       if (err(info)) return false
       return info.enabled
@@ -2029,6 +2050,7 @@ export const modelingMachine = setup({
       }) => {
         const constraint = applyConstraintEqualAngle({
           selectionRanges,
+          kclManager,
           wasmInstance: await kclManager.wasmInstancePromise,
         })
         if (trap(constraint)) return false

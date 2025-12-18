@@ -71,7 +71,12 @@ async function testingSwapSketchFnCall({
     otherSelections: [],
   }
 
-  const transformInfos = getTransformInfos(selections, ast, constraintType)
+  const transformInfos = getTransformInfos(
+    selections,
+    ast,
+    constraintType,
+    instanceInThisFile
+  )
 
   if (!transformInfos)
     return Promise.reject(new Error('transformInfos undefined'))

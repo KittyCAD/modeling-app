@@ -38,7 +38,11 @@ export async function applyConstraintLength({
   exprInsertIndex: number
 }> {
   const ast = kclManager.ast
-  const angleLength = angleLengthInfo({ selectionRanges, kclManager })
+  const angleLength = angleLengthInfo({
+    selectionRanges,
+    kclManager,
+    wasmInstance: await kclManager.wasmInstancePromise,
+  })
   if (err(angleLength)) return Promise.reject(angleLength)
   const { transforms } = angleLength
 
@@ -105,6 +109,7 @@ export async function applyConstraintAngleLength({
     selectionRanges,
     angleOrLength,
     kclManager,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(angleLength)) return Promise.reject(angleLength)
 

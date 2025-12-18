@@ -29,10 +29,12 @@ export function absDistanceInfo({
   selectionRanges,
   constraint,
   kclManager,
+  wasmInstance,
 }: {
   selectionRanges: Selections
   constraint: Constraint
   kclManager: KclManager
+  wasmInstance: ModuleType
 }):
   | {
       transforms: TransformInfo[]
@@ -62,7 +64,12 @@ export function absDistanceInfo({
       toolTips.includes(node.callee.name.name as any)
   )
 
-  const transforms = getTransformInfos(selectionRanges, kclManager.ast, disType)
+  const transforms = getTransformInfos(
+    selectionRanges,
+    kclManager.ast,
+    disType,
+    wasmInstance
+  )
   if (err(transforms)) return transforms
 
   const enableY =
@@ -100,6 +107,7 @@ export async function applyConstraintAbsDistance({
     selectionRanges,
     constraint,
     kclManager,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(info)) return Promise.reject(info)
   const transformInfos = info.transforms
@@ -183,6 +191,7 @@ export function applyConstraintAxisAlign({
     selectionRanges,
     constraint,
     kclManager,
+    wasmInstance,
   })
   if (err(info)) return info
   const transformInfos = info.transforms

@@ -23,15 +23,18 @@ import {
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { KclManager } from '@src/lang/KclManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
 export function angleBetweenInfo({
   selectionRanges,
   kclManager,
+  wasmInstance,
 }: {
   selectionRanges: Selections
   kclManager: KclManager
+  wasmInstance: ModuleType
 }):
   | {
       transforms: TransformInfo[]
@@ -77,7 +80,8 @@ export function angleBetweenInfo({
       graphSelections: selectionRanges.graphSelections.slice(1),
     },
     kclManager.ast,
-    'setAngleBetween'
+    'setAngleBetween',
+    wasmInstance
   )
 
   const _enableEqual =
@@ -100,7 +104,11 @@ export async function applyConstraintAngleBetween({
   pathToNodeMap: PathToNodeMap
   exprInsertIndex: number
 }> {
-  const info = angleBetweenInfo({ selectionRanges, kclManager })
+  const info = angleBetweenInfo({
+    selectionRanges,
+    kclManager,
+    wasmInstance: await kclManager.wasmInstancePromise,
+  })
   if (err(info)) return Promise.reject(info)
   const transformInfos = info.transforms
 

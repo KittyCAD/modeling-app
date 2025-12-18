@@ -22,9 +22,11 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 export function setEqualLengthInfo({
   selectionRanges,
   ast,
+  wasmInstance,
 }: {
   selectionRanges: Selections
   ast: Node<Program>
+  wasmInstance: ModuleType
 }):
   | {
       transforms: TransformInfo[]
@@ -70,7 +72,8 @@ export function setEqualLengthInfo({
       graphSelections: selectionRanges.graphSelections.slice(1),
     },
     ast,
-    'equalLength'
+    'equalLength',
+    wasmInstance
   )
   if (err(transforms)) return transforms
 
@@ -99,7 +102,7 @@ export function applyConstraintEqualLength({
       pathToNodeMap: PathToNodeMap
     }
   | Error {
-  const info = setEqualLengthInfo({ selectionRanges, ast })
+  const info = setEqualLengthInfo({ selectionRanges, ast, wasmInstance })
   if (err(info)) return info
   const { transforms } = info
 

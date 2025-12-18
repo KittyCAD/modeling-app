@@ -1822,7 +1822,7 @@ export function getTransformInfos(
   selectionRanges: Selections,
   ast: Program,
   constraintType: ConstraintType,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): TransformInfo[] {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
     getNodeFromPath<Expr>(

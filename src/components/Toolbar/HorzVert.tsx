@@ -16,7 +16,8 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 export function horzVertInfo(
   selectionRanges: Selections,
   horOrVert: 'vertical' | 'horizontal',
-  ast: Node<Program>
+  ast: Node<Program>,
+  wasmInstance: ModuleType
 ):
   | {
       transforms: TransformInfo[]
@@ -38,7 +39,12 @@ export function horzVertInfo(
       toolTips.includes(node.callee.name.name as any)
   )
 
-  const theTransforms = getTransformInfos(selectionRanges, ast, horOrVert)
+  const theTransforms = getTransformInfos(
+    selectionRanges,
+    ast,
+    horOrVert,
+    wasmInstance
+  )
   if (err(theTransforms)) return theTransforms
 
   const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
@@ -57,7 +63,7 @@ export function applyConstraintHorzVert(
       pathToNodeMap: PathToNodeMap
     }
   | Error {
-  const info = horzVertInfo(selectionRanges, horOrVert, ast)
+  const info = horzVertInfo(selectionRanges, horOrVert, ast, wasmInstance)
   if (err(info)) return info
   const transformInfos = info.transforms
 

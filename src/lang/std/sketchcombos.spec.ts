@@ -463,7 +463,8 @@ part001 = startSketchOn(XY)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
-      'horizontal'
+      'horizontal',
+      instanceInThisFile
     )
 
     const newAst = transformAstSketchLines({
@@ -524,7 +525,8 @@ part001 = startSketchOn(XY)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
-      'vertical'
+      'vertical',
+      instanceInThisFile
     )
 
     const newAst = transformAstSketchLines({
@@ -620,7 +622,8 @@ async function helperThing(
   const transformInfos = getTransformInfos(
     makeSelections(selectionRanges.slice(1)),
     ast,
-    constraint
+    constraint,
+    instanceInThisFile
   )
 
   const newAst = transformSecondarySketchLinesTagFirst({

@@ -33,10 +33,12 @@ export function horzVertDistanceInfo({
   selectionRanges,
   constraint,
   kclManager,
+  wasmInstance,
 }: {
   selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
   kclManager: KclManager
+  wasmInstance: ModuleType
 }):
   | {
       transforms: TransformInfo[]
@@ -83,7 +85,8 @@ export function horzVertDistanceInfo({
       graphSelections: selectionRanges.graphSelections.slice(1),
     },
     kclManager.ast,
-    constraint
+    constraint,
+    wasmInstance
   )
   const _enableEqual =
     secondaryVarDecs.length === 1 &&
@@ -110,6 +113,7 @@ export async function applyConstraintHorzVertDistance({
     selectionRanges: selectionRanges,
     constraint,
     kclManager,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(info)) return Promise.reject(info)
   const transformInfos = info.transforms
@@ -214,6 +218,7 @@ export function applyConstraintHorzVertAlign({
     selectionRanges,
     constraint,
     kclManager,
+    wasmInstance,
   })
   if (err(info)) return info
   const transformInfos = info.transforms

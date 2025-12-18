@@ -10,14 +10,18 @@ import {
 import type { TransformInfo } from '@src/lang/std/stdTypes'
 import type { Expr, Program, VariableDeclarator } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { KclManager } from '@src/lang/KclManager'
 
 export function equalAngleInfo({
   selectionRanges,
+  kclManager,
+  wasmInstance,
 }: {
   selectionRanges: Selections
+  kclManager: KclManager
+  wasmInstance: ModuleType
 }):
   | {
       transforms: TransformInfo[]
@@ -66,7 +70,8 @@ export function equalAngleInfo({
       graphSelections: selectionRanges.graphSelections.slice(1),
     },
     kclManager.ast,
-    'equalAngle'
+    'equalAngle',
+    wasmInstance
   )
   if (err(transforms)) return transforms
 
@@ -80,9 +85,11 @@ export function equalAngleInfo({
 
 export function applyConstraintEqualAngle({
   selectionRanges,
+  kclManager,
   wasmInstance,
 }: {
   selectionRanges: Selections
+  kclManager: KclManager
   wasmInstance: ModuleType
 }):
   | {
@@ -90,7 +97,7 @@ export function applyConstraintEqualAngle({
       pathToNodeMap: PathToNodeMap
     }
   | Error {
-  const info = equalAngleInfo({ selectionRanges })
+  const info = equalAngleInfo({ selectionRanges, kclManager, wasmInstance })
   if (err(info)) return info
   const { transforms } = info
 

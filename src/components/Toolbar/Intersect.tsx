@@ -27,15 +27,18 @@ import {
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { KclManager } from '@src/lang/KclManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
 export function intersectInfo({
   selectionRanges,
   kclManager,
+  wasmInstance,
 }: {
   selectionRanges: Selections
   kclManager: KclManager
+  wasmInstance: ModuleType
 }):
   | {
       transforms: TransformInfo[]
@@ -118,7 +121,8 @@ export function intersectInfo({
       graphSelections: _forcedSelectionRanges.graphSelections.slice(1),
     },
     kclManager.ast,
-    'intersect'
+    'intersect',
+    wasmInstance
   )
 
   const forcedArtifact = _forcedSelectionRanges?.graphSelections?.[1]?.artifact
@@ -150,6 +154,7 @@ export async function applyConstraintIntersect({
   const info = intersectInfo({
     selectionRanges,
     kclManager,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(info)) return Promise.reject(info)
   const { transforms, forcedSelectionRanges } = info
