@@ -120,6 +120,8 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
       - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          rustflags: '' # Use .cargo/config.toml
       - uses: taiki-e/install-action@just
       - name: Run tests
         run: |
