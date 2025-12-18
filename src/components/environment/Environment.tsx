@@ -5,15 +5,11 @@ import { commandBarActor } from '@src/lib/singletons'
 export function EnvironmentChip() {
   let label = env().VITE_ZOO_BASE_DOMAIN
   const urls = [
-    new URL(env().VITE_KITTYCAD_WEBSOCKET_URL || ''),
-    new URL(env().VITE_MLEPHANT_WEBSOCKET_URL || ''),
+    new URL(env().VITE_KITTYCAD_WEBSOCKET_URL ?? ''),
+    new URL(env().VITE_MLEPHANT_WEBSOCKET_URL ?? ''),
   ]
   for (const url of urls) {
-    if (
-      url.hostname === 'localhost' ||
-      url.hostname === '127.0.0.1' ||
-      url.hostname === '0.0.0.0'
-    ) {
+    if (['localhost', '127.0.0.1', '0.0.0.0'].includes(url.hostname)) {
       label = `${label} + local`
     } else if (url.search) {
       label = `${label} + ${url.search.substring(1)}`
