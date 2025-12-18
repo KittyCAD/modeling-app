@@ -188,7 +188,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 kind: SegmentKind::Point {
                     position,
                     ctor: ctor.clone(),
-                    freedom: position_x_freedom.merge(position_y_freedom),
+                    freedom: point_freedom(position_x_freedom, position_y_freedom),
                 },
                 meta: segment.meta,
             })
@@ -218,8 +218,8 @@ pub(super) fn substitute_sketch_var_in_segment(
                     ctor: ctor.clone(),
                     start_object_id: *start_object_id,
                     end_object_id: *end_object_id,
-                    start_freedom: start_x_freedom.merge(start_y_freedom),
-                    end_freedom: end_x_freedom.merge(end_y_freedom),
+                    start_freedom: point_freedom(start_x_freedom, start_y_freedom),
+                    end_freedom: point_freedom(end_x_freedom, end_y_freedom),
                 },
                 meta: segment.meta,
             })
@@ -258,9 +258,9 @@ pub(super) fn substitute_sketch_var_in_segment(
                     start_object_id: *start_object_id,
                     end_object_id: *end_object_id,
                     center_object_id: *center_object_id,
-                    start_freedom: start_x_freedom.merge(start_y_freedom),
-                    end_freedom: end_x_freedom.merge(end_y_freedom),
-                    center_freedom: center_x_freedom.merge(center_y_freedom),
+                    start_freedom: point_freedom(start_x_freedom, start_y_freedom),
+                    end_freedom: point_freedom(end_x_freedom, end_y_freedom),
+                    center_freedom: point_freedom(center_x_freedom, center_y_freedom),
                 },
                 meta: segment.meta,
             })
@@ -274,9 +274,9 @@ fn substitute_sketch_var_in_unsolved_expr(
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
     source_ranges: &[SourceRange],
-) -> Result<(TyF64, Freedom), KclError> {
+) -> Result<(TyF64, Option<Freedom>), KclError> {
     match unsolved_expr {
-        UnsolvedExpr::Known(n) => Ok((n.clone(), Freedom::Fixed)),
+        UnsolvedExpr::Known(n) => Ok((n.clone(), Some(Freedom::Fixed))),
         UnsolvedExpr::Unknown(var_id) => {
             let Some(solution) = solve_outcome.final_values.get(var_id.0) else {
                 let message = format!("No solution for sketch variable with id {}", var_id.0);
@@ -287,22 +287,36 @@ fn substitute_sketch_var_in_unsolved_expr(
                 )));
             };
             let freedom = if solve_outcome.unsatisfied.contains(&var_id.0) {
-                Freedom::Conflict
+                Some(Freedom::Conflict)
             } else if let Some(analysis) = analysis {
                 let solver_var_id = var_id.to_constraint_id(source_ranges.first().copied().unwrap_or_default())?;
                 if analysis.underconstrained.contains(&solver_var_id) {
-                    Freedom::Free
+                    Some(Freedom::Free)
                 } else {
-                    Freedom::Fixed
+                    Some(Freedom::Fixed)
                 }
             } else {
-                // We didn't do the freedom analysis, so use free as the
-                // default. We don't want to accidentally communicate that
-                // something is well-constrained when it may not be.
-                Freedom::Free
+                // We didn't do the freedom analysis, so we don't know.
+                None
             };
             Ok((TyF64::new(*solution, solution_ty), freedom))
         }
+    }
+}
+
+/// Create the freedom for a 2D point by merging two optional `Freedom` values.
+/// None represents unknown. If both are Some, merges them using
+/// [`Freedom::merge`]. If one is None, returns the other *only if* it's not
+/// `Fixed`. We don't want to communicate that a point is well-constrained if we
+/// don't actually know.
+fn point_freedom(x: Option<Freedom>, y: Option<Freedom>) -> Option<Freedom> {
+    match (x, y) {
+        (Some(x), Some(y)) => Some(x.merge(y)),
+        (Some(f), None) | (None, Some(f)) => match f {
+            Freedom::Fixed => None,
+            Freedom::Conflict | Freedom::Free => Some(f),
+        },
+        (None, None) => None,
     }
 }
 
