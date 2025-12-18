@@ -2159,6 +2159,7 @@ dependencies = [
 [[package]]
 name = "kcl-ezpz"
 version = "0.2.5"
+source = "git+https://github.com/KittyCAD/ezpz?branch=main#153784df3b7a0f2956c5736bbf11ea487163213e"
 dependencies = [
  "faer",
  "indexmap 2.12.1",
