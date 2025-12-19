@@ -11,6 +11,9 @@ import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import type { ActorRefFrom } from 'xstate'
+
+export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
 
 export type CommandBarInput = {
   commands: Command[]

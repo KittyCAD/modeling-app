@@ -24,18 +24,29 @@ import {
   loadAndValidateSettings,
   readLocalStorageAppSettingsFile,
 } from '@src/lib/settings/settingsUtils'
-import { rustContext, systemIOActor } from '@src/lib/singletons'
 import type { KclManager } from '@src/lang/KclManager'
-import { settingsActor } from '@src/lib/singletons'
+import type { SystemIOActor } from '@src/lib/singletons'
 import type {
   FileLoaderData,
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import type RustContext from '@src/lib/rustContext'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export const fileLoader =
-  (kclManager: KclManager): LoaderFunction =>
+  ({
+    kclManager,
+    rustContext,
+    systemIOActor,
+    settingsActor,
+  }: {
+    kclManager: KclManager
+    rustContext: RustContext
+    systemIOActor: SystemIOActor
+    settingsActor: SettingsActorType
+  }): LoaderFunction =>
   async (routerData): Promise<FileLoaderData | Response> => {
     const { params } = routerData
 
@@ -226,17 +237,21 @@ export const fileLoader =
 
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred
-export const homeLoader: LoaderFunction = async ({
-  request,
-}): Promise<HomeLoaderData | Response> => {
-  const url = new URL(request.url)
-  if (!isDesktop()) {
-    return redirect(
-      PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
-    )
+export const homeLoader =
+  ({
+    settingsActor,
+  }: {
+    settingsActor: SettingsActorType
+  }): LoaderFunction =>
+  async ({ request }): Promise<HomeLoaderData | Response> => {
+    const url = new URL(request.url)
+    if (!isDesktop()) {
+      return redirect(
+        PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
+      )
+    }
+    settingsActor.send({
+      type: 'clear.project',
+    })
+    return {}
   }
-  settingsActor.send({
-    type: 'clear.project',
-  })
-  return {}
-}

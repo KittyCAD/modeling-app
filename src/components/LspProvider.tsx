@@ -24,7 +24,11 @@ import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { kclManager, sceneEntitiesManager } from '@src/lib/singletons'
+import {
+  kclManager,
+  rustContext,
+  sceneEntitiesManager,
+} from '@src/lib/singletons'
 import { useToken } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
@@ -165,7 +169,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
             }
           },
         },
-        { kclManager, sceneEntitiesManager, wasmInstance }
+        { kclManager, sceneEntitiesManager, wasmInstance, rustContext }
       )
 
       plugin = lsp
