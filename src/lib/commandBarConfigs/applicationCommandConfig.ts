@@ -3,6 +3,7 @@ import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   writeEnvironmentConfigurationKittycadWebSocketUrl,
+  writeEnvironmentConfigurationMlephantWebSocketUrl,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
@@ -433,20 +434,26 @@ export function createApplicationCommands({
         console.error(new Error('No file system present'))
         return
       }
-      if (data?.url) {
-        const environmentName = env().VITE_ZOO_BASE_DOMAIN
-        if (environmentName)
-          writeEnvironmentConfigurationKittycadWebSocketUrl(
-            window.electron,
-            environmentName,
-            data.url
-          )
-            .then(() => {
-              // Reload the application and it will trigger the correct sign in workflow for the new environment
-              window.location.reload()
-            })
-            .catch(reportRejection)
+      if (!data?.url) {
+        return
       }
+      try {
+        new URL(data.url)
+      } catch {
+        return
+      }
+      const environmentName = env().VITE_ZOO_BASE_DOMAIN
+      if (environmentName)
+        writeEnvironmentConfigurationKittycadWebSocketUrl(
+          window.electron,
+          environmentName,
+          data.url
+        )
+          .then(() => {
+            // Reload the application and it will trigger the correct sign in workflow for the new environment
+            window.location.reload()
+          })
+          .catch(reportRejection)
     },
     args: {
       url: {
@@ -457,8 +464,57 @@ export function createApplicationCommands({
           Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Engines.
           Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
           Finally, append **?pool=LABEL** for all other variants of deployed Engines.
+          Reset to the default value: **${env().VITE_KITTYCAD_WEBSOCKET_URL}**
         `.trim(),
-        defaultValue: () => env().VITE_KITTYCAD_WEBSOCKET_URL || '',
+        defaultValue: () => env().VITE_KITTYCAD_WEBSOCKET_URL ?? '',
+      },
+    },
+  }
+
+  const overrideZookeeperCommand: Command = {
+    name: 'override-zookeeper',
+    displayName: 'Override Zookeeper',
+    description: 'Connect to a custom Zookeeper WebSocket URL',
+    needsReview: false,
+    icon: 'gear',
+    groupId: 'application',
+    onSubmit: (data) => {
+      if (!window.electron) {
+        console.error(new Error('No file system present'))
+        return
+      }
+      if (!data?.url) {
+        return
+      }
+      try {
+        new URL(data.url)
+      } catch {
+        return
+      }
+      const environmentName = env().VITE_ZOO_BASE_DOMAIN
+      if (environmentName)
+        writeEnvironmentConfigurationMlephantWebSocketUrl(
+          window.electron,
+          environmentName,
+          data.url
+        )
+          .then(() => {
+            // Reload the application and it will trigger the correct sign in workflow for the new environment
+            window.location.reload()
+          })
+          .catch(reportRejection)
+    },
+    args: {
+      url: {
+        inputType: 'string',
+        required: true,
+        displayName: 'URL',
+        description: `
+          Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Zookeeper.
+          Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
+          Reset to the default value: **${env().VITE_MLEPHANT_WEBSOCKET_URL}**
+        `.trim(),
+        defaultValue: () => env().VITE_MLEPHANT_WEBSOCKET_URL ?? '',
       },
     },
   }
@@ -522,6 +578,7 @@ export function createApplicationCommands({
         createASampleDesktopOnly,
         switchEnvironmentsCommand,
         overrideEngineCommand,
+        overrideZookeeperCommand,
       ]
     : [addKCLFileToProject, resetLayoutCommand, setLayoutCommand]
 }

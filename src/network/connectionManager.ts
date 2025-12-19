@@ -6,7 +6,7 @@ import {
   getThemeColorForEngine,
   Themes,
 } from '@src/lib/theme'
-import { withWebSocketURL } from '@src/lib/withBaseURL'
+import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   IEventListenerTracked,
   ManagerTearDown,
@@ -389,7 +389,7 @@ export class ConnectionManager extends EventTarget {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
-    const url = withWebSocketURL(
+    const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
     return url

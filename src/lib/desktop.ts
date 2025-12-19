@@ -869,6 +869,36 @@ export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
   return environmentConfiguration.kittycadWebSocketUrl.trim()
 }
 
+export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (
+  electron: IElectronAPI,
+  environmentName: string,
+  mlephantWebSocketUrl: string
+) => {
+  mlephantWebSocketUrl = mlephantWebSocketUrl.trim()
+  const path = await getEnvironmentConfigurationPath(electron, environmentName)
+  const environmentConfiguration = await getEnvironmentConfigurationObject(
+    electron,
+    environmentName
+  )
+  environmentConfiguration.mlephantWebSocketUrl = mlephantWebSocketUrl
+  const requestedConfiguration = JSON.stringify(environmentConfiguration)
+  const result = await electron.writeFile(path, requestedConfiguration)
+  console.log(`wrote ${environmentName}.json to disk`)
+  return result
+}
+
+export const readEnvironmentConfigurationMlephantWebSocketUrl = async (
+  electron: IElectronAPI,
+  environmentName: string
+) => {
+  const environmentConfiguration = await readEnvironmentConfigurationFile(
+    electron,
+    environmentName
+  )
+  if (!environmentConfiguration?.mlephantWebSocketUrl) return ''
+  return environmentConfiguration.mlephantWebSocketUrl.trim()
+}
+
 export const readEnvironmentFile = async (electron: IElectronAPI) => {
   let environmentFilePath = await getEnvironmentFilePath(electron)
 
