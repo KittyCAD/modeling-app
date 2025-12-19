@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, memo } from 'react'
 
 import type { ContextMenuProps } from '@src/components/ContextMenu'
 import {
@@ -199,7 +199,7 @@ export function useViewControlMenuItems() {
   return menuItems
 }
 
-export function ViewControlContextMenu({
+export const ViewControlContextMenu = memo(function ViewControlContextMenu({
   menuTargetElement: wrapperRef,
   ...props
 }: ContextMenuProps) {
@@ -212,4 +212,4 @@ export function ViewControlContextMenu({
       {...props}
     />
   )
-}
+})
