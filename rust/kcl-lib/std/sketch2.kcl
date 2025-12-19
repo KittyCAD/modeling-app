@@ -17,9 +17,8 @@ export fn line(
   midpoint?: Point2d,
 ): Segment {}
 
-/// A circular arc. The arc segment always sweeps in a counterclockwise
-/// direction. If you have a 10-degree arc and you want the reverse 350-degree
-/// arc, swap the start and end points.
+/// A circular arc. The arc segment always sweeps counterclockwise from start to end.
+/// To change direction, swap the start and end points.
 @(impl = std_rust_constrainable, experimental = true, feature_tree = false)
 export fn arc(
   start: Point2d,

@@ -91,6 +91,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![engine-valve](screenshots/engine-valve.png)](engine-valve/main.kcl)
 #### [exhaust-manifold](exhaust-manifold/main.kcl) ([screenshot](screenshots/exhaust-manifold.png))
 [![exhaust-manifold](screenshots/exhaust-manifold.png)](exhaust-manifold/main.kcl)
+#### [field-monitor-stand](field-monitor-stand/main.kcl) ([screenshot](screenshots/field-monitor-stand.png))
+[![field-monitor-stand](screenshots/field-monitor-stand.png)](field-monitor-stand/main.kcl)
 #### [flange](flange/main.kcl) ([screenshot](screenshots/flange.png))
 [![flange](screenshots/flange.png)](flange/main.kcl)
 #### [flat-bladed-impeller](flat-bladed-impeller/main.kcl) ([screenshot](screenshots/flat-bladed-impeller.png))

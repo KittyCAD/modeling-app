@@ -2520,6 +2520,8 @@ box = extrude(profile, length = 30)`
             Objects: '1 path',
           },
           commandName: 'Translate',
+          reviewValidationError:
+            'semantic: Expected `x`, `y`, or `z` to be provided.',
         })
       })
 
