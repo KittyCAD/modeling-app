@@ -37,6 +37,7 @@ import type { MaybePressOrBlur } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
+import { showWarningToast } from '@src/components/ToastWarning'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
@@ -349,17 +350,15 @@ export const ProjectExplorer = ({
         }
       }
 
-      // Show error for unsupported files
       if (unsupportedFiles.length > 0) {
         const maxToShow = 5
         const fileList = unsupportedFiles.slice(0, maxToShow).join(', ')
         const remaining = unsupportedFiles.length - maxToShow
-        const message =
+        const fileListMessage =
           remaining > 0 ? `${fileList}, and ${remaining} more` : fileList
-        toast.error(
-          `Unsupported file${unsupportedFiles.length > 1 ? 's' : ''}: ${message}`,
-          { duration: 5000 }
-        )
+        showWarningToast(fileListMessage, {
+          title: `Unsupported file${unsupportedFiles.length > 1 ? 's' : ''}:`,
+        })
       }
 
       // Copy supported files to the target directory
