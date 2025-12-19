@@ -1226,12 +1226,12 @@ export class CameraControls {
 
       const onComplete = async () => {
         if (isReducedMotion() && toOrthographic) {
-          cameraAtTime(0.9999)
+          cameraAtTime(1)
           this.useOrthographicCamera()
         } else if (toOrthographic) {
           await this.animateToOrthographic()
         } else {
-          cameraAtTime(0.9999)
+          cameraAtTime(1)
         }
         this.enableRotate = false
         this._isCamMovingCallback(false, true)
