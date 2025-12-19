@@ -31,6 +31,8 @@ import {
   kclManager,
   engineCommandManager,
   rustContext,
+  systemIOActor,
+  settingsActor,
 } from '@src/lib/singletons'
 import { useToken } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -72,7 +74,12 @@ const router = createRouter([
         },
       },
       {
-        loader: fileLoader(kclManager),
+        loader: fileLoader({
+          kclManager,
+          rustContext,
+          systemIOActor,
+          settingsActor,
+        }),
         id: PATHS.FILE,
         path: PATHS.FILE + '/:id',
         errorElement: <ErrorPage />,
@@ -131,7 +138,7 @@ const router = createRouter([
           </>
         ),
         id: PATHS.HOME,
-        loader: homeLoader,
+        loader: homeLoader({ settingsActor }),
         children: [
           {
             index: true,
