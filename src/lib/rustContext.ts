@@ -582,6 +582,41 @@ export default class RustContext {
     }
   }
 
+  /** Chain a segment to a previous segment by adding it and creating a coincident constraint. */
+  async chainSegment(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    previousSegmentEndPointId: ApiObjectId,
+    segment: SegmentCtor,
+    label: string | undefined,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SourceDelta, SceneGraphDelta] =
+        await instance.chain_segment(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(previousSegmentEndPointId),
+          JSON.stringify(segment),
+          label,
+          JSON.stringify(settings)
+        )
+      return {
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
   /** Helper to check if context instance exists */
   private async _checkContextInstance(): Promise<Context> {
     if (!this.ctxInstance) {
