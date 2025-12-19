@@ -17,7 +17,7 @@ import { useRef } from 'react'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -115,8 +115,9 @@ const attemptToConnectToEngine = async ({
 
 const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   sceneInfra,
-  settings: providedSettings,
-}: { sceneInfra: SceneInfra; settings: SettingsType }) => {
+  settingsActor,
+}: { sceneInfra: SceneInfra; settingsActor: SettingsActorType }) => {
+  const providedSettings = getSettingsFromActorContext(settingsActor)
   const settings = await jsAppSettings(providedSettings)
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',
@@ -144,7 +145,11 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   if (sceneInfra.camControls.oldCameraState) {
     await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
   } else {
-    await resetCameraPosition({ sceneInfra })
+    await resetCameraPosition({
+      sceneInfra,
+      engineCommandManager,
+      settingsActor,
+    })
   }
 
   // Since you reconnected you are not idle, clear the old camera state
@@ -218,7 +223,7 @@ async function tryConnecting({
           // Do not count the 30 second timer to connect within the kcl execution and scene setup
           await setupSceneAndExecuteCodeAfterOpenedEngineConnection({
             sceneInfra,
-            settings: getSettingsFromActorContext(rustContext.settingsActor),
+            settingsActor: rustContext.settingsActor,
           })
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: true })
