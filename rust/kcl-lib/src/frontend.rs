@@ -8,7 +8,7 @@ use crate::{
     exec::WarningLevel,
     execution::MockConfig,
     fmt::format_number_literal,
-    front::{ArcCtor, Distance, Line, LinesEqualLength, Parallel, Perpendicular, PointCtor},
+    front::{ArcCtor, Distance, LinesEqualLength, Parallel, Perpendicular, PointCtor},
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
@@ -49,6 +49,10 @@ const VERTICAL_FN: &str = "vertical";
 
 const LINE_PROPERTY_START: &str = "start";
 const LINE_PROPERTY_END: &str = "end";
+
+const ARC_PROPERTY_START: &str = "start";
+const ARC_PROPERTY_END: &str = "end";
+const ARC_PROPERTY_CENTER: &str = "center";
 
 #[derive(Debug, Clone)]
 pub struct FrontendState {
@@ -430,6 +434,94 @@ impl SketchApi for FrontendState {
             .await
     }
 
+    async fn chain_segment(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        previous_segment_end_point_id: ObjectId,
+        segment: SegmentCtor,
+        _label: Option<String>,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+
+        // First, add the segment (line) to get its start point ID
+        let SegmentCtor::Line(line_ctor) = segment else {
+            return Err(Error {
+                msg: format!("chain_segment currently only supports Line segments, got: {segment:?}"),
+            });
+        };
+
+        // Add the line segment first - this updates self.program and self.scene_graph
+        let (_first_src_delta, first_scene_delta) = self.add_line(ctx, sketch, line_ctor).await?;
+
+        // Find the new line's start point ID from the updated scene graph
+        // add_line updates self.scene_graph, so we can use that
+        let new_line_id = first_scene_delta
+            .new_objects
+            .iter()
+            .find(|&obj_id| {
+                let obj = self.scene_graph.objects.get(obj_id.0);
+                if let Some(obj) = obj {
+                    matches!(
+                        &obj.kind,
+                        ObjectKind::Segment {
+                            segment: Segment::Line(_)
+                        }
+                    )
+                } else {
+                    false
+                }
+            })
+            .ok_or_else(|| Error {
+                msg: "Failed to find new line segment in scene graph".to_string(),
+            })?;
+
+        let new_line_obj = self.scene_graph.objects.get(new_line_id.0).ok_or_else(|| Error {
+            msg: format!("New line object not found: {new_line_id:?}"),
+        })?;
+
+        let ObjectKind::Segment {
+            segment: new_line_segment,
+        } = &new_line_obj.kind
+        else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {new_line_obj:?}"),
+            });
+        };
+
+        let Segment::Line(new_line) = new_line_segment else {
+            return Err(Error {
+                msg: format!("Segment is not a line: {new_line_segment:?}"),
+            });
+        };
+
+        let new_line_start_point_id = new_line.start;
+
+        // Now add the coincident constraint between the previous end point and the new line's start point.
+        let coincident = Coincident {
+            segments: vec![previous_segment_end_point_id, new_line_start_point_id],
+        };
+
+        let (final_src_delta, final_scene_delta) = self
+            .add_constraint(ctx, version, sketch, Constraint::Coincident(coincident))
+            .await?;
+
+        // Combine new objects from the line addition and the constraint addition.
+        // Both add_line and add_constraint now populate new_objects correctly.
+        let mut combined_new_objects = first_scene_delta.new_objects.clone();
+        combined_new_objects.extend(final_scene_delta.new_objects);
+
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            invalidates_ids: false,
+            new_objects: combined_new_objects,
+            exec_outcome: final_scene_delta.exec_outcome,
+        };
+
+        Ok((final_src_delta, scene_graph_delta))
+    }
+
     async fn edit_constraint(
         &mut self,
         _ctx: &ExecutorContext,
@@ -711,23 +803,24 @@ impl FrontendState {
         let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
         let center_ast = to_ast_point2d(&ctor.center).map_err(|err| Error { msg: err.to_string() })?;
+        let arguments = vec![
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_START_PARAM)),
+                arg: start_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_END_PARAM)),
+                arg: end_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_CENTER_PARAM)),
+                arg: center_ast,
+            },
+        ];
         let arc_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
             unlabeled: None,
-            arguments: vec![
-                ast::LabeledArg {
-                    label: Some(ast::Identifier::new(ARC_START_PARAM)),
-                    arg: start_ast,
-                },
-                ast::LabeledArg {
-                    label: Some(ast::Identifier::new(ARC_END_PARAM)),
-                    arg: end_ast,
-                },
-                ast::LabeledArg {
-                    label: Some(ast::Identifier::new(ARC_CENTER_PARAM)),
-                    arg: center_ast,
-                },
-            ],
+            arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
@@ -859,38 +952,67 @@ impl FrontendState {
             });
         };
 
-        // If the point is part of a line, edit the line instead.
-        if let Some(line_id) = point.owner {
-            let line_object = self.scene_graph.objects.get(line_id.0).ok_or_else(|| Error {
-                msg: format!("Internal: Line owner of point not found in scene graph: line={line_id:?}",),
+        // If the point is part of a line or arc, edit the line/arc instead.
+        if let Some(owner_id) = point.owner {
+            let owner_object = self.scene_graph.objects.get(owner_id.0).ok_or_else(|| Error {
+                msg: format!("Internal: Owner of point not found in scene graph: owner={owner_id:?}",),
             })?;
-            let ObjectKind::Segment {
-                segment: Segment::Line(line),
-            } = &line_object.kind
-            else {
+            let ObjectKind::Segment { segment } = &owner_object.kind else {
                 return Err(Error {
-                    msg: format!("Internal: Owner of point is not actually a line segment: {line_object:?}"),
+                    msg: format!("Internal: Owner of point is not a segment: {owner_object:?}"),
                 });
             };
-            let SegmentCtor::Line(line_ctor) = &line.ctor else {
-                return Err(Error {
-                    msg: format!("Internal: Owner of point does not have line ctor: {line_object:?}"),
-                });
-            };
-            let mut line_ctor = line_ctor.clone();
-            // Which end of the line is this point?
-            if line.start == point_id {
-                line_ctor.start = ctor.position;
-            } else if line.end == point_id {
-                line_ctor.end = ctor.position;
-            } else {
-                return Err(Error {
-                    msg: format!(
-                        "Internal: Point is not part of owner's line segment: point={point_id:?}, line={line_id:?}"
-                    ),
-                });
+
+            // Handle Line owner
+            if let Segment::Line(line) = segment {
+                let SegmentCtor::Line(line_ctor) = &line.ctor else {
+                    return Err(Error {
+                        msg: format!("Internal: Owner of point does not have line ctor: {owner_object:?}"),
+                    });
+                };
+                let mut line_ctor = line_ctor.clone();
+                // Which end of the line is this point?
+                if line.start == point_id {
+                    line_ctor.start = ctor.position;
+                } else if line.end == point_id {
+                    line_ctor.end = ctor.position;
+                } else {
+                    return Err(Error {
+                        msg: format!(
+                            "Internal: Point is not part of owner's line segment: point={point_id:?}, line={owner_id:?}"
+                        ),
+                    });
+                }
+                return self.edit_line(new_ast, sketch_id, owner_id, line_ctor);
             }
-            return self.edit_line(new_ast, sketch_id, line_id, line_ctor);
+
+            // Handle Arc owner
+            if let Segment::Arc(arc) = segment {
+                let SegmentCtor::Arc(arc_ctor) = &arc.ctor else {
+                    return Err(Error {
+                        msg: format!("Internal: Owner of point does not have arc ctor: {owner_object:?}"),
+                    });
+                };
+                let mut arc_ctor = arc_ctor.clone();
+                // Which point of the arc is this? (center, start, or end)
+                if arc.center == point_id {
+                    arc_ctor.center = ctor.position;
+                } else if arc.start == point_id {
+                    arc_ctor.start = ctor.position;
+                } else if arc.end == point_id {
+                    arc_ctor.end = ctor.position;
+                } else {
+                    return Err(Error {
+                        msg: format!(
+                            "Internal: Point is not part of owner's arc segment: point={point_id:?}, arc={owner_id:?}"
+                        ),
+                    });
+                }
+                return self.edit_arc(new_ast, sketch_id, owner_id, arc_ctor);
+            }
+
+            // If owner is neither Line nor Arc, allow editing the point directly
+            // (fall through to the point editing logic below)
         }
 
         // Modify the point AST.
@@ -1144,6 +1266,82 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta))
     }
 
+    /// Map a point object id into an AST reference expression for use in
+    /// constraints. If the point is owned by a segment (line or arc), we
+    /// reference the appropriate property on that segment (e.g. `line1.start`,
+    /// `arc1.center`). Otherwise we reference the point directly.
+    fn point_id_to_ast_reference(
+        &self,
+        point_id: ObjectId,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<ast::Expr> {
+        let point_object = self.scene_graph.objects.get(point_id.0).ok_or_else(|| Error {
+            msg: format!("Point not found: {point_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: point_segment } = &point_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {point_object:?}"),
+            });
+        };
+        let Segment::Point(point) = point_segment else {
+            return Err(Error {
+                msg: format!("Only points are currently supported: {point_object:?}"),
+            });
+        };
+
+        if let Some(owner_id) = point.owner {
+            let owner_object = self.scene_graph.objects.get(owner_id.0).ok_or_else(|| Error {
+                msg: format!("Owner of point not found in scene graph: point={point_id:?}, owner={owner_id:?}"),
+            })?;
+            let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind else {
+                return Err(Error {
+                    msg: format!("Owner of point is not a segment: {owner_object:?}"),
+                });
+            };
+
+            match owner_segment {
+                Segment::Line(line) => {
+                    let property = if line.start == point_id {
+                        LINE_PROPERTY_START
+                    } else if line.end == point_id {
+                        LINE_PROPERTY_END
+                    } else {
+                        return Err(Error {
+                            msg: format!(
+                                "Internal: Point is not part of owner's line segment: point={point_id:?}, line={owner_id:?}"
+                            ),
+                        });
+                    };
+                    get_or_insert_ast_reference(new_ast, &owner_object.source, "line", Some(property))
+                }
+                Segment::Arc(arc) => {
+                    let property = if arc.start == point_id {
+                        ARC_PROPERTY_START
+                    } else if arc.end == point_id {
+                        ARC_PROPERTY_END
+                    } else if arc.center == point_id {
+                        ARC_PROPERTY_CENTER
+                    } else {
+                        return Err(Error {
+                            msg: format!(
+                                "Internal: Point is not part of owner's arc segment: point={point_id:?}, arc={owner_id:?}"
+                            ),
+                        });
+                    };
+                    get_or_insert_ast_reference(new_ast, &owner_object.source, "arc", Some(property))
+                }
+                _ => Err(Error {
+                    msg: format!(
+                        "Internal: Owner of point is not a supported segment type for constraints: {owner_segment:?}"
+                    ),
+                }),
+            }
+        } else {
+            // Standalone point.
+            get_or_insert_ast_reference(new_ast, &point_object.source, "point", None)
+        }
+    }
+
     async fn add_coincident(
         &mut self,
         sketch: ObjectId,
@@ -1170,36 +1368,17 @@ impl FrontendState {
             });
         };
         let seg0_ast = match seg0_segment {
-            Segment::Point(point) => {
-                // If the point is part of a line, refer to the line's start/end property
-                if let Some(line_id) = point.owner {
-                    let line = self.expect_line(line_id)?;
-                    let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-                    let property = if line.start == seg0_id {
-                        LINE_PROPERTY_START
-                    } else if line.end == seg0_id {
-                        LINE_PROPERTY_END
-                    } else {
-                        return Err(Error {
-                            msg: format!(
-                                "Internal: Point is not part of owner's line segment: point={seg0_id:?}, line={line_id:?}"
-                            ),
-                        });
-                    };
-                    get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-                } else {
-                    // Standalone point
-                    get_or_insert_ast_reference(new_ast, &seg0_object.source, "point", None)?
-                }
+            Segment::Point(_) => {
+                // Use the helper function which supports both Line and Arc owners
+                self.point_id_to_ast_reference(seg0_id, new_ast)?
             }
             Segment::Line(_) => {
                 // Reference the segment directly (for point-segment coincident)
                 get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?
             }
             Segment::Arc(_) | Segment::Circle(_) => {
-                return Err(Error {
-                    msg: "Coincident constraint with arcs or circles is not supported. Only points and line segments are.".to_owned(),
-                });
+                // Reference the segment directly (for point-arc coincident)
+                get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?
             }
         };
 
@@ -1213,36 +1392,17 @@ impl FrontendState {
             });
         };
         let seg1_ast = match seg1_segment {
-            Segment::Point(point) => {
-                // If the point is part of a line, refer to the line's start/end property
-                if let Some(line_id) = point.owner {
-                    let line = self.expect_line(line_id)?;
-                    let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-                    let property = if line.start == seg1_id {
-                        LINE_PROPERTY_START
-                    } else if line.end == seg1_id {
-                        LINE_PROPERTY_END
-                    } else {
-                        return Err(Error {
-                            msg: format!(
-                                "Internal: Point is not part of owner's line segment: point={seg1_id:?}, line={line_id:?}"
-                            ),
-                        });
-                    };
-                    get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-                } else {
-                    // Standalone point
-                    get_or_insert_ast_reference(new_ast, &seg1_object.source, "point", None)?
-                }
+            Segment::Point(_) => {
+                // Use the helper function which supports both Line and Arc owners
+                self.point_id_to_ast_reference(seg1_id, new_ast)?
             }
             Segment::Line(_) => {
                 // Reference the segment directly (for point-segment coincident)
                 get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?
             }
             Segment::Arc(_) | Segment::Circle(_) => {
-                return Err(Error {
-                    msg: "Coincident constraint with arcs or circles is not supported. Only points and line segments are.".to_owned(),
-                });
+                // Reference the segment directly (for point-arc coincident)
+                get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?
             }
         };
 
@@ -1287,71 +1447,8 @@ impl FrontendState {
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
-        let pt0_object = self.scene_graph.objects.get(pt0_id.0).ok_or_else(|| Error {
-            msg: format!("Point not found: {pt0_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment: pt0_segment } = &pt0_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {pt0_object:?}"),
-            });
-        };
-        let Segment::Point(pt0) = pt0_segment else {
-            return Err(Error {
-                msg: format!("Only points are currently supported: {pt0_object:?}"),
-            });
-        };
-        // If the point is part of a line, refer to the line instead.
-        let pt0_ast = if let Some(line_id) = pt0.owner {
-            let line = self.expect_line(line_id)?;
-            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-            let property = if line.start == pt0_id {
-                LINE_PROPERTY_START
-            } else if line.end == pt0_id {
-                LINE_PROPERTY_END
-            } else {
-                return Err(Error {
-                    msg: format!(
-                        "Internal: Point is not part of owner's line segment: point={pt0_id:?}, line={line_id:?}"
-                    ),
-                });
-            };
-            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-        } else {
-            get_or_insert_ast_reference(new_ast, &pt0_object.source, "point", None)?
-        };
-
-        let pt1_object = self.scene_graph.objects.get(pt1_id.0).ok_or_else(|| Error {
-            msg: format!("Point not found: {pt1_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment: pt1_segment } = &pt1_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {pt1_object:?}"),
-            });
-        };
-        let Segment::Point(pt1) = pt1_segment else {
-            return Err(Error {
-                msg: format!("Only points are currently supported: {pt1_object:?}"),
-            });
-        };
-        // If the point is part of a line, refer to the line instead.
-        let pt1_ast = if let Some(line_id) = pt1.owner {
-            let line = self.expect_line(line_id)?;
-            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-            let property = if line.start == pt1_id {
-                LINE_PROPERTY_START
-            } else if line.end == pt1_id {
-                LINE_PROPERTY_END
-            } else {
-                return Err(Error {
-                    msg: format!(
-                        "Internal: Point is not part of owner's line segment: point={pt1_id:?}, line={line_id:?}"
-                    ),
-                });
-            };
-            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-        } else {
-            get_or_insert_ast_reference(new_ast, &pt1_object.source, "point", None)?
-        };
+        let pt0_ast = self.point_id_to_ast_reference(pt0_id, new_ast)?;
+        let pt1_ast = self.point_id_to_ast_reference(pt1_id, new_ast)?;
 
         // Create the distance() call.
         let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -1654,7 +1751,7 @@ impl FrontendState {
         &mut self,
         ctx: &ExecutorContext,
         _sketch_id: ObjectId,
-        sketch_block_range: SourceRange,
+        #[cfg_attr(not(feature = "artifact-graph"), allow(unused_variables))] sketch_block_range: SourceRange,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
@@ -1671,7 +1768,8 @@ impl FrontendState {
                 msg: "No AST produced after adding constraint".to_string(),
             });
         };
-        let _constraint_source_range =
+        #[cfg(feature = "artifact-graph")]
+        let constraint_source_range =
             find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
                 msg: format!(
                     "Source range of new constraint not found in sketch block: {sketch_block_range:?}; {err:?}"
@@ -1694,12 +1792,27 @@ impl FrontendState {
             }
         })?;
 
+        #[cfg(not(feature = "artifact-graph"))]
+        let new_object_ids = Vec::new();
+        #[cfg(feature = "artifact-graph")]
+        let new_object_ids = {
+            // Extract the constraint ID from the execution outcome using source_range_to_object
+            let constraint_id = outcome
+                .source_range_to_object
+                .get(&constraint_source_range)
+                .copied()
+                .ok_or_else(|| Error {
+                    msg: format!("Source range of constraint not found: {constraint_source_range:?}"),
+                })?;
+            vec![constraint_id]
+        };
+
         let src_delta = SourceDelta { text: new_source };
         let outcome = self.update_state_after_exec(outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
-            new_objects: Vec::new(),
+            new_objects: new_object_ids,
             exec_outcome: outcome,
         };
         Ok((src_delta, scene_graph_delta))
@@ -1776,23 +1889,6 @@ impl FrontendState {
             }
         }
         Ok(())
-    }
-
-    fn expect_line(&self, object_id: ObjectId) -> api::Result<&Line> {
-        let object = self.scene_graph.objects.get(object_id.0).ok_or_else(|| Error {
-            msg: format!("Object not found: {object_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment } = &object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {object:?}"),
-            });
-        };
-        let Segment::Line(line) = segment else {
-            return Err(Error {
-                msg: format!("Segment is not a line: {segment:?}"),
-            });
-        };
-        Ok(line)
     }
 
     fn update_state_after_exec(&mut self, outcome: ExecOutcome) -> ExecOutcome {

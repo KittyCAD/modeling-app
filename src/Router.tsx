@@ -41,7 +41,7 @@ import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import { Spinner } from '@src/components/Spinner'
+import Loading from '@src/components/Loading'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -78,7 +78,13 @@ const router = createRouter([
         errorElement: <ErrorPage />,
         element: (
           <ModelingPageProvider>
-            <Suspense fallback={<Spinner className="w-8 h-8" />}>
+            <Suspense
+              fallback={
+                <div className="absolute inset-0 grid place-content-center">
+                  <Loading>Loading Design Studio...</Loading>
+                </div>
+              }
+            >
               <ModelingMachineProvider>
                 <CoreDump />
                 <Outlet />
