@@ -20,6 +20,7 @@ use super::{
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use crate::{
     errors::{KclError, KclErrorDetails},
+    exec::PlaneKind,
     execution::{
         BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
         ProfileClosed, Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
@@ -906,7 +907,7 @@ async fn inner_start_sketch_on(
             Ok(SketchSurface::Plane(plane))
         }
         SketchData::Plane(plane) => {
-            if plane.value == crate::exec::PlaneType::Uninit {
+            if plane.is_uninitialized() {
                 let plane = make_sketch_plane_from_orientation(plane.info.into_plane_data(), exec_state, args).await?;
                 Ok(SketchSurface::Plane(plane))
             } else {
@@ -1049,7 +1050,17 @@ pub async fn make_sketch_plane_from_orientation(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Box<Plane>, KclError> {
-    let plane = Plane::from_plane_data(data.clone(), exec_state)?;
+    let id = exec_state.next_uuid();
+    let kind = PlaneKind::from(&data);
+    let plane_object_id = exec_state.next_object_id();
+    let plane = Plane {
+        id,
+        artifact_id: id.into(),
+        object_id: Some(plane_object_id),
+        kind,
+        info: PlaneInfo::try_from(data)?,
+        meta: vec![args.source_range.into()],
+    };
 
     // Create the plane on the fly.
     let clobber = false;
@@ -1070,7 +1081,6 @@ pub async fn make_sketch_plane_from_orientation(
         .await?;
     #[cfg(feature = "artifact-graph")]
     {
-        let plane_object_id = exec_state.next_object_id();
         let plane_object = crate::front::Object {
             id: plane_object_id,
             kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),

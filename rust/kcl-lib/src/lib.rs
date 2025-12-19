@@ -116,7 +116,7 @@ pub mod exec {
     #[cfg(feature = "artifact-graph")]
     pub use crate::execution::{ArtifactCommand, Operation};
     pub use crate::execution::{
-        DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
+        DefaultPlanes, IdGenerator, KclValue, PlaneKind, Sketch,
         annotations::WarningLevel,
         types::{NumericType, UnitType},
     };
