@@ -91,7 +91,7 @@ format: install ## Format the code
 	npm run fmt
 
 .PHONY: lint
-lint: install ## Lint the code
+lint: install public/kcl_wasm_lib_bg.wasm ## Lint the code
 	npm run tsc
 	npm run lint
 
