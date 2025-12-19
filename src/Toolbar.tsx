@@ -57,9 +57,9 @@ const Toolbar_ = memo(
       if (
         isCursorInFunctionDefinition(
           kclManager.ast,
-          props.context.selectionRanges.graphSelections[0]
+          props.context.selectionRanges.graphSelections[0],
+          wasmInstance
         )
-
       )
         return false
       return isCursorInSketchCommandRange(
@@ -144,41 +144,41 @@ const Toolbar_ = memo(
       }, 500)
     }, [setShowRichContent])
 
-  /**
-   * Resolve all the callbacks and values for the current mode,
-   * so we don't need to worry about the other modes
-   */
-  const currentModeItems: (
-    | ToolbarItemResolved
-    | ToolbarItemResolvedDropdown
-    | 'break'
-  )[] = useMemo(() => {
-    return toolbarConfig[currentMode].items.map((maybeIconConfig) => {
-      if (maybeIconConfig === 'break') {
-        return 'break'
-      } else if (isToolbarDropdown(maybeIconConfig)) {
-        return {
-          id: maybeIconConfig.id,
-          array: maybeIconConfig.array.map((item) =>
-            resolveItemConfig(item, wasmInstance)
-          ),
+    /**
+     * Resolve all the callbacks and values for the current mode,
+     * so we don't need to worry about the other modes
+     */
+    const currentModeItems: (
+      | ToolbarItemResolved
+      | ToolbarItemResolvedDropdown
+      | 'break'
+    )[] = useMemo(() => {
+      return toolbarConfig[currentMode].items.map((maybeIconConfig) => {
+        if (maybeIconConfig === 'break') {
+          return 'break'
+        } else if (isToolbarDropdown(maybeIconConfig)) {
+          return {
+            id: maybeIconConfig.id,
+            array: maybeIconConfig.array.map((item) =>
+              resolveItemConfig(item, wasmInstance)
+            ),
+          }
+        } else {
+          return resolveItemConfig(maybeIconConfig, wasmInstance)
         }
-      } else {
-        return resolveItemConfig(maybeIconConfig, wasmInstance)
-      }
-    })
+      })
 
-    function resolveItemConfig(
-      maybeIconConfig: ToolbarItem,
-      wasmInstance: ModuleType
-    ): ToolbarItemResolved {
-      const isConfiguredAvailable = ['available', 'experimental'].includes(
-        maybeIconConfig.status
-      )
-      const isDisabled =
-        disableAllButtons ||
-        !isConfiguredAvailable ||
-        maybeIconConfig.disabled?.(state, wasmInstance) === true
+      function resolveItemConfig(
+        maybeIconConfig: ToolbarItem,
+        wasmInstance: ModuleType
+      ): ToolbarItemResolved {
+        const isConfiguredAvailable = ['available', 'experimental'].includes(
+          maybeIconConfig.status
+        )
+        const isDisabled =
+          disableAllButtons ||
+          !isConfiguredAvailable ||
+          maybeIconConfig.disabled?.(props.state, wasmInstance) === true
 
         // Calculate the isActive state for this specific item
         const itemIsActive = maybeIconConfig.isActive?.(props.state) || false
@@ -213,9 +213,8 @@ const Toolbar_ = memo(
           callbackProps: itemCallbackProps,
         }
       }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [currentMode, disableAllButtons, configCallbackProps, wasmInstance])
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    }, [currentMode, disableAllButtons, configCallbackProps, wasmInstance])
 
     // To remember the last selected item in an ActionButtonDropdown
     const [lastSelectedMultiActionItem, _] = useState(
