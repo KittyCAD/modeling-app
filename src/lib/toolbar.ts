@@ -1395,3 +1395,37 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
     ],
   },
 }
+
+/**
+ * Derives a map of sketchSolve tool names to their icon names from the toolbar config.
+ * This ensures a single source of truth for tool-to-icon mappings.
+ * Extracts tool names by parsing the isActive function which references state.context.sketchSolveToolName.
+ */
+export function getSketchSolveToolIconMap(): Record<string, CustomIconName> {
+  const map: Record<string, CustomIconName> = {}
+  const items = toolbarConfig.sketchSolve.items
+
+  for (const item of items) {
+    // Skip 'break' strings
+    if (typeof item === 'string') continue
+
+    // Skip dropdowns (which don't have direct icons)
+    if ('array' in item) continue
+
+    // Now TypeScript knows item is ToolbarItem
+    // Only process items that have an icon and an isActive function (which indicates it's a tool)
+    if (item.icon && item.isActive) {
+      // Extract tool name from isActive function string representation
+      // The isActive function references the tool name like: state.context.sketchSolveToolName === 'toolName'
+      const isActiveStr = item.isActive.toString()
+      const toolNameMatch = isActiveStr.match(
+        /sketchSolveToolName\s*===\s*['"]([^'"]+)['"]/
+      )
+      if (toolNameMatch && toolNameMatch[1]) {
+        map[toolNameMatch[1]] = item.icon
+      }
+    }
+  }
+
+  return map
+}

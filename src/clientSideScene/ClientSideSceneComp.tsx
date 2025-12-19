@@ -45,6 +45,7 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
+import { getSketchSolveToolIconMap } from '@src/lib/toolbar'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -206,12 +207,10 @@ export const ClientSideScene = ({
 }
 
 // Map sketchSolve tool names to their corresponding icon names
+// Derived from toolbar config to maintain a single source of truth
+const toolIconMap = getSketchSolveToolIconMap()
 const getToolIconName = (toolName: string | null): CustomIconName | null => {
   if (!toolName) return null
-  const toolIconMap: Record<string, CustomIconName> = {
-    lineTool: 'line',
-    pointTool: 'oneDot',
-  }
   return toolIconMap[toolName] || null
 }
 
