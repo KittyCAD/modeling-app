@@ -1285,9 +1285,8 @@ impl FrontendState {
                 get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?
             }
             Segment::Arc(_) | Segment::Circle(_) => {
-                return Err(Error {
-                    msg: "Coincident constraint with arcs or circles is not supported. Only points and line segments are.".to_owned(),
-                });
+                // Reference the segment directly (for point-arc coincident)
+                get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?
             }
         };
 
@@ -1310,9 +1309,8 @@ impl FrontendState {
                 get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?
             }
             Segment::Arc(_) | Segment::Circle(_) => {
-                return Err(Error {
-                    msg: "Coincident constraint with arcs or circles is not supported. Only points and line segments are.".to_owned(),
-                });
+                // Reference the segment directly (for point-arc coincident)
+                get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?
             }
         };
 
