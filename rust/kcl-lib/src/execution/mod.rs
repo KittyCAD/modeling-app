@@ -2627,7 +2627,7 @@ sketch = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, 10])
   |> line(end = [10, 0], tag = $tag0)
-  |> line(end = [0, 0])
+  |> line(endAbsolute = [0, 0])
 
 fn foo() {
   // tag0 tags an edge

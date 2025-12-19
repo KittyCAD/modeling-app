@@ -2,10 +2,10 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing execute_engine_error_return.kcl
 ---
-KCL Engine error
+KCL Semantic error
 
-  × engine: The path is not closed.  Solid2D construction requires a closed
-  │ path!
+  × semantic: Cannot solid extrude an open profile. Either close the profile,
+  │ or use a surface extrude.
    ╭─[7:6]
  6 │   |> line(end = [-11.53311, 2.81559])
  7 │   |> extrude(length = 4)
@@ -13,10 +13,10 @@ KCL Engine error
    ·               ╰── tests/execute_engine_error_return/input.kcl
    ·               ╰── tests/execute_engine_error_return/input.kcl
    ╰────
-  ╰─▶ KCL Engine error
+  ╰─▶ KCL Semantic error
       
-        × engine: The path is not closed.  Solid2D construction requires a
-        │ closed path!
+        × semantic: Cannot solid extrude an open profile. Either close the
+        │ profile, or use a surface extrude.
          ╭─[7:6]
        6 │   |> line(end = [-11.53311, 2.81559])
        7 │   |> extrude(length = 4)
