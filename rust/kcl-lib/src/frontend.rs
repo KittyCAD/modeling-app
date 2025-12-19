@@ -430,6 +430,94 @@ impl SketchApi for FrontendState {
             .await
     }
 
+    async fn chain_segment(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        previous_segment_end_point_id: ObjectId,
+        segment: SegmentCtor,
+        _label: Option<String>,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+
+        // First, add the segment (line) to get its start point ID
+        let SegmentCtor::Line(line_ctor) = segment else {
+            return Err(Error {
+                msg: format!("chain_segment currently only supports Line segments, got: {segment:?}"),
+            });
+        };
+
+        // Add the line segment first - this updates self.program and self.scene_graph
+        let (_first_src_delta, first_scene_delta) = self.add_line(ctx, sketch, line_ctor).await?;
+
+        // Find the new line's start point ID from the updated scene graph
+        // add_line updates self.scene_graph, so we can use that
+        let new_line_id = first_scene_delta
+            .new_objects
+            .iter()
+            .find(|&obj_id| {
+                let obj = self.scene_graph.objects.get(obj_id.0);
+                if let Some(obj) = obj {
+                    matches!(
+                        &obj.kind,
+                        ObjectKind::Segment {
+                            segment: Segment::Line(_)
+                        }
+                    )
+                } else {
+                    false
+                }
+            })
+            .ok_or_else(|| Error {
+                msg: "Failed to find new line segment in scene graph".to_string(),
+            })?;
+
+        let new_line_obj = self.scene_graph.objects.get(new_line_id.0).ok_or_else(|| Error {
+            msg: format!("New line object not found: {new_line_id:?}"),
+        })?;
+
+        let ObjectKind::Segment {
+            segment: new_line_segment,
+        } = &new_line_obj.kind
+        else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {new_line_obj:?}"),
+            });
+        };
+
+        let Segment::Line(new_line) = new_line_segment else {
+            return Err(Error {
+                msg: format!("Segment is not a line: {new_line_segment:?}"),
+            });
+        };
+
+        let new_line_start_point_id = new_line.start;
+
+        // Now add the coincident constraint between the previous end point and the new line's start point.
+        let coincident = Coincident {
+            segments: vec![previous_segment_end_point_id, new_line_start_point_id],
+        };
+
+        let (final_src_delta, final_scene_delta) = self
+            .add_constraint(ctx, version, sketch, Constraint::Coincident(coincident))
+            .await?;
+
+        // Combine new objects from the line addition and the constraint addition.
+        // Both add_line and add_constraint now populate new_objects correctly.
+        let mut combined_new_objects = first_scene_delta.new_objects.clone();
+        combined_new_objects.extend(final_scene_delta.new_objects);
+
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            invalidates_ids: false,
+            new_objects: combined_new_objects,
+            exec_outcome: final_scene_delta.exec_outcome,
+        };
+
+        Ok((final_src_delta, scene_graph_delta))
+    }
+
     async fn edit_constraint(
         &mut self,
         _ctx: &ExecutorContext,
@@ -1676,7 +1764,7 @@ impl FrontendState {
                 msg: "No AST produced after adding constraint".to_string(),
             });
         };
-        let _constraint_source_range =
+        let constraint_source_range =
             find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
                 msg: format!(
                     "Source range of new constraint not found in sketch block: {sketch_block_range:?}; {err:?}"
@@ -1699,12 +1787,27 @@ impl FrontendState {
             }
         })?;
 
+        #[cfg(not(feature = "artifact-graph"))]
+        let new_object_ids = Vec::new();
+        #[cfg(feature = "artifact-graph")]
+        let new_object_ids = {
+            // Extract the constraint ID from the execution outcome using source_range_to_object
+            let constraint_id = outcome
+                .source_range_to_object
+                .get(&constraint_source_range)
+                .copied()
+                .ok_or_else(|| Error {
+                    msg: format!("Source range of constraint not found: {constraint_source_range:?}"),
+                })?;
+            vec![constraint_id]
+        };
+
         let src_delta = SourceDelta { text: new_source };
         let outcome = self.update_state_after_exec(outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
-            new_objects: Vec::new(),
+            new_objects: new_object_ids,
             exec_outcome: outcome,
         };
         Ok((src_delta, scene_graph_delta))
