@@ -296,13 +296,12 @@ pub struct Plane {
     pub id: uuid::Uuid,
     /// The artifact ID.
     pub artifact_id: ArtifactId,
-    /// The scene object ID.
-    // TODO: This shouldn't be an Option. It should be part of the [`PlaneType`]
-    // enum since it's only none when `Uninit`.
+    /// The scene object ID. If this is None, then the plane has not been
+    /// sent to the engine yet. It must be sent before it is used.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub object_id: Option<ObjectId>,
-    // The code for the plane either a string or custom.
-    pub value: PlaneType,
+    /// The kind of plane or custom.
+    pub kind: PlaneKind,
     /// The information for the plane.
     #[serde(flatten)]
     pub info: PlaneInfo,
@@ -522,9 +521,6 @@ impl TryFrom<PlaneData> for PlaneInfo {
     type Error = KclError;
 
     fn try_from(value: PlaneData) -> Result<Self, Self::Error> {
-        if let PlaneData::Plane(info) = value {
-            return Ok(info);
-        }
         let name = match value {
             PlaneData::XY => PlaneName::Xy,
             PlaneData::NegXY => PlaneName::NegXy,
@@ -532,12 +528,8 @@ impl TryFrom<PlaneData> for PlaneInfo {
             PlaneData::NegXZ => PlaneName::NegXz,
             PlaneData::YZ => PlaneName::Yz,
             PlaneData::NegYZ => PlaneName::NegYz,
-            PlaneData::Plane(_) => {
-                // We will never get here since we already checked for PlaneData::Plane.
-                return Err(KclError::new_internal(KclErrorDetails::new(
-                    format!("PlaneData {value:?} not found"),
-                    Default::default(),
-                )));
+            PlaneData::Plane(info) => {
+                return Ok(info);
             }
         };
 
@@ -552,36 +544,63 @@ impl TryFrom<PlaneData> for PlaneInfo {
     }
 }
 
-impl From<PlaneData> for PlaneType {
-    fn from(value: PlaneData) -> Self {
+impl From<&PlaneData> for PlaneKind {
+    fn from(value: &PlaneData) -> Self {
         match value {
-            PlaneData::XY => PlaneType::XY,
-            PlaneData::NegXY => PlaneType::XY,
-            PlaneData::XZ => PlaneType::XZ,
-            PlaneData::NegXZ => PlaneType::XZ,
-            PlaneData::YZ => PlaneType::YZ,
-            PlaneData::NegYZ => PlaneType::YZ,
-            PlaneData::Plane(_) => PlaneType::Custom,
+            PlaneData::XY => PlaneKind::XY,
+            PlaneData::NegXY => PlaneKind::XY,
+            PlaneData::XZ => PlaneKind::XZ,
+            PlaneData::NegXZ => PlaneKind::XZ,
+            PlaneData::YZ => PlaneKind::YZ,
+            PlaneData::NegYZ => PlaneKind::YZ,
+            PlaneData::Plane(_) => PlaneKind::Custom,
         }
     }
 }
 
+impl From<&PlaneInfo> for PlaneKind {
+    fn from(value: &PlaneInfo) -> Self {
+        let data = PlaneData::Plane(value.clone());
+        PlaneKind::from(&data)
+    }
+}
+
+impl From<PlaneInfo> for PlaneKind {
+    fn from(value: PlaneInfo) -> Self {
+        let data = PlaneData::Plane(value);
+        PlaneKind::from(&data)
+    }
+}
+
 impl Plane {
-    pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState) -> Result<Self, KclError> {
+    #[cfg(test)]
+    pub(crate) fn from_plane_data_skipping_engine(
+        value: PlaneData,
+        exec_state: &mut ExecState,
+    ) -> Result<Self, KclError> {
         let id = exec_state.next_uuid();
+        let kind = PlaneKind::from(&value);
         Ok(Plane {
             id,
-            object_id: None,
             artifact_id: id.into(),
-            info: PlaneInfo::try_from(value.clone())?,
-            value: value.into(),
+            info: PlaneInfo::try_from(value)?,
+            object_id: None,
+            kind,
             meta: vec![],
         })
     }
 
+    /// Returns true if the plane has not been sent to the engine yet.
+    pub fn is_uninitialized(&self) -> bool {
+        self.object_id.is_none()
+    }
+
     /// The standard planes are XY, YZ and XZ (in both positive and negative)
     pub fn is_standard(&self) -> bool {
-        !matches!(self.value, PlaneType::Custom | PlaneType::Uninit)
+        match &self.kind {
+            PlaneKind::XY | PlaneKind::YZ | PlaneKind::XZ => true,
+            PlaneKind::Custom => false,
+        }
     }
 
     /// Project a point onto a plane by calculating how far away it is and moving it along the
@@ -616,11 +635,11 @@ pub struct Face {
     pub meta: Vec<Metadata>,
 }
 
-/// Type for a plane.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
+/// Kind of plane.
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[display(style = "camelCase")]
-pub enum PlaneType {
+pub enum PlaneKind {
     #[serde(rename = "XY", alias = "xy")]
     #[display("XY")]
     XY,
@@ -633,9 +652,6 @@ pub enum PlaneType {
     /// A custom plane.
     #[display("Custom")]
     Custom,
-    /// A custom plane which has not been sent to the engine. It must be sent before it is used.
-    #[display("Uninit")]
-    Uninit,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]

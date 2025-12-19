@@ -11,8 +11,8 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         AbstractSegment, BodyType, ControlFlowKind, EnvironmentRef, ExecState, ExecutorContext, KclValue,
-        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PlaneType, PreserveMem,
-        Segment, SegmentKind, SegmentRepr, SketchConstraintKind, StatementKind, TagIdentifier, UnsolvedSegment,
+        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PreserveMem, Segment,
+        SegmentKind, SegmentRepr, SketchConstraintKind, StatementKind, TagIdentifier, UnsolvedSegment,
         UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
         control_continue,
@@ -2575,8 +2575,8 @@ impl Node<UnaryExpression> {
                             plane.info.x_axis.z *= -1.0;
                         }
 
-                        plane.value = PlaneType::Uninit;
                         plane.id = exec_state.next_uuid();
+                        plane.object_id = None;
                         Ok(KclValue::Plane { value: plane }.continue_())
                     }
                     KclValue::Object {

@@ -82,7 +82,7 @@ async fn inner_datum(
         // No plane given. Use one of the standard planes.
         xy_plane(exec_state, args).await?
     };
-    let frame_plane_id = if frame_plane.value == crate::exec::PlaneType::Uninit {
+    let frame_plane_id = if frame_plane.is_uninitialized() {
         // Create it in the engine.
         let engine_plane =
             make_sketch_plane_from_orientation(frame_plane.info.into_plane_data(), exec_state, args).await?;
@@ -203,7 +203,7 @@ async fn inner_flatness(
         // No plane given. Use one of the standard planes.
         xy_plane(exec_state, args).await?
     };
-    let frame_plane_id = if frame_plane.value == crate::exec::PlaneType::Uninit {
+    let frame_plane_id = if frame_plane.is_uninitialized() {
         // Create it in the engine.
         let engine_plane =
             make_sketch_plane_from_orientation(frame_plane.info.into_plane_data(), exec_state, args).await?;
