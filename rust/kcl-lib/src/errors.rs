@@ -14,6 +14,10 @@ use crate::{
     modules::{ModulePath, ModuleSource},
 };
 
+mod details;
+
+pub use details::KclErrorDetails;
+
 /// How did the KCL execution fail
 #[derive(thiserror::Error, Debug)]
 pub enum ExecError {
@@ -392,18 +396,6 @@ impl miette::Diagnostic for Report {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq, thiserror::Error, miette::Diagnostic)]
-#[serde(rename_all = "camelCase")]
-#[error("{message}")]
-#[ts(export)]
-pub struct KclErrorDetails {
-    #[label(collection, "Errors")]
-    pub source_ranges: Vec<SourceRange>,
-    pub backtrace: Vec<BacktraceItem>,
-    #[serde(rename = "msg")]
-    pub message: String,
-}
-
 impl KclErrorDetails {
     pub fn new(message: String, source_ranges: Vec<SourceRange>) -> KclErrorDetails {
         let backtrace = source_ranges
@@ -458,6 +450,10 @@ impl KclError {
 
     pub fn new_io(details: KclErrorDetails) -> KclError {
         KclError::Io { details }
+    }
+
+    pub fn new_invalid_expression(details: KclErrorDetails) -> KclError {
+        KclError::InvalidExpression { details }
     }
 
     pub fn new_engine(details: KclErrorDetails) -> KclError {

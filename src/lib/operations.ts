@@ -47,6 +47,14 @@ import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 import { retrieveEdgeSelectionsFromOpArgs } from '@src/lang/modifyAst/edges'
+import {
+  KCL_PRELUDE_BODY_TYPE_SOLID,
+  KCL_PRELUDE_BODY_TYPE_SURFACE,
+  type KclPreludeBodyType,
+  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
+  KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+  type KclPreludeExtrudeMethod,
+} from '@src/lib/constants'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -372,42 +380,46 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
   }
 
   // twistCenter argument from a Point2d to two KCL expression
-  let twistCenter: KclCommandValue | undefined
-  if (
-    'twistCenter' in operation.labeledArgs &&
-    operation.labeledArgs.twistCenter
-  ) {
-    const result = await stringToKclExpression(
-      code.slice(
-        operation.labeledArgs.twistCenter.sourceRange[0],
-        operation.labeledArgs.twistCenter.sourceRange[1]
-      ),
-      rustContext,
-      { allowArrays: true }
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve twistCenter argument" }
-    }
-
-    twistCenter = result
-  }
+  const twistCenterResult = await extractKclArgument(
+    code,
+    operation,
+    'twistCenter',
+    rustContext,
+    true
+  )
+  const twistCenter: KclCommandValue | undefined =
+    'error' in twistCenterResult ? undefined : twistCenterResult
 
   // method argument from a string to boolean
-  let method: string | undefined
+  let method: KclPreludeExtrudeMethod | undefined
   if ('method' in operation.labeledArgs && operation.labeledArgs.method) {
-    method = code.slice(
+    const result = code.slice(
       operation.labeledArgs.method.sourceRange[0],
       operation.labeledArgs.method.sourceRange[1]
     )
+    if (result === KCL_PRELUDE_EXTRUDE_METHOD_MERGE) {
+      method = KCL_PRELUDE_EXTRUDE_METHOD_MERGE
+    } else if (result === KCL_PRELUDE_EXTRUDE_METHOD_NEW) {
+      method = KCL_PRELUDE_EXTRUDE_METHOD_NEW
+    } else {
+      return { reason: "Couldn't retrieve method argument" }
+    }
   }
 
   // bodyType argument from a string
-  let bodyType: string | undefined
+  let bodyType: KclPreludeBodyType | undefined
   if ('bodyType' in operation.labeledArgs && operation.labeledArgs.bodyType) {
-    bodyType = code.slice(
+    const result = code.slice(
       operation.labeledArgs.bodyType.sourceRange[0],
       operation.labeledArgs.bodyType.sourceRange[1]
     )
+    if (result === KCL_PRELUDE_BODY_TYPE_SOLID) {
+      bodyType = KCL_PRELUDE_BODY_TYPE_SOLID
+    } else if (result === KCL_PRELUDE_BODY_TYPE_SURFACE) {
+      bodyType = KCL_PRELUDE_BODY_TYPE_SURFACE
+    } else {
+      return { reason: "Couldn't retrieve bodyType argument" }
+    }
   }
 
   // 3. Assemble the default argument values for the command,

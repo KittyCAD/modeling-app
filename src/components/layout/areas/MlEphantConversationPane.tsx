@@ -1,37 +1,35 @@
 import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
-import type { settings } from '@src/lib/settings/initialSettings'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { KclManager } from '@src/lang/KclManager'
 import type { SystemIOActor } from '@src/lib/singletons'
 import { useEffect, useState, useRef } from 'react'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
-import type { MlEphantManagerActor2 } from '@src/machines/mlEphantManagerMachine2'
+import { MlEphantConversation } from '@src/components/MlEphantConversation'
+import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
-  MlEphantManagerStates2,
-  MlEphantManagerTransitions2,
-} from '@src/machines/mlEphantManagerMachine2'
+  MlEphantManagerStates,
+  MlEphantManagerTransitions,
+} from '@src/machines/mlEphantManagerMachine'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
-import type { BillingActor } from '@src/machines/billingMachine'
 import { useSelector } from '@xstate/react'
 import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 import { type useModelingContext } from '@src/hooks/useModelingContext'
 
-export const MlEphantConversationPane2 = (props: {
-  mlEphantManagerActor: MlEphantManagerActor2
-  billingActor: BillingActor
+export const MlEphantConversationPane = (props: {
+  mlEphantManagerActor: MlEphantManagerActor
   systemIOActor: SystemIOActor
   kclManager: KclManager
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
   sendModeling: ReturnType<typeof useModelingContext>['send']
   loaderFile: FileEntry | undefined
-  settings: typeof settings
+  settings: SettingsType
   user?: User
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
@@ -54,10 +52,6 @@ export const MlEphantConversationPane2 = (props: {
   ) {
     conversation = undefined
   }
-
-  const billingContext = useSelector(props.billingActor, (actor) => {
-    return actor.context
-  })
 
   const onProcess = async (request: string, mode: MlCopilotMode) => {
     if (props.theProject === undefined) {
@@ -102,7 +96,7 @@ export const MlEphantConversationPane2 = (props: {
     // has more data for initial creations. Improvements to the TTC service
     // will close this gap in performance.
     props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions2.MessageSend,
+      type: MlEphantManagerTransitions.MessageSend,
       prompt: request,
       projectForPromptOutput: project,
       applicationProjectDirectory: props.settings.app.projectDirectory.current,
@@ -127,7 +121,8 @@ export const MlEphantConversationPane2 = (props: {
 
   const isProcessing = lastExchange[0]
     ? lastExchange[0].responses.some(
-        (x: MlCopilotServerMessage) => 'end_of_stream' in x || 'error' in x
+        (x: MlCopilotServerMessage) =>
+          'end_of_stream' in x || 'error' in x || 'info' in x
       ) === false
     : false
 
@@ -135,10 +130,16 @@ export const MlEphantConversationPane2 = (props: {
 
   const onReconnect = () => {
     props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions2.CacheSetupAndConnect,
+      type: MlEphantManagerTransitions.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
       conversationId:
         props.mlEphantManagerActor.getSnapshot().context.conversationId,
+    })
+  }
+
+  const onInterrupt = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.Interrupt,
     })
   }
 
@@ -151,7 +152,7 @@ export const MlEphantConversationPane2 = (props: {
 
   const onClickClearChat = () => {
     props.mlEphantManagerActor.send({
-      type: MlEphantManagerTransitions2.ConversationClose,
+      type: MlEphantManagerTransitions.ConversationClose,
     })
     const sub = props.mlEphantManagerActor.subscribe((next) => {
       if (!next.matches(S.Await)) {
@@ -159,7 +160,7 @@ export const MlEphantConversationPane2 = (props: {
       }
 
       props.mlEphantManagerActor.send({
-        type: MlEphantManagerTransitions2.CacheSetupAndConnect,
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
         conversationId: undefined,
       })
@@ -194,7 +195,7 @@ export const MlEphantConversationPane2 = (props: {
       props.mlEphantManagerActor.getSnapshot().context.abruptlyClosed === false
     ) {
       props.mlEphantManagerActor.send({
-        type: MlEphantManagerTransitions2.CacheSetupAndConnect,
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
         conversationId,
       })
@@ -228,15 +229,15 @@ export const MlEphantConversationPane2 = (props: {
     )
 
     const subscriptionMlEphantManagerActor =
-      props.mlEphantManagerActor.subscribe((mlEphantManagerActorSnapshot2) => {
+      props.mlEphantManagerActor.subscribe((mlEphantManagerActorSnapshot) => {
         const isProcessing =
-          (mlEphantManagerActorSnapshot2.matches({
-            [MlEphantManagerStates2.Ready]: {
-              [MlEphantManagerStates2.Request]: S.Await,
+          (mlEphantManagerActorSnapshot.matches({
+            [MlEphantManagerStates.Ready]: {
+              [MlEphantManagerStates.Request]: S.Await,
             },
-          }) || mlEphantManagerActorSnapshot2.value === S.Await) === false
+          }) || mlEphantManagerActorSnapshot.value === S.Await) === false
 
-        const { context } = mlEphantManagerActorSnapshot2
+        const { context } = mlEphantManagerActorSnapshot
 
         if (isProcessing) {
           return
@@ -276,23 +277,39 @@ export const MlEphantConversationPane2 = (props: {
     }
   }, [searchParams, setSearchParams])
 
+  const userBlockedOnPayment: () => boolean = () => {
+    if (!props.user || !props.user.block) {
+      return false
+    }
+
+    switch (props.user.block) {
+      case 'missing_payment_method':
+      case 'payment_method_failed':
+        return true
+      default:
+        props.user.block satisfies never // exhaustiveness check
+        return false
+    }
+  }
+
   return (
-    <MlEphantConversation2
+    <MlEphantConversation
       isLoading={conversation === undefined}
       contexts={[
         { type: 'selections', data: props.contextModeling.selectionRanges },
       ]}
       conversation={conversation}
-      billingContext={billingContext}
       onProcess={(request: string, mode: MlCopilotMode) => {
         onProcess(request, mode).catch(reportRejection)
       }}
       onClickClearChat={onClickClearChat}
       onReconnect={onReconnect}
+      onInterrupt={onInterrupt}
       disabled={isProcessing || needsReconnect}
       needsReconnect={needsReconnect}
-      hasPromptCompleted={isProcessing}
+      hasPromptCompleted={!isProcessing}
       userAvatarSrc={props.user?.image}
+      userBlockedOnPayment={userBlockedOnPayment()}
       defaultPrompt={defaultPrompt}
     />
   )

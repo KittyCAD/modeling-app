@@ -445,7 +445,8 @@ description: Artifact commands bench.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -922,7 +923,8 @@ description: Artifact commands bench.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1448,7 +1450,8 @@ description: Artifact commands bench.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1909,7 +1912,8 @@ description: Artifact commands bench.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2435,7 +2439,8 @@ description: Artifact commands bench.kcl
         "distance": 2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2896,7 +2901,8 @@ description: Artifact commands bench.kcl
         "distance": -2.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3236,7 +3242,8 @@ description: Artifact commands bench.kcl
         "distance": 56.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3511,7 +3518,8 @@ description: Artifact commands bench.kcl
         "distance": 56.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3842,7 +3850,8 @@ description: Artifact commands bench.kcl
         "distance": 60.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3903,7 +3912,8 @@ description: Artifact commands bench.kcl
         "distance": 60.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3964,7 +3974,8 @@ description: Artifact commands bench.kcl
         "distance": 60.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4266,7 +4277,8 @@ description: Artifact commands bench.kcl
         "distance": 60.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4327,7 +4339,8 @@ description: Artifact commands bench.kcl
         "distance": 60.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

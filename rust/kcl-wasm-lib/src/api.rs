@@ -229,6 +229,36 @@ impl Context {
             .map_err(|e| format!("Could not serialize exit sketch result. {TRUE_BUG} Details: {e}"))?)
     }
 
+    /// Delete sketch.
+    #[wasm_bindgen]
+    pub async fn delete_sketch(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
+
+        let ctx = self
+            .create_executor_ctx(settings, None, true)
+            .map_err(|e| format!("Could not create KCL executor context for delete sketch. {TRUE_BUG} Details: {e}"))?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let result = guard
+            .delete_sketch(&ctx, version, sketch)
+            .await
+            .map_err(|e| format!("Failed to delete sketch: {:?}", e))?;
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize delete sketch result. {TRUE_BUG} Details: {e}"))?)
+    }
+
     /// Add segment to sketch.
     #[wasm_bindgen]
     pub async fn add_segment(
@@ -363,5 +393,43 @@ impl Context {
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize add constraint result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    /// Chain a segment to a previous segment by adding it and creating a coincident constraint.
+    #[wasm_bindgen]
+    pub async fn chain_segment(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        previous_segment_end_point_id_json: &str,
+        segment_json: &str,
+        label: Option<String>,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+        let previous_segment_end_point_id: kcl_lib::front::ObjectId =
+            serde_json::from_str(previous_segment_end_point_id_json)
+                .map_err(|e| format!("Could not deserialize previous_segment_end_point_id: {e}"))?;
+        let segment: kcl_lib::front::SegmentCtor =
+            serde_json::from_str(segment_json).map_err(|e| format!("Could not deserialize SegmentCtor: {e}"))?;
+
+        let ctx = self
+            .create_executor_ctx(settings, None, true)
+            .map_err(|e| format!("Could not create KCL executor context for chain segment. {TRUE_BUG} Details: {e}"))?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let result = guard
+            .chain_segment(&ctx, version, sketch, previous_segment_end_point_id, segment, label)
+            .await
+            .map_err(|e| format!("Failed to chain segment: {:?}", e))?;
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize chain segment result. {TRUE_BUG} Details: {e}"))?)
     }
 }

@@ -710,7 +710,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             state.matches({ Sketch: 'SketchIdle' }) ||
             state.matches('Sketch no face')
           ),
-        icon: 'arrowLeft',
+        icon: 'arrowShortLeft',
         status: 'available',
         title: 'Exit sketch',
         showTitle: true,
@@ -1236,7 +1236,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           modelingSend({
             type: 'Exit sketch',
           }),
-        icon: 'arrowLeft',
+        icon: 'arrowShortLeft',
         status: 'available',
         title: 'Exit sketch',
         showTitle: true,
@@ -1279,7 +1279,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'oneDot',
         status: 'available',
         title: 'Point',
-        hotkey: 'L',
+        hotkey: 'P',
         description: 'Start drawing straight points',
         links: [],
         isActive: (state) =>
@@ -1305,6 +1305,27 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           state.matches('sketchSolveMode') &&
           state.context.sketchSolveToolName === 'trimTool',
       },
+      {
+        id: 'center-arc',
+        onClick: ({ modelingSend, isActive }) =>
+          isActive
+            ? modelingSend({
+                type: 'unequip tool',
+              })
+            : modelingSend({
+                type: 'equip tool',
+                data: { tool: 'centerArcTool' },
+              }),
+        icon: 'arcCenter',
+        status: 'available',
+        title: 'Center Arc',
+        hotkey: 'A',
+        description: 'Draw an arc by center and two endpoints',
+        links: [],
+        isActive: (state) =>
+          state.matches('sketchSolveMode') &&
+          state.context.sketchSolveToolName === 'centerArcTool',
+      },
       'break',
       {
         id: 'coincident',
@@ -1315,7 +1336,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'coincident',
         status: 'available',
         title: 'Coincident',
-        hotkey: 'L',
+        hotkey: 'C',
         description: 'Constrain points or curves to be coincident',
         links: [],
         isActive: (state) => false,
@@ -1329,7 +1350,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'parallel',
         status: 'available',
         title: 'Parallel',
-        hotkey: 'L',
+        hotkey: 'Shift+P',
         description: 'Constrain lines or curves to be parallel',
         links: [],
         isActive: (state) => false,
@@ -1343,7 +1364,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'equal',
         status: 'available',
         title: 'Equal Length',
-        hotkey: 'L',
+        hotkey: 'E',
         description: 'Constrain lines to have equal length',
         links: [],
         isActive: (state) => false,
@@ -1357,7 +1378,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'vertical',
         status: 'available',
         title: 'Vertical',
-        hotkey: 'L',
+        hotkey: 'V',
         description: 'Constrain lines to be vertical',
         links: [],
         isActive: (state) => false,
@@ -1371,7 +1392,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'horizontal',
         status: 'available',
         title: 'Horizontal',
-        hotkey: 'L',
+        hotkey: 'H',
         description: 'Constrain lines to be horizontal',
         links: [],
         isActive: (state) => false,
@@ -1385,7 +1406,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'dimension',
         status: 'available',
         title: 'Distance',
-        hotkey: 'L',
+        hotkey: 'D',
         description: 'Constrain distance between points or lines',
         links: [],
         isActive: (state) => false,

@@ -1,25 +1,16 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { expect, vi, describe, test } from 'vitest'
 
-import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
-import type { BillingContext } from '@src/machines/billingMachine'
-import type { Conversation } from '@src/machines/mlEphantManagerMachine2'
+import { MlEphantConversation } from '@src/components/MlEphantConversation'
+import type { Conversation } from '@src/machines/mlEphantManagerMachine'
 import type { MlCopilotMode } from '@kittycad/lib'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 
-describe('MlEphantConversation2', () => {
+describe('MlEphantConversation', () => {
   function rendersRequestBubbleThenDisplayResponse(
     mode: MlCopilotMode = DEFAULT_ML_COPILOT_MODE
   ) {
     vi.useFakeTimers()
-
-    const billingContext: BillingContext = {
-      credits: 10,
-      allowance: 100,
-      error: undefined,
-      urlUserService: () => '',
-      lastFetch: undefined,
-    }
 
     let latestConversation: Conversation | undefined = { exchanges: [] }
 
@@ -40,16 +31,16 @@ describe('MlEphantConversation2', () => {
 
     const renderConversation = (
       conversation?: Conversation,
-      hasPromptCompleted = false
+      hasPromptCompleted = true
     ) => {
       return (
-        <MlEphantConversation2
+        <MlEphantConversation
           isLoading={false}
           conversation={conversation}
-          billingContext={billingContext}
           onProcess={handleProcess}
           onClickClearChat={() => {}}
           onReconnect={() => {}}
+          onInterrupt={() => {}}
           needsReconnect={false}
           contexts={[]}
           disabled={false}
@@ -132,14 +123,6 @@ describe('MlEphantConversation2', () => {
   })
 
   test('does not render unknown response types', () => {
-    const billingContext: BillingContext = {
-      credits: 10,
-      allowance: 100,
-      error: undefined,
-      urlUserService: () => '',
-      lastFetch: undefined,
-    }
-
     const unknownResponseText = 'this should never be visible'
 
     const conversation: Conversation = {
@@ -162,13 +145,13 @@ describe('MlEphantConversation2', () => {
     }
 
     render(
-      <MlEphantConversation2
+      <MlEphantConversation
         isLoading={false}
         conversation={conversation}
-        billingContext={billingContext}
         onProcess={vi.fn()}
         onClickClearChat={() => {}}
         onReconnect={() => {}}
+        onInterrupt={() => {}}
         needsReconnect={false}
         disabled={false}
         hasPromptCompleted={true}

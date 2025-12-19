@@ -9,11 +9,7 @@ import type {
 import { buildCommandArgument } from '@src/lib/createMachineCommand'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getPropertyByPath } from '@src/lib/objectPropertyByPath'
-import type {
-  Setting,
-  SettingsType,
-  createSettings,
-} from '@src/lib/settings/initialSettings'
+import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
 import type {
   SetEventTypes,
   SettingProps,
@@ -22,12 +18,14 @@ import type {
 } from '@src/lib/settings/settingsTypes'
 import type { PathValue } from '@src/lib/types'
 import type { settingsMachine } from '@src/machines/settingsMachine'
+import { hiddenOnPlatform } from '@src/lib/settings/settingsUtils'
 
 // An array of the paths to all of the settings that have commandConfigs
 export const settingsWithCommandConfigs = (s: SettingsType) =>
   Object.entries(s).flatMap(([categoryName, categorySettings]) =>
     Object.entries(categorySettings)
       .filter(([_, setting]) => setting.commandConfig !== undefined)
+      .filter(([_, setting]) => !hiddenOnPlatform(setting, isDesktop()))
       .map(([settingName]) => `${categoryName}.${settingName}`)
   ) as SettingsPaths[]
 
@@ -63,7 +61,7 @@ interface CreateSettingsArgs {
 // Takes a Setting with a commandConfig and creates a Command
 // that can be used in the CommandBar component.
 export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
-  type S = PathValue<ReturnType<typeof createSettings>, typeof type>
+  type S = PathValue<SettingsType, typeof type>
 
   const context = actor.getSnapshot().context
   const isProjectAvailable = context.currentProject !== undefined

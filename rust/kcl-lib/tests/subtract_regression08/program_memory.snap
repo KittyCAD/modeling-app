@@ -261,7 +261,7 @@ description: Variables in memory after executing subtract_regression08.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "in",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "sketch002": {
@@ -522,7 +522,7 @@ description: Variables in memory after executing subtract_regression08.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "in",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "sweepCut000": {

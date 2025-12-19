@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ExecOutcome, ExecutorContext,
+    ExecutorContext,
     frontend::api::{
         Expr, FileId, Number, ObjectId, Plane, ProjectId, Result, SceneGraph, SceneGraphDelta, SourceDelta, Version,
     },
@@ -17,7 +17,7 @@ pub trait SketchApi {
         ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
-    ) -> Result<(SceneGraph, ExecOutcome)>;
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn new_sketch(
         &mut self,
@@ -39,6 +39,13 @@ pub trait SketchApi {
     ) -> Result<SceneGraphDelta>;
 
     async fn exit_sketch(&mut self, ctx: &ExecutorContext, version: Version, sketch: ObjectId) -> Result<SceneGraph>;
+
+    async fn delete_sketch(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn add_segment(
         &mut self,
@@ -72,6 +79,16 @@ pub trait SketchApi {
         version: Version,
         sketch: ObjectId,
         constraint: Constraint,
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+
+    async fn chain_segment(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        previous_segment_end_point_id: ObjectId,
+        segment: SegmentCtor,
+        label: Option<String>,
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn edit_constraint(
@@ -112,24 +129,21 @@ pub struct Point {
 #[ts(export, export_to = "FrontendApi.ts")]
 pub enum Freedom {
     Free,
-    Partial,
     Fixed,
+    Conflict,
 }
 
 impl Freedom {
+    /// Merges two Freedom values. For example, a point has a solver variable
+    /// for each dimension, x and y. If one dimension is `Free` and the other is
+    /// `Fixed`, the point overall is `Free` since it isn't fully constrained.
+    /// `Conflict` infects the most, followed by `Free`. An object must be fully
+    /// `Fixed` to be `Fixed` overall.
     pub fn merge(self, other: Self) -> Self {
-        match self {
-            Self::Free => match other {
-                Self::Free => Self::Free,
-                Self::Partial => Self::Partial,
-                Self::Fixed => Self::Partial,
-            },
-            Self::Partial => Self::Partial,
-            Self::Fixed => match other {
-                Self::Free => Self::Partial,
-                Self::Partial => Self::Partial,
-                Self::Fixed => Self::Fixed,
-            },
+        match (self, other) {
+            (Self::Conflict, _) | (_, Self::Conflict) => Self::Conflict,
+            (Self::Free, _) | (_, Self::Free) => Self::Free,
+            (Self::Fixed, Self::Fixed) => Self::Fixed,
         }
     }
 }
@@ -258,13 +272,14 @@ pub enum Constraint {
     Horizontal(Horizontal),
     LinesEqualLength(LinesEqualLength),
     Parallel(Parallel),
+    Perpendicular(Perpendicular),
     Vertical(Vertical),
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Coincident {
-    pub points: Vec<ObjectId>,
+    pub segments: Vec<ObjectId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -295,5 +310,11 @@ pub struct Vertical {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Parallel {
+    pub lines: Vec<ObjectId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", optional_fields)]
+pub struct Perpendicular {
     pub lines: Vec<ObjectId>,
 }

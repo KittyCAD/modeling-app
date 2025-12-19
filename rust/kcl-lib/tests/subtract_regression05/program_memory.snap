@@ -575,7 +575,7 @@ description: Variables in memory after executing subtract_regression05.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "in",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "sketch004": {

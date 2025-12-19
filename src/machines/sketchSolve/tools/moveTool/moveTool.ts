@@ -10,7 +10,9 @@ import {
   htmlHelper,
   SEGMENT_TYPE_LINE,
   SEGMENT_TYPE_POINT,
-  updateLineSegmentHover,
+  SEGMENT_TYPE_ARC,
+  ARC_SEGMENT_BODY,
+  updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
 import {
   type Object3D,
@@ -119,6 +121,22 @@ function buildSegmentCtorWithDrag({
     const newEnd = applyVectorToPoint2D(baseCtor.end, dragVec)
     return {
       type: 'Line',
+      start: newStart,
+      end: newEnd,
+    }
+  } else if (baseCtor.type === 'Arc') {
+    // For arcs, always apply the drag vector to center, start, and end points (translate the arc)
+    // This applies whether it's the entity under cursor or another selected entity
+    const newCenter = applyVectorToPoint2D(baseCtor.center, dragVec)
+    const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
+    const newEnd = applyVectorToPoint2D(baseCtor.end, dragVec)
+
+    // When dragging the arc body (all points translate), we don't need to swap start/end
+    // All points move together, so the relative positions stay the same
+
+    return {
+      type: 'Arc',
+      center: newCenter,
       start: newStart,
       end: newEnd,
     }
@@ -277,8 +295,13 @@ export function findEntityUnderCursorId(
         selected.children.some(
           (child) => child.userData?.type === STRAIGHT_SEGMENT_BODY
         )
+      const isArcSegment =
+        selected.userData?.type === SEGMENT_TYPE_ARC ||
+        selected.children.some(
+          (child) => child.userData?.type === ARC_SEGMENT_BODY
+        )
 
-      if (isPointSegment || isLineSegment) {
+      if (isPointSegment || isLineSegment || isArcSegment) {
         return groupId
       }
     }
@@ -288,6 +311,7 @@ export function findEntityUnderCursorId(
   const groupUnderCursor = getParentGroup(selected, [
     SEGMENT_TYPE_POINT,
     SEGMENT_TYPE_LINE,
+    SEGMENT_TYPE_ARC,
   ])
   if (groupUnderCursor) {
     const groupId = Number(groupUnderCursor.name)
@@ -307,12 +331,12 @@ export function findEntityUnderCursorId(
  * @returns The onMouseEnter callback function
  */
 export function createOnMouseEnterCallback({
-  updateLineSegmentHover,
+  updateSegmentHover,
   getSelectedIds,
   setLastHoveredMesh,
   getDraftEntityIds,
 }: {
-  updateLineSegmentHover: (
+  updateSegmentHover: (
     mesh: Mesh,
     isHovering: boolean,
     selectedIds: Array<number>,
@@ -334,13 +358,17 @@ export function createOnMouseEnterCallback({
     }
     if (!selected) return
 
-    // Only highlight line segment meshes (not point segments or other objects)
+    // Only highlight segment meshes (lines or arcs), not points or other objects
     const mesh = selected
-    if (mesh.userData?.type === STRAIGHT_SEGMENT_BODY && mesh instanceof Mesh) {
+    if (
+      mesh instanceof Mesh &&
+      (mesh.userData?.type === STRAIGHT_SEGMENT_BODY ||
+        mesh.userData?.type === ARC_SEGMENT_BODY)
+    ) {
       const allSelectedIds = getSelectedIds()
       const draftEntityIds = getDraftEntityIds?.()
       // Highlight the line segment to show it's interactive
-      updateLineSegmentHover(mesh, true, allSelectedIds, draftEntityIds)
+      updateSegmentHover(mesh, true, allSelectedIds, draftEntityIds)
       // Store the hovered mesh so we can clear it on mouse leave
       setLastHoveredMesh(mesh)
     }
@@ -358,13 +386,13 @@ export function createOnMouseEnterCallback({
  * @returns The onMouseLeave callback function
  */
 export function createOnMouseLeaveCallback({
-  updateLineSegmentHover,
+  updateSegmentHover,
   getSelectedIds,
   getLastHoveredMesh,
   setLastHoveredMesh,
   getDraftEntityIds,
 }: {
-  updateLineSegmentHover: (
+  updateSegmentHover: (
     mesh: Mesh,
     isHovering: boolean,
     selectedIds: Array<number>,
@@ -392,7 +420,7 @@ export function createOnMouseLeaveCallback({
       const allSelectedIds = getSelectedIds()
       const draftEntityIds = getDraftEntityIds?.()
       // Remove hover highlighting from the previously hovered segment
-      updateLineSegmentHover(hoveredMesh, false, allSelectedIds, draftEntityIds)
+      updateSegmentHover(hoveredMesh, false, allSelectedIds, draftEntityIds)
       setLastHoveredMesh(null)
     }
 
@@ -400,13 +428,14 @@ export function createOnMouseLeaveCallback({
     if (selected) {
       const mesh = selected
       if (
-        mesh.userData?.type === STRAIGHT_SEGMENT_BODY &&
-        mesh instanceof Mesh
+        mesh instanceof Mesh &&
+        (mesh.userData?.type === STRAIGHT_SEGMENT_BODY ||
+          mesh.userData?.type === ARC_SEGMENT_BODY)
       ) {
         const allSelectedIds = getSelectedIds()
         const draftEntityIds = getDraftEntityIds?.()
         // Ensure hover is cleared even if the mesh wasn't in our tracking
-        updateLineSegmentHover(mesh, false, allSelectedIds, draftEntityIds)
+        updateSegmentHover(mesh, false, allSelectedIds, draftEntityIds)
       }
     }
   }
@@ -566,6 +595,7 @@ export function createOnDragCallback({
 
       // Build ctors for each segment with drag applied
       const units = baseUnitToNumericSuffix(getDefaultLengthUnit())
+
       for (const id of idsToEdit) {
         const obj = objects[id]
         if (!obj) {
@@ -578,6 +608,7 @@ export function createOnDragCallback({
         }
 
         const isEntityUnderCursor = id === entityUnderCursorId
+
         const ctor = buildSegmentCtorWithDrag({
           objUnderCursor: obj,
           selectedObjects: objects,
@@ -618,6 +649,7 @@ export function createOnDragCallback({
       // Notify about new sketch outcome if edit was successful
       if (result) {
         onNewSketchOutcome({ ...result, writeToDisk: false })
+        await new Promise((resolve) => requestAnimationFrame(resolve))
       }
     } finally {
       setIsSolveInProgress(false)
@@ -1115,21 +1147,19 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      // Check if this group has a line segment mesh
-      const lineMesh = child.children.find(
-        (c) => c instanceof Mesh && c.userData?.type === STRAIGHT_SEGMENT_BODY
+      // Check if this group has a line or arc segment mesh
+      const segmentMesh = child.children.find(
+        (c) =>
+          c instanceof Mesh &&
+          (c.userData?.type === STRAIGHT_SEGMENT_BODY ||
+            c.userData?.type === ARC_SEGMENT_BODY)
       )
 
-      if (lineMesh && lineMesh instanceof Mesh) {
-        // Handle line segment
-        const geometry = lineMesh.geometry
-        if (!(geometry instanceof ExtrudeGeometry)) {
-          return
-        }
-
+      if (segmentMesh && segmentMesh instanceof Mesh) {
+        // Handle line or arc segment (same logic for both)
         // Get the bounding box of the mesh in world space
-        lineMesh.updateMatrixWorld()
-        const box = new Box3().setFromObject(lineMesh)
+        segmentMesh.updateMatrixWorld()
+        const box = new Box3().setFromObject(segmentMesh)
 
         // Get the 8 corners of the bounding box
         const min = box.min
@@ -1194,7 +1224,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
   }
 
   /**
-   * Helper function to find segments (line segments and point segments) that intersect with the selection box
+   * Helper function to find segments (line segments, arc segments, and point segments) that intersect with the selection box
    * Uses improved intersection logic: checks bounding box containment first, then polygon intersection
    */
   function findIntersectingSegments(
@@ -1234,21 +1264,27 @@ export function setUpOnDragAndSelectionClickCallbacks({
         return
       }
 
-      // Check if this group has a line segment mesh
-      const lineMesh = child.children.find(
-        (c) => c instanceof Mesh && c.userData?.type === STRAIGHT_SEGMENT_BODY
+      // Check if this group has a line or arc segment mesh
+      const segmentMesh = child.children.find(
+        (c) =>
+          c instanceof Mesh &&
+          (c.userData?.type === STRAIGHT_SEGMENT_BODY ||
+            c.userData?.type === ARC_SEGMENT_BODY)
       )
 
-      if (lineMesh && lineMesh instanceof Mesh) {
-        // Handle line segment
-        const geometry = lineMesh.geometry
-        if (!(geometry instanceof ExtrudeGeometry)) {
-          return
+      if (segmentMesh && segmentMesh instanceof Mesh) {
+        // Handle line or arc segment (same logic for both)
+        // For line segments, check geometry type
+        if (segmentMesh.userData?.type === STRAIGHT_SEGMENT_BODY) {
+          const geometry = segmentMesh.geometry
+          if (!(geometry instanceof ExtrudeGeometry)) {
+            return
+          }
         }
 
         // Get the bounding box of the mesh in world space
-        lineMesh.updateMatrixWorld()
-        const box = new Box3().setFromObject(lineMesh)
+        segmentMesh.updateMatrixWorld()
+        const box = new Box3().setFromObject(segmentMesh)
 
         // Get the 8 corners of the bounding box
         const min = box.min
@@ -1275,7 +1311,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
           )
         })
 
-        // Compute the bounding box of the line segment in screen space
+        // Compute the bounding box of the segment in screen space
         const segmentMinPx = new Vector2(
           Math.min(...screenCorners.map((c) => c.x)),
           Math.min(...screenCorners.map((c) => c.y))
@@ -1287,7 +1323,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
 
         // Extract triangles from the mesh
         const triangles = extractTrianglesFromMesh(
-          lineMesh,
+          segmentMesh,
           camera,
           viewportSize
         )
@@ -1374,7 +1410,8 @@ export function setUpOnDragAndSelectionClickCallbacks({
         }),
       getDefaultLengthUnit: () =>
         context.kclManager.fileSettings.defaultLengthUnit,
-      getJsAppSettings: async () => await jsAppSettings(),
+      getJsAppSettings: async () =>
+        await jsAppSettings(context.rustContext.settingsActor),
     }),
     onClick: createOnClickCallback({
       getParentGroup,
@@ -1384,7 +1421,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       }) => self.send({ type: 'update selected ids', data }),
     }),
     onMouseEnter: createOnMouseEnterCallback({
-      updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds: () => {
         const snapshot = self.getSnapshot()
         // Combine selectedIds and duringAreaSelectIds for highlighting
@@ -1404,7 +1441,7 @@ export function setUpOnDragAndSelectionClickCallbacks({
       },
     }),
     onMouseLeave: createOnMouseLeaveCallback({
-      updateLineSegmentHover,
+      updateSegmentHover,
       getSelectedIds: () => {
         const snapshot = self.getSnapshot()
         // Combine selectedIds and duringAreaSelectIds for highlighting

@@ -41,12 +41,7 @@ async function getAstAndArtifactGraph(code: string, rustContext: RustContext) {
   const ast = assertParse(code, instanceInThisFile)
   if (err(ast)) throw ast
 
-  const { artifactGraph } = await enginelessExecutor(
-    ast,
-    undefined,
-    undefined,
-    rustContext
-  )
+  const { artifactGraph } = await enginelessExecutor(ast, rustContext)
   return { ast, artifactGraph }
 }
 
@@ -86,7 +81,7 @@ describe('geometry.test.ts', () => {
         )) as KclCommandValue,
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(ast, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(expectedNewLine)
     })
@@ -127,7 +122,7 @@ describe('geometry.test.ts', () => {
         ccw: true,
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(ast, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(expectedNewLine)
     })
@@ -174,7 +169,7 @@ describe('geometry.test.ts', () => {
         nodeToEdit: createPathToNodeForLastVariable(ast),
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(ast, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).not.toContain(code)
       expect(newCode).toContain(expectedNewLine)
@@ -236,7 +231,7 @@ helix001 = helix(
         )) as KclCommandValue,
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(ast, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toBe(helixFromSegmentInPath)
     })
@@ -278,7 +273,7 @@ helix001 = helix(
         nodeToEdit: createPathToNodeForLastVariable(ast),
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(ast, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`helix001 = helix(
   axis = seg01,
@@ -334,7 +329,7 @@ helix001 = helix(
         ccw: true,
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(ast, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toBe(helixFromCylinder)
     })
@@ -370,7 +365,7 @@ helix001 = helix(
         nodeToEdit: createPathToNodeForLastVariable(ast),
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(ast, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
         `helix001 = helix(cylinder = extrude001, revolutions = 11, angleStart = 22`

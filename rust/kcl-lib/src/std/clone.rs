@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use kcmc::{
     ModelingCmd, each_cmd as mcmd,
     ok_response::{OkModelingCmdResponse, output::EntityGetAllChildUuids},
+    shared::BodyType,
     websocket::OkWebSocketResponseData,
 };
 use kittycad_modeling_cmds::{self as kcmc};
@@ -168,6 +169,7 @@ async fn fix_tags_and_references(
                 args,
                 None,
                 Some(&entity_id_map.clone()),
+                BodyType::Solid, // TODO: Support surface clones.
             )
             .await?;
 
