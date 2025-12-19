@@ -92,6 +92,13 @@ describe('processMemory', () => {
         faceId: expect.any(String),
         sourceRange: [expect.any(Number), expect.any(Number), 0],
       },
+      {
+        type: 'extrudePlane',
+        tag: null,
+        id: expect.any(String),
+        faceId: expect.any(String),
+        sourceRange: [expect.any(Number), expect.any(Number), 0],
+      },
     ])
     expect(output.theSketch).toEqual([
       {

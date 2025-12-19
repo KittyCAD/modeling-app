@@ -129,6 +129,13 @@ mySketch001 = startSketchOn(XY)
             id: expect.any(String),
             sourceRange: [expect.any(Number), expect.any(Number), 0],
           },
+          {
+            type: 'extrudePlane',
+            faceId: expect.any(String),
+            tag: null,
+            id: expect.any(String),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
+          },
         ],
         sketch: {
           id: expect.any(String),
@@ -154,6 +161,17 @@ mySketch001 = startSketchOn(XY)
               type: 'ToPoint',
               from: [-1.59, -1.54],
               to: [0.46, -5.82],
+              units: 'mm',
+              tag: null,
+              __geoMeta: {
+                id: expect.any(String),
+                sourceRange: [expect.any(Number), expect.any(Number), 0],
+              },
+            },
+            {
+              type: 'ToPoint',
+              from: [0.46, -5.82],
+              to: [0, 0],
               units: 'mm',
               tag: null,
               __geoMeta: {
