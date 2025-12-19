@@ -1,7 +1,7 @@
 use anyhow::Result;
 use kcl_ezpz::{
     Constraint as SolverConstraint,
-    datatypes::{DatumPoint, LineSegment},
+    datatypes::{CircularArc, DatumPoint, LineSegment},
 };
 
 use crate::{
@@ -512,8 +512,11 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             center_x.to_constraint_id(range)?,
             center_y.to_constraint_id(range)?,
         ),
-        a: kcl_ezpz::datatypes::DatumPoint::new_xy(start_x.to_constraint_id(range)?, start_y.to_constraint_id(range)?),
-        b: kcl_ezpz::datatypes::DatumPoint::new_xy(end_x.to_constraint_id(range)?, end_y.to_constraint_id(range)?),
+        start: kcl_ezpz::datatypes::DatumPoint::new_xy(
+            start_x.to_constraint_id(range)?,
+            start_y.to_constraint_id(range)?,
+        ),
+        end: kcl_ezpz::datatypes::DatumPoint::new_xy(end_x.to_constraint_id(range)?, end_y.to_constraint_id(range)?),
     });
 
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
@@ -800,6 +803,96 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                         _ => Err(KclError::new_semantic(KclErrorDetails::new(
                             "Point coordinates must be sketch variables for point-segment coincident constraint"
                                 .to_owned(),
+                            vec![args.source_range],
+                        ))),
+                    }
+                }
+                // Point-Arc or Arc-Point case: create PointArcCoincident constraint
+                (
+                    UnsolvedSegmentKind::Point {
+                        position: point_pos, ..
+                    },
+                    UnsolvedSegmentKind::Arc {
+                        start: arc_start,
+                        end: arc_end,
+                        center: arc_center,
+                        ..
+                    },
+                )
+                | (
+                    UnsolvedSegmentKind::Arc {
+                        start: arc_start,
+                        end: arc_end,
+                        center: arc_center,
+                        ..
+                    },
+                    UnsolvedSegmentKind::Point {
+                        position: point_pos, ..
+                    },
+                ) => {
+                    let point_x = &point_pos[0];
+                    let point_y = &point_pos[1];
+                    match (point_x, point_y) {
+                        (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) => {
+                            // Extract arc center, start, and end coordinates
+                            let (center_x, center_y) = (&arc_center[0], &arc_center[1]);
+                            let (start_x, start_y) = (&arc_start[0], &arc_start[1]);
+                            let (end_x, end_y) = (&arc_end[0], &arc_end[1]);
+
+                            match (center_x, center_y, start_x, start_y, end_x, end_y) {
+                                (
+                                    UnsolvedExpr::Unknown(cx), UnsolvedExpr::Unknown(cy),
+                                    UnsolvedExpr::Unknown(sx), UnsolvedExpr::Unknown(sy),
+                                    UnsolvedExpr::Unknown(ex), UnsolvedExpr::Unknown(ey),
+                                ) => {
+                                    let point = DatumPoint::new_xy(
+                                        point_x.to_constraint_id(range)?,
+                                        point_y.to_constraint_id(range)?,
+                                    );
+                                    let circular_arc = CircularArc {
+                                        center: DatumPoint::new_xy(
+                                            cx.to_constraint_id(range)?,
+                                            cy.to_constraint_id(range)?,
+                                        ),
+                                        start: DatumPoint::new_xy(
+                                            sx.to_constraint_id(range)?,
+                                            sy.to_constraint_id(range)?,
+                                        ),
+                                        end: DatumPoint::new_xy(
+                                            ex.to_constraint_id(range)?,
+                                            ey.to_constraint_id(range)?,
+                                        ),
+                                    };
+                                    let constraint = SolverConstraint::PointArcCoincident(circular_arc, point);
+
+                                    #[cfg(feature = "artifact-graph")]
+                                    let constraint_id = exec_state.next_object_id();
+
+                                    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                                            "coincident() can only be used inside a sketch block".to_owned(),
+                                            vec![args.source_range],
+                                        )));
+                                    };
+                                    sketch_state.solver_constraints.push(constraint);
+                                    #[cfg(feature = "artifact-graph")]
+                                    {
+                                        let constraint = crate::front::Constraint::Coincident(Coincident {
+                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
+                                        });
+                                        sketch_state.sketch_constraints.push(constraint_id);
+                                        track_constraint(constraint_id, constraint, exec_state, &args);
+                                    }
+                                    Ok(KclValue::none())
+                                }
+                                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                                    "Arc center, start, and end points must be sketch variables for point-arc coincident constraint".to_owned(),
+                                    vec![args.source_range],
+                                ))),
+                            }
+                        }
+                        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Point coordinates must be sketch variables for point-arc coincident constraint".to_owned(),
                             vec![args.source_range],
                         ))),
                     }
