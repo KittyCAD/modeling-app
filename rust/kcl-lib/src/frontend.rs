@@ -1751,7 +1751,7 @@ impl FrontendState {
         &mut self,
         ctx: &ExecutorContext,
         _sketch_id: ObjectId,
-        sketch_block_range: SourceRange,
+        #[cfg_attr(not(feature = "artifact-graph"), allow(unused_variables))] sketch_block_range: SourceRange,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
@@ -1768,6 +1768,7 @@ impl FrontendState {
                 msg: "No AST produced after adding constraint".to_string(),
             });
         };
+        #[cfg(feature = "artifact-graph")]
         let constraint_source_range =
             find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
                 msg: format!(
