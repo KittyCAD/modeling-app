@@ -27,7 +27,7 @@ use crate::{
 };
 
 pub(crate) mod api;
-mod modify;
+pub(crate) mod modify;
 pub(crate) mod sketch;
 mod traverse;
 
