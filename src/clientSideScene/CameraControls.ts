@@ -1163,8 +1163,7 @@ export class CameraControls {
   async tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
     targetPosition = new Vector3(),
-    duration = 500,
-    toOrthographic = true
+    duration = 500
   ): Promise<void> {
     if (this.syncDirection === 'engineToClient')
       console.warn(
@@ -1173,16 +1172,13 @@ export class CameraControls {
     await this._tweenCameraToQuaternion(
       targetQuaternion,
       targetPosition,
-      duration,
-      toOrthographic
+      duration
     )
   }
   _tweenCameraToQuaternion(
     targetQuaternion: Quaternion,
     targetPosition: Vector3,
-    duration = 500,
-    // Currently never true, we could delete it along with animateToOrthographic()..
-    toOrthographic = false
+    duration = 500
   ): Promise<void> {
     return new Promise((resolve) => {
       const camera = this.camera
@@ -1226,12 +1222,8 @@ export class CameraControls {
       }
 
       const onComplete = async () => {
-        if (isReducedMotion() && toOrthographic) {
-          cameraAtTime(1)
-          this.useOrthographicCamera()
-        } else if (toOrthographic) {
-          await this.animateToOrthographic()
-        } else {
+        if (isReducedMotion()) {
+          // Even if there is no animation we need to call cameraAtTime so camera values are updated
           cameraAtTime(1)
         }
         this.enableRotate = false
