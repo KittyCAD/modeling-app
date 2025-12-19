@@ -16,7 +16,6 @@ import {
   editorCodeUpdateEvent,
   type KclManager,
 } from '@src/lang/KclManager'
-import { kclManager, rustContext } from '@src/lib/singletons'
 import { deferExecution } from '@src/lib/utils'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
@@ -33,6 +32,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type RustContext from '@src/lib/rustContext'
 
 const changesDelay = 600
 
@@ -41,6 +41,7 @@ export class KclPlugin implements PluginValue {
   private viewUpdate: ViewUpdate | null = null
   private client: LanguageServerClient
   private readonly kclManager: KclManager
+  private readonly rustContext: RustContext
   private readonly sceneEntitiesManager: SceneEntities
   private readonly wasmInstance: ModuleType
 
@@ -51,10 +52,12 @@ export class KclPlugin implements PluginValue {
       kclManager: KclManager
       sceneEntitiesManager: SceneEntities
       wasmInstance: ModuleType
+      rustContext: RustContext
     }
   ) {
     this.client = client
     this.kclManager = systemDeps.kclManager
+    this.rustContext = systemDeps.rustContext
     this.sceneEntitiesManager = systemDeps.sceneEntitiesManager
     this.wasmInstance = systemDeps.wasmInstance
 
@@ -181,13 +184,16 @@ export class KclPlugin implements PluginValue {
     // these are short term hacks while in rapid development for sketch revamp
     // should be clean up.
     try {
-      const modelingState = kclManager.modelingState
+      const modelingState = this.kclManager.modelingState
       if (modelingState?.matches('sketchSolveMode')) {
-        await kclManager.executeCode()
-        const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
-          kclManager.ast,
-          await jsAppSettings(kclManager.singletons.rustContext.settingsActor)
-        )
+        await this.kclManager.executeCode()
+        const { sceneGraph, execOutcome } =
+          await this.rustContext.hackSetProgram(
+            this.kclManager.ast,
+            await jsAppSettings(
+              this.kclManager.singletons.rustContext.settingsActor
+            )
+          )
 
         // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
         const sceneGraphDelta: SceneGraphDelta = {
@@ -198,11 +204,11 @@ export class KclPlugin implements PluginValue {
         }
 
         const kclSource: SourceDelta = {
-          text: kclManager.code,
+          text: this.kclManager.code,
         }
 
         // Send event to sketch solve machine via modeling machine
-        kclManager.sendModelingEvent({
+        this.kclManager.sendModelingEvent({
           type: 'update sketch outcome',
           data: {
             kclSource,
@@ -210,7 +216,7 @@ export class KclPlugin implements PluginValue {
           },
         })
       } else {
-        await kclManager.executeCode()
+        await this.kclManager.executeCode()
       }
     } catch (error) {
       console.error('Error when updating Rust state after user edit:', error)
@@ -242,6 +248,7 @@ export function kclPlugin(
     kclManager: KclManager
     sceneEntitiesManager: SceneEntities
     wasmInstance: ModuleType
+    rustContext: RustContext
   }
 ): Extension {
   return [

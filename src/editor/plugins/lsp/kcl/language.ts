@@ -12,6 +12,7 @@ import { colorPicker } from '@src/editor/plugins/lsp/kcl/colors'
 import type { KclManager } from '@src/lang/KclManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type RustContext from '@src/lib/rustContext'
 
 export interface LanguageOptions {
   workspaceFolders: LSP.WorkspaceFolder[]
@@ -29,6 +30,7 @@ export function kcl(
     kclManager: KclManager
     sceneEntitiesManager: SceneEntities
     wasmInstance: ModuleType
+    rustContext: RustContext
   }
 ) {
   return new LanguageSupport(KclLanguage, [
