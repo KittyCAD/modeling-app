@@ -320,6 +320,7 @@ export function App() {
             actionLibrary={defaultActionLibrary}
             showDebugPanel={settings.app.showDebugPanel.current}
             notifications={notifications}
+            artifactGraph={kclManager.artifactGraph}
           />
         </section>
         <StatusBar
