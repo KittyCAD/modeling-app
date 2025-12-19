@@ -1214,7 +1214,8 @@ describe('createOnDragCallback', () => {
       id: 5,
       kind: {
         type: 'Sketch',
-        args: { on: { default: 'xy' } },
+        args: { on: 'XY' },
+        plane: 0,
         segments: [],
         constraints: [],
       },
