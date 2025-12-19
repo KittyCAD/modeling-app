@@ -21,7 +21,7 @@ use crate::{
         modify::{find_defined_names, next_free_name},
         sketch::{
             Coincident, Constraint, ExistingSegmentCtor, Horizontal, LineCtor, Point2d, Segment, SegmentCtor,
-            SketchApi, SketchArgs, Vertical,
+            SketchApi, SketchCtor, Vertical,
         },
         traverse::{MutateBodyItem, TraversalReturn, Visitor, dfs_mut},
     },
@@ -158,16 +158,12 @@ impl SketchApi for FrontendState {
         _project: ProjectId,
         _file: FileId,
         _version: Version,
-        args: SketchArgs,
+        args: SketchCtor,
     ) -> api::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
         // TODO: Check version.
 
         // Create updated KCL source from args.
-        let plane_ast = match &args.on {
-            // TODO: sketch-api: implement ObjectId to source.
-            api::Plane::Object(_) => todo!(),
-            api::Plane::Default(plane) => ast_name_expr(plane.to_string()),
-        };
+        let plane_ast = ast_name_expr(args.on);
         let sketch_ast = ast::SketchBlock {
             arguments: vec![ast::LabeledArg {
                 label: Some(ast::Identifier::new("on")),
@@ -2662,7 +2658,7 @@ mod tests {
     use super::*;
     use crate::{
         engine::PlaneName,
-        front::{Distance, Plane, Sketch},
+        front::{Distance, Sketch},
         frontend::sketch::Vertical,
         pretty::NumericSuffix,
     };
@@ -2677,8 +2673,8 @@ mod tests {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        let sketch_args = SketchArgs {
-            on: api::Plane::Default(PlaneName::Xy),
+        let sketch_args = SketchCtor {
+            on: PlaneName::Xy.to_string(),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
@@ -2691,9 +2687,10 @@ mod tests {
         assert_eq!(
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
-                args: SketchArgs {
-                    on: Plane::Default(PlaneName::Xy)
+                args: SketchCtor {
+                    on: PlaneName::Xy.to_string()
                 },
+                plane: ObjectId(0),
                 segments: vec![],
                 constraints: vec![],
             })
@@ -2780,8 +2777,8 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        let sketch_args = SketchArgs {
-            on: api::Plane::Default(PlaneName::Xy),
+        let sketch_args = SketchCtor {
+            on: PlaneName::Xy.to_string(),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
@@ -2794,9 +2791,10 @@ sketch(on = XY) {
         assert_eq!(
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
-                args: SketchArgs {
-                    on: Plane::Default(PlaneName::Xy)
+                args: SketchCtor {
+                    on: PlaneName::Xy.to_string()
                 },
+                plane: ObjectId(0),
                 segments: vec![],
                 constraints: vec![],
             })
@@ -2903,8 +2901,8 @@ sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        let sketch_args = SketchArgs {
-            on: api::Plane::Default(PlaneName::Xy),
+        let sketch_args = SketchCtor {
+            on: PlaneName::Xy.to_string(),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
@@ -2917,9 +2915,10 @@ sketch(on = XY) {
         assert_eq!(
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
-                args: SketchArgs {
-                    on: Plane::Default(PlaneName::Xy)
+                args: SketchCtor {
+                    on: PlaneName::Xy.to_string(),
                 },
+                plane: ObjectId(0),
                 segments: vec![],
                 constraints: vec![],
             })
@@ -3110,8 +3109,8 @@ s = sketch(on = XY) {
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
-        let sketch_args = SketchArgs {
-            on: api::Plane::Default(PlaneName::Xy),
+        let sketch_args = SketchCtor {
+            on: PlaneName::Xy.to_string(),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
@@ -3124,9 +3123,10 @@ s = sketch(on = XY) {
         assert_eq!(
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
-                args: SketchArgs {
-                    on: Plane::Default(PlaneName::Xy)
+                args: SketchCtor {
+                    on: PlaneName::Xy.to_string()
                 },
+                plane: ObjectId(0),
                 segments: vec![],
                 constraints: vec![],
             })

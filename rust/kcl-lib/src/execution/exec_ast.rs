@@ -1029,33 +1029,79 @@ impl Node<SketchBlock> {
         let mut args = Args::new_no_args(range, ctx.clone(), Some("sketch block".to_owned()));
         args.labeled = labeled;
 
+        // Create the sketch block scene object. This needs to happen before
+        // scene objects created inside the sketch block so that its ID is
+        // stable across sketch block edits.
+        let arg_on: crate::execution::Plane = args.get_kw_arg("on", &RuntimeType::plane(), exec_state)?;
+        let on_object_id = arg_on.object_id.ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                "Sketch block `on` Plane should have an Object ID, but it doesn't".to_owned(),
+                vec![range],
+            ))
+        })?;
+        let arg_on_expr_name = self
+            .arguments
+            .iter()
+            .find_map(|labeled_arg| {
+                if let Some(label) = &labeled_arg.label
+                    && label.name == "on"
+                {
+                    // Being a simple identifier only is required by the parser.
+                    if let Some(name) = labeled_arg.arg.ident_name() {
+                        Some(Ok(name))
+                    } else {
+                        let message = "A sketch block's `on` parameter must be a variable or identifier, not an arbitrary expression. The parser should have enforced this."
+                                .to_owned();
+                        debug_assert!(false, "{message}");
+                        Some(Err(KclError::new_internal(KclErrorDetails::new(
+                            message,
+                            vec![SourceRange::from(&labeled_arg.arg)],
+                        ))))
+                    }
+                } else {
+                    None
+                }
+            })
+            .unwrap_or_else(|| {
+                Err(KclError::new_invalid_expression(KclErrorDetails::new(
+                    "sketch block requires an `on` parameter".to_owned(),
+                    vec![SourceRange::from(self)],
+                )))
+            })?
+            // Convert to owned so that we can do an exclusive borrow later.
+            .to_owned();
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = on_object_id;
+            drop(arg_on_expr_name);
+        }
         #[cfg(feature = "artifact-graph")]
         let sketch_id = {
-            // Create the sketch block scene object. This needs to happen before
-            // scene objects created inside the sketch block so that its ID is
-            // stable across sketch block edits.
+            use crate::execution::{Artifact, ArtifactId, CodeRef, SketchBlock};
 
-            use crate::{
-                engine::PlaneName,
-                execution::{Artifact, ArtifactId, CodeRef, SketchBlock},
-            };
+            let on_object = exec_state
+                .mod_local
+                .artifacts
+                .scene_objects
+                .get(on_object_id.0)
+                .ok_or_else(|| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("sketch block `on` Object not found for id: {on_object_id:?}"),
+                        vec![range],
+                    ))
+                })?;
+
+            // Get the plane artifact ID so that we can do an exclusive borrow.
+            let plane_artifact_id = on_object.artifact_id;
+
             let sketch_id = exec_state.next_object_id();
-            let arg_on: Option<crate::execution::Plane> =
-                args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
-            let on_object = arg_on.as_ref().and_then(|plane| plane.object_id);
-
-            // Get the plane artifact ID if the plane is an object plane
-            let plane_artifact_id = arg_on.as_ref().map(|plane| plane.artifact_id);
 
             let artifact_id = ArtifactId::from(exec_state.next_uuid());
             let sketch_scene_object = Object {
                 id: sketch_id,
                 kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
-                    args: crate::front::SketchArgs {
-                        on: on_object
-                            .map(crate::front::Plane::Object)
-                            .unwrap_or(crate::front::Plane::Default(PlaneName::Xy)),
-                    },
+                    args: crate::front::SketchCtor { on: arg_on_expr_name },
+                    plane: on_object_id,
                     segments: Default::default(),
                     constraints: Default::default(),
                 }),
@@ -1069,7 +1115,7 @@ impl Node<SketchBlock> {
             // Create and add the sketch block artifact
             exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
                 id: artifact_id,
-                plane_id: plane_artifact_id,
+                plane_id: Some(plane_artifact_id),
                 code_ref: CodeRef::placeholder(range),
                 sketch_id,
             }));
