@@ -118,7 +118,7 @@ interface LayoutRootNodeProps {
   setLayout: (layout: Layout) => void
   // Values that affect the layout (pane buttons, menus, etc).
   showDebugPanel: SettingsType['app']['showDebugPanel']['current']
-  hasNotifications: boolean
+  notifications: boolean[]
   layoutName?: string
   /** Kind of a feature flag, remove in future */
   enableContextMenus?: boolean
@@ -200,10 +200,10 @@ export const LayoutRootNode = memo(
     )
   },
   (oldProps, newProps) =>
-    oldProps.layout === newProps.layout &&
+    isEqual(oldProps.layout, newProps.layout) &&
     oldProps.enableContextMenus === newProps.enableContextMenus &&
     oldProps.showDebugPanel === newProps.showDebugPanel &&
-    oldProps.hasNotifications === newProps.hasNotifications
+    isEqual(oldProps.notifications, newProps.notifications)
 )
 
 /*

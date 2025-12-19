@@ -21,6 +21,7 @@ export function TestLayout() {
       areaLibrary={testAreaLibrary}
       enableContextMenus={true}
       showDebugPanel={false}
+      notifications={[]}
     />
   )
 }

@@ -285,8 +285,8 @@ export function App() {
     []
   )
 
-  const hasNotifications = Object.values(layout || defaultLayout).map((x) =>
-    x.useNotifications?.()
+  const notifications: boolean[] = Object.values(layout || defaultLayout).map(
+    (x) => x.useNotifications?.()
   )
 
   return (
@@ -313,7 +313,7 @@ export function App() {
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
             showDebugPanel={settings.app.showDebugPanel.current}
-            hasNotifications={hasNotifications}
+            notifications={notifications}
           />
         </section>
         <StatusBar
