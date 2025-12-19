@@ -1,3 +1,4 @@
+import isEqual from 'react-fast-compare'
 import { LayoutType } from '@src/lib/layout/types'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type {
@@ -117,6 +118,7 @@ interface LayoutRootNodeProps {
   setLayout: (layout: Layout) => void
   // Values that affect the layout (pane buttons, menus, etc).
   showDebugPanel: SettingsType['app']['showDebugPanel']['current']
+  hasNotifications: boolean
   layoutName?: string
   /** Kind of a feature flag, remove in future */
   enableContextMenus?: boolean
@@ -200,7 +202,8 @@ export const LayoutRootNode = memo(
   (oldProps, newProps) =>
     oldProps.layout === newProps.layout &&
     oldProps.enableContextMenus === newProps.enableContextMenus &&
-    oldProps.showDebugPanel === newProps.showDebugPanel
+    oldProps.showDebugPanel === newProps.showDebugPanel &&
+    oldProps.hasNotifications === newProps.hasNotifications
 )
 
 /*

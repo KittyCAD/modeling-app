@@ -285,6 +285,8 @@ export function App() {
     []
   )
 
+  const hasNotifications = Object.values(layout || defaultLayout).map(x => x.useNotifications?.())
+
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
       <div className="relative flex flex-1 flex-col">
@@ -309,6 +311,7 @@ export function App() {
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
             showDebugPanel={settings.app.showDebugPanel.current}
+            hasNotifications={hasNotifications}
           />
         </section>
         <StatusBar
