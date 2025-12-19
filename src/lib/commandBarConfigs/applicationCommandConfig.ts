@@ -461,6 +461,7 @@ export function createApplicationCommands({
           Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Engines.
           Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
           Finally, append **?pool=LABEL** for all other variants of deployed Engines.
+          Reset to the default value: **${env().VITE_KITTYCAD_WEBSOCKET_URL}**
         `.trim(),
         defaultValue: () => env().VITE_KITTYCAD_WEBSOCKET_URL ?? '',
       },
@@ -508,6 +509,7 @@ export function createApplicationCommands({
         description: `
           Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Zookeeper.
           Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
+          Reset to the default value: **${env().VITE_MLEPHANT_WEBSOCKET_URL}**
         `.trim(),
         defaultValue: () => env().VITE_MLEPHANT_WEBSOCKET_URL ?? '',
       },
