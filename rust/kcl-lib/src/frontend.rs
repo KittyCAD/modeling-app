@@ -50,6 +50,10 @@ const VERTICAL_FN: &str = "vertical";
 const LINE_PROPERTY_START: &str = "start";
 const LINE_PROPERTY_END: &str = "end";
 
+const ARC_PROPERTY_START: &str = "start";
+const ARC_PROPERTY_END: &str = "end";
+const ARC_PROPERTY_CENTER: &str = "center";
+
 #[derive(Debug, Clone)]
 pub struct FrontendState {
     program: Program,
@@ -1312,11 +1316,11 @@ impl FrontendState {
                 }
                 Segment::Arc(arc) => {
                     let property = if arc.start == point_id {
-                        "start"
+                        ARC_PROPERTY_START
                     } else if arc.end == point_id {
-                        "end"
+                        ARC_PROPERTY_END
                     } else if arc.center == point_id {
-                        "center"
+                        ARC_PROPERTY_CENTER
                     } else {
                         return Err(Error {
                             msg: format!(
@@ -2188,14 +2192,6 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         labeled_arg.arg = center.clone();
                     }
                 }
-                // Remove ccw parameter if it exists (ezpz now always goes CCW from start to end)
-                call.arguments.retain(|arg| {
-                    if let Some(label) = &arg.label {
-                        label.name.as_str() != "ccw"
-                    } else {
-                        true
-                    }
-                });
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
