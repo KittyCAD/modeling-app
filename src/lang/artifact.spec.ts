@@ -238,6 +238,13 @@ sk2 = startSketchOn(XY)
               id: expect.any(String),
               sourceRange: [expect.any(Number), expect.any(Number), 0],
             },
+            {
+              type: 'extrudePlane',
+              faceId: expect.any(String),
+              tag: null,
+              id: expect.any(String),
+              sourceRange: [expect.any(Number), expect.any(Number), 0],
+            },
           ],
           sketch: {
             id: expect.any(String),
@@ -294,6 +301,17 @@ sk2 = startSketchOn(XY)
                   sourceRange: [expect.any(Number), expect.any(Number), 0],
                 },
               },
+              {
+                type: 'ToPoint',
+                from: [2.5, 0],
+                to: [0, 0],
+                units: 'mm',
+                tag: null,
+                __geoMeta: {
+                  id: expect.any(String),
+                  sourceRange: [expect.any(Number), expect.any(Number), 0],
+                },
+              },
             ],
           },
           sectional: false,
@@ -327,6 +345,13 @@ sk2 = startSketchOn(XY)
                 type: 'TagDeclarator',
                 value: 'o',
               },
+              id: expect.any(String),
+              sourceRange: [expect.any(Number), expect.any(Number), 0],
+            },
+            {
+              type: 'extrudePlane',
+              faceId: expect.any(String),
+              tag: null,
               id: expect.any(String),
               sourceRange: [expect.any(Number), expect.any(Number), 0],
             },
@@ -386,6 +411,17 @@ sk2 = startSketchOn(XY)
                 type: 'ToPoint',
                 from: [0, 3],
                 to: [2.5, 0],
+                units: 'mm',
+                tag: null,
+                __geoMeta: {
+                  id: expect.any(String),
+                  sourceRange: [expect.any(Number), expect.any(Number), 0],
+                },
+              },
+              {
+                type: 'ToPoint',
+                from: [2.5, 0],
+                to: [0, 0],
                 units: 'mm',
                 tag: null,
                 __geoMeta: {
