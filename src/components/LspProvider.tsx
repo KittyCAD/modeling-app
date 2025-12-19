@@ -174,7 +174,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       plugin = lsp
     }
     return plugin
-  }, [kclLspClient, isKclLspReady])
+  }, [kclLspClient, isKclLspReady, wasmInstance])
 
   useEffect(() => {
     // New code to just update the CodeMirror extensions directly.
