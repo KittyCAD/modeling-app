@@ -4,4 +4,4 @@
 /rust/ @KittyCAD/kcl
 
 # Replace with @kittycad/meche once available, see https://github.com/KittyCAD/configs/issues/272
-e2e/playwright/benchmark @nicboone8 @max-mrgrsk
+/e2e/playwright/benchmark/ @nicboone8 @max-mrgrsk
