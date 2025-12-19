@@ -101,6 +101,7 @@ mySketch001 = startSketchOn(XY)
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
   // |> rx(45)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> extrude(length = 2)`
     const execState = await enginelessExecutor(
       assertParse(code, instanceInThisFile),
