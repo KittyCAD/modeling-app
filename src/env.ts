@@ -27,7 +27,7 @@ let ENVIRONMENT: EnvironmentConfigurationRuntime | null = null
 /** Update the runtime environment */
 export const updateEnvironment = (environment: string | null) => {
   if (environment === '') {
-    console.log('reject updating environment: value is the empty string.')
+    console.log('reject updating environment: value is the empty string')
     return
   }
 
@@ -42,19 +42,13 @@ export const updateEnvironment = (environment: string | null) => {
       }
     }
   }
-  console.log('updating environment', environment)
+  console.log('updating environment:', environment)
 }
 
 export const updateEnvironmentKittycadWebSocketUrl = (
   environmentName: string,
   kittycadWebSocketUrl: string
 ) => {
-  if (environmentName === '') {
-    console.log(
-      'reject updating kittycadWebSocketUrl, environment: value is the empty string.'
-    )
-    return
-  }
   if (!ENVIRONMENT) return
   if (ENVIRONMENT.domain === environmentName) {
     ENVIRONMENT.kittycadWebSocketUrl = kittycadWebSocketUrl
@@ -65,12 +59,6 @@ export const updateEnvironmentMlephantWebSocketUrl = (
   environmentName: string,
   mlephantWebSocketUrl: string
 ) => {
-  if (environmentName === '') {
-    console.log(
-      'reject updating mlephantWebSocketUrl, environment: value is the empty string.'
-    )
-    return
-  }
   if (!ENVIRONMENT) return
   if (ENVIRONMENT.domain === environmentName) {
     ENVIRONMENT.mlephantWebSocketUrl = mlephantWebSocketUrl

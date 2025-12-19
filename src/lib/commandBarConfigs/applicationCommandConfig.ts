@@ -426,20 +426,23 @@ export function createApplicationCommands({
     name: 'override-engine',
     displayName: 'Override Engine',
     description: 'Connect the scene to a custom Engine WebSocket URL',
-    needsReview: false,
+
     icon: 'gear',
     groupId: 'application',
+    needsReview: true,
+    reviewValidation: async (context) => {
+      const url = context.argumentsToSubmit.url as string | undefined
+      if (url) {
+        try {
+          new URL(url)
+        } catch {
+          return new Error('Invalid Engine WebSocket URL')
+        }
+      }
+    },
     onSubmit: (data) => {
       if (!window.electron) {
         console.error(new Error('No file system present'))
-        return
-      }
-      if (!data?.url) {
-        return
-      }
-      try {
-        new URL(data.url)
-      } catch {
         return
       }
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
@@ -447,10 +450,9 @@ export function createApplicationCommands({
         writeEnvironmentConfigurationKittycadWebSocketUrl(
           window.electron,
           environmentName,
-          data.url
+          data?.url ?? ''
         )
           .then(() => {
-            // Reload the application and it will trigger the correct sign in workflow for the new environment
             window.location.reload()
           })
           .catch(reportRejection)
@@ -458,13 +460,12 @@ export function createApplicationCommands({
     args: {
       url: {
         inputType: 'string',
-        required: true,
+        required: false,
         displayName: 'URL',
         description: `
           Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Engines.
           Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
           Finally, append **?pool=LABEL** for all other variants of deployed Engines.
-          Reset to the default value: **${env().VITE_KITTYCAD_WEBSOCKET_URL}**
         `.trim(),
         defaultValue: () => env().VITE_KITTYCAD_WEBSOCKET_URL ?? '',
       },
@@ -475,20 +476,22 @@ export function createApplicationCommands({
     name: 'override-zookeeper',
     displayName: 'Override Zookeeper',
     description: 'Connect to a custom Zookeeper WebSocket URL',
-    needsReview: false,
     icon: 'gear',
     groupId: 'application',
+    needsReview: true,
+    reviewValidation: async (context) => {
+      const url = context.argumentsToSubmit.url as string | undefined
+      if (url) {
+        try {
+          new URL(url)
+        } catch {
+          return new Error('Invalid Zookeeper WebSocket URL')
+        }
+      }
+    },
     onSubmit: (data) => {
       if (!window.electron) {
         console.error(new Error('No file system present'))
-        return
-      }
-      if (!data?.url) {
-        return
-      }
-      try {
-        new URL(data.url)
-      } catch {
         return
       }
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
@@ -496,10 +499,9 @@ export function createApplicationCommands({
         writeEnvironmentConfigurationMlephantWebSocketUrl(
           window.electron,
           environmentName,
-          data.url
+          data?.url ?? ''
         )
           .then(() => {
-            // Reload the application and it will trigger the correct sign in workflow for the new environment
             window.location.reload()
           })
           .catch(reportRejection)
@@ -507,12 +509,11 @@ export function createApplicationCommands({
     args: {
       url: {
         inputType: 'string',
-        required: true,
+        required: false,
         displayName: 'URL',
         description: `
           Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Zookeeper.
           Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
-          Reset to the default value: **${env().VITE_MLEPHANT_WEBSOCKET_URL}**
         `.trim(),
         defaultValue: () => env().VITE_MLEPHANT_WEBSOCKET_URL ?? '',
       },

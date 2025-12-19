@@ -29,7 +29,7 @@ export function EnvironmentDescription() {
       <div
         className={`flex flex-col p-2 mb-2 rounded-t-sm bg-chalkboard-20 text-chalkboard-100 dark:bg-chalkboard-80 dark:text-chalkboard-10`}
       >
-        <p className="flex flex-row justify-between items-center">
+        <div className="flex flex-row justify-between items-center">
           <h2 className="text-sm font-sans font-normal">Environment</h2>
           <p
             data-testid="environment"
@@ -58,7 +58,7 @@ export function EnvironmentDescription() {
               {fullEnvironmentName}
             </ActionButton>
           </p>
-        </p>
+        </div>
       </div>
       <ul>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
