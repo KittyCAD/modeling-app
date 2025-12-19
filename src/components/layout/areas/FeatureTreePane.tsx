@@ -1,7 +1,7 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { useMachine, useSelector } from '@xstate/react'
 import type { ComponentProps } from 'react'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, memo } from 'react'
 import type { Actor, Prop } from 'xstate'
 
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -93,7 +93,7 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
   )
 }
 
-export const FeatureTreePaneContents = () => {
+export const FeatureTreePaneContents = memo(() => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const layout = useLayout()
@@ -322,7 +322,7 @@ export const FeatureTreePaneContents = () => {
       </section>
     </div>
   )
-}
+})
 
 interface VisibilityToggleProps {
   visible: boolean
@@ -410,88 +410,90 @@ type OpValueProps = {
  * to be used for default planes after we fix them and
  * add them to the artifact graph / feature tree
  */
-const OperationItemWrapper = ({
-  icon,
-  name,
-  type,
-  variableName,
-  visibilityToggle,
-  valueDetail,
-  menuItems,
-  errors,
-  customSuffix,
-  className,
-  selectable = true,
-  greyedOut = false,
-  ...props
-}: React.HTMLAttributes<HTMLButtonElement> & {
-  icon: CustomIconName
-  visibilityToggle?: VisibilityToggleProps
-  customSuffix?: React.JSX.Element
-  menuItems?: ComponentProps<typeof ContextMenu>['items']
-  errors?: Diagnostic[]
-  selectable?: boolean
-  greyedOut?: boolean
-} & OpValueProps) => {
-  const menuRef = useRef<HTMLDivElement>(null)
+const OperationItemWrapper = memo(
+  ({
+    icon,
+    name,
+    type,
+    variableName,
+    visibilityToggle,
+    valueDetail,
+    menuItems,
+    errors,
+    customSuffix,
+    className,
+    selectable = true,
+    greyedOut = false,
+    ...props
+  }: React.HTMLAttributes<HTMLButtonElement> & {
+    icon: CustomIconName
+    visibilityToggle?: VisibilityToggleProps
+    customSuffix?: React.JSX.Element
+    menuItems?: ComponentProps<typeof ContextMenu>['items']
+    errors?: Diagnostic[]
+    selectable?: boolean
+    greyedOut?: boolean
+  } & OpValueProps) => {
+    const menuRef = useRef<HTMLDivElement>(null)
 
-  return (
-    <div
-      ref={menuRef}
-      className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/25 hover:bg-2 hover:focus-within:bg-primary/25' : ''} ${greyedOut ? 'opacity-50 cursor-not-allowed' : ''}`}
-      data-testid="feature-tree-operation-item"
-    >
-      <button
-        {...props}
-        className={`reset min-w-[0px] py-1 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
+    return (
+      <div
+        ref={menuRef}
+        className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/25 hover:bg-2 hover:focus-within:bg-primary/25' : ''} ${greyedOut ? 'opacity-50 cursor-not-allowed' : ''}`}
+        data-testid="feature-tree-operation-item"
       >
-        <CustomIcon
-          name={icon}
-          className="w-6 h-6 block self-start"
-          aria-hidden
-        />
-        <div className="text-sm flex-1 flex gap-x-2 overflow-x-hidden items-baseline align-baseline">
-          {variableName && valueDetail ? (
-            <>
-              <span className="text-sm">{variableName}</span>
-              <code
-                data-testid="value-detail"
-                className="block min-w-[0px] flex-auto overflow-hidden whitespace-nowrap overflow-ellipsis text-chalkboard-70 dark:text-chalkboard-40 text-xs"
-              >
-                {getOperationCalculatedDisplay(valueDetail.calculated)}
-              </code>
-            </>
-          ) : (
-            <span className="text-sm">{variableName ?? name}</span>
+        <button
+          {...props}
+          className={`reset min-w-[0px] py-1 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
+        >
+          <CustomIcon
+            name={icon}
+            className="w-6 h-6 block self-start"
+            aria-hidden
+          />
+          <div className="text-sm flex-1 flex gap-x-2 overflow-x-hidden items-baseline align-baseline">
+            {variableName && valueDetail ? (
+              <>
+                <span className="text-sm">{variableName}</span>
+                <code
+                  data-testid="value-detail"
+                  className="block min-w-[0px] flex-auto overflow-hidden whitespace-nowrap overflow-ellipsis text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+                >
+                  {getOperationCalculatedDisplay(valueDetail.calculated)}
+                </code>
+              </>
+            ) : (
+              <span className="text-sm">{variableName ?? name}</span>
+            )}
+            {customSuffix && customSuffix}
+          </div>
+          {errors && errors.length > 0 && (
+            <em className="text-destroy-80 text-xs">has error</em>
           )}
-          {customSuffix && customSuffix}
-        </div>
-        {errors && errors.length > 0 && (
-          <em className="text-destroy-80 text-xs">has error</em>
+          {valueDetail || variableName ? (
+            <Tooltip
+              delay={500}
+              position="bottom-left"
+              wrapperClassName="left-0 right-0"
+              contentClassName="text-sm max-w-full"
+            >
+              <VariableTooltipContents
+                variableName={variableName}
+                valueDetail={valueDetail}
+                name={name}
+                type={type}
+              />
+            </Tooltip>
+          ) : null}
+        </button>
+        {visibilityToggle && <VisibilityToggle {...visibilityToggle} />}
+        {menuItems && (
+          <ContextMenu menuTargetElement={menuRef} items={menuItems} />
         )}
-        {valueDetail || variableName ? (
-          <Tooltip
-            delay={500}
-            position="bottom-left"
-            wrapperClassName="left-0 right-0"
-            contentClassName="text-sm max-w-full"
-          >
-            <VariableTooltipContents
-              variableName={variableName}
-              valueDetail={valueDetail}
-              name={name}
-              type={type}
-            />
-          </Tooltip>
-        ) : null}
-      </button>
-      {visibilityToggle && <VisibilityToggle {...visibilityToggle} />}
-      {menuItems && (
-        <ContextMenu menuTargetElement={menuRef} items={menuItems} />
-      )}
-    </div>
-  )
-}
+      </div>
+    )
+  }
+)
 
 function VariableTooltipContents({
   variableName,
