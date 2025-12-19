@@ -1742,7 +1742,11 @@ export const ModelingMachineProvider = ({
     modelingSend({ type: 'Center camera on selection' })
   })
   useHotkeys(['mod + alt + x'], () => {
-    resetCameraPosition({ sceneInfra }).catch(reportRejection)
+    resetCameraPosition({
+      sceneInfra,
+      engineCommandManager,
+      settingsActor,
+    }).catch(reportRejection)
   })
 
   // Toggle Snap to grid

@@ -4,6 +4,7 @@ import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import {
   engineCommandManager,
   kclManager,
+  settingsActor,
   useSettings,
 } from '@src/lib/singletons'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -44,6 +45,7 @@ const systemDeps = {
   engineCommandManager,
   kclManager,
   sceneInfra,
+  settingsActor,
 }
 
 export const ConnectionStream = (props: {

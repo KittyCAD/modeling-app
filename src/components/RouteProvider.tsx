@@ -15,7 +15,12 @@ import { getAppSettingsFilePath } from '@src/lib/desktop'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import { kclManager, sceneInfra, settingsActor } from '@src/lib/singletons'
+import {
+  kclManager,
+  engineCommandManager,
+  sceneInfra,
+  settingsActor,
+} from '@src/lib/singletons'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
@@ -106,7 +111,11 @@ export function RouteProvider({ children }: { children: ReactNode }) {
           if (!isCodeTheSame(code, kclManager.codeSignal.value)) {
             kclManager.updateCodeStateEditor(code)
             await kclManager.executeCode()
-            await resetCameraPosition({ sceneInfra })
+            await resetCameraPosition({
+              sceneInfra,
+              engineCommandManager,
+              settingsActor,
+            })
           }
         }
       } else {
