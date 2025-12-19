@@ -103,12 +103,10 @@ async fn inner_extrude(
 ) -> Result<Vec<Solid>, KclError> {
     let body_type = body_type.unwrap_or_default();
 
-    if matches!(body_type, BodyType::Solid)
-        && let Some(open_profile) = sketches.iter().find(|sk| matches!(sk.is_closed, ProfileClosed::No))
-    {
+    if matches!(body_type, BodyType::Solid) && sketches.iter().any(|sk| matches!(sk.is_closed, ProfileClosed::No)) {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "Cannot solid extrude an open profile. Either close the profile, or use a surface extrude.".to_owned(),
-            open_profile.meta.iter().map(|m| m.source_range).collect(),
+            vec![args.source_range],
         )));
     }
 
