@@ -9,6 +9,7 @@ import type { WebSocketResponse } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { ToastOptions } from 'react-hot-toast'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 // Exports a sketch operation to DXF format
 export async function exportSketchToDxf(
@@ -23,7 +24,10 @@ export async function exportSketchToDxf(
       dismiss: (toastId: string) => void
     }
     uuidv4: () => string
-    base64Decode: (input: string) => ArrayBuffer | Error
+    base64Decode: (
+      input: string,
+      wasmInstance: ModuleType
+    ) => ArrayBuffer | Error
     browserSaveFile: (
       blob: Blob,
       filename: string,
@@ -166,7 +170,10 @@ export async function exportSketchToDxf(
     // Decode (handle throws or Error return)
     let decodedBuf: ArrayBuffer
     try {
-      const decoded = base64Decode(selectedFile.contents)
+      const decoded = base64Decode(
+        selectedFile.contents,
+        await kclManager.wasmInstancePromise
+      )
       if (decoded instanceof Error) {
         console.error('Base64 decode failed:', decoded)
         toast.error('Failed to decode DXF file data', { id: toastId })
@@ -182,7 +189,11 @@ export async function exportSketchToDxf(
     const decodedData = new Uint8Array(decodedBuf)
 
     // Generate meaningful filename from sketch name
-    const sketchName = getOperationVariableName(operation, kclManager.ast)
+    const sketchName = getOperationVariableName(
+      operation,
+      kclManager.ast,
+      await kclManager.wasmInstancePromise
+    )
     const fileName = `${sketchName || 'sketch'}.dxf`
 
     if (window.electron) {

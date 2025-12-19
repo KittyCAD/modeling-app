@@ -49,14 +49,17 @@ export const fileLoader =
             .join(window.electron.sep)
         : undefined
 
+    const wasmInstance = await kclManager.wasmInstancePromise
+
     let settings = await loadAndValidateSettings(
-      kclManager.wasmInstancePromise,
+      wasmInstance,
       heuristicProjectFilePath
     )
 
     const projectPathData = await getProjectMetaByRouteId(
       readAppSettingsFile,
       readLocalStorageAppSettingsFile,
+      wasmInstance,
       params.id,
       settings.configuration
     )
@@ -70,7 +73,8 @@ export const fileLoader =
 
       if (!urlObj.pathname.endsWith('/settings')) {
         const fallbackFile = window.electron
-          ? (await getProjectInfo(window.electron, projectPath)).default_file
+          ? (await getProjectInfo(window.electron, projectPath, wasmInstance))
+              .default_file
           : ''
         let fileExists = isDesktop()
         if (currentFilePath && fileExists && window.electron) {
@@ -144,7 +148,7 @@ export const fileLoader =
       }
 
       const maybeProjectInfo = window.electron
-        ? await getProjectInfo(window.electron, projectPath)
+        ? await getProjectInfo(window.electron, projectPath, wasmInstance)
         : null
 
       const project = maybeProjectInfo ?? defaultProjectData

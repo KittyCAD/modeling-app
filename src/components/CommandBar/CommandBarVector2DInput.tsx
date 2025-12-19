@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from 'react'
+import { useEffect, useRef, useState, useMemo, use } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import toast from 'react-hot-toast'
 import {
@@ -14,6 +14,12 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
 import { roundOffWithUnits } from '@src/lib/utils'
 import { isKclCommandValue } from '@src/lib/commandUtils'
+import { useSelector } from '@xstate/react'
+import type { SnapshotFrom, AnyStateMachine } from 'xstate'
+
+// TODO: remove the need for this selector once we decouple all actors from React
+const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
+  snapshot?.context
 
 function CoordinateInput({
   label,
@@ -88,8 +94,13 @@ function CommandBarVector2DInput({
   stepBack: () => void
   onSubmit: (data: KclCommandValue) => void
 }) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const commandBarState = useCommandBarState()
   const argumentValue = commandBarState.context.argumentsToSubmit[arg.name]
+  const argMachineContext = useSelector(
+    arg.machineActor,
+    machineContextSelector
+  )
   const previouslySetValue = isKclCommandValue(argumentValue)
     ? argumentValue
     : undefined
@@ -103,12 +114,22 @@ function CommandBarVector2DInput({
     // smart defaults
     if (arg.defaultValue) {
       return typeof arg.defaultValue === 'function'
-        ? arg.defaultValue(commandBarState.context, undefined)
+        ? arg.defaultValue(
+            commandBarState.context,
+            argMachineContext,
+            wasmInstance
+          )
         : arg.defaultValue
     }
     // dumb defaults
     return '[0, 0]'
-  }, [previouslySetValue, commandBarState.context, arg])
+  }, [
+    previouslySetValue,
+    commandBarState.context,
+    arg,
+    argMachineContext,
+    wasmInstance,
+  ])
 
   // Extract individual x, y values from the vector string
   const defaultValues = useMemo(() => {

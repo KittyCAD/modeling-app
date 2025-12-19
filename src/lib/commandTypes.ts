@@ -12,6 +12,7 @@ import type {
   CommandBarContext,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type Icon = CustomIconName
 const _TARGETS = ['both', 'web', 'desktop'] as const
@@ -80,7 +81,7 @@ export type Command<
     | ((commandBarContext: CommandBarContext) => ReactNode)
   reviewValidation?: (context: CommandBarContext) => Promise<undefined | Error>
   machineActor?: Actor<T>
-  onSubmit: (data?: CommandSchema) => void
+  onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => void
   onCancel?: () => void
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgument<CommandSchema[ArgName], T>
@@ -155,7 +156,8 @@ export type CommandArgumentConfig<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
     }
@@ -206,7 +208,8 @@ export type CommandArgumentConfig<
         | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => string)
     }
   | {
@@ -215,7 +218,8 @@ export type CommandArgumentConfig<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
       validation?: ({
@@ -232,7 +236,8 @@ export type CommandArgumentConfig<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
     }
@@ -242,7 +247,8 @@ export type CommandArgumentConfig<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
     }
@@ -254,7 +260,8 @@ export type CommandArgumentConfig<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
       validation?: ({
@@ -271,7 +278,8 @@ export type CommandArgumentConfig<
         | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => string)
       defaultValueFromContext?: (context: C) => OutputType
       validation?: ({
@@ -288,7 +296,8 @@ export type CommandArgumentConfig<
         | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => string)
       defaultValueFromContext?: (context: C) => OutputType
       validation?: ({
@@ -325,7 +334,7 @@ export type CommandArgument<
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */
-  valueSummary?: (value: OutputType) => string
+  valueSummary?: (value: OutputType, wasmInstance?: ModuleType) => string
 } & (
   | {
       inputType: Extract<CommandInputType, 'options'>
@@ -341,7 +350,8 @@ export type CommandArgument<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => OutputType)
       validation?: ({
         data,
@@ -398,7 +408,8 @@ export type CommandArgument<
         | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => string)
     }
   | {
@@ -407,7 +418,8 @@ export type CommandArgument<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => OutputType)
       validation?: ({
         data,
@@ -423,7 +435,8 @@ export type CommandArgument<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => OutputType)
       filters: FiltersConfig
     }
@@ -433,7 +446,8 @@ export type CommandArgument<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => OutputType)
     }
   | {
@@ -442,7 +456,8 @@ export type CommandArgument<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => OutputType)
     }
   | {
@@ -451,7 +466,8 @@ export type CommandArgument<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => OutputType)
       validation?: ({
         data,
@@ -467,7 +483,8 @@ export type CommandArgument<
         | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => string)
       validation?: ({
         data,
@@ -483,7 +500,8 @@ export type CommandArgument<
         | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => string)
       validation?: ({
         data,

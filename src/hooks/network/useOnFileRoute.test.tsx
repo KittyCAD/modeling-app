@@ -64,7 +64,7 @@ describe('useOnFileRoute', () => {
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
       const commandBarActor = createActor(commandBarMachine, {
-        input: { commands: [] },
+        input: { commands: [], wasmInstancePromise: initWasmMock },
       }).start()
       const settingsActor = createActor(settingsMachine, {
         input: { commandBarActor, ...createSettings() },
@@ -74,7 +74,7 @@ describe('useOnFileRoute', () => {
         initWasmMock,
         settingsActor
       )
-      const sceneInfra = new SceneInfra(engineCommandManager)
+      const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
@@ -119,7 +119,7 @@ describe('useOnFileRoute', () => {
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
       const commandBarActor = createActor(commandBarMachine, {
-        input: { commands: [] },
+        input: { commands: [], wasmInstancePromise: initWasmMock },
       }).start()
       const settingsActor = createActor(settingsMachine, {
         input: { commandBarActor, ...createSettings() },
@@ -129,7 +129,7 @@ describe('useOnFileRoute', () => {
         initWasmMock,
         settingsActor
       )
-      const sceneInfra = new SceneInfra(engineCommandManager)
+      const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
@@ -186,7 +186,7 @@ describe('useOnFileRoute', () => {
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
       const commandBarActor = createActor(commandBarMachine, {
-        input: { commands: [] },
+        input: { commands: [], wasmInstancePromise: initWasmMock },
       }).start()
       const settingsActor = createActor(settingsMachine, {
         input: { commandBarActor, ...createSettings() },
@@ -196,7 +196,7 @@ describe('useOnFileRoute', () => {
         initWasmMock,
         settingsActor
       )
-      const sceneInfra = new SceneInfra(engineCommandManager)
+      const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
@@ -255,7 +255,7 @@ describe('useOnFileRoute', () => {
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
       const commandBarActor = createActor(commandBarMachine, {
-        input: { commands: [] },
+        input: { commands: [], wasmInstancePromise: initWasmMock },
       }).start()
       const settingsActor = createActor(settingsMachine, {
         input: { commandBarActor, ...createSettings() },
@@ -265,7 +265,7 @@ describe('useOnFileRoute', () => {
         initWasmMock,
         settingsActor
       )
-      const sceneInfra = new SceneInfra(engineCommandManager)
+      const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,

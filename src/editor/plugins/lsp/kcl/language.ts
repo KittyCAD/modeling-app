@@ -11,6 +11,7 @@ import { kclPlugin } from '@src/editor/plugins/lsp/kcl'
 import { colorPicker } from '@src/editor/plugins/lsp/kcl/colors'
 import type { KclManager } from '@src/lang/KclManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export interface LanguageOptions {
   workspaceFolders: LSP.WorkspaceFolder[]
@@ -27,6 +28,7 @@ export function kcl(
   systemDeps: {
     kclManager: KclManager
     sceneEntitiesManager: SceneEntities
+    wasmInstance: ModuleType
   }
 ) {
   return new LanguageSupport(KclLanguage, [

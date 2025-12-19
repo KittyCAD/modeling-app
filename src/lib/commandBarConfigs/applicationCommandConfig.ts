@@ -28,6 +28,7 @@ import type { ActorRefFrom } from 'xstate'
 import { appActor, setLayout } from '@src/lib/singletons'
 import { AppMachineEventType } from '@src/lib/types'
 import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -129,8 +130,10 @@ function onSubmitKCLSampleCreation({
 
 export function createApplicationCommands({
   systemIOActor,
+  wasmInstance,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  wasmInstance: ModuleType
 }) {
   const addKCLFileToProject: Command = {
     name: 'add-kcl-file-to-project',
@@ -305,8 +308,8 @@ export function createApplicationCommands({
           ['local'].includes(commandContext.argumentsToSubmit.source as string),
         filters: [
           {
-            name: `Import ${relevantFileExtensions().map((f) => ` .${f}`)}`,
-            extensions: relevantFileExtensions(),
+            name: `Import ${relevantFileExtensions(wasmInstance).map((f) => ` .${f}`)}`,
+            extensions: relevantFileExtensions(wasmInstance),
           },
         ],
       },

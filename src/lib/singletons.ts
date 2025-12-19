@@ -50,13 +50,6 @@ import {
 } from '@src/lib/layout'
 import type { Project } from '@src/lib/project'
 
-export const commandBarActor = createActor(commandBarMachine, {
-  input: { commands: [] },
-}).start()
-const dummySettingsActor = createActor(settingsMachine, {
-  input: { commandBarActor, ...createSettings() },
-})
-
 /**
  * THE bundle of WASM, a cornerstone of our app. We use this for:
  * - settings parse/unparse
@@ -65,6 +58,14 @@ const dummySettingsActor = createActor(settingsMachine, {
  * Access this through `kclManager.wasmInstance`, not directly.
  */
 const initPromise = initialiseWasm()
+
+export const commandBarActor = createActor(commandBarMachine, {
+  input: { commands: [], wasmInstancePromise: initPromise },
+}).start()
+const dummySettingsActor = createActor(settingsMachine, {
+  input: { commandBarActor, ...createSettings() },
+})
+
 export const engineCommandManager = new ConnectionManager()
 export const rustContext = new RustContext(
   engineCommandManager,
@@ -86,7 +87,7 @@ declare global {
 // Accessible for tests mostly
 window.engineCommandManager = engineCommandManager
 
-export const sceneInfra = new SceneInfra(engineCommandManager)
+export const sceneInfra = new SceneInfra(engineCommandManager, initPromise)
 export const kclManager = new KclManager(engineCommandManager, initPromise, {
   rustContext,
   sceneInfra,
@@ -289,6 +290,9 @@ const appMachine = setup({
     }),
     spawnChild(appMachineActors[SYSTEM_IO], {
       systemId: SYSTEM_IO,
+      input: {
+        wasmInstancePromise: initPromise,
+      },
     }),
     spawnChild(appMachineActors[COMMAND_BAR], {
       systemId: COMMAND_BAR,
@@ -374,6 +378,7 @@ export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
 
 // TODO: proper dependency management
 sceneEntitiesManager.commandBarActor = commandBarActor
+commandBarActor.send({ type: 'Set kclManager', data: kclManager })
 
 export const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
   (typeof appMachineActors)[typeof BILLING]

@@ -338,7 +338,7 @@ export class KclManager extends EventTarget {
   // so we don't waste time getting it multiple times
   get kclVersion() {
     if (this._kclVersion === undefined) {
-      this._kclVersion = getKclVersion()
+      this._kclVersion = getKclVersion(this.wasmInstance)
       setKclVersion(this.kclVersion)
     }
     return this._kclVersion
@@ -483,7 +483,7 @@ export class KclManager extends EventTarget {
 
     this._wasmInstancePromise
       .then(async (wasmInstance) => {
-        this._kclVersion = getKclVersion()
+        this._kclVersion = getKclVersion(wasmInstance)
         if (typeof wasmInstance === 'string') {
           this.wasmInitFailed = true
         } else {
@@ -697,6 +697,7 @@ export class KclManager extends EventTarget {
           engineCommandManager: this.engineCommandManager,
           kclManager: this,
           sceneEntitiesManager: this._sceneEntitiesManager,
+          wasmInstance: await this.wasmInstancePromise,
         })
       }
     }
@@ -845,7 +846,7 @@ export class KclManager extends EventTarget {
       this.clearAst()
       return
     }
-    const code = recast(ast)
+    const code = recast(ast, await this.wasmInstancePromise)
     if (err(code)) {
       console.error(code)
       return
@@ -870,13 +871,12 @@ export class KclManager extends EventTarget {
     execute: boolean,
     optionalParams?: {
       focusPath?: Array<PathToNode>
-    },
-    wasmInstance?: ModuleType
+    }
   ): Promise<{
     newAst: Node<Program>
     selections?: Selections
   }> {
-    const newCode = recast(ast, wasmInstance)
+    const newCode = recast(ast, await this._wasmInstancePromise)
     if (err(newCode)) return Promise.reject(newCode)
 
     const astWithUpdatedSource = await this.safeParse(newCode)
@@ -892,7 +892,8 @@ export class KclManager extends EventTarget {
       for (const path of optionalParams.focusPath) {
         const getNodeFromPathResult = getNodeFromPath<any>(
           astWithUpdatedSource,
-          path
+          path,
+          await this.wasmInstancePromise
         )
         if (err(getNodeFromPathResult))
           return Promise.reject(getNodeFromPathResult)
@@ -1002,6 +1003,7 @@ export class KclManager extends EventTarget {
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilterToDefault(
     sceneEntitiesManager: SceneEntities,
+    wasmInstance: ModuleType,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
@@ -1011,12 +1013,14 @@ export class KclManager extends EventTarget {
       sceneEntitiesManager,
       selectionsToRestore,
       handleSelectionBatchFn: handleSelectionBatch,
+      wasmInstance,
     })
   }
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilter(
     filter: EntityType[],
     sceneEntitiesManager: SceneEntities,
+    wasmInstance: ModuleType,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
@@ -1027,6 +1031,7 @@ export class KclManager extends EventTarget {
       sceneEntitiesManager,
       selectionsToRestore,
       handleSelectionBatchFn: handleSelectionBatch,
+      wasmInstance,
     })
   }
 
@@ -1387,7 +1392,8 @@ export class KclManager extends EventTarget {
   handleOnViewUpdate(
     viewUpdate: ViewUpdate,
     processCodeMirrorRanges: typeof processCodeMirrorRangesFn,
-    sceneEntitiesManager: SceneEntities
+    sceneEntitiesManager: SceneEntities,
+    wasmInstance: ModuleType
   ): void {
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
@@ -1421,6 +1427,7 @@ export class KclManager extends EventTarget {
       systemDeps: {
         engineCommandManager: this.engineCommandManager,
         sceneEntitiesManager,
+        wasmInstance,
       },
     })
     if (!eventInfo) {

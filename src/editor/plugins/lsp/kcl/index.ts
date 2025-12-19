@@ -32,6 +32,7 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const changesDelay = 600
 
@@ -41,6 +42,7 @@ export class KclPlugin implements PluginValue {
   private client: LanguageServerClient
   private readonly kclManager: KclManager
   private readonly sceneEntitiesManager: SceneEntities
+  private readonly wasmInstance: ModuleType
 
   constructor(
     client: LanguageServerClient,
@@ -48,11 +50,13 @@ export class KclPlugin implements PluginValue {
     systemDeps: {
       kclManager: KclManager
       sceneEntitiesManager: SceneEntities
+      wasmInstance: ModuleType
     }
   ) {
     this.client = client
     this.kclManager = systemDeps.kclManager
     this.sceneEntitiesManager = systemDeps.sceneEntitiesManager
+    this.wasmInstance = systemDeps.wasmInstance
 
     // Gotcha: Code can be written into the CodeMirror editor but not propagated to kclManager.code
     // because the update function has not run. We need to initialize the kclManager.code when lsp initializes
@@ -71,7 +75,7 @@ export class KclPlugin implements PluginValue {
   // document.
   private sendScheduledInput: number | null = null
 
-  private _deffererUserSelect = deferExecution(() => {
+  private _deffererUserSelect = deferExecution((wasmInstance: ModuleType) => {
     if (this.viewUpdate === null) {
       return
     }
@@ -79,7 +83,8 @@ export class KclPlugin implements PluginValue {
     this.kclManager.handleOnViewUpdate(
       this.viewUpdate,
       processCodeMirrorRanges,
-      this.sceneEntitiesManager
+      this.sceneEntitiesManager,
+      wasmInstance
     )
   }, 50)
 
@@ -133,7 +138,7 @@ export class KclPlugin implements PluginValue {
     // If we have a user select event, we want to update what parts are
     // highlighted.
     if (isUserSelect) {
-      this._deffererUserSelect(true)
+      this._deffererUserSelect(this.wasmInstance)
       return
     }
 
@@ -236,6 +241,7 @@ export function kclPlugin(
   systemDeps: {
     kclManager: KclManager
     sceneEntitiesManager: SceneEntities
+    wasmInstance: ModuleType
   }
 ): Extension {
   return [

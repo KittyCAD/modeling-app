@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useRef, useState } from 'react'
+import { memo, use, useCallback, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useAppState } from '@src/AppState'
@@ -25,6 +25,7 @@ import type {
 } from '@src/lib/toolbar'
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
 import { EngineConnectionStateType } from '@src/network/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type ToolbarProps = Omit<ReturnType<typeof useModelingContext>, 'theProject'> &
   Pick<
@@ -38,6 +39,7 @@ type ToolbarProps = Omit<ReturnType<typeof useModelingContext>, 'theProject'> &
 
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
+    const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
       'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
     const bgClassName = '!bg-transparent'
@@ -55,7 +57,8 @@ const Toolbar_ = memo(
       if (
         isCursorInFunctionDefinition(
           kclManager.ast,
-          props.context.selectionRanges.graphSelections[0]
+          props.context.selectionRanges.graphSelections[0],
+          wasmInstance
         )
       )
         return false
@@ -156,15 +159,18 @@ const Toolbar_ = memo(
         } else if (isToolbarDropdown(maybeIconConfig)) {
           return {
             id: maybeIconConfig.id,
-            array: maybeIconConfig.array.map((item) => resolveItemConfig(item)),
+            array: maybeIconConfig.array.map((item) =>
+              resolveItemConfig(item, wasmInstance)
+            ),
           }
         } else {
-          return resolveItemConfig(maybeIconConfig)
+          return resolveItemConfig(maybeIconConfig, wasmInstance)
         }
       })
 
       function resolveItemConfig(
-        maybeIconConfig: ToolbarItem
+        maybeIconConfig: ToolbarItem,
+        wasmInstance: ModuleType
       ): ToolbarItemResolved {
         const isConfiguredAvailable = ['available', 'experimental'].includes(
           maybeIconConfig.status
@@ -172,7 +178,7 @@ const Toolbar_ = memo(
         const isDisabled =
           disableAllButtons ||
           !isConfiguredAvailable ||
-          maybeIconConfig.disabled?.(props.state) === true
+          maybeIconConfig.disabled?.(props.state, wasmInstance) === true
 
         // Calculate the isActive state for this specific item
         const itemIsActive = maybeIconConfig.isActive?.(props.state) || false
@@ -208,7 +214,7 @@ const Toolbar_ = memo(
         }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [currentMode, disableAllButtons, configCallbackProps])
+    }, [currentMode, disableAllButtons, configCallbackProps, wasmInstance])
 
     // To remember the last selected item in an ActionButtonDropdown
     const [lastSelectedMultiActionItem, _] = useState(

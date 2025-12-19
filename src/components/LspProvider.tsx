@@ -7,7 +7,7 @@ import {
   LanguageServerClient,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import React, { createContext, useContext, useMemo, useState } from 'react'
+import React, { createContext, use, useContext, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type * as LSP from 'vscode-languageserver-protocol'
 
@@ -67,6 +67,7 @@ type LspContext = {
 
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
@@ -164,13 +165,13 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
             }
           },
         },
-        { kclManager, sceneEntitiesManager }
+        { kclManager, sceneEntitiesManager, wasmInstance }
       )
 
       plugin = lsp
     }
     return plugin
-  }, [kclLspClient, isKclLspReady])
+  }, [kclLspClient, isKclLspReady, wasmInstance])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '') {

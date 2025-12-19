@@ -133,13 +133,14 @@ export async function mkdirOrNOOP(
 export async function createNewProjectDirectory(
   electron: IElectronAPI,
   projectName: string,
+  wasmInstance: ModuleType,
   initialCode?: string,
   configuration?: DeepPartial<Configuration> | Error,
   initialFileName?: string,
   overrideApplicationProjectDirectory?: string
 ): Promise<Project> {
   if (!configuration) {
-    configuration = await readAppSettingsFile(electron)
+    configuration = await readAppSettingsFile(electron, wasmInstance)
   }
 
   if (err(configuration)) return Promise.reject(configuration)
@@ -171,7 +172,8 @@ export async function createNewProjectDirectory(
   // user's settings.
   const codeToWrite = newKclFile(
     initialCode,
-    configuration?.settings?.modeling?.base_unit ?? DEFAULT_DEFAULT_LENGTH_UNIT
+    configuration?.settings?.modeling?.base_unit ?? DEFAULT_DEFAULT_LENGTH_UNIT,
+    wasmInstance
   )
   if (err(codeToWrite)) return Promise.reject(codeToWrite)
   await electron.writeFile(projectFile, codeToWrite)
@@ -206,13 +208,15 @@ export async function listProjects(
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
   // Make sure we have wasm initialized.
-  await initPromise
+  const wasmInstance = await initPromise
 
   if (configuration === undefined) {
-    configuration = await readAppSettingsFile(electron).catch((e) => {
-      console.error(e)
-      return e
-    })
+    configuration = await readAppSettingsFile(electron, wasmInstance).catch(
+      (e) => {
+        console.error(e)
+        return e
+      }
+    )
   }
 
   if (err(configuration) || !configuration) return Promise.reject(configuration)
@@ -241,7 +245,7 @@ export async function listProjects(
       continue
     }
 
-    const project = await getProjectInfo(electron, projectPath)
+    const project = await getProjectInfo(electron, projectPath, wasmInstance)
 
     if (
       project.kcl_file_count === 0 &&
@@ -430,7 +434,7 @@ const directoryCount = (file: FileEntry) => {
 export async function getProjectInfo(
   electron: IElectronAPI,
   projectPath: string,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): Promise<Project> {
   // Check the directory.
   let stats: Stats | undefined
@@ -674,7 +678,8 @@ export const getInitialDefaultDir = async (electron: IElectronAPI) => {
 
 export const readProjectSettingsFile = async (
   electron: IElectronAPI,
-  projectPath: string
+  projectPath: string,
+  wasmInstance: ModuleType
 ): Promise<DeepPartial<ProjectConfiguration>> => {
   let settingsPath = await getProjectSettingsFilePath(electron, projectPath)
 
@@ -690,7 +695,7 @@ export const readProjectSettingsFile = async (
   const configToml = await fsManager.readFile(settingsPath, {
     encoding: 'utf-8',
   })
-  const configObj = parseProjectSettings(configToml)
+  const configObj = parseProjectSettings(configToml, wasmInstance)
   if (err(configObj)) {
     return Promise.reject(configObj)
   }
@@ -700,7 +705,10 @@ export const readProjectSettingsFile = async (
 /**
  * Read the app settings file, or creates an initial one if it doesn't exist.
  */
-export const readAppSettingsFile = async (electron: IElectronAPI) => {
+export const readAppSettingsFile = async (
+  electron: IElectronAPI,
+  wasmInstance: ModuleType
+) => {
   let settingsPath = await getAppSettingsFilePath(electron)
   const initialProjectDirConfig: DeepPartial<
     NonNullable<Required<Configuration>['settings']['project']>
@@ -711,7 +719,7 @@ export const readAppSettingsFile = async (electron: IElectronAPI) => {
     const configToml = await fsManager.readFile(settingsPath, {
       encoding: 'utf-8',
     })
-    const parsedAppConfig = parseAppSettings(configToml)
+    const parsedAppConfig = parseAppSettings(configToml, wasmInstance)
     if (err(parsedAppConfig)) {
       return Promise.reject(parsedAppConfig)
     }
@@ -739,7 +747,7 @@ export const readAppSettingsFile = async (electron: IElectronAPI) => {
   }
 
   // The file doesn't exist, create a new one.
-  const defaultAppConfig = defaultAppSettings()
+  const defaultAppConfig = defaultAppSettings(wasmInstance)
   if (err(defaultAppConfig)) {
     return Promise.reject(defaultAppConfig)
   }

@@ -44,6 +44,7 @@ const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
       end: 0,
       moduleId: 'test-module',
     },
+    wasmInstancePromise: vi.importActual('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'),
   } as any,
   toast: {
     error: vi.fn(),
@@ -546,7 +547,8 @@ describe('DXF Export', () => {
       // Our logic correctly selects the first DXF file's content (sketch1.dxf)
       // but the filename comes from the sketch name, not the selected file name
       expect(mockDeps.base64Decode).toHaveBeenCalledWith(
-        'Zmlyc3QtZHhmLWNvbnRlbnQ='
+        'Zmlyc3QtZHhmLWNvbnRlbnQ=',
+        await mockDeps.kclManager.wasmInstancePromise
       )
       expect(mockDeps.browserSaveFile).toHaveBeenCalledWith(
         expect.any(Blob),

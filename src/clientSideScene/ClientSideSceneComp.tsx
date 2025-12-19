@@ -1,5 +1,5 @@
 import { Popover } from '@headlessui/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -310,6 +310,7 @@ const Overlay = ({
   overlayIndex: number
   pathToNodeString: string
 }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const { context, send, state } = useModelingContext()
 
   // Simple check directly from localStorage
@@ -324,6 +325,7 @@ const Overlay = ({
   const _node1 = getNodeFromPath<Node<CallExpressionKw>>(
     kclManager.ast,
     overlay.pathToNode,
+    wasmInstance,
     ['CallExpressionKw']
   )
 
@@ -444,8 +446,13 @@ const SegmentMenu = ({
   pathToNode: PathToNode
   stdLibFnName: string
 }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const { send } = useModelingContext()
-  const dependentSourceRanges = findUsesOfTagInPipe(kclManager.ast, pathToNode)
+  const dependentSourceRanges = findUsesOfTagInPipe(
+    kclManager.ast,
+    pathToNode,
+    wasmInstance
+  )
   return (
     <Popover className="relative">
       {({ open }) => (
@@ -503,6 +510,7 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const { context } = useModelingContext()
   const varNameMap: {
     [key in ConstrainInfo['type']]: {
@@ -586,7 +594,7 @@ const ConstraintSymbol = ({
   const implicitDesc = varNameMap[_type]?.implicitConstraintDesc
 
   const _node = useMemo(
-    () => getNodeFromPath<Expr>(kclManager.ast, pathToNode),
+    () => getNodeFromPath<Expr>(kclManager.ast, pathToNode, wasmInstance),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [kclManager.ast, pathToNode]
   )
@@ -638,10 +646,11 @@ const ConstraintSymbol = ({
               },
             })
           } else if (isConstrained) {
+            const wasmInstance = await kclManager.wasmInstancePromise
             try {
               const pResult = parse(
-                recast(kclManager.ast),
-                await kclManager.wasmInstancePromise
+                recast(kclManager.ast, wasmInstance),
+                wasmInstance
               )
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
@@ -649,6 +658,7 @@ const ConstraintSymbol = ({
               const _node1 = getNodeFromPath<CallExpressionKw>(
                 pResult.program,
                 pathToNode,
+                wasmInstance,
                 ['CallExpressionKw'],
                 true
               )
@@ -662,7 +672,8 @@ const ConstraintSymbol = ({
                 kclManager.ast,
                 kclManager.variables,
                 removeSingleConstraint,
-                transformAstSketchLines
+                transformAstSketchLines,
+                wasmInstance
               )
 
               if (!transform) return
@@ -671,7 +682,7 @@ const ConstraintSymbol = ({
               await kclManager.updateAst(modifiedAst, true)
 
               // Code editor will be updated in the modelingMachine.
-              const newCode = recast(modifiedAst)
+              const newCode = recast(modifiedAst, wasmInstance)
               if (err(newCode)) return
               kclManager.updateCodeEditor(newCode)
             } catch (e) {

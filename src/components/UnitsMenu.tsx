@@ -1,5 +1,5 @@
 import { Popover } from '@headlessui/react'
-import { useCallback, useEffect, useState } from 'react'
+import { use, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -13,6 +13,7 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 
 export function UnitsMenu() {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
   const { state: modelingState } = useModelingContext()
   const inSketchMode = modelingState.matches('Sketch')
@@ -98,7 +99,11 @@ export function UnitsMenu() {
                   <button
                     className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                     onClick={() => {
-                      const newCode = changeDefaultUnits(kclManager.code, unit)
+                      const newCode = changeDefaultUnits(
+                        kclManager.code,
+                        unit,
+                        wasmInstance
+                      )
                       if (err(newCode)) {
                         toast.error(
                           `Failed to set per-file units: ${newCode.message}`

@@ -21,6 +21,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -28,10 +29,12 @@ export default function CommandBarSelectionMixedInput({
   arg,
   stepBack,
   onSubmit,
+  wasmInstance,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'selectionMixed'; name: string }
   stepBack: () => void
   onSubmit: (data: unknown) => void
+  wasmInstance: ModuleType
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = useCommandBarState()
@@ -143,6 +146,7 @@ export default function CommandBarSelectionMixedInput({
         sceneEntitiesManager,
         selectionsToRestore: selection,
         handleSelectionBatchFn: handleSelectionBatch,
+        wasmInstance,
       })
     }
     return () => {
@@ -154,10 +158,11 @@ export default function CommandBarSelectionMixedInput({
           sceneEntitiesManager,
           selectionsToRestore: selection,
           handleSelectionBatchFn: handleSelectionBatch,
+          wasmInstance,
         })
       }
     }
-  }, [arg.selectionFilter, selection, hasCoercedSelections])
+  }, [arg.selectionFilter, selection, hasCoercedSelections, wasmInstance])
 
   // Watch for outside teardowns of this component
   // (such as clicking another argument in the command palette header)

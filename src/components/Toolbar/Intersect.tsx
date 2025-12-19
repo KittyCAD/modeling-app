@@ -25,15 +25,20 @@ import {
   type VariableDeclarator,
 } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
+import type { KclManager } from '@src/lang/KclManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
 export function intersectInfo({
   selectionRanges,
+  kclManager,
+  wasmInstance,
 }: {
   selectionRanges: Selections
+  kclManager: KclManager
+  wasmInstance: ModuleType
 }):
   | {
       transforms: TransformInfo[]
@@ -56,7 +61,8 @@ export function intersectInfo({
       kclManager.artifactGraph,
       kclManager.variables,
       selectionRanges.graphSelections[0],
-      selectionRanges.graphSelections[1]
+      selectionRanges.graphSelections[1],
+      wasmInstance
     )
 
   if (err(previousSegment)) return previousSegment
@@ -78,7 +84,11 @@ export function intersectInfo({
   }
 
   const _nodes = _forcedSelectionRanges.graphSelections.map(({ codeRef }) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
+    const tmp = getNodeFromPath<Expr>(
+      kclManager.ast,
+      codeRef.pathToNode,
+      wasmInstance
+    )
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -90,6 +100,7 @@ export function intersectInfo({
     const tmp = getNodeFromPath<VariableDeclarator>(
       kclManager.ast,
       codeRef.pathToNode,
+      wasmInstance,
       'VariableDeclarator'
     )
     if (err(tmp)) return tmp
@@ -116,7 +127,8 @@ export function intersectInfo({
       graphSelections: _forcedSelectionRanges.graphSelections.slice(1),
     },
     kclManager.ast,
-    'intersect'
+    'intersect',
+    wasmInstance
   )
 
   const forcedArtifact = _forcedSelectionRanges?.graphSelections?.[1]?.artifact
@@ -136,8 +148,10 @@ export function intersectInfo({
 
 export async function applyConstraintIntersect({
   selectionRanges,
+  kclManager,
 }: {
   selectionRanges: Selections
+  kclManager: KclManager
 }): Promise<{
   modifiedAst: Node<Program>
   pathToNodeMap: PathToNodeMap
@@ -145,6 +159,8 @@ export async function applyConstraintIntersect({
 }> {
   const info = intersectInfo({
     selectionRanges,
+    kclManager,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(info)) return Promise.reject(info)
   const { transforms, forcedSelectionRanges } = info
@@ -154,6 +170,7 @@ export async function applyConstraintIntersect({
     selectionRanges: forcedSelectionRanges,
     transformInfos: transforms,
     memVars: kclManager.variables,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(transform1)) return Promise.reject(transform1)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
@@ -187,7 +204,12 @@ export async function applyConstraintIntersect({
   // transform again but forcing certain values
   if (!isExprBinaryPart(valueNode))
     return Promise.reject('Invalid valueNode, is not a BinaryPart')
-  const finalValue = removeDoubleNegatives(valueNode, sign, variableName)
+  const finalValue = removeDoubleNegatives(
+    valueNode,
+    sign,
+    await kclManager.wasmInstancePromise,
+    variableName
+  )
   const transform2 = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
     selectionRanges: forcedSelectionRanges,
@@ -195,6 +217,7 @@ export async function applyConstraintIntersect({
     memVars: kclManager.variables,
     forceSegName: segName,
     forceValueUsedInTransform: finalValue,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(transform2)) return Promise.reject(transform2)
   const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =

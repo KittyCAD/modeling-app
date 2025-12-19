@@ -151,7 +151,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
+      const result = addFlatnessGdt({
+        ast,
+        artifactGraph,
+        faces,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -180,7 +186,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
+      const result = addFlatnessGdt({
+        ast,
+        artifactGraph,
+        faces,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -214,7 +226,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
+      const result = addFlatnessGdt({
+        ast,
+        artifactGraph,
+        faces,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -260,6 +278,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         artifactGraph,
         faces: duplicatedSelection,
         tolerance,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
 
@@ -296,6 +315,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         artifactGraph,
         faces,
         tolerance: tolerance1,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result1)) throw result1
 
@@ -312,6 +332,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         artifactGraph,
         faces,
         tolerance: tolerance2,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result2)) throw result2
 
@@ -375,6 +396,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         framePlane,
         fontPointSize,
         fontScale,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
 
@@ -407,7 +429,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
+      const result = addFlatnessGdt({
+        ast,
+        artifactGraph,
+        faces,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -445,7 +473,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
+      const result = addFlatnessGdt({
+        ast,
+        artifactGraph,
+        faces,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -499,6 +533,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         artifactGraph,
         faces,
         tolerance,
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) throw result
@@ -527,7 +562,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getCapFromCylinder(artifactGraph)
       const name = 'A'
-      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+      const result = addDatumGdt({
+        ast,
+        artifactGraph,
+        faces,
+        name,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -550,7 +591,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getWallsFromBox(artifactGraph, 1)
       const name = 'C'
-      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+      const result = addDatumGdt({
+        ast,
+        artifactGraph,
+        faces,
+        name,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -588,7 +635,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
 
       const name = 'D'
-      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+      const result = addDatumGdt({
+        ast,
+        artifactGraph,
+        faces,
+        name,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -613,7 +666,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getWallsFromBox(artifactGraph, 2)
       const name = 'A'
-      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+      const result = addDatumGdt({
+        ast,
+        artifactGraph,
+        faces,
+        name,
+        wasmInstance: instanceInThisFile,
+      })
 
       expect(err(result)).toBeTruthy()
       if (!err(result))
@@ -631,7 +690,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces: Selections = { graphSelections: [], otherSelections: [] }
       const name = 'A'
-      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+      const result = addDatumGdt({
+        ast,
+        artifactGraph,
+        faces,
+        name,
+        wasmInstance: instanceInThisFile,
+      })
 
       expect(err(result)).toBeTruthy()
       if (!err(result)) throw new Error('Should have failed with no faces')
@@ -646,7 +711,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getCapFromCylinder(artifactGraph)
       const name = 'AB'
-      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+      const result = addDatumGdt({
+        ast,
+        artifactGraph,
+        faces,
+        name,
+        wasmInstance: instanceInThisFile,
+      })
 
       // Should fail with validation error
       expect(err(result)).toBeTruthy()
@@ -663,7 +734,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getCapFromCylinder(artifactGraph)
       const name = ''
-      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+      const result = addDatumGdt({
+        ast,
+        artifactGraph,
+        faces,
+        name,
+        wasmInstance: instanceInThisFile,
+      })
 
       // Should fail with validation error
       expect(err(result)).toBeTruthy()
@@ -679,7 +756,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getCapFromCylinder(artifactGraph)
       const name = '"'
-      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+      const result = addDatumGdt({
+        ast,
+        artifactGraph,
+        faces,
+        name,
+        wasmInstance: instanceInThisFile,
+      })
 
       // Should fail with validation error
       expect(err(result)).toBeTruthy()
@@ -724,6 +807,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         framePlane,
         fontPointSize,
         fontScale,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
 

@@ -1,7 +1,9 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { useMachine, useSelector } from '@xstate/react'
 import type { ComponentProps } from 'react'
-import { useCallback, useEffect, useMemo, useRef, memo } from 'react'
+
+import { use, useCallback, useEffect, useMemo, useRef, memo } from 'react'
+
 import type { Actor, Prop } from 'xstate'
 
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
@@ -64,6 +66,7 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
+import { toUtf16 } from '@src/lang/errors'
 
 // Defined outside of React to prevent rerenders
 // TODO: get all system dependencies into React via global context
@@ -534,22 +537,23 @@ interface OperationProps {
 const OperationItem = (props: OperationProps) => {
   const diagnostics = kclManager.diagnosticsSignal.value
   const ast = kclManager.astSignal.value
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const name = getOperationLabel(props.item)
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(props.item, props.code)
   }, [props.item, props.code])
 
   const variableName = useMemo(() => {
-    return getOperationVariableName(props.item, ast)
-  }, [props.item, ast])
+    return getOperationVariableName(props.item, ast, wasmInstance)
+  }, [props.item, ast, wasmInstance])
 
   const errors = useMemo(() => {
     return diagnostics.filter(
       (diag) =>
         diag.severity === 'error' &&
         'sourceRange' in props.item &&
-        diag.from >= props.item.sourceRange[0] &&
-        diag.to <= props.item.sourceRange[1]
+        diag.from >= toUtf16(props.item.sourceRange[0], props.code) &&
+        diag.to <= toUtf16(props.item.sourceRange[1], props.code)
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [diagnostics.length])
@@ -1028,7 +1032,9 @@ export function getFeatureTreeValueDetail(
 ): { calculated: OpKclValue; display: string } | undefined {
   if (operation.type === 'VariableDeclaration') {
     return {
-      display: code.slice(operation.sourceRange[0], operation.sourceRange[1]),
+      display: code.slice(
+        ...operation.sourceRange.map((r) => toUtf16(r, code))
+      ),
       calculated: operation.value,
     }
   }
@@ -1037,7 +1043,9 @@ export function getFeatureTreeValueDetail(
   if (operation.type === 'StdLibCall' && operation.name === 'gdt::datum') {
     const nameArg = operation.labeledArgs?.name
     if (nameArg?.sourceRange) {
-      const nameRaw = code.slice(nameArg.sourceRange[0], nameArg.sourceRange[1])
+      const nameRaw = code.slice(
+        ...nameArg.sourceRange.map((r) => toUtf16(r, code))
+      )
       const datumName = stripQuotes(nameRaw)
       if (datumName) {
         const stringValue: OpKclValue = {

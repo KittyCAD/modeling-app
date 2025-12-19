@@ -31,6 +31,7 @@ import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
 import type { Project } from '@src/lib/project'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -39,6 +40,7 @@ interface KclCommandConfig {
     providedOptions: CommandArgumentOption<string>[]
   }
   kclManager: KclManager
+  wasmInstance: ModuleType
   projectData: IndexLoaderData
   authToken: string
   settings: {
@@ -87,7 +89,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         if (typeof data === 'object' && 'unit' in data) {
           const newCode = changeDefaultUnits(
             commandProps.kclManager.code,
-            data.unit
+            data.unit,
+            commandProps.wasmInstance
           )
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
@@ -202,7 +205,9 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             const context = systemIOActor.getSnapshot().context
             const projectName = commandProps.project?.name
             const sep = window.electron?.sep
-            const relevantFiles = relevantFileExtensions()
+            const relevantFiles = relevantFileExtensions(
+              commandProps.wasmInstance
+            )
             if (projectName && sep) {
               const importableFiles = listAllImportFilesWithinProject(context, {
                 projectFolderName: projectName,
@@ -358,6 +363,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             const node = getNodeFromPath<VariableDeclarator>(
               commandProps.kclManager.ast,
               nodeToEdit,
+              commandProps.wasmInstance,
               'VariableDeclarator',
               true
             )
@@ -388,7 +394,9 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             if (!nodeToEdit || !isPathToNode(nodeToEdit)) return '5'
             const node = getNodeFromPath<VariableDeclarator>(
               commandProps.kclManager.ast,
-              nodeToEdit
+              nodeToEdit,
+              commandProps.wasmInstance,
+              'VariableDeclarator'
             )
             if (err(node) || node.node.type !== 'VariableDeclarator')
               return 'Error'
@@ -418,7 +426,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         const newAst = structuredClone(commandProps.kclManager.ast)
         const variableNode = getNodeFromPath<Node<VariableDeclarator>>(
           newAst,
-          nodeToEdit
+          nodeToEdit,
+          commandProps.wasmInstance
         )
 
         if (
