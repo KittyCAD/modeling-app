@@ -285,8 +285,14 @@ export function App() {
     []
   )
 
-  const notifications: boolean[] = Object.values(layout || defaultLayout).map(
-    (x) => x.useNotifications?.()
+  const notifications: boolean[] = Object.values(defaultAreaLibrary).map(
+    (x) => {
+      if ('useNotifications' in x) {
+        const obj = x.useNotifications?.()
+        return obj !== undefined && Boolean(obj.value)
+      }
+      return false
+    }
   )
 
   return (
