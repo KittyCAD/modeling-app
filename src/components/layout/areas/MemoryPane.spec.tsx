@@ -53,6 +53,7 @@ describe('processMemory', () => {
     |> startProfile(at = [0, 0])
     |> line(endAbsolute = [-2.4, myVar])
     |> line(endAbsolute = [-0.76, otherVar])
+    |> line(endAbsolute = profileStart())
     |> extrude(length = 4)
 
   theSketch = startSketchOn(XY)
