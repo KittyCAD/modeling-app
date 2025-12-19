@@ -218,7 +218,7 @@ async fn inner_extrude(
                     })
                 }
                 Point3dAxis3dOrGeometryReference::Plane(plane) => {
-                    let plane_id = if plane.value == crate::exec::PlaneType::Uninit {
+                    let plane_id = if plane.is_uninitialized() {
                         if plane.info.origin.units.is_none() {
                             return Err(KclError::new_semantic(KclErrorDetails::new(
                                 "Origin of plane has unknown units".to_string(),
