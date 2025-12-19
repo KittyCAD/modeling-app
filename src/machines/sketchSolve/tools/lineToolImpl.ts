@@ -348,16 +348,7 @@ export function storePendingSketchOutcome({
   }>
   self: ToolActionArgs['self']
 }) {
-  const output = event.output as {
-    kclSource?: SourceDelta
-    sceneGraphDelta?: SceneGraphDelta
-    newLineEndPointId?: number
-    newlyAddedEntities?: {
-      segmentIds: Array<number>
-      constraintIds: Array<number>
-    }
-    error?: string
-  }
+  const output = event.output
 
   const result: Partial<ToolContext> = {}
 
@@ -413,10 +404,7 @@ export function sendDeleteResultToParentWithDebounce({
 }) {
   // Send the delete result to parent (this removes the entities)
   if (event.output) {
-    const output = event.output as {
-      kclSource?: SourceDelta
-      sceneGraphDelta?: SceneGraphDelta
-    }
+    const output = event.output
     if (output.kclSource && output.sceneGraphDelta) {
       self._parent?.send({
         type: 'update sketch outcome',
@@ -443,10 +431,7 @@ export function sendDeleteResultToParent({
 }) {
   // Send the delete result to parent
   if (event.output) {
-    const output = event.output as {
-      kclSource?: SourceDelta
-      sceneGraphDelta?: SceneGraphDelta
-    }
+    const output = event.output
     if (output.kclSource && output.sceneGraphDelta) {
       self._parent?.send({
         type: 'update sketch outcome',
