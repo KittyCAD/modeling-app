@@ -365,7 +365,7 @@ test.describe('Point-and-click assemblies tests', () => {
           },
           commandName: 'Rotate',
           reviewValidationError:
-            'Expected `roll`, `pitch`, and `yaw` or `axis` and `angle` to be provided.',
+            'semantic: Expected `roll`, `pitch`, and `yaw` or `axis` and `angle` to be provided.',
         })
         await cmdBar.clickOptionalArgument('roll')
         await cmdBar.expectState({
