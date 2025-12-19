@@ -285,7 +285,9 @@ export function App() {
     []
   )
 
-  const hasNotifications = Object.values(layout || defaultLayout).map(x => x.useNotifications?.())
+  const hasNotifications = Object.values(layout || defaultLayout).map((x) =>
+    x.useNotifications?.()
+  )
 
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
