@@ -1,0 +1,98 @@
+// Field monitor stand
+// Stand for a Feelworld FW760 7 inch Field Monitor
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+plateLength = 121
+plateLengthBase = 60
+
+width = 3
+
+plateWidth = 62 + 4
+holeRadius = 4 / 2 // 2.84
+holeDistanceY = 52.1 + 2 * holeRadius
+holeDistanceX = 75.2 + 2 * holeRadius
+
+plateHoleDistanceY1 = plateWidth / 2 + holeDistanceY / 2
+plateHoleDistanceY2 = plateWidth / 2 - (holeDistanceY / 2)
+plateHoleDistanceX1 = plateLength - 21 - 0
+plateHoleDistanceX2 = plateLength - 21 - holeDistanceX
+
+angle = 110deg
+
+// Model the base extrusion of the part
+baseSketch = startSketchOn(YZ)
+bodyProfile = startProfile(baseSketch, at = [-plateLengthBase, 0])
+  |> xLine(length = plateLengthBase)
+  |> angledLine(angle = angle, length = plateLength, tag = $seg01)
+  |> angledLine(angle = angle + 90deg, length = width, tag = $seg02)
+  |> angledLine(angle = angle + 90deg + 90deg, endAbsoluteY = width, tag = $seg03)
+  |> angledLine(angle = 180deg, endAbsoluteX = -plateLengthBase, tag = $seg04)
+  |> line(endAbsolute = [-plateLengthBase, 0], tag = $seg05)
+
+// Model a supporting gusset on the interior
+gussetProfile = startProfile(baseSketch, at = segEnd(seg03))
+  |> xLine(length = -15)
+  |> angledLineThatIntersects(angle = 90deg, intersectTag = seg03)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Extrude the body of the mount to desired width
+body = extrude(
+  bodyProfile,
+  length = plateWidth,
+  tagStart = $capStart001,
+  tagEnd = $capEnd001,
+)
+
+// Extrude the gusset to desired thickness
+gusset = extrude(gussetProfile, length = 2)
+
+// Model the mounting holes
+sketch003 = startSketchOn(body, face = seg01)
+
+// Identify hole positions
+holeCenters = [
+  [
+  plateHoleDistanceX1,
+  plateHoleDistanceY1
+],
+  [
+  plateHoleDistanceX1,
+  plateHoleDistanceY2
+],
+  [
+  plateHoleDistanceX2,
+  plateHoleDistanceY1
+],
+  [
+  plateHoleDistanceX2,
+  plateHoleDistanceY2
+]
+]
+
+// Place a hole at each position
+holes = map(
+  holeCenters,
+  f = fn(@pt) {
+    return circle(sketch003, center = pt, radius = holeRadius)
+  },
+)
+
+// Extrude all holes, then subtract
+holeExtrusions = extrude(holes, length = -10, method = NEW)
+subtract = subtract(body, tools = holeExtrusions)
+
+// Fillet the exterior edges
+fillet(
+  subtract,
+  tags = [
+    getCommonEdge(faces = [seg02, capStart001]),
+    getCommonEdge(faces = [seg02, capEnd001]),
+    getCommonEdge(faces = [seg05, capStart001]),
+    getCommonEdge(faces = [seg05, capEnd001])
+  ],
+  radius = 5,
+)
