@@ -31,151 +31,145 @@ const DefaultContextMenuItems = [
   // add more default context menu items here
 ]
 
-export const ContextMenu = memo(
-  function ContextMenu({
-    items = DefaultContextMenuItems,
-    menuTargetElement,
-    className,
-    guard,
-    event = 'contextmenu',
-    callback,
-    ...props
-  }: ContextMenuProps) {
-    const dialogRef = useRef<HTMLDivElement>(null)
-    const [open, setOpen] = useState(false)
-    const [windowSize, setWindowSize] = useState({
-      width: globalThis?.window?.innerWidth,
-      height: globalThis?.window?.innerHeight,
-    })
-    const [position, setPosition] = useState({ x: 0, y: 0 })
-    useHotkeys('esc', () => setOpen(false), {
-      enabled: open,
-    })
-    const handleContextMenu = useCallback(
-      (e: globalThis.MouseEvent) => {
-        if (callback) {
-          callback(e)
-        }
-        if (guard && !guard(e)) return
-        e.preventDefault()
-        // This stopPropagation is needed in case multiple nested items use a separate context menu each,
-        // which would cause the parent context menu to receive the event even if the child was clicked on.
-        // Eg. this happens in FileTree causing a bug where the parent folder is going into renaming mode when trying to rename a child.
-        e.stopPropagation()
-        setPosition({ x: e.clientX, y: e.clientY })
-        setOpen(true)
-      },
-      [guard, setPosition, setOpen, callback]
-    )
-
-    const onDialogMouseUp = useCallback((e: MouseEvent) => {
-      // Prevent mouseup event to propagate to EngineStream's handleMouseUp which would update the selection depending
-      // on what's behind the ContextMenu at the position of the mouse.
-      // Bug without this:
-      // - Open ContextMenu
-      // - Click on an item in the ContextMenu and see how what's behind will get selected.
+export const ContextMenu = memo(function ContextMenu({
+  items = DefaultContextMenuItems,
+  menuTargetElement,
+  className,
+  guard,
+  event = 'contextmenu',
+  callback,
+  ...props
+}: ContextMenuProps) {
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
+  const [windowSize, setWindowSize] = useState({
+    width: globalThis?.window?.innerWidth,
+    height: globalThis?.window?.innerHeight,
+  })
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  useHotkeys('esc', () => setOpen(false), {
+    enabled: open,
+  })
+  const handleContextMenu = useCallback(
+    (e: globalThis.MouseEvent) => {
+      if (callback) {
+        callback(e)
+      }
+      if (guard && !guard(e)) return
+      e.preventDefault()
+      // This stopPropagation is needed in case multiple nested items use a separate context menu each,
+      // which would cause the parent context menu to receive the event even if the child was clicked on.
+      // Eg. this happens in FileTree causing a bug where the parent folder is going into renaming mode when trying to rename a child.
       e.stopPropagation()
-    }, [])
+      setPosition({ x: e.clientX, y: e.clientY })
+      setOpen(true)
+    },
+    [guard, setPosition, setOpen, callback]
+  )
 
-    const onCloseDialog = useCallback(() => {
-      setOpen(false)
-    }, [])
+  const onDialogMouseUp = useCallback((e: MouseEvent) => {
+    // Prevent mouseup event to propagate to EngineStream's handleMouseUp which would update the selection depending
+    // on what's behind the ContextMenu at the position of the mouse.
+    // Bug without this:
+    // - Open ContextMenu
+    // - Click on an item in the ContextMenu and see how what's behind will get selected.
+    e.stopPropagation()
+  }, [])
 
-    const dialogPositionStyle = useMemo(() => {
-      if (!dialogRef.current)
-        return {
-          top: 0,
-          left: 0,
-          right: 'auto',
-          bottom: 'auto',
-        }
+  const onCloseDialog = useCallback(() => {
+    setOpen(false)
+  }, [])
 
+  const dialogPositionStyle = useMemo(() => {
+    if (!dialogRef.current)
       return {
-        top:
-          position.y + dialogRef.current.clientHeight > windowSize.height
-            ? 'auto'
-            : position.y,
-        left:
-          position.x + dialogRef.current.clientWidth > windowSize.width
-            ? 'auto'
-            : position.x,
-        right:
-          position.x + dialogRef.current.clientWidth > windowSize.width
-            ? windowSize.width - position.x
-            : 'auto',
-        bottom:
-          position.y + dialogRef.current.clientHeight > windowSize.height
-            ? windowSize.height - position.y
-            : 'auto',
+        top: 0,
+        left: 0,
+        right: 'auto',
+        bottom: 'auto',
       }
+
+    return {
+      top:
+        position.y + dialogRef.current.clientHeight > windowSize.height
+          ? 'auto'
+          : position.y,
+      left:
+        position.x + dialogRef.current.clientWidth > windowSize.width
+          ? 'auto'
+          : position.x,
+      right:
+        position.x + dialogRef.current.clientWidth > windowSize.width
+          ? windowSize.width - position.x
+          : 'auto',
+      bottom:
+        position.y + dialogRef.current.clientHeight > windowSize.height
+          ? windowSize.height - position.y
+          : 'auto',
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [position, windowSize, dialogRef.current])
+
+  // Listen for window resize to update context menu position
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: globalThis?.window?.innerWidth,
+        height: globalThis?.window?.innerHeight,
+      })
+    }
+    globalThis?.window?.addEventListener('resize', handleResize)
+    return () => {
+      globalThis?.window?.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  // Add context menu listener to target once mounted
+  useEffect(() => {
+    menuTargetElement?.current?.addEventListener(event, handleContextMenu)
+    return () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [position, windowSize, dialogRef.current])
+      menuTargetElement?.current?.removeEventListener(event, handleContextMenu)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [menuTargetElement?.current, callback])
 
-    // Listen for window resize to update context menu position
-    useEffect(() => {
-      const handleResize = () => {
-        setWindowSize({
-          width: globalThis?.window?.innerWidth,
-          height: globalThis?.window?.innerHeight,
-        })
-      }
-      globalThis?.window?.addEventListener('resize', handleResize)
-      return () => {
-        globalThis?.window?.removeEventListener('resize', handleResize)
-      }
-    }, [])
-
-    // Add context menu listener to target once mounted
-    useEffect(() => {
-      menuTargetElement?.current?.addEventListener(event, handleContextMenu)
-      return () => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-        menuTargetElement?.current?.removeEventListener(
-          event,
-          handleContextMenu
-        )
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [menuTargetElement?.current, callback])
-
-    return (
-      <Dialog open={open} onClose={onCloseDialog} onMouseUp={onDialogMouseUp}>
-        <div
-          className="fixed inset-0 z-50 w-screen h-screen"
-          onContextMenu={(e) => {
-            e.preventDefault()
-            setPosition({ x: e.clientX, y: e.clientY })
-          }}
-        >
-          <Dialog.Backdrop className="fixed z-10 inset-0" />
-          <Dialog.Panel
-            ref={dialogRef}
-            className={`w-52 fixed bg-chalkboard-10 dark:bg-chalkboard-90
+  return (
+    <Dialog open={open} onClose={onCloseDialog} onMouseUp={onDialogMouseUp}>
+      <div
+        className="fixed inset-0 z-50 w-screen h-screen"
+        onContextMenu={(e) => {
+          e.preventDefault()
+          setPosition({ x: e.clientX, y: e.clientY })
+        }}
+      >
+        <Dialog.Backdrop className="fixed z-10 inset-0" />
+        <Dialog.Panel
+          ref={dialogRef}
+          className={`w-52 fixed bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-10 dark:border-chalkboard-90 rounded
           shadow-lg backdrop:fixed backdrop:inset-0 backdrop:bg-primary ${className}`}
-            style={{
-              ...dialogPositionStyle,
-              ...props.style,
-            }}
+          style={{
+            ...dialogPositionStyle,
+            ...props.style,
+          }}
+        >
+          <ul
+            {...props}
+            className="relative flex flex-col gap-0.5 items-stretch content-stretch"
+            onClick={() => setOpen(false)}
           >
-            <ul
-              {...props}
-              className="relative flex flex-col gap-0.5 items-stretch content-stretch"
-              onClick={() => setOpen(false)}
-            >
-              {items.map((item, i) => (
-                <Fragment key={`${i}-${item.key}`}>{item}</Fragment>
-              ))}
-            </ul>
-          </Dialog.Panel>
-        </div>
-      </Dialog>
-    )
-    // ContextMenu's items prop always sets a static array, but it's a new ref each time.
-    // This prevents the unnecessary rerender.
-  },
-  (oldP, newP) => oldP.items?.length === newP.items?.length
-)
+            {items.map((item, i) => (
+              <Fragment key={`${i}-${item.key}`}>{item}</Fragment>
+            ))}
+          </ul>
+        </Dialog.Panel>
+      </div>
+    </Dialog>
+  )
+  // ContextMenu's items prop always sets a static array, but it's a new ref each time.
+  // This prevents the unnecessary rerender.
+})
 
 export function ContextMenuDivider() {
   return <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
