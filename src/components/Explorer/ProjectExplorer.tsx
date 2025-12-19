@@ -45,6 +45,15 @@ const isFileExplorerEntryOpened = (
   return rows[entry.key]
 }
 
+const handleExternalDragEvent = (e: React.DragEvent): boolean => {
+  if (!isExternalFileDrag(e)) {
+    return false
+  }
+  e.preventDefault()
+  e.stopPropagation()
+  return true
+}
+
 const getDropTargetPath = (
   target: FileExplorerEntry | null,
   projectPath: string
@@ -1026,24 +1035,18 @@ export const ProjectExplorer = ({
           }
         }}
         onDragEnter={(e) => {
-          if (isExternalFileDrag(e)) {
-            e.preventDefault()
-            e.stopPropagation()
+          if (handleExternalDragEvent(e)) {
             externalDragCounter.current++
             setIsExternalDragOver(true)
           }
         }}
         onDragOver={(e) => {
-          if (isExternalFileDrag(e)) {
-            e.preventDefault()
-            e.stopPropagation()
+          if (handleExternalDragEvent(e)) {
             e.dataTransfer.dropEffect = 'copy'
           }
         }}
         onDragLeave={(e) => {
-          if (isExternalFileDrag(e)) {
-            e.preventDefault()
-            e.stopPropagation()
+          if (handleExternalDragEvent(e)) {
             externalDragCounter.current--
             if (externalDragCounter.current <= 0) {
               externalDragCounter.current = 0
@@ -1053,9 +1056,7 @@ export const ProjectExplorer = ({
           }
         }}
         onDrop={(e) => {
-          if (isExternalFileDrag(e)) {
-            e.preventDefault()
-            e.stopPropagation()
+          if (handleExternalDragEvent(e)) {
             externalDragCounter.current = 0
             setIsExternalDragOver(false)
             if (e.dataTransfer.items.length > 0) {
