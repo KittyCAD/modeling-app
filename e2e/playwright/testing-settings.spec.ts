@@ -552,6 +552,7 @@ test.describe(
 
         // Set user level unit to anything but the default
         const unitSelect = page.getByTestId('modeling-defaultUnit')
+        await page.waitForTimeout(200)
         await unitSelect.selectOption('ft')
         const toast = page.getByText(
           `Set default unit to "ft" as a user default`
@@ -576,6 +577,7 @@ test.describe(
         // Change project level debug panel to off, see if it sticks
         const showDebugPanel = page.locator('#showDebugPanel')
         const showDebugPanelToggle = showDebugPanel.getByText('OffOn')
+        await page.waitForTimeout(200)
         await showDebugPanelToggle.click()
         await expect(showDebugPanel.getByRole('checkbox')).not.toBeChecked()
         const toastDebug = page.getByText(
