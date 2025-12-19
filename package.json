@@ -60,6 +60,7 @@
     "re-resizable": "^6.11.2",
     "react": "19.2.1",
     "react-dom": "19.2.1",
+    "react-fast-compare": "^3.2.2",
     "react-hot-toast": "^2.5.2",
     "react-hotkeys-hook": "^4.6.1",
     "react-modal": "^3.16.3",
