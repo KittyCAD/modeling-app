@@ -1,5 +1,5 @@
 import { useSelector } from '@xstate/react'
-import { use, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
@@ -21,6 +21,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -28,12 +29,13 @@ export default function CommandBarSelectionMixedInput({
   arg,
   stepBack,
   onSubmit,
+  wasmInstance,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'selectionMixed'; name: string }
   stepBack: () => void
   onSubmit: (data: unknown) => void
+  wasmInstance: ModuleType
 }) {
-  const wasmInstance = use(kclManager.wasmInstancePromise)
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = useCommandBarState()
   const [hasSubmitted, setHasSubmitted] = useState(false)

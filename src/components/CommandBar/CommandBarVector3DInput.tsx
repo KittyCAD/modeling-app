@@ -109,7 +109,7 @@ function CommandBarVector3DInput({
     }
     // dumb defaults
     return '[0, 0, 0]'
-  }, [previouslySetValue, commandBarState.context, arg])
+  }, [previouslySetValue, commandBarState.context, arg, wasmInstance])
 
   // Extract individual x, y, z values from the vector string
   const defaultValues = useMemo(() => {
