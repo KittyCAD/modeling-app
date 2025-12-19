@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     ExecutorContext,
     frontend::api::{
-        Expr, FileId, Number, ObjectId, Plane, ProjectId, Result, SceneGraph, SceneGraphDelta, SourceDelta, Version,
+        Expr, FileId, Number, ObjectId, ProjectId, Result, SceneGraph, SceneGraphDelta, SourceDelta, Version,
     },
 };
 
@@ -25,7 +25,7 @@ pub trait SketchApi {
         project: ProjectId,
         file: FileId,
         version: Version,
-        args: SketchArgs,
+        args: SketchCtor,
     ) -> Result<(SourceDelta, SceneGraphDelta, ObjectId)>;
 
     // Enters sketch mode
@@ -104,15 +104,22 @@ pub trait SketchApi {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiSketch")]
 pub struct Sketch {
-    pub args: SketchArgs,
+    pub args: SketchCtor,
+    pub plane: ObjectId,
     pub segments: Vec<ObjectId>,
     pub constraints: Vec<ObjectId>,
 }
 
+/// Arguments for creating a new sketch. This is similar to the constructor of
+/// other kinds of objects in that it is the inputs to the sketch, not the
+/// outputs.
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
-pub struct SketchArgs {
-    pub on: Plane,
+pub struct SketchCtor {
+    /// Identifier representing the plane or face to sketch on. This could be a
+    /// built-in plane like `XY`, a variable referencing a plane, or a face tag.
+    /// But currently, it may not be an arbitrary expression.
+    pub on: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
