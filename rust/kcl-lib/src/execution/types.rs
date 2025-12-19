@@ -1342,7 +1342,6 @@ impl KclValue {
                         let id = exec_state.mod_local.id_generator.next_uuid();
                         let plane = Plane {
                             id,
-                            object_id: None,
                             artifact_id: id.into(),
                             info: PlaneInfo {
                                 origin,
@@ -1350,7 +1349,7 @@ impl KclValue {
                                 y_axis: y_axis.normalize(),
                                 z_axis: z_axis.normalize(),
                             },
-                            value: super::PlaneType::Uninit,
+                            scene_info: None,
                             meta: meta.clone(),
                         };
 
@@ -1753,7 +1752,9 @@ mod test {
             KclValue::TagIdentifier(Box::new("foo".parse().unwrap())),
             KclValue::TagDeclarator(Box::new(crate::parsing::ast::types::TagDeclarator::new("foo"))),
             KclValue::Plane {
-                value: Box::new(Plane::from_plane_data(crate::std::sketch::PlaneData::XY, exec_state).unwrap()),
+                value: Box::new(
+                    Plane::from_plane_data_skipping_engine(crate::std::sketch::PlaneData::XY, exec_state).unwrap(),
+                ),
             },
             // No easy way to make a Face, Sketch, Solid, or Helix
             KclValue::ImportedGeometry(crate::execution::ImportedGeometry::new(

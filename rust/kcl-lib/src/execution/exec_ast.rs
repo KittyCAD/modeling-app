@@ -11,9 +11,9 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         AbstractSegment, BodyType, ControlFlowKind, EnvironmentRef, ExecState, ExecutorContext, KclValue,
-        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PlaneKind, Segment,
-        SegmentKind, SegmentRepr, SketchConstraintKind, StatementKind, TagIdentifier, UnsolvedSegment,
-        UnsolvedSegmentKind, annotations,
+        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, Segment, SegmentKind,
+        SegmentRepr, SketchConstraintKind, StatementKind, TagIdentifier, UnsolvedSegment, UnsolvedSegmentKind,
+        annotations,
         cad_op::OpKclValue,
         control_continue,
         fn_call::{Arg, Args},
@@ -1006,12 +1006,15 @@ impl Node<SketchBlock> {
         // scene objects created inside the sketch block so that its ID is
         // stable across sketch block edits.
         let arg_on: crate::execution::Plane = args.get_kw_arg("on", &RuntimeType::plane(), exec_state)?;
-        let on_object_id = arg_on.object_id.ok_or_else(|| {
-            KclError::new_internal(KclErrorDetails::new(
-                "Sketch block `on` Plane should have an Object ID, but it doesn't".to_owned(),
-                vec![range],
-            ))
-        })?;
+        let on_object_id = arg_on
+            .scene_info
+            .map(|plane_info| plane_info.object_id)
+            .ok_or_else(|| {
+                KclError::new_internal(KclErrorDetails::new(
+                    "Sketch block `on` Plane should have an Object ID, but it doesn't".to_owned(),
+                    vec![range],
+                ))
+            })?;
         let arg_on_expr_name = self
             .arguments
             .iter()
@@ -2534,7 +2537,7 @@ impl Node<UnaryExpression> {
                             plane.info.x_axis.z *= -1.0;
                         }
 
-                        plane.value = PlaneType::Uninit;
+                        plane.scene_info = None;
                         plane.id = exec_state.next_uuid();
                         Ok(KclValue::Plane { value: plane }.continue_())
                     }
