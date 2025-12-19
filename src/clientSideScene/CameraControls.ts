@@ -1181,6 +1181,7 @@ export class CameraControls {
     targetQuaternion: Quaternion,
     targetPosition: Vector3,
     duration = 500,
+    // Currently never true, we could delete it along with animateToOrthographic()..
     toOrthographic = false
   ): Promise<void> {
     return new Promise((resolve) => {
