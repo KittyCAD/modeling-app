@@ -14,7 +14,6 @@ pub use cache::{bust_cache, clear_mem_cache};
 #[cfg(feature = "artifact-graph")]
 pub use cad_op::Group;
 pub use cad_op::Operation;
-pub(crate) use exec_ast::normalize_to_solver_unit;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
@@ -29,6 +28,7 @@ use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::{Deserialize, Serialize};
+pub(crate) use sketch_solve::normalize_to_solver_unit;
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
@@ -446,13 +446,12 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
-        let pool = std::env::var("ZOO_ENGINE_POOL").ok();
         let (ws, _headers) = client
             .modeling()
             .commands_ws(
                 None,
                 None,
-                pool,
+                None,
                 if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {

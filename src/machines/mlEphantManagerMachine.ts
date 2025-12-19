@@ -46,22 +46,23 @@ export function isMlCopilotUserRequest(
   return typeof x === 'object' && x !== null && 'type' in x && x.type === 'user'
 }
 
-export enum MlEphantManagerStates2 {
+export enum MlEphantManagerStates {
   Setup = 'setup',
   Ready = 'ready',
   Response = 'response',
   Request = 'request',
 }
 
-export enum MlEphantManagerTransitions2 {
+export enum MlEphantManagerTransitions {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
   ConversationClose = 'conversation-close',
+  Interrupt = 'interrupt',
   AbruptClose = 'abrupt-close',
   CacheSetupAndConnect = 'cache-setup-and-connect',
 }
 
-export type MlEphantManagerEvents2 =
+export type MlEphantManagerEvents =
   | {
       type: 'xstate.done.state.(machine).ready'
       conversationId: undefined
@@ -71,19 +72,19 @@ export type MlEphantManagerEvents2 =
       conversationId: undefined
     }
   | {
-      type: MlEphantManagerTransitions2.CacheSetupAndConnect
-      refParentSend: (event: MlEphantManagerEvents2) => void
+      type: MlEphantManagerTransitions.CacheSetupAndConnect
+      refParentSend: (event: MlEphantManagerEvents) => void
       // If not present, a new conversation is created.
       conversationId?: string
     }
   | {
-      type: MlEphantManagerStates2.Setup
-      refParentSend: (event: MlEphantManagerEvents2) => void
+      type: MlEphantManagerStates.Setup
+      refParentSend: (event: MlEphantManagerEvents) => void
       // If not present, a new conversation is created.
       conversationId?: string
     }
   | {
-      type: MlEphantManagerTransitions2.MessageSend
+      type: MlEphantManagerTransitions.MessageSend
       projectForPromptOutput: Project
       prompt: string
       applicationProjectDirectory: string
@@ -94,14 +95,17 @@ export type MlEphantManagerEvents2 =
       mode: MlCopilotMode
     }
   | {
-      type: MlEphantManagerTransitions2.ResponseReceive
+      type: MlEphantManagerTransitions.ResponseReceive
       response: MlCopilotServerMessage
     }
   | {
-      type: MlEphantManagerTransitions2.ConversationClose
+      type: MlEphantManagerTransitions.ConversationClose
     }
   | {
-      type: MlEphantManagerTransitions2.AbruptClose
+      type: MlEphantManagerTransitions.Interrupt
+    }
+  | {
+      type: MlEphantManagerTransitions.AbruptClose
     }
 
 export interface Exchange {
@@ -125,7 +129,7 @@ export type Conversation = {
   exchanges: Exchange[]
 }
 
-export interface MlEphantManagerContext2 {
+export interface MlEphantManagerContext {
   apiToken: string
   ws?: WebSocket
   abruptlyClosed: boolean
@@ -136,16 +140,16 @@ export interface MlEphantManagerContext2 {
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
   cachedSetup?: {
-    refParentSend?: (event: MlEphantManagerEvents2) => void
+    refParentSend?: (event: MlEphantManagerEvents) => void
     conversationId?: string
   }
 }
 
-export const mlEphantDefaultContext2 = (args: {
+export const mlEphantDefaultContext = (args: {
   input?: {
     apiToken?: string
   } | null
-}): MlEphantManagerContext2 => ({
+}): MlEphantManagerContext => ({
   apiToken: args.input?.apiToken ?? '',
   ws: undefined,
   abruptlyClosed: false,
@@ -204,16 +208,16 @@ function isMlCopilotServerMessage(
 }
 
 type XSInput<T> = {
-  input: { event: Extract<MlEphantManagerEvents2, { type: T }> } & {
-    context: MlEphantManagerContext2
+  input: { event: Extract<MlEphantManagerEvents, { type: T }> } & {
+    context: MlEphantManagerContext
   }
 }
 
-export const mlEphantManagerMachine2 = setup({
+export const mlEphantManagerMachine = setup({
   types: {
-    context: {} as MlEphantManagerContext2,
-    input: {} as Pick<MlEphantManagerContext2, 'apiToken'>,
-    events: {} as MlEphantManagerEvents2,
+    context: {} as MlEphantManagerContext,
+    input: {} as Pick<MlEphantManagerContext, 'apiToken'>,
+    events: {} as MlEphantManagerEvents,
   },
   actions: {
     toastError: ({ event }) => {
@@ -228,7 +232,7 @@ export const mlEphantManagerMachine2 = setup({
     },
     cacheSetup: assign({
       conversationId: ({ event }) => {
-        assertEvent(event, MlEphantManagerTransitions2.CacheSetupAndConnect)
+        assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
 
         if (event.conversationId) {
           return event.conversationId
@@ -237,7 +241,7 @@ export const mlEphantManagerMachine2 = setup({
         return undefined
       },
       cachedSetup: ({ event }) => {
-        assertEvent(event, MlEphantManagerTransitions2.CacheSetupAndConnect)
+        assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
         return {
           refParentSend: event.refParentSend,
           conversationId: event.conversationId,
@@ -249,10 +253,10 @@ export const mlEphantManagerMachine2 = setup({
     }),
   },
   actors: {
-    [MlEphantManagerStates2.Setup]: fromPromise(async function (
-      args: XSInput<MlEphantManagerStates2.Setup>
-    ): Promise<Partial<MlEphantManagerContext2>> {
-      assertEvent(args.input.event, MlEphantManagerStates2.Setup)
+    [MlEphantManagerStates.Setup]: fromPromise(async function (
+      args: XSInput<MlEphantManagerStates.Setup>
+    ): Promise<Partial<MlEphantManagerContext>> {
+      assertEvent(args.input.event, MlEphantManagerStates.Setup)
 
       // On future reenters of this actor it will not have args.input.event
       // You must read from the context for the cached conversationId
@@ -291,7 +295,7 @@ export const mlEphantManagerMachine2 = setup({
 
       let maybeReplayedExchanges: Exchange[] = []
 
-      return await new Promise<Partial<MlEphantManagerContext2>>(
+      return await new Promise<Partial<MlEphantManagerContext>>(
         (onFulfilled, onRejected) => {
           let devCalledClose = false
 
@@ -421,7 +425,7 @@ export const mlEphantManagerMachine2 = setup({
 
             if (theRefParentSend) {
               theRefParentSend({
-                type: MlEphantManagerTransitions2.ResponseReceive,
+                type: MlEphantManagerTransitions.ResponseReceive,
                 response,
               })
             } else {
@@ -432,16 +436,16 @@ export const mlEphantManagerMachine2 = setup({
           ws.addEventListener('close', function (event: Event) {
             if (theRefParentSend !== undefined && devCalledClose === false) {
               theRefParentSend({
-                type: MlEphantManagerTransitions2.AbruptClose,
+                type: MlEphantManagerTransitions.AbruptClose,
               })
             }
           })
         }
       )
     }),
-    [MlEphantManagerTransitions2.MessageSend]: fromPromise(async function (
-      args: XSInput<MlEphantManagerTransitions2.MessageSend>
-    ): Promise<Partial<MlEphantManagerContext2>> {
+    [MlEphantManagerTransitions.MessageSend]: fromPromise(async function (
+      args: XSInput<MlEphantManagerTransitions.MessageSend>
+    ): Promise<Partial<MlEphantManagerContext>> {
       const { context, event } = args.input
       if (!isPresent<WebSocket>(context.ws))
         return Promise.reject(new Error('WebSocket not present'))
@@ -495,15 +499,32 @@ export const mlEphantManagerMachine2 = setup({
         projectNameCurrentlyOpened: requestData.body.project_name,
       }
     }),
+    [MlEphantManagerTransitions.Interrupt]: fromPromise(async function (
+      args: XSInput<MlEphantManagerTransitions.Interrupt>
+    ): Promise<Partial<MlEphantManagerContext>> {
+      const { context } = args.input
+      if (!isPresent<WebSocket>(context.ws))
+        return Promise.reject(new Error('WebSocket not present'))
+      if (!isPresent<Conversation>(context.conversation))
+        return Promise.reject(new Error('Conversation not present'))
+
+      const request: Extract<MlCopilotClientMessage, { type: 'system' }> = {
+        type: 'system',
+        command: 'interrupt',
+      }
+      context.ws.send(JSON.stringify(request))
+
+      return {}
+    }),
   },
 }).createMachine({
   initial: S.Await,
-  context: mlEphantDefaultContext2,
+  context: mlEphantDefaultContext,
   states: {
     [S.Await]: {
       on: {
-        [MlEphantManagerTransitions2.CacheSetupAndConnect]: {
-          target: MlEphantManagerStates2.Setup,
+        [MlEphantManagerTransitions.CacheSetupAndConnect]: {
+          target: MlEphantManagerStates.Setup,
           actions: [
             assign({
               abruptlyClosed: false,
@@ -515,35 +536,35 @@ export const mlEphantManagerMachine2 = setup({
             'cacheSetup',
           ],
         },
-        ...transitions([MlEphantManagerStates2.Setup]),
+        ...transitions([MlEphantManagerStates.Setup]),
       },
     },
-    [MlEphantManagerStates2.Setup]: {
+    [MlEphantManagerStates.Setup]: {
       invoke: {
         input: (args) => {
           assertEvent(args.event, [
-            MlEphantManagerStates2.Setup,
+            MlEphantManagerStates.Setup,
             'xstate.done.state.(machine).ready',
             'xstate.error.actor.0.(machine).setup',
-            MlEphantManagerTransitions2.CacheSetupAndConnect,
+            MlEphantManagerTransitions.CacheSetupAndConnect,
           ])
 
           return {
             event: {
-              type: MlEphantManagerStates2.Setup,
+              type: MlEphantManagerStates.Setup,
               conversationId: args.event.conversationId,
               refParentSend: args.self.send,
             },
             context: args.context,
           }
         },
-        src: MlEphantManagerStates2.Setup,
+        src: MlEphantManagerStates.Setup,
         onDone: {
-          target: MlEphantManagerStates2.Ready,
+          target: MlEphantManagerStates.Ready,
           actions: [assign(({ event }) => event.output), 'clearCacheSetup'],
         },
         onError: {
-          target: MlEphantManagerStates2.Setup,
+          target: MlEphantManagerStates.Setup,
           actions: [
             assign(({ event, context }) => {
               if (event.error === MlEphantSetupErrors.ConversationNotFound) {
@@ -574,45 +595,45 @@ export const mlEphantManagerMachine2 = setup({
         },
       },
       on: {
-        ...transitions([MlEphantManagerTransitions2.ConversationClose]),
-        [MlEphantManagerTransitions2.AbruptClose]: {
-          target: MlEphantManagerTransitions2.AbruptClose,
+        ...transitions([MlEphantManagerTransitions.ConversationClose]),
+        [MlEphantManagerTransitions.AbruptClose]: {
+          target: MlEphantManagerTransitions.AbruptClose,
           actions: [assign({ abruptlyClosed: true })],
         },
       },
     },
-    [MlEphantManagerStates2.Ready]: {
+    [MlEphantManagerStates.Ready]: {
       type: 'parallel',
       states: {
-        [MlEphantManagerStates2.Response]: {
+        [MlEphantManagerStates.Response]: {
           initial: S.Await,
           states: {
             [S.Await]: {
               on: {
                 ...transitions([
-                  MlEphantManagerTransitions2.ResponseReceive,
-                  MlEphantManagerTransitions2.ConversationClose,
+                  MlEphantManagerTransitions.ResponseReceive,
+                  MlEphantManagerTransitions.ConversationClose,
                 ]),
-                [MlEphantManagerTransitions2.AbruptClose]: {
-                  target: MlEphantManagerTransitions2.AbruptClose,
+                [MlEphantManagerTransitions.AbruptClose]: {
+                  target: MlEphantManagerTransitions.AbruptClose,
                   actions: [assign({ abruptlyClosed: true })],
                 },
               },
             },
-            [MlEphantManagerTransitions2.ConversationClose]: {
+            [MlEphantManagerTransitions.ConversationClose]: {
               type: 'final',
             },
-            [MlEphantManagerTransitions2.AbruptClose]: {
+            [MlEphantManagerTransitions.AbruptClose]: {
               type: 'final',
             },
             // Triggered by the WebSocket 'message' event.
-            [MlEphantManagerTransitions2.ResponseReceive]: {
+            [MlEphantManagerTransitions.ResponseReceive]: {
               always: {
                 target: S.Await,
                 actions: [
                   assign(({ event, context }) => {
                     assertEvent(event, [
-                      MlEphantManagerTransitions2.ResponseReceive,
+                      MlEphantManagerTransitions.ResponseReceive,
                     ])
 
                     const lastMessageId = (context.lastMessageId ?? -1) + 1
@@ -623,9 +644,11 @@ export const mlEphantManagerMachine2 = setup({
                       ),
                     }
 
-                    // Errors and information are considered their own
+                    // Errors are considered their own
                     // exchanges because they have no end_of_stream signal.
-                    if ('error' in event.response || 'info' in event.response) {
+                    // It is assumed `info` messages are followed up
+                    // with an end_of_stream signal.
+                    if ('error' in event.response) {
                       conversation.exchanges.push({
                         responses: [event.response],
                         deltasAggregated: '',
@@ -684,37 +707,57 @@ export const mlEphantManagerMachine2 = setup({
             },
           },
         },
-        [MlEphantManagerStates2.Request]: {
+        [MlEphantManagerStates.Request]: {
           initial: S.Await,
           states: {
             [S.Await]: {
               on: transitions([
-                MlEphantManagerTransitions2.MessageSend,
-                MlEphantManagerTransitions2.ConversationClose,
-                MlEphantManagerTransitions2.AbruptClose,
+                MlEphantManagerTransitions.MessageSend,
+                MlEphantManagerTransitions.Interrupt,
+                MlEphantManagerTransitions.ConversationClose,
+                MlEphantManagerTransitions.AbruptClose,
               ]),
             },
-            [MlEphantManagerTransitions2.ConversationClose]: {
+            [MlEphantManagerTransitions.ConversationClose]: {
               type: 'final',
             },
-            [MlEphantManagerTransitions2.AbruptClose]: {
+            [MlEphantManagerTransitions.AbruptClose]: {
               type: 'final',
             },
-            [MlEphantManagerTransitions2.MessageSend]: {
+            [MlEphantManagerTransitions.MessageSend]: {
               invoke: {
                 input: (args) => {
                   assertEvent(args.event, [
-                    MlEphantManagerTransitions2.MessageSend,
+                    MlEphantManagerTransitions.MessageSend,
                   ])
                   return {
                     event: args.event,
                     context: args.context,
                   }
                 },
-                src: MlEphantManagerTransitions2.MessageSend,
+                src: MlEphantManagerTransitions.MessageSend,
                 onDone: {
                   target: S.Await,
                   actions: [assign(({ event }) => event.output)],
+                },
+                onError: { target: S.Await, actions: ['toastError'] },
+              },
+            },
+            [MlEphantManagerTransitions.Interrupt]: {
+              invoke: {
+                input: (args) => {
+                  assertEvent(args.event, [
+                    MlEphantManagerTransitions.Interrupt,
+                  ])
+                  return {
+                    event: args.event,
+                    context: args.context,
+                  }
+                },
+                src: MlEphantManagerTransitions.Interrupt,
+                onDone: {
+                  target: S.Await,
+                  actions: [],
                 },
                 onError: { target: S.Await, actions: ['toastError'] },
               },
@@ -723,15 +766,15 @@ export const mlEphantManagerMachine2 = setup({
         },
       },
       onDone: {
-        target: MlEphantManagerTransitions2.ConversationClose,
+        target: MlEphantManagerTransitions.ConversationClose,
       },
     },
-    [MlEphantManagerTransitions2.AbruptClose]: {
+    [MlEphantManagerTransitions.AbruptClose]: {
       always: {
-        target: MlEphantManagerTransitions2.ConversationClose,
+        target: MlEphantManagerTransitions.ConversationClose,
       },
     },
-    [MlEphantManagerTransitions2.ConversationClose]: {
+    [MlEphantManagerTransitions.ConversationClose]: {
       always: {
         target: S.Await,
         actions: [
@@ -760,7 +803,7 @@ export const mlEphantManagerMachine2 = setup({
   },
 })
 
-export type MlEphantManagerActor2 = ActorRefFrom<typeof mlEphantManagerMachine2>
+export type MlEphantManagerActor = ActorRefFrom<typeof mlEphantManagerMachine>
 export const MlEphantManagerReactContext = createActorContext(
-  mlEphantManagerMachine2
+  mlEphantManagerMachine
 )

@@ -1061,7 +1061,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "mm",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "profile003": {
@@ -2252,7 +2252,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "mm",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "profile008": {

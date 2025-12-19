@@ -1,10 +1,11 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
-import { createSettings } from '@src/lib/settings/initialSettings'
+import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
 import {
   configurationToSettingsPayload,
   getAllCurrentSettings,
+  hiddenOnPlatform,
   projectConfigurationToSettingsPayload,
   setSettingsAtLevel,
 } from '@src/lib/settings/settingsUtils'
@@ -110,5 +111,31 @@ describe(`testing getAllCurrentSettings`, () => {
     // (see the test "doesn't read theme from project settings")
     expect(allCurrentSettings.app.theme).toBe('dark')
     expect(allCurrentSettings.modeling.defaultUnit).toBe('ft')
+  })
+})
+
+describe('testing hiddenOnPlatform', () => {
+  it('correctly identifies hidden settings on desktop', () => {
+    const setting1 = { hideOnPlatform: 'both' } as Setting<unknown>
+    const setting2 = { hideOnPlatform: 'desktop' } as Setting<unknown>
+    const setting3 = { hideOnPlatform: 'web' } as Setting<unknown>
+    const setting4 = { hideOnPlatform: undefined } as Setting<unknown>
+
+    expect(hiddenOnPlatform(setting1, true)).toBe(true)
+    expect(hiddenOnPlatform(setting2, true)).toBe(true)
+    expect(hiddenOnPlatform(setting3, true)).toBe(false)
+    expect(hiddenOnPlatform(setting4, true)).toBe(false)
+  })
+
+  it('correctly identifies hidden settings on web', () => {
+    const setting1 = { hideOnPlatform: 'both' } as Setting
+    const setting2 = { hideOnPlatform: 'desktop' } as Setting
+    const setting3 = { hideOnPlatform: 'web' } as Setting
+    const setting4 = { hideOnPlatform: undefined } as Setting
+
+    expect(hiddenOnPlatform(setting1, false)).toBe(true)
+    expect(hiddenOnPlatform(setting2, false)).toBe(false)
+    expect(hiddenOnPlatform(setting3, false)).toBe(true)
+    expect(hiddenOnPlatform(setting4, false)).toBe(false)
   })
 })

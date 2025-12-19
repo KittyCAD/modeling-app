@@ -45,6 +45,7 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
+import { getSketchSolveToolIconMap } from '@src/lib/toolbar'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -119,7 +120,7 @@ export const ClientSideScene = ({
       // This is called initially too, not just on resize
       sceneInfra.onCanvasResized()
       sceneInfra.camControls.onWindowResize()
-      sceneEntitiesManager.onCamChange()
+      sceneEntitiesManager.onCamChange().catch(reportRejection)
     })
     observer.observe(container)
 
@@ -178,6 +179,11 @@ export const ClientSideScene = ({
     } else {
       cursor = 'default'
     }
+  } else if (
+    state.matches('sketchSolveMode') &&
+    context.sketchSolveToolName !== null
+  ) {
+    cursor = 'crosshair'
   }
 
   return (
@@ -195,7 +201,68 @@ export const ClientSideScene = ({
         }`}
       ></div>
       <Overlays />
+      <SketchSolveToolIconOverlay />
     </>
+  )
+}
+
+// Map sketchSolve tool names to their corresponding icon names
+// Derived from toolbar config to maintain a single source of truth
+const toolIconMap = getSketchSolveToolIconMap()
+const getToolIconName = (toolName: string | null): CustomIconName | null => {
+  if (!toolName) return null
+  return toolIconMap[toolName] || null
+}
+
+const SketchSolveToolIconOverlay = () => {
+  const { state, context } = useModelingContext()
+  const [mousePosition, setMousePosition] = useState<{
+    x: number
+    y: number
+  } | null>(null)
+
+  // Only show overlay when in sketchSolveMode with a tool equipped
+  const isToolEquipped =
+    state.matches('sketchSolveMode') && context.sketchSolveToolName !== null
+  const iconName = isToolEquipped
+    ? getToolIconName(context.sketchSolveToolName)
+    : null
+
+  useEffect(() => {
+    if (!isToolEquipped) {
+      setMousePosition(null)
+      return
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [isToolEquipped])
+
+  if (!isToolEquipped || !iconName || !mousePosition) {
+    return null
+  }
+
+  // Position icon below and to the right of cursor
+  // Offset: 16px right, 16px down (typical cursor size is ~16px)
+  const offsetX = 8
+  const offsetY = 8
+
+  return (
+    <div
+      className="fixed pointer-events-none z-[9999] w-5 h-5 left-0 top-0"
+      style={{
+        opacity: 0.2,
+        transform: `translate(${mousePosition.x + offsetX}px, ${mousePosition.y + offsetY}px)`,
+      }}
+    >
+      <CustomIcon name={iconName} className="w-6 h-6" />
+    </div>
   )
 }
 
@@ -572,7 +639,10 @@ const ConstraintSymbol = ({
             })
           } else if (isConstrained) {
             try {
-              const pResult = parse(recast(kclManager.ast))
+              const pResult = parse(
+                recast(kclManager.ast),
+                await kclManager.wasmInstancePromise
+              )
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
 

@@ -105,7 +105,7 @@ export function ToastUpdate({
           <ActionButton
             Element="button"
             iconStart={{
-              icon: 'arrowRight',
+              icon: 'arrowShortRight',
             }}
             name="accept"
             onClick={onRestart}

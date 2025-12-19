@@ -325,7 +325,8 @@ description: Artifact commands router-template-slate.kcl
         "distance": 5.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -497,7 +498,8 @@ description: Artifact commands router-template-slate.kcl
         "distance": 7.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -669,7 +671,8 @@ description: Artifact commands router-template-slate.kcl
         "distance": 7.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

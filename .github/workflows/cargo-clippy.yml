@@ -24,7 +24,7 @@ jobs:
     name: cargo clippy
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: taiki-e/install-action@just
       - name: Use correct Rust toolchain
         shell: bash
@@ -35,6 +35,7 @@ jobs:
         with:
           cache-workspaces: rust
           components: clippy
+          rustflags: '' # Use .cargo/config.toml
 
       - name: Run clippy
         run: |

@@ -471,6 +471,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::line(e, a)),
             StdFnProps::default("std::sketch2::line"),
         ),
+        ("sketch2", "arc") => (
+            |e, a| Box::pin(crate::std::constraints::arc(e, a)),
+            StdFnProps::default("std::sketch2::arc"),
+        ),
         ("sketch2", "coincident") => (
             |e, a| Box::pin(crate::std::constraints::coincident(e, a)),
             StdFnProps::default("std::sketch2::coincident"),
@@ -490,6 +494,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch2", "parallel") => (
             |e, a| Box::pin(crate::std::constraints::parallel(e, a)),
             StdFnProps::default("std::sketch2::parallel"),
+        ),
+        ("sketch2", "perpendicular") => (
+            |e, a| Box::pin(crate::std::constraints::perpendicular(e, a)),
+            StdFnProps::default("std::sketch2::perpendicular"),
         ),
         ("sketch2", "vertical") => (
             |e, a| Box::pin(crate::std::constraints::vertical(e, a)),

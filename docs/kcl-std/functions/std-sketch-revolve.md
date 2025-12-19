@@ -17,6 +17,7 @@ revolve(
   bidirectionalAngle?: number(Angle),
   tagStart?: TagDecl,
   tagEnd?: TagDecl,
+  bodyType?: string,
 ): [Solid; 1+]
 ```
 
@@ -43,6 +44,7 @@ revolved around the same axis.
 | `bidirectionalAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored. | No |
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the revolve, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the revolve. | No |
+| `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
 
 ### Returns
 

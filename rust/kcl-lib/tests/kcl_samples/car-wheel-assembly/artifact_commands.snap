@@ -366,7 +366,8 @@ description: Artifact commands car-wheel-assembly.kcl
           "value": -70.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -540,7 +541,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": 6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -686,7 +688,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": 12.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -836,7 +839,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -19.049999999999997,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -893,7 +897,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -19.049999999999997,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -950,7 +955,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -19.049999999999997,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1007,7 +1013,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -19.049999999999997,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1064,7 +1071,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -19.049999999999997,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1278,7 +1286,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": 12.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1407,7 +1416,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": 6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1557,7 +1567,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1614,7 +1625,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1671,7 +1683,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1728,7 +1741,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1785,7 +1799,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -1914,7 +1929,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": 12.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2128,7 +2144,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2185,7 +2202,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2242,7 +2260,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2299,7 +2318,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2356,7 +2376,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2549,7 +2570,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2606,7 +2628,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2663,7 +2686,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2720,7 +2744,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -2777,7 +2802,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3217,7 +3243,8 @@ description: Artifact commands car-wheel-assembly.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -3485,7 +3512,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": 12.065,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3704,7 +3732,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": 24.13,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3854,7 +3883,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -24.13,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3911,7 +3941,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -24.13,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -3968,7 +3999,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -24.13,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4025,7 +4057,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -24.13,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4082,7 +4115,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -24.13,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4232,7 +4266,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -12.065,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4289,7 +4324,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -12.065,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4346,7 +4382,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -12.065,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4403,7 +4440,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -12.065,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4460,7 +4498,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -12.065,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -4757,7 +4796,8 @@ description: Artifact commands car-wheel-assembly.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -4979,7 +5019,8 @@ description: Artifact commands car-wheel-assembly.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -5223,7 +5264,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": 24.13,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -5580,7 +5622,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "distance": -24.13,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -6228,7 +6271,8 @@ description: Artifact commands car-wheel-assembly.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -6518,7 +6562,8 @@ description: Artifact commands car-wheel-assembly.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {

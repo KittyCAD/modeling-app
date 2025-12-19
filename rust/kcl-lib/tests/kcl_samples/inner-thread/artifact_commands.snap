@@ -130,7 +130,8 @@ description: Artifact commands inner-thread.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -292,7 +293,8 @@ description: Artifact commands inner-thread.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

@@ -18,7 +18,7 @@ import {
   systemIOActor,
   useSettings,
 } from '@src/lib/singletons'
-import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
   useHasListedProjects,
   useProjectDirectoryPath,

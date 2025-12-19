@@ -22,11 +22,12 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
-        Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
+        ProfileClosed, Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
     std::{
+        EQUAL_POINTS_DIST_EPSILON,
         args::{Args, TyF64},
         axis_or_reference::Axis2dOrEdgeReference,
         planes::inner_plane_of,
@@ -361,6 +362,15 @@ async fn straight_line(
         [from.x + point[0], from.y + point[1]]
     };
 
+    // Does it loop back on itself?
+    let end_x = end[0];
+    let end_y = end[1];
+    let start_x = sketch.start.from[0];
+    let start_y = sketch.start.from[1];
+    let same_x = (end_x - start_x).abs() < EQUAL_POINTS_DIST_EPSILON;
+    let same_y = (end_y - start_y).abs() < EQUAL_POINTS_DIST_EPSILON;
+    let loops_back_to_start = same_x && same_y;
+
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.ignore_units(),
@@ -377,6 +387,9 @@ async fn straight_line(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -1203,7 +1216,7 @@ pub(crate) async fn inner_start_profile(
             Default::default()
         },
         start: current_path,
-        is_closed: false,
+        is_closed: ProfileClosed::No,
     };
     Ok(sketch)
 }
@@ -1260,7 +1273,7 @@ pub(crate) async fn inner_close(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    if sketch.is_closed {
+    if matches!(sketch.is_closed, ProfileClosed::Explicitly) {
         exec_state.warn(
             crate::CompilationError {
                 source_range: args.source_range,
@@ -1320,7 +1333,7 @@ pub(crate) async fn inner_close(
         );
     }
 
-    new_sketch.is_closed = true;
+    new_sketch.is_closed = ProfileClosed::Explicitly;
 
     Ok(new_sketch)
 }

@@ -124,7 +124,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
                 Element="button"
                 className={buttonClasses + ' !text-base'}
                 onClick={onOpenInDesktopApp}
-                iconEnd={{ icon: 'arrowRight' }}
+                iconEnd={{ icon: 'arrowShortRight' }}
               >
                 Open in desktop app
               </ActionButton>
@@ -144,7 +144,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
               Element="button"
               className={buttonClasses + ' -order-1 !text-base'}
               onClick={continueToWebApp}
-              iconStart={{ icon: 'arrowLeft' }}
+              iconStart={{ icon: 'arrowShortLeft' }}
               data-testid="continue-to-web-app-button"
             >
               Continue to web app
