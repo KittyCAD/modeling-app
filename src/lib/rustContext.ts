@@ -594,7 +594,7 @@ export default class RustContext {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const result: [SourceDelta, SceneGraphDelta] =
