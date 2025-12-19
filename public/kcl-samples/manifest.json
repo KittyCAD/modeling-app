@@ -363,6 +363,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "field-monitor-stand/main.kcl",
+    "multipleFiles": false,
+    "title": "Field monitor stand",
+    "description": "Stand for a Feelworld FW760 7 inch Field Monitor",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "flange/main.kcl",
     "multipleFiles": false,
     "title": "Flange",
