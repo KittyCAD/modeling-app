@@ -29,70 +29,70 @@ jobs:
           id=$(gh run ls --repo kittycad/modeling-app -w build-apps.yml --branch ${{ github.event.release.tag_name }} --json databaseId | jq '.[0].databaseId')
           echo "id=$id" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: out-arm64-windows
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: out-x64-windows
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: out-yml-windows
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: out-arm64-macos
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: out-x64-macos
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: out-yml-macos
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: out-arm64-linux
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: out-x64-linux
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: out-yml-linux
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: out-download-json
           path: out

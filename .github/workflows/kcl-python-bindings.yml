@@ -164,7 +164,7 @@ jobs:
     needs: [linux-x86_64, windows, macos, sdist]
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           path: rust/kcl-python-bindings
       - name: Install the latest version of uv

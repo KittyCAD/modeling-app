@@ -123,7 +123,7 @@ jobs:
           repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: prepared-wasm
           path: prepared-wasm
@@ -245,7 +245,7 @@ jobs:
           repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: prepared-wasm
           path: prepared-wasm
@@ -361,7 +361,7 @@ jobs:
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: prepared-wasm
           path: prepared-wasm
@@ -402,7 +402,7 @@ jobs:
       - name: Build app
         run: npm run tronb:vite:dev
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         if: ${{ !cancelled() && (success() || failure()) }}
         continue-on-error: true
         with:

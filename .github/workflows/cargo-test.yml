@@ -173,7 +173,7 @@ jobs:
           OS_NAME: ${{ env.OS_NAME }}
       - uses: taiki-e/install-action@nextest
       - name: Download archive
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: nextest-archive
       - name: Run tests

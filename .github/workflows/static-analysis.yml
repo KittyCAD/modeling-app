@@ -43,7 +43,7 @@ jobs:
       - run: npm install
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
 
       - name: Copy prepared wasm
         run: |
@@ -73,7 +73,7 @@ jobs:
       - run: npm install
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
 
       - name: Copy prepared wasm
         run: |
@@ -103,7 +103,7 @@ jobs:
       - run: npm install
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
 
       - name: Copy prepared wasm
         run: |
@@ -133,7 +133,7 @@ jobs:
       - run: npm install
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
 
       - name: Copy prepared wasm
         run: |
