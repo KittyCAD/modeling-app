@@ -44,6 +44,7 @@ import {
   sceneInfra,
   setLayout,
   useLayout,
+  userEventsManager,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { featureTreeMachine } from '@src/machines/featureTreeMachine'
@@ -67,6 +68,7 @@ import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
 import { toUtf16 } from '@src/lang/errors'
+import { UserTask } from '@src/lib/events'
 
 // Defined outside of React to prevent rerenders
 // TODO: get all system dependencies into React via global context
@@ -103,6 +105,10 @@ export const FeatureTreePaneContents = memo(() => {
   const { send: modelingSend, state: modelingState } = useModelingContext()
 
   const sketchNoFace = modelingState.matches('Sketch no face')
+
+  useEffect(() => {
+    userEventsManager.trigger(UserTask.OpenedFeatureTreePane)
+  }, [])
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_featureTreeState, featureTreeSend] = useMachine(

@@ -49,6 +49,7 @@ import {
   type Layout,
 } from '@src/lib/layout'
 import type { Project } from '@src/lib/project'
+import { UserTask, UserTaskTracker } from '@src/lib/events'
 
 /**
  * THE bundle of WASM, a cornerstone of our app. We use this for:
@@ -64,6 +65,11 @@ export const commandBarActor = createActor(commandBarMachine, {
 }).start()
 const dummySettingsActor = createActor(settingsMachine, {
   input: { commandBarActor, ...createSettings() },
+})
+export const userEventsManager = UserTaskTracker.fromPersisted()
+
+userEventsManager.subscribe(UserTask.OpenedFeatureTreePane, (v) => {
+  v && console.log('Woah we opened the code pane for the first time!!!')
 })
 
 export const engineCommandManager = new ConnectionManager()
