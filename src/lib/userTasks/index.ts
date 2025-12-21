@@ -4,8 +4,6 @@ import { err } from '@src/lib/trap'
 import { useSignalEffect } from '@preact/signals-react'
 import { isArray } from '@src/lib/utils'
 
-type LiveEventMap = Map<UserTask, Signal<boolean>>
-
 /**
  * A named task that the user might perform while using ZDS
  * that the Zoo team might want to teach them more about with a tip
@@ -14,6 +12,10 @@ type LiveEventMap = Map<UserTask, Signal<boolean>>
 export enum UserTask {
   OpenedFeatureTreePane = 'opened-feature-tree',
   UsedExtrude = 'used-extrude',
+}
+
+interface UserTaskTrackerConfig {
+  shouldAutoPersist: boolean
 }
 
 /**
@@ -25,16 +27,19 @@ export enum UserTask {
  * use the static method `fromPersisted` to instantiate from localStorage.
  */
 export class UserTaskTracker {
-  private static PERSISTENCE_KEY = 'zds-user-events'
-  private eventMap: LiveEventMap = new Map()
-  shouldAutoPersist = true
+  protected static PERSISTENCE_KEY = 'zds-user-events'
+  protected taskMap: Map<UserTask, Signal<boolean>> = new Map()
+  protected _config: UserTaskTrackerConfig
+  static defaultConfig: UserTaskTrackerConfig = {
+    shouldAutoPersist: true,
+  }
 
   /**
    * Revive an array of the user's triggered UserEvents from persisted storage.
    *
    * TODO: make persist to disk on desktop, or maybe better, provide the persistence behavior.
    */
-  static fromPersisted() {
+  static fromPersisted(config = UserTaskTracker.defaultConfig) {
     const fallback = () => UserTaskTracker.fromArray([])
     const jsonString = globalThis.localStorage.getItem(
       UserTaskTracker.PERSISTENCE_KEY
@@ -46,18 +51,21 @@ export class UserTaskTracker {
       UserTaskTracker.isUserEvent(value) ? value : isArray(value) ? value : null
     )
 
-    return UserTaskTracker.fromArray(userEventsArray)
+    return UserTaskTracker.fromArray(userEventsArray, config)
   }
 
   /**
    * Instantiate a live set of signals given an array of events
    * that should be instantiated as already "triggered".
    */
-  static fromArray(providedEvents: UserTask[]): UserTaskTracker {
-    const userEvents = new UserTaskTracker()
+  static fromArray(
+    providedEvents: UserTask[],
+    config = UserTaskTracker.defaultConfig
+  ): UserTaskTracker {
+    const userEvents = new UserTaskTracker(config)
     for (const event of Object.values(UserTask)) {
       const found = providedEvents.find((e) => e === event)
-      userEvents.eventMap.set(event, signal(Boolean(found)))
+      userEvents.taskMap.set(event, signal(Boolean(found)))
     }
 
     return userEvents
@@ -70,16 +78,16 @@ export class UserTaskTracker {
    * Will return true if value is changed.
    */
   trigger(key: UserTask) {
-    const eventSignal = this.getSignal(key)
-    if (err(eventSignal)) {
-      return eventSignal
+    const task = this.getSignal(key)
+    if (err(task)) {
+      return task
     }
 
-    if (eventSignal.value) {
+    if (task.value) {
       return false
     } else {
-      eventSignal.value = true
-      if (this.shouldAutoPersist) {
+      task.value = true
+      if (this.config.shouldAutoPersist) {
         this.persist()
         console.log(
           "I've auto-persisted since the values changed",
@@ -102,16 +110,16 @@ export class UserTaskTracker {
     onChange: (value: boolean) => void | Promise<void>,
     options?: EffectOptions
   ) {
-    const eventSignal = this.getSignal(key)
-    if (err(eventSignal)) {
-      return eventSignal
+    const task = this.getSignal(key)
+    if (err(task)) {
+      return task
     }
 
     // No need to subscribe if the event is already `true`
-    if (eventSignal.value === true) return false
+    if (task.value === true) return false
     // If it false it's worth subscribing to
     effect(() => {
-      onChange(eventSignal.value)
+      onChange(task.value)
     }, options)
     // Notify the caller that we established a subscription
     return true
@@ -129,16 +137,16 @@ export class UserTaskTracker {
     onChange: (value: boolean) => void | Promise<void>,
     options?: EffectOptions
   ) {
-    const eventSignal = this.getSignal(key)
-    if (err(eventSignal)) {
-      return eventSignal
+    const task = this.getSignal(key)
+    if (err(task)) {
+      return task
     }
 
     // No need to subscribe if the event is already `true`
-    if (eventSignal.value === true) return false
+    if (task.value === true) return false
     // If it false it's worth subscribing to
     useSignalEffect(() => {
-      onChange(eventSignal.value)
+      onChange(task.value)
     }, options)
     // Notify the caller that we established a subscription
     return true
@@ -154,11 +162,21 @@ export class UserTaskTracker {
     globalThis.localStorage.setItem(UserTaskTracker.PERSISTENCE_KEY, jsonString)
   }
 
+  constructor(config = UserTaskTracker.defaultConfig) {
+    this._config = config
+  }
+  get config() {
+    return this._config
+  }
+  set config(newConfig: UserTaskTrackerConfig) {
+    this._config = newConfig
+  }
+
   /**
    * Return an array of only the triggered events so far.
    */
   private getTriggeredEvents() {
-    return this.eventMap
+    return this.taskMap
       .entries()
       .filter(([_, signal]) => signal.value)
       .map(([eventName]) => eventName)
@@ -171,8 +189,9 @@ export class UserTaskTracker {
   private toJSON() {
     return JSON.stringify(this.getTriggeredEvents())
   }
+
   private getSignal(key: UserTask) {
-    const eventSignal = this.eventMap.get(key)
+    const eventSignal = this.taskMap.get(key)
     return eventSignal ?? new Error(`No user event with id ${key} found.`)
   }
 
