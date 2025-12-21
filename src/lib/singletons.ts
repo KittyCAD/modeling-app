@@ -50,6 +50,7 @@ import {
 } from '@src/lib/layout'
 import type { Project } from '@src/lib/project'
 import { UserTask, UserTaskTracker } from '@src/lib/events'
+import toast from 'react-hot-toast'
 
 /**
  * THE bundle of WASM, a cornerstone of our app. We use this for:
@@ -69,10 +70,11 @@ const dummySettingsActor = createActor(settingsMachine, {
 export const userTaskTracker = UserTaskTracker.fromPersisted()
 
 userTaskTracker.subscribe(UserTask.OpenedFeatureTreePane, (v) => {
-  v && console.log('Woah we opened the feature tree pane for the first time!!!')
+  v &&
+    toast.success('Woah we opened the feature tree pane for the first time!!!')
 })
 userTaskTracker.subscribe(UserTask.UsedExtrude, (v) => {
-  v && alert('DID YOU EXTRUDE MY MAN? THAT IS SO COOL')
+  v && toast.success('DID YOU EXTRUDE MY MAN? THAT IS SO COOL')
 })
 
 export const engineCommandManager = new ConnectionManager()
