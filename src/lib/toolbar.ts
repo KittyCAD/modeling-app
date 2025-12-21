@@ -3,7 +3,7 @@ import type { EventFrom, StateFrom } from 'xstate'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
-import { commandBarActor } from '@src/lib/singletons'
+import { commandBarActor, userTaskTracker } from '@src/lib/singletons'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -12,6 +12,7 @@ import {
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { UserTask, UserTaskTracker } from './events'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
@@ -144,11 +145,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       'break',
       {
         id: 'extrude',
-        onClick: () =>
+        onClick: () => {
+          userTaskTracker.trigger(UserTask.UsedExtrude)
           commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Extrude', groupId: 'modeling' },
-          }),
+          })
+        },
         icon: 'extrude',
         status: 'available',
         title: 'Extrude',

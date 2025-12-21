@@ -66,10 +66,13 @@ export const commandBarActor = createActor(commandBarMachine, {
 const dummySettingsActor = createActor(settingsMachine, {
   input: { commandBarActor, ...createSettings() },
 })
-export const userEventsManager = UserTaskTracker.fromPersisted()
+export const userTaskTracker = UserTaskTracker.fromPersisted()
 
-userEventsManager.subscribe(UserTask.OpenedFeatureTreePane, (v) => {
-  v && console.log('Woah we opened the code pane for the first time!!!')
+userTaskTracker.subscribe(UserTask.OpenedFeatureTreePane, (v) => {
+  v && console.log('Woah we opened the feature tree pane for the first time!!!')
+})
+userTaskTracker.subscribe(UserTask.UsedExtrude, (v) => {
+  v && alert('DID YOU EXTRUDE MY MAN? THAT IS SO COOL')
 })
 
 export const engineCommandManager = new ConnectionManager()

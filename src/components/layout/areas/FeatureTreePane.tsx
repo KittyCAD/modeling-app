@@ -44,7 +44,7 @@ import {
   sceneInfra,
   setLayout,
   useLayout,
-  userEventsManager,
+  userTaskTracker,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { featureTreeMachine } from '@src/machines/featureTreeMachine'
@@ -107,7 +107,7 @@ export const FeatureTreePaneContents = memo(() => {
   const sketchNoFace = modelingState.matches('Sketch no face')
 
   useEffect(() => {
-    userEventsManager.trigger(UserTask.OpenedFeatureTreePane)
+    userTaskTracker.trigger(UserTask.OpenedFeatureTreePane)
   }, [])
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

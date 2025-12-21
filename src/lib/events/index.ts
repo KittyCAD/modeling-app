@@ -30,49 +30,6 @@ export class UserTaskTracker {
   shouldAutoPersist = true
 
   /**
-   * Instantiate a live set of signals given an array of events
-   * that should be instantiated as already "triggered".
-   */
-  static fromArray(providedEvents: UserTask[]): UserTaskTracker {
-    const userEvents = new UserTaskTracker()
-    for (const event of Object.values(UserTask)) {
-      const found = providedEvents.find((e) => e === event)
-      console.log({ event, found })
-      userEvents.eventMap.set(event, signal(Boolean(found)))
-    }
-
-    return userEvents
-  }
-
-  /**
-   * Return an array of only the triggered events so far.
-   */
-  private getTriggeredEvents() {
-    return this.eventMap
-      .entries()
-      .filter(([_, signal]) => signal.value)
-      .map(([eventName]) => eventName)
-      .toArray()
-  }
-
-  /**
-   * Create a JSON array of the events that have been triggered by the user.
-   */
-  private toJSON() {
-    return JSON.stringify(this.getTriggeredEvents())
-  }
-
-  /**
-   * Persist the user events to storage.
-   *
-   * TODO: make persist to disk on desktop, or maybe better, provide the persistence behavior.
-   */
-  persist() {
-    const jsonString = this.toJSON()
-    globalThis.localStorage.setItem(UserTaskTracker.PERSISTENCE_KEY, jsonString)
-  }
-
-  /**
    * Revive an array of the user's triggered UserEvents from persisted storage.
    *
    * TODO: make persist to disk on desktop, or maybe better, provide the persistence behavior.
@@ -90,6 +47,20 @@ export class UserTaskTracker {
     )
 
     return UserTaskTracker.fromArray(userEventsArray)
+  }
+
+  /**
+   * Instantiate a live set of signals given an array of events
+   * that should be instantiated as already "triggered".
+   */
+  static fromArray(providedEvents: UserTask[]): UserTaskTracker {
+    const userEvents = new UserTaskTracker()
+    for (const event of Object.values(UserTask)) {
+      const found = providedEvents.find((e) => e === event)
+      userEvents.eventMap.set(event, signal(Boolean(found)))
+    }
+
+    return userEvents
   }
 
   /**
@@ -119,14 +90,12 @@ export class UserTaskTracker {
     }
   }
 
-  private getSignal(key: UserTask) {
-    const eventSignal = this.eventMap.get(key)
-    return eventSignal ?? new Error(`No user event with id ${key} found.`)
-  }
-
   /**
    * Subscribe to a user event being triggered (by UserEvents.trigger())
    * outside of React. For use within React, use the `useSubscribe` method hook.
+   *
+   * Returns `true` if the subscription was established (because the task isn't completed yet),
+   * or false if the task is completed and therefore not subscribable.
    */
   subscribe(
     key: UserTask,
@@ -138,14 +107,22 @@ export class UserTaskTracker {
       return eventSignal
     }
 
+    // No need to subscribe if the event is already `true`
+    if (eventSignal.value === true) return false
+    // If it false it's worth subscribing to
     effect(() => {
       onChange(eventSignal.value)
     }, options)
+    // Notify the caller that we established a subscription
+    return true
   }
 
   /**
    * Subscribe to a user event being triggered (by UserEvents.trigger())
    * within of React. For use within React, use the `subscribe` method.
+   *
+   * Returns `true` if the subscription was established (because the task isn't completed yet),
+   * or false if the task is completed and therefore not subscribable.
    */
   useSubscribe(
     key: UserTask,
@@ -157,9 +134,46 @@ export class UserTaskTracker {
       return eventSignal
     }
 
+    // No need to subscribe if the event is already `true`
+    if (eventSignal.value === true) return false
+    // If it false it's worth subscribing to
     useSignalEffect(() => {
       onChange(eventSignal.value)
     }, options)
+    // Notify the caller that we established a subscription
+    return true
+  }
+
+  /**
+   * Persist the user events to storage.
+   *
+   * TODO: make persist to disk on desktop, or maybe better, provide the persistence behavior.
+   */
+  persist() {
+    const jsonString = this.toJSON()
+    globalThis.localStorage.setItem(UserTaskTracker.PERSISTENCE_KEY, jsonString)
+  }
+
+  /**
+   * Return an array of only the triggered events so far.
+   */
+  private getTriggeredEvents() {
+    return this.eventMap
+      .entries()
+      .filter(([_, signal]) => signal.value)
+      .map(([eventName]) => eventName)
+      .toArray()
+  }
+
+  /**
+   * Create a JSON array of the events that have been triggered by the user.
+   */
+  private toJSON() {
+    return JSON.stringify(this.getTriggeredEvents())
+  }
+  private getSignal(key: UserTask) {
+    const eventSignal = this.eventMap.get(key)
+    return eventSignal ?? new Error(`No user event with id ${key} found.`)
   }
 
   private static isUserEvent(e: unknown): e is UserTask {
