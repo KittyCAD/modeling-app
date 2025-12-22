@@ -1,7 +1,6 @@
 import type { EffectOptions, Signal } from '@preact/signals-core'
 import { effect, signal } from '@preact/signals-core'
 import { err } from '@src/lib/trap'
-import { useSignalEffect } from '@preact/signals-react'
 import { isArray } from '@src/lib/utils'
 
 /**
@@ -120,34 +119,7 @@ export class UserTaskTracker {
     if (task.value === true) return false
     // If it false it's worth subscribing to
     effect(() => {
-      onChange(task.value)
-    }, options)
-    // Notify the caller that we established a subscription
-    return true
-  }
-
-  /**
-   * Subscribe to a user event being triggered (by UserEvents.trigger())
-   * within of React. For use within React, use the `subscribe` method.
-   *
-   * Returns `true` if the subscription was established (because the task isn't completed yet),
-   * or false if the task is completed and therefore not subscribable.
-   */
-  useSubscribe(
-    key: UserTask,
-    onChange: (value: boolean) => void | Promise<void>,
-    options?: EffectOptions
-  ) {
-    const task = this.getSignal(key)
-    if (err(task)) {
-      return task
-    }
-
-    // No need to subscribe if the event is already `true`
-    if (task.value === true) return false
-    // If it false it's worth subscribing to
-    useSignalEffect(() => {
-      onChange(task.value)
+      void onChange(task.value)
     }, options)
     // Notify the caller that we established a subscription
     return true
