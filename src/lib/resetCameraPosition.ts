@@ -1,7 +1,8 @@
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { isPlaywright } from '@src/lib/isPlaywright'
-import { engineCommandManager, settingsActor } from '@src/lib/singletons'
 import { engineStreamZoomToFit, engineViewIsometric } from '@src/lib/utils'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 /**
  * Reset the camera position to a baseline, which is isometric for
@@ -13,7 +14,13 @@ import { engineStreamZoomToFit, engineViewIsometric } from '@src/lib/utils'
  */
 export async function resetCameraPosition({
   sceneInfra,
-}: { sceneInfra: SceneInfra }) {
+  engineCommandManager,
+  settingsActor,
+}: {
+  sceneInfra: SceneInfra
+  engineCommandManager: ConnectionManager
+  settingsActor: SettingsActorType
+}) {
   // We need a padding of 0.1 for zoom_to_fit for all E2E tests since they were originally
   // written with zoom_to_fit with padding 0.1
   const padding = 0.1

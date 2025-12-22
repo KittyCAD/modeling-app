@@ -19,7 +19,8 @@ import {
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
-import { rustContext, systemIOActor } from '@src/lib/singletons'
+import type { SystemIOActor } from '@src/lib/singletons'
+import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -40,6 +41,8 @@ interface KclCommandConfig {
     providedOptions: CommandArgumentOption<string>[]
   }
   kclManager: KclManager
+  rustContext: RustContext
+  systemIOActor: SystemIOActor
   wasmInstance: ModuleType
   projectData: IndexLoaderData
   authToken: string
@@ -161,7 +164,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             }
             updateModelingState(newAst, EXECUTION_TYPE_REAL, {
               kclManager: commandProps.kclManager,
-              rustContext,
+              rustContext: commandProps.rustContext,
             })
               .then((result) => {
                 if (err(result)) {
@@ -202,7 +205,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           options: () => {
             const providedOptions: { name: string; value: string }[] = []
-            const context = systemIOActor.getSnapshot().context
+            const context = commandProps.systemIOActor.getSnapshot().context
             const projectName = commandProps.project?.name
             const sep = window.electron?.sep
             const relevantFiles = relevantFileExtensions(
@@ -276,7 +279,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           EXECUTION_TYPE_REAL,
           {
             kclManager: commandProps.kclManager,
-            rustContext,
+            rustContext: commandProps.rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -344,7 +347,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         })
         updateModelingState(newAst, EXECUTION_TYPE_REAL, {
           kclManager: commandProps.kclManager,
-          rustContext,
+          rustContext: commandProps.rustContext,
         }).catch(reportRejection)
       },
     },
@@ -443,7 +446,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
 
         updateModelingState(newAst, EXECUTION_TYPE_REAL, {
           kclManager: commandProps.kclManager,
-          rustContext,
+          rustContext: commandProps.rustContext,
         }).catch(reportRejection)
       },
     },

@@ -15,6 +15,7 @@ import {
   appActor,
   commandBarActor,
   kclManager,
+  rustContext,
   systemIOActor,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -22,7 +23,7 @@ import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 
 markOnce('code/willAuth')
-initializeWindowExceptionHandler(kclManager)
+initializeWindowExceptionHandler(kclManager, rustContext)
 
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.

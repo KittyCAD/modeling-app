@@ -206,6 +206,7 @@ export const FeatureTreePaneContents = memo(() => {
         rustContext,
         kclManager,
         sceneEntitiesManager,
+        commandBarActor,
       },
       // devTools: true,
     }

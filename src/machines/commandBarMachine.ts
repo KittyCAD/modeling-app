@@ -11,6 +11,9 @@ import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import type { ActorRefFrom } from 'xstate'
+
+export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
 
 export type CommandBarInput = {
   commands: Command[]
@@ -352,7 +355,10 @@ export const commandBarMachine = setup({
 
           const data = input.event.data
           const argName = context.currentArgument?.name
-          const args = context?.selectedCommand?.args
+          const selectedCommand = context?.selectedCommand
+          const machineContext =
+            selectedCommand?.machineActor?.getSnapshot().context
+          const args = selectedCommand?.args
           const argConfig = args && argName ? args[argName] : undefined
           // Only do a validation check if the argument, selectedCommand, and the validation function are defined
           if (
@@ -365,7 +371,7 @@ export const commandBarMachine = setup({
             argConfig?.validation
           ) {
             argConfig
-              .validation({ context, data })
+              .validation({ context, data, machineContext })
               .then((result) => {
                 if (typeof result === 'boolean' && result === true) {
                   return resolve(data)
@@ -496,7 +502,10 @@ export const commandBarMachine = setup({
           input.selectedCommand?.needsReview &&
           input.selectedCommand.reviewValidation
         ) {
-          const result = await input.selectedCommand.reviewValidation(input)
+          const result = await input.selectedCommand.reviewValidation(
+            input,
+            input.selectedCommand?.machineActor
+          )
           if (err(result)) {
             reviewValidationError = result.message
           }

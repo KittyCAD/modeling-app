@@ -12,7 +12,9 @@ import { markOnce } from '@src/lib/performance'
 import {
   engineCommandManager,
   kclManager,
+  rustContext,
   sceneInfra,
+  systemIOActor,
 } from '@src/lib/singletons'
 import { useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
@@ -162,6 +164,8 @@ export const ModelingPageProvider = ({
       },
       specialPropsForInsertCommand: { providedOptions },
       project,
+      rustContext,
+      systemIOActor,
       wasmInstance,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!

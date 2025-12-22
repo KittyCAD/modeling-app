@@ -34,11 +34,6 @@ import {
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import {
-  engineCommandManager,
-  kclManager,
-  rustContext,
-} from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type {
@@ -80,6 +75,7 @@ import {
   getNextAvailableDatumName,
 } from '@src/lang/modifyAst/gdt'
 import { capitaliseFC } from '@src/lib/utils'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -116,7 +112,9 @@ const objectsTypesAndFilters: {
   selectionFilter: ['object'],
 }
 
-const hasEngineConnection = (): true | Error => {
+const hasEngineConnection = (
+  engineCommandManager: ConnectionManager
+): true | Error => {
   return (
     engineCommandManager.connection?.connected ||
     new Error('No engine connection to send command')
@@ -549,8 +547,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Pull a sketch into 3D along its normal or perpendicular.',
     icon: 'extrude',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -645,8 +648,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -708,8 +716,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -763,8 +776,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -852,8 +870,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Hollow out a 3D solid.',
     icon: 'shell',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -894,8 +917,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     reviewMessage:
       'The argument cutAt specifies where to place the hole given as absolute coordinates in the global scene. Point selection will be allowed in the future, and more hole bottoms and hole types are coming soon.',
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1028,8 +1056,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Subtract one solid from another.',
     icon: 'booleanSubtract',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1068,8 +1101,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Union multiple solids into a single solid.',
     icon: 'booleanUnion',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1101,8 +1139,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a solid from the intersection of two solids.',
     icon: 'booleanIntersect',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1134,8 +1177,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Offset a plane.',
     icon: 'plane',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1176,8 +1224,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a helix or spiral in 3D about an axis.',
     icon: 'helix',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1277,8 +1330,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Fillet edge',
     icon: 'fillet3d',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1323,8 +1381,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Chamfer edge',
     icon: 'chamfer3d',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1396,7 +1459,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           const angleLength = angleLengthInfo({
             selectionRanges,
             angleOrLength: 'setLength',
-            kclManager,
+            kclManager: machineContext.kclManager,
             wasmInstance,
           })
           if (err(angleLength) || !wasmInstance) return KCL_DEFAULT_LENGTH
@@ -1404,10 +1467,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
 
           // QUESTION: is it okay to reference kclManager here? will its state be up to date?
           const sketched = transformAstSketchLines({
-            ast: structuredClone(kclManager.ast),
+            ast: structuredClone(machineContext.kclManager.ast),
             selectionRanges,
             transformInfos: transforms,
-            memVars: kclManager.variables,
+            memVars: machineContext.kclManager.variables,
             referenceSegName: '',
             wasmInstance,
           })
@@ -1465,8 +1528,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
     icon: 'extrude',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1514,8 +1582,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set translation on solid or sketch.',
     icon: 'move',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1568,8 +1641,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set rotation on solid or sketch.',
     icon: 'rotate',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1622,8 +1700,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set scale on solid or sketch.',
     icon: 'scale',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1681,8 +1764,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Clone a solid or sketch.',
     icon: 'clone',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1713,20 +1801,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       variableName: {
         inputType: 'string',
         required: true,
-        defaultValue: () => {
+        defaultValue: (_, modelingContext) => {
+          if (!modelingContext) {
+            return KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
+          }
           return findUniqueName(
-            kclManager.ast,
+            modelingContext.kclManager.ast,
             KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
           )
         },
-        validation: async ({
-          data,
-        }: {
-          data: string
-        }) => {
+        validation: async ({ data, machineContext: modelingContext }) => {
+          if (!modelingContext) {
+            return 'Modeling context not found'
+          }
           // Be conservative and error out if there is an item or module with the same name.
           const variableExists =
-            kclManager.variables[data] || kclManager.variables['__mod_' + data]
+            modelingContext.kclManager.variables[data] ||
+            modelingContext.kclManager.variables['__mod_' + data]
           if (variableExists) {
             return 'This variable name is already in use.'
           }
@@ -1740,8 +1831,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a circular pattern of 3D solids around an axis.',
     icon: 'patternCircular3d',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1808,8 +1904,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a linear pattern of 3D solids along an axis.',
     icon: 'patternLinear3d',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1868,8 +1969,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add flatness geometric dimensioning & tolerancing annotation to faces.',
     icon: 'gdtFlatness',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1940,8 +2046,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add datum geometric dimensioning & tolerancing annotation to a face.',
     icon: 'gdtDatum',
     needsReview: true,
-    reviewValidation: async (context) => {
-      const hasConnectionRes = hasEngineConnection()
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
@@ -1972,7 +2083,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       name: {
         inputType: 'string',
-        defaultValue: (_) => getNextAvailableDatumName(kclManager.ast),
+        defaultValue: (_, modelingContext) =>
+          modelingContext
+            ? getNextAvailableDatumName(modelingContext.kclManager.ast)
+            : 'A',
         required: true,
       },
       framePosition: {

@@ -113,7 +113,7 @@ jobs:
           npm run files:set-version
           npm run files:set-windows-codesign-config
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: prepared-files
           path: |
@@ -228,7 +228,7 @@ jobs:
       - name: List artifacts in out/
         run: ls -R out
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: out-arm64-${{ matrix.platform }}
           # first two will pick both Zoo Design Studio-$VERSION-arm64-win.exe and Zoo Design Studio-$VERSION-win.exe
@@ -238,7 +238,7 @@ jobs:
             out/*-arm64-mac.*
             out/*-arm64-linux.*
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: out-x64-${{ matrix.platform }}
           path: |
@@ -246,7 +246,7 @@ jobs:
             out/*-x64-mac.*
             out/*-x86_64-linux.*
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: ${{ env.IS_RELEASE == 'true' || env.IS_STAGING == 'true' }}
         with:
           name: out-yml-${{ matrix.platform }}
@@ -359,7 +359,7 @@ jobs:
             }' > out/last_download.json
             cat out/last_download.json
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: out-download-json
           path: out/last_download.json

@@ -29,7 +29,7 @@ describe('useOnFileRoute', () => {
         name: 'main.kcl',
         children: null,
       }
-      const { engineCommandManager, sceneInfra, kclManager } =
+      const { engineCommandManager, sceneInfra, kclManager, settingsActor } =
         await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() => {
         useOnFileRoute({
@@ -40,6 +40,7 @@ describe('useOnFileRoute', () => {
             engineCommandManager,
             kclManager,
             sceneInfra,
+            settingsActor,
           },
         })
       })
@@ -89,6 +90,7 @@ describe('useOnFileRoute', () => {
             engineCommandManager,
             kclManager,
             sceneInfra,
+            settingsActor,
           },
         })
       })
@@ -151,6 +153,7 @@ describe('useOnFileRoute', () => {
               engineCommandManager,
               kclManager,
               sceneInfra,
+              settingsActor,
             },
           })
         },
@@ -218,6 +221,7 @@ describe('useOnFileRoute', () => {
               engineCommandManager,
               kclManager,
               sceneInfra,
+              settingsActor,
             },
           })
         },
@@ -287,6 +291,7 @@ describe('useOnFileRoute', () => {
               engineCommandManager,
               kclManager,
               sceneInfra,
+              settingsActor,
             },
           })
         },
