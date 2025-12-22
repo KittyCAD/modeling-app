@@ -14,6 +14,7 @@ import type {
   FileExplorerEntry,
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
+import { fsCreateBlankFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { FILE_EXT } from '@src/lib/constants'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
@@ -544,6 +545,10 @@ export const ProjectExplorer = ({
               if (row.isFake) {
                 // create a file if it is fake and navigate to that file!
                 if (file && canNavigate) {
+                  const requestedAbsolutePath = joinOSPaths(
+                    getParentAbsolutePath(row.path),
+                    fileNameForcedWithOriginalExt
+                  )
                   systemIOActor.send({
                     type: SystemIOMachineEvents.importFileFromURL,
                     data: {
@@ -552,16 +557,19 @@ export const ProjectExplorer = ({
                       requestedFileNameWithExtension: pathRelativeToParent,
                     },
                   })
+                  kclManager.dispatch(fsCreateBlankFile(requestedAbsolutePath))
                 } else {
+                  const requestedAbsolutePath = joinOSPaths(
+                    getParentAbsolutePath(row.path),
+                    fileNameForcedWithOriginalExt
+                  )
                   systemIOActor.send({
                     type: SystemIOMachineEvents.createBlankFile,
                     data: {
-                      requestedAbsolutePath: joinOSPaths(
-                        getParentAbsolutePath(row.path),
-                        fileNameForcedWithOriginalExt
-                      ),
+                      requestedAbsolutePath,
                     },
                   })
+                  kclManager.dispatch(fsCreateBlankFile(requestedAbsolutePath))
                 }
               } else {
                 const requestedAbsoluteFilePathWithExtension = joinOSPaths(
