@@ -674,7 +674,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await expect
       .poll(() =>
         page.evaluate(
-          () => document.querySelector('.cm-line > span[class*="ͼ"]') !== null
+          () => document.querySelector('.cm-line > span[class*="ͼh"]') !== null
         )
       )
       .toBe(true)
