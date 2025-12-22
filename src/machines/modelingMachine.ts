@@ -154,6 +154,7 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { EditorView } from 'codemirror'
 
 export type ModelingMachineEvent =
   | {
@@ -1473,6 +1474,13 @@ export const modelingMachine = setup({
           if (codeMirrorSelection) {
             kclManager.editorView.dispatch({
               selection: codeMirrorSelection,
+              effects: setSelections.scrollIntoView
+                ? [
+                    EditorView.scrollIntoView(codeMirrorSelection.ranges[0], {
+                      y: 'center',
+                    }),
+                  ]
+                : [],
             })
             theKclEditorMachine.send({
               type: 'setLastSelectionEvent',
