@@ -473,6 +473,8 @@ export class KclManager extends EventTarget {
    * then fires (and forgets) an execution with a debounce.
    */
   private executeKclEffect = EditorView.updateListener.of((update) => {
+    this.code = update.view.state.doc.toString()
+
     const shouldExecute =
       this.engineCommandManager.started &&
       update.docChanged &&
@@ -543,7 +545,14 @@ export class KclManager extends EventTarget {
           },
         })
       } else if (this.modelingState?.matches('Sketch')) {
-        // Do nothing and see what happens!
+        // TODO: use derived facets to decide what portion of the code
+        // gets executed in sketch mode, not this AST business.
+        // For now, this is needed because `modelingMachine`'s "re-eval node paths"
+        // actor peeks into the KCL manager's stored AST.
+        this.ast = (await this.safeParse(newCode)) ?? this._lastAst
+        this.singletons.sceneInfra.modelingSend({
+          type: 'code edit during sketch',
+        })
       } else {
         await this.executeCode(newCode)
       }

@@ -69,7 +69,7 @@ extrude001 = extrude(sketch001, length = 5)`
     })
 
     // Ensure we have no errors in the gutter, since error out of view.
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeInViewport()
 
     // Click the badge.
     const badge = page.locator('#code-badge')
@@ -77,7 +77,7 @@ extrude001 = extrude(sketch001, length = 5)`
     await badge.click()
 
     // Ensure we have an error diagnostic.
-    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeInViewport()
 
     // Hover over the error to see the error message
     await page.hover('.cm-lint-marker-error')
