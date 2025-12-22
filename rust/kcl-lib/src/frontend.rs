@@ -2658,10 +2658,28 @@ mod tests {
     use super::*;
     use crate::{
         engine::PlaneName,
-        front::{Distance, Sketch},
+        front::{Distance, Object, Sketch},
         frontend::sketch::Vertical,
         pretty::NumericSuffix,
     };
+
+    fn find_first_sketch_object(scene_graph: &SceneGraph) -> Option<&Object> {
+        for object in &scene_graph.objects {
+            if let ObjectKind::Sketch(_) = &object.kind {
+                return Some(object);
+            }
+        }
+        None
+    }
+
+    #[track_caller]
+    fn expect_sketch(object: &Object) -> &Sketch {
+        if let ObjectKind::Sketch(sketch) = &object.kind {
+            sketch
+        } else {
+            panic!("Object is not a sketch: {:?}", object);
+        }
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_new_sketch_add_point_edit_point() {
@@ -2680,10 +2698,10 @@ mod tests {
             .new_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
-        assert_eq!(sketch_id, ObjectId(0));
-        assert_eq!(scene_delta.new_objects, vec![ObjectId(0)]);
-        let sketch_object = &scene_delta.new_graph.objects[0];
-        assert_eq!(sketch_object.id, ObjectId(0));
+        assert_eq!(sketch_id, ObjectId(1));
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(1)]);
+        let sketch_object = &scene_delta.new_graph.objects[1];
+        assert_eq!(sketch_object.id, ObjectId(1));
         assert_eq!(
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
@@ -2695,7 +2713,7 @@ mod tests {
                 constraints: vec![],
             })
         );
-        assert_eq!(scene_delta.new_graph.objects.len(), 1);
+        assert_eq!(scene_delta.new_graph.objects.len(), 2);
 
         let point_ctor = PointCtor {
             position: Point2d {
@@ -2723,12 +2741,11 @@ sketch(on = XY) {
 }
 "
         );
-        assert_eq!(scene_delta.new_objects, vec![ObjectId(1)]);
-        assert_eq!(scene_delta.new_graph.objects.len(), 2);
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(2)]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 3);
         for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
             assert_eq!(scene_object.id.0, i);
         }
-        assert_eq!(scene_delta.new_graph.objects.len(), 2);
 
         let point_id = *scene_delta.new_objects.last().unwrap();
 
@@ -2762,7 +2779,7 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![]);
-        assert_eq!(scene_delta.new_graph.objects.len(), 2);
+        assert_eq!(scene_delta.new_graph.objects.len(), 3);
 
         mock_ctx.close().await;
     }
@@ -2784,10 +2801,10 @@ sketch(on = XY) {
             .new_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
-        assert_eq!(sketch_id, ObjectId(0));
-        assert_eq!(scene_delta.new_objects, vec![ObjectId(0)]);
-        let sketch_object = &scene_delta.new_graph.objects[0];
-        assert_eq!(sketch_object.id, ObjectId(0));
+        assert_eq!(sketch_id, ObjectId(1));
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(1)]);
+        let sketch_object = &scene_delta.new_graph.objects[1];
+        assert_eq!(sketch_object.id, ObjectId(1));
         assert_eq!(
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
@@ -2799,7 +2816,7 @@ sketch(on = XY) {
                 constraints: vec![],
             })
         );
-        assert_eq!(scene_delta.new_graph.objects.len(), 1);
+        assert_eq!(scene_delta.new_graph.objects.len(), 2);
 
         let line_ctor = LineCtor {
             start: Point2d {
@@ -2837,11 +2854,11 @@ sketch(on = XY) {
 }
 "
         );
-        assert_eq!(scene_delta.new_objects, vec![ObjectId(1), ObjectId(2), ObjectId(3)]);
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(2), ObjectId(3), ObjectId(4)]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 5);
         for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
             assert_eq!(scene_object.id.0, i);
         }
-        assert_eq!(scene_delta.new_graph.objects.len(), 4);
 
         // The new objects are the end points and then the line.
         let line = *scene_delta.new_objects.last().unwrap();
@@ -2886,7 +2903,7 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![]);
-        assert_eq!(scene_delta.new_graph.objects.len(), 4);
+        assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
         mock_ctx.close().await;
     }
@@ -2908,10 +2925,10 @@ sketch(on = XY) {
             .new_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
-        assert_eq!(sketch_id, ObjectId(0));
-        assert_eq!(scene_delta.new_objects, vec![ObjectId(0)]);
-        let sketch_object = &scene_delta.new_graph.objects[0];
-        assert_eq!(sketch_object.id, ObjectId(0));
+        assert_eq!(sketch_id, ObjectId(1));
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(1)]);
+        let sketch_object = &scene_delta.new_graph.objects[1];
+        assert_eq!(sketch_object.id, ObjectId(1));
         assert_eq!(
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
@@ -2923,7 +2940,7 @@ sketch(on = XY) {
                 constraints: vec![],
             })
         );
-        assert_eq!(scene_delta.new_graph.objects.len(), 1);
+        assert_eq!(scene_delta.new_graph.objects.len(), 2);
 
         let arc_ctor = ArcCtor {
             start: Point2d {
@@ -2973,12 +2990,12 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_objects,
-            vec![ObjectId(1), ObjectId(2), ObjectId(3), ObjectId(4)]
+            vec![ObjectId(2), ObjectId(3), ObjectId(4), ObjectId(5)]
         );
         for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
             assert_eq!(scene_object.id.0, i);
         }
-        assert_eq!(scene_delta.new_graph.objects.len(), 5);
+        assert_eq!(scene_delta.new_graph.objects.len(), 6);
 
         // The new objects are the end points, the center, and then the arc.
         let arc = *scene_delta.new_objects.last().unwrap();
@@ -3033,7 +3050,7 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![]);
-        assert_eq!(scene_delta.new_graph.objects.len(), 5);
+        assert_eq!(scene_delta.new_graph.objects.len(), 6);
 
         mock_ctx.close().await;
     }
@@ -3054,7 +3071,8 @@ s = sketch(on = XY) {}
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
 
         let line_ctor = LineCtor {
             start: Point2d {
@@ -3092,8 +3110,8 @@ s = sketch(on = XY) {
 }
 "
         );
-        assert_eq!(scene_delta.new_objects, vec![ObjectId(1), ObjectId(2), ObjectId(3)]);
-        assert_eq!(scene_delta.new_graph.objects.len(), 4);
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(2), ObjectId(3), ObjectId(4)]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -3116,10 +3134,10 @@ s = sketch(on = XY) {
             .new_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
-        assert_eq!(sketch_id, ObjectId(0));
-        assert_eq!(scene_delta.new_objects, vec![ObjectId(0)]);
-        let sketch_object = &scene_delta.new_graph.objects[0];
-        assert_eq!(sketch_object.id, ObjectId(0));
+        assert_eq!(sketch_id, ObjectId(1));
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(1)]);
+        let sketch_object = &scene_delta.new_graph.objects[1];
+        assert_eq!(sketch_object.id, ObjectId(1));
         assert_eq!(
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
@@ -3131,7 +3149,7 @@ s = sketch(on = XY) {
                 constraints: vec![],
             })
         );
-        assert_eq!(scene_delta.new_graph.objects.len(), 1);
+        assert_eq!(scene_delta.new_graph.objects.len(), 2);
 
         let line_ctor = LineCtor {
             start: Point2d {
@@ -3169,7 +3187,7 @@ sketch(on = XY) {
 }
 "
         );
-        assert_eq!(scene_delta.new_graph.objects.len(), 4);
+        assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
         let (src_delta, scene_delta) = frontend.delete_sketch(&mock_ctx, version, sketch_id).await.unwrap();
         assert_eq!(
@@ -3198,7 +3216,8 @@ s = sketch(on = XY) {}
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
 
         let (src_delta, scene_delta) = frontend.delete_sketch(&mock_ctx, version, sketch_id).await.unwrap();
         assert_eq!(
@@ -3231,9 +3250,11 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
 
-        let point_id = frontend.scene_graph.objects.get(1).unwrap().id;
+        let point_id = *sketch.segments.first().unwrap();
 
         let point_ctor = PointCtor {
             position: Point2d {
@@ -3266,7 +3287,7 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![]);
-        assert_eq!(scene_delta.new_graph.objects.len(), 4);
+        assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -3291,9 +3312,10 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
-
-        let point_id = frontend.scene_graph.objects.get(2).unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point_id = *sketch.segments.get(1).unwrap();
 
         let point_ctor = PointCtor {
             position: Point2d {
@@ -3326,7 +3348,7 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![]);
-        assert_eq!(scene_delta.new_graph.objects.len(), 4);
+        assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -3356,8 +3378,10 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
-        let line2_end_id = frontend.scene_graph.objects.get(5).unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line2_end_id = *sketch.segments.get(4).unwrap();
 
         let segments = vec![ExistingSegmentCtor {
             id: line2_end_id,
@@ -3395,7 +3419,7 @@ line1.start.at[1] == 0
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            9,
+            10,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -3425,9 +3449,11 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
 
-        let point_id = frontend.scene_graph.objects.get(2).unwrap().id;
+        let point_id = *sketch.segments.get(1).unwrap();
 
         let (src_delta, scene_delta) = frontend
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point_id])
@@ -3445,7 +3471,7 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![]);
-        assert_eq!(scene_delta.new_graph.objects.len(), 3);
+        assert_eq!(scene_delta.new_graph.objects.len(), 4);
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -3472,9 +3498,11 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
 
-        let point_id = frontend.scene_graph.objects.get(2).unwrap().id;
+        let point_id = *sketch.segments.get(1).unwrap();
 
         let (src_delta, scene_delta) = frontend
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point_id])
@@ -3492,7 +3520,7 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![]);
-        assert_eq!(scene_delta.new_graph.objects.len(), 3);
+        assert_eq!(scene_delta.new_graph.objects.len(), 4);
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -3519,10 +3547,13 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
 
-        let point1_id = frontend.scene_graph.objects.get(1).unwrap().id;
-        let point2_id = frontend.scene_graph.objects.get(2).unwrap().id;
+        let sketch = expect_sketch(sketch_object);
+
+        let point1_id = *sketch.segments.first().unwrap();
+        let point2_id = *sketch.segments.get(1).unwrap();
 
         let (src_delta, scene_delta) = frontend
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point1_id, point2_id])
@@ -3539,7 +3570,7 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![]);
-        assert_eq!(scene_delta.new_graph.objects.len(), 2);
+        assert_eq!(scene_delta.new_graph.objects.len(), 3);
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -3567,9 +3598,11 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
 
-        let coincident_id = frontend.scene_graph.objects.get(3).unwrap().id;
+        let coincident_id = *sketch.constraints.first().unwrap();
 
         let (src_delta, scene_delta) = frontend
             .delete_objects(&mock_ctx, version, sketch_id, vec![coincident_id], Vec::new())
@@ -3588,7 +3621,7 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![]);
-        assert_eq!(scene_delta.new_graph.objects.len(), 4);
+        assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -3615,8 +3648,10 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
-        let line_id = frontend.scene_graph.objects.get(6).unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_id = *sketch.segments.get(5).unwrap();
 
         let (src_delta, scene_delta) = frontend
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line_id])
@@ -3634,7 +3669,7 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            4,
+            5,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -3664,8 +3699,10 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
-        let line_id = frontend.scene_graph.objects.get(6).unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line_id = *sketch.segments.get(5).unwrap();
 
         let (src_delta, scene_delta) = frontend
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line_id])
@@ -3683,7 +3720,7 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            4,
+            5,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -3712,9 +3749,11 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
-        let point0_id = frontend.scene_graph.objects.get(1).unwrap().id;
-        let point1_id = frontend.scene_graph.objects.get(2).unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.first().unwrap();
+        let point1_id = *sketch.segments.get(1).unwrap();
 
         let constraint = Constraint::Coincident(Coincident {
             segments: vec![point0_id, point1_id],
@@ -3737,7 +3776,7 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            4,
+            5,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -3766,9 +3805,11 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
-        let point0_id = frontend.scene_graph.objects.get(2).unwrap().id;
-        let point1_id = frontend.scene_graph.objects.get(4).unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.get(1).unwrap();
+        let point1_id = *sketch.segments.get(3).unwrap();
 
         let constraint = Constraint::Coincident(Coincident {
             segments: vec![point0_id, point1_id],
@@ -3791,7 +3832,7 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            8,
+            9,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -3820,9 +3861,11 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
-        let point0_id = frontend.scene_graph.objects.get(1).unwrap().id;
-        let point1_id = frontend.scene_graph.objects.get(2).unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let point0_id = *sketch.segments.first().unwrap();
+        let point1_id = *sketch.segments.get(1).unwrap();
 
         let constraint = Constraint::Distance(Distance {
             points: vec![point0_id, point1_id],
@@ -3850,7 +3893,7 @@ sketch2::distance([point1, point2]) == 2mm
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            4,
+            5,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -3878,8 +3921,10 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
-        let line1_id = frontend.scene_graph.objects.get(3).unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
 
         let constraint = Constraint::Horizontal(Horizontal { line: line1_id });
         let (src_delta, scene_delta) = frontend
@@ -3899,7 +3944,7 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            5,
+            6,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -3927,8 +3972,10 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
-        let line1_id = frontend.scene_graph.objects.get(3).unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
 
         let constraint = Constraint::Vertical(Vertical { line: line1_id });
         let (src_delta, scene_delta) = frontend
@@ -3948,7 +3995,7 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            5,
+            6,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -3977,9 +4024,11 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
-        let line1_id = frontend.scene_graph.objects.get(3).unwrap().id;
-        let line2_id = frontend.scene_graph.objects.get(6).unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
 
         let constraint = Constraint::LinesEqualLength(LinesEqualLength {
             lines: vec![line1_id, line2_id],
@@ -4002,7 +4051,7 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            8,
+            9,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -4031,9 +4080,11 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
-        let line1_id = frontend.scene_graph.objects.get(3).unwrap().id;
-        let line2_id = frontend.scene_graph.objects.get(6).unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
 
         let constraint = Constraint::Parallel(Parallel {
             lines: vec![line1_id, line2_id],
@@ -4056,7 +4107,7 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            8,
+            9,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -4085,9 +4136,11 @@ sketch(on = XY) {
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
-        let line1_id = frontend.scene_graph.objects.get(3).unwrap().id;
-        let line2_id = frontend.scene_graph.objects.get(6).unwrap().id;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let line1_id = *sketch.segments.get(2).unwrap();
+        let line2_id = *sketch.segments.get(5).unwrap();
 
         let constraint = Constraint::Perpendicular(Perpendicular {
             lines: vec![line1_id, line2_id],
@@ -4110,7 +4163,7 @@ sketch(on = XY) {
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            8,
+            9,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -4185,7 +4238,8 @@ sketch2::distance([line1.start, line1.end]) == x
         // Edit the first sketch. Objects from the second sketch should not be
         // present since the program exits early after the first sketch block.
         //
-        // - Plane 1
+        // - startSketchOn(XY) Plane 1
+        // - sketch on=XY Plane 1
         // - Sketch block 16
         let scene_delta = frontend
             .edit_sketch(&mock_ctx, project_id, file_id, version, sketch1_id)
@@ -4193,7 +4247,7 @@ sketch2::distance([line1.start, line1.end]) == x
             .unwrap();
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            17,
+            18,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -4304,17 +4358,21 @@ sketch2::distance([line1.start, line1.end]) == x
         );
         // Exit sketch. Objects from the entire program should be present.
         //
-        // - Plane 1
+        // - startSketchOn(XY) Plane 1
+        // - sketch on=XY Plane 1
         // - Sketch block 16
+        // - sketch on=XY Plane 1
         // - Sketch block 5
         let scene = frontend.exit_sketch(&ctx, version, sketch1_id).await.unwrap();
-        assert_eq!(scene.objects.len(), 22, "{:#?}", scene.objects);
+        assert_eq!(scene.objects.len(), 24, "{:#?}", scene.objects);
 
         // Edit the second sketch. Objects from the entire program should be
         // present.
         //
-        // - Plane 1
+        // - startSketchOn(XY) Plane 1
+        // - sketch on=XY Plane 1
         // - Sketch block 16
+        // - sketch on=XY Plane 1
         // - Sketch block 5
         let scene_delta = frontend
             .edit_sketch(&mock_ctx, project_id, file_id, version, sketch2_id)
@@ -4322,7 +4380,7 @@ sketch2::distance([line1.start, line1.end]) == x
             .unwrap();
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            22,
+            24,
             "{:#?}",
             scene_delta.new_graph.objects
         );

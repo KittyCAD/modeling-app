@@ -1035,17 +1035,31 @@ pub async fn make_sketch_plane_from_orientation(
 ) -> Result<Box<Plane>, KclError> {
     let id = exec_state.next_uuid();
     let kind = PlaneKind::from(&data);
-    let plane_object_id = exec_state.next_object_id();
-    let plane = Plane {
+    let mut plane = Plane {
         id,
         artifact_id: id.into(),
-        object_id: Some(plane_object_id),
+        object_id: None,
         kind,
         info: PlaneInfo::try_from(data)?,
         meta: vec![args.source_range.into()],
     };
 
     // Create the plane on the fly.
+    ensure_sketch_plane_in_engine(&mut plane, exec_state, args).await?;
+
+    Ok(Box::new(plane))
+}
+
+/// Ensure that the plane exists in the engine.
+pub async fn ensure_sketch_plane_in_engine(
+    plane: &mut Plane,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<(), KclError> {
+    if plane.is_initialized() {
+        return Ok(());
+    }
+
     let clobber = false;
     let size = LengthUnit(60.0);
     let hide = Some(true);
@@ -1073,6 +1087,7 @@ pub async fn make_sketch_plane_from_orientation(
             ModelingCmd::from(cmd),
         )
         .await?;
+    let plane_object_id = exec_state.next_object_id();
     #[cfg(feature = "artifact-graph")]
     {
         let plane_object = crate::front::Object {
@@ -1085,8 +1100,9 @@ pub async fn make_sketch_plane_from_orientation(
         };
         exec_state.add_scene_object(plane_object, args.source_range);
     }
+    plane.object_id = Some(plane_object_id);
 
-    Ok(Box::new(plane))
+    Ok(())
 }
 
 /// Start a new profile at a given point.
