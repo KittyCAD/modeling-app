@@ -714,13 +714,25 @@ export function getArtifactFromRange(
   range: SourceRange,
   artifactGraph: ArtifactGraph
 ): Artifact | null {
+  const candidates = []
   for (const artifact of artifactGraph.values()) {
     const codeRef = getFaceCodeRef(artifact)
     if (codeRef) {
       const match =
         codeRef?.range[0] === range[0] && codeRef.range[1] === range[1]
-      if (match) return artifact
+      if (match) {
+        // Favor the first sketch block artifact since multiple artifacts may be
+        // created here.
+        if (artifact.type === 'sketchBlock') {
+          return artifact
+        }
+        candidates.push(artifact)
+      }
     }
+  }
+  // Fallback to the first candidate.
+  if (candidates.length > 0) {
+    return candidates[0]
   }
   return null
 }
