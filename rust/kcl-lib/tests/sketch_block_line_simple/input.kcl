@@ -1,6 +1,6 @@
 @settings(experimentalFeatures = allow)
 
-s = sketch() {
+s = sketch(on = XY) {
   x = var 5mm
   y = var
   l1 = sketch2::line(start=[x, y], end=[10mm, 0mm])
