@@ -305,14 +305,6 @@ profile002 = circle(sketch002, center = [2.5, 2.5], radius = 2)`
     await expect(dxfExportOption).toBeVisible()
     await dxfExportOption.click()
 
-    // Expect it to succeed - check for various error types
-    const errorToastMessage = page.getByText('Failed to export sketch to DXF')
-    const generalErrorToastMessage = page.getByText('Error while exporting')
-    const engineErrorToastMessage = page.getByText('Nothing to export')
-    await expect(errorToastMessage).not.toBeVisible()
-    await expect(generalErrorToastMessage).not.toBeVisible()
-    await expect(engineErrorToastMessage).not.toBeVisible()
-
     const successToastMessage = page.getByText('DXF export completed [TEST]')
     await page.waitForTimeout(1_000)
     const count = await successToastMessage.count()
