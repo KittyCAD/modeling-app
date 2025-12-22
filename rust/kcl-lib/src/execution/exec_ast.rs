@@ -34,7 +34,7 @@ use crate::{
         MemberExpression, Name, Node, ObjectExpression, PipeExpression, Program, SketchBlock, SketchVar, TagDeclarator,
         Type, UnaryExpression, UnaryOperator,
     },
-    std::args::TyF64,
+    std::{args::TyF64, sketch::ensure_sketch_plane_in_engine},
 };
 
 impl<'a> StatementKind<'a> {
@@ -1005,7 +1005,10 @@ impl Node<SketchBlock> {
         // Create the sketch block scene object. This needs to happen before
         // scene objects created inside the sketch block so that its ID is
         // stable across sketch block edits.
-        let arg_on: crate::execution::Plane = args.get_kw_arg("on", &RuntimeType::plane(), exec_state)?;
+        let mut arg_on: crate::execution::Plane = args.get_kw_arg("on", &RuntimeType::plane(), exec_state)?;
+        // Ensure that the plane has been created in the engine and has an
+        // ObjectId.
+        ensure_sketch_plane_in_engine(&mut arg_on, exec_state, &args).await?;
         let on_object_id = arg_on
             .scene_info
             .map(|plane_info| plane_info.object_id)

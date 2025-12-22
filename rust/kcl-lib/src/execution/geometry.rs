@@ -571,9 +571,14 @@ impl Plane {
         })
     }
 
+    /// Returns true if the plane has been sent to the engine.
+    pub fn is_initialized(&self) -> bool {
+        self.scene_info.is_some()
+    }
+
     /// Returns true if the plane has not been sent to the engine yet.
     pub fn is_uninitialized(&self) -> bool {
-        self.scene_info.is_none()
+        !self.is_initialized()
     }
 
     /// The standard planes are XY, YZ and XZ (in both positive and negative)
