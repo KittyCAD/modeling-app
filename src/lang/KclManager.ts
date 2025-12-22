@@ -597,9 +597,9 @@ export class KclManager extends EventTarget {
       zustandStore.state.code = ''
       safeLSSetItem('store', JSON.stringify(zustandStore))
     } else if (storedCode === null) {
-      this.code = bracket
+      this.updateCodeStateEditor(bracket)
     } else {
-      this.code = storedCode || ''
+      this.updateCodeStateEditor(storedCode || '')
     }
     /** End merged code from EditorManager and CodeManager */
 
