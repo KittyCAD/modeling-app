@@ -17,7 +17,7 @@ use crate::{
         types::{ArrayLen, RuntimeType},
     },
     parsing::ast::types as ast,
-    std::{Args, args::TyF64, sketch::make_sketch_plane_from_orientation},
+    std::{Args, args::TyF64, sketch::ensure_sketch_plane_in_engine},
 };
 
 /// Bundle of common GD&T annotation style arguments.
@@ -76,20 +76,13 @@ async fn inner_datum(
             vec![args.source_range],
         ))
     })?;
-    let frame_plane = if let Some(plane) = frame_plane {
+    let mut frame_plane = if let Some(plane) = frame_plane {
         plane
     } else {
         // No plane given. Use one of the standard planes.
         xy_plane(exec_state, args).await?
     };
-    let frame_plane_id = if frame_plane.is_uninitialized() {
-        // Create it in the engine.
-        let engine_plane =
-            make_sketch_plane_from_orientation(frame_plane.info.into_plane_data(), exec_state, args).await?;
-        engine_plane.id
-    } else {
-        frame_plane.id
-    };
+    ensure_sketch_plane_in_engine(&mut frame_plane, exec_state, args).await?;
     let face_id = args.get_adjacent_face_to_tag(exec_state, &face, false).await?;
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
@@ -114,7 +107,7 @@ async fn inner_datum(
                         defined_datum: Some(name_char),
                         prefix: None,
                         suffix: None,
-                        plane_id: frame_plane_id,
+                        plane_id: frame_plane.id,
                         offset: if let Some(offset) = &frame_position {
                             KPoint2d {
                                 x: offset[0].to_mm(),
@@ -195,20 +188,13 @@ async fn inner_flatness(
         // The default precision.
         3
     };
-    let frame_plane = if let Some(plane) = frame_plane {
+    let mut frame_plane = if let Some(plane) = frame_plane {
         plane
     } else {
         // No plane given. Use one of the standard planes.
         xy_plane(exec_state, args).await?
     };
-    let frame_plane_id = if frame_plane.is_uninitialized() {
-        // Create it in the engine.
-        let engine_plane =
-            make_sketch_plane_from_orientation(frame_plane.info.into_plane_data(), exec_state, args).await?;
-        engine_plane.id
-    } else {
-        frame_plane.id
-    };
+    ensure_sketch_plane_in_engine(&mut frame_plane, exec_state, args).await?;
     let mut annotations = Vec::with_capacity(faces.len());
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
@@ -243,7 +229,7 @@ async fn inner_flatness(
                             defined_datum: None,
                             prefix: None,
                             suffix: None,
-                            plane_id: frame_plane_id,
+                            plane_id: frame_plane.id,
                             offset: if let Some(offset) = &frame_position {
                                 KPoint2d {
                                     x: offset[0].to_mm(),
