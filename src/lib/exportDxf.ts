@@ -2,7 +2,7 @@ import { isArray } from '@src/lib/utils'
 import { getOperationVariableName } from '@src/lib/operations'
 import type { KclManager } from '@src/lang/KclManager'
 import {
-  findOperationPlaneArtifact,
+  findOperationPlaneLikeArtifact,
   type StdLibCallOp,
 } from '@src/lang/queryAst'
 import type { WebSocketResponse } from '@kittycad/lib'
@@ -48,12 +48,12 @@ export async function exportSketchToDxf(
 
   try {
     // Get the plane artifact associated with this sketch operation
-    const planeArtifact = findOperationPlaneArtifact(
+    const planeArtifact = findOperationPlaneLikeArtifact(
       operation,
       kclManager.artifactGraph
     )
 
-    if (planeArtifact?.type !== 'plane') {
+    if (!planeArtifact) {
       toast.error('Could not find sketch for DXF export')
       return new Error('Could not find plane artifact')
     }
