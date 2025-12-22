@@ -12,6 +12,7 @@ import { isArray } from '@src/lib/utils'
 export enum UserTask {
   OpenedFeatureTreePane = 'opened-feature-tree',
   UsedExtrude = 'used-extrude',
+  TriedOutZookeeper = 'tried-out-zk',
 }
 
 interface UserTaskTrackerConfig {

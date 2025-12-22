@@ -12,7 +12,7 @@ import {
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { UserTask, UserTaskTracker } from './events'
+import { UserTask } from '@src/lib/userTasks'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 

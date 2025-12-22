@@ -49,7 +49,7 @@ import {
   type Layout,
 } from '@src/lib/layout'
 import type { Project } from '@src/lib/project'
-import { UserTask, UserTaskTracker } from '@src/lib/events'
+import { UserTask, UserTaskTracker } from '@src/lib/userTasks'
 import toast from 'react-hot-toast'
 
 /**

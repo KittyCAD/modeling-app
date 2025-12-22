@@ -34,7 +34,7 @@ describe('UserTaskTracker', () => {
     const persistMethod = vi.spyOn(utt, 'persist')
     utt.trigger(UserTask.OpenedFeatureTreePane)
     expect(persistMethod).not.toBeCalled()
-    utt.options.shouldAutoPersist = true
+    utt.config.shouldAutoPersist = true
     utt.trigger(UserTask.UsedExtrude)
     expect(persistMethod).toBeCalled()
   })

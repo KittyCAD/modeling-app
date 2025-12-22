@@ -68,7 +68,7 @@ import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
 import { Disclosure } from '@headlessui/react'
 import { toUtf16 } from '@src/lang/errors'
-import { UserTask } from '@src/lib/events'
+import { UserTask } from '@src/lib/userTasks'
 
 // Defined outside of React to prevent rerenders
 // TODO: get all system dependencies into React via global context
