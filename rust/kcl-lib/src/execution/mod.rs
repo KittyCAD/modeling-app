@@ -71,6 +71,74 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
+/// Convenience macro for handling control flow in execution by returning early
+/// if it is some kind of early return or stripping off the control flow
+/// otherwise.
+macro_rules! control_continue {
+    ($control_flow:expr) => {{
+        let cf = $control_flow;
+        if cf.is_some_return() {
+            return Ok(cf);
+        } else {
+            cf.into_value()
+        }
+    }};
+}
+// Expose the macro to other modules.
+pub(crate) use control_continue;
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
+pub(crate) enum ControlFlowKind {
+    #[default]
+    Continue,
+    Exit,
+}
+
+impl ControlFlowKind {
+    /// Returns true if this is any kind of early return.
+    pub fn is_some_return(&self) -> bool {
+        match self {
+            ControlFlowKind::Continue => false,
+            ControlFlowKind::Exit => true,
+        }
+    }
+}
+
+#[must_use = "You should always handle the control flow value when it is returned"]
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub(crate) struct KclValueControlFlow {
+    /// Use [control_continue] or [Self::into_value] to get the value.
+    value: KclValue,
+    pub control: ControlFlowKind,
+}
+
+impl KclValue {
+    pub(crate) fn continue_(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: self,
+            control: ControlFlowKind::Continue,
+        }
+    }
+
+    pub(crate) fn exit(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: self,
+            control: ControlFlowKind::Exit,
+        }
+    }
+}
+
+impl KclValueControlFlow {
+    /// Returns true if this is any kind of early return.
+    pub fn is_some_return(&self) -> bool {
+        self.control.is_some_return()
+    }
+
+    pub(crate) fn into_value(self) -> KclValue {
+        self.value
+    }
+}
+
 pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,

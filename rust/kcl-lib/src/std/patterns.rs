@@ -19,7 +19,7 @@ use crate::{
     ExecutorContext, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, Geometries, Geometry, KclObjectFields, KclValue, ModelingCmdMeta, Sketch, Solid,
+        ControlFlowKind, ExecState, Geometries, Geometry, KclObjectFields, KclValue, ModelingCmdMeta, Sketch, Solid,
         fn_call::{Arg, Args},
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType},
@@ -223,6 +223,19 @@ async fn make_transform<T: GeometryTrait>(
             source_ranges.clone(),
         ))
     })?;
+
+    let transform_fn_return = match transform_fn_return.control {
+        ControlFlowKind::Continue => transform_fn_return.into_value(),
+        ControlFlowKind::Exit => {
+            let message = "Early return inside pattern transform function is currently not supported".to_owned();
+            debug_assert!(false, "{}", &message);
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message,
+                vec![source_range],
+            )));
+        }
+    };
+
     let transforms = match transform_fn_return {
         KclValue::Object { value, .. } => vec![value],
         KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
