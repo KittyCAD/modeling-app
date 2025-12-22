@@ -994,11 +994,11 @@ export async function getPlaneDataFromSketchBlock(
   }
 
   // Try to get the artifact from the graph
-  const artifact = artifactGraph.get(sketchBlock.planeId)
+  const _artifact = artifactGraph.get(sketchBlock.planeId)
 
-  // If artifact doesn't exist in the graph, fallback to default XY plane
+  // Use the default XY plane.
   // This is a temporary solution while we determine the proper approach for default planes
-  if (!artifact) {
+  if (true) {
     const defaultPlanes = systemDeps.rustContext.defaultPlanes
     if (defaultPlanes?.xy) {
       const defaultResult = getDefaultSketchPlaneData(
