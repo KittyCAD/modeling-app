@@ -107,6 +107,7 @@ import {
   updateAstAnnotation,
 } from '@src/editor/plugins/ast'
 import { setKclVersion } from '@src/lib/kclVersion'
+import { History } from '@src/lib/History'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -184,7 +185,6 @@ export class KclManager extends EventTarget {
   engineCommandManager: ConnectionManager
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
   private _modelingState: StateFrom<typeof modelingMachine> | null = null
-
   // CORE STATE
 
   /** TODO: make this be the source of truth for all editor state,
@@ -441,6 +441,8 @@ export class KclManager extends EventTarget {
     this._wasmInitFailed.value = wasmInitFailed
   }
 
+  public history: History
+
   constructor(
     engineCommandManager: ConnectionManager,
     wasmInstance: Promise<ModuleType>,
@@ -449,6 +451,7 @@ export class KclManager extends EventTarget {
     super()
     this.engineCommandManager = engineCommandManager
     this._wasmInstancePromise = wasmInstance
+    this.history = new History()
     this.singletons = singletons
 
     /** Merged code from EditorManager and CodeManager classes */

@@ -10,6 +10,7 @@ export enum AreaType {
   Logs = 'logs',
   ModelingScene = 'modeling',
   Debug = 'debug',
+  History = 'history'
 }
 
 export type AreaTypeComponentProps = {

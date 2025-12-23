@@ -21,6 +21,7 @@ export enum DefaultLayoutPaneID {
   TTC = 'ttc',
   Variables = 'variables',
   Logs = 'logs',
+  History = 'history'
 }
 
 export function isDefaultLayoutPaneID(s: string): s is DefaultLayoutPaneID {
@@ -98,6 +99,13 @@ export const defaultLayoutConfig: Layout = {
           type: LayoutType.Simple,
           areaType: AreaType.Logs,
           icon: 'logs',
+        },
+        {
+          id: DefaultLayoutPaneID.History,
+          label: 'History',
+          icon: 'bug',
+          type: LayoutType.Simple,
+          areaType: AreaType.History,
         },
         {
           id: DefaultLayoutPaneID.Debug,

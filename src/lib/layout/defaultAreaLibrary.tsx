@@ -23,6 +23,7 @@ import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
 import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
+import { DiffView } from '@src/components/DiffView/DiffView'
 
 const onCodeNotificationClick: MouseEventHandler = (e) => {
   e.preventDefault()
@@ -116,6 +117,11 @@ export const defaultAreaLibrary = Object.freeze({
     hide: () => false,
     shortcut: 'Shift + L',
     Component: LogsPane,
+  },
+  history: {
+    hide: () => false,
+    shortcut: 'Shift + H',
+    Component: DiffView,
   },
   debug: {
     hide: () => getSettings().app.showDebugPanel.current === false,

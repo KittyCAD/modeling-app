@@ -138,6 +138,18 @@ export class KclPlugin implements PluginValue {
       }
     }
 
+    if (viewUpdate.docChanged) {
+      console.log('DID THE DOC CHANGE', viewUpdate.docChanged);
+
+      this.kclManager.history.entries.value = [{
+        type: '',
+        dateString: new Date().toISOString(),
+        absoluteFilePath: this.kclManager.currentFilePath,
+        right: viewUpdate.state.doc.toString(),
+        left: `${this.kclManager.code}`,
+      }, ...this.kclManager.history.entries.value]
+    }
+
     // If we have a user select event, we want to update what parts are
     // highlighted.
     if (isUserSelect) {
