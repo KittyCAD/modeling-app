@@ -318,6 +318,19 @@ impl ExecState {
         Ok(())
     }
 
+    /// Returns true if we're executing in sketch mode for the current module.
+    /// In sketch mode, we still want to execute the prelude and other stdlib
+    /// modules as normal, so it can vary per module within a single overall
+    /// execution.
+    pub(crate) fn sketch_mode(&self) -> bool {
+        self.mod_local.sketch_mode
+            && match &self.mod_local.path {
+                ModulePath::Main => true,
+                ModulePath::Local { .. } => true,
+                ModulePath::Std { .. } => false,
+            }
+    }
+
     #[cfg(not(feature = "artifact-graph"))]
     pub fn next_object_id(&mut self) -> ObjectId {
         // The return value should only ever be used when the feature is

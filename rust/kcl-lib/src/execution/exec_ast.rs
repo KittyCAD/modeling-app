@@ -215,6 +215,9 @@ impl ExecutorContext {
         for statement in block.body() {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
+                    if exec_state.sketch_mode() {
+                        continue;
+                    }
                     if !matches!(body_type, BodyType::Root) {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             "Imports are only supported at the top-level of a file.".to_owned(),
@@ -374,6 +377,10 @@ impl ExecutorContext {
                     last_expr = None;
                 }
                 BodyItem::ExpressionStatement(expression_statement) => {
+                    if exec_state.sketch_mode() && sketch_mode_should_skip(&expression_statement.expression) {
+                        continue;
+                    }
+
                     let metadata = Metadata::from(expression_statement);
                     let value = self
                         .execute_expr(
@@ -393,6 +400,10 @@ impl ExecutorContext {
                     }
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
+                    if exec_state.sketch_mode() && sketch_mode_should_skip(&variable_declaration.declaration.init) {
+                        continue;
+                    }
+
                     let var_name = variable_declaration.declaration.id.name.to_string();
                     let source_range = SourceRange::from(&variable_declaration.declaration.init);
                     let metadata = Metadata { source_range };
@@ -470,6 +481,10 @@ impl ExecutorContext {
                     last_expr = matches!(body_type, BodyType::Root).then_some(rhs.continue_());
                 }
                 BodyItem::TypeDeclaration(ty) => {
+                    if exec_state.sketch_mode() {
+                        continue;
+                    }
+
                     let metadata = Metadata::from(&**ty);
                     let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
                     match attrs.impl_ {
@@ -550,6 +565,10 @@ impl ExecutorContext {
                     last_expr = None;
                 }
                 BodyItem::ReturnStatement(return_statement) => {
+                    if exec_state.sketch_mode() && sketch_mode_should_skip(&return_statement.argument) {
+                        continue;
+                    }
+
                     let metadata = Metadata::from(return_statement);
 
                     if matches!(body_type, BodyType::Root) {
@@ -947,6 +966,15 @@ impl ExecutorContext {
     }
 }
 
+/// When executing in sketch mode, whether we should skip executing this
+/// expression.
+fn sketch_mode_should_skip(expr: &Expr) -> bool {
+    match expr {
+        Expr::SketchBlock(sketch_block) => !sketch_block.is_being_edited,
+        _ => true,
+    }
+}
+
 /// If the error is about an undefined name, and that name matches the name being defined,
 /// make the error message more specific.
 fn var_in_own_ref_err(e: KclError, being_declared: &Option<String>) -> KclError {
@@ -1134,7 +1162,13 @@ impl Node<SketchBlock> {
             // Track that we're executing a sketch block.
             let original_value = exec_state.mod_local.sketch_block.replace(SketchBlockState::default());
 
+            // When executing the body of the sketch block, we no longer want to
+            // skip any code.
+            let original_sketch_mode = std::mem::replace(&mut exec_state.mod_local.sketch_mode, false);
+
             let result = ctx.exec_block(&self.body, exec_state, BodyType::Block).await;
+
+            exec_state.mod_local.sketch_mode = original_sketch_mode;
 
             let sketch_block_state = std::mem::replace(&mut exec_state.mod_local.sketch_block, original_value);
 

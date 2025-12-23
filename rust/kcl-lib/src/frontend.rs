@@ -4234,10 +4234,11 @@ sketch2::distance([line1.start, line1.end]) == x
         // First point in sketch2.
         let point2_id = ObjectId(sketch2_id.0 + 1);
 
-        // Edit the first sketch. Objects from the second sketch should not be
-        // present since the program exits early after the first sketch block.
+        // Edit the first sketch. Objects before and after the first sketch
+        // block should not be present since those statements are skipped in
+        // sketch mode.
         //
-        // - startSketchOn(XY) Plane 1
+        // - startSketchOn(XY) not present
         // - sketch on=XY Plane 1
         // - Sketch block 16
         let scene_delta = frontend
@@ -4246,7 +4247,7 @@ sketch2::distance([line1.start, line1.end]) == x
             .unwrap();
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            18,
+            17,
             "{:#?}",
             scene_delta.new_graph.objects
         );
@@ -4365,12 +4366,12 @@ sketch2::distance([line1.start, line1.end]) == x
         let scene = frontend.exit_sketch(&ctx, version, sketch1_id).await.unwrap();
         assert_eq!(scene.objects.len(), 24, "{:#?}", scene.objects);
 
-        // Edit the second sketch. Objects from the entire program should be
+        // Edit the second sketch. Only Objects from the second sketch should be
         // present.
         //
-        // - startSketchOn(XY) Plane 1
-        // - sketch on=XY Plane 1
-        // - Sketch block 16
+        // - startSketchOn(XY) not present
+        // - sketch on=XY not present
+        // - Sketch block not present
         // - sketch on=XY Plane 1
         // - Sketch block 5
         let scene_delta = frontend
@@ -4379,7 +4380,7 @@ sketch2::distance([line1.start, line1.end]) == x
             .unwrap();
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            24,
+            6,
             "{:#?}",
             scene_delta.new_graph.objects
         );
