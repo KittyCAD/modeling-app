@@ -155,6 +155,7 @@ impl ExecutorContext {
             exec_state.stack().memory.clone(),
             Some(module_id),
             next_object_id,
+            exec_state.mod_local.sketch_mode,
             exec_state.mod_local.freedom_analysis,
         );
         if preserve_mem.normal() {

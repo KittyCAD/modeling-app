@@ -132,6 +132,9 @@ pub(super) struct ModuleState {
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
+    /// True if executing in sketch mode. Only a single sketch block will be
+    /// executed. All other code is ignored.
+    pub sketch_mode: bool,
     /// True to do more costly analysis of whether the sketch block segments are
     /// under-constrained. The only time we disable this is when a user is
     /// dragging segments.
@@ -159,11 +162,18 @@ impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
             global: GlobalState::new(&exec_context.settings, Default::default()),
-            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), 0, true),
+            mod_local: ModuleState::new(
+                ModulePath::Main,
+                ProgramMemory::new(),
+                Default::default(),
+                0,
+                false,
+                true,
+            ),
         }
     }
 
-    pub fn new_sketch_mode(exec_context: &super::ExecutorContext, mock_config: &MockConfig) -> Self {
+    pub fn new_mock(exec_context: &super::ExecutorContext, mock_config: &MockConfig) -> Self {
         #[cfg(feature = "artifact-graph")]
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         #[cfg(not(feature = "artifact-graph"))]
@@ -175,6 +185,7 @@ impl ExecState {
                 ProgramMemory::new(),
                 Default::default(),
                 0,
+                mock_config.sketch_mode,
                 mock_config.freedom_analysis,
             ),
         }
@@ -190,6 +201,7 @@ impl ExecState {
                 ProgramMemory::new(),
                 Default::default(),
                 0,
+                false,
                 true,
             ),
         };
@@ -694,6 +706,7 @@ impl ModuleState {
         memory: Arc<ProgramMemory>,
         module_id: Option<ModuleId>,
         next_object_id: usize,
+        sketch_mode: bool,
         freedom_analysis: bool,
     ) -> Self {
         #[cfg(not(feature = "artifact-graph"))]
@@ -710,6 +723,7 @@ impl ModuleState {
             explicit_length_units: false,
             path,
             settings: Default::default(),
+            sketch_mode,
             freedom_analysis,
             #[cfg(not(feature = "artifact-graph"))]
             artifacts: Default::default(),

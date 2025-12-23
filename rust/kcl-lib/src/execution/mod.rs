@@ -200,6 +200,9 @@ pub struct ExecOutcome {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
+    /// True if executing in sketch mode. Only a single sketch block will be
+    /// executed. All other code is ignored.
+    pub sketch_mode: bool,
     /// True to do more costly analysis of whether the sketch block segments are
     /// under-constrained.
     pub freedom_analysis: bool,
@@ -213,6 +216,7 @@ impl Default for MockConfig {
         Self {
             // By default, use previous memory. This is usually what you want.
             use_prev_memory: true,
+            sketch_mode: false,
             freedom_analysis: true,
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited: AhashIndexSet::default(),
@@ -221,6 +225,14 @@ impl Default for MockConfig {
 }
 
 impl MockConfig {
+    /// Create a new mock config for sketch mode.
+    pub fn new_sketch_mode() -> Self {
+        Self {
+            sketch_mode: true,
+            ..Default::default()
+        }
+    }
+
     #[must_use]
     pub(crate) fn no_freedom_analysis(mut self) -> Self {
         self.freedom_analysis = false;
@@ -716,10 +728,7 @@ impl ExecutorContext {
         );
 
         let use_prev_memory = mock_config.use_prev_memory;
-        #[cfg(not(feature = "artifact-graph"))]
-        let mut exec_state = ExecState::new(self);
-        #[cfg(feature = "artifact-graph")]
-        let mut exec_state = ExecState::new_sketch_mode(self, mock_config);
+        let mut exec_state = ExecState::new_mock(self, mock_config);
         if use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => {

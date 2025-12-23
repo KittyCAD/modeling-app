@@ -134,7 +134,7 @@ impl SketchApi for FrontendState {
 
         // Execute.
         let outcome = ctx
-            .run_mock(&truncated_program, &MockConfig::default())
+            .run_mock(&truncated_program, &MockConfig::new_sketch_mode())
             .await
             .map_err(|err| Error {
                 msg: err.error.message().to_owned(),
@@ -231,7 +231,7 @@ impl SketchApi for FrontendState {
 
         // Execute.
         let outcome = ctx
-            .run_mock(&truncated_program, &MockConfig::default().no_freedom_analysis())
+            .run_mock(&truncated_program, &MockConfig::new_sketch_mode().no_freedom_analysis())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
@@ -295,7 +295,7 @@ impl SketchApi for FrontendState {
         // Execute in mock mode to ensure state is up to date. The caller will
         // want freedom analysis to display segments correctly.
         let outcome = ctx
-            .run_mock(&truncated_program, &MockConfig::default())
+            .run_mock(&truncated_program, &MockConfig::new_sketch_mode())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
@@ -696,7 +696,7 @@ impl FrontendState {
 
         // Execute.
         let outcome = ctx
-            .run_mock(&truncated_program, &MockConfig::default().no_freedom_analysis())
+            .run_mock(&truncated_program, &MockConfig::new_sketch_mode().no_freedom_analysis())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
@@ -817,7 +817,7 @@ impl FrontendState {
 
         // Execute.
         let outcome = ctx
-            .run_mock(&truncated_program, &MockConfig::default().no_freedom_analysis())
+            .run_mock(&truncated_program, &MockConfig::new_sketch_mode().no_freedom_analysis())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
@@ -944,7 +944,7 @@ impl FrontendState {
 
         // Execute.
         let outcome = ctx
-            .run_mock(&truncated_program, &MockConfig::default().no_freedom_analysis())
+            .run_mock(&truncated_program, &MockConfig::new_sketch_mode().no_freedom_analysis())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
@@ -1311,6 +1311,7 @@ impl FrontendState {
 
         // Execute.
         let mock_config = MockConfig {
+            sketch_mode: true,
             freedom_analysis: is_delete,
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited: segment_ids_edited.clone(),
@@ -1874,7 +1875,7 @@ impl FrontendState {
 
         // Execute.
         let outcome = ctx
-            .run_mock(&truncated_program, &MockConfig::default())
+            .run_mock(&truncated_program, &MockConfig::new_sketch_mode())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
