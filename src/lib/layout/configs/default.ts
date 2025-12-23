@@ -104,7 +104,7 @@ export const defaultLayoutConfig: Layout = {
         {
           id: DefaultLayoutPaneID.History,
           label: 'History',
-          icon: 'bug',
+          icon: 'stopwatch',
           type: LayoutType.Simple,
           areaType: AreaType.History,
         },
@@ -162,7 +162,7 @@ export const defaultLayoutConfig: Layout = {
         {
           id: DefaultLayoutPaneID.Diff,
           label: 'Diff',
-          icon: 'bug',
+          icon: 'command',
           type: LayoutType.Simple,
           areaType: AreaType.Diff,
         },

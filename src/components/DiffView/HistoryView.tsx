@@ -76,7 +76,7 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
     >
       <LayoutPanelHeader
         id={props.layout.id}
-        icon="code"
+        icon="stopwatch"
         title={props.layout.label}
         onClose={props.onClose}
       />
