@@ -146,7 +146,7 @@ export class KclPlugin implements PluginValue {
           absoluteFilePath: this.kclManager.currentFilePath,
           right: viewUpdate.state.doc.toString(),
           left: `${this.kclManager.code}`,
-          wroteToDisk: false
+          wroteToDisk: false,
         },
         ...this.kclManager.history.entries.value,
       ]
