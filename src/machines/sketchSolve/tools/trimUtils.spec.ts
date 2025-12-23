@@ -80,6 +80,49 @@ sketch(on = YZ) {
   })
 })
 
+describe('Split trim - line trimmed between two intersections', () => {
+  it('splits line1 into two segments when trimmed between two intersections', async () => {
+    const baseKclCode = `@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -4mm, var 0mm], end = [var 5mm, var 0mm])
+  line2 = sketch2::line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
+  arc1 = sketch2::arc(start = [var 2mm, var 4mm], end = [var 3mm, var -4mm], center = [var 500mm, var 0mm])
+}
+`
+
+    const trimPoints: Coords2d[] = [
+      [0, 2],
+      [0, -2],
+    ]
+
+    const result = await executeTrimFlow({
+      kclCode: baseKclCode,
+      trimPoints,
+      sketchId: 0,
+    })
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (result instanceof Error) {
+      throw result
+    }
+
+    const expectedCode = `@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -4mm, var 0mm], end = [var -2mm, var 0mm])
+  line2 = sketch2::line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
+  arc1 = sketch2::arc(start = [var 2mm, var 4mm], end = [var 3mm, var -4mm], center = [var 500mm, var 0mm])
+  sketch2::coincident([line1.end, line2])
+  line3 = sketch2::line(start = [var 2.48mm, var 0mm], end = [var 5mm, var 0mm])
+  sketch2::coincident([line3.start, arc1])
+}
+`
+
+    expect(result.kclSource.text).toBe(expectedCode)
+  })
+})
+
 afterAll(() => {
   engineCommandManagerInThisFile.tearDown()
 })

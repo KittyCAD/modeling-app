@@ -1784,25 +1784,26 @@ export function trimStrategy({
           )
 
     return [
-      // trim left side
+      // trim left side: keep original start, cut end at left intersection
       {
         type: 'cutTail',
         segmentToTrimId: trimSpawnId,
         segmentOrPointToMakeCoincidentTo: leftSide.intersectingSegId,
-        endpointChanged: 'start',
+        endpointChanged: 'end',
         ctor: {
           ...trimSpawnSegment.kind.segment.ctor,
-          start: coordsToApiPoint(leftSide.trimTerminationCoords),
+          end: coordsToApiPoint(leftSide.trimTerminationCoords),
         },
         ...leftCoincidentData,
       },
-      // create new segment for right side
+      // create new segment for right side: from right intersection to original end
       {
         type: 'createCoincidentLineSegment',
-        segmentOrPointToMakeCoincidentToId: 3,
+        segmentOrPointToMakeCoincidentToId: rightSide.intersectingSegId,
         ctor: {
           ...trimSpawnSegment.kind.segment.ctor,
           start: coordsToApiPoint(rightSide.trimTerminationCoords),
+          // Keep original end point
         },
       },
     ]
