@@ -102,6 +102,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -109,7 +111,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -310,6 +311,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -317,7 +320,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -542,6 +544,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -549,7 +553,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -774,6 +777,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 2,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -781,7 +786,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -934,6 +938,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -941,7 +947,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1126,6 +1131,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 5,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1133,7 +1140,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1342,6 +1348,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 5,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1349,7 +1357,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1558,6 +1565,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 5,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1565,7 +1574,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1774,6 +1782,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 5,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1781,7 +1791,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1990,6 +1999,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 5,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1997,7 +2008,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2206,6 +2216,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 5,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2213,7 +2225,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2422,6 +2433,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 5,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2429,7 +2442,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2638,6 +2650,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 5,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2645,7 +2659,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2859,6 +2872,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 5,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2866,7 +2881,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3075,6 +3089,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 5,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3082,7 +3098,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3291,6 +3306,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 5,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3298,7 +3315,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3507,6 +3523,8 @@ description: Variables in memory after executing french-press.kcl
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "Custom",
+                    "objectId": 5,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3514,7 +3532,6 @@ description: Variables in memory after executing french-press.kcl
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3635,6 +3652,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XY",
+          "objectId": 6,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3642,7 +3661,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4022,6 +4040,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 8,
           "origin": {
             "x": 0.0,
             "y": -8.254999999999999,
@@ -4029,7 +4049,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4392,6 +4411,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4399,7 +4420,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4996,6 +5016,8 @@ description: Variables in memory after executing french-press.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": -0.26,
                 "y": 0.26,
@@ -5003,7 +5025,6 @@ description: Variables in memory after executing french-press.kcl
                 "units": "in"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.7071067811865475,
                 "y": 0.7071067811865475,
@@ -5613,6 +5634,8 @@ description: Variables in memory after executing french-press.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": -0.26,
                 "y": 0.26,
@@ -5620,7 +5643,6 @@ description: Variables in memory after executing french-press.kcl
                 "units": "in"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.7071067811865475,
                 "y": 0.7071067811865475,
@@ -6230,6 +6252,8 @@ description: Variables in memory after executing french-press.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": -0.26,
                 "y": 0.26,
@@ -6237,7 +6261,6 @@ description: Variables in memory after executing french-press.kcl
                 "units": "in"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.7071067811865475,
                 "y": 0.7071067811865475,
@@ -6847,6 +6870,8 @@ description: Variables in memory after executing french-press.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "Custom",
+              "objectId": 1,
               "origin": {
                 "x": -0.26,
                 "y": 0.26,
@@ -6854,7 +6879,6 @@ description: Variables in memory after executing french-press.kcl
                 "units": "in"
               },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.7071067811865475,
                 "y": 0.7071067811865475,
@@ -6965,6 +6989,8 @@ description: Variables in memory after executing french-press.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -6972,7 +6998,6 @@ description: Variables in memory after executing french-press.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -7141,6 +7166,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 2,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -7148,7 +7175,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -7341,6 +7367,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 2,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -7348,7 +7376,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -7541,6 +7568,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 2,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -7548,7 +7577,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -7792,6 +7820,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -7799,7 +7829,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8040,6 +8069,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -8047,7 +8078,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -8151,6 +8181,8 @@ description: Variables in memory after executing french-press.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 5,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -8158,7 +8190,6 @@ description: Variables in memory after executing french-press.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -8325,6 +8356,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 5,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -8332,7 +8365,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -8523,6 +8555,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 5,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -8530,7 +8564,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -8721,6 +8754,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 5,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -8728,7 +8763,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -8919,6 +8953,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 5,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -8926,7 +8962,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -9117,6 +9152,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 5,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9124,7 +9161,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -9315,6 +9351,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 5,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9322,7 +9360,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -9513,6 +9550,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 5,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9520,7 +9559,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -9711,6 +9749,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 5,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9718,7 +9758,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -9914,6 +9953,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 5,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -9921,7 +9962,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -10112,6 +10152,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 5,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -10119,7 +10161,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -10310,6 +10351,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 5,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -10317,7 +10360,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -10508,6 +10550,8 @@ description: Variables in memory after executing french-press.kcl
                 "on": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
+                  "kind": "Custom",
+                  "objectId": 5,
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
@@ -10515,7 +10559,6 @@ description: Variables in memory after executing french-press.kcl
                     "units": "mm"
                   },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
@@ -10618,6 +10661,8 @@ description: Variables in memory after executing french-press.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "XY",
+        "objectId": 6,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -10625,7 +10670,6 @@ description: Variables in memory after executing french-press.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -10850,6 +10894,8 @@ description: Variables in memory after executing french-press.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 7,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -10857,7 +10903,6 @@ description: Variables in memory after executing french-press.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -11147,6 +11192,8 @@ description: Variables in memory after executing french-press.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 8,
         "origin": {
           "x": 0.0,
           "y": -8.254999999999999,
@@ -11154,7 +11201,6 @@ description: Variables in memory after executing french-press.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

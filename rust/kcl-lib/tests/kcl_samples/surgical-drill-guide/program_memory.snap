@@ -202,6 +202,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "Custom",
+                      "objectId": 3,
                       "origin": {
                         "x": 0.0,
                         "y": -28.495190528383297,
@@ -209,7 +211,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "Custom",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -525,6 +526,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                     "on": {
                       "artifactId": "[uuid]",
                       "id": "[uuid]",
+                      "kind": "Custom",
+                      "objectId": 5,
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -532,7 +535,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                         "units": "mm"
                       },
                       "type": "plane",
-                      "value": "Custom",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -704,6 +706,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "XZ",
+          "objectId": 1,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -711,7 +715,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -803,6 +806,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -810,7 +815,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -929,6 +933,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": -28.495190528383297,
@@ -936,7 +942,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1028,6 +1033,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 5,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1035,7 +1042,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1425,6 +1431,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1432,7 +1440,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1676,6 +1683,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": -47.4951905283833,
@@ -1683,7 +1692,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1893,6 +1901,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 6,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1900,7 +1910,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2334,6 +2343,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -2341,7 +2352,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2630,6 +2640,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 3,
                 "origin": {
                   "x": 0.0,
                   "y": -28.495190528383297,
@@ -2637,7 +2649,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "Custom",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2868,6 +2879,8 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 5,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -2875,7 +2888,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "Custom",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

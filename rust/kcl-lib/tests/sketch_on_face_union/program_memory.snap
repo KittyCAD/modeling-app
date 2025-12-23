@@ -167,6 +167,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -174,7 +176,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -532,6 +533,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "on": {
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
+                "kind": "YZ",
+                "objectId": 0,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -539,7 +542,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   "units": "mm"
                 },
                 "type": "plane",
-                "value": "YZ",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -802,6 +804,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "on": {
             "artifactId": "[uuid]",
             "id": "[uuid]",
+            "kind": "YZ",
+            "objectId": 0,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -809,7 +813,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "units": "mm"
             },
             "type": "plane",
-            "value": "YZ",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -1121,6 +1124,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "YZ",
+              "objectId": 0,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1128,7 +1133,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 "units": "mm"
               },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1370,6 +1374,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1377,7 +1383,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1542,6 +1547,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1549,7 +1556,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1678,6 +1684,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1685,7 +1693,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1804,6 +1811,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1811,7 +1820,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2031,6 +2039,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "YZ",
+        "objectId": 0,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2038,7 +2048,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "units": "mm"
         },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2201,6 +2210,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 2.54,
             "y": 0.0,
@@ -2208,7 +2219,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2366,6 +2376,8 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "Custom",
+          "objectId": 1,
           "origin": {
             "x": 2.54,
             "y": 0.0,
@@ -2373,7 +2385,6 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "units": "mm"
           },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2424,13 +2435,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "YZ",
+      "objectId": 0,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -2456,13 +2468,14 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
+      "kind": "Custom",
+      "objectId": 1,
       "origin": {
         "x": 2.54,
         "y": 0.0,
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,

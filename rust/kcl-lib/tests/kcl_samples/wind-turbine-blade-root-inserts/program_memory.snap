@@ -61,6 +61,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 3,
         "origin": {
           "x": 1000.0,
           "y": 0.0,
@@ -68,7 +70,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -187,6 +188,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
         "on": {
           "artifactId": "[uuid]",
           "id": "[uuid]",
+          "kind": "YZ",
+          "objectId": 0,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -194,7 +197,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "units": "mm"
           },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -374,6 +376,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 5,
         "origin": {
           "x": 17333.333333333332,
           "y": 0.0,
@@ -381,7 +385,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -556,6 +559,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 7,
         "origin": {
           "x": 51000.0,
           "y": 0.0,
@@ -563,7 +568,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -684,6 +688,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 8,
         "origin": {
           "x": 51000.0,
           "y": 0.0,
@@ -691,7 +697,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -803,6 +808,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
+        "kind": "Custom",
+        "objectId": 9,
         "origin": {
           "x": 52000.0,
           "y": 0.0,
@@ -810,7 +817,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
           "units": "mm"
         },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1022,6 +1028,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1029,7 +1037,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1235,6 +1242,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1242,7 +1251,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1448,6 +1456,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1455,7 +1465,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1661,6 +1670,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1668,7 +1679,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1874,6 +1884,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1881,7 +1893,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2087,6 +2098,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2094,7 +2107,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2300,6 +2312,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2307,7 +2321,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2513,6 +2526,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2520,7 +2535,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2726,6 +2740,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2733,7 +2749,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2939,6 +2954,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2946,7 +2963,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3152,6 +3168,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3159,7 +3177,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3365,6 +3382,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3372,7 +3391,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3578,6 +3596,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3585,7 +3605,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3791,6 +3810,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3798,7 +3819,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4004,6 +4024,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4011,7 +4033,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4217,6 +4238,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 1,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4224,7 +4247,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4411,6 +4433,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4418,7 +4442,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -4627,6 +4650,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4634,7 +4659,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -4843,6 +4867,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4850,7 +4876,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -5059,6 +5084,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5066,7 +5093,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -5275,6 +5301,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5282,7 +5310,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -5491,6 +5518,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5498,7 +5527,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -5707,6 +5735,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5714,7 +5744,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -5923,6 +5952,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5930,7 +5961,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -6139,6 +6169,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6146,7 +6178,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -6355,6 +6386,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6362,7 +6395,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -6571,6 +6603,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6578,7 +6612,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -6787,6 +6820,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6794,7 +6829,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -7003,6 +7037,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7010,7 +7046,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -7219,6 +7254,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7226,7 +7263,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -7435,6 +7471,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7442,7 +7480,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -7651,6 +7688,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                   "on": {
                     "artifactId": "[uuid]",
                     "id": "[uuid]",
+                    "kind": "YZ",
+                    "objectId": 0,
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7658,7 +7697,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                       "units": "mm"
                     },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -7934,6 +7972,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7941,7 +7981,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8176,6 +8215,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8183,7 +8224,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8418,6 +8458,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8425,7 +8467,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8660,6 +8701,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8667,7 +8710,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8902,6 +8944,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8909,7 +8953,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9144,6 +9187,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9151,7 +9196,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9386,6 +9430,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9393,7 +9439,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9628,6 +9673,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9635,7 +9682,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9870,6 +9916,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9877,7 +9925,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10112,6 +10159,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -10119,7 +10168,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10354,6 +10402,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -10361,7 +10411,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10596,6 +10645,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -10603,7 +10654,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10838,6 +10888,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -10845,7 +10897,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11080,6 +11131,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -11087,7 +11140,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11322,6 +11374,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -11329,7 +11383,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11564,6 +11617,8 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
             "on": {
               "artifactId": "[uuid]",
               "id": "[uuid]",
+              "kind": "XY",
+              "objectId": 2,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -11571,7 +11626,6 @@ description: Variables in memory after executing wind-turbine-blade-root-inserts
                 "units": "mm"
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
