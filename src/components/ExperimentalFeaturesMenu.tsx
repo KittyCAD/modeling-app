@@ -23,7 +23,7 @@ export function ExperimentalFeaturesMenu() {
   return (
     currentLevel.type !== 'Deny' && (
       <Popover className="relative pointer-events-auto flex">
-        {({ close }) => (
+        {(popover) => (
           <>
             <Popover.Button
               data-testid="experimental-features-menu"
@@ -76,7 +76,7 @@ export function ExperimentalFeaturesMenu() {
                               })
                               .catch(reportRejection)
                           }
-                          close()
+                          popover.close()
                         }
                       }}
                     >
