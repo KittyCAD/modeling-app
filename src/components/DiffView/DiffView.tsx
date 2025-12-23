@@ -1,36 +1,45 @@
 import { useEffect, useRef } from 'react'
-import { MergeView } from '@codemirror/merge'
+import { MergeView, unifiedMergeView } from '@codemirror/merge'
 import { EditorState } from '@codemirror/state'
-import { EditorView } from '@codemirror/view'
+import { dropCursor, EditorView, highlightActiveLine, highlightActiveLineGutter, highlightSpecialChars, lineNumbers, rectangularSelection } from '@codemirror/view'
 import { kclManager } from '@src/lib/singletons'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useSettings } from '@src/lib/singletons'
 import { parentPathRelativeToProject } from '@src/lib/paths'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { AreaTypeComponentProps } from '@src/lib/layout'
+import { lintGutter } from '@codemirror/lint'
+import { bracketMatching, foldGutter } from '@codemirror/language'
+import { highlightSelectionMatches } from '@codemirror/search'
+
 async function setDiff(editorRef, mergeViewRef, absoluteFilePath, left, right) {
   const originalFile = await window.electron.readFile(absoluteFilePath, 'utf-8')
   if (mergeViewRef.current) {
     mergeViewRef.current.destroy()
   }
-  const mergeView = new MergeView({
-    a: {
-      doc: left,
-      extensions: [
-        EditorView.editable.of(false),
-        EditorState.readOnly.of(true),
-        EditorView.lineWrapping,
-      ],
-    },
-    b: {
-      doc: right,
-      extensions: [
-        EditorView.editable.of(false),
-        EditorState.readOnly.of(true),
-        EditorView.lineWrapping,
-      ],
-    },
+  const mergeView = new EditorView({
     parent: editorRef.current,
+    doc: right,
+    extensions: [
+      EditorView.editable.of(false),
+      EditorState.readOnly.of(true),
+      EditorView.lineWrapping,
+      lintGutter(),
+      lineNumbers(),
+      highlightActiveLineGutter(),
+      highlightSpecialChars(),
+      foldGutter(),
+      EditorState.allowMultipleSelections.of(true),
+      bracketMatching(),
+      highlightActiveLine(),
+      highlightSelectionMatches(),
+      rectangularSelection(),
+      dropCursor(),
+      unifiedMergeView({
+        original: left,
+        mergeControls: false
+      })
+    ]
   })
 
   mergeViewRef.current = mergeView
@@ -57,7 +66,6 @@ export const DiffView = (props: AreaTypeComponentProps) => {
         onClose={props.onClose}
       />
       <div className="w-full h-full relative overflow-y-auto overflow-x-hidden">
-        welcome!
         <div className="w-full h-full flex flex-col">
           <div className="overflow-auto pb-12 inset-0">
             {theValue.map((e) => {
