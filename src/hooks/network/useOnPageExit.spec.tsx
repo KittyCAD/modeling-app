@@ -29,6 +29,7 @@ describe('useOnPageExit', () => {
       pivot_rotation: { x: 1.0, y: 1.0, z: 1.0, w: 1.0 },
     }
     expect(callback).toHaveBeenCalledTimes(0)
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(engineCommandManager.tearDown).toHaveBeenCalledTimes(0)
     const { unmount } = renderHook(() =>
       useOnPageExit({
@@ -39,6 +40,7 @@ describe('useOnPageExit', () => {
     )
     unmount()
     expect(callback).toHaveBeenCalledTimes(1)
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(engineCommandManager.tearDown).toHaveBeenCalledTimes(1)
     expect(sceneInfra.camControls.oldCameraState).toBe(undefined)
   })

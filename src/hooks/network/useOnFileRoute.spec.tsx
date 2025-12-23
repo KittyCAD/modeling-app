@@ -163,6 +163,7 @@ describe('useOnFileRoute', () => {
       await tick()
       unmount()
       expect(callback).toHaveBeenCalledTimes(1)
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(kclManager.executeCode).toHaveBeenCalledTimes(1)
     })
     test('should not call execute code if you are switching to the same file twice in a row', async () => {
@@ -233,6 +234,7 @@ describe('useOnFileRoute', () => {
       await tick()
       unmount()
       expect(callback).toHaveBeenCalledTimes(1)
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(kclManager.executeCode).toHaveBeenCalledTimes(1)
     })
     test('should not call execute code if stream is not accepting input', async () => {
@@ -301,6 +303,7 @@ describe('useOnFileRoute', () => {
       await tick()
       unmount()
       expect(callback).toHaveBeenCalledTimes(0)
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(kclManager.executeCode).toHaveBeenCalledTimes(0)
     })
   })

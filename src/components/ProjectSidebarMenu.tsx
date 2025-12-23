@@ -233,6 +233,7 @@ function ProjectMenuPopover({
     [
       platform,
       findCommand,
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- TODO: blanket-ignored fix me!
       commandBarActor.send,
       engineCommandManager,
       onProjectClose,
