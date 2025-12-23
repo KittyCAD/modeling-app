@@ -51,7 +51,7 @@ async function runTrimTest({
   // Execute the code to get the scene graph
   const { sceneGraph, execOutcome } = await rustContext.hackSetProgram(
     ast,
-    await jsAppSettings()
+    await jsAppSettings(rustContext.settingsActor)
   )
 
   // Convert SceneGraph to SceneGraphDelta
