@@ -20,7 +20,7 @@ use crate::{
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
         memory,
         sketch_solve::{
-            FreedomAnalysis, create_segment_scene_objects, normalize_to_solver_unit, solver_numeric_type,
+            FreedomAnalysis, Solved, create_segment_scene_objects, normalize_to_solver_unit, solver_numeric_type,
             substitute_sketch_var_in_segment, substitute_sketch_vars,
         },
         state::{ModuleState, SketchBlockState},
@@ -1133,10 +1133,7 @@ impl Node<SketchBlock> {
             })
             .collect::<Result<Vec<_>, KclError>>()?;
         // Solve constraints.
-        let config = kcl_ezpz::Config {
-            max_iterations: 50,
-            ..Default::default()
-        };
+        let config = kcl_ezpz::Config::default().with_max_iterations(50);
         let solve_result = if exec_state.mod_local.freedom_analysis {
             kcl_ezpz::solve_with_priority_analysis(&constraints, initial_guesses.clone(), config)
                 .map(|outcome| (outcome.outcome, Some(FreedomAnalysis::from(outcome.analysis))))
@@ -1144,7 +1141,7 @@ impl Node<SketchBlock> {
             kcl_ezpz::solve_with_priority(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
         };
         let (solve_outcome, solve_analysis) = match solve_result {
-            Ok(o) => o,
+            Ok((solved, freedom)) => (Solved::from(solved), freedom),
             Err(failure) => {
                 match &failure.error {
                     NonLinearSystemError::FaerMatrix { .. }
@@ -1160,7 +1157,7 @@ impl Node<SketchBlock> {
                         );
                         let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
                         (
-                            kcl_ezpz::SolveOutcome {
+                            Solved {
                                 final_values,
                                 iterations: Default::default(),
                                 warnings: failure.warnings,
