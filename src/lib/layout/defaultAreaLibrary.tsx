@@ -24,6 +24,7 @@ import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { DiffView } from '@src/components/DiffView/DiffView'
+import { HistoryView } from '@src/components/DiffView/HistoryView'
 
 const onCodeNotificationClick: MouseEventHandler = (e) => {
   e.preventDefault()
@@ -121,12 +122,17 @@ export const defaultAreaLibrary = Object.freeze({
   history: {
     hide: () => false,
     shortcut: 'Shift + H',
-    Component: DiffView,
+    Component: HistoryView,
   },
   debug: {
     hide: () => getSettings().app.showDebugPanel.current === false,
     shortcut: 'Shift + D',
     Component: DebugPane,
+  },
+  diff: {
+    hide: () => false,
+    shortcut: 'Shift + H',
+    Component: DiffView,
   },
 } satisfies Record<AreaType, AreaTypeDefinition>)
 

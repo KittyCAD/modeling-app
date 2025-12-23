@@ -22,6 +22,7 @@ export enum DefaultLayoutPaneID {
   Variables = 'variables',
   Logs = 'logs',
   History = 'history',
+  Diff = 'diff',
 }
 
 export function isDefaultLayoutPaneID(s: string): s is DefaultLayoutPaneID {
@@ -157,6 +158,13 @@ export const defaultLayoutConfig: Layout = {
           type: LayoutType.Simple,
           areaType: AreaType.TTC,
           icon: 'sparkles',
+        },
+        {
+          id: DefaultLayoutPaneID.Diff,
+          label: 'Diff',
+          icon: 'bug',
+          type: LayoutType.Simple,
+          areaType: AreaType.Diff,
         },
       ],
     },
