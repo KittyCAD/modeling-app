@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use ahash::AHashSet;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
+use kcl_ezpz::Warning;
 use kittycad_modeling_cmds::units::UnitLength;
 
 use crate::{
@@ -11,7 +12,6 @@ use crate::{
     exec::{KclValue, NumericType, UnitType},
     execution::{
         AbstractSegment, Segment, SegmentKind, SegmentRepr, UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind,
-        exec_ast::Solved,
         types::{PrimitiveType, RuntimeType},
     },
     front::{Freedom, Object},
@@ -301,6 +301,34 @@ fn substitute_sketch_var_in_unsolved_expr(
                 None
             };
             Ok((TyF64::new(*solution, solution_ty), freedom))
+        }
+    }
+}
+
+pub(crate) struct Solved {
+    /// Which constraints couldn't be satisfied
+    pub(crate) unsatisfied: Vec<usize>,
+    /// Each variable's final value.
+    pub(crate) final_values: Vec<f64>,
+    /// How many iterations of Newton's method were required?
+    #[expect(dead_code, reason = "ezpz provides this info, but we aren't using it yet")]
+    pub(crate) iterations: usize,
+    /// Anything that went wrong either in problem definition or during solving it.
+    pub(crate) warnings: Vec<Warning>,
+    /// What is the lowest priority that got solved?
+    /// 0 is the highest priority. Larger numbers are lower priority.
+    #[expect(dead_code, reason = "ezpz provides this info, but we aren't using it yet")]
+    pub(crate) priority_solved: u32,
+}
+
+impl From<kcl_ezpz::SolveOutcome> for Solved {
+    fn from(value: kcl_ezpz::SolveOutcome) -> Self {
+        Self {
+            unsatisfied: value.unsatisfied().to_owned(),
+            final_values: value.final_values().to_owned(),
+            iterations: value.iterations(),
+            warnings: value.warnings().to_owned(),
+            priority_solved: value.priority_solved(),
         }
     }
 }

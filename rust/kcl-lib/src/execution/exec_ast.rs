@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
-use kcl_ezpz::{Constraint, NonLinearSystemError, Warning};
+use kcl_ezpz::{Constraint, NonLinearSystemError};
 
 #[cfg(feature = "artifact-graph")]
 use crate::front::{Object, ObjectKind};
@@ -20,7 +20,7 @@ use crate::{
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
         memory,
         sketch_solve::{
-            FreedomAnalysis, create_segment_scene_objects, normalize_to_solver_unit, solver_numeric_type,
+            FreedomAnalysis, Solved, create_segment_scene_objects, normalize_to_solver_unit, solver_numeric_type,
             substitute_sketch_var_in_segment, substitute_sketch_vars,
         },
         state::{ModuleState, SketchBlockState},
@@ -1141,16 +1141,7 @@ impl Node<SketchBlock> {
             kcl_ezpz::solve_with_priority(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
         };
         let (solve_outcome, solve_analysis) = match solve_result {
-            Ok((solved, freedom)) => (
-                Solved {
-                    unsatisfied: solved.unsatisfied().to_vec(),
-                    final_values: solved.final_values().to_vec(),
-                    iterations: solved.iterations(),
-                    warnings: solved.warnings().to_vec(),
-                    priority_solved: solved.priority_solved(),
-                },
-                freedom,
-            ),
+            Ok((solved, freedom)) => (Solved::from(solved), freedom),
             Err(failure) => {
                 match &failure.error {
                     NonLinearSystemError::FaerMatrix { .. }
@@ -2973,22 +2964,6 @@ impl Node<PipeExpression> {
     ) -> Result<KclValueControlFlow, KclError> {
         execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
     }
-}
-
-pub(crate) struct Solved {
-    /// Which constraints couldn't be satisfied
-    pub(crate) unsatisfied: Vec<usize>,
-    /// Each variable's final value.
-    pub(crate) final_values: Vec<f64>,
-    /// How many iterations of Newton's method were required?
-    #[expect(dead_code, reason = "ezpz provides this info, but we aren't using it yet")]
-    pub(crate) iterations: usize,
-    /// Anything that went wrong either in problem definition or during solving it.
-    pub(crate) warnings: Vec<Warning>,
-    /// What is the lowest priority that got solved?
-    /// 0 is the highest priority. Larger numbers are lower priority.
-    #[expect(dead_code, reason = "ezpz provides this info, but we aren't using it yet")]
-    pub(crate) priority_solved: u32,
 }
 
 #[cfg(test)]

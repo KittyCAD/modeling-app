@@ -26,7 +26,7 @@ use crate::{
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
-    execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ProgramLookup, exec_ast::Solved},
+    execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ProgramLookup, sketch_solve::Solved},
     front::{Number, Object},
     id::IncIdGenerator,
 };
