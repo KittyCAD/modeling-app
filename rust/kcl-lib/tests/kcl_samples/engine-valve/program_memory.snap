@@ -155,8 +155,11 @@ description: Variables in memory after executing engine-valve.kcl
                   "z": 30.0,
                   "units": "mm"
                 },
+                "sceneInfo": {
+                  "kind": "Custom",
+                  "object_id": 1
+                },
                 "type": "plane",
-                "value": "Custom",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -397,8 +400,11 @@ description: Variables in memory after executing engine-valve.kcl
                         "z": 30.0,
                         "units": "mm"
                       },
+                      "sceneInfo": {
+                        "kind": "Custom",
+                        "object_id": 1
+                      },
                       "type": "plane",
-                      "value": "Custom",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
@@ -724,8 +730,11 @@ description: Variables in memory after executing engine-valve.kcl
                               "z": 30.0,
                               "units": "mm"
                             },
+                            "sceneInfo": {
+                              "kind": "Custom",
+                              "object_id": 1
+                            },
                             "type": "plane",
-                            "value": "Custom",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
@@ -1136,8 +1145,11 @@ description: Variables in memory after executing engine-valve.kcl
                                     "z": 30.0,
                                     "units": "mm"
                                   },
+                                  "sceneInfo": {
+                                    "kind": "Custom",
+                                    "object_id": 1
+                                  },
                                   "type": "plane",
-                                  "value": "Custom",
                                   "xAxis": {
                                     "x": 1.0,
                                     "y": 0.0,
@@ -1633,8 +1645,11 @@ description: Variables in memory after executing engine-valve.kcl
                                           "z": 30.0,
                                           "units": "mm"
                                         },
+                                        "sceneInfo": {
+                                          "kind": "Custom",
+                                          "object_id": 1
+                                        },
                                         "type": "plane",
-                                        "value": "Custom",
                                         "xAxis": {
                                           "x": 1.0,
                                           "y": 0.0,
@@ -2215,8 +2230,11 @@ description: Variables in memory after executing engine-valve.kcl
                                                 "z": 30.0,
                                                 "units": "mm"
                                               },
+                                              "sceneInfo": {
+                                                "kind": "Custom",
+                                                "object_id": 1
+                                              },
                                               "type": "plane",
-                                              "value": "Custom",
                                               "xAxis": {
                                                 "x": 1.0,
                                                 "y": 0.0,
@@ -2910,8 +2928,11 @@ description: Variables in memory after executing engine-valve.kcl
                                                       "z": 30.0,
                                                       "units": "mm"
                                                     },
+                                                    "sceneInfo": {
+                                                      "kind": "Custom",
+                                                      "object_id": 1
+                                                    },
                                                     "type": "plane",
-                                                    "value": "Custom",
                                                     "xAxis": {
                                                       "x": 1.0,
                                                       "y": 0.0,
@@ -3416,8 +3437,11 @@ description: Variables in memory after executing engine-valve.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3489,7 +3513,10 @@ description: Variables in memory after executing engine-valve.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
+      "sceneInfo": {
+        "kind": "XZ",
+        "object_id": 0
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3674,8 +3701,11 @@ description: Variables in memory after executing engine-valve.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "XZ",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3801,8 +3831,11 @@ description: Variables in memory after executing engine-valve.kcl
             "z": 30.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

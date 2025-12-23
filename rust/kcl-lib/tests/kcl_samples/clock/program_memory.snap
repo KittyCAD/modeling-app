@@ -93,8 +93,11 @@ description: Variables in memory after executing clock.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XY",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -177,7 +180,10 @@ description: Variables in memory after executing clock.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
+      "sceneInfo": {
+        "kind": "XY",
+        "object_id": 0
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -373,8 +379,11 @@ description: Variables in memory after executing clock.kcl
                   "z": 0.0,
                   "units": "mm"
                 },
+                "sceneInfo": {
+                  "kind": "XY",
+                  "object_id": 0
+                },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -595,8 +604,11 @@ description: Variables in memory after executing clock.kcl
               "z": 0.0,
               "units": "mm"
             },
+            "sceneInfo": {
+              "kind": "XY",
+              "object_id": 0
+            },
             "type": "plane",
-            "value": "XY",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -1548,8 +1560,11 @@ description: Variables in memory after executing clock.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "XY",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1732,8 +1747,11 @@ description: Variables in memory after executing clock.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1962,8 +1980,11 @@ description: Variables in memory after executing clock.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2272,8 +2293,11 @@ description: Variables in memory after executing clock.kcl
                   "z": 0.0,
                   "units": "mm"
                 },
+                "sceneInfo": {
+                  "kind": "XY",
+                  "object_id": 0
+                },
                 "type": "plane",
-                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2533,8 +2557,11 @@ description: Variables in memory after executing clock.kcl
           "z": 55.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 27
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2624,8 +2651,11 @@ description: Variables in memory after executing clock.kcl
           "z": 55.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 27
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2827,8 +2857,11 @@ description: Variables in memory after executing clock.kcl
           "z": 50.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 28
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2918,8 +2951,11 @@ description: Variables in memory after executing clock.kcl
           "z": 50.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 28
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3122,8 +3158,11 @@ description: Variables in memory after executing clock.kcl
               "z": 0.0,
               "units": "mm"
             },
+            "sceneInfo": {
+              "kind": "XY",
+              "object_id": 0
+            },
             "type": "plane",
-            "value": "XY",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -3208,7 +3247,10 @@ description: Variables in memory after executing clock.kcl
         "z": 55.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 27
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3240,7 +3282,10 @@ description: Variables in memory after executing clock.kcl
         "z": 50.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 28
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

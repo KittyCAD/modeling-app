@@ -470,8 +470,11 @@ description: Variables in memory after executing v-block.kcl
                     "z": 0.0,
                     "units": "mm"
                   },
+                  "sceneInfo": {
+                    "kind": "Custom",
+                    "object_id": 0
+                  },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 0.0,
                     "y": 1.0,
@@ -986,8 +989,11 @@ description: Variables in memory after executing v-block.kcl
                     "z": 0.0,
                     "units": "mm"
                   },
+                  "sceneInfo": {
+                    "kind": "Custom",
+                    "object_id": 0
+                  },
                   "type": "plane",
-                  "value": "Custom",
                   "xAxis": {
                     "x": 0.0,
                     "y": 1.0,
@@ -1484,8 +1490,11 @@ description: Variables in memory after executing v-block.kcl
               "z": 0.0,
               "units": "mm"
             },
+            "sceneInfo": {
+              "kind": "Custom",
+              "object_id": 0
+            },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -1996,8 +2005,11 @@ description: Variables in memory after executing v-block.kcl
                       "z": 0.0,
                       "units": "mm"
                     },
+                    "sceneInfo": {
+                      "kind": "Custom",
+                      "object_id": 0
+                    },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -2530,8 +2542,11 @@ description: Variables in memory after executing v-block.kcl
                       "z": 0.0,
                       "units": "mm"
                     },
+                    "sceneInfo": {
+                      "kind": "Custom",
+                      "object_id": 0
+                    },
                     "type": "plane",
-                    "value": "Custom",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -3035,8 +3050,11 @@ description: Variables in memory after executing v-block.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3384,8 +3402,11 @@ description: Variables in memory after executing v-block.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3443,7 +3464,10 @@ description: Variables in memory after executing v-block.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 0
+      },
       "xAxis": {
         "x": 0.0,
         "y": 1.0,

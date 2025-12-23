@@ -58,8 +58,11 @@ description: Variables in memory after executing subtract_regression10.kcl
                 "z": 232.09247866942073,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 8
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": -0.9778288277170034,
                 "y": 0.0,
@@ -149,8 +152,11 @@ description: Variables in memory after executing subtract_regression10.kcl
                 "z": 232.09247866942073,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 8
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": -0.9778288277170034,
                 "y": 0.0,
@@ -218,7 +224,10 @@ description: Variables in memory after executing subtract_regression10.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
+      "sceneInfo": {
+        "kind": "XZ",
+        "object_id": 7
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -740,8 +749,11 @@ description: Variables in memory after executing subtract_regression10.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 5
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1288,8 +1300,11 @@ description: Variables in memory after executing subtract_regression10.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 5
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -1938,8 +1953,11 @@ description: Variables in memory after executing subtract_regression10.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 5
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2159,8 +2177,11 @@ description: Variables in memory after executing subtract_regression10.kcl
             "z": 232.09247866942073,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 6
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": -0.9778288277170034,
             "y": 0.0,
@@ -2707,8 +2728,11 @@ description: Variables in memory after executing subtract_regression10.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 5
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2806,8 +2830,11 @@ description: Variables in memory after executing subtract_regression10.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 7
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2992,8 +3019,11 @@ description: Variables in memory after executing subtract_regression10.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "YZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3157,8 +3187,11 @@ description: Variables in memory after executing subtract_regression10.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "YZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3324,8 +3357,11 @@ description: Variables in memory after executing subtract_regression10.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 2
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3382,7 +3418,10 @@ description: Variables in memory after executing subtract_regression10.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
+      "sceneInfo": {
+        "kind": "XZ",
+        "object_id": 0
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3895,8 +3934,11 @@ description: Variables in memory after executing subtract_regression10.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4425,8 +4467,11 @@ description: Variables in memory after executing subtract_regression10.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4955,8 +5000,11 @@ description: Variables in memory after executing subtract_regression10.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5151,8 +5199,11 @@ description: Variables in memory after executing subtract_regression10.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 4
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5302,8 +5353,11 @@ description: Variables in memory after executing subtract_regression10.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 3
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5437,8 +5491,11 @@ description: Variables in memory after executing subtract_regression10.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 7
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

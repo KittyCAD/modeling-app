@@ -200,8 +200,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -389,8 +392,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -578,8 +584,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -767,8 +776,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -956,8 +968,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1145,8 +1160,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1334,8 +1352,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1523,8 +1544,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1712,8 +1736,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1901,8 +1928,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2090,8 +2120,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2279,8 +2312,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2468,8 +2504,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2657,8 +2696,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2846,8 +2888,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3035,8 +3080,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3224,8 +3272,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3413,8 +3464,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3602,8 +3656,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3791,8 +3848,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3980,8 +4040,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4169,8 +4232,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4358,8 +4424,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4547,8 +4616,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4741,8 +4813,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4930,8 +5005,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5119,8 +5197,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5308,8 +5389,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5497,8 +5581,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5686,8 +5773,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5875,8 +5965,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6064,8 +6157,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6253,8 +6349,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6442,8 +6541,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6631,8 +6733,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6820,8 +6925,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7009,8 +7117,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7198,8 +7309,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7387,8 +7501,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7576,8 +7693,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7765,8 +7885,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7954,8 +8077,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8143,8 +8269,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8332,8 +8461,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8521,8 +8653,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8710,8 +8845,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8899,8 +9037,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9088,8 +9229,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9300,8 +9444,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9489,8 +9636,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9678,8 +9828,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9867,8 +10020,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10110,8 +10266,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10299,8 +10458,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10488,8 +10650,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10677,8 +10842,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10868,8 +11036,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -11057,8 +11228,11 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,

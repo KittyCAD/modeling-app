@@ -123,8 +123,11 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -256,8 +259,11 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "XZ",
+          "object_id": 1
+        },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": -1.0,
           "y": 0.0,
