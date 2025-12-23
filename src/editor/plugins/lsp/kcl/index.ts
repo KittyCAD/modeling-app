@@ -142,7 +142,7 @@ export class KclPlugin implements PluginValue {
       this.kclManager.history.entries.value = [
         {
           type: '',
-          dateString: new Date().toISOString(),
+          date: new Date(),
           absoluteFilePath: this.kclManager.currentFilePath,
           right: viewUpdate.state.doc.toString(),
           left: `${this.kclManager.code}`,

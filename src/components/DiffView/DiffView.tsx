@@ -13,7 +13,7 @@ import {
 import { getSettings, kclManager } from '@src/lib/singletons'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useSettings } from '@src/lib/singletons'
-import { parentPathRelativeToProject } from '@src/lib/paths'
+import { parentPathRelativeToApplicationDirectory, parentPathRelativeToProject } from '@src/lib/paths'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { AreaTypeComponentProps } from '@src/lib/layout'
 import { lintGutter } from '@codemirror/lint'
@@ -26,15 +26,50 @@ import { kclAstExtension } from '@src/editor/plugins/ast'
 import { lineHighlightField } from '@src/editor/highlightextension'
 import { historyCompartment } from '@src/editor/compartments'
 import { history } from '@codemirror/commands'
+import { CustomIcon } from '@src/components/CustomIcon'
 
-async function setDiff(editorRef, mergeViewRef, absoluteFilePath, left, right, kclLSP) {
+function timeSince(date) {
+  const seconds = Math.floor((new Date() - date) / 1000);
+  let interval = seconds / 31536000;
+  if (interval > 1) {
+    return Math.floor(interval) + " years";
+  }
+  interval = seconds / 2592000;
+  if (interval > 1) {
+    return Math.floor(interval) + " months";
+  }
+  interval = seconds / 86400;
+  if (interval > 1) {
+    return Math.floor(interval) + " days";
+  }
+  interval = seconds / 3600;
+  if (interval > 1) {
+    return Math.floor(interval) + " hours";
+  }
+  interval = seconds / 60;
+  if (interval > 1) {
+    return Math.floor(interval) + " minutes";
+  }
+  return Math.floor(seconds) + " seconds";
+}
+
+async function setDiff(
+  editorRef,
+  mergeViewRef,
+  absoluteFilePath,
+  left,
+  right,
+  kclLSP
+) {
   const originalFile = await window.electron.readFile(absoluteFilePath, 'utf-8')
   if (mergeViewRef.current) {
     mergeViewRef.current.destroy()
   }
 
   const extensions = [
-    themeCompartment.of(editorTheme[getResolvedTheme(getSettings().app.theme.current)]),
+    themeCompartment.of(
+      editorTheme[getResolvedTheme(getSettings().app.theme.current)]
+    ),
     kclAstExtension(),
     lineHighlightField,
     EditorView.editable.of(false),
@@ -65,7 +100,7 @@ async function setDiff(editorRef, mergeViewRef, absoluteFilePath, left, right, k
   const mergeView = new EditorView({
     parent: editorRef.current,
     doc: right,
-    extensions
+    extensions,
   })
 
   mergeViewRef.current = mergeView
@@ -100,9 +135,16 @@ export const DiffView = (props: AreaTypeComponentProps) => {
                 e.absoluteFilePath,
                 applicationProjectDirectory
               )
+              const projectPath = parentPathRelativeToApplicationDirectory(e.absoluteFilePath, applicationProjectDirectory)
+              const outlineCSS = false ? 'outline outline-1 outline-primary' : 'outline-0 outline-none'
+              const isSelected = false
+              const month = e.date.toLocaleString('default', { month: 'long' })
+              const dayOfMonth = e.date.getDate()
+              const year = e.date.getFullYear()
               return (
                 <div
-                  className="h-16"
+
+                  className={`pl-2 h-5 flex flex-row items-center justify-between text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:bg-gray-300/50 hover:bg-gray-300/50 ${isSelected ? 'bg-primary/10' : ''}`}
                   onClick={() =>
                     setDiff(
                       editor,
@@ -114,8 +156,15 @@ export const DiffView = (props: AreaTypeComponentProps) => {
                     )
                   }
                 >
-                  <h2>{path}</h2>
-                  <p>{e.dateString}</p>
+                  <div className="flex flex-row items-center">
+                  <CustomIcon
+                    name="kcl"
+                    className="inline-block w-4 text-current mr-1"
+                  />
+                  <span className="pr-2">{path}</span>
+                  <span className="text-xs text-chalkboard-80 dark:text-chalkboard-30 ">{projectPath}</span>
+                  </div>
+                  <span>{timeSince(e.date)} ago ( {month} {dayOfMonth}, {year} at {e.date.toLocaleTimeString()})</span>
                 </div>
               )
             })}
