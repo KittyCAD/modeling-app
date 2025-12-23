@@ -26,7 +26,7 @@ use crate::{
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
-    execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ProgramLookup},
+    execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ProgramLookup, exec_ast::Solved},
     front::{Number, Object},
     id::IncIdGenerator,
 };
@@ -709,7 +709,7 @@ impl SketchBlockState {
     #[cfg(feature = "artifact-graph")]
     pub(crate) fn var_solutions(
         &self,
-        solve_outcome: kcl_ezpz::SolveOutcome,
+        solve_outcome: Solved,
         solution_ty: NumericType,
         range: SourceRange,
     ) -> Result<Vec<(SourceRange, Number)>, KclError> {

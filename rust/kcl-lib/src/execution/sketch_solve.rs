@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use ahash::AHashSet;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kcl_ezpz::SolveOutcome;
 use kittycad_modeling_cmds::units::UnitLength;
 
 use crate::{
@@ -12,6 +11,7 @@ use crate::{
     exec::{KclValue, NumericType, UnitType},
     execution::{
         AbstractSegment, Segment, SegmentKind, SegmentRepr, UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind,
+        exec_ast::Solved,
         types::{PrimitiveType, RuntimeType},
     },
     front::{Freedom, Object},
@@ -28,8 +28,9 @@ pub(super) struct FreedomAnalysis {
 
 impl From<kcl_ezpz::FreedomAnalysis> for FreedomAnalysis {
     fn from(value: kcl_ezpz::FreedomAnalysis) -> Self {
+        let x: Vec<kcl_ezpz::Id> = value.into();
         FreedomAnalysis {
-            underconstrained: AHashSet::from_iter(value.underconstrained),
+            underconstrained: AHashSet::from_iter(x),
         }
     }
 }
@@ -66,7 +67,7 @@ pub(crate) fn normalize_to_solver_unit(
 
 pub(super) fn substitute_sketch_vars(
     variables: IndexMap<String, KclValue>,
-    solve_outcome: &SolveOutcome,
+    solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
 ) -> Result<HashMap<String, KclValue>, KclError> {
@@ -80,7 +81,7 @@ pub(super) fn substitute_sketch_vars(
 
 fn substitute_sketch_var(
     value: KclValue,
-    solve_outcome: &SolveOutcome,
+    solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
 ) -> Result<KclValue, KclError> {
@@ -171,7 +172,7 @@ fn substitute_sketch_var(
 
 pub(super) fn substitute_sketch_var_in_segment(
     segment: UnsolvedSegment,
-    solve_outcome: &SolveOutcome,
+    solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
 ) -> Result<Segment, KclError> {
@@ -270,7 +271,7 @@ pub(super) fn substitute_sketch_var_in_segment(
 
 fn substitute_sketch_var_in_unsolved_expr(
     unsolved_expr: &UnsolvedExpr,
-    solve_outcome: &SolveOutcome,
+    solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
     source_ranges: &[SourceRange],

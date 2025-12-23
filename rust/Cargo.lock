@@ -2158,13 +2158,13 @@ dependencies = [
 
 [[package]]
 name = "kcl-ezpz"
-version = "0.2.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f82c9d253270cfed9e2f2df0574a81abb311c9ab3078e44464cf1f8a17985d2"
+version = "0.2.8"
+source = "git+https://github.com/KittyCAD/ezpz?branch=achalmers/ready-for-1.0#05985489c6c73ba2a324e1e6765c4a834bb2c390"
 dependencies = [
  "faer",
  "indexmap 2.12.1",
  "libm",
+ "mutants",
  "thiserror 2.0.17",
  "winnow",
 ]
@@ -2723,6 +2723,12 @@ dependencies = [
  "num-traits 0.2.19",
  "pxfm",
 ]
+
+[[package]]
+name = "mutants"
+version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc0287524726960e07b119cebd01678f852f147742ae0d925e6a520dca956126"
 
 [[package]]
 name = "nalgebra"
