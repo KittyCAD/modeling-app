@@ -27,10 +27,9 @@ pub(super) struct FreedomAnalysis {
 }
 
 impl From<kcl_ezpz::FreedomAnalysis> for FreedomAnalysis {
-    fn from(value: kcl_ezpz::FreedomAnalysis) -> Self {
-        let x: Vec<kcl_ezpz::Id> = value.into();
+    fn from(analysis: kcl_ezpz::FreedomAnalysis) -> Self {
         FreedomAnalysis {
-            underconstrained: AHashSet::from_iter(x),
+            underconstrained: AHashSet::from_iter(analysis.into_underconstrained()),
         }
     }
 }
