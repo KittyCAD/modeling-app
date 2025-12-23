@@ -146,6 +146,7 @@ export class KclPlugin implements PluginValue {
           absoluteFilePath: this.kclManager.currentFilePath,
           right: viewUpdate.state.doc.toString(),
           left: `${this.kclManager.code}`,
+          wroteToDisk: false
         },
         ...this.kclManager.history.entries.value,
       ]
@@ -168,6 +169,12 @@ export class KclPlugin implements PluginValue {
 
     const newCode = viewUpdate.state.doc.toString()
     this.kclManager.code = newCode
+
+    if (viewUpdate.docChanged) {
+      const entries = [...this.kclManager.history.entries.value]
+      entries[0].wroteToDisk = true
+      this.kclManager.history.entries.value = entries
+    }
 
     void this.kclManager.writeToFile().then(() => {
       this.scheduleUpdateDoc()

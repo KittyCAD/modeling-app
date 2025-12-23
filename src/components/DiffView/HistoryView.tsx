@@ -111,6 +111,7 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
                       {projectPath}
                     </span>
                   </div>
+                  {e.wroteToDisk && <span>saved to disk</span>}
                   <span>
                     {timeSince(e.date)} ago ({month} {dayOfMonth}, {year} at{' '}
                     {e.date.toLocaleTimeString()})
