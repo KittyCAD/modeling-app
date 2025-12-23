@@ -1268,6 +1268,25 @@ export function findOperationPlaneArtifact(
   return artifact
 }
 
+// Returns Plane / Wall / Cap which contains pathIds
+export function findOperationPlaneLikeArtifact(
+  operation: StdLibCallOp,
+  artifactGraph: ArtifactGraph
+) {
+  const artifact = findOperationPlaneArtifact(operation, artifactGraph)
+  if (artifact?.type === 'startSketchOnFace') {
+    const planeLikeArtifact = artifactGraph.get(artifact.faceId)
+    if (
+      planeLikeArtifact?.type === 'plane' ||
+      planeLikeArtifact?.type === 'wall' ||
+      planeLikeArtifact?.type === 'cap'
+    ) {
+      return planeLikeArtifact
+    }
+  }
+  return artifact
+}
+
 export function isOffsetPlane(item: Operation): item is StdLibCallOp {
   return item.type === 'StdLibCall' && item.name === 'offsetPlane'
 }
