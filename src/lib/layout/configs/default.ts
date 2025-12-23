@@ -21,7 +21,7 @@ export enum DefaultLayoutPaneID {
   TTC = 'ttc',
   Variables = 'variables',
   Logs = 'logs',
-  History = 'history'
+  History = 'history',
 }
 
 export function isDefaultLayoutPaneID(s: string): s is DefaultLayoutPaneID {

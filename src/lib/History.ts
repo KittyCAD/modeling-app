@@ -1,8 +1,6 @@
-import { signal } from "@preact/signals-react";
+import { signal } from '@preact/signals-react'
 
 export class History {
   public entries = signal([])
-  constructor() {
-
-  }
+  constructor() {}
 }
