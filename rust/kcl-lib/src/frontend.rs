@@ -222,18 +222,16 @@ impl SketchApi for FrontendState {
             .ok_or_else(|| Error {
                 msg: "No AST body items after adding sketch".to_owned(),
             })?;
-        #[cfg(not(feature = "artifact-graph"))]
-        let _ = sketch_source_range;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
-        // Since we just added the sketch block to the end, we don't need to
-        // truncate it.
+        let mut truncated_program = new_program;
+        only_sketch_block(&mut truncated_program.ast, sketch_source_range, ChangeKind::None)?;
 
         // Execute.
         let outcome = ctx
-            .run_mock(&new_program, &MockConfig::default().no_freedom_analysis())
+            .run_mock(&truncated_program, &MockConfig::default().no_freedom_analysis())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
