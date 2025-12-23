@@ -78,9 +78,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
                       }
                     },
                     "start_object_id": 1,
-                    "end_object_id": 2,
-                    "start_freedom": null,
-                    "end_freedom": null
+                    "end_object_id": 2
                   }
                 }
               }
@@ -160,9 +158,7 @@ description: Variables in memory after executing sketch_block_coincident_constra
                       }
                     },
                     "start_object_id": 4,
-                    "end_object_id": 5,
-                    "start_freedom": null,
-                    "end_freedom": null
+                    "end_object_id": 5
                   }
                 }
               }

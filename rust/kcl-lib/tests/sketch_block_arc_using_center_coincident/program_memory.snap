@@ -109,10 +109,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     },
                     "start_object_id": 1,
                     "end_object_id": 2,
-                    "center_object_id": 3,
-                    "start_freedom": null,
-                    "end_freedom": null,
-                    "center_freedom": null
+                    "center_object_id": 3
                   }
                 }
               }
@@ -192,9 +189,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                       }
                     },
                     "start_object_id": 7,
-                    "end_object_id": 8,
-                    "start_freedom": null,
-                    "end_freedom": null
+                    "end_object_id": 8
                   }
                 }
               }
@@ -274,9 +269,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                       }
                     },
                     "start_object_id": 11,
-                    "end_object_id": 12,
-                    "start_freedom": null,
-                    "end_freedom": null
+                    "end_object_id": 12
                   }
                 }
               }
@@ -324,8 +317,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                           "units": "None"
                         }
                       }
-                    },
-                    "freedom": null
+                    }
                   }
                 }
               }
@@ -373,8 +365,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                           "units": "None"
                         }
                       }
-                    },
-                    "freedom": null
+                    }
                   }
                 }
               }
