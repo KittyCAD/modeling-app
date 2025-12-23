@@ -144,6 +144,7 @@ describe('DXF Export', () => {
         },
       }
       vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).mockResolvedValue(mockResponse)
 
@@ -163,6 +164,7 @@ describe('DXF Export', () => {
 
       expect(result).toBe(true)
       expect(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).toHaveBeenCalledWith(
         {
@@ -229,6 +231,7 @@ describe('DXF Export', () => {
         },
       }
       vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).mockResolvedValue(mockResponse)
 
@@ -371,6 +374,7 @@ describe('DXF Export', () => {
         errors: [{ message: 'Engine error', error_code: 'bad_request' }],
       }
       vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).mockResolvedValue(mockFailedResponse)
 
@@ -388,6 +392,7 @@ describe('DXF Export', () => {
       // Test case 2: Network/exception error
       vi.clearAllMocks()
       vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).mockRejectedValue(new Error('Network error'))
 
@@ -446,6 +451,7 @@ describe('DXF Export', () => {
         },
       }
       vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).mockResolvedValue(mockResponse)
 
@@ -526,6 +532,7 @@ describe('DXF Export', () => {
         },
       }
       vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).mockResolvedValue(mockResponse)
 

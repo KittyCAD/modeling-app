@@ -183,7 +183,7 @@ export const ModelingPageProvider = ({
         data: { commands: kclCommandMemo },
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    // eslint-disable-next-line react-hooks/exhaustive-deps, @typescript-eslint/unbound-method -- TODO: blanket-ignored fix me!
   }, [commandBarActor.send, kclCommandMemo])
 
   return <div>{children}</div>

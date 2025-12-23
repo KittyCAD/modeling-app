@@ -68,7 +68,7 @@ export function UnitsMenu() {
 
   return (
     <Popover className="relative pointer-events-auto flex">
-      {({ close }) => (
+      {(popover) => (
         <>
           <Popover.Button
             data-testid="units-menu"
@@ -119,7 +119,7 @@ export function UnitsMenu() {
                           })
                           .catch(reportRejection)
                       }
-                      close()
+                      popover.close()
                     }}
                   >
                     <span className="flex-1">{baseUnitLabels[unit]}</span>
