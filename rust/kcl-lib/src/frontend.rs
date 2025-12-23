@@ -130,7 +130,7 @@ impl SketchApi for FrontendState {
         sketch: ObjectId,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         let mut truncated_program = self.program.clone();
-        self.exit_after_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
+        self.only_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
 
         // Execute.
         let outcome = ctx
@@ -292,7 +292,7 @@ impl SketchApi for FrontendState {
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = self.program.clone();
-        self.exit_after_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
+        self.only_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
 
         // Execute in mock mode to ensure state is up to date. The caller will
         // want freedom analysis to display segments correctly.
@@ -694,7 +694,7 @@ impl FrontendState {
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
-        self.exit_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+        self.only_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
 
         // Execute.
         let outcome = ctx
@@ -815,7 +815,7 @@ impl FrontendState {
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
-        self.exit_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+        self.only_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
 
         // Execute.
         let outcome = ctx
@@ -942,7 +942,7 @@ impl FrontendState {
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
-        self.exit_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+        self.only_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
 
         // Execute.
         let outcome = ctx
@@ -1303,7 +1303,7 @@ impl FrontendState {
             EditDeleteKind::DeleteSketch => new_program,
             EditDeleteKind::Edit | EditDeleteKind::DeleteNonSketch => {
                 let mut truncated_program = new_program;
-                self.exit_after_sketch_block(sketch, edit_kind.to_change_kind(), &mut truncated_program.ast)?;
+                self.only_sketch_block(sketch, edit_kind.to_change_kind(), &mut truncated_program.ast)?;
                 truncated_program
             }
         };
@@ -1872,7 +1872,7 @@ impl FrontendState {
 
         // Truncate after the sketch block for mock execution.
         let mut truncated_program = new_program;
-        self.exit_after_sketch_block(sketch_id, ChangeKind::Add, &mut truncated_program.ast)?;
+        self.only_sketch_block(sketch_id, ChangeKind::Add, &mut truncated_program.ast)?;
 
         // Execute.
         let outcome = ctx
@@ -2075,7 +2075,7 @@ impl FrontendState {
         }
     }
 
-    fn exit_after_sketch_block(
+    fn only_sketch_block(
         &self,
         sketch_id: ObjectId,
         edit_kind: ChangeKind,
@@ -2090,7 +2090,7 @@ impl FrontendState {
             });
         };
         let sketch_block_range = expect_single_source_range(&sketch_object.source)?;
-        exit_after_sketch_block(ast, sketch_block_range, edit_kind)
+        only_sketch_block(ast, sketch_block_range, edit_kind)
     }
 
     fn mutate_ast(
@@ -2128,7 +2128,7 @@ fn expect_single_source_range(source_ref: &SourceRef) -> api::Result<SourceRange
     }
 }
 
-fn exit_after_sketch_block(
+fn only_sketch_block(
     ast: &mut ast::Node<ast::Program>,
     sketch_block_range: SourceRange,
     edit_kind: ChangeKind,
