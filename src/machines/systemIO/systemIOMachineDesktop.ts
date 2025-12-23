@@ -148,8 +148,6 @@ const sharedBulkDeleteWorkflow = async ({
       input.files.some((f2) => f1.relPath === f2.requestedFileName) === false
   )
 
-  console.log(filesToDelete)
-
   for (const file of filesToDelete) {
     if (file.type === 'other') continue
     await electron.rm(file.absPath)
