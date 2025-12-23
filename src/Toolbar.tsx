@@ -103,7 +103,7 @@ const Toolbar_ = memo(
       [
         props.state,
         props.send,
-        // eslint-disable-next-line @typescript-eslint/unbound-method -- TODO: blanket-ignored fix me!
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         commandBarActor.send,
         sketchPathId,
         // eslint-disable-next-line react-hooks/exhaustive-deps
