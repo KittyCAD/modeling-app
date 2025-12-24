@@ -651,4 +651,57 @@ test = startSketchOn(controllerBody, face = END)
       await expect(toolbar.startSketchBtn).toBeVisible()
     })
   })
+
+  test('User can edit sketch via feature tree when sketch is used in patternLinear2d', async ({
+    homePage,
+    scene,
+    toolbar,
+    cmdBar,
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-3.75, 3.75])
+  |> line(end = [-4.98, -8.91])
+  |> line(end = [5.5, 1.5])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(instances = 3, distance = 10, axis = [1, 0])
+`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+    await toolbar.openFeatureTreePane()
+
+    await test.step('double-click on sketch to enter edit mode', async () => {
+      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
+      await sketchOperation.dblclick()
+
+      // Wait for animation to complete
+      await page.waitForTimeout(600)
+    })
+
+    await test.step('verify we entered sketch mode', async () => {
+      await expect(
+        toolbar.exitSketchBtn,
+        'We should be in sketch mode now'
+      ).toBeVisible()
+      await expect(toolbar.exitSketchBtn).not.toBeDisabled()
+    })
+
+    await test.step('verify segment overlays are visible', async () => {
+      // The sketch has 3 line segments plus close, so we expect 4 segment overlays
+      const segmentOverlays = page.getByTestId('segment-overlay')
+      await expect(segmentOverlays).toHaveCount(4, { timeout: 5000 })
+    })
+
+    await test.step('exit sketch mode', async () => {
+      await toolbar.exitSketchBtn.click()
+      await expect(toolbar.startSketchBtn).toBeVisible()
+    })
+  })
 })
