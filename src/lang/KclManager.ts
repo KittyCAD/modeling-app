@@ -544,15 +544,6 @@ export class KclManager extends EventTarget {
             sceneGraphDelta,
           },
         })
-      } else if (this.modelingState?.matches('Sketch')) {
-        // TODO: use derived facets to decide what portion of the code
-        // gets executed in sketch mode, not this AST business.
-        // For now, this is needed because `modelingMachine`'s "re-eval node paths"
-        // actor peeks into the KCL manager's stored AST.
-        this.ast = (await this.safeParse(newCode)) ?? this._lastAst
-        this.singletons.sceneInfra.modelingSend({
-          type: 'code edit during sketch',
-        })
       } else {
         await this.executeCode(newCode)
       }
