@@ -578,13 +578,17 @@ profile003 = startProfile(sketch001, at = [0, -4.93])
     })
   })
 
-  test(
-    'User can edit sketch via right-click context menu when sketch is on face',
-    async ({ homePage, scene, toolbar, cmdBar, page }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `@settings(defaultLengthUnit = mm)
+  test('User can edit sketch via right-click context menu when sketch is on face', async ({
+    homePage,
+    scene,
+    toolbar,
+    cmdBar,
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `@settings(defaultLengthUnit = mm)
 
 // Define dimensions
 controllerWidth = 102
@@ -613,42 +617,38 @@ test = startSketchOn(controllerBody, face = END)
   |> close()
   |> extrude(length = 2)
 `
-        )
-      })
+      )
+    })
 
-      await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
-      await toolbar.openFeatureTreePane()
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+    await toolbar.openFeatureTreePane()
 
-      await test.step('right-click on second sketch and select Edit', async () => {
-        // Get the second sketch (index 1) - the "test" sketch on controllerBody
-        const sketchOperation = await toolbar.getFeatureTreeOperation(
-          'Sketch',
-          1
-        )
-        await sketchOperation.click({ button: 'right' })
+    await test.step('right-click on second sketch and select Edit', async () => {
+      // Get the second sketch (index 1) - the "test" sketch on controllerBody
+      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 1)
+      await sketchOperation.click({ button: 'right' })
 
-        // Click the Edit menu item from the context menu
-        const editMenuItem = page.getByRole('button', { name: 'Edit' })
-        await expect(editMenuItem).toBeVisible()
-        await editMenuItem.click()
+      // Click the Edit menu item from the context menu
+      const editMenuItem = page.getByRole('button', { name: 'Edit' })
+      await expect(editMenuItem).toBeVisible()
+      await editMenuItem.click()
 
-        // Wait for animation to complete
-        await page.waitForTimeout(600)
-      })
+      // Wait for animation to complete
+      await page.waitForTimeout(600)
+    })
 
-      await test.step('verify we entered sketch mode', async () => {
-        await expect(
-          toolbar.exitSketchBtn,
-          'We should be in sketch mode now'
-        ).toBeVisible()
-        await expect(toolbar.exitSketchBtn).not.toBeDisabled()
-      })
+    await test.step('verify we entered sketch mode', async () => {
+      await expect(
+        toolbar.exitSketchBtn,
+        'We should be in sketch mode now'
+      ).toBeVisible()
+      await expect(toolbar.exitSketchBtn).not.toBeDisabled()
+    })
 
-      await test.step('exit sketch mode', async () => {
-        await toolbar.exitSketchBtn.click()
-        await expect(toolbar.startSketchBtn).toBeVisible()
-      })
-    }
-  )
+    await test.step('exit sketch mode', async () => {
+      await toolbar.exitSketchBtn.click()
+      await expect(toolbar.startSketchBtn).toBeVisible()
+    })
+  })
 })
