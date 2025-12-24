@@ -1135,10 +1135,10 @@ impl Node<SketchBlock> {
         // Solve constraints.
         let config = kcl_ezpz::Config::default().with_max_iterations(50);
         let solve_result = if exec_state.mod_local.freedom_analysis {
-            kcl_ezpz::solve_with_priority_analysis(&constraints, initial_guesses.clone(), config)
+            kcl_ezpz::solve_analysis(&constraints, initial_guesses.clone(), config)
                 .map(|outcome| (outcome.outcome, Some(FreedomAnalysis::from(outcome.analysis))))
         } else {
-            kcl_ezpz::solve_with_priority(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
+            kcl_ezpz::solve(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
         };
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => (Solved::from(solved), freedom),
@@ -2261,11 +2261,11 @@ impl Node<BinaryExpression> {
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+                            let solver_pt0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p0.vars.x.to_constraint_id(range)?,
                                 p0.vars.y.to_constraint_id(range)?,
                             );
-                            let solver_pt1 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+                            let solver_pt1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p1.vars.x.to_constraint_id(range)?,
                                 p1.vars.y.to_constraint_id(range)?,
                             );
