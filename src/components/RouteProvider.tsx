@@ -73,7 +73,6 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       }
 
       // Earlier method, this doesn't hurt but it's not needed anymore..
-      // Try to detect file changes and overwrite the editor
       if (kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
         kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
         return
@@ -82,33 +81,16 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       const isCurrentFile = loadedProject?.file?.path === path
       if (isCurrentFile) {
         if (window.electron) {
-          try {
-            const stat = await window.electron.stat(path)
-            const lastUpdatedMs = stat?.mtimeMs
-            if (kclManager.lastWrite && typeof lastUpdatedMs === 'number') {
-              // If last write happened shortly before the file was updated, it means the file was updated by us
-              // Typically the delay is 2-4 ms, so we allow a 50ms margin after the write and a 2ms margin
-              // before the write (just for inaccuracies for the timestamp).
-              if (
-                kclManager.lastWrite.time - 2 < lastUpdatedMs &&
-                lastUpdatedMs < kclManager.lastWrite.time + 50
-              ) {
-                // Ignore this change event, last update of the file was likely caused by us
-                return
-              }
-            }
-          } catch (e) {
-            console.warn('stat failed for change event', e)
-          }
-
-          // Your current file is changed, read it from disk and write it into the code manager and execute the AST
+          // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
+          // unless the change was initiated by us (the currently running instance).
           const code = await window.electron.readFile(path, {
             encoding: 'utf-8',
           })
 
-          // Don't fire a re-execution if the kclManager already knows about this change,
-          // which would be evident if we already have matching code there.
-          if (!isCodeTheSame(code, kclManager.codeSignal.value)) {
+          const lastWrittenCode = kclManager.lastWrite?.code
+          if (!lastWrittenCode || !isCodeTheSame(lastWrittenCode, code)) {
+            // Nothing written out yet by ourselves, or it's not the same as the current file content
+            // -> this must be an external change -> re-execute.
             kclManager.updateCodeStateEditor(code)
             await kclManager.executeCode()
             await resetCameraPosition({
