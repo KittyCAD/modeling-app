@@ -2160,6 +2160,16 @@ export function createOnAreaSelectEndCallback({
 
       let objects = sceneGraphDelta.new_graph.objects
 
+      // Track the last result to send a single final event at the end
+      let lastResult: {
+        kclSource: { text: string }
+        sceneGraphDelta: {
+          new_graph: { objects: ApiObject[] }
+          new_objects: number[]
+          invalidates_ids: boolean
+        }
+      } | null = null
+
       // New trim flow: getNextTrimCoords -> getTrimSpawnTerminations -> TrimStrategy
       let startIndex = 0
       let iterationCount = 0
@@ -2182,6 +2192,12 @@ export function createOnAreaSelectEndCallback({
           if (startIndex <= oldStartIndex) {
             startIndex = oldStartIndex + 1
           }
+
+          // Early exit if we've reached the end of the points array
+          if (startIndex >= points.length - 1) {
+            break
+          }
+
           continue
         }
 
@@ -2268,12 +2284,9 @@ export function createOnAreaSelectEndCallback({
           // or if invalidates_ids is true, we use the fresh objects
           objects = result.sceneGraphDelta.new_graph.objects
 
-          // Notify about new sketch outcome
-          onNewSketchOutcome(result)
+          // Store the result but don't send event yet - we'll send one final event at the end
+          lastResult = result
         }
-
-        // Log the trim strategy for sanity checking
-        console.log('Trim Strategy:', strategy)
 
         // Move to next segment
         const oldStartIndex = startIndex
@@ -2289,6 +2302,11 @@ export function createOnAreaSelectEndCallback({
         console.error(
           `ERROR: Reached max iterations (${maxIterations}). Breaking loop to prevent infinite loop.`
         )
+      }
+
+      // Send a single final event with the last result (if any operations were performed)
+      if (lastResult) {
+        onNewSketchOutcome(lastResult)
       }
     } catch (error) {
       console.error('[TRIM] Exception in onAreaSelectEnd:', error)

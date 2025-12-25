@@ -827,7 +827,6 @@ export async function deleteDraftEntitiesPromise({
       segmentIds,
       await jsAppSettings(context.rustContext.settingsActor)
     )
-    console.log('result', result)
 
     //
     return result || null
