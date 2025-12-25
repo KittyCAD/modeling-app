@@ -5,9 +5,12 @@ import type {
   Expr,
   ExistingSegmentCtor,
   ApiConstraint,
+  SceneGraphDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
 import type RustContext from '@src/lib/rustContext'
+import type { DeepPartial } from '@src/lib/types'
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
 
@@ -2096,5 +2099,199 @@ export async function executeTrimStrategy({
       ...lastResult.sceneGraphDelta,
       invalidates_ids,
     },
+  }
+}
+
+/**
+ * Creates the onAreaSelectEnd callback for trim operations.
+ * Handles the trim flow by processing trim points and executing trim strategies.
+ *
+ * @param getContextData - Function to get current context (sceneGraphDelta, sketchId, rustContext)
+ * @param executeTrimStrategy - Function to execute a trim strategy
+ * @param onNewSketchOutcome - Callback when a new sketch outcome is available
+ * @param getJsAppSettings - Function to get app settings (async)
+ */
+export function createOnAreaSelectEndCallback({
+  getContextData,
+  executeTrimStrategy,
+  onNewSketchOutcome,
+  getJsAppSettings,
+}: {
+  getContextData: () => {
+    sceneGraphDelta?: SceneGraphDelta
+    sketchId: number
+    rustContext: RustContext
+  }
+  executeTrimStrategy: (params: {
+    strategy: ReturnType<typeof trimStrategy>
+    rustContext: RustContext
+    sketchId: number
+    objects: ApiObject[]
+  }) => Promise<
+    | {
+        kclSource: { text: string }
+        sceneGraphDelta: {
+          new_graph: { objects: ApiObject[] }
+          new_objects: number[]
+          invalidates_ids: boolean
+        }
+      }
+    | Error
+  >
+  onNewSketchOutcome: (outcome: {
+    kclSource: { text: string }
+    sceneGraphDelta: {
+      new_graph: { objects: ApiObject[] }
+      new_objects: number[]
+      invalidates_ids: boolean
+    }
+  }) => void
+  getJsAppSettings: () => Promise<DeepPartial<Configuration>>
+}): (points: Coords2d[]) => Promise<void> {
+  return async (points: Coords2d[]) => {
+    try {
+      const contextData = getContextData()
+      const { sceneGraphDelta, sketchId, rustContext } = contextData
+
+      if (!sceneGraphDelta) {
+        console.error('[TRIM] ERROR: No sceneGraphDelta available!')
+        return
+      }
+
+      let objects = sceneGraphDelta.new_graph.objects
+
+      // New trim flow: getNextTrimCoords -> getTrimSpawnTerminations -> TrimStrategy
+      let startIndex = 0
+      let iterationCount = 0
+      const maxIterations = 1000
+
+      while (startIndex < points.length - 1 && iterationCount < maxIterations) {
+        iterationCount++
+
+        const nextTrimResult = getNextTrimCoords({
+          points,
+          startIndex,
+          objects,
+        })
+
+        if (nextTrimResult.type === 'noTrimSpawn') {
+          const oldStartIndex = startIndex
+          startIndex = nextTrimResult.nextIndex
+
+          // Fail-safe: if nextIndex didn't advance, force it to advance
+          if (startIndex <= oldStartIndex) {
+            startIndex = oldStartIndex + 1
+          }
+          continue
+        }
+
+        // Found a trim spawn, get terminations
+        const terminations = getTrimSpawnTerminations({
+          trimSpawnSegId: nextTrimResult.trimSpawnSegId,
+          trimSpawnCoords: points,
+          objects,
+        })
+
+        if (terminations instanceof Error) {
+          console.error('Error getting trim terminations:', terminations)
+          const oldStartIndex = startIndex
+          startIndex = nextTrimResult.nextIndex
+
+          // Fail-safe: if nextIndex didn't advance, force it to advance
+          if (startIndex <= oldStartIndex) {
+            startIndex = oldStartIndex + 1
+          }
+          continue
+        }
+
+        // Get the trim spawn segment
+        const trimSpawnSegment = objects[nextTrimResult.trimSpawnSegId]
+        if (!trimSpawnSegment) {
+          console.error(
+            'Trim spawn segment not found:',
+            nextTrimResult.trimSpawnSegId
+          )
+          const oldStartIndex = startIndex
+          startIndex = nextTrimResult.nextIndex
+
+          // Fail-safe: if nextIndex didn't advance, force it to advance
+          if (startIndex <= oldStartIndex) {
+            startIndex = oldStartIndex + 1
+          }
+          continue
+        }
+
+        // Get trim strategy
+        const strategy = trimStrategy({
+          trimSpawnId: nextTrimResult.trimSpawnSegId,
+          trimSpawnSegment,
+          leftSide: terminations.leftSide,
+          rightSide: terminations.rightSide,
+          objects,
+        })
+        if (strategy instanceof Error) {
+          console.error('Error determining trim strategy:', strategy)
+          const oldStartIndex = startIndex
+          startIndex = nextTrimResult.nextIndex
+
+          // Fail-safe: if nextIndex didn't advance, force it to advance
+          if (startIndex <= oldStartIndex) {
+            startIndex = oldStartIndex + 1
+          }
+          continue
+        }
+
+        if (strategy instanceof Error) {
+          console.error('Error determining trim strategy:', strategy)
+          const oldStartIndex = startIndex
+          startIndex = nextTrimResult.nextIndex
+
+          // Fail-safe: if nextIndex didn't advance, force it to advance
+          if (startIndex <= oldStartIndex) {
+            startIndex = oldStartIndex + 1
+          }
+          continue
+        }
+
+        const result = await executeTrimStrategy({
+          strategy,
+          rustContext,
+          sketchId,
+          objects,
+        })
+
+        if (result instanceof Error) {
+          console.error('[TRIM] Error executing trim strategy:', result)
+        } else {
+          // CRITICAL FIX: Update objects array from result for subsequent operations
+          // This ensures that if there are multiple trim operations in the same drag,
+          // or if invalidates_ids is true, we use the fresh objects
+          objects = result.sceneGraphDelta.new_graph.objects
+
+          // Notify about new sketch outcome
+          onNewSketchOutcome(result)
+        }
+
+        // Log the trim strategy for sanity checking
+        console.log('Trim Strategy:', strategy)
+
+        // Move to next segment
+        const oldStartIndex = startIndex
+        startIndex = nextTrimResult.nextIndex
+
+        // Fail-safe: if nextIndex didn't advance, force it to advance
+        if (startIndex <= oldStartIndex) {
+          startIndex = oldStartIndex + 1
+        }
+      }
+
+      if (iterationCount >= maxIterations) {
+        console.error(
+          `ERROR: Reached max iterations (${maxIterations}). Breaking loop to prevent infinite loop.`
+        )
+      }
+    } catch (error) {
+      console.error('[TRIM] Exception in onAreaSelectEnd:', error)
+    }
   }
 }

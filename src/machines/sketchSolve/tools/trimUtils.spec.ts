@@ -11,10 +11,9 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import {
-  getTrimSpawnTerminations,
-  getNextTrimCoords,
-  trimStrategy,
+  createOnAreaSelectEndCallback,
   executeTrimStrategy,
+  getTrimSpawnTerminations,
 } from '@src/machines/sketchSolve/tools/trimUtils'
 import type { Coords2d } from '@src/lang/util'
 
@@ -518,6 +517,7 @@ sketch(on = YZ) {
 
 /**
  * Helper function to execute the full trim flow and return the resulting KCL code
+ * Now uses createOnAreaSelectEndCallback internally
  */
 async function executeTrimFlow({
   kclCode,
@@ -543,89 +543,51 @@ async function executeTrimFlow({
     exec_outcome: execOutcome,
   }
 
-  let objects = initialSceneGraphDelta.new_graph.objects
-  let startIndex = 0
-  let iterationCount = 0
-  const maxIterations = 100
+  // Track the last result to return it
   let lastResult: { kclSource: { text: string } } | null = null
+  let hadError: Error | null = null
 
-  // Execute trim flow: getNextTrimCoords -> getTrimSpawnTerminations -> trimStrategy -> executeTrimStrategy
-  while (startIndex < trimPoints.length - 1 && iterationCount < maxIterations) {
-    iterationCount++
-
-    const nextTrimResult = getNextTrimCoords({
-      points: trimPoints,
-      startIndex,
-      objects,
-    })
-
-    if (nextTrimResult.type === 'noTrimSpawn') {
-      const oldStartIndex = startIndex
-      startIndex = nextTrimResult.nextIndex
-      // Fail-safe: if nextIndex didn't advance, force it to advance
-      if (startIndex <= oldStartIndex) {
-        startIndex = oldStartIndex + 1
-      }
-      continue
-    }
-
-    // Found a trim spawn, get terminations
-    const terminations = getTrimSpawnTerminations({
-      trimSpawnSegId: nextTrimResult.trimSpawnSegId,
-      trimSpawnCoords: trimPoints,
-      objects,
-    })
-
-    if (terminations instanceof Error) {
-      return terminations
-    }
-
-    // Get the trim spawn segment
-    const trimSpawnSegment = objects[nextTrimResult.trimSpawnSegId]
-    if (!trimSpawnSegment) {
-      return new Error(
-        `Trim spawn segment ${nextTrimResult.trimSpawnSegId} not found`
-      )
-    }
-
-    // Get trim strategy
-    const strategy = trimStrategy({
-      trimSpawnId: nextTrimResult.trimSpawnSegId,
-      trimSpawnSegment,
-      leftSide: terminations.leftSide,
-      rightSide: terminations.rightSide,
-      objects,
-    })
-
-    if (strategy instanceof Error) {
-      return strategy
-    }
-
-    // Execute trim strategy
-    const result = await executeTrimStrategy({
-      strategy,
+  // Use the new createOnAreaSelectEndCallback function
+  const onAreaSelectEndHandler = createOnAreaSelectEndCallback({
+    getContextData: () => ({
+      sceneGraphDelta: initialSceneGraphDelta,
+      sketchId,
       rustContext: rustContextInThisFile,
+    }),
+    executeTrimStrategy: async ({
+      strategy,
+      rustContext,
       sketchId,
       objects,
-    })
+    }) => {
+      if (strategy instanceof Error) {
+        return strategy
+      }
+      return executeTrimStrategy({
+        strategy,
+        rustContext,
+        sketchId,
+        objects,
+      })
+    },
+    onNewSketchOutcome: (outcome) => {
+      lastResult = outcome
+    },
+    getJsAppSettings: async () => {
+      return await jsAppSettings(rustContextInThisFile.settingsActor)
+    },
+  })
 
-    if (result instanceof Error) {
-      return result
-    }
+  // Execute the trim flow
+  try {
+    await onAreaSelectEndHandler(trimPoints)
+  } catch (error) {
+    hadError = error instanceof Error ? error : new Error(String(error))
+  }
 
-    lastResult = result
-    // Update objects array for subsequent operations
-    if (result.sceneGraphDelta.new_graph.objects) {
-      objects = result.sceneGraphDelta.new_graph.objects
-    }
-
-    // Move to next segment
-    const oldStartIndex = startIndex
-    startIndex = nextTrimResult.nextIndex
-    // Fail-safe: if nextIndex didn't advance, force it to advance
-    if (startIndex <= oldStartIndex) {
-      startIndex = oldStartIndex + 1
-    }
+  // Return error if one occurred, or if no operations were executed
+  if (hadError) {
+    return hadError
   }
 
   if (!lastResult) {

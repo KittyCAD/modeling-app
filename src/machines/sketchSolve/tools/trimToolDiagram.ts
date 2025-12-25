@@ -7,13 +7,10 @@ import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTy
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import { BufferGeometry, Line, LineBasicMaterial, Vector3 } from 'three'
 import {
+  createOnAreaSelectEndCallback,
   executeTrimStrategy,
-  getNextTrimCoords,
-  getTrimSpawnTerminations,
-  trimStrategy,
 } from '@src/machines/sketchSolve/tools/trimUtils'
-import type { Coords2d } from '@src/lang/util'
-import { rustContext } from '@src/lib/singletons'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 // Trim tool draws an ephemeral polyline during an area-select drag.
 // At drag end the preview is removed – no sketch entities are created (yet).
@@ -88,191 +85,74 @@ export const machine = setup({
           }
         },
         onAreaSelectEnd: async () => {
-          try {
-            // CRITICAL FIX: Get current context at execution time, not the stale captured context
-            // The 'context' variable in the closure is stale because it was captured when the
-            // callback was set up. We need to get the current context from the machine snapshot.
-            const currentSnapshot = self.getSnapshot()
-            const currentContext = currentSnapshot?.context
+          const onAreaSelectEndHandler = createOnAreaSelectEndCallback({
+            getContextData: () => {
+              // CRITICAL FIX: Get current context at execution time, not the stale captured context
+              // The 'context' variable in the closure is stale because it was captured when the
+              // callback was set up. We need to get the current context from the machine snapshot.
+              const currentSnapshot = self.getSnapshot()
+              const currentContext = currentSnapshot?.context
 
-            // Try to get the most up-to-date sceneGraphDelta
-            // Priority: 1) Parent's sketchExecOutcome (most recent), 2) Current machine context, 3) Captured context (stale)
-            let sceneGraphDelta: SceneGraphDelta | undefined
+              // Try to get the most up-to-date sceneGraphDelta
+              // Priority: 1) Parent's sketchExecOutcome (most recent), 2) Current machine context, 3) Captured context (stale)
+              let sceneGraphDelta: SceneGraphDelta | undefined
 
-            try {
-              const parentSnapshot = self._parent?.getSnapshot()
+              try {
+                const parentSnapshot = self._parent?.getSnapshot()
 
-              if (parentSnapshot?.context?.sketchExecOutcome?.sceneGraphDelta) {
-                sceneGraphDelta =
-                  parentSnapshot.context.sketchExecOutcome.sceneGraphDelta
-              } else if (currentContext?.sceneGraphDelta) {
-                sceneGraphDelta = currentContext.sceneGraphDelta
-              } else if (context.sceneGraphDelta) {
+                if (
+                  parentSnapshot?.context?.sketchExecOutcome?.sceneGraphDelta
+                ) {
+                  sceneGraphDelta =
+                    parentSnapshot.context.sketchExecOutcome.sceneGraphDelta
+                } else if (currentContext?.sceneGraphDelta) {
+                  sceneGraphDelta = currentContext.sceneGraphDelta
+                } else if (context.sceneGraphDelta) {
+                  sceneGraphDelta = context.sceneGraphDelta
+                }
+              } catch (e) {
+                console.error('[TRIM] Error accessing context:', e)
+                // Fall back to captured context
                 sceneGraphDelta = context.sceneGraphDelta
               }
-            } catch (e) {
-              console.error('[TRIM] Error accessing context:', e)
-              // Fall back to captured context
-              sceneGraphDelta = context.sceneGraphDelta
-            }
 
-            if (!sceneGraphDelta) {
-              console.error('[TRIM] ERROR: No sceneGraphDelta available!')
-              return
-            }
-
-            // Convert Vector3[] to Coords2d[] for the new trim flow
-            const trimPoints: Coords2d[] = points.map((p) => [p.x, p.y])
-
-            let objects = sceneGraphDelta.new_graph.objects
-
-            // New trim flow: getNextTrimCoords -> getTrimSpawnTerminations -> TrimStrategy
-            let startIndex = 0
-            let iterationCount = 0
-            const maxIterations = 100
-
-            while (
-              startIndex < trimPoints.length - 1 &&
-              iterationCount < maxIterations
-            ) {
-              iterationCount++
-
-              const nextTrimResult = getNextTrimCoords({
-                points: trimPoints,
-                startIndex,
-                objects,
-              })
-
-              if (nextTrimResult.type === 'noTrimSpawn') {
-                const oldStartIndex = startIndex
-                startIndex = nextTrimResult.nextIndex
-
-                // Fail-safe: if nextIndex didn't advance, force it to advance
-                if (startIndex <= oldStartIndex) {
-                  startIndex = oldStartIndex + 1
-                }
-                continue
+              return {
+                sceneGraphDelta,
+                sketchId: context.sketchId,
+                rustContext: context.rustContext,
               }
-
-              // Found a trim spawn, get terminations
-              const terminations = getTrimSpawnTerminations({
-                trimSpawnSegId: nextTrimResult.trimSpawnSegId,
-                trimSpawnCoords: trimPoints,
-                objects,
-              })
-
-              if (terminations instanceof Error) {
-                console.error('Error getting trim terminations:', terminations)
-                const oldStartIndex = startIndex
-                startIndex = nextTrimResult.nextIndex
-
-                // Fail-safe: if nextIndex didn't advance, force it to advance
-                if (startIndex <= oldStartIndex) {
-                  startIndex = oldStartIndex + 1
-                }
-                continue
-              }
-
-              // Get the trim spawn segment
-              const trimSpawnSegment = objects[nextTrimResult.trimSpawnSegId]
-              if (!trimSpawnSegment) {
-                console.error(
-                  'Trim spawn segment not found:',
-                  nextTrimResult.trimSpawnSegId
-                )
-                const oldStartIndex = startIndex
-                startIndex = nextTrimResult.nextIndex
-
-                // Fail-safe: if nextIndex didn't advance, force it to advance
-                if (startIndex <= oldStartIndex) {
-                  startIndex = oldStartIndex + 1
-                }
-                continue
-              }
-
-              // Get trim strategy
-              const strategy = trimStrategy({
-                trimSpawnId: nextTrimResult.trimSpawnSegId,
-                trimSpawnSegment,
-                leftSide: terminations.leftSide,
-                rightSide: terminations.rightSide,
-                objects,
-              })
+            },
+            executeTrimStrategy: async ({
+              strategy,
+              rustContext,
+              sketchId,
+              objects,
+            }) => {
               if (strategy instanceof Error) {
-                console.error('Error determining trim strategy:', strategy)
-                const oldStartIndex = startIndex
-                startIndex = nextTrimResult.nextIndex
-
-                // Fail-safe: if nextIndex didn't advance, force it to advance
-                if (startIndex <= oldStartIndex) {
-                  startIndex = oldStartIndex + 1
-                }
-                continue
+                return strategy
               }
-              const yo = await executeTrimStrategy({
+              return executeTrimStrategy({
                 strategy,
                 rustContext,
-                sketchId: context.sketchId,
+                sketchId,
                 objects,
               })
+            },
+            onNewSketchOutcome: (outcome) => {
+              self._parent?.send({
+                type: 'update sketch outcome',
+                data: outcome,
+              })
+            },
+            getJsAppSettings: async () => {
+              return await jsAppSettings(context.rustContext.settingsActor)
+            },
+          })
 
-              if (yo instanceof Error) {
-                console.error('[TRIM] Error executing trim strategy:', yo)
-              } else {
-                // CRITICAL FIX: Update objects array from result for subsequent operations
-                // This ensures that if there are multiple trim operations in the same drag,
-                // or if invalidates_ids is true, we use the fresh objects
-                objects = yo.sceneGraphDelta.new_graph.objects
+          // Convert Vector3[] to Coords2d[] for the trim flow
+          await onAreaSelectEndHandler(points.map((p) => [p.x, p.y]))
 
-                // Send result to parent to update sketchExecOutcome for subsequent trims
-                self._parent?.send({
-                  type: 'update sketch outcome',
-                  data: yo,
-                })
-              }
-
-              // Log the trim strategy for sanity checking
-              console.log('Trim Strategy:', strategy)
-
-              // Move to next segment
-              const oldStartIndex = startIndex
-              startIndex = nextTrimResult.nextIndex
-
-              // Fail-safe: if nextIndex didn't advance, force it to advance
-              if (startIndex <= oldStartIndex) {
-                startIndex = oldStartIndex + 1
-              }
-            }
-
-            if (iterationCount >= maxIterations) {
-              console.error(
-                `ERROR: Reached max iterations (${maxIterations}). Breaking loop to prevent infinite loop.`
-              )
-            }
-          } catch (error) {
-            console.error('[TRIM] Exception in onAreaSelectEnd:', error)
-            return
-          }
-
-          // TODO: Remove old processTrimOperations call once new flow is fully implemented
-          // const result = await processTrimOperations({
-          //   points,
-          //   initialSceneGraph: context.sceneGraphDelta,
-          //   rustContext: context.rustContext,
-          //   sketchId: context.sketchId,
-          // })
-
-          // if (result) {
-          //   // Send the final result to parent to update sketch outcome
-          //   self._parent?.send({
-          //     type: 'update sketch outcome',
-          //     data: {
-          //       kclSource: result.kclSource,
-          //       sceneGraphDelta: result.sceneGraphDelta,
-          //     },
-          //   })
-          // }
-
+          // Clean up the preview line
           if (currentLine) {
             scene.remove(currentLine)
             currentLine.geometry.dispose()
