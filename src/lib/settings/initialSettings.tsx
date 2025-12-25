@@ -28,9 +28,8 @@ import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
-import env from '@src/env'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
-import { getCookie } from '@src/machines/authMachine'
+import { getTokenFromEnvOrCookie } from '@src/machines/authMachine'
 
 /**
  * A setting that can be set at the user or project level
@@ -154,9 +153,7 @@ function hideWithoutFeatureFlag(
   return async (): Promise<HideOnPlatformValue | null> => {
     try {
       // Try to get a token - check env first, then cookie for web
-      const envToken = env().VITE_ZOO_API_TOKEN
-      const cookieToken = getCookie()
-      const token = envToken || cookieToken || ''
+      const token = getTokenFromEnvOrCookie()
 
       if (!token) {
         return defaultHide
