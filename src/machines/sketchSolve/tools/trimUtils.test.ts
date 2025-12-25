@@ -3,7 +3,6 @@ import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
 import {
   getNextTrimCoords,
-  getTrimSpawnTerminations,
   arcArcIntersection,
 } from '@src/machines/sketchSolve/tools/trimUtils'
 import { isArray } from '@src/lib/utils'

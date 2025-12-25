@@ -1,5 +1,6 @@
 import type RustContext from '@src/lib/rustContext'
 import type {
+  ApiObject,
   ExistingSegmentCtor,
   SceneGraphDelta,
   SourceDelta,
@@ -16,14 +17,20 @@ const EPSILON_PARALLEL = 1e-10 // For checking if lines are parallel or segments
 const EPSILON_POINT_ON_SEGMENT = 1e-6 // For checking if a point is on a segment
 
 type SegmentIntersectionPoint = {
-  point: [number, number]
   type: 'intersection'
+  point: [number, number]
+  segmentId: number
+}
+
+type CoincidentWithOtherLineBody = {
+  type: 'coincidentWithOtherLineBody'
+  point: [number, number]
   segmentId: number
 }
 
 type CoincidentWithOtherLineEndPoint = {
-  point: [number, number]
   type: 'coincidentWithOtherLineEnd'
+  point: [number, number]
   segmentId: number
   coincidentWithPointId: number
 }
@@ -78,7 +85,7 @@ export async function deleteSegmentWithNoIntersections({
       sketchId,
       [],
       [segmentId],
-      await jsAppSettings()
+      await jsAppSettings(rustContext.settingsActor)
     )
     return {
       invalidates_ids:
@@ -129,9 +136,9 @@ export async function applyCoincidentConstraintForIntersection({
       sketchId,
       {
         type: 'Coincident',
-        points: [endPointId, intersectionSide.coincidentWithPointId],
+        segments: [endPointId, intersectionSide.coincidentWithPointId],
       },
-      await jsAppSettings()
+      await jsAppSettings(rustContext.settingsActor)
     )
 
     return {
@@ -256,7 +263,7 @@ export async function splitSegmentAtIntersections({
           },
         },
       ],
-      await jsAppSettings()
+      await jsAppSettings(rustContext.settingsActor)
     )
 
     let nextInvalidatesIds =
@@ -292,7 +299,7 @@ export async function splitSegmentAtIntersections({
         },
       },
       undefined,
-      await jsAppSettings()
+      await jsAppSettings(rustContext.settingsActor)
     )
 
     nextInvalidatesIds =
@@ -379,18 +386,22 @@ function lineSegmentIntersection(
   const p1OnSegment2 = isPointOnSegment(p1, p3, p4, epsilon)
   if (p1OnSegment2)
     return { point: p1OnSegment2, isCoincident: true, isStart: true }
+  // return { point: p1OnSegment2, isCoincident: true, isStart: false }
 
   const p2OnSegment2 = isPointOnSegment(p2, p3, p4, epsilon)
   if (p2OnSegment2)
     return { point: p2OnSegment2, isCoincident: true, isStart: false }
+  // return { point: p2OnSegment2, isCoincident: true, isStart: true }
 
   const p3OnSegment1 = isPointOnSegment(p3, p1, p2, epsilon)
   if (p3OnSegment1)
     return { point: p3OnSegment1, isCoincident: true, isStart: true }
+  // return { point: p3OnSegment1, isCoincident: true, isStart: false }
 
   const p4OnSegment1 = isPointOnSegment(p4, p1, p2, epsilon)
   if (p4OnSegment1)
     return { point: p4OnSegment1, isCoincident: true, isStart: false }
+  // return { point: p4OnSegment1, isCoincident: true, isStart: true }
 
   // Then check for actual line segment intersection (true intersection)
   const [x1, y1] = p1
@@ -435,6 +446,83 @@ function getPointCoords(
   ]
 }
 
+function decideTrimCase({
+  trimSides,
+  objects,
+  trimSpawnSeg,
+}: {
+  trimSides: SegmentTrimSides
+  objects: SceneGraphDelta['new_graph']['objects']
+  trimSpawnSeg: ApiObject
+}):
+  | {
+      type: 'simpleDelete'
+    }
+  | {
+      type: 'otherCases'
+    } {
+  const isSideFree = (side: ConvergeOrEndPoint, isStart = true) => {
+    console.log('isSideFree side', side, trimSides)
+    if (side.type === 'endpoint') {
+      return true
+    }
+    if (side.type === 'coincidentWithOtherLineEnd') {
+      if (
+        // TODO handle arcs
+        trimSpawnSeg?.kind?.type !== 'Segment' ||
+        trimSpawnSeg.kind.segment.type !== 'Line'
+      ) {
+        return false
+      }
+      // const trimSpawnSegStartPoint =
+      //   trimSpawnSeg.kind.segment[isStart ? 'start' : 'end']
+      const trimSpawnSegStartPoint = trimSpawnSeg.kind.segment.start
+      const trimSpawnSegEndPoint = trimSpawnSeg.kind.segment.end
+      const coincidentConstraintWithTrimSpawnPointAndOtherLine = objects.find(
+        (obj) => {
+          if (
+            obj?.kind?.type !== 'Constraint' ||
+            obj.kind.constraint.type !== 'Coincident'
+          ) {
+            return false
+          }
+          return (
+            obj.kind.constraint.segments.includes(side.coincidentWithPointId) &&
+            // obj.kind.constraint.points.includes(trimSpawnSegStartPoint)
+            (obj.kind.constraint.segments.includes(trimSpawnSegStartPoint) ||
+              obj.kind.constraint.segments.includes(trimSpawnSegEndPoint))
+          )
+        }
+      )
+      console.log(
+        'coincidentConstraintWithTrimSpawnPointAndOtherLine',
+        coincidentConstraintWithTrimSpawnPointAndOtherLine
+      )
+      return !!coincidentConstraintWithTrimSpawnPointAndOtherLine
+    }
+    return false
+  }
+
+  const startIsFree = isSideFree(trimSides.startSide)
+  const endIsFree = isSideFree(trimSides.endSide, false)
+  if (startIsFree && endIsFree) {
+    return {
+      type: 'simpleDelete',
+    }
+  }
+  console.log('not simple', {
+    trimSides,
+    objects,
+    trimSpawnSeg,
+    startIsFree,
+    endIsFree,
+  })
+  // console.log('startIsFree, endIsFree', startIsFree, endIsFree)
+  return {
+    type: 'otherCases',
+  }
+}
+
 // Pure function that processes trim operations on a polyline
 // Returns the final scene graph delta and source delta
 export async function processTrimOperations({
@@ -470,35 +558,41 @@ export async function processTrimOperations({
     const objects = currentSceneGraph.new_graph.objects
 
     // Find first intersection starting from lastPointIndex
-    const foundIntersection = findFirstIntersectionWithPolylineSegment(
-      points,
-      objects,
-      lastPointIndex
-    )
+    const trimSpawn = findNextTrimSpawn(points, objects, lastPointIndex)
 
-    if (!foundIntersection) {
+    if (!trimSpawn) {
       // No more intersections found, we're done
       break
     }
 
     // Second pass: Find all segments that intersect with the intersected segment
     const segmentIntersections = findSegmentsThatIntersect(
-      foundIntersection.segmentId,
+      trimSpawn.segmentId,
       objects
     )
 
     const trimSides = findTwoClosestPointsToIntersection(
-      foundIntersection.location,
-      foundIntersection.segmentId,
+      trimSpawn.location,
+      trimSpawn.segmentId,
       segmentIntersections,
       objects
     )
 
     // Early continue if trimSides is an error
     if (trimSides instanceof Error) {
-      lastPointIndex = foundIntersection.pointIndex + 1
+      lastPointIndex = trimSpawn.pointIndex + 1
       continue
     }
+    const trimSpawnSeg = objects[trimSpawn.segmentId]
+    // if (trimSpawnSeg.kind.type !== 'Segment' || trimSpawnSeg.kind.segment.type !== 'Line') {
+    //   lastPointIndex = trimSpawn.pointIndex + 1
+    //   continue
+    // }
+    // const t0:
+    // console.log('trimSides', trimSpawnSeg)
+
+    const decision = decideTrimCase({ trimSides, objects, trimSpawnSeg })
+    console.log('decision', decision)
 
     const trimSegmentDoseNotIntersectWithOtherSegments =
       trimSides.startSide.type === 'endpoint' &&
@@ -510,13 +604,15 @@ export async function processTrimOperations({
         trimSides.startSide.type !== 'endpoint')
 
     // Only delete if segment has no intersections with other segments
-    if (trimSegmentDoseNotIntersectWithOtherSegments) {
+    if (decision.type === 'simpleDelete') {
+      // if (trimSegmentDoseNotIntersectWithOtherSegments) {
       const deleteResult = await deleteSegmentWithNoIntersections({
         rustContext,
         sketchId,
-        segmentId: foundIntersection.segmentId,
+        segmentId: trimSpawn.segmentId,
         invalidates_ids,
       })
+      console.log('deleteResult', deleteResult)
 
       if (deleteResult.error) {
         console.error('Failed to delete segment:', deleteResult.error)
@@ -527,18 +623,19 @@ export async function processTrimOperations({
       invalidates_ids = deleteResult.invalidates_ids
       lastDeleteResult = deleteResult.lastDeleteResult
       currentSceneGraph = deleteResult.currentSceneGraph || currentSceneGraph
-      lastPointIndex = foundIntersection.pointIndex + 1
+      // keep current index (no increment) to re-check same polyline segment for additional intersections
+      lastPointIndex = trimSpawn.pointIndex
       continue
     }
 
     // Handle endpoint-to-intersection case (move endpoint to intersection)
     if (trimSegmentHasIntersectionWithOtherSegmentOnOneSideOnly) {
-      const segment = objects[foundIntersection.segmentId]
+      const segment = objects[trimSpawn.segmentId]
       if (
         segment.kind.type !== 'Segment' ||
         segment.kind.segment.type !== 'Line'
       ) {
-        lastPointIndex = foundIntersection.pointIndex + 1
+        lastPointIndex = trimSpawn.pointIndex + 1
         continue
       }
 
@@ -551,7 +648,7 @@ export async function processTrimOperations({
         endPoint.kind.type !== 'Segment' ||
         endPoint.kind.segment.type !== 'Point'
       ) {
-        lastPointIndex = foundIntersection.pointIndex + 1
+        lastPointIndex = trimSpawn.pointIndex + 1
         continue
       }
 
@@ -583,7 +680,7 @@ export async function processTrimOperations({
               },
             },
           ],
-          await jsAppSettings()
+          await jsAppSettings(rustContext.settingsActor)
         )
 
         invalidates_ids =
@@ -641,12 +738,13 @@ export async function processTrimOperations({
       trimSides.startSide.type !== 'intersection' &&
       trimSides.endSide.type !== 'intersection'
     ) {
+      lastPointIndex = trimSpawn.pointIndex + 1
       continue
     }
     const splitResult = await splitSegmentAtIntersections({
       rustContext,
       sketchId,
-      foundIntersection,
+      foundIntersection: trimSpawn,
       trimSides,
       objects,
       invalidates_ids,
@@ -660,7 +758,7 @@ export async function processTrimOperations({
     invalidates_ids = splitResult.invalidates_ids
     lastDeleteResult = splitResult.lastDeleteResult
     currentSceneGraph = splitResult.currentSceneGraph || currentSceneGraph
-    lastPointIndex = splitResult.lastPointIndex
+    lastPointIndex = splitResult.lastPointIndex + 1
   }
 
   // Round all point coordinates before returning
@@ -708,7 +806,7 @@ export async function processTrimOperations({
           0,
           sketchId,
           pointSegmentsToRound,
-          await jsAppSettings()
+          await jsAppSettings(rustContext.settingsActor)
         )
         invalidates_ids =
           roundingResult.sceneGraphDelta.invalidates_ids || invalidates_ids
@@ -738,7 +836,7 @@ export async function processTrimOperations({
 // Pure function: Finds the first intersection between the polyline and any scene segment
 // Loops over polyline segments and checks each against all scene segments
 // Returns null if no intersection is found
-export function findFirstIntersectionWithPolylineSegment(
+export function findNextTrimSpawn(
   points: Vector3[],
   objects: SceneGraphDelta['new_graph']['objects'],
   startIndex = 0
@@ -846,7 +944,7 @@ export function findSegmentsThatIntersect(
             point: segmentIntersection.point,
             segmentId: otherSegmentId,
             type: 'coincidentWithOtherLineEnd',
-            coincidentWithPointId: segmentIntersection.isStart
+            coincidentWithPointId: !segmentIntersection.isStart
               ? otherObj.kind.segment.start
               : otherObj.kind.segment.end,
           })
@@ -872,16 +970,16 @@ export function findTwoClosestPointsToIntersection(
   segmentIntersections: SegmentConverge[],
   objects: SceneGraphDelta['new_graph']['objects']
 ): SegmentTrimSides | Error {
-  const segmentObj = objects[segmentId]
+  const trimSpawnObj = objects[segmentId]
   if (
-    segmentObj?.kind?.type !== 'Segment' ||
-    segmentObj.kind.segment.type !== 'Line'
+    trimSpawnObj?.kind?.type !== 'Segment' ||
+    trimSpawnObj.kind.segment.type !== 'Line'
   ) {
     return new Error('Segment is not a line segment')
   }
 
-  const startPoint = getPointCoords(segmentObj.kind.segment.start, objects)
-  const endPoint = getPointCoords(segmentObj.kind.segment.end, objects)
+  const startPoint = getPointCoords(trimSpawnObj.kind.segment.start, objects)
+  const endPoint = getPointCoords(trimSpawnObj.kind.segment.end, objects)
 
   if (!startPoint || !endPoint) {
     return new Error('Could not get segment endpoint coordinates')

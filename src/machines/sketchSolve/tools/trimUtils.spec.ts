@@ -848,3 +848,39 @@ sketch(on = YZ) {
     expect(result.kclSource.text).toBe(expectedCode)
   })
 })
+
+describe('Multi-segment trim - trim line through multiple segments', () => {
+  it('should delete both segments when a single section of the trim line intersects two segments (rare but important edge case) ', async () => {
+    const baseKclCode = `@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line2 = sketch2::line(start = [var 4mm, var 3mm], end = [var 4mm, var -3mm])
+  line1 = sketch2::line(start = [var -4mm, var 3mm], end = [var -4mm, var -3mm])
+}
+`
+
+    const trimPoints: Coords2d[] = [
+      [-5, 1],
+      [5, 1],
+    ]
+
+    const result = await executeTrimFlow({
+      kclCode: baseKclCode,
+      trimPoints,
+      sketchId: 0,
+    })
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (result instanceof Error) {
+      throw result
+    }
+
+    const expectedCode = `@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+}
+`
+
+    expect(result.kclSource.text).toBe(expectedCode)
+  })
+})

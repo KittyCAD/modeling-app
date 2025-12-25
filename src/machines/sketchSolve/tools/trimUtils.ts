@@ -12,7 +12,7 @@ import type RustContext from '@src/lib/rustContext'
 import type { DeepPartial } from '@src/lib/types'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
+import { isArray, roundOff } from '@src/lib/utils'
 
 // Epsilon constants for geometric calculations
 const EPSILON_PARALLEL = 1e-10
@@ -523,7 +523,7 @@ export function getNextTrimCoords({
             type: 'trimSpawn',
             trimSpawnSegId: obj.id,
             trimSpawnCoords: intersection,
-            nextIndex: i + 1, // Advance to next polyline segment to avoid rechecking
+            nextIndex: i, // return current index to re-check same polyline segment for additional intersections
           }
         }
       }
@@ -552,7 +552,7 @@ export function getNextTrimCoords({
             type: 'trimSpawn',
             trimSpawnSegId: obj.id,
             trimSpawnCoords: intersection,
-            nextIndex: i + 1, // Advance to next polyline segment to avoid rechecking
+            nextIndex: i, // return current index to re-check same polyline segment for additional intersections
           }
         }
       }
@@ -2288,13 +2288,21 @@ export function createOnAreaSelectEndCallback({
           lastResult = result
         }
 
-        // Move to next segment
+        // Move to next segment (or re-check same segment if deletion occurred)
+        // When a segment is deleted, nextIndex will be the same point index, allowing us to
+        // find additional intersections on the same polyline segment
         const oldStartIndex = startIndex
         startIndex = nextTrimResult.nextIndex
 
-        // Fail-safe: if nextIndex didn't advance, force it to advance
+        // Fail-safe: if nextIndex didn't advance and we didn't delete, force it to advance
+        // This prevents infinite loops in edge cases
         if (startIndex <= oldStartIndex) {
-          startIndex = oldStartIndex + 1
+          // Check if we actually deleted a segment (simpleTrim operation)
+          const wasDeleted =
+            isArray(strategy) && strategy.some((op) => op.type === 'simpleTrim')
+          if (!wasDeleted) {
+            startIndex = oldStartIndex + 1
+          }
         }
       }
 
