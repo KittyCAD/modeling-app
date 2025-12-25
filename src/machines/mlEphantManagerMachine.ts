@@ -1,5 +1,5 @@
-import env from '@src/env'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
+import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
@@ -265,14 +265,11 @@ export const mlEphantManagerMachine = setup({
         args.input.context?.conversationId
       const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
 
-      const ws = await Socket(
-        WebSocket,
-        (env().VITE_MLEPHANT_WEBSOCKET_URL ?? '/ws/ml/copilot') +
-          (maybeConversationId
-            ? `?conversation_id=${maybeConversationId}&replay=true`
-            : ''),
-        args.input.context.apiToken
-      )
+      const querystring = maybeConversationId
+        ? `?conversation_id=${maybeConversationId}&replay=true`
+        : ''
+      const url = withMlephantWebSocketURL(querystring)
+      const ws = await Socket(WebSocket, url, args.input.context.apiToken)
       ws.binaryType = 'arraybuffer'
 
       // TODO: Get the server side to instead insert "interrupt"...

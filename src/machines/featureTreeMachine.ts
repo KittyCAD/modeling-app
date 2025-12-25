@@ -15,7 +15,7 @@ import type { EnterEditFlowProps } from '@src/lib/operations'
 import { enterEditFlow } from '@src/lib/operations'
 import type { KclManager } from '@src/lang/KclManager'
 import type RustContext from '@src/lib/rustContext'
-import { commandBarActor } from '@src/lib/singletons'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { err } from '@src/lib/trap'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
@@ -69,6 +69,7 @@ type FeatureTreeContext = {
   rustContext: RustContext
   kclManager: KclManager
   sceneEntitiesManager: SceneEntities
+  commandBarActor: CommandBarActorType
 }
 
 export const featureTreeMachine = setup({
@@ -86,7 +87,7 @@ export const featureTreeMachine = setup({
         input,
       }: {
         input: EnterEditFlowProps & {
-          commandBarSend: (typeof commandBarActor)['send']
+          commandBarSend: CommandBarActorType['send']
         }
       }) => {
         return new Promise((resolve, reject) => {
@@ -423,7 +424,7 @@ export const featureTreeMachine = setup({
                 // currentOperation is guaranteed to be defined here
                 operation: context.currentOperation!,
                 artifact,
-                commandBarSend: commandBarActor.send,
+                commandBarSend: context.commandBarActor.send,
                 rustContext: context.rustContext,
                 code: context.kclManager.code,
                 artifactGraph: context.kclManager.artifactGraph,

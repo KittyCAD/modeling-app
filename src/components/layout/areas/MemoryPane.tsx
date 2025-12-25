@@ -15,6 +15,8 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { kclManager } from '@src/lib/singletons'
+import { Suspense, use } from 'react'
+import Loading from '@src/components/Loading'
 
 export const MemoryPaneMenu = () => {
   const variables = kclManager.variablesSignal.value
@@ -62,7 +64,9 @@ export function MemoryPane(props: AreaTypeComponentProps) {
         Menu={MemoryPaneMenu}
         onClose={props.onClose}
       />
-      <MemoryPaneContents />
+      <Suspense fallback={<Loading>Loading...</Loading>}>
+        <MemoryPaneContents />
+      </Suspense>
     </LayoutPanel>
   )
 }
@@ -71,7 +75,8 @@ export const MemoryPaneContents = () => {
   const theme = useResolvedTheme()
   const variables = kclManager.variablesSignal.value
   const { state } = useModelingContext()
-  const ProcessedMemory = processMemory(variables)
+  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const ProcessedMemory = processMemory(variables, wasmInstance)
 
   return (
     <div className="h-full relative">
@@ -104,7 +109,7 @@ export const MemoryPaneContents = () => {
 
 export const processMemory = (
   variables: VariableMap,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ) => {
   const processedMemory: Record<
     string,

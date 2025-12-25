@@ -3470,6 +3470,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             inner: SketchBlock {
                 arguments,
                 body,
+                is_being_edited: false,
                 non_code_meta,
                 digest: None,
             },

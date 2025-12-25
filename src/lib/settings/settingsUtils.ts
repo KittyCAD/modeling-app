@@ -279,9 +279,9 @@ function localStorageProjectSettingsPath() {
   return '/' + BROWSER_PROJECT_NAME + '/project.toml'
 }
 
-export function readLocalStorageAppSettingsFile():
-  | DeepPartial<Configuration>
-  | Error {
+export function readLocalStorageAppSettingsFile(
+  wasmInstance: ModuleType
+): DeepPartial<Configuration> | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored =
     localStorage.getItem(localStorageAppSettingsPath()) ??
@@ -289,16 +289,16 @@ export function readLocalStorageAppSettingsFile():
     ''
 
   if (stored === '') {
-    return defaultAppSettings()
+    return defaultAppSettings(wasmInstance)
   }
 
   try {
-    return parseAppSettings(stored)
+    return parseAppSettings(stored, wasmInstance)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
-    const settings = defaultAppSettings()
+    const settings = defaultAppSettings(wasmInstance)
     if (err(settings)) return settings
-    const tomlStr = serializeConfiguration(settings)
+    const tomlStr = serializeConfiguration(settings, wasmInstance)
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageAppSettingsPath(), tomlStr)
@@ -306,21 +306,21 @@ export function readLocalStorageAppSettingsFile():
   }
 }
 
-export function readLocalStorageProjectSettingsFile():
-  | DeepPartial<ProjectConfiguration>
-  | Error {
+export function readLocalStorageProjectSettingsFile(
+  wasmInstance: ModuleType
+): DeepPartial<ProjectConfiguration> | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored = localStorage.getItem(localStorageProjectSettingsPath()) ?? ''
 
   if (stored === '') {
-    return defaultProjectSettings()
+    return defaultProjectSettings(wasmInstance)
   }
 
-  const projectSettings = parseProjectSettings(stored)
+  const projectSettings = parseProjectSettings(stored, wasmInstance)
   if (err(projectSettings)) {
-    const settings = defaultProjectSettings()
+    const settings = defaultProjectSettings(wasmInstance)
     if (err(settings)) return settings
-    const tomlStr = serializeProjectConfiguration(settings)
+    const tomlStr = serializeProjectConfiguration(settings, wasmInstance)
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
@@ -343,16 +343,16 @@ export interface AppSettings {
  * Relies on WASM for TOML de/serialization.
  */
 export async function loadAndValidateSettings(
-  initPromise: Promise<ModuleType>,
+  initPromise: Promise<ModuleType> | ModuleType,
   projectPath?: string
 ): Promise<AppSettings> {
   // Make sure we have wasm initialized.
-  await initPromise
+  const wasmInstance = await initPromise
 
   // Load the app settings from the file system or localStorage.
   const appSettingsPayload = window.electron
-    ? await readAppSettingsFile(window.electron)
-    : readLocalStorageAppSettingsFile()
+    ? await readAppSettingsFile(window.electron, wasmInstance)
+    : readLocalStorageAppSettingsFile(wasmInstance)
 
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
@@ -374,8 +374,12 @@ export async function loadAndValidateSettings(
   // Load the project settings if they exist
   if (projectPath) {
     let projectSettings = window.electron
-      ? await readProjectSettingsFile(window.electron, projectPath)
-      : readLocalStorageProjectSettingsFile()
+      ? await readProjectSettingsFile(
+          window.electron,
+          projectPath,
+          wasmInstance
+        )
+      : readLocalStorageProjectSettingsFile(wasmInstance)
 
     // An id was missing. Create one and write it to disk immediately.
     if (!err(projectSettings) && !projectSettings.settings?.meta?.id) {
@@ -387,7 +391,10 @@ export async function loadAndValidateSettings(
         },
       }
       // Duplicated from settingsUtils.ts
-      const projectTomlString = serializeProjectConfiguration(projectSettings)
+      const projectTomlString = serializeProjectConfiguration(
+        projectSettings,
+        wasmInstance
+      )
       if (err(projectTomlString))
         return Promise.reject(new Error('Failed to serialize project settings'))
       if (window.electron) {
@@ -420,7 +427,8 @@ export async function loadAndValidateSettings(
 
       // Duplicated from settingsUtils.ts
       const projectTomlString = serializeProjectConfiguration(
-        settingsPayloadToProjectConfiguration(projectSettingsNew)
+        settingsPayloadToProjectConfiguration(projectSettingsNew),
+        wasmInstance
       )
       if (err(projectTomlString))
         return Promise.reject(
@@ -460,7 +468,8 @@ export async function loadAndValidateSettings(
 
       // Duplicated from settingsUtils.ts
       const projectTomlString = serializeProjectConfiguration(
-        settingsPayloadToProjectConfiguration(projectSettingsNew)
+        settingsPayloadToProjectConfiguration(projectSettingsNew),
+        wasmInstance
       )
 
       if (err(projectTomlString))
@@ -557,12 +566,13 @@ export async function saveSettings(
   projectPath?: string
 ) {
   // Make sure we have wasm initialized.
-  await initPromise
+  const wasmInstance = await initPromise
 
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
   const appTomlString = serializeConfiguration(
-    settingsPayloadToConfiguration(jsAppSettings)
+    settingsPayloadToConfiguration(jsAppSettings),
+    wasmInstance
   )
   if (err(appTomlString)) return
 
@@ -581,7 +591,8 @@ export async function saveSettings(
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
   const projectTomlString = serializeProjectConfiguration(
-    settingsPayloadToProjectConfiguration(jsProjectSettings)
+    settingsPayloadToProjectConfiguration(jsProjectSettings),
+    wasmInstance
   )
   if (err(projectTomlString)) return
 

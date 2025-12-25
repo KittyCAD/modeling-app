@@ -272,7 +272,7 @@ contextBridge.exposeInMainWorld('electron', {
   arch: process.arch,
   platform: process.platform,
   version: process.version,
-  join: path.join,
+  join: path.join.bind(path),
   sep: path.sep,
   takeElectronWindowScreenshot,
   os: {

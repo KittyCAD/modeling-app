@@ -37,6 +37,19 @@ const onCodeNotificationClick: MouseEventHandler = (e) => {
   kclManager.scrollToFirstErrorDiagnosticIfExists()
 }
 
+function ModelingArea() {
+  const authToken = useToken()
+  return (
+    <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
+      <Toolbar />
+      <ConnectionStream authToken={authToken} />
+      <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
+        <Gizmo />
+      </div>
+    </div>
+  )
+}
+
 /**
  * For now we have strict area types but in future
  * we should make it possible to register your own in an extension.
@@ -132,16 +145,3 @@ export const testAreaLibrary = Object.freeze({
   variables: testArea('Variables'),
   debug: testArea('Debug'),
 } satisfies Record<AreaType, AreaTypeDefinition>)
-
-function ModelingArea() {
-  const authToken = useToken()
-  return (
-    <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
-      <Toolbar />
-      <ConnectionStream authToken={authToken} />
-      <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
-        <Gizmo />
-      </div>
-    </div>
-  )
-}

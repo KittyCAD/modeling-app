@@ -3,6 +3,7 @@ import { users, oauth2 } from '@kittycad/lib'
 import env, {
   updateEnvironment,
   updateEnvironmentKittycadWebSocketUrl,
+  updateEnvironmentMlephantWebSocketUrl,
   generateDomainsFromBaseDomain,
 } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
@@ -11,7 +12,10 @@ import {
   OAUTH2_DEVICE_CLIENT_ID,
   COOKIE_NAME_PREFIX,
 } from '@src/lib/constants'
-import { readEnvironmentConfigurationKittycadWebSocketUrl } from '@src/lib/desktop'
+import {
+  readEnvironmentConfigurationKittycadWebSocketUrl,
+  readEnvironmentConfigurationMlephantWebSocketUrl,
+} from '@src/lib/desktop'
 import {
   listAllEnvironments,
   readEnvironmentConfigurationToken,
@@ -176,7 +180,7 @@ async function getUser(input: { token?: string }) {
       ''
     updateEnvironment(environment)
 
-    // Update the WebSocket URL override
+    // Update the Engine WebSocket URL override
     const cachedKittycadWebSocketUrl =
       await readEnvironmentConfigurationKittycadWebSocketUrl(
         window.electron,
@@ -186,6 +190,19 @@ async function getUser(input: { token?: string }) {
       updateEnvironmentKittycadWebSocketUrl(
         environment,
         cachedKittycadWebSocketUrl
+      )
+    }
+
+    // Update the Zookeeper WebSocket URL override
+    const cachedMlephantWebSocketUrl =
+      await readEnvironmentConfigurationMlephantWebSocketUrl(
+        window.electron,
+        environment
+      )
+    if (cachedMlephantWebSocketUrl) {
+      updateEnvironmentMlephantWebSocketUrl(
+        environment,
+        cachedMlephantWebSocketUrl
       )
     }
   }

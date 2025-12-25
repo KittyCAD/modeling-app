@@ -233,6 +233,7 @@ function ProjectMenuPopover({
     [
       platform,
       findCommand,
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       commandBarActor.send,
       engineCommandManager,
       onProjectClose,

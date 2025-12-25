@@ -120,6 +120,7 @@ revolve001 = revolve(profile001, angle = 270deg, axis = X)`
         artifactGraph,
         selection,
         radius,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -155,6 +156,7 @@ revolve001 = revolve(profile001, angle = 270deg, axis = X)`
         artifactGraph,
         selection,
         radius,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -204,6 +206,7 @@ fillet001 = fillet(
         selection,
         radius,
         tag: 'myTag',
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -249,6 +252,7 @@ fillet001 = fillet(
         selection,
         radius,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -298,6 +302,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         selection,
         radius,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -347,6 +352,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         artifactGraph,
         selection,
         radius,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -386,6 +392,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         artifactGraph,
         selection,
         radius,
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -422,6 +429,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         artifactGraph,
         selection,
         length,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -457,6 +465,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         artifactGraph,
         selection,
         length,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -510,6 +519,7 @@ chamfer001 = chamfer(
         selection,
         length,
         secondLength,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -557,6 +567,7 @@ chamfer001 = chamfer(
         length,
         angle,
         tag: 'myChamferTag',
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -601,6 +612,7 @@ chamfer001 = chamfer(
         selection,
         length,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -652,6 +664,7 @@ chamfer001 = chamfer(
         artifactGraph,
         selection,
         length,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -691,6 +704,7 @@ chamfer001 = chamfer(
         artifactGraph,
         selection,
         length,
+        wasmInstance: instanceInThisFile,
       })
 
       if (err(result)) {
@@ -742,7 +756,7 @@ chamfer001 = chamfer(
     }
 
     // delete edge treatment
-    const result = await deleteEdgeTreatment(ast, selection)
+    const result = await deleteEdgeTreatment(ast, selection, instanceInThisFile)
     if (err(result)) {
       expect(result).toContain(expectedCode)
       return result
@@ -1081,7 +1095,11 @@ revolve001 = revolve(
           }
 
           // delete edge treatment
-          const result = await deleteEdgeTreatment(ast, selection)
+          const result = await deleteEdgeTreatment(
+            ast,
+            selection,
+            instanceInThisFile
+          )
           if (err(result)) {
             throw result
           }
@@ -1143,7 +1161,11 @@ revolve001 = revolve(`
           }
 
           // delete edge treatment
-          const result = await deleteEdgeTreatment(ast, selection)
+          const result = await deleteEdgeTreatment(
+            ast,
+            selection,
+            instanceInThisFile
+          )
           if (err(result)) {
             throw result
           }

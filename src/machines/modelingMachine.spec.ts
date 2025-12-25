@@ -993,6 +993,7 @@ p3 = [342.51, 216.38],
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
               artifact.codeRef.pathToNode,
+              instanceInThisFile,
               'CallExpressionKw'
             )
             if (err(callExp)) {
@@ -1126,6 +1127,7 @@ p3 = [342.51, 216.38],
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
               artifact.codeRef.pathToNode,
+              instanceInThisFile,
               'CallExpressionKw'
             )
             if (err(callExp)) {
@@ -1156,12 +1158,12 @@ p3 = [342.51, 216.38],
                   valueCalculated: '20',
                   variableDeclarationAst: createVariableDeclaration(
                     'test_variable',
-                    createLiteral('20')
+                    createLiteral('20', instanceInThisFile)
                   ),
                   variableIdentifierAst: createIdentifier(
                     'test_variable'
                   ) as any,
-                  valueAst: createLiteral('20'),
+                  valueAst: createLiteral('20', instanceInThisFile),
                 },
               },
             })
@@ -1273,6 +1275,7 @@ p3 = [342.51, 216.38],
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
               artifact.codeRef.pathToNode,
+              instanceInThisFile,
               'CallExpressionKw'
             )
             if (err(callExp)) {
@@ -1404,6 +1407,7 @@ p3 = [342.51, 216.38],
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
               artifact.codeRef.pathToNode,
+              instanceInThisFile,
               'CallExpressionKw'
             )
             if (err(callExp)) {

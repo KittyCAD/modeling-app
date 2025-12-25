@@ -27,7 +27,7 @@ let ENVIRONMENT: EnvironmentConfigurationRuntime | null = null
 /** Update the runtime environment */
 export const updateEnvironment = (environment: string | null) => {
   if (environment === '') {
-    console.log('reject updating environment: value is the empty string.')
+    console.log('reject updating environment: value is the empty string')
     return
   }
 
@@ -42,22 +42,26 @@ export const updateEnvironment = (environment: string | null) => {
       }
     }
   }
-  console.log('updating environment', environment)
+  console.log('updating environment:', environment)
 }
 
 export const updateEnvironmentKittycadWebSocketUrl = (
   environmentName: string,
   kittycadWebSocketUrl: string
 ) => {
-  if (environmentName === '') {
-    console.log(
-      'reject updating kittycadWebSocketUrl, environment: value is the empty string.'
-    )
-    return
-  }
   if (!ENVIRONMENT) return
   if (ENVIRONMENT.domain === environmentName) {
     ENVIRONMENT.kittycadWebSocketUrl = kittycadWebSocketUrl
+  }
+}
+
+export const updateEnvironmentMlephantWebSocketUrl = (
+  environmentName: string,
+  mlephantWebSocketUrl: string
+) => {
+  if (!ENVIRONMENT) return
+  if (ENVIRONMENT.domain === environmentName) {
+    ENVIRONMENT.mlephantWebSocketUrl = mlephantWebSocketUrl
   }
 }
 
@@ -67,6 +71,7 @@ const getEnvironmentFromThisFile = (baseDomain: string) => {
     ENVIRONMENT || {
       domain: baseDomain,
       kittycadWebSocketUrl: undefined,
+      mlephantWebSocketUrl: undefined,
     }
   )
 }
@@ -139,7 +144,7 @@ export default (): EnvironmentVariables => {
   }
 
   /**
-   * Allow .env.development.local to override the default WebSocket URLs
+   * Allow .env.development.local to override default WebSocket URLs
    */
   if (
     env.VITE_KITTYCAD_WEBSOCKET_URL &&
@@ -154,9 +159,12 @@ export default (): EnvironmentVariables => {
     MLEPHANT_WEBSOCKET_URL = env.VITE_MLEPHANT_WEBSOCKET_URL
   }
 
-  // Allow the environment configuration to override the Engine WebSocket URL
+  // Allow the in-app settings to override local WebSocket URLs
   if (environment.kittycadWebSocketUrl) {
     KITTYCAD_WEBSOCKET_URL = environment.kittycadWebSocketUrl
+  }
+  if (environment.mlephantWebSocketUrl) {
+    MLEPHANT_WEBSOCKET_URL = environment.mlephantWebSocketUrl
   }
 
   const environmentVariables: EnvironmentVariables = {

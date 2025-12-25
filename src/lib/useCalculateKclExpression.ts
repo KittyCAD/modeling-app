@@ -125,7 +125,12 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     if (!variables) return
-    const varInfo = findAllPreviousVariables(ast, variables, endingSourceRange)
+    const varInfo = findAllPreviousVariables(
+      ast,
+      variables,
+      endingSourceRange,
+      wasmInstance
+    )
     setAvailableVarInfo(varInfo)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [ast, variables, endingSourceRange])

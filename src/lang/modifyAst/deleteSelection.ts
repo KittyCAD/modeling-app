@@ -29,7 +29,10 @@ export async function deleteSelectionPromise({
     selection,
     systemDeps.kclManager.variables,
     systemDeps.kclManager.artifactGraph,
-    systemDeps.sceneEntitiesManager.getFaceDetails
+    await systemDeps.kclManager.wasmInstancePromise,
+    systemDeps.sceneEntitiesManager.getFaceDetails.bind(
+      systemDeps.sceneEntitiesManager
+    )
   )
   if (err(modifiedAst)) {
     return new Error(deletionErrorMessage)
