@@ -7,6 +7,7 @@ import {
   useNavigation,
   useRouteLoaderData,
 } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
@@ -92,6 +93,11 @@ export function RouteProvider({ children }: { children: ReactNode }) {
             // Nothing written out yet by ourselves, or it's not the same as the current file content
             // -> this must be an external change -> re-execute.
             kclManager.updateCodeStateEditor(code)
+
+            toast('Reloading file from disk')
+            // If we can use emojis this looks nice:
+            // toast('Reloading file from disk', { icon: '📁' })
+
             await kclManager.executeCode()
 
             // Only reset camera if we're not in sketch mode, in sketch mode we always want to keep ortho camera
