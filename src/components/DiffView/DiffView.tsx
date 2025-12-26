@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { MergeView, unifiedMergeView } from '@codemirror/merge'
+import { unifiedMergeView } from '@codemirror/merge'
 import { EditorState, Prec } from '@codemirror/state'
 import {
   dropCursor,
@@ -18,8 +18,9 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { AreaTypeComponentProps } from '@src/lib/layout'
+import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { lintGutter } from '@codemirror/lint'
+import type { LanguageSupport } from '@codemirror/language'
 import { bracketMatching, foldGutter } from '@codemirror/language'
 import { highlightSelectionMatches } from '@codemirror/search'
 import { useLspContext } from '@src/components/LspProvider'
@@ -31,16 +32,15 @@ import { historyCompartment } from '@src/editor/compartments'
 import { history } from '@codemirror/commands'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ActionButton } from '@src/components/ActionButton'
+import { reportRejection } from '@src/lib/trap'
 
-async function setDiff(
-  editorRef,
-  mergeViewRef,
-  absoluteFilePath,
-  left,
-  right,
-  kclLSP
+function setDiff(
+  editorRef: React.RefObject<HTMLDivElement | null>,
+  mergeViewRef: React.RefObject<EditorView | null>,
+  left: string,
+  right: string,
+  kclLSP: LanguageSupport | null
 ) {
-  const originalFile = await window.electron.readFile(absoluteFilePath, 'utf-8')
   if (mergeViewRef.current) {
     mergeViewRef.current.destroy()
   }
@@ -76,6 +76,11 @@ async function setDiff(
     extensions.push(Prec.highest(kclLSP))
   }
 
+  if (!editorRef.current) {
+    console.warn('unable to set the diff view, missing editor reference')
+    return
+  }
+
   const mergeView = new EditorView({
     parent: editorRef.current,
     doc: right,
@@ -85,14 +90,21 @@ async function setDiff(
   mergeViewRef.current = mergeView
 }
 
-async function copyToClipboard(message: string) {
-  await navigator.clipboard.writeText(message)
+function cleanUp(mergeViewRef: React.RefObject<EditorView | null>) {
+  if (mergeViewRef.current) {
+    mergeViewRef.current.destroy()
+  }
+  mergeViewRef.current = null
+}
+
+function copyToClipboard(message: string) {
+  navigator.clipboard.writeText(message).catch(reportRejection)
 }
 
 export const DiffView = (props: AreaTypeComponentProps) => {
   useSignals()
   const editor = useRef<HTMLDivElement>(null)
-  const mergeView = useRef<MergeView>(null)
+  const mergeView = useRef<EditorView>(null)
   const settings = useSettings()
   const applicationProjectDirectory = settings.app.projectDirectory.current
   const { kclLSP } = useLspContext()
@@ -100,21 +112,24 @@ export const DiffView = (props: AreaTypeComponentProps) => {
 
   useEffect(() => {
     if (!lastEntrySelected) return
+    if (!mergeView.current) {
+      console.warn('unable to find merge view')
+      return
+    }
     setDiff(
       editor,
       mergeView,
-      lastEntrySelected.absoluteFilePath,
       lastEntrySelected.left,
       lastEntrySelected.right,
       kclLSP
     )
-  }, [lastEntrySelected])
+  }, [lastEntrySelected, kclLSP])
 
   useEffect(() => {
     return () => {
       // When you leave the page remove the last entry selected
       kclManager.history.lastEntrySelected.value = null
-      mergeView.current?.destroy()
+      cleanUp(mergeView)
     }
   }, [])
   return (

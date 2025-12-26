@@ -1,16 +1,4 @@
-import { useEffect, useRef } from 'react'
-import { MergeView, unifiedMergeView } from '@codemirror/merge'
-import { EditorState, Prec } from '@codemirror/state'
-import {
-  dropCursor,
-  EditorView,
-  highlightActiveLine,
-  highlightActiveLineGutter,
-  highlightSpecialChars,
-  lineNumbers,
-  rectangularSelection,
-} from '@codemirror/view'
-import { getSettings, kclManager } from '@src/lib/singletons'
+import { kclManager } from '@src/lib/singletons'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useSettings } from '@src/lib/singletons'
 import {
@@ -19,23 +7,15 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { AreaTypeComponentProps } from '@src/lib/layout'
-import { lintGutter } from '@codemirror/lint'
-import { bracketMatching, foldGutter } from '@codemirror/language'
-import { highlightSelectionMatches } from '@codemirror/search'
-import { useLspContext } from '@src/components/LspProvider'
-import { editorTheme, themeCompartment } from '@src/lib/codeEditor'
-import { getResolvedTheme } from '@src/lib/theme'
-import { kclAstExtension } from '@src/editor/plugins/ast'
-import { lineHighlightField } from '@src/editor/highlightextension'
-import { historyCompartment } from '@src/editor/compartments'
-import { history } from '@codemirror/commands'
-import { CustomIcon } from '@src/components/CustomIcon'
-import { useLoaderData } from 'react-router-dom'
+import type { AreaTypeComponentProps } from '@src/lib/layout'
 import type { IndexLoaderData } from '@src/lib/types'
+import { useLoaderData } from 'react-router-dom'
+import { CustomIcon } from '@src/components/CustomIcon'
 
-function timeSince(date) {
-  const seconds = Math.floor((new Date() - date) / 1000)
+function timeSince(date: Date) {
+  const now = new Date()
+  // @ts-expect-error: You can subtract two dates.
+  const seconds = Math.floor((now - date) / 1000)
   let interval = seconds / 31536000
   if (interval > 1) {
     return Math.floor(interval) + ' years'
@@ -64,7 +44,6 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
   const theValue = kclManager.history.entries.value
   const settings = useSettings()
   const applicationProjectDirectory = settings.app.projectDirectory.current
-  const { kclLSP } = useLspContext()
   const loaderData = useLoaderData() as IndexLoaderData
   const { project } = loaderData
 
@@ -100,10 +79,6 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
                   e.absoluteFilePath,
                   applicationProjectDirectory
                 )
-                const outlineCSS = false
-                  ? 'outline outline-1 outline-primary'
-                  : 'outline-0 outline-none'
-                const isSelected = false
                 const month = e.date.toLocaleString('default', {
                   month: 'long',
                 })
@@ -111,7 +86,9 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
                 const year = e.date.getFullYear()
                 return (
                   <div
-                    className={`px-2 h-5 flex flex-row items-center justify-between text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:bg-gray-300/50 hover:bg-gray-300/50 ${isSelected ? 'bg-primary/10' : ''}`}
+                    className={`px-2 h-5 flex flex-row items-center justify-between text-xs cursor-pointer -outline-offset-1 hover:outline hover:outline-1 hover:bg-gray-300/50 hover:bg-gray-300/50`}
+                    role="button"
+                    tabIndex="0"
                     onClick={() =>
                       (kclManager.history.lastEntrySelected.value = e)
                     }

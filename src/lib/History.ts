@@ -11,7 +11,7 @@ export interface HistoryEntry {
 
 export class History {
   public entries = signal<HistoryEntry[]>([])
-  public lastEntrySelected = signal(null)
+  public lastEntrySelected = signal<HistoryEntry | null>(null)
   private _maxLength = 100
   constructor() {}
 
