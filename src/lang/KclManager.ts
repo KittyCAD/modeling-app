@@ -1518,7 +1518,6 @@ export class KclManager extends EventTarget {
       // and file-system watchers which read, will receive empty data during
       // writes.
       clearTimeout(this.timeoutWriter)
-      this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
           if (!this._currentFilePath)
@@ -1529,6 +1528,7 @@ export class KclManager extends EventTarget {
             code: this.code ?? '',
             time: Date.now(),
           }
+          this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
           electron
             .writeFile(this._currentFilePath, this.code ?? '')
             .then(resolve)
