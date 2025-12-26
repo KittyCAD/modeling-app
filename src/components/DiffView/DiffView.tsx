@@ -30,6 +30,7 @@ import { lineHighlightField } from '@src/editor/highlightextension'
 import { historyCompartment } from '@src/editor/compartments'
 import { history } from '@codemirror/commands'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { ActionButton } from '@src/components/ActionButton'
 
 async function setDiff(
   editorRef,
@@ -84,6 +85,10 @@ async function setDiff(
   mergeViewRef.current = mergeView
 }
 
+async function copyToClipboard (message: string) {
+  await navigator.clipboard.writeText(message)
+}
+
 export const DiffView = (props: AreaTypeComponentProps) => {
   useSignals()
   const editor = useRef<HTMLDivElement>(null)
@@ -104,7 +109,6 @@ export const DiffView = (props: AreaTypeComponentProps) => {
       kclLSP
     )
   }, [lastEntrySelected])
-
   return (
     <LayoutPanel
       title={props.layout.label}
@@ -118,6 +122,22 @@ export const DiffView = (props: AreaTypeComponentProps) => {
         onClose={props.onClose}
       />
       <div className="w-full h-full relative overflow-y-auto overflow-x-hidden">
+        <div className="flex flex-row justify-around py-2">
+         { lastEntrySelected && (<><ActionButton
+            Element="button"
+            className="py-2"
+            onClick={() => copyToClipboard(lastEntrySelected ? lastEntrySelected.left : '')}
+          >
+            Copy original to clipboard
+          </ActionButton>
+          <ActionButton
+            className="py-2"
+            Element="button"
+            onClick={() => copyToClipboard(lastEntrySelected ? lastEntrySelected.right : '')}
+            >
+              Copy new to clipboard
+            </ActionButton></>)}
+        </div>
         <div ref={editor}></div>
       </div>
     </LayoutPanel>
