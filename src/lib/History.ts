@@ -15,7 +15,7 @@ export class History {
   private _maxLength = 100
   constructor() {}
 
-  get maxLength () {
+  get maxLength() {
     return this._maxLength
   }
 

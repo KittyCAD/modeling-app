@@ -130,31 +130,69 @@ export const DiffView = (props: AreaTypeComponentProps) => {
         onClose={props.onClose}
       />
       <div className="w-full h-full relative overflow-y-auto overflow-x-hidden">
-        <div className="flex flex-row justify-around py-2">
+        <div className="flex flex-col justify-around py-2">
           {lastEntrySelected && (
             <>
-              <ActionButton
-                Element="button"
-                className="py-2"
-                onClick={() =>
-                  copyToClipboard(
-                    lastEntrySelected ? lastEntrySelected.left : ''
-                  )
-                }
+              <div
+                className={`px-2 h-5 flex flex-row items-center justify-between text-xs -outline-offset-1`}
               >
-                Copy original to clipboard
-              </ActionButton>
-              <ActionButton
-                className="py-2"
-                Element="button"
-                onClick={() =>
-                  copyToClipboard(
-                    lastEntrySelected ? lastEntrySelected.right : ''
-                  )
-                }
-              >
-                Copy new to clipboard
-              </ActionButton>
+                <div className="flex flex-row items-center">
+                  <CustomIcon
+                    name="kcl"
+                    className="inline-block w-4 text-current mr-1"
+                  />
+                  <span className="pr-2 text-ellipsis whitespace-nowrap">
+                    {parentPathRelativeToProject(
+                      lastEntrySelected.absoluteFilePath,
+                      applicationProjectDirectory
+                    )}
+                  </span>
+                  <span className="text-xs text-chalkboard-80 dark:text-chalkboard-30 text-ellipsis whitespace-nowrap">
+                    {parentPathRelativeToApplicationDirectory(
+                      lastEntrySelected.absoluteFilePath,
+                      applicationProjectDirectory
+                    )}
+                  </span>
+                </div>
+                {lastEntrySelected.wroteToDisk && (
+                  <span className="text-ellipsis whitespace-nowrap px-2">
+                    saved to disk
+                  </span>
+                )}
+                <span className="text-ellipsis whitespace-nowrap px-2">
+                  (
+                  {lastEntrySelected.date.toLocaleString('default', {
+                    month: 'long',
+                  })}{' '}
+                  {lastEntrySelected.date.getDate()},{' '}
+                  {lastEntrySelected.date.getFullYear()} at{' '}
+                  {lastEntrySelected.date.toLocaleTimeString()})
+                </span>
+              </div>
+              <div className="flex flex-row justify-around mt-2">
+                <ActionButton
+                  Element="button"
+                  className="py-1"
+                  onClick={() =>
+                    copyToClipboard(
+                      lastEntrySelected ? lastEntrySelected.left : ''
+                    )
+                  }
+                >
+                  Copy original to clipboard
+                </ActionButton>
+                <ActionButton
+                  className="py-1"
+                  Element="button"
+                  onClick={() =>
+                    copyToClipboard(
+                      lastEntrySelected ? lastEntrySelected.right : ''
+                    )
+                  }
+                >
+                  Copy new to clipboard
+                </ActionButton>
+              </div>
             </>
           )}
         </div>
