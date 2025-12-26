@@ -82,7 +82,7 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
       />
       <div className="w-full h-full relative overflow-y-auto overflow-x-hidden">
         <div className="w-full h-full flex flex-col">
-          <div className="overflow-auto pb-12 inset-0">
+          <div className="pb-12 inset-0">
             {theValue
               .filter((e) => {
                 const projectDirectoryName = getProjectDirectoryFromKCLFilePath(
@@ -121,13 +121,19 @@ export const HistoryView = (props: AreaTypeComponentProps) => {
                         name="kcl"
                         className="inline-block w-4 text-current mr-1"
                       />
-                      <span className="pr-2">{path}</span>
-                      <span className="text-xs text-chalkboard-80 dark:text-chalkboard-30 ">
+                      <span className="pr-2 text-ellipsis whitespace-nowrap">
+                        {path}
+                      </span>
+                      <span className="text-xs text-chalkboard-80 dark:text-chalkboard-30 text-ellipsis whitespace-nowrap">
                         {projectPath}
                       </span>
                     </div>
-                    {e.wroteToDisk && <span>saved to disk</span>}
-                    <span>
+                    {e.wroteToDisk && (
+                      <span className="text-ellipsis whitespace-nowrap px-2">
+                        saved to disk
+                      </span>
+                    )}
+                    <span className="text-ellipsis whitespace-nowrap px-2">
                       {timeSince(e.date)} ago ({month} {dayOfMonth}, {year} at{' '}
                       {e.date.toLocaleTimeString()})
                     </span>
