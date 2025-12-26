@@ -149,7 +149,7 @@ impl ExecutorContext {
         #[cfg(not(feature = "artifact-graph"))]
         let next_object_id = 0;
         #[cfg(feature = "artifact-graph")]
-        let next_object_id = exec_state.global.root_module_artifacts.scene_objects.len();
+        let next_object_id = exec_state.mod_local.artifacts.object_id_generator.peek_id();
         let mut local_state = ModuleState::new(
             path.clone(),
             exec_state.stack().memory.clone(),
@@ -158,6 +158,13 @@ impl ExecutorContext {
             exec_state.mod_local.sketch_mode,
             exec_state.mod_local.freedom_analysis,
         );
+        #[cfg(feature = "artifact-graph")]
+        {
+            local_state
+                .artifacts
+                .scene_objects
+                .clone_from(&exec_state.mod_local.artifacts.scene_objects);
+        }
         if preserve_mem.normal() {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         }
@@ -1060,17 +1067,44 @@ impl Node<SketchBlock> {
 
         // Create the sketch block scene object. This needs to happen before
         // scene objects created inside the sketch block so that its ID is
-        // stable across sketch block edits.
+        // stable across sketch block edits. In order to create the sketch block
+        // scene object, we need to make sure the plane scene object is created.
         let mut arg_on: crate::execution::Plane = args.get_kw_arg("on", &RuntimeType::plane(), exec_state)?;
-        // Ensure that the plane has been created in the engine and has an
-        // ObjectId.
-        ensure_sketch_plane_in_engine(&mut arg_on, exec_state, &args).await?;
-        let on_object_id = arg_on.object_id.ok_or_else(|| {
-            KclError::new_internal(KclErrorDetails::new(
-                "Sketch block `on` Plane should have an Object ID, but it doesn't".to_owned(),
-                vec![range],
-            ))
-        })?;
+        // Ensure that the plane has an ObjectId. Always create an Object so
+        // that we're consistent with IDs.
+        if exec_state.sketch_mode() {
+            if arg_on.object_id.is_none() {
+                #[cfg(not(feature = "artifact-graph"))]
+                {
+                    // Without artifact graph, we just create a new object ID.
+                    // It will never be used for anything meaningful.
+                    arg_on.object_id = Some(exec_state.next_object_id());
+                }
+                #[cfg(feature = "artifact-graph")]
+                {
+                    // Look up the last object. Since this is where we would have
+                    // created it in real execution, it will be the last object.
+                    let Some(last_object) = exec_state.mod_local.artifacts.scene_objects.last() else {
+                        return Err(KclError::new_internal(KclErrorDetails::new(
+                            "In sketch mode, the `on` plane argument must refer to an existing plane object."
+                                .to_owned(),
+                            vec![range],
+                        )));
+                    };
+                    arg_on.object_id = Some(last_object.id);
+                }
+            }
+        } else {
+            // Ensure that it's been created in the engine.
+            ensure_sketch_plane_in_engine(&mut arg_on, exec_state, &args).await?;
+        }
+        let on_object_id = if let Some(object_id) = arg_on.object_id {
+            object_id
+        } else {
+            let message = "The `on` argument should have an object after ensure_sketch_plane_in_engine".to_owned();
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+        };
         let arg_on_expr_name = self
             .arguments
             .iter()
@@ -1111,20 +1145,10 @@ impl Node<SketchBlock> {
         let sketch_id = {
             use crate::execution::{Artifact, ArtifactId, CodeRef, SketchBlock};
 
-            let on_object = exec_state
-                .mod_local
-                .artifacts
-                .scene_objects
-                .get(on_object_id.0)
-                .ok_or_else(|| {
-                    KclError::new_internal(KclErrorDetails::new(
-                        format!("sketch block `on` Object not found for id: {on_object_id:?}"),
-                        vec![range],
-                    ))
-                })?;
+            let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
 
             // Get the plane artifact ID so that we can do an exclusive borrow.
-            let plane_artifact_id = on_object.artifact_id;
+            let plane_artifact_id = on_object.map(|object| object.artifact_id);
 
             let sketch_id = exec_state.next_object_id();
 
@@ -1147,7 +1171,7 @@ impl Node<SketchBlock> {
             // Create and add the sketch block artifact
             exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
                 id: artifact_id,
-                plane_id: Some(plane_artifact_id),
+                plane_id: plane_artifact_id,
                 code_ref: CodeRef::placeholder(range),
                 sketch_id,
             }));
@@ -1365,7 +1389,7 @@ impl Node<SketchBlock> {
                 exec_state.set_scene_object(scene_object);
             }
             // Update the sketch scene object with the segments.
-            let Some(sketch_object) = exec_state.mod_local.artifacts.scene_objects.get_mut(sketch_id.0) else {
+            let Some(sketch_object) = exec_state.mod_local.artifacts.scene_object_by_id_mut(sketch_id) else {
                 let message = format!("Sketch object not found after it was just created; id={:?}", sketch_id);
                 debug_assert!(false, "{}", &message);
                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
@@ -1375,7 +1399,11 @@ impl Node<SketchBlock> {
                     "Expected Sketch object after it was just created to be a sketch kind; id={:?}, actual={:?}",
                     sketch_id, sketch_object
                 );
-                debug_assert!(false, "{}", &message);
+                debug_assert!(
+                    false,
+                    "{}; scene_objects={:#?}",
+                    &message, &exec_state.mod_local.artifacts.scene_objects
+                );
                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
             };
             sketch.segments.extend(segment_object_ids);

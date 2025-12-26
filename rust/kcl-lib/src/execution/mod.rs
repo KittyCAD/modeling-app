@@ -42,15 +42,13 @@ use crate::{
         import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
     },
+    front::{Object, ObjectId},
     fs::FileManager,
     modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
 };
 #[cfg(feature = "artifact-graph")]
-use crate::{
-    collections::AhashIndexSet,
-    front::{Number, Object, ObjectId},
-};
+use crate::{collections::AhashIndexSet, front::Number};
 
 pub(crate) mod annotations;
 #[cfg(feature = "artifact-graph")]
@@ -196,13 +194,36 @@ pub struct ExecOutcome {
     pub default_planes: Option<DefaultPlanes>,
 }
 
+impl ExecOutcome {
+    pub fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
+        #[cfg(feature = "artifact-graph")]
+        {
+            if let Some(first_object) = self.scene_objects.first() {
+                // The scene objects are stored in order, but they may start
+                // with a non-zero ID. If so, shift the ID down to get the
+                // index.
+                debug_assert!(id.0 >= first_object.id.0);
+                let index = id.0.checked_sub(first_object.id.0);
+                index.and_then(|i| self.scene_objects.get(i))
+            } else {
+                None
+            }
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = id;
+            None
+        }
+    }
+}
+
 /// Configuration for mock execution.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
-    /// True if executing in sketch mode. Only a single sketch block will be
-    /// executed. All other code is ignored.
-    pub sketch_mode: bool,
+    /// The `ObjectId` of the sketch block to execute for sketch mode. Only the
+    /// specified sketch block will be executed. All other code is ignored.
+    pub sketch_block_id: Option<ObjectId>,
     /// True to do more costly analysis of whether the sketch block segments are
     /// under-constrained.
     pub freedom_analysis: bool,
@@ -216,7 +237,7 @@ impl Default for MockConfig {
         Self {
             // By default, use previous memory. This is usually what you want.
             use_prev_memory: true,
-            sketch_mode: false,
+            sketch_block_id: None,
             freedom_analysis: true,
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited: AhashIndexSet::default(),
@@ -226,9 +247,9 @@ impl Default for MockConfig {
 
 impl MockConfig {
     /// Create a new mock config for sketch mode.
-    pub fn new_sketch_mode() -> Self {
+    pub fn new_sketch_mode(sketch_block_id: ObjectId) -> Self {
         Self {
-            sketch_mode: true,
+            sketch_block_id: Some(sketch_block_id),
             ..Default::default()
         }
     }
@@ -734,6 +755,11 @@ impl ExecutorContext {
                 Some(mem) => {
                     *exec_state.mut_stack() = mem.stack;
                     exec_state.global.module_infos = mem.module_infos;
+                    #[cfg(feature = "artifact-graph")]
+                    {
+                        let len = exec_state.mod_local.artifacts.object_id_generator.peek_id();
+                        exec_state.mod_local.artifacts.scene_objects = mem.scene_objects[0..len].to_vec();
+                    }
                 }
                 None => self.prepare_mem(&mut exec_state).await?,
             }
@@ -753,10 +779,18 @@ impl ExecutorContext {
 
         let mut stack = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
+        #[cfg(feature = "artifact-graph")]
+        let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
+        #[cfg(not(feature = "artifact-graph"))]
+        let scene_objects = Default::default();
         let outcome = exec_state.into_exec_outcome(result.0, self).await;
 
         stack.squash_env(result.0);
-        let state = cache::SketchModeState { stack, module_infos };
+        let state = cache::SketchModeState {
+            stack,
+            module_infos,
+            scene_objects,
+        };
         cache::write_old_memory(state).await;
 
         Ok(outcome)
@@ -1330,6 +1364,10 @@ impl ExecutorContext {
             let state = cache::SketchModeState {
                 stack,
                 module_infos: exec_state.global.module_infos.clone(),
+                #[cfg(feature = "artifact-graph")]
+                scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
+                #[cfg(not(feature = "artifact-graph"))]
+                scene_objects: Default::default(),
             };
             cache::write_old_memory(state).await;
         }

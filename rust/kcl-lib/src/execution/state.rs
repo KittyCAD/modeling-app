@@ -20,14 +20,14 @@ use crate::{
         memory::{ProgramMemory, Stack},
         types::NumericType,
     },
-    front::ObjectId,
+    front::{Object, ObjectId},
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
     execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ProgramLookup, sketch_solve::Solved},
-    front::{Number, Object},
+    front::Number,
     id::IncIdGenerator,
 };
 
@@ -184,8 +184,11 @@ impl ExecState {
                 ModulePath::Main,
                 ProgramMemory::new(),
                 Default::default(),
-                0,
-                mock_config.sketch_mode,
+                mock_config
+                    .sketch_block_id
+                    .map(|object_id| object_id.0)
+                    .unwrap_or_default(),
+                mock_config.sketch_block_id.is_some(),
                 mock_config.freedom_analysis,
             ),
         }
@@ -343,10 +346,21 @@ impl ExecState {
         ObjectId(self.mod_local.artifacts.object_id_generator.next_id())
     }
 
+    #[cfg(not(feature = "artifact-graph"))]
+    pub fn peek_object_id(&self) -> ObjectId {
+        // The return value should only ever be used when the feature is
+        // enabled,
+        ObjectId(0)
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn peek_object_id(&self) -> ObjectId {
+        ObjectId(self.mod_local.artifacts.object_id_generator.peek_id())
+    }
+
     #[cfg(feature = "artifact-graph")]
     pub fn add_scene_object(&mut self, obj: Object, source_range: SourceRange) -> ObjectId {
         let id = obj.id;
-        debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
         self.mod_local.artifacts.scene_objects.push(obj);
         self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
         id
@@ -356,7 +370,6 @@ impl ExecState {
     /// an ID before we have all the information to create the full object.
     #[cfg(feature = "artifact-graph")]
     pub fn add_placeholder_scene_object(&mut self, id: ObjectId, source_range: SourceRange) -> ObjectId {
-        debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
         self.mod_local
             .artifacts
             .scene_objects
@@ -368,8 +381,7 @@ impl ExecState {
     /// Update a scene object. This is useful to replace a placeholder.
     #[cfg(feature = "artifact-graph")]
     pub fn set_scene_object(&mut self, object: Object) {
-        let id = object.id;
-        self.mod_local.artifacts.scene_objects[id.0] = object;
+        self.mod_local.artifacts.set_scene_object(object);
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -710,6 +722,69 @@ impl ModuleArtifactState {
         let new_module_commands = unprocessed.clone();
         self.commands.extend(unprocessed);
         new_module_commands
+    }
+
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
+    pub(crate) fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
+        #[cfg(feature = "artifact-graph")]
+        {
+            if let Some(first_object) = self.scene_objects.first() {
+                // The scene objects are stored in order, but they may start
+                // with a non-zero ID. If so, shift the ID down to get the
+                // index.
+                debug_assert!(id.0 >= first_object.id.0);
+                let index = id.0.checked_sub(first_object.id.0);
+                index.and_then(|i| self.scene_objects.get(i))
+            } else {
+                None
+            }
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = id;
+            None
+        }
+    }
+
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
+    pub(crate) fn scene_object_by_id_mut(&mut self, id: ObjectId) -> Option<&mut Object> {
+        #[cfg(feature = "artifact-graph")]
+        {
+            if let Some(first_object) = self.scene_objects.first() {
+                // The scene objects are stored in order, but they may start
+                // with a non-zero ID. If so, shift the ID down to get the
+                // index.
+                debug_assert!(id.0 >= first_object.id.0);
+                let index = id.0.checked_sub(first_object.id.0);
+                index.and_then(|i| self.scene_objects.get_mut(i))
+            } else {
+                None
+            }
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            let _ = id;
+            None
+        }
+    }
+
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
+    pub(crate) fn set_scene_object(&mut self, object: Object) {
+        #[cfg(feature = "artifact-graph")]
+        {
+            if let Some(first_object) = self.scene_objects.first() {
+                // The scene objects are stored in order, but they may start
+                // with a non-zero ID. If so, shift the ID down to get the
+                // index.
+                debug_assert!(object.id.0 >= first_object.id.0);
+                let index = object.id.0.checked_sub(first_object.id.0);
+                if let Some(index) = index {
+                    self.scene_objects[index] = object;
+                }
+            }
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        drop(object);
     }
 }
 

@@ -154,13 +154,17 @@ impl Context {
             serde_json::from_str(args_json).map_err(|e| format!("Could not deserialize SketchCtor: {e}"))?;
 
         let ctx = self
+            .create_executor_ctx(settings, None, false)
+            .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
+
+        let mock_ctx = self
             .create_executor_ctx(settings, None, true)
             .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
         let result = guard
-            .new_sketch(&ctx, project, file, version, args)
+            .new_sketch(&ctx, &mock_ctx, project, file, version, args)
             .await
             .map_err(|e| format!("Failed to create new sketch: {:?}", e))?;
 

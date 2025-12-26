@@ -12,6 +12,7 @@ use crate::{
         memory::Stack,
         state::{self as exec_state, ModuleInfoMap},
     },
+    front::Object,
     parsing::ast::types::{Annotation, Node, Program},
     walk::Node as WalkNode,
 };
@@ -141,6 +142,9 @@ pub(crate) struct SketchModeState {
     pub stack: Stack,
     /// The module info map.
     pub module_infos: ModuleInfoMap,
+    /// The scene objects.
+    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
+    pub scene_objects: Vec<Object>,
 }
 
 /// The result of a cache check.
