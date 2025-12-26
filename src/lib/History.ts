@@ -12,13 +12,17 @@ export interface HistoryEntry {
 export class History {
   public entries = signal<HistoryEntry[]>([])
   public lastEntrySelected = signal(null)
-  private maxLength = 100
+  private _maxLength = 100
   constructor() {}
 
-  push (entry: HistoryEntry) {
+  get maxLength () {
+    return this._maxLength
+  }
+
+  push(entry: HistoryEntry) {
     this.entries.value = [entry, ...this.entries.value]
 
-    if (this.entries.value.length >= this.maxLength) {
+    if (this.entries.value.length >= this._maxLength) {
       const allButTheEnd = [...this.entries.value]
       allButTheEnd.pop()
       this.entries.value = allButTheEnd
@@ -26,8 +30,8 @@ export class History {
   }
 
   markWroteToDisk(index: number) {
-      const entries = [...this.entries.value]
-      entries[index].wroteToDisk = true
-      this.entries.value = entries
+    const entries = [...this.entries.value]
+    entries[index].wroteToDisk = true
+    this.entries.value = entries
   }
 }

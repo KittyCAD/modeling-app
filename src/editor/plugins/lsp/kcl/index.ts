@@ -139,16 +139,14 @@ export class KclPlugin implements PluginValue {
     }
 
     if (viewUpdate.docChanged) {
-      this.kclManager.history.push(
-        {
-          type: '',
-          date: new Date(),
-          absoluteFilePath: this.kclManager.currentFilePath || '',
-          right: viewUpdate.state.doc.toString(),
-          left: `${this.kclManager.code}`,
-          wroteToDisk: false,
-        }
-      )
+      this.kclManager.history.push({
+        type: '',
+        date: new Date(),
+        absoluteFilePath: this.kclManager.currentFilePath || '',
+        right: viewUpdate.state.doc.toString(),
+        left: `${this.kclManager.code}`,
+        wroteToDisk: false,
+      })
     }
 
     // If we have a user select event, we want to update what parts are
