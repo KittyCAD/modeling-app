@@ -3,6 +3,7 @@ import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+import { type UserFeatureEntry, users } from '@kittycad/lib'
 
 import { NIL as uuidNIL } from 'uuid'
 
@@ -18,6 +19,7 @@ import {
 import { isDesktop } from '@src/lib/isDesktop'
 import type {
   BaseUnit,
+  HideOnPlatformValue,
   SettingProps,
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
@@ -26,7 +28,8 @@ import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
+import { getTokenFromEnvOrCookie } from '@src/machines/authMachine'
 
 /**
  * A setting that can be set at the user or project level
@@ -130,8 +133,62 @@ export class Setting<T = unknown> {
 
 const MS_IN_MINUTE = 1000 * 60
 
+/**
+ * Helper function to fetch user features and determine if the corresponding setting should be visible
+ * Returns 'both' (hidden) if feature flag doesn't exist, or null (visible) if it does
+ */
+/**
+ * Higher-order function that returns an async hideOnPlatform function.
+ * The returned function checks if the specified feature flag exists,
+ * and returns null (visible) if it does, or the defaultHide value if it doesn't.
+ *
+ * @param featureFlagId - The feature flag ID to check for
+ * @param defaultHide - The value to return if the feature flag is not found (defaults to 'both')
+ * @returns An async function that resolves to the hideOnPlatform value
+ */
+function hideWithoutFeatureFlag(
+  featureFlagId: UserFeatureEntry['id'],
+  defaultHide: HideOnPlatformValue = 'both'
+): () => Promise<HideOnPlatformValue | null> {
+  return async (): Promise<HideOnPlatformValue | null> => {
+    try {
+      // Try to get a token - check env first, then cookie for web
+      const token = getTokenFromEnvOrCookie()
+
+      if (!token) {
+        return defaultHide
+      }
+
+      // Use the KittyCAD library to fetch user features
+      const client = createKCClient(token)
+      const featuresData = await kcCall(() =>
+        users.user_features_get({ client })
+      )
+
+      if (featuresData instanceof Error) {
+        console.error('Error fetching user features:', featuresData.message)
+        return defaultHide
+      }
+
+      // Check if the specified feature flag exists
+      const hasFeatureFlag = featuresData.features.find(
+        (feat: { id: string }) => feat.id === featureFlagId
+      )
+
+      if (hasFeatureFlag) {
+        return null // null means visible (no hiding)
+      } else {
+        return defaultHide
+      }
+    } catch (error) {
+      console.error(`Error checking feature flag ${featureFlagId}:`, error)
+      return defaultHide
+    }
+  }
+}
+
 export function createSettings() {
-  return {
+  const settings = {
     // Gotcha: If you add a new setting here, you will likely need to update rust/kcl-lib/src/settings/types/mod.rs as well.
     app: {
       /**
@@ -393,11 +450,13 @@ export function createSettings() {
       }),
       /**
        * Use the new sketch mode implementation - solver (Dev only)
+       * Visibility is controlled by the 'new_sketch_mode' feature flag.
+       * If the feature flag exists, the setting will be visible.
+       * Otherwise, it will be hidden.
        */
       useNewSketchMode: new Setting<boolean>({
         hideOnLevel: 'project',
-        // Don't show in prod, consider switching to use AdamS's endpoint https://github.com/KittyCAD/common/pull/1704
-        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
+        hideOnPlatform: hideWithoutFeatureFlag('new_sketch_mode', 'both'),
         defaultValue: false,
         description: 'Use the new sketch mode implementation',
         validate: (v) => typeof v === 'boolean',
@@ -693,6 +752,8 @@ export function createSettings() {
       }),
     },
   }
+
+  return settings
 }
 
 export type SettingsType = ReturnType<typeof createSettings>
