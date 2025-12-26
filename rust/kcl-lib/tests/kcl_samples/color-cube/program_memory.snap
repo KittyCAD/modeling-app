@@ -14,7 +14,10 @@ description: Variables in memory after executing color-cube.kcl
         "z": 50.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 0
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -55,7 +58,10 @@ description: Variables in memory after executing color-cube.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 2
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -105,7 +111,10 @@ description: Variables in memory after executing color-cube.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 3
+      },
       "xAxis": {
         "x": -1.0,
         "y": 0.0,
@@ -137,7 +146,10 @@ description: Variables in memory after executing color-cube.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 4
+      },
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -191,7 +203,10 @@ description: Variables in memory after executing color-cube.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 5
+      },
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -223,7 +238,10 @@ description: Variables in memory after executing color-cube.kcl
         "z": -50.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 1
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

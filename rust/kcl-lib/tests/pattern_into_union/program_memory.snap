@@ -245,8 +245,11 @@ description: Variables in memory after executing pattern_into_union.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -500,8 +503,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -701,8 +707,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -902,8 +911,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1103,8 +1115,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1304,8 +1319,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1505,8 +1523,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1706,8 +1727,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1907,8 +1931,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2108,8 +2135,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2309,8 +2339,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2510,8 +2543,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2711,8 +2747,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2912,8 +2951,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3113,8 +3155,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3314,8 +3359,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3515,8 +3563,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3716,8 +3767,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3917,8 +3971,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4118,8 +4175,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4319,8 +4379,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4520,8 +4583,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4726,8 +4792,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4927,8 +4996,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5128,8 +5200,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5329,8 +5404,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5530,8 +5608,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5731,8 +5812,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5932,8 +6016,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6133,8 +6220,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6334,8 +6424,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6535,8 +6628,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6736,8 +6832,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6937,8 +7036,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7138,8 +7240,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7339,8 +7444,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7540,8 +7648,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7741,8 +7852,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7942,8 +8056,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8143,8 +8260,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8344,8 +8464,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8545,8 +8668,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8746,8 +8872,11 @@ description: Variables in memory after executing pattern_into_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,

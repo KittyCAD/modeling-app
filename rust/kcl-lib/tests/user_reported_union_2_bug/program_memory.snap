@@ -125,8 +125,11 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XY",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -359,8 +362,11 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XY",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -556,8 +562,11 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XY",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -732,8 +741,11 @@ description: Variables in memory after executing user_reported_union_2_bug.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "XY",
+          "object_id": 1
+        },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

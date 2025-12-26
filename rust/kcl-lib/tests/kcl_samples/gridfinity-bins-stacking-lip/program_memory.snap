@@ -266,8 +266,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -455,8 +458,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -644,8 +650,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -833,8 +842,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1022,8 +1034,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1211,8 +1226,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1400,8 +1418,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1589,8 +1610,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1778,8 +1802,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1967,8 +1994,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2156,8 +2186,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2345,8 +2378,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2534,8 +2570,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2723,8 +2762,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2912,8 +2954,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3101,8 +3146,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3290,8 +3338,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3479,8 +3530,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3668,8 +3722,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3857,8 +3914,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4046,8 +4106,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4235,8 +4298,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4424,8 +4490,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4613,8 +4682,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4839,8 +4911,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5136,8 +5211,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5433,8 +5511,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5730,8 +5811,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6027,8 +6111,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6324,8 +6411,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6612,8 +6702,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6801,8 +6894,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -6990,8 +7086,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7179,8 +7278,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7368,8 +7470,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7557,8 +7662,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7746,8 +7854,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7935,8 +8046,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8124,8 +8238,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8313,8 +8430,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8502,8 +8622,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8691,8 +8814,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8880,8 +9006,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9069,8 +9198,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9258,8 +9390,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9447,8 +9582,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9636,8 +9774,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9825,8 +9966,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10014,8 +10158,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10203,8 +10350,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10392,8 +10542,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10581,8 +10734,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10770,8 +10926,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10959,8 +11118,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -11200,8 +11362,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "z": 4.75,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 3
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -11477,8 +11642,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -11666,8 +11834,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -11855,8 +12026,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -12044,8 +12218,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -12447,8 +12624,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 11.75,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 6
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -12770,8 +12950,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 11.75,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 6
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -13098,8 +13281,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 11.75,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 7
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -13421,8 +13607,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 11.75,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 7
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -13762,8 +13951,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 11.75,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 4
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -14085,8 +14277,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 11.75,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 4
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -14419,8 +14614,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "z": 11.75,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 4
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -14742,8 +14940,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "z": 11.75,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 6
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -15065,8 +15266,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "z": 11.75,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 5
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -15388,8 +15592,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "z": 11.75,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 7
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -15759,8 +15966,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 11.75,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 5
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16082,8 +16292,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 11.75,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 5
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16380,8 +16593,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "z": 0.0,
                       "units": "mm"
                     },
+                    "sceneInfo": {
+                      "kind": "XY",
+                      "object_id": 2
+                    },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -16762,8 +16978,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "z": 0.0,
                       "units": "mm"
                     },
+                    "sceneInfo": {
+                      "kind": "XY",
+                      "object_id": 2
+                    },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -17144,8 +17363,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "z": 0.0,
                       "units": "mm"
                     },
+                    "sceneInfo": {
+                      "kind": "XY",
+                      "object_id": 2
+                    },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -17526,8 +17748,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "z": 0.0,
                       "units": "mm"
                     },
+                    "sceneInfo": {
+                      "kind": "XY",
+                      "object_id": 2
+                    },
                     "type": "plane",
-                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -18165,8 +18390,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -18354,8 +18582,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -18543,8 +18774,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -18732,8 +18966,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -18955,8 +19192,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XY",
+            "object_id": 2
+          },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -19220,8 +19460,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -19409,8 +19652,11 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,

@@ -173,8 +173,11 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -538,8 +541,11 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                   "z": 0.0,
                   "units": "mm"
                 },
+                "sceneInfo": {
+                  "kind": "YZ",
+                  "object_id": 0
+                },
                 "type": "plane",
-                "value": "YZ",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -808,8 +814,11 @@ description: Variables in memory after executing sketch_on_face_union.kcl
               "z": 0.0,
               "units": "mm"
             },
+            "sceneInfo": {
+              "kind": "YZ",
+              "object_id": 0
+            },
             "type": "plane",
-            "value": "YZ",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -1127,8 +1136,11 @@ description: Variables in memory after executing sketch_on_face_union.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "YZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1376,8 +1388,11 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1548,8 +1563,11 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1684,8 +1702,11 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1810,8 +1831,11 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2037,8 +2061,11 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -2207,8 +2234,11 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2372,8 +2402,11 @@ description: Variables in memory after executing sketch_on_face_union.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2430,7 +2463,10 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
+      "sceneInfo": {
+        "kind": "YZ",
+        "object_id": 0
+      },
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -2462,7 +2498,10 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 1
+      },
       "xAxis": {
         "x": 0.0,
         "y": 1.0,

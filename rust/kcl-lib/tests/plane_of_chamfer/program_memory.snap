@@ -144,8 +144,11 @@ description: Variables in memory after executing plane_of_chamfer.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XY",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -233,14 +236,16 @@ description: Variables in memory after executing plane_of_chamfer.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": 1,
       "origin": {
         "x": 0.6866666666666666,
         "y": 0.6035533905932737,
         "z": 1.603553390593274,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 1
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.00000000000000005551115123125783,
@@ -335,8 +340,11 @@ description: Variables in memory after executing plane_of_chamfer.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "XY",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -412,7 +420,10 @@ description: Variables in memory after executing plane_of_chamfer.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
+      "sceneInfo": {
+        "kind": "XY",
+        "object_id": 0
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -466,15 +477,17 @@ description: Variables in memory after executing plane_of_chamfer.kcl
       "on": {
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "objectId": 1,
         "origin": {
           "x": 0.6866666666666666,
           "y": 0.6035533905932737,
           "z": 1.603553390593274,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 1
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.00000000000000005551115123125783,
