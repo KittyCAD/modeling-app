@@ -93,11 +93,18 @@ export function RouteProvider({ children }: { children: ReactNode }) {
             // -> this must be an external change -> re-execute.
             kclManager.updateCodeStateEditor(code)
             await kclManager.executeCode()
-            await resetCameraPosition({
-              sceneInfra,
-              engineCommandManager,
-              settingsActor,
-            })
+
+            // Only reset camera if we're not in sketch mode, in sketch mode we always want to keep ortho camera
+            const isInSketchMode =
+              kclManager.modelingState?.matches('Sketch') ||
+              kclManager.modelingState?.matches('sketchSolveMode')
+            if (!isInSketchMode) {
+              await resetCameraPosition({
+                sceneInfra,
+                engineCommandManager,
+                settingsActor,
+              })
+            }
           }
         }
       } else {
