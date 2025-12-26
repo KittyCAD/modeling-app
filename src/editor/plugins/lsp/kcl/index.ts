@@ -139,17 +139,16 @@ export class KclPlugin implements PluginValue {
     }
 
     if (viewUpdate.docChanged) {
-      this.kclManager.history.entries.value = [
+      this.kclManager.history.push(
         {
           type: '',
           date: new Date(),
-          absoluteFilePath: this.kclManager.currentFilePath,
+          absoluteFilePath: this.kclManager.currentFilePath || '',
           right: viewUpdate.state.doc.toString(),
           left: `${this.kclManager.code}`,
           wroteToDisk: false,
-        },
-        ...this.kclManager.history.entries.value,
-      ]
+        }
+      )
     }
 
     // If we have a user select event, we want to update what parts are
@@ -171,9 +170,7 @@ export class KclPlugin implements PluginValue {
     this.kclManager.code = newCode
 
     if (viewUpdate.docChanged) {
-      const entries = [...this.kclManager.history.entries.value]
-      entries[0].wroteToDisk = true
-      this.kclManager.history.entries.value = entries
+      this.kclManager.history.markWroteToDisk(0)
     }
 
     void this.kclManager.writeToFile().then(() => {
