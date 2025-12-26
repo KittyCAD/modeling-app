@@ -85,7 +85,7 @@ async function setDiff(
   mergeViewRef.current = mergeView
 }
 
-async function copyToClipboard (message: string) {
+async function copyToClipboard(message: string) {
   await navigator.clipboard.writeText(message)
 }
 
@@ -109,6 +109,14 @@ export const DiffView = (props: AreaTypeComponentProps) => {
       kclLSP
     )
   }, [lastEntrySelected])
+
+  useEffect(() => {
+    return () => {
+      // When you leave the page remove the last entry selected
+      kclManager.history.lastEntrySelected.value = null
+      mergeView.current?.destroy()
+    }
+  }, [])
   return (
     <LayoutPanel
       title={props.layout.label}
@@ -123,20 +131,32 @@ export const DiffView = (props: AreaTypeComponentProps) => {
       />
       <div className="w-full h-full relative overflow-y-auto overflow-x-hidden">
         <div className="flex flex-row justify-around py-2">
-         { lastEntrySelected && (<><ActionButton
-            Element="button"
-            className="py-2"
-            onClick={() => copyToClipboard(lastEntrySelected ? lastEntrySelected.left : '')}
-          >
-            Copy original to clipboard
-          </ActionButton>
-          <ActionButton
-            className="py-2"
-            Element="button"
-            onClick={() => copyToClipboard(lastEntrySelected ? lastEntrySelected.right : '')}
-            >
-              Copy new to clipboard
-            </ActionButton></>)}
+          {lastEntrySelected && (
+            <>
+              <ActionButton
+                Element="button"
+                className="py-2"
+                onClick={() =>
+                  copyToClipboard(
+                    lastEntrySelected ? lastEntrySelected.left : ''
+                  )
+                }
+              >
+                Copy original to clipboard
+              </ActionButton>
+              <ActionButton
+                className="py-2"
+                Element="button"
+                onClick={() =>
+                  copyToClipboard(
+                    lastEntrySelected ? lastEntrySelected.right : ''
+                  )
+                }
+              >
+                Copy new to clipboard
+              </ActionButton>
+            </>
+          )}
         </div>
         <div ref={editor}></div>
       </div>
