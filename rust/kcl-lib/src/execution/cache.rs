@@ -20,7 +20,7 @@ lazy_static::lazy_static! {
     /// A static mutable lock for updating the last successful execution state for the cache.
     static ref OLD_AST: Arc<RwLock<Option<GlobalState>>> = Default::default();
     // The last successful run's memory. Not cleared after an unsuccessful run.
-    static ref PREV_MEMORY: Arc<RwLock<Option<(Stack, ModuleInfoMap)>>> = Default::default();
+    static ref PREV_MEMORY: Arc<RwLock<Option<SketchModeState>>> = Default::default();
 }
 
 /// Read the old ast memory from the lock.
@@ -34,12 +34,12 @@ pub(super) async fn write_old_ast(old_state: GlobalState) {
     *old_ast = Some(old_state);
 }
 
-pub(crate) async fn read_old_memory() -> Option<(Stack, ModuleInfoMap)> {
+pub(crate) async fn read_old_memory() -> Option<SketchModeState> {
     let old_mem = PREV_MEMORY.read().await;
     old_mem.clone()
 }
 
-pub(crate) async fn write_old_memory(mem: (Stack, ModuleInfoMap)) {
+pub(crate) async fn write_old_memory(mem: SketchModeState) {
     let mut old_mem = PREV_MEMORY.write().await;
     *old_mem = Some(mem);
 }
@@ -132,6 +132,15 @@ pub(super) struct ModuleState {
     pub(super) exec_state: exec_state::ModuleState,
     /// The memory env for the module.
     pub(super) result_env: EnvironmentRef,
+}
+
+/// Cached state for sketch mode.
+#[derive(Debug, Clone)]
+pub(crate) struct SketchModeState {
+    /// The stack of the main module.
+    pub stack: Stack,
+    /// The module info map.
+    pub module_infos: ModuleInfoMap,
 }
 
 /// The result of a cache check.

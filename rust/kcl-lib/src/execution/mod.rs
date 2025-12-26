@@ -732,8 +732,8 @@ impl ExecutorContext {
         if use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => {
-                    *exec_state.mut_stack() = mem.0;
-                    exec_state.global.module_infos = mem.1;
+                    *exec_state.mut_stack() = mem.stack;
+                    exec_state.global.module_infos = mem.module_infos;
                 }
                 None => self.prepare_mem(&mut exec_state).await?,
             }
@@ -751,12 +751,13 @@ impl ExecutorContext {
         // memory in case another run wants to use them. Note this is just saved to the preserved
         // memory, not to the exec_state which is not cached for mock execution.
 
-        let mut mem = exec_state.stack().clone();
+        let mut stack = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
         let outcome = exec_state.into_exec_outcome(result.0, self).await;
 
-        mem.squash_env(result.0);
-        cache::write_old_memory((mem, module_infos)).await;
+        stack.squash_env(result.0);
+        let state = cache::SketchModeState { stack, module_infos };
+        cache::write_old_memory(state).await;
 
         Ok(outcome)
     }
@@ -1324,9 +1325,13 @@ impl ExecutorContext {
         let env_ref = result.map_err(|(err, env_ref)| exec_state.error_with_outputs(err, env_ref, default_planes))?;
 
         if !self.is_mock() {
-            let mut mem = exec_state.stack().deep_clone();
-            mem.restore_env(env_ref);
-            cache::write_old_memory((mem, exec_state.global.module_infos.clone())).await;
+            let mut stack = exec_state.stack().deep_clone();
+            stack.restore_env(env_ref);
+            let state = cache::SketchModeState {
+                stack,
+                module_infos: exec_state.global.module_infos.clone(),
+            };
+            cache::write_old_memory(state).await;
         }
         let session_data = self.engine.get_session_data().await;
 
