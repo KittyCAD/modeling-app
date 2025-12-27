@@ -30,7 +30,7 @@
     "rollup": "^4.40.0",
     "rollup-plugin-dts": "^6.2.3",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.0.15"
+    "vitest": "^4.0.16"
   },
   "files": ["dist/"]
 }
