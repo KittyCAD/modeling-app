@@ -60,7 +60,14 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import { history, redo, undo } from '@codemirror/commands'
+import {
+  history,
+  historyField,
+  redo,
+  redoDepth,
+  undo,
+  undoDepth,
+} from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
@@ -249,6 +256,12 @@ export class KclManager extends EventTarget {
     otherSelections: [],
     graphSelections: [],
   }
+  undoDepth = signal(0)
+  redoDepth = signal(0)
+  undoListenerEffect = EditorView.updateListener.of((vu) => {
+    this.undoDepth.value = undoDepth(vu.state)
+    this.redoDepth.value = redoDepth(vu.state)
+  })
   /**
    * A client-side representation of the commands that have been sent,
    * the geometry they represent, and the connections between them.
@@ -557,6 +570,7 @@ export class KclManager extends EventTarget {
       baseEditorExtensions(),
       keymapCompartment.of(keymap.of(this.getCodemirrorHotkeys())),
       this.highlightEngineEntitiesEffect,
+      this.undoListenerEffect,
       this.executeKclEffect,
     ]
   }
@@ -1182,7 +1196,6 @@ export class KclManager extends EventTarget {
     )
   }
 
-  /** TODO: make this and `editorState` always guaranteed present */
   get editorView() {
     return this._editorView
   }
