@@ -14,7 +14,7 @@ import type {
   FileExplorerEntry,
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
-import { fsCreateBlankFile } from '@src/editor/plugins/fs'
+import { fsCreateFile, fsDeleteFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { FILE_EXT } from '@src/lib/constants'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
@@ -323,11 +323,16 @@ export const ProjectExplorer = ({
                 },
               })
             } else {
-              systemIOActor.send({
-                type: SystemIOMachineEvents.deleteFileOrFolder,
-                data: {
-                  requestedPath: child.path,
-                },
+              window.electron?.readFile(child.path, 'utf8').then((contents) => {
+                systemIOActor.send({
+                  type: SystemIOMachineEvents.deleteFileOrFolder,
+                  data: {
+                    requestedPath: child.path,
+                  },
+                })
+                kclManager.dispatch(
+                  fsDeleteFile({ path: child.path, contents })
+                )
               })
             }
           },
@@ -557,7 +562,9 @@ export const ProjectExplorer = ({
                       requestedFileNameWithExtension: pathRelativeToParent,
                     },
                   })
-                  kclManager.dispatch(fsCreateBlankFile(requestedAbsolutePath))
+                  kclManager.dispatch(
+                    fsCreateFile({ path: requestedAbsolutePath, contents: '' })
+                  )
                 } else {
                   const requestedAbsolutePath = joinOSPaths(
                     getParentAbsolutePath(row.path),
@@ -569,7 +576,9 @@ export const ProjectExplorer = ({
                       requestedAbsolutePath,
                     },
                   })
-                  kclManager.dispatch(fsCreateBlankFile(requestedAbsolutePath))
+                  kclManager.dispatch(
+                    fsCreateFile({ path: requestedAbsolutePath, contents: '' })
+                  )
                 }
               } else {
                 const requestedAbsoluteFilePathWithExtension = joinOSPaths(

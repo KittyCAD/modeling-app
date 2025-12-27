@@ -16,15 +16,16 @@ import { ActorRefFrom } from 'xstate'
 const fsEffectCompartment = new Compartment()
 export const fsIgnoreAnnotationType = Annotation.define<true>()
 
-const createBlankFile = StateEffect.define<string>()
-const deleteFile = StateEffect.define<string>()
+type FSEffectProps = { path: string; contents: string }
+const createFile = StateEffect.define<FSEffectProps>()
+const deleteFile = StateEffect.define<FSEffectProps>()
 const h = <T>(e: StateEffect<T>): TransactionSpec => ({
   effects: e,
   // Hopefully, makes initial transactions ignored and undo/redo not ignored.
   annotations: [fsIgnoreAnnotationType.of(true)],
 })
-export const fsCreateBlankFile = (path: string) => h(createBlankFile.of(path))
-export const fsDeleteFile = (path: string) => h(deleteFile.of(path))
+export const fsCreateFile = (props: FSEffectProps) => h(createFile.of(props))
+export const fsDeleteFile = (props: FSEffectProps) => h(deleteFile.of(props))
 
 export function buildFSEffectExtension(
   systemIOActor: ActorRefFrom<typeof systemIOMachine>,
@@ -36,24 +37,23 @@ export function buildFSEffectExtension(
         continue
       }
       for (const e of tr.effects) {
-        if (e.is(createBlankFile)) {
+        if (e.is(createFile)) {
           console.log('got a create effect!')
           systemIOActor.send({
             type: SystemIOMachineEvents.createBlankFile,
-            data: { requestedAbsolutePath: e.value },
+            data: { requestedAbsolutePath: e.value.path },
           })
         } else if (e.is(deleteFile)) {
           console.log('got a delete!')
           systemIOActor.send({
             type: SystemIOMachineEvents.deleteFileOrFolder,
-            data: { requestedPath: e.value },
+            data: { requestedPath: e.value.path },
           })
         }
       }
     }
   })
 
-  console.log('wiring up!')
   kclManager.editorView.dispatch({
     effects: [fsEffectCompartment.reconfigure(fsWiredListener)],
   })
@@ -69,10 +69,10 @@ export function fsEffectExtension(): Extension {
   const undoableFs = invertedEffects.of((tr) => {
     const found: StateEffect<unknown>[] = []
     for (const e of tr.effects) {
-      if (e.is(createBlankFile)) {
-        found.push(deleteFile.of(e.value))
+      if (e.is(createFile)) {
+        found.push(deleteFile.of({ path: e.value.path, contents: '' }))
       } else if (e.is(deleteFile)) {
-        found.push(createBlankFile.of(e.value))
+        found.push(createFile.of(e.value))
       }
     }
     return found
