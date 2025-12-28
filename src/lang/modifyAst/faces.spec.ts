@@ -170,7 +170,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         '1',
         rustContextInThisFile
       )) as KclCommandValue
-      const result = addShell({ ast, artifactGraph, faces, thickness })
+      const result = addShell({
+        ast,
+        artifactGraph,
+        faces,
+        thickness,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) {
         throw result
       }
@@ -204,7 +210,13 @@ extrude(p, length = 1000)`
         '1',
         rustContextInThisFile
       )) as KclCommandValue
-      const result = addShell({ ast, artifactGraph, faces, thickness })
+      const result = addShell({
+        ast,
+        artifactGraph,
+        faces,
+        thickness,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) {
         throw result
       }
@@ -236,6 +248,7 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
         faces,
         thickness,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -260,7 +273,13 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
         '1',
         rustContextInThisFile
       )) as KclCommandValue
-      const result = addShell({ ast, artifactGraph, faces, thickness })
+      const result = addShell({
+        ast,
+        artifactGraph,
+        faces,
+        thickness,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) {
         throw result
       }
@@ -290,6 +309,7 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`,
         faces,
         thickness,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -316,7 +336,13 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
         '5',
         rustContextInThisFile
       )) as KclCommandValue
-      const result = addShell({ ast, artifactGraph, faces, thickness })
+      const result = addShell({
+        ast,
+        artifactGraph,
+        faces,
+        thickness,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) {
         throw result
       }
@@ -357,7 +383,13 @@ extrude002 = extrude(profile002, length = 200)`
         '0.1',
         rustContextInThisFile
       )) as KclCommandValue
-      const result = addShell({ ast, artifactGraph, faces, thickness })
+      const result = addShell({
+        ast,
+        artifactGraph,
+        faces,
+        thickness,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) {
         throw result
       }
@@ -409,6 +441,7 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)`)
         blindDiameter: diameter,
         holeType: 'simple',
         holeBottom: 'flat',
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -453,6 +486,7 @@ ${simpleHole}`,
         blindDiameter: diameter,
         holeType: 'simple',
         holeBottom: 'flat',
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -514,6 +548,7 @@ hole002 = hole::hole(
         counterboreDepth: cDepth,
         counterboreDiameter: cDiameter,
         holeBottom: 'flat',
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -582,6 +617,7 @@ ${simpleHole}`,
         countersinkDiameter: cDiameter,
         holeBottom: 'drill',
         drillPointAngle: dAngle,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -963,6 +999,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
           variables,
           plane,
           offset,
+          wasmInstance: instanceInThisFile,
         })
         if (err(result)) {
           throw result
@@ -984,6 +1021,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
           plane,
           offset: newOffset,
           nodeToEdit,
+          wasmInstance: instanceInThisFile,
         })
         if (err(result2)) {
           throw result2
@@ -1026,6 +1064,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
         variables,
         plane,
         offset,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -1048,6 +1087,7 @@ plane002 = offsetPlane(plane001, offset = 2)`)
         plane,
         offset: newOffset,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result2)) {
         throw result2
@@ -1076,6 +1116,7 @@ plane002 = offsetPlane(plane001, offset = 3)`)
         variables,
         plane,
         offset,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -1098,6 +1139,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 2)`)
         plane,
         offset: newOffset,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result2)) {
         throw result2
@@ -1126,6 +1168,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 3)`)
         variables,
         plane,
         offset,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -1148,6 +1191,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 10)`)
         plane,
         offset: newOffset,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result2)) {
         throw result2
@@ -1179,6 +1223,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
         variables,
         plane,
         offset,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
         throw result
@@ -1200,6 +1245,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
         plane,
         offset: newOffset,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result2)) {
         throw result2
@@ -1223,7 +1269,12 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       const artifact = [...artifactGraph.values()].find(
         (a) => a.type === 'edgeCut'
       )
-      const result = getEdgeCutMeta(artifact!, ast, artifactGraph)
+      const result = getEdgeCutMeta(
+        artifact!,
+        ast,
+        artifactGraph,
+        instanceInThisFile
+      )
       expect(result?.type).toEqual('edgeCut')
       expect(result?.subType).toEqual('opposite')
       expect(result?.tagName).toEqual('seg01')
@@ -1238,7 +1289,12 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       const artifact = [...artifactGraph.values()].find(
         (a) => a.type === 'edgeCut'
       )
-      const result = getEdgeCutMeta(artifact!, ast, artifactGraph)
+      const result = getEdgeCutMeta(
+        artifact!,
+        ast,
+        artifactGraph,
+        instanceInThisFile
+      )
       expect(result?.type).toEqual('edgeCut')
       expect(result?.subType).toEqual('adjacent')
       expect(result?.tagName).toEqual('seg01')

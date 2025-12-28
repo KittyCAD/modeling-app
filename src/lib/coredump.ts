@@ -312,7 +312,12 @@ export class CoreDumpManager {
             kclManager.wasmInitFailed
         }
 
-        const kclManagerSkipKeys = ['camControls']
+        const kclManagerSkipKeys = [
+          'camControls',
+          'engineCommandManager',
+          'wasmInstancePromise',
+          'singletons',
+        ]
         const kclManagerKeys = Object.keys(kclManager)
           .sort()
           .filter((entry) => {
@@ -344,7 +349,7 @@ export class CoreDumpManager {
       debugLog('CoreDump: Scene Infra', sceneInfra)
 
       if (sceneInfra) {
-        const sceneInfraSkipKeys = ['camControls']
+        const sceneInfraSkipKeys = ['camControls', 'wasmInstancePromise']
         const sceneInfraKeys = Object.keys(sceneInfra)
           .sort()
           .filter((entry) => {
@@ -367,7 +372,6 @@ export class CoreDumpManager {
           }
         })
       }
-
       // Scene Entities Manager - globalThis?.window?.sceneEntitiesManager
       const sceneEntitiesManager = (globalThis?.window as any)
         ?.sceneEntitiesManager

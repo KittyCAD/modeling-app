@@ -13,17 +13,20 @@ import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function addUnion({
   ast,
   artifactGraph,
   solids,
   nodeToEdit,
+  wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   solids: Selections
   nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
@@ -34,6 +37,7 @@ export function addUnion({
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -53,6 +57,7 @@ export function addUnion({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -69,11 +74,13 @@ export function addIntersect({
   artifactGraph,
   solids,
   nodeToEdit,
+  wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   solids: Selections
   nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
@@ -84,6 +91,7 @@ export function addIntersect({
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -103,6 +111,7 @@ export function addIntersect({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -120,12 +129,14 @@ export function addSubtract({
   solids,
   tools,
   nodeToEdit,
+  wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   solids: Selections
   tools: Selections
   nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
@@ -136,6 +147,7 @@ export function addSubtract({
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph,
@@ -148,6 +160,7 @@ export function addSubtract({
   const toolVars = getVariableExprsFromSelection(
     tools,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph,
@@ -182,6 +195,7 @@ export function addSubtract({
     pathIfNewPipe,
     pathToEdit: mNodeToEdit,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode

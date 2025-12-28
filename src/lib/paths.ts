@@ -11,6 +11,7 @@ import {
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const SETTINGS = '/settings'
 
@@ -37,9 +38,13 @@ export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${
 
 export async function getProjectMetaByRouteId(
   readAppSettingsFile: (
-    electron: IElectronAPI
+    electron: IElectronAPI,
+    wasmInstance: ModuleType
   ) => Promise<DeepPartial<Configuration>>,
-  readLocalStorageAppSettingsFile: () => DeepPartial<Configuration> | Error,
+  readLocalStorageAppSettingsFile: (
+    wasmInstance: ModuleType
+  ) => DeepPartial<Configuration> | Error,
+  wasmInstance: ModuleType,
   id?: string,
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<ProjectRoute | undefined> {
@@ -49,8 +54,8 @@ export async function getProjectMetaByRouteId(
 
   if (configuration === undefined || isPlaywright) {
     configuration = window.electron
-      ? await readAppSettingsFile(window.electron)
-      : readLocalStorageAppSettingsFile()
+      ? await readAppSettingsFile(window.electron, wasmInstance)
+      : readLocalStorageAppSettingsFile(wasmInstance)
   }
 
   if (err(configuration)) return Promise.reject(configuration)

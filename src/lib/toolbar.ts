@@ -11,6 +11,7 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
@@ -39,7 +40,10 @@ export type ToolbarItem = {
   iconColor?: string
   alwaysDark?: true
   status: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
-  disabled?: (state: StateFrom<typeof modelingMachine>) => boolean
+  disabled?: (
+    state: StateFrom<typeof modelingMachine>,
+    wasmInstance: ModuleType
+  ) => boolean
   disableHotkey?: (state: StateFrom<typeof modelingMachine>) => boolean
   title: string | ((props: ToolbarItemCallbackProps) => string)
   showTitle?: boolean
@@ -793,11 +797,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 (!isEditingExistingSketch({
                   sketchDetails: state.context.sketchDetails,
                   kclManager: state.context.kclManager,
+                  wasmInstance: state.context.wasmInstance,
                 }) &&
                   !state.matches({ Sketch: 'Tangential arc to' })) ||
                 pipeHasCircle({
                   sketchDetails: state.context.sketchDetails,
                   kclManager: state.context.kclManager,
+                  wasmInstance: state.context.wasmInstance,
                 })
               )
             },
@@ -805,6 +811,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               return !isEditingExistingSketch({
                 sketchDetails: state.context.sketchDetails,
                 kclManager: state.context.kclManager,
+                wasmInstance: state.context.wasmInstance,
               }) && !state.matches({ Sketch: 'Tangential arc to' })
                 ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."
                 : undefined
@@ -964,7 +971,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         array: [
           {
             id: 'constraint-length',
-            disabled: (state) =>
+            disabled: (state, wasmInstance) =>
               !(
                 state.matches({ Sketch: 'SketchIdle' }) &&
                 state.can({
@@ -973,7 +980,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                     selection: state.context.selectionRanges,
                     // dummy data is okay for checking if the constrain is possible
                     length: {
-                      valueAst: createLiteral(1),
+                      valueAst: createLiteral(1, wasmInstance),
                       valueText: '1',
                       valueCalculated: '1',
                     },

@@ -37,8 +37,8 @@ extrude001 = extrude(sketch001, length = 5)`
     await scene.settled(cmdBar)
 
     // Ensure no badge is present
-    const codePaneButtonHolder = page.locator('#code-button-holder')
-    await expect(codePaneButtonHolder).not.toContainText('notification')
+    const codeBadge = page.locator('#code-badge')
+    await expect(codeBadge).not.toBeVisible()
 
     // Delete a character to break the KCL
     await u.openKclCodePanel()
@@ -46,7 +46,7 @@ extrude001 = extrude(sketch001, length = 5)`
     await page.keyboard.press('Backspace')
 
     // Ensure that a badge appears on the button
-    await expect(codePaneButtonHolder).toContainText('notification')
+    await expect(codeBadge).toBeVisible()
   })
 
   test('When error is not in view you can click the badge to scroll to it', async ({

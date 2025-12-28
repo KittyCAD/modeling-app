@@ -13,6 +13,7 @@ import { forceSuffix } from '@src/lang/util'
 import { roundOff } from '@src/lib/utils'
 import type { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Vector2 } from 'three'
+import { toUtf16 } from '@src/lang/errors'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 
@@ -142,6 +143,7 @@ export async function stringToKclExpression(
     allowArrays?: boolean
   }
 ) {
+  debugger
   const calculatedResult = await getCalculatedKclExpressionValue(
     value,
     providedRustContext,
@@ -160,7 +162,10 @@ export async function stringToKclExpression(
 }
 
 export function getStringValue(code: string, range: SourceRange): string {
-  return code.slice(range[0], range[1]).replaceAll(`'`, ``).replaceAll(`"`, ``)
+  return code
+    .slice(...range.map((r) => toUtf16(r, code)))
+    .replaceAll(`'`, ``)
+    .replaceAll(`"`, ``)
 }
 
 /**

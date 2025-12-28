@@ -156,7 +156,8 @@ describe('testing changeSketchArguments', () => {
         type: 'straight-segment',
         from: [0, 0],
         to: [2, 3],
-      }
+      },
+      instanceInThisFile
     )
     if (err(changeSketchArgsRetVal)) return changeSketchArgsRetVal
     expect(recast(changeSketchArgsRetVal.modifiedAst, instanceInThisFile)).toBe(
@@ -190,9 +191,11 @@ describe('testing addTagForSketchOnFace', () => {
         // previousProgramMemory: execState.memory, // redundant?
         pathToNode,
         node: ast,
+        wasmInstance: instanceInThisFile,
       },
       'lineTo',
-      null
+      null,
+      instanceInThisFile
     )
     if (err(sketchOnFaceRetVal)) return sketchOnFaceRetVal
 
@@ -256,13 +259,15 @@ ${insertCode}
         {
           pathToNode,
           node: ast,
+          wasmInstance: instanceInThisFile,
         },
         'chamfer',
         {
           type: 'edgeCut',
           subType: 'opposite',
           tagName: 'seg01',
-        }
+        },
+        instanceInThisFile
       )
       if (err(sketchOnFaceRetVal)) throw sketchOnFaceRetVal
       expect(recast(sketchOnFaceRetVal.modifiedAst, instanceInThisFile)).toBe(
@@ -296,9 +301,12 @@ describe('testing getConstraintInfo', () => {
       const sourceRange = topLevelRange(start, start + functionName.length)
       if (err(ast)) throw new Error('ast is error')
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<Node<CallExpressionKw>>(ast, pathToNode, [
-        'CallExpressionKw',
-      ])
+      const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+        ast,
+        pathToNode,
+        instanceInThisFile,
+        ['CallExpressionKw']
+      )
       if (err(callExp)) throw new Error('callExp is error')
       const result = getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
@@ -674,9 +682,12 @@ describe('testing getConstraintInfo', () => {
       const sourceRange = topLevelRange(start, start + functionName.length)
       if (err(ast)) throw new Error('ast is error')
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<Node<CallExpressionKw>>(ast, pathToNode, [
-        'CallExpressionKw',
-      ])
+      const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+        ast,
+        pathToNode,
+        instanceInThisFile,
+        ['CallExpressionKw']
+      )
       if (err(callExp)) throw new Error('callExp is error')
       const result = getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
@@ -830,9 +841,12 @@ describe('testing getConstraintInfo', () => {
       const sourceRange = topLevelRange(start, start + functionName.length)
       if (err(ast)) throw new Error('ast is error')
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<Node<CallExpressionKw>>(ast, pathToNode, [
-        'CallExpressionKw',
-      ])
+      const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+        ast,
+        pathToNode,
+        instanceInThisFile,
+        ['CallExpressionKw']
+      )
       if (err(callExp)) throw new Error('callExp is error')
       const result = getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
@@ -1204,9 +1218,12 @@ describe('testing getConstraintInfo', () => {
       const sourceRange = topLevelRange(start, start + functionName.length)
       if (err(ast)) throw new Error('ast  is error')
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<Node<CallExpressionKw>>(ast, pathToNode, [
-        'CallExpressionKw',
-      ])
+      const callExp = getNodeFromPath<Node<CallExpressionKw>>(
+        ast,
+        pathToNode,
+        instanceInThisFile,
+        ['CallExpressionKw']
+      )
       if (err(callExp)) throw new Error('callExp is error')
 
       const result = getConstraintInfoKw(callExp.node, code, pathToNode)

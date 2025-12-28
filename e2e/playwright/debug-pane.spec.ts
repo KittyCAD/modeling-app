@@ -42,7 +42,7 @@ test.describe('Debug pane', () => {
       // Expand the artifact graph.
       await tree.getByText('Artifact Graph').click()
       // Just expanded the details, making the element taller, so scroll again.
-      await tree.getByText('Plane').first().scrollIntoViewIfNeeded()
+      await tree.getByText('plane').first().scrollIntoViewIfNeeded()
     })
     // Extract the artifact IDs from the debug artifact graph.
     const initialSegmentIds = await segment.innerText({ timeout: 5_000 })

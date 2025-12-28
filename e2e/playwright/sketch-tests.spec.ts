@@ -597,6 +597,8 @@ sketch001 = startSketchOn(XZ)
       stage: 'review',
       headerArguments: { Profiles: '1 profile' },
       commandName: 'Extrude',
+      reviewValidationError:
+        'semantic: Either `length` or `to` parameter must be provided for extrusion.',
     })
   })
   test("Existing sketch with bad code delete user's code", async ({

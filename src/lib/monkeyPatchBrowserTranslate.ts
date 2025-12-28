@@ -1,6 +1,8 @@
 // The patch below is adapted from https://github.com/facebook/react/issues/11538#issuecomment-417504600
 export default function monkeyPatchForBrowserTranslation() {
   if (typeof Node === 'function' && Node.prototype) {
+    // Intentionally changing `this`, so no need to bind.
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalRemoveChild = Node.prototype.removeChild
     Node.prototype.removeChild = function <T extends Node>(
       this: Node,
@@ -19,6 +21,8 @@ export default function monkeyPatchForBrowserTranslation() {
       return originalRemoveChild.call(this, child) as T
     }
 
+    // Intentionally changing `this`, so no need to bind.
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const originalInsertBefore = Node.prototype.insertBefore
     Node.prototype.insertBefore = function <T extends Node>(
       this: Node,

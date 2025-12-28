@@ -29,7 +29,7 @@ describe('useOnFileRoute', () => {
         name: 'main.kcl',
         children: null,
       }
-      const { engineCommandManager, sceneInfra, kclManager } =
+      const { engineCommandManager, sceneInfra, kclManager, settingsActor } =
         await buildTheWorldAndNoEngineConnection(true)
       const { unmount } = renderHook(() => {
         useOnFileRoute({
@@ -40,6 +40,7 @@ describe('useOnFileRoute', () => {
             engineCommandManager,
             kclManager,
             sceneInfra,
+            settingsActor,
           },
         })
       })
@@ -64,7 +65,7 @@ describe('useOnFileRoute', () => {
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
       const commandBarActor = createActor(commandBarMachine, {
-        input: { commands: [] },
+        input: { commands: [], wasmInstancePromise: initWasmMock },
       }).start()
       const settingsActor = createActor(settingsMachine, {
         input: { commandBarActor, ...createSettings() },
@@ -74,7 +75,7 @@ describe('useOnFileRoute', () => {
         initWasmMock,
         settingsActor
       )
-      const sceneInfra = new SceneInfra(engineCommandManager)
+      const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
@@ -89,6 +90,7 @@ describe('useOnFileRoute', () => {
             engineCommandManager,
             kclManager,
             sceneInfra,
+            settingsActor,
           },
         })
       })
@@ -119,7 +121,7 @@ describe('useOnFileRoute', () => {
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
       const commandBarActor = createActor(commandBarMachine, {
-        input: { commands: [] },
+        input: { commands: [], wasmInstancePromise: initWasmMock },
       }).start()
       const settingsActor = createActor(settingsMachine, {
         input: { commandBarActor, ...createSettings() },
@@ -129,7 +131,7 @@ describe('useOnFileRoute', () => {
         initWasmMock,
         settingsActor
       )
-      const sceneInfra = new SceneInfra(engineCommandManager)
+      const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
@@ -151,6 +153,7 @@ describe('useOnFileRoute', () => {
               engineCommandManager,
               kclManager,
               sceneInfra,
+              settingsActor,
             },
           })
         },
@@ -160,6 +163,7 @@ describe('useOnFileRoute', () => {
       await tick()
       unmount()
       expect(callback).toHaveBeenCalledTimes(1)
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(kclManager.executeCode).toHaveBeenCalledTimes(1)
     })
     test('should not call execute code if you are switching to the same file twice in a row', async () => {
@@ -186,7 +190,7 @@ describe('useOnFileRoute', () => {
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
       const commandBarActor = createActor(commandBarMachine, {
-        input: { commands: [] },
+        input: { commands: [], wasmInstancePromise: initWasmMock },
       }).start()
       const settingsActor = createActor(settingsMachine, {
         input: { commandBarActor, ...createSettings() },
@@ -196,7 +200,7 @@ describe('useOnFileRoute', () => {
         initWasmMock,
         settingsActor
       )
-      const sceneInfra = new SceneInfra(engineCommandManager)
+      const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
@@ -218,6 +222,7 @@ describe('useOnFileRoute', () => {
               engineCommandManager,
               kclManager,
               sceneInfra,
+              settingsActor,
             },
           })
         },
@@ -229,6 +234,7 @@ describe('useOnFileRoute', () => {
       await tick()
       unmount()
       expect(callback).toHaveBeenCalledTimes(1)
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(kclManager.executeCode).toHaveBeenCalledTimes(1)
     })
     test('should not call execute code if stream is not accepting input', async () => {
@@ -255,7 +261,7 @@ describe('useOnFileRoute', () => {
       })
       const initWasmMock = Promise.resolve({} as ModuleType)
       const commandBarActor = createActor(commandBarMachine, {
-        input: { commands: [] },
+        input: { commands: [], wasmInstancePromise: initWasmMock },
       }).start()
       const settingsActor = createActor(settingsMachine, {
         input: { commandBarActor, ...createSettings() },
@@ -265,7 +271,7 @@ describe('useOnFileRoute', () => {
         initWasmMock,
         settingsActor
       )
-      const sceneInfra = new SceneInfra(engineCommandManager)
+      const sceneInfra = new SceneInfra(engineCommandManager, initWasmMock)
       const kclManager = new KclManager(engineCommandManager, initWasmMock, {
         rustContext,
         sceneInfra,
@@ -287,6 +293,7 @@ describe('useOnFileRoute', () => {
               engineCommandManager,
               kclManager,
               sceneInfra,
+              settingsActor,
             },
           })
         },
@@ -296,6 +303,7 @@ describe('useOnFileRoute', () => {
       await tick()
       unmount()
       expect(callback).toHaveBeenCalledTimes(0)
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(kclManager.executeCode).toHaveBeenCalledTimes(0)
     })
   })

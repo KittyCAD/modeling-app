@@ -101,6 +101,7 @@ mySketch001 = startSketchOn(XY)
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
   // |> rx(45)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> extrude(length = 2)`
     const execState = await enginelessExecutor(
       assertParse(code, instanceInThisFile),
@@ -114,6 +115,13 @@ mySketch001 = startSketchOn(XY)
         id: expect.any(String),
         artifactId: expect.any(String),
         value: [
+          {
+            type: 'extrudePlane',
+            faceId: expect.any(String),
+            tag: null,
+            id: expect.any(String),
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
+          },
           {
             type: 'extrudePlane',
             faceId: expect.any(String),
@@ -160,6 +168,17 @@ mySketch001 = startSketchOn(XY)
                 sourceRange: [expect.any(Number), expect.any(Number), 0],
               },
             },
+            {
+              type: 'ToPoint',
+              from: [0.46, -5.82],
+              to: [0, 0],
+              units: 'mm',
+              tag: null,
+              __geoMeta: {
+                id: expect.any(String),
+                sourceRange: [expect.any(Number), expect.any(Number), 0],
+              },
+            },
           ],
         },
         sectional: false,
@@ -178,6 +197,7 @@ sk1 = startSketchOn(XY)
   |> line(endAbsolute = [-2.5, 0])
   |> line(endAbsolute = [0, 10], tag = $p)
   |> line(endAbsolute = [2.5, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   // |> rx(45)
   // |> translate(x = 1, y = 0, z = 1)
   // |> ry(5)
@@ -188,6 +208,7 @@ sk2 = startSketchOn(XY)
   |> line(endAbsolute = [-2.5, 0])
   |> line(endAbsolute = [0, 3], tag = $o)
   |> line(endAbsolute = [2.5, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   // |> transform(theTransf)
   |> extrude(length = 2)
 
@@ -225,6 +246,13 @@ sk2 = startSketchOn(XY)
                 type: 'TagDeclarator',
                 value: 'p',
               },
+              id: expect.any(String),
+              sourceRange: [expect.any(Number), expect.any(Number), 0],
+            },
+            {
+              type: 'extrudePlane',
+              faceId: expect.any(String),
+              tag: null,
               id: expect.any(String),
               sourceRange: [expect.any(Number), expect.any(Number), 0],
             },
@@ -291,6 +319,17 @@ sk2 = startSketchOn(XY)
                   sourceRange: [expect.any(Number), expect.any(Number), 0],
                 },
               },
+              {
+                type: 'ToPoint',
+                from: [2.5, 0],
+                to: [0, 0],
+                units: 'mm',
+                tag: null,
+                __geoMeta: {
+                  id: expect.any(String),
+                  sourceRange: [expect.any(Number), expect.any(Number), 0],
+                },
+              },
             ],
           },
           sectional: false,
@@ -324,6 +363,13 @@ sk2 = startSketchOn(XY)
                 type: 'TagDeclarator',
                 value: 'o',
               },
+              id: expect.any(String),
+              sourceRange: [expect.any(Number), expect.any(Number), 0],
+            },
+            {
+              type: 'extrudePlane',
+              faceId: expect.any(String),
+              tag: null,
               id: expect.any(String),
               sourceRange: [expect.any(Number), expect.any(Number), 0],
             },
@@ -383,6 +429,17 @@ sk2 = startSketchOn(XY)
                 type: 'ToPoint',
                 from: [0, 3],
                 to: [2.5, 0],
+                units: 'mm',
+                tag: null,
+                __geoMeta: {
+                  id: expect.any(String),
+                  sourceRange: [expect.any(Number), expect.any(Number), 0],
+                },
+              },
+              {
+                type: 'ToPoint',
+                from: [2.5, 0],
+                to: [0, 0],
                 units: 'mm',
                 tag: null,
                 __geoMeta: {

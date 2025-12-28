@@ -64,7 +64,7 @@ export async function buildTheWorldAndConnectToEngine() {
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
   const engineCommandManager = new ConnectionManager()
   const commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [] },
+    input: { commands: [], wasmInstancePromise: instancePromise },
   }).start()
   const settingsActor = createActor(settingsMachine, {
     input: { commandBarActor, ...createSettings() },
@@ -74,7 +74,7 @@ export async function buildTheWorldAndConnectToEngine() {
     instancePromise,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager)
+  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
   const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
     sceneInfra,
@@ -136,7 +136,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     : loadWasm()
   const engineCommandManager = new ConnectionManager()
   const commandBarActor = createActor(commandBarMachine, {
-    input: { commands: [] },
+    input: { commands: [], wasmInstancePromise: instancePromise },
   }).start()
   const settingsActor = createActor(settingsMachine, {
     input: { commandBarActor, ...createSettings() },
@@ -146,7 +146,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     instancePromise,
     settingsActor
   )
-  const sceneInfra = new SceneInfra(engineCommandManager)
+  const sceneInfra = new SceneInfra(engineCommandManager, instancePromise)
   const kclManager = new KclManager(engineCommandManager, instancePromise, {
     rustContext,
     sceneInfra,

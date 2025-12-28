@@ -79,6 +79,7 @@ describe('geometry.test.ts', () => {
           '4',
           rustContextInThisFile
         )) as KclCommandValue,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await enginelessExecutor(ast, rustContextInThisFile)
@@ -120,6 +121,7 @@ describe('geometry.test.ts', () => {
           rustContextInThisFile
         )) as KclCommandValue,
         ccw: true,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await enginelessExecutor(ast, rustContextInThisFile)
@@ -167,6 +169,7 @@ describe('geometry.test.ts', () => {
           rustContextInThisFile
         )) as KclCommandValue,
         nodeToEdit: createPathToNodeForLastVariable(ast),
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await enginelessExecutor(ast, rustContextInThisFile)
@@ -229,6 +232,7 @@ helix001 = helix(
           '3',
           rustContextInThisFile
         )) as KclCommandValue,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await enginelessExecutor(ast, rustContextInThisFile)
@@ -271,6 +275,7 @@ helix001 = helix(
         )) as KclCommandValue,
         ccw: true,
         nodeToEdit: createPathToNodeForLastVariable(ast),
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await enginelessExecutor(ast, rustContextInThisFile)
@@ -327,6 +332,7 @@ helix001 = helix(
           rustContextInThisFile
         )) as KclCommandValue,
         ccw: true,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await enginelessExecutor(ast, rustContextInThisFile)
@@ -363,6 +369,7 @@ helix001 = helix(
         )) as KclCommandValue,
         ccw: false,
         nodeToEdit: createPathToNodeForLastVariable(ast),
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await enginelessExecutor(ast, rustContextInThisFile)

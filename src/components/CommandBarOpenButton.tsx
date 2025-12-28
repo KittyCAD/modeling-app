@@ -1,10 +1,11 @@
+import { memo } from 'react'
 import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/CommandBar'
 import { CustomIcon } from '@src/components/CustomIcon'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { commandBarActor } from '@src/lib/singletons'
 
-export function CommandBarOpenButton() {
+export const CommandBarOpenButton = memo(function CommandBarOpenButton() {
   const platform = usePlatform()
 
   return (
@@ -22,4 +23,4 @@ export function CommandBarOpenButton() {
       </kbd>
     </button>
   )
-}
+})
