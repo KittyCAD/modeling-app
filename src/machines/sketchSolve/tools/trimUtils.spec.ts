@@ -927,4 +927,50 @@ sketch(on = YZ) {
 
     expect(result.kclSource.text).toBe(expectedCode)
   })
+
+  it('split trim where the end of the trimed segment has a point-line coincident constraint, should move the constraint to the newly created segment', async () => {
+    const baseKclCode = `@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  arc9 = sketch2::arc(start = [var -5.643mm, var 6.905mm], end = [var -6.871mm, var 2.472mm], center = [var -0.447mm, var 3.079mm])
+  arc2 = sketch2::arc(start = [var -7.463mm, var 5.878mm], end = [var -4.365mm, var 6.798mm], center = [var -6.237mm, var 7.425mm])
+  line5 = sketch2::line(start = [var -7.81mm, var 3.77mm], end = [var -6.27mm, var 3.91mm])
+  line6 = sketch2::line(start = [var -7.47mm, var 2.459mm], end = [var -6.1mm, var 2.489mm])
+  sketch2::coincident([arc9.end, line6])
+}
+`
+
+    // Trim line that intersects arc9 at two points to cause a split trim
+    const trimPoints: Coords2d[] = [
+      [-7, 6],
+      [-6.5, 2.5],
+    ]
+
+    const result = await executeTrimFlow({
+      kclCode: baseKclCode,
+      trimPoints,
+      sketchId: 0,
+    })
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (result instanceof Error) {
+      throw result
+    }
+
+    const expectedCode = `@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  arc9 = sketch2::arc(start = [var -5.642mm, var 6.904mm], end = [var -6.442mm, var 5.461mm], center = [var -0.447mm, var 3.079mm])
+  arc2 = sketch2::arc(start = [var -7.463mm, var 5.878mm], end = [var -4.365mm, var 6.798mm], center = [var -6.237mm, var 7.424mm])
+  line5 = sketch2::line(start = [var -7.81mm, var 3.771mm], end = [var -6.27mm, var 3.911mm])
+  line6 = sketch2::line(start = [var -7.47mm, var 2.459mm], end = [var -6.1mm, var 2.489mm])
+  sketch2::coincident([arc9.end, arc2])
+  arc1 = sketch2::arc(start = [var -6.851mm, var 3.858mm], end = [var -6.87mm, var 2.472mm], center = [var -0.447mm, var 3.079mm])
+  sketch2::coincident([arc1.start, line5])
+  sketch2::coincident([arc1.end, line6])
+}
+`
+
+    expect(result.kclSource.text).toBe(expectedCode)
+  })
 })

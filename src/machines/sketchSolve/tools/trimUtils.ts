@@ -618,6 +618,10 @@ type CreateCoincidentLineSegmentOperation = {
   type: 'createCoincidentLineSegment'
   segmentOrPointToMakeCoincidentToId: number
   ctor: Extract<SegmentCtor, { type: 'Line' | 'Arc' }>
+  constraintsToMoveToNewSegmentEnd?: Array<{
+    constraintId: number
+    segmentOrPointId: number
+  }>
 }
 
 type TrimOperation =
@@ -1772,6 +1776,51 @@ export function trimStrategy({
     return constraintIds
   }
 
+  // Helper to find all point-segment coincident constraints on a given endpoint
+  // These need to be moved to the new segment's end during a split trim operation
+  const findPointSegmentCoincidentConstraints = (
+    endpointPointId: number
+  ): Array<{ constraintId: number; segmentOrPointId: number }> => {
+    const constraints: Array<{
+      constraintId: number
+      segmentOrPointId: number
+    }> = []
+    for (const obj of objects) {
+      if (
+        obj?.kind?.type === 'Constraint' &&
+        obj.kind.constraint.type === 'Coincident'
+      ) {
+        const constraintSegments = obj.kind.constraint.segments
+        // Only consider constraints that involve the endpoint
+        if (!constraintSegments.includes(endpointPointId)) {
+          continue
+        }
+
+        // Check if this is a point-segment constraint (one is a point, one is a segment)
+        const otherSegmentId = constraintSegments.find(
+          (segId) => segId !== endpointPointId
+        )
+        if (otherSegmentId === undefined) {
+          continue
+        }
+
+        const otherSegObj = objects[otherSegmentId]
+        const isPointSegmentConstraint =
+          otherSegObj?.kind?.type === 'Segment' &&
+          otherSegObj.kind.segment.type !== 'Point'
+
+        // Only collect point-segment constraints, not point-point constraints
+        if (isPointSegmentConstraint) {
+          constraints.push({
+            constraintId: obj.id,
+            segmentOrPointId: otherSegmentId,
+          })
+        }
+      }
+    }
+    return constraints
+  }
+
   if (leftSideNeedsTailCut || rightSideNeedsTailCut) {
     const side = leftSideNeedsTailCut ? leftSide : rightSide
     if (side.type === 'segEndPoint') {
@@ -1891,21 +1940,29 @@ export function trimStrategy({
           )
 
     // Find the endpoint that will be trimmed for the left side cutTail
+    // This is also the original end that will become the new segment's end
     const trimSeg = objects.find(
       (obj) => obj.id === trimSpawnId && obj.kind?.type === 'Segment'
     )
-    let leftEndpointPointId: number | undefined
+    let originalEndPointId: number | undefined
     if (trimSeg?.kind?.type === 'Segment') {
       if (
         trimSeg.kind.segment.type === 'Line' ||
         trimSeg.kind.segment.type === 'Arc'
       ) {
-        leftEndpointPointId = trimSeg.kind.segment.end // endpointChanged is 'end'
+        originalEndPointId = trimSeg.kind.segment.end // The end that gets trimmed and becomes the new segment's end
       }
     }
-    const leftCoincidentEndConstraintToDeleteIds =
-      leftEndpointPointId !== undefined
-        ? findPointPointCoincidentConstraints(leftEndpointPointId)
+    // Find point-point constraints on the original end - these get deleted
+    const pointPointConstraintsToDelete =
+      originalEndPointId !== undefined
+        ? findPointPointCoincidentConstraints(originalEndPointId)
+        : []
+
+    // Find point-segment constraints on the original end - these get moved to the new segment's end
+    const pointSegmentConstraintsToMove =
+      originalEndPointId !== undefined
+        ? findPointSegmentCoincidentConstraints(originalEndPointId)
         : []
 
     const operations: TrimOperation[] = []
@@ -1936,6 +1993,7 @@ export function trimStrategy({
     })
 
     // Create new segment for right side: from right intersection to original end
+    // Include constraints that need to be moved to the new segment's end
     operations.push({
       type: 'createCoincidentLineSegment',
       segmentOrPointToMakeCoincidentToId: rightSide.intersectingSegId,
@@ -1944,6 +2002,9 @@ export function trimStrategy({
         start: coordsToApiPoint(rightSide.trimTerminationCoords),
         // Keep original end point
       },
+      ...(pointSegmentConstraintsToMove.length > 0
+        ? { constraintsToMoveToNewSegmentEnd: pointSegmentConstraintsToMove }
+        : {}),
     })
 
     // Delete old constraints last (must be last since deletes invalidate IDs)
@@ -1954,8 +2015,14 @@ export function trimStrategy({
         leftCoincidentData.existingPointSegmentConstraintId
       )
     }
-    if (leftCoincidentEndConstraintToDeleteIds.length > 0) {
-      allConstraintIdsToDelete.push(...leftCoincidentEndConstraintToDeleteIds)
+    if (pointPointConstraintsToDelete.length > 0) {
+      allConstraintIdsToDelete.push(...pointPointConstraintsToDelete)
+    }
+    // Also delete the constraints that will be moved to the new segment's end
+    if (pointSegmentConstraintsToMove.length > 0) {
+      allConstraintIdsToDelete.push(
+        ...pointSegmentConstraintsToMove.map((c) => c.constraintId)
+      )
     }
     if (allConstraintIdsToDelete.length > 0) {
       operations.push({
@@ -2210,12 +2277,15 @@ export async function executeTrimStrategy({
           return new Error('Newly created segment is not a segment')
         }
 
-        // Get the start point ID of the new segment
+        // Get the start and end point IDs of the new segment
         let newSegmentStartPointId: number | null = null
+        let newSegmentEndPointId: number | null = null
         if (newSegment.kind.segment.type === 'Line') {
           newSegmentStartPointId = newSegment.kind.segment.start
+          newSegmentEndPointId = newSegment.kind.segment.end
         } else if (newSegment.kind.segment.type === 'Arc') {
           newSegmentStartPointId = newSegment.kind.segment.start
+          newSegmentEndPointId = newSegment.kind.segment.end
         }
 
         if (newSegmentStartPointId !== null) {
@@ -2237,6 +2307,43 @@ export async function executeTrimStrategy({
             invalidates_ids || constraintResult.sceneGraphDelta.invalidates_ids
           if (constraintResult.sceneGraphDelta.new_graph.objects) {
             objects = constraintResult.sceneGraphDelta.new_graph.objects
+          }
+        }
+
+        // Move constraints from the original segment's end to the new segment's end
+        if (
+          newSegmentEndPointId !== null &&
+          operation.constraintsToMoveToNewSegmentEnd &&
+          operation.constraintsToMoveToNewSegmentEnd.length > 0
+        ) {
+          for (const constraintToMove of operation.constraintsToMoveToNewSegmentEnd) {
+            try {
+              const constraintResult = await rustContext.addConstraint(
+                0,
+                sketchId,
+                {
+                  type: 'Coincident',
+                  segments: [
+                    newSegmentEndPointId,
+                    constraintToMove.segmentOrPointId,
+                  ],
+                } as ApiConstraint,
+                settings
+              )
+              lastResult = constraintResult
+              invalidates_ids =
+                invalidates_ids ||
+                constraintResult.sceneGraphDelta.invalidates_ids
+              if (constraintResult.sceneGraphDelta.new_graph.objects) {
+                objects = constraintResult.sceneGraphDelta.new_graph.objects
+              }
+            } catch (error) {
+              // If constraint addition fails, log but don't fail the operation
+              console.error(
+                'Failed to move constraint to new segment end:',
+                error
+              )
+            }
           }
         }
       } catch (error) {
@@ -2330,6 +2437,7 @@ export function createOnAreaSelectEndCallback({
       let startIndex = 0
       let iterationCount = 0
       const maxIterations = 1000
+      let invalidates_ids: boolean = false
 
       while (startIndex < points.length - 1 && iterationCount < maxIterations) {
         iterationCount++
@@ -2442,6 +2550,8 @@ export function createOnAreaSelectEndCallback({
 
           // Store the result but don't send event yet - we'll send one final event at the end
           lastResult = result
+          invalidates_ids =
+            invalidates_ids || result.sceneGraphDelta.invalidates_ids
         }
 
         // Move to next segment (or re-check same segment if deletion occurred)
@@ -2470,7 +2580,13 @@ export function createOnAreaSelectEndCallback({
 
       // Send a single final event with the last result (if any operations were performed)
       if (lastResult) {
-        onNewSketchOutcome(lastResult)
+        onNewSketchOutcome({
+          ...lastResult,
+          sceneGraphDelta: {
+            ...lastResult.sceneGraphDelta,
+            invalidates_ids,
+          },
+        })
       }
     } catch (error) {
       console.error('[TRIM] Exception in onAreaSelectEnd:', error)
