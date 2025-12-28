@@ -156,7 +156,7 @@ describe('getNextTrimCoords', () => {
       expect(result.trimSpawnSegId).toBe(0)
       expect(result.trimSpawnCoords[0]).toBeCloseTo(2, 1)
       expect(result.trimSpawnCoords[1]).toBeCloseTo(1.3, 0)
-      expect(result.nextIndex).toBe(2)
+      expect(result.nextIndex).toBe(1)
     }
   })
 
@@ -174,7 +174,7 @@ describe('getNextTrimCoords', () => {
       expect(result.trimSpawnSegId).toBe(3)
       expect(result.trimSpawnCoords[0]).toBeCloseTo(1.3, 0)
       expect(result.trimSpawnCoords[1]).toBeCloseTo(3.6, 0)
-      expect(result.nextIndex).toBe(4)
+      expect(result.nextIndex).toBe(3)
     }
   })
 

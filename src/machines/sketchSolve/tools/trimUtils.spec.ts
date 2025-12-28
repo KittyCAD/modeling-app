@@ -69,8 +69,8 @@ sketch(on = YZ) {
     const expectedCode = `@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var -0.41mm, var -0.17mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  line1 = sketch2::line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
+  arc1 = sketch2::arc(start = [var -0.411mm, var -0.17mm], end = [var 0.002mm, var -5mm], center = [var 30mm, var -0mm])
+  line1 = sketch2::line(start = [var -5mm, var -2mm], end = [var -0.411mm, var -0.17mm])
   sketch2::coincident([arc1.start, line1.end])
 }
 `
@@ -878,6 +878,50 @@ sketch(on = YZ) {
     const expectedCode = `@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
+}
+`
+
+    expect(result.kclSource.text).toBe(expectedCode)
+  })
+
+  it("Should remove coincident point from the end of a segment's end that is being trimmed", async () => {
+    const baseKclCode = `@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
+  line2 = sketch2::line(start = [var -3mm, var 2mm], end = [var 3mm, var 2mm])
+  sketch2::coincident([line1.end, line2.start])
+  line3 = sketch2::line(start = [var 3.5mm, var 2mm], end = [var 5mm, var 5mm])
+  sketch2::coincident([line2.end, line3.start])
+  sketch2::arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
+}
+`
+
+    const trimPoints: Coords2d[] = [
+      [-1.5, 5],
+      [-1.5, -5],
+    ]
+
+    const result = await executeTrimFlow({
+      kclCode: baseKclCode,
+      trimPoints,
+      sketchId: 0,
+    })
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (result instanceof Error) {
+      throw result
+    }
+
+    const expectedCode = `@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
+  line2 = sketch2::line(start = [var 0mm, var 2mm], end = [var 3.25mm, var 2mm])
+  line3 = sketch2::line(start = [var 3.25mm, var 2mm], end = [var 5mm, var 5mm])
+  sketch2::coincident([line2.end, line3.start])
+  arc1 = sketch2::arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
+  sketch2::coincident([line2.start, arc1])
 }
 `
 

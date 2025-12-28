@@ -594,14 +594,24 @@ type SimpleTrimOperation = {
   segmentToTrimId: number
 }
 
-type CutTailOperation = {
-  type: 'cutTail'
-  segmentToTrimId: number
-  segmentOrPointToMakeCoincidentTo: number
-  endpointChanged: 'start' | 'end'
+type EditSegmentOperation = {
+  type: 'editSegment'
+  segmentId: number
   ctor: Extract<SegmentCtor, { type: 'Line' | 'Arc' }>
-  existingPointSegmentConstraintId?: number
+  endpointChanged: 'start' | 'end'
+}
+
+type AddCoincidentConstraintOperation = {
+  type: 'addCoincidentConstraint'
+  segmentId: number
+  endpointChanged: 'start' | 'end'
+  segmentOrPointToMakeCoincidentTo: number
   intersectingEndpointPointId?: number
+}
+
+type DeleteConstraintsOperation = {
+  type: 'deleteConstraints'
+  constraintIds: Array<number>
 }
 
 type CreateCoincidentLineSegmentOperation = {
@@ -612,8 +622,10 @@ type CreateCoincidentLineSegmentOperation = {
 
 type TrimOperation =
   | SimpleTrimOperation
-  | CutTailOperation
+  | EditSegmentOperation
+  | AddCoincidentConstraintOperation
   | CreateCoincidentLineSegmentOperation
+  | DeleteConstraintsOperation
 
 /**
  * For the trim spawn segment, and the intersection point on that segment,
@@ -1724,6 +1736,42 @@ export function trimStrategy({
 
     return {}
   }
+
+  // Helper to find all point-point coincident constraints on a given endpoint
+  // These need to be deleted when the endpoint is moved during a cutTail operation
+  const findPointPointCoincidentConstraints = (
+    endpointPointId: number
+  ): number[] => {
+    const constraintIds: number[] = []
+    for (const obj of objects) {
+      if (
+        obj?.kind?.type === 'Constraint' &&
+        obj.kind.constraint.type === 'Coincident'
+      ) {
+        const constraintSegments = obj.kind.constraint.segments
+        // Only consider constraints that involve the endpoint
+        if (!constraintSegments.includes(endpointPointId)) {
+          continue
+        }
+
+        // Check if this is a point-point constraint (both segments are points)
+        const isPointPointConstraint = constraintSegments.every((segId) => {
+          const segObj = objects[segId]
+          return (
+            segObj?.kind?.type === 'Segment' &&
+            segObj.kind.segment.type === 'Point'
+          )
+        })
+
+        // Only collect point-point constraints, not point-segment constraints
+        if (isPointPointConstraint) {
+          constraintIds.push(obj.id)
+        }
+      }
+    }
+    return constraintIds
+  }
+
   if (leftSideNeedsTailCut || rightSideNeedsTailCut) {
     const side = leftSideNeedsTailCut ? leftSide : rightSide
     if (side.type === 'segEndPoint') {
@@ -1750,19 +1798,75 @@ export function trimStrategy({
             side.intersectingSegId
           )
 
-    return [
-      {
-        type: 'cutTail',
-        segmentToTrimId: trimSpawnId,
-        segmentOrPointToMakeCoincidentTo: side.intersectingSegId,
-        endpointChanged: endpointToChange,
-        ctor: {
-          ...trimSpawnSegment.kind.segment.ctor,
-          [endpointToChange]: coordsToApiPoint(intersectionCoords),
-        },
-        ...coincidentData,
+    // Find the endpoint that will be trimmed to identify point-point constraints to delete
+    const trimSeg = objects.find(
+      (obj) => obj.id === trimSpawnId && obj.kind?.type === 'Segment'
+    )
+    let endpointPointId: number | undefined
+    if (trimSeg?.kind?.type === 'Segment') {
+      if (
+        trimSeg.kind.segment.type === 'Line' ||
+        trimSeg.kind.segment.type === 'Arc'
+      ) {
+        endpointPointId =
+          endpointToChange === 'start'
+            ? trimSeg.kind.segment.start
+            : trimSeg.kind.segment.end
+      }
+    }
+
+    // Find all point-point coincident constraints on the endpoint that will be trimmed
+    const coincidentEndConstraintToDeleteIds =
+      endpointPointId !== undefined
+        ? findPointPointCoincidentConstraints(endpointPointId)
+        : []
+
+    const operations: TrimOperation[] = []
+
+    // Edit the segment first
+    operations.push({
+      type: 'editSegment',
+      segmentId: trimSpawnId,
+      endpointChanged: endpointToChange,
+      ctor: {
+        ...trimSpawnSegment.kind.segment.ctor,
+        [endpointToChange]: coordsToApiPoint(intersectionCoords),
       },
-    ]
+    })
+
+    // Add coincident constraint after editing
+    operations.push({
+      type: 'addCoincidentConstraint',
+      segmentId: trimSpawnId,
+      endpointChanged: endpointToChange,
+      segmentOrPointToMakeCoincidentTo: side.intersectingSegId,
+      ...(coincidentData.intersectingEndpointPointId !== undefined
+        ? {
+            intersectingEndpointPointId:
+              coincidentData.intersectingEndpointPointId,
+          }
+        : {}),
+    })
+
+    // Delete old constraints last (must be last since deletes invalidate IDs)
+    // Batch all constraint deletions into a single operation
+    const allConstraintIdsToDelete: number[] = []
+    if (coincidentData.existingPointSegmentConstraintId !== undefined) {
+      allConstraintIdsToDelete.push(
+        coincidentData.existingPointSegmentConstraintId
+      )
+    }
+    if (coincidentEndConstraintToDeleteIds.length > 0) {
+      allConstraintIdsToDelete.push(...coincidentEndConstraintToDeleteIds)
+    }
+    if (allConstraintIdsToDelete.length > 0) {
+      operations.push({
+        type: 'deleteConstraints',
+        constraintIds: allConstraintIdsToDelete,
+      })
+    }
+
+    return operations
   }
   const leftSideIntersects =
     leftSide.type === 'intersection' ||
@@ -1786,30 +1890,81 @@ export function trimStrategy({
             leftSide.intersectingSegId
           )
 
-    return [
-      // trim left side: keep original start, cut end at left intersection
-      {
-        type: 'cutTail',
-        segmentToTrimId: trimSpawnId,
-        segmentOrPointToMakeCoincidentTo: leftSide.intersectingSegId,
-        endpointChanged: 'end',
-        ctor: {
-          ...trimSpawnSegment.kind.segment.ctor,
-          end: coordsToApiPoint(leftSide.trimTerminationCoords),
-        },
-        ...leftCoincidentData,
+    // Find the endpoint that will be trimmed for the left side cutTail
+    const trimSeg = objects.find(
+      (obj) => obj.id === trimSpawnId && obj.kind?.type === 'Segment'
+    )
+    let leftEndpointPointId: number | undefined
+    if (trimSeg?.kind?.type === 'Segment') {
+      if (
+        trimSeg.kind.segment.type === 'Line' ||
+        trimSeg.kind.segment.type === 'Arc'
+      ) {
+        leftEndpointPointId = trimSeg.kind.segment.end // endpointChanged is 'end'
+      }
+    }
+    const leftCoincidentEndConstraintToDeleteIds =
+      leftEndpointPointId !== undefined
+        ? findPointPointCoincidentConstraints(leftEndpointPointId)
+        : []
+
+    const operations: TrimOperation[] = []
+
+    // Edit the left side segment (trim end to left intersection)
+    operations.push({
+      type: 'editSegment',
+      segmentId: trimSpawnId,
+      endpointChanged: 'end',
+      ctor: {
+        ...trimSpawnSegment.kind.segment.ctor,
+        end: coordsToApiPoint(leftSide.trimTerminationCoords),
       },
-      // create new segment for right side: from right intersection to original end
-      {
-        type: 'createCoincidentLineSegment',
-        segmentOrPointToMakeCoincidentToId: rightSide.intersectingSegId,
-        ctor: {
-          ...trimSpawnSegment.kind.segment.ctor,
-          start: coordsToApiPoint(rightSide.trimTerminationCoords),
-          // Keep original end point
-        },
+    })
+
+    // Add coincident constraint for left side after editing
+    operations.push({
+      type: 'addCoincidentConstraint',
+      segmentId: trimSpawnId,
+      endpointChanged: 'end',
+      segmentOrPointToMakeCoincidentTo: leftSide.intersectingSegId,
+      ...(leftCoincidentData.intersectingEndpointPointId !== undefined
+        ? {
+            intersectingEndpointPointId:
+              leftCoincidentData.intersectingEndpointPointId,
+          }
+        : {}),
+    })
+
+    // Create new segment for right side: from right intersection to original end
+    operations.push({
+      type: 'createCoincidentLineSegment',
+      segmentOrPointToMakeCoincidentToId: rightSide.intersectingSegId,
+      ctor: {
+        ...trimSpawnSegment.kind.segment.ctor,
+        start: coordsToApiPoint(rightSide.trimTerminationCoords),
+        // Keep original end point
       },
-    ]
+    })
+
+    // Delete old constraints last (must be last since deletes invalidate IDs)
+    // Batch all constraint deletions into a single operation
+    const allConstraintIdsToDelete: number[] = []
+    if (leftCoincidentData.existingPointSegmentConstraintId !== undefined) {
+      allConstraintIdsToDelete.push(
+        leftCoincidentData.existingPointSegmentConstraintId
+      )
+    }
+    if (leftCoincidentEndConstraintToDeleteIds.length > 0) {
+      allConstraintIdsToDelete.push(...leftCoincidentEndConstraintToDeleteIds)
+    }
+    if (allConstraintIdsToDelete.length > 0) {
+      operations.push({
+        type: 'deleteConstraints',
+        constraintIds: allConstraintIdsToDelete,
+      })
+    }
+
+    return operations
   }
   return new Error('Not implemented')
 }
@@ -1872,11 +2027,11 @@ export async function executeTrimStrategy({
       } catch (error) {
         return new Error(`Failed to delete segment: ${error}`)
       }
-    } else if (operation.type === 'cutTail') {
+    } else if (operation.type === 'editSegment') {
       // Edit the segment with the new ctor
       try {
         const segmentToEdit: ExistingSegmentCtor = {
-          id: operation.segmentToTrimId,
+          id: operation.segmentId,
           ctor: operation.ctor,
         }
 
@@ -1893,19 +2048,22 @@ export async function executeTrimStrategy({
         if (editResult.sceneGraphDelta.new_graph.objects) {
           objects = editResult.sceneGraphDelta.new_graph.objects
         }
-
+      } catch (error) {
+        return new Error(`Failed to edit segment: ${error}`)
+      }
+    } else if (operation.type === 'addCoincidentConstraint') {
+      // Add a coincident constraint between the edited segment's endpoint and the intersecting segment/point
+      try {
         // Find the edited segment to get the endpoint point ID
         const editedSegment = objects.find(
-          (obj) => obj.id === operation.segmentToTrimId
+          (obj) => obj.id === operation.segmentId
         )
         if (!editedSegment || editedSegment.kind?.type !== 'Segment') {
           return new Error(
-            `Failed to find edited segment ${operation.segmentToTrimId}`
+            `Failed to find edited segment ${operation.segmentId}`
           )
         }
 
-        // Both Line and Arc share the same coincident-add logic: point (endpoint) to segment
-        // Only Line or Arc segments expose start/end. Fail fast otherwise.
         const segment = editedSegment.kind.segment
         if (
           segment.type !== 'Line' &&
@@ -1913,86 +2071,62 @@ export async function executeTrimStrategy({
           // Note: Circle/Point don't have start/end
         ) {
           return new Error(
-            `Unsupported segment type for cutTail: ${segment.type}`
+            `Unsupported segment type for addCoincidentConstraint: ${segment.type}`
           )
         }
 
-        const segmentEndpointPointId =
+        // Get the endpoint ID after editing (may be different if point was recreated)
+        const newSegmentEndpointPointId =
           operation.endpointChanged === 'start' ? segment.start : segment.end
 
-        const intersectingSeg =
-          objects[operation.segmentOrPointToMakeCoincidentTo] ??
-          objects.find(
-            (obj) => obj?.id === operation.segmentOrPointToMakeCoincidentTo
+        // Look up the intersecting segment from the updated objects array
+        // First try by ID from the operation
+        let intersectingSeg = objects.find(
+          (obj) => obj?.id === operation.segmentOrPointToMakeCoincidentTo
+        )
+
+        // If we can't find it by ID (maybe IDs were invalidated), we need to find it another way
+        // Since we don't have the original segment type stored, we'll try to find it by looking
+        // for segments that aren't the one we just edited
+        if (!intersectingSeg) {
+          // Find segments that are not the one we just edited
+          // For arcs specifically, there's usually only one, so we can find it that way
+          intersectingSeg = objects.find(
+            (obj) =>
+              obj?.id !== operation.segmentId &&
+              obj?.kind?.type === 'Segment' &&
+              obj.kind.segment.type === 'Arc'
           )
-
-        if (intersectingSeg && intersectingSeg.kind?.type === 'Segment') {
-          const intersectingSegId = intersectingSeg.id
-          const intersectingSegment = intersectingSeg.kind.segment
-          const intersectingEndpointIds: number[] = []
-          if (
-            intersectingSegment.type === 'Line' ||
-            intersectingSegment.type === 'Arc'
-          ) {
-            intersectingEndpointIds.push(
-              intersectingSegment.start,
-              intersectingSegment.end
+          // If no arc found, try line segments
+          if (!intersectingSeg) {
+            intersectingSeg = objects.find(
+              (obj) =>
+                obj?.id !== operation.segmentId &&
+                obj?.kind?.type === 'Segment' &&
+                obj.kind.segment.type === 'Line'
             )
           }
+        }
 
-          let existingConstraintId = operation.existingPointSegmentConstraintId
-          let intersectingEndpointPointId =
-            operation.intersectingEndpointPointId
+        const intersectingSegId =
+          intersectingSeg?.id ?? operation.segmentOrPointToMakeCoincidentTo
 
-          // // Fallback detection if trimStrategy did not precompute it.
-          // if (
-          //   existingConstraintId === undefined ||
-          //   intersectingEndpointPointId === undefined
-          // ) {
-          //   for (const obj of objects) {
-          //     if (
-          //       obj?.kind?.type === 'Constraint' &&
-          //       obj.kind.constraint.type === 'Coincident'
-          //     ) {
-          //       const segments = obj.kind.constraint.segments
-          //       const hasTrimSeg = segments.includes(operation.segmentToTrimId)
-          //       const sharedEndpoint = intersectingEndpointIds.find((id) =>
-          //         segments.includes(id)
-          //       )
-          //       if (hasTrimSeg && sharedEndpoint !== undefined) {
-          //         existingConstraintId =
-          //           existingConstraintId ?? obj.id
-          //         intersectingEndpointPointId =
-          //           intersectingEndpointPointId ?? sharedEndpoint
-          //         break
-          //       }
-          //     }
-          //   }
-          // }
-
-          // Delete old point-segment coincident if we identified one in trimStrategy
-          if (existingConstraintId !== undefined) {
-            const deleteResult = await rustContext.deleteObjects(
-              0,
-              sketchId,
-              [existingConstraintId],
-              [], // segmentIds
-              settings
-            )
-            lastResult = deleteResult
-            invalidates_ids =
-              invalidates_ids || deleteResult.sceneGraphDelta.invalidates_ids
-            if (deleteResult.sceneGraphDelta.new_graph.objects) {
-              objects = deleteResult.sceneGraphDelta.new_graph.objects
-            }
-          }
-
-          // Add the new coincident constraint: if we know the exact endpoint on the
-          // intersecting segment, prefer point-point; otherwise fall back to point-segment.
+        // Verify the segment still exists before adding constraint
+        const verifySeg = objects.find((obj) => obj?.id === intersectingSegId)
+        if (!verifySeg) {
+          console.error(
+            `Cannot add constraint: intersecting segment ${intersectingSegId} not found in objects array`
+          )
+        } else {
+          // Use point-point constraint if intersectingEndpointPointId is provided,
+          // otherwise use point-segment constraint
           const coincidentSegments =
-            intersectingEndpointPointId !== undefined
-              ? [segmentEndpointPointId, intersectingEndpointPointId]
-              : [segmentEndpointPointId, intersectingSegId]
+            operation.intersectingEndpointPointId !== undefined
+              ? [
+                  newSegmentEndpointPointId,
+                  operation.intersectingEndpointPointId,
+                ]
+              : [newSegmentEndpointPointId, intersectingSegId]
 
           const constraintResult = await rustContext.addConstraint(
             0,
@@ -2011,7 +2145,29 @@ export async function executeTrimStrategy({
           }
         }
       } catch (error) {
-        return new Error(`Failed to execute cutTail: ${error}`)
+        // If constraint addition fails, log but don't fail the operation
+        // The trim operation itself succeeded, the constraint is just a bonus
+        console.error('Failed to add coincident constraint:', error)
+      }
+    } else if (operation.type === 'deleteConstraints') {
+      // Delete constraints - this operation should come after other operations
+      // since deleting constraints can invalidate IDs
+      try {
+        const deleteResult = await rustContext.deleteObjects(
+          0,
+          sketchId,
+          operation.constraintIds,
+          [], // segmentIds
+          settings
+        )
+        lastResult = deleteResult
+        invalidates_ids =
+          invalidates_ids || deleteResult.sceneGraphDelta.invalidates_ids
+        if (deleteResult.sceneGraphDelta.new_graph.objects) {
+          objects = deleteResult.sceneGraphDelta.new_graph.objects
+        }
+      } catch (error) {
+        return new Error(`Failed to delete constraints: ${error}`)
       }
     } else if (operation.type === 'createCoincidentLineSegment') {
       // Add a new segment
