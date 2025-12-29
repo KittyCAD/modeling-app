@@ -232,17 +232,7 @@ export const settingsMachine = setup({
      * based on the setting textEditor.blinkingCursor.current
      */
     setCursorBlinking: ({ context, self }) => {
-      document.documentElement.style.setProperty(
-        `--cursor-color`,
-        context.textEditor.blinkingCursor.current ? 'auto' : 'transparent'
-      )
-      const rootContext = self.system.get('root')?.getSnapshot().context
-      const kclManager = rootContext?.kclManager
-
-      if (!kclManager) {
-        return
-      }
-      kclManager.setCursorBlinking(context.textEditor.blinkingCursor.current)
+      // Implementation moved to singletons.ts to provide necessary singletons.
     },
     /** Unload the project-level setting values from memory */
     clearProjectSettings: assign(({ context }) => {
