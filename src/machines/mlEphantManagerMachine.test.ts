@@ -22,17 +22,17 @@ describe('mlEphantManagerMachine', () => {
               {
                 reasoning: {
                   type: 'created_kcl_file',
-                  content: '// created_kcl_file'
+                  content: '// created_kcl_file',
                 },
               },
               {
                 reasoning: {
-                  error: 'nonsense computation'
+                  error: 'nonsense computation',
                 },
               },
               {
                 reasoning: {
-                  code: '// code'
+                  code: '// code',
                 },
               },
               {
@@ -50,7 +50,7 @@ describe('mlEphantManagerMachine', () => {
                       filepath_to_edit: 'main.kcl',
                       edit_instructions: 'instruction n',
                     },
-                  ]
+                  ],
                 },
               },
               {
@@ -59,11 +59,11 @@ describe('mlEphantManagerMachine', () => {
                   started_at: new Date().toISOString(),
                   whole_response: '// whole_response',
                   conversation_id: 'xxxxxxxxxxxxxxxxxxxxxxxx',
-                }
-              }
-            ]
-          }
-        ]
+                },
+              },
+            ],
+          },
+        ],
       }
       const output = MlEphantConversationToMarkdown(conversation)
 
