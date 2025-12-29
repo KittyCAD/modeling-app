@@ -8,10 +8,12 @@ import {
   TransactionSpec,
 } from '@codemirror/state'
 import { KclManager } from '@src/lang/KclManager'
-import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import { getProjectDirectoryFromKCLFilePath } from '@src/lib/paths'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { EditorView } from 'codemirror'
-import { ActorRefFrom } from 'xstate'
+import type { ActorRefFrom } from 'xstate'
 
 const fsEffectCompartment = new Compartment()
 export const fsIgnoreAnnotationType = Annotation.define<true>()
@@ -29,8 +31,11 @@ export const fsDeleteFile = (props: FSEffectProps) => h(deleteFile.of(props))
 
 export function buildFSEffectExtension(
   systemIOActor: ActorRefFrom<typeof systemIOMachine>,
-  kclManager: KclManager
+  kclManager: KclManager,
+  settingsActor: SettingsActorType
 ) {
+  const applicationProjectDirectory =
+    settingsActor.getSnapshot().context.app.projectDirectory.current
   const fsWiredListener = EditorView.updateListener.of((vu) => {
     for (const tr of vu.transactions) {
       if (tr.annotation(fsIgnoreAnnotationType)) {
@@ -38,11 +43,33 @@ export function buildFSEffectExtension(
       }
       for (const e of tr.effects) {
         if (e.is(createFile)) {
-          console.log('got a create effect!')
-          systemIOActor.send({
-            type: SystemIOMachineEvents.createBlankFile,
-            data: { requestedAbsolutePath: e.value.path },
-          })
+          const requestedFileNameWithExtension = e.value.path
+            .split(window.electron?.sep || '/')
+            .pop()
+          const requestedProjectName = getProjectDirectoryFromKCLFilePath(
+            e.value.path,
+            applicationProjectDirectory
+          )
+          const requestedProjectNameWithSubDirectories = window.electron?.join(
+            requestedProjectName,
+            (e.value.path.split(requestedProjectName).pop() || '').replace(
+              requestedFileNameWithExtension || '',
+              ''
+            )
+          )
+          if (
+            requestedFileNameWithExtension &&
+            requestedProjectNameWithSubDirectories
+          ) {
+            systemIOActor.send({
+              type: SystemIOMachineEvents.createKCLFile,
+              data: {
+                requestedCode: e.value.contents,
+                requestedProjectName: requestedProjectNameWithSubDirectories,
+                requestedFileNameWithExtension,
+              },
+            })
+          }
         } else if (e.is(deleteFile)) {
           console.log('got a delete!')
           systemIOActor.send({
