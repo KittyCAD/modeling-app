@@ -1,4 +1,3 @@
-import { redoDepth, undoDepth } from '@codemirror/commands'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import type { KclManager } from '@src/lang/KclManager'
@@ -6,12 +5,7 @@ import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
-import {
-  useMemo,
-  useSyncExternalStore,
-  type HTMLProps,
-  type MouseEventHandler,
-} from 'react'
+import { type HTMLProps, type MouseEventHandler } from 'react'
 import { useSignals } from '@preact/signals-react/runtime'
 
 export function UndoRedoButtons({
