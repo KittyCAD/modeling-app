@@ -15,6 +15,4 @@ once fixed in engine will just start working here with no language changes.
 - **Import**: Right now you can import a file, even if that file has brep data
     you cannot edit it, after v1, the engine will account for this. 
 
-- **Appearance**: Changing the appearance on a loft does not work. 
-
 - **CSG Booleans**: Coplanar (bodies that share a plane) unions, subtractions, and intersections are not currently supported.
