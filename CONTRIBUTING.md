@@ -99,7 +99,7 @@ Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (
 
 How to identify the types of tests and where to put your test.
 
-Unit tests should be fast, miminal dependencies, and minimal async code. 
+Unit tests should be fast, minimal dependencies, and minimal async code.
 Integration tests will be slower, require more dependencies, and could be flaky.
 
 - Vitest [config](./vitest.config.ts) 
