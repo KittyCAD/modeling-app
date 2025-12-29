@@ -501,11 +501,57 @@ export async function loadAndValidateSettings(
     )
   }
 
+  // Resolve all async hideOnPlatform values before returning
+  // This makes everything synchronous from this point on
+  await resolveAsyncHideOnPlatform(settingsNext)
+
   // Return the settings object
   return {
     settings: settingsNext,
     configuration: appSettingsPayload,
   }
+}
+
+/**
+ * Resolves all async hideOnPlatform functions in settings and replaces them with resolved values.
+ * This is called once during settings loading to make everything synchronous afterward.
+ */
+async function resolveAsyncHideOnPlatform(
+  settings: SettingsType
+): Promise<void> {
+  const settingsToResolve: Array<{ setting: Setting<unknown> }> = []
+
+  // Collect all settings with async hideOnPlatform functions
+  Object.entries(settings).forEach(([_, categorySettings]) => {
+    Object.entries(categorySettings).forEach(([_, setting]) => {
+      if (typeof setting.hideOnPlatform === 'function') {
+        settingsToResolve.push({ setting })
+      }
+    })
+  })
+
+  if (settingsToResolve.length === 0) {
+    return
+  }
+
+  // Resolve all async hideOnPlatform values in parallel
+  await Promise.all(
+    settingsToResolve.map(async ({ setting }) => {
+      const hideOnPlatform = setting.hideOnPlatform
+      if (typeof hideOnPlatform === 'function') {
+        try {
+          const resolved = await hideOnPlatform()
+          // Replace the function with the resolved value
+          // Convert null to undefined since the type doesn't allow null
+          setting.hideOnPlatform = resolved === null ? undefined : resolved
+        } catch (error) {
+          console.error('Error resolving hideOnPlatform:', error)
+          // Default to hidden on error
+          setting.hideOnPlatform = 'both'
+        }
+      }
+    })
+  )
 }
 
 /**
@@ -653,43 +699,49 @@ export function setSettingsAtLevel(
 }
 
 /**
- * Returns true if the setting should be hidden
- * based on its config, the current settings level,
- * and the current platform.
+ * Synchronous version of shouldHideSetting
+ * Async hideOnPlatform functions should have been resolved in loadAndValidateSettings,
+ * so this works synchronously.
  */
 export function shouldHideSetting(
   setting: Setting<unknown>,
   settingsLevel: SettingsLevel
-) {
+): boolean {
+  // Async functions should have been resolved in loadAndValidateSettings,
+  // but if we encounter one (shouldn't happen), default to hidden
+  const hideOnPlatform = setting.hideOnPlatform
+  if (typeof hideOnPlatform === 'function') {
+    return true
+  }
+
   return (
     setting.hideOnLevel === settingsLevel ||
-    setting.hideOnPlatform === 'both' ||
-    (setting.hideOnPlatform && isDesktop()
-      ? setting.hideOnPlatform === 'desktop'
-      : setting.hideOnPlatform === 'web')
+    hideOnPlatform === 'both' ||
+    (hideOnPlatform && isDesktop()
+      ? hideOnPlatform === 'desktop'
+      : hideOnPlatform === 'web')
   )
 }
 
 /**
- * Returns true if the setting meets the requirements
- * to appear in the settings modal in this context
- * based on its config, the current settings level,
- * and the current platform
+ * Synchronous version of shouldShowSettingInput
+ * Async hideOnPlatform functions should have been resolved in loadAndValidateSettings,
+ * so this works synchronously.
  */
 export function shouldShowSettingInput(
   setting: Setting<unknown>,
   settingsLevel: SettingsLevel
-) {
-  return (
-    !shouldHideSetting(setting, settingsLevel) &&
-    (setting.Component ||
-      ['string', 'boolean', 'number'].some(
-        (t) => typeof setting.default === t
-      ) ||
-      (setting.commandConfig?.inputType &&
-        ['string', 'options', 'boolean', 'number'].some(
-          (t) => setting.commandConfig?.inputType === t
-        )))
+): boolean {
+  const isHidden = shouldHideSetting(setting, settingsLevel)
+  if (isHidden) return false
+
+  return !!(
+    setting.Component ||
+    ['string', 'boolean', 'number'].some((t) => typeof setting.default === t) ||
+    (setting.commandConfig?.inputType &&
+      ['string', 'options', 'boolean', 'number'].some(
+        (t) => setting.commandConfig?.inputType === t
+      ))
   )
 }
 
@@ -725,9 +777,28 @@ export async function jsAppSettings(s: SettingsType | SettingsActorType) {
   return settingsPayloadToConfiguration(getAllCurrentSettings(settings))
 }
 
-export function hiddenOnPlatform(setting: Setting, desktop: boolean) {
+/**
+ * Synchronous check if a setting is hidden on the given platform.
+ * For async hideOnPlatform functions, this returns false (not hidden) since
+ * we can't resolve them synchronously. The actual visibility will be resolved
+ * asynchronously and commands will be updated reactively.
+ */
+export function hiddenOnPlatform(setting: Setting, desktop: boolean): boolean {
+  const hideOnPlatform = setting.hideOnPlatform
+
+  // Async functions should have been resolved in loadAndValidateSettings,
+  // but if we encounter one (shouldn't happen), default to hidden
+  if (typeof hideOnPlatform === 'function') {
+    return true // Hidden until resolved
+  }
+
+  // Handle sync values (including resolved async values)
+  if (hideOnPlatform === null || hideOnPlatform === undefined) {
+    return false // Not hidden
+  }
+
   return (
-    setting.hideOnPlatform === 'both' ||
-    setting.hideOnPlatform === (desktop ? 'desktop' : 'web')
+    hideOnPlatform === 'both' ||
+    hideOnPlatform === (desktop ? 'desktop' : 'web')
   )
 }

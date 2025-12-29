@@ -295,21 +295,29 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
     props.onProcess(request, mode)
   }
 
+  // Scroll to bottom when:
+  // 1. A new message is added (exchanges length changes)
+  // 2. A prompt completes (hasPromptCompleted becomes true)
   useEffect(() => {
-    if (autoScroll === false) {
-      return
-    }
-    if (refScroll.current == null) {
-      return
-    }
-    if (!props.hasPromptCompleted) {
-      return
-    }
-    refScroll.current.scrollTo({
-      top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
+    const exchangesLength = props.conversation?.exchanges.length ?? 0
+
+    if (autoScroll === false) return
+    if (refScroll.current === null) return
+    if (exchangesLength === 0 && !props.hasPromptCompleted) return
+
+    requestAnimationFrame(() => {
+      if (refScroll.current) {
+        refScroll.current.scrollTo({
+          top: refScroll.current.scrollHeight,
+          behavior: 'smooth',
+        })
+      }
     })
-  }, [props.hasPromptCompleted, autoScroll])
+  }, [
+    props.conversation?.exchanges.length,
+    props.hasPromptCompleted,
+    autoScroll,
+  ])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
     (exchange: Exchange, exchangeIndex: number, list) => {
