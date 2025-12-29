@@ -95,6 +95,28 @@ Note that it leverages a web server and by default points to our non-production 
 
 Devtools can be opened with the usual Command-Option-I (macOS) or Ctrl-Shift-I (Linux and Windows).
 
+## Writing tests
+
+How to identify the types of tests and where to put your test.
+
+Unit tests should be fast, miminal dependenices, and minimal async code. 
+Integration tests will be slower, require more dependenices, and could be flaky.
+
+- Vitest [config](./vitest.config.ts) 
+  - Code written under `/src/**/*`
+  - Projects
+    - `unit` -- `npm run test:unit`
+      - ends with `*.test.*`
+      - Any raw typescript/javascript code. Think `function add(a,b) {return a+b}`
+      - Component mounting and rendering
+    - `integration` -- `npm run test:integration`
+      - ends with `*.spec.*`
+      - Any code that requires the WASM blob loaded into memory
+      - Any code that requires engine connection lite (websocket)
+- Playwright [config](./playwright.config.ts)
+  - Code written under `/e2e/*/*`
+  - ends with `*.spec.*`
+
 ## Running tests
 
 ### Playwright tests
