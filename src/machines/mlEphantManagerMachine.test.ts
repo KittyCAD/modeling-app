@@ -1,9 +1,8 @@
-import { err } from '@src/lib/trap'
-import { join } from 'path'
-import fs from 'node:fs'
-
 import { expect, describe, it } from 'vitest'
-import { MlEphantConversationToMarkdown } from './mlEphantManagerMachine'
+import {
+  MlEphantConversationToMarkdown,
+  type Conversation,
+} from '@src/machines/mlEphantManagerMachine'
 
 describe('mlEphantManagerMachine', () => {
   describe('MlEphantConversationToMarkdown', () => {
@@ -12,31 +11,37 @@ describe('mlEphantManagerMachine', () => {
       expect(output.length).toBe(0)
     })
     it('has conversation, return non-empty string', async () => {
-      const conversation = {
+      const conversation: Conversation = {
         exchanges: [
           {
+            deltasAggregated: '',
             request: {
+              type: 'user',
               content: 'make me a sandwich',
             },
             responses: [
               {
                 reasoning: {
-                  type: 'created_kcl_file',
-                  content: '// created_kcl_file',
+                  type: 'updated_kcl_file',
+                  file_name: 'main.kcl',
+                  content: '// updated_kcl_file',
                 },
               },
               {
                 reasoning: {
+                  type: 'kcl_code_error',
                   error: 'nonsense computation',
                 },
               },
               {
                 reasoning: {
+                  type: 'generated_kcl_code',
                   code: '// code',
                 },
               },
               {
                 reasoning: {
+                  type: 'design_plan',
                   steps: [
                     {
                       filepath_to_edit: 'main.kcl',
@@ -55,10 +60,7 @@ describe('mlEphantManagerMachine', () => {
               },
               {
                 end_of_stream: {
-                  completed_at: new Date().toISOString(),
-                  started_at: new Date().toISOString(),
                   whole_response: '// whole_response',
-                  conversation_id: 'xxxxxxxxxxxxxxxxxxxxxxxx',
                 },
               },
             ],
