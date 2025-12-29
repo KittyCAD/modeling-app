@@ -348,7 +348,7 @@ impl FunctionSource {
         // - put this `prev_inside_stdlib` value back.
         // - called the pop_env.
         let result = match &self.body {
-            FunctionBody::Rust(f) => f(exec_state, args).await.map(|r| Some(r.continue_())),
+            FunctionBody::Rust(f) => f(exec_state, args).await.map(Some),
             FunctionBody::Kcl(_) => {
                 if let Err(e) = assign_args_to_params_kw(self, args, exec_state) {
                     exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
