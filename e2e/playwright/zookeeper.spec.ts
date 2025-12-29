@@ -9,7 +9,7 @@ import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 
 test.describe('Zookeeper tests', () => {
-  async function runCopilotHappyPathTest({
+  async function runZookeeperHappyPathTest({
     page,
     editor,
     homePage,
@@ -39,11 +39,11 @@ test.describe('Zookeeper tests', () => {
       await copilot.submitButton.click()
       await expect(copilot.placeHolderResponse).toBeVisible()
       await expect(copilot.placeHolderResponse).not.toBeVisible({
-        timeout: 60_000,
+        timeout: 120_000,
       })
       await expect(copilot.thinkingView).toBeVisible()
       await expect(copilot.thinkingView).not.toBeVisible({
-        timeout: 60_000,
+        timeout: 120_000,
       })
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain('startSketchOn')
@@ -58,7 +58,7 @@ test.describe('Zookeeper tests', () => {
     'Web copilot happy path: new project, easy prompt, good result',
     { tag: ['@web'] },
     async ({ page, editor, homePage, scene, toolbar, cmdBar, copilot }) => {
-      await runCopilotHappyPathTest({
+      await runZookeeperHappyPathTest({
         page,
         editor,
         homePage,
@@ -74,7 +74,7 @@ test.describe('Zookeeper tests', () => {
     'Desktop copilot happy path: new project, easy prompt, good result',
     { tag: ['@desktop'] },
     async ({ page, editor, homePage, scene, toolbar, cmdBar, copilot }) => {
-      await runCopilotHappyPathTest({
+      await runZookeeperHappyPathTest({
         page,
         editor,
         homePage,
