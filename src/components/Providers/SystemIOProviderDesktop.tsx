@@ -1,4 +1,3 @@
-import { useSelector } from '@xstate/react'
 import { useLspContext } from '@src/components/LspProvider'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { fsManager } from '@src/lang/std/fileSystemManager'
@@ -285,15 +284,6 @@ export function SystemIOMachineLogicListenerDesktop() {
       })
     }
   )
-
-  // ZOOKEEPER BEHAVIOR EXCEPTION
-  // Only fires on state changes, to deal with Zookeeper control.
-  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
-  useEffect(() => {
-    if (systemIOState !== 'idle') return
-    void kclManager.executeCode()
-    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
-  }, [systemIOState])
 
   // Save the conversation id for the project id if necessary.
   useProjectIdToConversationId(mlEphantManagerActor2, systemIOActor, settings)
