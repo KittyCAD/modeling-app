@@ -133,7 +133,8 @@
 }
 
 .tooltipWrapper.bottom-left {
-  inset-block-start: anchor(start);
+  inset-inline-start: anchor(start);
+  inset-block-start: anchor(end);
 }
 
 .tooltipWrapper.left {
