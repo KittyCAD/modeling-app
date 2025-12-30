@@ -14,9 +14,11 @@
 
   pointer-events: none;
   user-select: none;
-  visibility: hidden;
   position: absolute;
-  z-index: 1;
+  inset: unset;
+  background-color: transparent;
+  border: none;
+  margin: 0;
 
   /* The parts that will be transitioned */
   opacity: 0;
@@ -104,45 +106,46 @@
 }
 
 .tooltipWrapper.top {
-  inset-inline-start: 50%;
-  inset-block-end: 100%;
+  inset-inline-start: anchor(50%);
+  inset-block-end: anchor(end);
   --_x: calc(50% * var(--isRTL));
 }
 
 .tooltipWrapper.top-right {
-  inset-block-end: 100%;
-  inset-inline-end: 0;
+  inset-block-end: anchor(start);
+  inset-inline-end: anchor(end);
 }
 
 .tooltipWrapper.right {
-  inset-inline-start: 100%;
-  inset-block-end: 50%;
+  inset-inline-start: anchor(end);
+  inset-block-end: anchor(50%);
   --_y: 50%;
 }
 
 .tooltipWrapper.bottom-right {
-  inset-block-start: 100%;
-  inset-inline-end: 0;
+  inset-block-start: anchor(end);
+  inset-inline-end: anchor(end);
 }
 
 .tooltipWrapper.bottom {
   --_x: calc(50% * var(--isRTL));
-  inset-inline-start: 50%;
-  inset-block-start: 100%;
+  inset-inline-start: anchor(50%);
+  inset-block-start: anchor(end);
 }
 
 .tooltipWrapper.bottom-left {
-  inset-block-start: 100%;
+  inset-block-start: anchor(start);
 }
 
 .tooltipWrapper.left {
-  inset-inline-end: 100%;
-  inset-block-end: 50%;
+  inset-inline-end: anchor(start);
+  inset-block-end: anchor(50%);
   --_y: 50%;
 }
 
 .tooltipWrapper.top-left {
-  inset-block-end: 100%;
+  inset-inline-start: anchor(start);
+  inset-block-end: anchor(start);
 }
 
 @media (prefers-reduced-motion: no-preference) {
