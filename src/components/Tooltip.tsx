@@ -19,8 +19,6 @@ export interface TooltipProps extends React.HTMLProps<HTMLDivElement> {
   inert?: boolean
 }
 
-let tooltipIndex = 0
-
 export default function Tooltip({
   children,
   position = 'top',
@@ -33,7 +31,6 @@ export default function Tooltip({
   ...rest
 }: TooltipProps) {
   const tooltip = useRef<HTMLDivElement>(null)
-  const tooltipID = useRef(`tooltip-${tooltipIndex++}`)
   useEffect(() => {
     if (tooltip.current === null) {
       return
