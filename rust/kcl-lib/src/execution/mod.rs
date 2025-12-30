@@ -88,7 +88,7 @@ macro_rules! control_continue {
 pub(crate) use control_continue;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
-pub(crate) enum ControlFlowKind {
+pub enum ControlFlowKind {
     #[default]
     Continue,
     Exit,
@@ -106,7 +106,7 @@ impl ControlFlowKind {
 
 #[must_use = "You should always handle the control flow value when it is returned"]
 #[derive(Debug, Clone, PartialEq, Serialize)]
-pub(crate) struct KclValueControlFlow {
+pub struct KclValueControlFlow {
     /// Use [control_continue] or [Self::into_value] to get the value.
     value: KclValue,
     pub control: ControlFlowKind,
