@@ -211,12 +211,9 @@ function CommandBarKclInput({
               key: 'Enter',
               run: (editor) => {
                 // Only submit if there is no completion active
-                if (completionStatus(editor.state) === null) {
-                  handleSubmit()
-                  return true
-                } else {
-                  return false
-                }
+                if (completionStatus(editor.state) !== null) return false
+                handleSubmit()
+                return true
               },
             },
             {
