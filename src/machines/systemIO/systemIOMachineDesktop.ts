@@ -471,7 +471,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           return Promise.reject(new Error('No file system present'))
         }
         const wasmInstance = await input.context.wasmInstancePromise
-        await new Promise((resolve) => setTimeout(resolve, 3000))
         const message = await sharedBulkCreateWorkflow({
           electron: window.electron,
           input: {
