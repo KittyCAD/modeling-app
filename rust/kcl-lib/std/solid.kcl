@@ -1290,4 +1290,6 @@ export fn appearance(
   metalness?: number(Count),
   /// Roughness of the new material, a percentage like 95.7.
   roughness?: number(Count),
+  /// Opacity. Defaults to 100 (totally opaque). 0 would be totally transparent.
+  opacity?: number(Count),
 ): [Solid; 1+] | ImportedGeometry {}
