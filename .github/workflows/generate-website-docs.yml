@@ -71,7 +71,7 @@ jobs:
           gh pr create --title "Update KCL docs" \
               --body "Applies the latest changes from: ${{ github.server_url }}/${{ github.repository }} cc @KittyCAD/kcl" \
               --head "$NEW_BRANCH" \
-              --base main
+              --base main || echo "PR already exists, updated via force push"
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
