@@ -11,8 +11,8 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         AbstractSegment, BodyType, ControlFlowKind, EnvironmentRef, ExecState, ExecutorContext, KclValue,
-        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PlaneType, Segment,
-        SegmentKind, SegmentRepr, SketchConstraintKind, StatementKind, TagIdentifier, UnsolvedSegment,
+        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PlaneType, PreserveMem,
+        Segment, SegmentKind, SegmentRepr, SketchConstraintKind, StatementKind, TagIdentifier, UnsolvedSegment,
         UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
         control_continue,
@@ -141,7 +141,7 @@ impl ExecutorContext {
         &self,
         program: &Node<Program>,
         exec_state: &mut ExecState,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
         module_id: ModuleId,
         path: &ModulePath,
     ) -> Result<ModuleExecutionOutcome, (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>)> {
@@ -157,7 +157,7 @@ impl ExecutorContext {
             next_object_id,
             exec_state.mod_local.freedom_analysis,
         );
-        if !preserve_mem {
+        if preserve_mem.normal() {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         }
 
@@ -166,7 +166,7 @@ impl ExecutorContext {
             .await
             .map_err(|err| (err, None, None))?;
 
-        if !preserve_mem {
+        if preserve_mem.normal() {
             exec_state.mut_stack().push_new_root_env(!no_prelude);
         }
 
@@ -174,16 +174,16 @@ impl ExecutorContext {
             .exec_block(program, exec_state, crate::execution::BodyType::Root)
             .await;
 
-        let env_ref = if preserve_mem {
-            exec_state.mut_stack().pop_and_preserve_env()
-        } else {
-            exec_state.mut_stack().pop_env()
+        let env_ref = match preserve_mem {
+            PreserveMem::Always => exec_state.mut_stack().pop_and_preserve_env(),
+            PreserveMem::Normal => exec_state.mut_stack().pop_env(),
         };
-        let module_artifacts = if !preserve_mem {
-            std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-            local_state.artifacts
-        } else {
-            std::mem::take(&mut exec_state.mod_local.artifacts)
+        let module_artifacts = match preserve_mem {
+            PreserveMem::Always => std::mem::take(&mut exec_state.mod_local.artifacts),
+            PreserveMem::Normal => {
+                std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+                local_state.artifacts
+            }
         };
 
         crate::log::log(format!("leave {path}"));
@@ -675,7 +675,7 @@ impl ExecutorContext {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
             ModuleRepr::Kcl(_, Some(outcome)) => Ok((outcome.environment, outcome.exports.clone())),
             ModuleRepr::Kcl(program, cache) => self
-                .exec_module_from_ast(program, module_id, &path, exec_state, source_range, false)
+                .exec_module_from_ast(program, module_id, &path, exec_state, source_range, PreserveMem::Normal)
                 .await
                 .map(|outcome| {
                     *cache = Some(outcome.clone());
@@ -707,7 +707,7 @@ impl ExecutorContext {
             ModuleRepr::Kcl(_, Some(outcome)) => Ok(outcome.last_expr.clone()),
             ModuleRepr::Kcl(program, cached_items) => {
                 let result = self
-                    .exec_module_from_ast(program, module_id, &path, exec_state, source_range, false)
+                    .exec_module_from_ast(program, module_id, &path, exec_state, source_range, PreserveMem::Normal)
                     .await;
                 match result {
                     Ok(outcome) => {
@@ -747,7 +747,7 @@ impl ExecutorContext {
         path: &ModulePath,
         exec_state: &mut ExecState,
         source_range: SourceRange,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
     ) -> Result<ModuleExecutionOutcome, KclError> {
         exec_state.global.mod_loader.enter_module(path);
         let result = self
