@@ -35,7 +35,7 @@
     "@typescript-eslint/no-for-in-array": "error",
     "no-implied-eval": "off", // This is wrong; use the @typescript-eslint one instead.
     "@typescript-eslint/no-implied-eval": "error",
-    "@typescript-eslint/no-invalid-void-type": "error",
+    "@typescript-eslint/no-invalid-void-type": ["error", { "allowAsThisParameter": true }],
     "@typescript-eslint/no-misused-new": "error",
     "@typescript-eslint/no-misused-promises": "error",
     "@typescript-eslint/no-namespace": "error",
@@ -64,6 +64,7 @@
     "@typescript-eslint/prefer-namespace-keyword": "error",
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/restrict-plus-operands": "error",
+    "@typescript-eslint/unbound-method": "error",
     "jsx-a11y/click-events-have-key-events": "off",
     "jsx-a11y/no-autofocus": "off",
     "jsx-a11y/no-noninteractive-element-interactions": "off",

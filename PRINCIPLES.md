@@ -3,7 +3,7 @@ These are principles we try to follow as a team working on this product. Anyone 
 ## 0. Application architecture
 1. Use React as a thin view layer unless absolutely necessary, presenting state that is defined outside of React.
 
-2. Reduce the usage of the global `initPromise()` workflow of globally importing and initializing the WASM instance.
+2. Never directly import a method from the WASM module (although it is tempting!). Always pass in our WASM instance as a dependency instead. This anti-pattern was removed in #9415.
 
 3. Reduce the usage of circular dependencies in src/lib/singletons.ts.
 

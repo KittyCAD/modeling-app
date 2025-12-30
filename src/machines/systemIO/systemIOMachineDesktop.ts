@@ -21,6 +21,7 @@ import {
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import type { AppMachineContext } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   RequestedKCLFile,
@@ -45,10 +46,11 @@ const sharedBulkCreateWorkflow = async ({
     context: SystemIOContext
     files: RequestedKCLFile[]
     rootContext: AppMachineContext
+    wasmInstance: ModuleType
     override?: boolean
   }
 }) => {
-  const configuration = await readAppSettingsFile(electron)
+  const configuration = await readAppSettingsFile(electron, input.wasmInstance)
   for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
     const file = input.files[fileIndex]
     const requestedProjectName = file.requestedProjectName
@@ -86,6 +88,7 @@ const sharedBulkCreateWorkflow = async ({
             electron,
             entryName: requestedFileName,
             baseDir,
+            wasmInstance: input.wasmInstance,
           })
         ).name
 
@@ -93,6 +96,7 @@ const sharedBulkCreateWorkflow = async ({
     await createNewProjectDirectory(
       electron,
       newProjectName,
+      input.wasmInstance,
       requestedCode,
       configuration,
       fileName,
@@ -148,7 +152,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           }
           const project: Project = await getProjectInfo(
             window.electron,
-            projectPath
+            projectPath,
+            await context.wasmInstancePromise
           )
           if (
             project.kcl_file_count === 0 &&
@@ -174,7 +179,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         const folders = input.context.folders
         const requestedProjectName = input.requestedProjectName
         const uniqueName = getUniqueProjectName(requestedProjectName, folders)
-        await createNewProjectDirectory(window.electron, uniqueName)
+        await createNewProjectDirectory(
+          window.electron,
+          uniqueName,
+          await input.context.wasmInstancePromise
+        )
         return {
           message: `Successfully created "${uniqueName}"`,
           name: uniqueName,
@@ -265,6 +274,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedCode: string
           rootContext: AppMachineContext
           requestedSubRoute?: string
+          wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
         if (!window.electron) {
@@ -295,6 +305,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           )
         }
 
+        const wasmInstance = await input.wasmInstancePromise
+
         const baseDir = window.electron.join(
           input.context.projectDirectoryPath,
           newProjectName
@@ -303,14 +315,19 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           electron: window.electron,
           entryName: requestedFileNameWithExtension,
           baseDir,
+          wasmInstance,
         })
 
-        const configuration = await readAppSettingsFile(window.electron)
+        const configuration = await readAppSettingsFile(
+          window.electron,
+          wasmInstance
+        )
 
         // Create the project around the file if newProject
         await createNewProjectDirectory(
           window.electron,
           newProjectName,
+          await input.wasmInstancePromise,
           requestedCode,
           configuration,
           newFileName,
@@ -381,14 +398,20 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           context: SystemIOContext
           files: RequestedKCLFile[]
           rootContext: AppMachineContext
+          wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
         if (!window.electron) {
           return Promise.reject(new Error('No file system present'))
         }
+        const { wasmInstancePromise, ...otherInput } = input
+        const wasmInstance = await wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
           electron: window.electron,
-          input,
+          input: {
+            ...otherInput,
+            wasmInstance,
+          },
         })
         return {
           ...message,
@@ -407,15 +430,19 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedProjectName: string
           override?: boolean
           requestedSubRoute?: string
+          wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
         if (!window.electron) {
           return Promise.reject(new Error('No file system present'))
         }
+        const { wasmInstancePromise, ...otherInput } = input
+        const wasmInstance = await wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
           electron: window.electron,
           input: {
-            ...input,
+            ...otherInput,
+            wasmInstance,
             override: input.override,
           },
         })
@@ -443,10 +470,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         if (!window.electron) {
           return Promise.reject(new Error('No file system present'))
         }
+        const wasmInstance = await input.context.wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
           electron: window.electron,
           input: {
             ...input,
+            wasmInstance,
             override: input.override,
           },
         })

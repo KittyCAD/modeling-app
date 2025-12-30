@@ -12,10 +12,12 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { findKwArg } from '@src/lang/util'
 import type { CallExpressionKw, PathToNode } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function giveSketchFnCallTag(
   ast: Node<Program>,
   range: SourceRange,
+  wasmInstance: ModuleType,
   tag?: string
 ):
   | {
@@ -27,9 +29,12 @@ export function giveSketchFnCallTag(
   | Error {
   const path = getNodePathFromSourceRange(ast, range)
   const maybeTag = (() => {
-    const callNode = getNodeFromPath<CallExpressionKw>(ast, path, [
-      'CallExpressionKw',
-    ])
+    const callNode = getNodeFromPath<CallExpressionKw>(
+      ast,
+      path,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
     if (err(callNode)) {
       return callNode
     }

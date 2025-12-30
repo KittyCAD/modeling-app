@@ -609,7 +609,7 @@ const getProjectPathAtStartup = async (
   filePath?: string
 ): Promise<string | null> => {
   // Make sure we have WASM, because we're about to use it indirectly.
-  await initPromise
+  const wasmInstance = await initPromise
   // If we are in development mode, we don't want to load a project at
   // startup.
   // Since the args passed are always '.'
@@ -653,7 +653,7 @@ const getProjectPathAtStartup = async (
   if (projectPath) {
     // We have a project path, load the project information.
     console.log(`Loading project at startup: ${projectPath}`)
-    const currentFile = await getCurrentProjectFile(projectPath)
+    const currentFile = await getCurrentProjectFile(projectPath, wasmInstance)
 
     if (currentFile instanceof Error) {
       console.error(currentFile)

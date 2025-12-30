@@ -21,7 +21,7 @@ export default function Gizmo() {
 function GizmoDropdown({ items }: { items: React.ReactNode[] }) {
   return (
     <Popover className="absolute top-0 right-0 pointer-events-auto">
-      {({ close }) => (
+      {(popover) => (
         <>
           <Popover.Button className="border-none p-0 m-0 -translate-y-1/4 translate-x-1/4">
             <CustomIcon
@@ -38,7 +38,11 @@ function GizmoDropdown({ items }: { items: React.ReactNode[] }) {
           >
             <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
               {items.map((item, index) => (
-                <li key={index} className="contents" onClick={() => close()}>
+                <li
+                  key={index}
+                  className="contents"
+                  onClick={() => popover.close()}
+                >
                   {item}
                 </li>
               ))}

@@ -13,7 +13,7 @@ use crate::{
     errors::KclErrorDetails,
     exec::KclValue,
     execution::{
-        GdtAnnotation, Metadata, ModelingCmdMeta, Plane, StatementKind, TagIdentifier,
+        ControlFlowKind, GdtAnnotation, Metadata, ModelingCmdMeta, Plane, StatementKind, TagIdentifier,
         types::{ArrayLen, RuntimeType},
     },
     parsing::ast::types as ast,
@@ -280,6 +280,17 @@ async fn xy_plane(exec_state: &mut ExecState, args: &Args) -> Result<Plane, KclE
         .ctx
         .execute_expr(&plane_ast, exec_state, &metadata, &[], StatementKind::Expression)
         .await?;
+    let plane_value = match plane_value.control {
+        ControlFlowKind::Continue => plane_value.into_value(),
+        ControlFlowKind::Exit => {
+            let message = "Early return inside plane value is currently not supported".to_owned();
+            debug_assert!(false, "{}", &message);
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message,
+                vec![args.source_range],
+            )));
+        }
+    };
     Ok(plane_value
         .as_plane()
         .ok_or_else(|| {

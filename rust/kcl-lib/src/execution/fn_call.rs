@@ -5,9 +5,10 @@ use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
-        annotations,
+        BodyType, ExecState, ExecutorContext, KclValue, KclValueControlFlow, Metadata, StatementKind, TagEngineInfo,
+        TagIdentifier, annotations,
         cad_op::{Group, OpArg, OpKclValue, Operation},
+        control_continue,
         kcl_value::{FunctionBody, FunctionSource},
         memory,
         types::RuntimeType,
@@ -128,7 +129,11 @@ impl Arg {
 
 impl Node<CallExpressionKw> {
     #[async_recursion]
-    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn execute(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         let fn_name = &self.callee;
         let callsite: SourceRange = self.into();
 
@@ -151,9 +156,10 @@ impl Node<CallExpressionKw> {
         if let Some(ref arg_expr) = self.unlabeled {
             let source_range = SourceRange::from(arg_expr.clone());
             let metadata = Metadata { source_range };
-            let value = ctx
+            let value_cf = ctx
                 .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
+            let value = control_continue!(value_cf);
 
             let label = arg_expr.ident_name().map(str::to_owned);
 
@@ -163,9 +169,10 @@ impl Node<CallExpressionKw> {
         for arg_expr in &self.arguments {
             let source_range = SourceRange::from(arg_expr.arg.clone());
             let metadata = Metadata { source_range };
-            let value = ctx
+            let value_cf = ctx
                 .execute_expr(&arg_expr.arg, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
+            let value = control_continue!(value_cf);
             let arg = Arg::new(value, source_range);
             match &arg_expr.label {
                 Some(l) => {
@@ -217,14 +224,14 @@ impl Node<CallExpressionKw> {
 }
 
 impl FunctionSource {
-    pub async fn call_kw(
+    pub(crate) async fn call_kw(
         &self,
         fn_name: Option<String>,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
         args: Args<Sugary>,
         callsite: SourceRange,
-    ) -> Result<Option<KclValue>, KclError> {
+    ) -> Result<Option<KclValueControlFlow>, KclError> {
         if self.deprecated {
             exec_state.warn(
                 CompilationError::err(
@@ -340,8 +347,8 @@ impl FunctionSource {
         // Do not early return via ? or something until we've
         // - put this `prev_inside_stdlib` value back.
         // - called the pop_env.
-        let mut result = match &self.body {
-            FunctionBody::Rust(f) => f(exec_state, args).await.map(Some),
+        let result = match &self.body {
+            FunctionBody::Rust(f) => f(exec_state, args).await.map(|r| Some(r.continue_())),
             FunctionBody::Kcl(_) => {
                 if let Err(e) = assign_args_to_params_kw(self, args, exec_state) {
                     exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
@@ -351,12 +358,20 @@ impl FunctionSource {
 
                 ctx.exec_block(&self.ast.body, exec_state, BodyType::Block)
                     .await
-                    .map(|_| {
+                    .map(|cf| {
+                        if let Some(cf) = cf
+                            && cf.is_some_return()
+                        {
+                            return Some(cf);
+                        }
+                        // Ignore the block's value and extract the return value
+                        // from memory.
                         exec_state
                             .stack()
                             .get(memory::RETURN_NAME, self.ast.as_source_range())
                             .ok()
                             .cloned()
+                            .map(KclValue::continue_)
                     })
             }
         };
@@ -378,13 +393,25 @@ impl FunctionSource {
             }
         }
 
+        let mut result = match result {
+            Ok(Some(value)) => {
+                if value.is_some_return() {
+                    return Ok(Some(value));
+                } else {
+                    Ok(Some(value.into_value()))
+                }
+            }
+            Ok(None) => Ok(None),
+            Err(e) => Err(e),
+        };
+
         if self.is_std
             && let Ok(Some(result)) = &mut result
         {
             update_memory_for_tags_of_geometry(result, exec_state)?;
         }
 
-        coerce_result_type(result, self, exec_state)
+        coerce_result_type(result, self, exec_state).map(|r| r.map(KclValue::continue_))
     }
 }
 

@@ -6,11 +6,21 @@ import type { CommandArgument } from '@src/lib/commandTypes'
 
 vi.mock('@src/lib/singletons', () => {
   const mockModelingSend = vi.fn()
+  const wasmInstancePromise = vi.importMock(
+    '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+  )
   return {
-    engineCommandManager: { modelingSend: mockModelingSend },
+    engineCommandManager: {
+      modelingSend: mockModelingSend,
+      wasmInstancePromise,
+    },
     kclManager: {
       setSelectionFilter: vi.fn(),
       defaultSelectionFilter: vi.fn(),
+      wasmInstancePromise,
+    },
+    scenInfra: {
+      wasmInstancePromise,
     },
     commandBarActor: { send: vi.fn() },
     useCommandBarState: () => ({ context: { argumentsToSubmit: {} } }),
@@ -54,7 +64,10 @@ describe('CommandBarSelectionMixedInput', () => {
 
   describe('clearSelectionFirst behavior', () => {
     it('should send clear selection command when clearSelectionFirst is true', async () => {
-      const { engineCommandManager } = await import('@src/lib/singletons')
+      const { engineCommandManager, kclManager } = await import(
+        '@src/lib/singletons'
+      )
+      const wasmInstance = await kclManager.wasmInstancePromise
       const mockModelingSend = vi.mocked(engineCommandManager.modelingSend)
 
       const arg = createArg(true)
@@ -64,10 +77,11 @@ describe('CommandBarSelectionMixedInput', () => {
           arg={arg}
           stepBack={mockProps.stepBack}
           onSubmit={mockProps.onSubmit}
+          wasmInstance={wasmInstance}
         />
       )
 
-      await waitFor(() => {
+      await waitFor(async () => {
         expect(mockModelingSend).toHaveBeenCalledWith({
           type: 'Set selection',
           data: { selectionType: 'singleCodeCursor' },
@@ -76,7 +90,10 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should NOT send clear selection command when clearSelectionFirst is false', async () => {
-      const { engineCommandManager } = await import('@src/lib/singletons')
+      const { engineCommandManager, kclManager } = await import(
+        '@src/lib/singletons'
+      )
+      const wasmInstance = await kclManager.wasmInstancePromise
       const mockModelingSend = vi.mocked(engineCommandManager.modelingSend)
 
       const arg = createArg(false)
@@ -86,6 +103,7 @@ describe('CommandBarSelectionMixedInput', () => {
           arg={arg}
           stepBack={mockProps.stepBack}
           onSubmit={mockProps.onSubmit}
+          wasmInstance={wasmInstance}
         />
       )
 
@@ -94,7 +112,10 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should NOT send clear selection command when clearSelectionFirst is undefined', async () => {
-      const { engineCommandManager } = await import('@src/lib/singletons')
+      const { engineCommandManager, kclManager } = await import(
+        '@src/lib/singletons'
+      )
+      const wasmInstance = await kclManager.wasmInstancePromise
       const mockModelingSend = vi.mocked(engineCommandManager.modelingSend)
 
       const arg = createArg() // No argument = undefined
@@ -104,6 +125,7 @@ describe('CommandBarSelectionMixedInput', () => {
           arg={arg}
           stepBack={mockProps.stepBack}
           onSubmit={mockProps.onSubmit}
+          wasmInstance={wasmInstance}
         />
       )
 
@@ -112,7 +134,10 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should send clear selection command only once on mount', async () => {
-      const { engineCommandManager } = await import('@src/lib/singletons')
+      const { engineCommandManager, kclManager } = await import(
+        '@src/lib/singletons'
+      )
+      const wasmInstance = await kclManager.wasmInstancePromise
       const mockModelingSend = vi.mocked(engineCommandManager.modelingSend)
 
       const arg = createArg(true)
@@ -122,6 +147,7 @@ describe('CommandBarSelectionMixedInput', () => {
           arg={arg}
           stepBack={mockProps.stepBack}
           onSubmit={mockProps.onSubmit}
+          wasmInstance={wasmInstance}
         />
       )
 
@@ -135,6 +161,7 @@ describe('CommandBarSelectionMixedInput', () => {
           arg={arg}
           stepBack={mockProps.stepBack}
           onSubmit={mockProps.onSubmit}
+          wasmInstance={wasmInstance}
         />
       )
 
@@ -144,7 +171,10 @@ describe('CommandBarSelectionMixedInput', () => {
     })
 
     it('should set hasClearedSelection state after clearing', async () => {
-      const { engineCommandManager } = await import('@src/lib/singletons')
+      const { engineCommandManager, kclManager } = await import(
+        '@src/lib/singletons'
+      )
+      const wasmInstance = await kclManager.wasmInstancePromise
       const mockModelingSend = vi.mocked(engineCommandManager.modelingSend)
 
       const arg = createArg(true)
@@ -154,6 +184,7 @@ describe('CommandBarSelectionMixedInput', () => {
           arg={arg}
           stepBack={mockProps.stepBack}
           onSubmit={mockProps.onSubmit}
+          wasmInstance={wasmInstance}
         />
       )
 

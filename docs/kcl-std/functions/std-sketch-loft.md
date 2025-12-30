@@ -92,10 +92,11 @@ circleSketch1 = startSketchOn(offsetPlane(XY, offset = 150))
   |> circle(center = [0, 100], radius = 20)
 
 loft([
-  squareSketch,
-  circleSketch0,
-  circleSketch1
-])
+       squareSketch,
+       circleSketch0,
+       circleSketch1
+     ])
+  |> appearance(color = "#da7333", roughness = 50, metalness = 90)
 
 ```
 

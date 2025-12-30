@@ -62,6 +62,9 @@ export type WildcardSetEvent<T extends SettingsPaths = SettingsPaths> = {
   }
 }
 
+/** Platform values for hiding settings */
+export type HideOnPlatformValue = 'web' | 'desktop' | 'both'
+
 export interface SettingProps<T = unknown> {
   /**
    * The default value of the setting, used if no user or project value is set
@@ -107,7 +110,9 @@ export interface SettingProps<T = unknown> {
    * Whether to hide the setting on a certain platform.
    * This will be applied in both the settings panel and the command bar.
    */
-  hideOnPlatform?: 'web' | 'desktop' | 'both'
+  hideOnPlatform?:
+    | HideOnPlatformValue
+    | (() => Promise<HideOnPlatformValue | null>)
   /**
    * A React component to use for the setting in the settings panel.
    * If this is not provided but a commandConfig is, the `inputType`

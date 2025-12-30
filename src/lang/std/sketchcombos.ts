@@ -374,6 +374,7 @@ const basicAngledLineCreateNode =
     inputs,
     rawArgs: args,
     referencedSegment: path,
+    wasmInstance,
   }) => {
     const refAng = path ? getAngle(path?.from, path?.to) : 0
     const argValue = asNum(args[0].expr.value)
@@ -385,7 +386,8 @@ const basicAngledLineCreateNode =
           ? getClosesAngleDirection(
               argValue,
               refAng,
-              createSegAngle(referenceSegName)
+              createSegAngle(referenceSegName),
+              wasmInstance
             )
           : args[0].expr
     const nonForcedLen =
@@ -461,12 +463,12 @@ const getSignedLeg = (arg: Literal, legLenVal: BinaryPart) =>
 const getLegAng = (
   ang: number,
   legAngleVal: BinaryPart,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ) => {
   const normalisedAngle = ((ang % 360) + 360) % 360 // between 0 and 360
   const truncatedTo90 = Math.floor(normalisedAngle / 90) * 90
   const binExp = createBinaryExpressionWithUnary([
-    createLiteral(truncatedTo90, 'Deg', wasmInstance),
+    createLiteral(truncatedTo90, wasmInstance, 'Deg'),
     legAngleVal,
   ])
   return truncatedTo90 === 0 ? legAngleVal : binExp
@@ -475,12 +477,16 @@ const getLegAng = (
 function getClosesAngleDirection(
   currentAng: number,
   refAngle: number,
-  angleVal: BinaryPart
+  angleVal: BinaryPart,
+  wasmInstance: ModuleType
 ) {
   const angDiff = Math.abs(currentAng - refAngle)
   const normalisedAngle = ((angDiff % 360) + 360) % 360 // between 0 and 180
   return normalisedAngle > 90
-    ? createBinaryExpressionWithUnary([angleVal, createLiteral(180, 'Deg')])
+    ? createBinaryExpressionWithUnary([
+        angleVal,
+        createLiteral(180, wasmInstance, 'Deg'),
+      ])
     : angleVal
 }
 
@@ -492,6 +498,7 @@ const setHorzVertDistanceCreateNode =
     forceValueUsedInTransform,
     rawArgs: args,
     referencedSegment,
+    wasmInstance,
   }) => {
     const refNum = referencedSegment?.to?.[index]
     const literalArg = asNum(args?.[index].expr.value)
@@ -500,7 +507,8 @@ const setHorzVertDistanceCreateNode =
     const valueUsedInTransform = roundOff(literalArg - refNum, 2)
     let finalValue: Node<Expr> = createBinaryExpressionWithUnary([
       createSegEnd(referenceSegName, !index),
-      forceValueUsedInTransform || createLiteral(valueUsedInTransform),
+      forceValueUsedInTransform ||
+        createLiteral(valueUsedInTransform, wasmInstance),
     ])
     if (isValueZero(forceValueUsedInTransform)) {
       finalValue = createSegEnd(referenceSegName, !index)
@@ -521,6 +529,7 @@ const setHorzVertDistanceForAngleLineCreateNode =
     inputs,
     rawArgs: args,
     referencedSegment,
+    wasmInstance,
   }) => {
     const refNum = referencedSegment?.to?.[index]
     const literalArg = asNum(args?.[1].expr.value)
@@ -528,7 +537,8 @@ const setHorzVertDistanceForAngleLineCreateNode =
     const valueUsedInTransform = roundOff(literalArg - refNum, 2)
     const binExp = createBinaryExpressionWithUnary([
       createSegEnd(referenceSegName, !index),
-      forceValueUsedInTransform || createLiteral(valueUsedInTransform),
+      forceValueUsedInTransform ||
+        createLiteral(valueUsedInTransform, wasmInstance),
     ])
     return createCallWrapper(
       xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
@@ -544,11 +554,13 @@ const setAbsDistanceCreateNode =
     isXOrYLine = false,
     index = xOrY === 'x' ? 0 : 1
   ): CreateStdLibSketchCallExpr =>
-  ({ tag, forceValueUsedInTransform, rawArgs: args }) => {
+  ({ tag, forceValueUsedInTransform, rawArgs: args, wasmInstance }) => {
     const literalArg = asNum(args?.[index].expr.value)
     if (err(literalArg)) return literalArg
     const valueUsedInTransform = roundOff(literalArg, 2)
-    const val = forceValueUsedInTransform || createLiteral(valueUsedInTransform)
+    const val =
+      forceValueUsedInTransform ||
+      createLiteral(valueUsedInTransform, wasmInstance)
     if (isXOrYLine) {
       return createCallWrapper(
         xOrY === 'x' ? 'xLineTo' : 'yLineTo',
@@ -566,11 +578,13 @@ const setAbsDistanceCreateNode =
   }
 const setAbsDistanceForAngleLineCreateNode =
   (xOrY: 'x' | 'y'): CreateStdLibSketchCallExpr =>
-  ({ tag, forceValueUsedInTransform, inputs, rawArgs: args }) => {
+  ({ tag, forceValueUsedInTransform, inputs, rawArgs: args, wasmInstance }) => {
     const literalArg = asNum(args?.[1].expr.value)
     if (err(literalArg)) return literalArg
     const valueUsedInTransform = roundOff(literalArg, 2)
-    const val = forceValueUsedInTransform || createLiteral(valueUsedInTransform)
+    const val =
+      forceValueUsedInTransform ||
+      createLiteral(valueUsedInTransform, wasmInstance)
     return createCallWrapper(
       xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
       [inputs[0].expr, val],
@@ -587,6 +601,7 @@ const setHorVertDistanceForXYLines =
     forceValueUsedInTransform,
     rawArgs: args,
     referencedSegment,
+    wasmInstance,
   }) => {
     const index = xOrY === 'x' ? 0 : 1
     const refNum = referencedSegment?.to?.[index]
@@ -595,7 +610,8 @@ const setHorVertDistanceForXYLines =
     const valueUsedInTransform = roundOff(literalArg - refNum, 2)
     const makeBinExp = createBinaryExpressionWithUnary([
       createSegEnd(referenceSegName, xOrY === 'x'),
-      forceValueUsedInTransform || createLiteral(valueUsedInTransform),
+      forceValueUsedInTransform ||
+        createLiteral(valueUsedInTransform, wasmInstance),
     ])
     return createCallWrapper(
       xOrY === 'x' ? 'xLineTo' : 'yLineTo',
@@ -607,9 +623,16 @@ const setHorVertDistanceForXYLines =
 
 const setHorzVertDistanceConstraintLineCreateNode =
   (isX: boolean): CreateStdLibSketchCallExpr =>
-  ({ referenceSegName, tag, inputs, rawArgs: args, referencedSegment }) => {
+  ({
+    referenceSegName,
+    tag,
+    inputs,
+    rawArgs: args,
+    referencedSegment,
+    wasmInstance,
+  }) => {
     let varVal = isX ? inputs[1].expr : inputs[0].expr
-    varVal = isExprBinaryPart(varVal) ? varVal : createLiteral(0)
+    varVal = isExprBinaryPart(varVal) ? varVal : createLiteral(0, wasmInstance)
     const varValBinExp = createBinaryExpressionWithUnary([
       createLastSeg(!isX),
       varVal,
@@ -621,7 +644,7 @@ const setHorzVertDistanceConstraintLineCreateNode =
       if (err(arg) || isUndef(refNum)) return REF_NUM_ERR
       return createBinaryExpressionWithUnary([
         createSegEnd(referenceSegName, isX),
-        createLiteral(roundOff(arg - refNum, 2)),
+        createLiteral(roundOff(arg - refNum, 2), wasmInstance),
       ])
     }
     const binExpr = isX ? makeBinExp(0) : makeBinExp(1)
@@ -638,6 +661,7 @@ const setAngledIntersectLineForLines: CreateStdLibSketchCallExpr = ({
   tag,
   forceValueUsedInTransform,
   rawArgs: args,
+  wasmInstance,
 }) => {
   const val = asNum(args[1].expr.value),
     angle = asNum(args[0].expr.value)
@@ -651,11 +675,13 @@ const setAngledIntersectLineForLines: CreateStdLibSketchCallExpr = ({
   }
   const angleVal = [0, 90, 180, 270].includes(angle)
     ? createName(['turns'], varNameMap[angle])
-    : createLiteral(angle, 'Deg')
+    : createLiteral(angle, wasmInstance, 'Deg')
   return intersectCallWrapper({
     fnName: 'angledLineThatIntersects',
     angleVal,
-    offsetVal: forceValueUsedInTransform || createLiteral(valueUsedInTransform),
+    offsetVal:
+      forceValueUsedInTransform ||
+      createLiteral(valueUsedInTransform, wasmInstance),
     intersectTag: createLocalName(referenceSegName),
     tag,
     valueUsedInTransform: String(valueUsedInTransform),
@@ -668,6 +694,7 @@ const setAngledIntersectForAngledLines: CreateStdLibSketchCallExpr = ({
   forceValueUsedInTransform,
   inputs,
   rawArgs: args,
+  wasmInstance,
 }) => {
   const val = asNum(args[1].expr.value)
   if (err(val)) return val
@@ -675,7 +702,9 @@ const setAngledIntersectForAngledLines: CreateStdLibSketchCallExpr = ({
   return intersectCallWrapper({
     fnName: 'angledLineThatIntersects',
     angleVal: inputs[0].expr,
-    offsetVal: forceValueUsedInTransform || createLiteral(valueUsedInTransform),
+    offsetVal:
+      forceValueUsedInTransform ||
+      createLiteral(valueUsedInTransform, wasmInstance),
     intersectTag: createLocalName(referenceSegName),
     tag,
     valueUsedInTransform: String(valueUsedInTransform),
@@ -691,6 +720,7 @@ const setAngleBetweenCreateNode =
     inputs,
     rawArgs: args,
     referencedSegment,
+    wasmInstance,
   }) => {
     const refAngle = referencedSegment
       ? getAngle(referencedSegment?.from, referencedSegment?.to)
@@ -709,7 +739,8 @@ const setAngleBetweenCreateNode =
     }
     const binExp = createBinaryExpressionWithUnary([
       firstHalfValue,
-      forceValueUsedInTransform || createLiteral(valueUsedInTransform, 'Deg'),
+      forceValueUsedInTransform ||
+        createLiteral(valueUsedInTransform, wasmInstance, 'Deg'),
     ])
     return createCallWrapper(
       transformToType === 'none'
@@ -1371,14 +1402,19 @@ export function removeSingleConstraint({
   pathToCallExp,
   inputDetails: inputToReplace,
   ast,
+  wasmInstance,
 }: {
   pathToCallExp: PathToNode
   inputDetails: SimplifiedArgDetails
   ast: Program
+  wasmInstance: ModuleType
 }): TransformInfo | false {
-  const callExp = getNodeFromPath<CallExpressionKw>(ast, pathToCallExp, [
-    'CallExpressionKw',
-  ])
+  const callExp = getNodeFromPath<CallExpressionKw>(
+    ast,
+    pathToCallExp,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
   if (err(callExp)) {
     console.error(callExp)
     return false
@@ -1791,18 +1827,12 @@ export function getTransformInfos(
   selectionRanges: Selections,
   ast: Program,
   constraintType: ConstraintType,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): TransformInfo[] {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(
-      ast,
-      codeRef.pathToNode,
-      ['CallExpressionKw'],
-      undefined,
-      undefined,
-      undefined,
-      wasmInstance
-    )
+    getNodeFromPath<Expr>(ast, codeRef.pathToNode, wasmInstance, [
+      'CallExpressionKw',
+    ])
   )
 
   try {
@@ -1830,18 +1860,10 @@ export function getTransformInfos(
 export function getRemoveConstraintsTransforms(
   selectionRanges: Selections,
   ast: Program,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): TransformInfo[] | Error {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(
-      ast,
-      codeRef.pathToNode,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      wasmInstance
-    )
+    getNodeFromPath<Expr>(ast, codeRef.pathToNode, wasmInstance)
   )
 
   const theTransforms = nodes.map((nodeMeta) => {
@@ -1877,7 +1899,7 @@ export function transformSecondarySketchLinesTagFirst({
   memVars: VariableMap
   forceSegName?: string
   forceValueUsedInTransform?: BinaryPart
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -1899,7 +1921,12 @@ export function transformSecondarySketchLinesTagFirst({
   const primarySelection = sortedCodeBasedSelections[0]?.codeRef?.range
   const secondarySelections = sortedCodeBasedSelections.slice(1)
 
-  const _tag = giveSketchFnCallTag(ast, primarySelection, forceSegName)
+  const _tag = giveSketchFnCallTag(
+    ast,
+    primarySelection,
+    wasmInstance,
+    forceSegName
+  )
   if (err(_tag)) return _tag
   const { modifiedAst, tag, isTagExisting, pathToNode } = _tag
 
@@ -1959,7 +1986,7 @@ export function transformAstSketchLines({
   referenceSegName: string
   referencedSegmentRange?: SourceRange
   forceValueUsedInTransform?: BinaryPart
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -2006,15 +2033,7 @@ export function transformAstSketchLines({
       )
         return
 
-      const nodeMeta = getNodeFromPath<Expr>(
-        ast,
-        a.pathToNode,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        wasmInstance
-      )
+      const nodeMeta = getNodeFromPath<Expr>(ast, a.pathToNode, wasmInstance)
       if (err(nodeMeta)) return
 
       switch (a?.argPosition?.type) {
@@ -2087,7 +2106,12 @@ export function transformAstSketchLines({
         return
       }
     }
-    const segMeta = getSketchSegmentFromPathToNode(sketch, ast, _pathToNode)
+    const segMeta = getSketchSegmentFromPathToNode(
+      sketch,
+      ast,
+      _pathToNode,
+      wasmInstance
+    )
     if (err(segMeta)) return segMeta
 
     const seg = segMeta.segment
@@ -2227,14 +2251,18 @@ export type ConstraintLevel = 'free' | 'partial' | 'full'
 
 export function getConstraintLevelFromSourceRange(
   cursorRange: SourceRange,
-  ast: Program | Error
+  ast: Program | Error,
+  wasmInstance: ModuleType
 ): Error | { range: [number, number]; level: ConstraintLevel } {
   if (err(ast)) return ast
   let partsOfCallNode = (() => {
     const path = getNodePathFromSourceRange(ast, cursorRange)
-    const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(ast, path, [
-      'CallExpressionKw',
-    ])
+    const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(
+      ast,
+      path,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
     if (err(nodeMeta)) return nodeMeta
 
     const { node: sketchFnExp } = nodeMeta
