@@ -144,6 +144,21 @@ pub(crate) enum StatementKind<'a> {
     Expression,
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum PreserveMem {
+    Normal,
+    Always,
+}
+
+impl PreserveMem {
+    fn normal(self) -> bool {
+        match self {
+            PreserveMem::Normal => true,
+            PreserveMem::Always => false,
+        }
+    }
+}
+
 /// Outcome of executing a program.  This is used in TS.
 #[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
 #[ts(export)]
@@ -710,7 +725,7 @@ impl ExecutorContext {
         // part of the scene).
         exec_state.mut_stack().push_new_env_for_scope();
 
-        let result = self.inner_run(program, &mut exec_state, true).await?;
+        let result = self.inner_run(program, &mut exec_state, PreserveMem::Always).await?;
 
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
@@ -879,7 +894,7 @@ impl ExecutorContext {
                                 &program,
                                 &mut new_exec_state,
                                 Some((new_universe, new_universe_map)),
-                                false,
+                                PreserveMem::Normal,
                             )
                             .await;
 
@@ -894,7 +909,9 @@ impl ExecutorContext {
                             .await
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                        let result = self.run_concurrent(&program, &mut exec_state, None, false).await;
+                        let result = self
+                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                            .await;
 
                         (exec_state, result)
                     }
@@ -902,7 +919,9 @@ impl ExecutorContext {
                         let mut exec_state = cached_state.reconstitute_exec_state();
                         exec_state.mut_stack().restore_env(cached_state.main.result_env);
 
-                        let result = self.run_concurrent(&program, &mut exec_state, None, true).await;
+                        let result = self
+                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Always)
+                            .await;
 
                         (exec_state, result)
                     }
@@ -916,7 +935,9 @@ impl ExecutorContext {
                     .await
                     .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                let result = self.run_concurrent(&program, &mut exec_state, None, false).await;
+                let result = self
+                    .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                    .await;
 
                 (program, exec_state, result)
             }
@@ -952,7 +973,8 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        self.run_concurrent(program, exec_state, None, false).await
+        self.run_concurrent(program, exec_state, None, PreserveMem::Normal)
+            .await
     }
 
     /// Perform the execution of a program using a concurrent
@@ -964,7 +986,7 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
         universe_info: Option<(Universe, UniverseMap)>,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Reuse our cached universe if we have one.
 
@@ -1029,7 +1051,14 @@ impl ExecutorContext {
                     match repr {
                         ModuleRepr::Kcl(program, _) => {
                             let result = exec_ctxt
-                                .exec_module_from_ast(program, module_id, module_path, exec_state, source_range, false)
+                                .exec_module_from_ast(
+                                    program,
+                                    module_id,
+                                    module_path,
+                                    exec_state,
+                                    source_range,
+                                    PreserveMem::Normal,
+                                )
                                 .await;
 
                             result.map(|val| ModuleRepr::Kcl(program.clone(), Some(val)))
@@ -1241,7 +1270,7 @@ impl ExecutorContext {
         &self,
         program: &crate::Program,
         exec_state: &mut ExecState,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
@@ -1290,7 +1319,7 @@ impl ExecutorContext {
         &self,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
     ) -> Result<EnvironmentRef, (KclError, Option<EnvironmentRef>)> {
         // Don't early return!  We need to build other outputs regardless of
         // whether execution failed.
