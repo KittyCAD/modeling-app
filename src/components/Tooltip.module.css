@@ -107,7 +107,7 @@
 
 .tooltipWrapper.top {
   inset-inline-start: anchor(50%);
-  inset-block-end: anchor(end);
+  inset-block-end: anchor(start);
   --_x: calc(50% * var(--isRTL));
 }
 
