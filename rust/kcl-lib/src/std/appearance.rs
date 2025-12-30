@@ -62,6 +62,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     let color: String = args.get_kw_arg("color", &RuntimeType::string(), exec_state)?;
     let metalness: Option<TyF64> = args.get_kw_arg_opt("metalness", &RuntimeType::count(), exec_state)?;
     let roughness: Option<TyF64> = args.get_kw_arg_opt("roughness", &RuntimeType::count(), exec_state)?;
+    let opacity: Option<TyF64> = args.get_kw_arg_opt("opacity", &RuntimeType::count(), exec_state)?;
 
     // Make sure the color if set is valid.
     if !HEX_REGEX.is_match(&color) {
@@ -76,6 +77,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         color,
         metalness.map(|t| t.n),
         roughness.map(|t| t.n),
+        opacity.map(|t| t.n),
         exec_state,
         args,
     )
@@ -88,6 +90,7 @@ async fn inner_appearance(
     color: String,
     metalness: Option<f64>,
     roughness: Option<f64>,
+    opacity: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrImportedGeometry, KclError> {
@@ -106,7 +109,7 @@ async fn inner_appearance(
             r: rgb.red,
             g: rgb.green,
             b: rgb.blue,
-            a: 100.0,
+            a: opacity.unwrap_or(100.0) as f32,
         };
 
         exec_state
