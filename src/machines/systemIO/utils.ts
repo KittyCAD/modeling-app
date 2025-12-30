@@ -26,7 +26,6 @@ export enum SystemIOMachineActors {
   bulkCreateKCLFiles = 'bulk create kcl files',
   bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
   bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
-  bulkCreateAndDeleteKCLFilesAndNavigateToFile = 'bulk create and delete kcl files and navigate to file',
   renameFolder = 'renameFolder',
   renameFile = 'renameFile',
   deleteFileOrFolder = 'delete file or folder',
@@ -54,7 +53,6 @@ export enum SystemIOMachineStates {
   deletingKCLFile = 'deletingKCLFile',
   bulkCreatingKCLFiles = 'bulkCreatingKCLFiles',
   bulkCreatingKCLFilesAndNavigateToProject = 'bulkCreatingKCLFilesAndNavigateToProject',
-  bulkCreateAndDeletingKCLFilesAndNavigateToFile = 'bulk create and deleting kcl files and navigate to file',
   bulkCreatingKCLFilesAndNavigateToFile = 'bulkCreatingKCLFilesAndNavigateToFile',
   renamingFolder = 'renamingFolder',
   renamingFile = 'renamingFile',
@@ -95,9 +93,6 @@ export enum SystemIOMachineEvents {
   bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
   done_bulkCreateKCLFilesAndNavigateToFile = donePrefix +
     'bulk create kcl files and navigate to file',
-  bulkCreateAndDeleteKCLFilesAndNavigateToFile = 'bulk create and delete kcl files and navigate to file',
-  done_bulkCreateAndDeleteKCLFilesAndNavigateToFile = donePrefix +
-    'bulk create and delete kcl files and navigate to file',
   renameFolder = 'rename folder',
   renameFile = 'rename file',
   deleteFileOrFolder = 'delete file or folder',
