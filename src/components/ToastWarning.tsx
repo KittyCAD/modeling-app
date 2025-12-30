@@ -14,10 +14,10 @@ export function ToastWarning({
   onDismiss?: () => void
 }) {
   return (
-    <div className="inset-0 z-50 grid place-content-center rounded bg-chalkboard-110/50 shadow-md">
+    <div className="inset-0 z-50 grid place-content-center rounded bg-chalkboard-110/50 shadow-md border border-destroy-80">
       <div className="max-w-3xl min-w-[20rem] px-4 py-3 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         {title && (
-          <h2 className="text-base font-semibold text-destroy-80 mb-1">
+          <h2 className="text-base font-semibold text-destroy-80 dark:text-destroy-70 mb-1">
             {title}
           </h2>
         )}
