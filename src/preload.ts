@@ -123,11 +123,8 @@ const stat = (path: string) => {
  * creating any folders necessary to do so,
  * and falling back to copy-and-delete if rename fails.
  */
-async function move(
-  source: string | URL,
-  destination: string | URL,
-  type: 'file' | 'dir' = 'file'
-) {
+async function move(source: string | URL, destination: string | URL) {
+  const type = (await fs.lstat(source)).isDirectory() ? 'dir' : 'file'
   return fs
     .rename(source, destination)
     .catch(async (e) => {
@@ -154,9 +151,15 @@ async function move(
             recursive: true,
           }),
         ])
+      } else if (e.code === 'ENOTEMPTY') {
+        return Promise.all([
+          fs.rm(destination, { recursive: true, force: true }),
+          fs.rename(source, destination),
+        ])
       }
       return e
     })
+    .catch((e) => e)
 }
 
 // Electron has behavior where it doesn't clone the prototype chain over.

@@ -1730,15 +1730,13 @@ function safeLSSetItem(key: string, value: string) {
 }
 
 function clearCodeMirrorHistory(kclManager: KclManager) {
+  console.log(
+    'what are we clearing?',
+    kclManager.editorView.state.field(historyField)
+  )
   // Clear history
   kclManager.dispatch({
-    effects: [historyCompartment.reconfigure([])],
-    annotations: [editorCodeUpdateEvent],
-  })
-
-  // Add history back
-  kclManager.dispatch({
-    effects: [historyCompartment.reconfigure([history()])],
+    effects: [historyCompartment.reconfigure(history())],
     annotations: [editorCodeUpdateEvent],
   })
 }
