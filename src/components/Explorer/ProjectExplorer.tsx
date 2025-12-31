@@ -14,7 +14,7 @@ import type {
   FileExplorerEntry,
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
-import { fsCreateFile, fsDeleteFile } from '@src/editor/plugins/fs'
+import { fsArchiveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { FILE_EXT } from '@src/lib/constants'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
@@ -27,6 +27,7 @@ import {
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
+  toArchivePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { kclManager, systemIOActor, useSettings } from '@src/lib/singletons'
@@ -323,17 +324,25 @@ export const ProjectExplorer = ({
                 },
               })
             } else {
-              window.electron?.readFile(child.path, 'utf8').then((contents) => {
-                systemIOActor.send({
-                  type: SystemIOMachineEvents.deleteFileOrFolder,
-                  data: {
-                    requestedPath: child.path,
-                  },
+              const src = child.path
+              toArchivePath(child.path)
+                .then((target) => {
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.moveRecursive,
+                    data: {
+                      src,
+                      target,
+                      successMessage: 'Archived successfully',
+                    },
+                  })
+                  kclManager.dispatch(fsArchiveFile({ src, target }))
                 })
-                kclManager.dispatch(
-                  fsDeleteFile({ path: child.path, contents })
-                )
-              })
+                .catch((e) => {
+                  console.error(e)
+                  console.warn(
+                    `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
+                  )
+                })
             }
           },
           onOpenInNewWindow: () => {
@@ -550,10 +559,6 @@ export const ProjectExplorer = ({
               if (row.isFake) {
                 // create a file if it is fake and navigate to that file!
                 if (file && canNavigate) {
-                  const requestedAbsolutePath = joinOSPaths(
-                    getParentAbsolutePath(row.path),
-                    fileNameForcedWithOriginalExt
-                  )
                   systemIOActor.send({
                     type: SystemIOMachineEvents.importFileFromURL,
                     data: {
@@ -562,9 +567,6 @@ export const ProjectExplorer = ({
                       requestedFileNameWithExtension: pathRelativeToParent,
                     },
                   })
-                  kclManager.dispatch(
-                    fsCreateFile({ path: requestedAbsolutePath, contents: '' })
-                  )
                 } else {
                   const requestedAbsolutePath = joinOSPaths(
                     getParentAbsolutePath(row.path),
@@ -576,9 +578,6 @@ export const ProjectExplorer = ({
                       requestedAbsolutePath,
                     },
                   })
-                  kclManager.dispatch(
-                    fsCreateFile({ path: requestedAbsolutePath, contents: '' })
-                  )
                 }
               } else {
                 const requestedAbsoluteFilePathWithExtension = joinOSPaths(
