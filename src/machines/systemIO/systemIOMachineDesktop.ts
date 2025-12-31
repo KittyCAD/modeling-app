@@ -32,6 +32,7 @@ import {
   SystemIOMachineActors,
   jsonToMlConversations,
   mlConversationsToJson,
+  collectProjectFiles,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 
@@ -114,6 +115,46 @@ const sharedBulkCreateWorkflow = async ({
     projectName: '',
     subRoute: 'subRoute' in input ? input.subRoute : '',
   }
+}
+
+const sharedBulkDeleteWorkflow = async ({
+  electron,
+  input,
+}: {
+  electron: IElectronAPI
+  input: {
+    requestedProjectName: string
+    context: SystemIOContext
+    files: RequestedKCLFile[]
+    rootContext: AppMachineContext
+    wasmInstance: ModuleType
+  }
+}) => {
+  const project = input.context.folders.find(
+    (f) => f.name === input.requestedProjectName
+  )
+
+  if (!project) return Promise.reject(new Error("Couldn't find project"))
+
+  const filesInProject = await collectProjectFiles({
+    selectedFileContents: '',
+    fileNames: [],
+    projectContext: project,
+  })
+
+  // requestedFileName is the relative path too.
+  const filesToDelete = filesInProject.filter(
+    (f1) =>
+      input.files.some((f2) => f1.relPath === f2.requestedFileName) === false
+  )
+
+  for (const file of filesToDelete) {
+    if (file.type === 'other') continue
+    await electron.rm(file.absPath)
+  }
+
+  // How many files we deleted successfully
+  return filesToDelete.length
 }
 
 export const systemIOMachineDesktop = systemIOMachine.provide({
@@ -453,6 +494,51 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }
     ),
+    [SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile]:
+      fromPromise(
+        async ({
+          input,
+        }: {
+          input: {
+            context: SystemIOContext
+            files: RequestedKCLFile[]
+            rootContext: AppMachineContext
+            requestedProjectName: string
+            override?: boolean
+            requestedFileNameWithExtension: string
+            requestedSubRoute?: string
+          }
+        }) => {
+          if (!window.electron) {
+            return Promise.reject(new Error('No file system present'))
+          }
+          const wasmInstance = await input.context.wasmInstancePromise
+          const message = await sharedBulkCreateWorkflow({
+            electron: window.electron,
+            input: {
+              ...input,
+              wasmInstance,
+              override: input.override,
+            },
+          })
+          // We won't delete until everything's created / updated first.
+          const totalDeleted = await sharedBulkDeleteWorkflow({
+            electron: window.electron,
+            input: {
+              ...input,
+              wasmInstance,
+            },
+          })
+
+          message.message += `, ${totalDeleted} deleted`
+
+          return {
+            ...message,
+            projectName: input.requestedProjectName,
+            subRoute: input.requestedSubRoute || '',
+          }
+        }
+      ),
     [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile]: fromPromise(
       async ({
         input,
