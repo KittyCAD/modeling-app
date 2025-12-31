@@ -232,6 +232,22 @@ impl FunctionSource {
         args: Args<Sugary>,
         callsite: SourceRange,
     ) -> Result<Option<KclValueControlFlow>, KclError> {
+        exec_state.inc_call_stack_size(callsite)?;
+
+        let result = self.inner_call_kw(fn_name, exec_state, ctx, args, callsite).await;
+
+        exec_state.dec_call_stack_size(callsite)?;
+        result
+    }
+
+    async fn inner_call_kw(
+        &self,
+        fn_name: Option<String>,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+        args: Args<Sugary>,
+        callsite: SourceRange,
+    ) -> Result<Option<KclValueControlFlow>, KclError> {
         if self.deprecated {
             exec_state.warn(
                 CompilationError::err(
@@ -258,12 +274,6 @@ impl FunctionSource {
         }
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
-
-        if exec_state.stack().len() >= 10_000 {
-            return Err(KclError::MaxCallStack {
-                details: KclErrorDetails::new("maximum call stack size exceeded".to_string(), vec![callsite]),
-            });
-        }
 
         // Don't early return until the stack frame is popped!
         self.body.prep_mem(exec_state);

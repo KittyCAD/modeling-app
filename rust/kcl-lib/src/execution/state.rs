@@ -110,6 +110,10 @@ pub(super) struct ModuleState {
     /// The id generator for this module.
     pub id_generator: IdGenerator,
     pub stack: Stack,
+    /// The size of the call stack. This is used to prevent stack overflows with
+    /// recursive function calls. In general, this doesn't match `stack`'s size
+    /// since it's conservative in reclaiming frames between executions.
+    pub(super) call_stack_size: usize,
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
@@ -272,6 +276,31 @@ impl ExecState {
 
     pub(crate) fn mut_stack(&mut self) -> &mut Stack {
         &mut self.mod_local.stack
+    }
+
+    /// Increment the user-level call stack size, returning an error if it
+    /// exceeds the maximum.
+    pub(super) fn inc_call_stack_size(&mut self, range: SourceRange) -> Result<(), KclError> {
+        if self.mod_local.call_stack_size >= 10_000 {
+            return Err(KclError::MaxCallStack {
+                details: KclErrorDetails::new("maximum call stack size exceeded".to_owned(), vec![range]),
+            });
+        }
+        self.mod_local.call_stack_size += 1;
+        Ok(())
+    }
+
+    /// Decrement the user-level call stack size, returning an error if it would
+    /// go below zero.
+    pub(super) fn dec_call_stack_size(&mut self, range: SourceRange) -> Result<(), KclError> {
+        // Prevent underflow.
+        if self.mod_local.call_stack_size == 0 {
+            let message = "call stack size below zero".to_owned();
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+        }
+        self.mod_local.call_stack_size -= 1;
+        Ok(())
     }
 
     #[cfg(not(feature = "artifact-graph"))]
@@ -669,6 +698,7 @@ impl ModuleState {
         ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
+            call_stack_size: 0,
             pipe_value: Default::default(),
             being_declared: Default::default(),
             sketch_block: Default::default(),
