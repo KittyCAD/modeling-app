@@ -270,7 +270,7 @@ export function SystemIOMachineLogicListenerDesktop() {
       )
 
       systemIOActor.send({
-        type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+        type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
         data: {
           files: requestedFiles,
           override: true,

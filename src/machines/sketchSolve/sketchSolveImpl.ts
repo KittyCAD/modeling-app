@@ -29,7 +29,7 @@ import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDia
 import { machine as trimTool } from '@src/machines/sketchSolve/tools/trimToolDiagram'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
-import { deferExecution } from '@src/lib/utils'
+import { deferredCallback } from '@src/lib/utils'
 import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
@@ -692,7 +692,7 @@ export function initializeInitialSceneGraph({
 // This allows us to cancel editor updates if a double-click is detected
 // The debounce delay is short (100ms) to minimize perceived lag while still allowing cancellation
 // We store the latest kclManager reference so the debounced function can access it
-const debouncedEditorUpdate = deferExecution(
+const debouncedEditorUpdate = deferredCallback(
   ({ text, kclManager }: { text: string; kclManager: KclManager }) =>
     kclManager.updateCodeEditor(text),
   200

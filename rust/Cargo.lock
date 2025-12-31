@@ -2119,7 +2119,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.117"
+version = "0.1.118"
 dependencies = [
  "anyhow",
  "clap",
@@ -2130,7 +2130,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.117"
+version = "0.1.118"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2139,7 +2139,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.117"
+version = "0.1.118"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2149,7 +2149,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.1.117"
+version = "0.1.118"
 dependencies = [
  "miette",
  "serde",
@@ -2173,7 +2173,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.117"
+version = "0.2.118"
 dependencies = [
  "anyhow",
  "clap",
@@ -2194,7 +2194,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.117"
+version = "0.1.118"
 dependencies = [
  "anyhow",
  "clap",
@@ -2214,7 +2214,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.117"
+version = "0.2.118"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2296,7 +2296,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.117"
+version = "0.3.118"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -2312,7 +2312,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.117"
+version = "0.1.118"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2325,7 +2325,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.117"
+version = "0.1.118"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2339,7 +2339,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.117"
+version = "0.1.118"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2573,9 +2573,9 @@ dependencies = [
 
 [[package]]
 name = "lzma-rust2"
-version = "0.13.0"
+version = "0.15.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c60a23ffb90d527e23192f1246b14746e2f7f071cb84476dd879071696c18a4a"
+checksum = "48172246aa7c3ea28e423295dd1ca2589a24617cc4e588bb8cfe177cb2c54d95"
 dependencies = [
  "crc",
  "sha2",
@@ -5848,9 +5848,9 @@ dependencies = [
 
 [[package]]
 name = "zip"
-version = "6.0.0"
+version = "7.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb2a05c7c36fde6c09b08576c9f7fb4cda705990f73b58fe011abf7dfb24168b"
+checksum = "bdd8a47718a4ee5fe78e07667cd36f3de80e7c2bfe727c7074245ffc7303c037"
 dependencies = [
  "aes",
  "arbitrary",
@@ -5859,6 +5859,7 @@ dependencies = [
  "crc32fast",
  "deflate64",
  "flate2",
+ "generic-array",
  "getrandom 0.3.4",
  "hmac",
  "indexmap 2.12.1",
