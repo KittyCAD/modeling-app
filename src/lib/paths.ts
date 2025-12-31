@@ -324,13 +324,17 @@ export function getFilePathRelativeToProject(
   return absoluteFilePath.slice(projectIndexInPath + sliceOffset) ?? ''
 }
 
+/** Gets our "archive" directory for deletion/restoration, within the electron userData path */
 async function getArchiveBasePath() {
-  return window.electron ? window.electron.getArchivePath() : `/${ARCHIVE_DIR}`
+  return `${window.electron ? await window.electron.getPathUserData() : '/'}'${ARCHIVE_DIR}`
 }
 
+/**
+ * Our archive simply mirrors the absolute location on disk for the item
+ * being archived, joining it with the archive base path.
+ */
 export async function toArchivePath(absolutePath: string) {
   const basePath = await getArchiveBasePath()
-  console.log('basePath', basePath)
   return window.electron
     ? window.electron.join(basePath, absolutePath)
     : webSafeJoin([basePath, absolutePath])

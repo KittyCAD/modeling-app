@@ -129,6 +129,7 @@ async function move(source: string | URL, destination: string | URL) {
     .rename(source, destination)
     .catch(async (e) => {
       if (e.code === 'ENOENT') {
+        // We need to make the directories in the destination
         const dirToMake =
           type === 'dir'
             ? destination
@@ -143,6 +144,7 @@ async function move(source: string | URL, destination: string | URL) {
     .catch((e) => {
       console.error(e)
       if (e.code === 'EXDEV') {
+        // Rename somehow isn't allowed, but copy+delete might be 🤞
         return Promise.all([
           fs.cp(source, destination, {
             recursive: true,
@@ -151,15 +153,9 @@ async function move(source: string | URL, destination: string | URL) {
             recursive: true,
           }),
         ])
-      } else if (e.code === 'ENOTEMPTY') {
-        return Promise.all([
-          fs.rm(destination, { recursive: true, force: true }),
-          fs.rename(source, destination),
-        ])
       }
       return e
     })
-    .catch((e) => e)
 }
 
 // Electron has behavior where it doesn't clone the prototype chain over.
@@ -266,9 +262,9 @@ const disableMenu = async (menuId: string): Promise<any> => {
   })
 }
 
-// Get the user data folder according to Electron, plus our designated archive folder
-const getArchivePath = async (): Promise<string> =>
-  ipcRenderer.invoke('get-archive-path')
+// Get the user data folder according to Electron
+const getPathUserData = async (): Promise<string> =>
+  ipcRenderer.invoke('get-path-userdata')
 
 /**
  * Gotcha: Even if the callback function is the same function in JS memory
@@ -366,5 +362,5 @@ contextBridge.exposeInMainWorld('electron', {
   canReadWriteDirectory,
   copy,
   move,
-  getArchivePath,
+  getPathUserData,
 })
