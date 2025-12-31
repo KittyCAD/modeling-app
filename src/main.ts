@@ -29,6 +29,7 @@ import {
 } from '@src/commandLineArgs'
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
 import {
+  ARCHIVE_DIR,
   OAUTH2_DEVICE_CLIENT_ID,
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
@@ -522,6 +523,10 @@ ipcMain.handle('disable-menu', (event, data) => {
   const menuId = data.menuId
   disableMenu(menuId)
 })
+
+ipcMain.handle('get-archive-path', () =>
+  path.join(app.getPath('userData'), ARCHIVE_DIR)
+)
 
 app.on('ready', () => {
   // Disable auto updater on non-versioned builds

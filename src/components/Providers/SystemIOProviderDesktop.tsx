@@ -16,7 +16,6 @@ import {
 import {
   engineCommandManager,
   kclManager,
-  settingsActor,
   systemIOActor,
   useSettings,
 } from '@src/lib/singletons'
@@ -48,10 +47,7 @@ export function SystemIOMachineLogicListenerDesktop() {
   const { onFileOpen, onFileClose } = useLspContext()
   const { pathname } = useLocation()
 
-  useEffect(
-    () => buildFSEffectExtension(systemIOActor, kclManager, settingsActor),
-    []
-  )
+  useEffect(() => buildFSEffectExtension(systemIOActor, kclManager), [])
 
   function safestNavigateToFile({
     requestedPath,

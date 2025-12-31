@@ -117,6 +117,48 @@ const stat = (path: string) => {
   return fs.stat(path).catch((e) => Promise.reject(e.code))
 }
 
+/**
+ * Recursively move a file or folder to a destination
+ * using the native Node `.rename` function,
+ * creating any folders necessary to do so,
+ * and falling back to copy-and-delete if rename fails.
+ */
+async function move(
+  source: string | URL,
+  destination: string | URL,
+  type: 'file' | 'dir' = 'file'
+) {
+  return fs
+    .rename(source, destination)
+    .catch(async (e) => {
+      if (e.code === 'ENOENT') {
+        const dirToMake =
+          type === 'dir'
+            ? destination
+            : destination.toString().split(path.sep).slice(0, -1).join(path.sep)
+        await fs.mkdir(dirToMake, { recursive: true })
+        return fs.rename(source, destination)
+      }
+      // I want the catch below to catch it
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw e
+    })
+    .catch((e) => {
+      console.error(e)
+      if (e.code === 'EXDEV') {
+        return Promise.all([
+          fs.cp(source, destination, {
+            recursive: true,
+          }),
+          fs.rm(source, {
+            recursive: true,
+          }),
+        ])
+      }
+      return e
+    })
+}
+
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
 async function statIsDirectory(path: string): Promise<boolean> {
@@ -221,6 +263,10 @@ const disableMenu = async (menuId: string): Promise<any> => {
   })
 }
 
+// Get the user data folder according to Electron, plus our designated archive folder
+const getArchivePath = async (): Promise<string> =>
+  ipcRenderer.invoke('get-archive-path')
+
 /**
  * Gotcha: Even if the callback function is the same function in JS memory
  * when passing it over the IPC layer it will not map to the same function.
@@ -316,4 +362,6 @@ contextBridge.exposeInMainWorld('electron', {
   menuOn,
   canReadWriteDirectory,
   copy,
+  move,
+  getArchivePath,
 })

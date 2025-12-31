@@ -216,6 +216,14 @@ export const systemIOMachine = setup({
           }
         }
       | {
+          type: SystemIOMachineEvents.moveRecursive
+          data: {
+            src: string
+            target: string
+            successMessage?: string
+          }
+        }
+      | {
           type: SystemIOMachineEvents.getMlEphantConversations
         }
       | {
@@ -603,6 +611,24 @@ export const systemIOMachine = setup({
         }
       }
     ),
+    [SystemIOMachineActors.moveRecursive]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          rootContext: AppMachineContext
+          src: string
+          target: string
+          successMessage?: string
+        }
+      }) => {
+        return {
+          message: '',
+          requestedAbsolutePath: '',
+        }
+      }
+    ),
     [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
       return new Map()
     }),
@@ -739,6 +765,9 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.copyRecursive]: {
           target: SystemIOMachineStates.copyingRecursive,
+        },
+        [SystemIOMachineEvents.moveRecursive]: {
+          target: SystemIOMachineStates.movingRecursive,
         },
         [SystemIOMachineEvents.getMlEphantConversations]: {
           target: SystemIOMachineStates.gettingMlEphantConversations,
@@ -1332,6 +1361,30 @@ export const systemIOMachine = setup({
             context,
             src: event.data.src,
             target: event.data.target,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastSuccess],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.movingRecursive]: {
+      invoke: {
+        id: SystemIOMachineActors.moveRecursive,
+        src: SystemIOMachineActors.moveRecursive,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.moveRecursive)
+          return {
+            context,
+            src: event.data.src,
+            target: event.data.target,
+            successMessage: event.data.successMessage,
             rootContext: self.system.get('root').getSnapshot().context,
           }
         },

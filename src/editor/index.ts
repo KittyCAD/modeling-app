@@ -40,7 +40,7 @@ import { lineHighlightField } from '@src/editor/highlightextension'
 import { onMouseDragRegex, onMouseDragMakeANewNumber } from '@src/lib/utils'
 import { themeCompartment } from '@src/editor/plugins/theme'
 import { kclAstExtension } from '@src/editor/plugins/ast'
-import { fsEffectExtension } from './plugins/fs'
+import { fsEffectExtension } from '@src/editor/plugins/fs'
 
 export const lineWrappingCompartment = new Compartment()
 export const cursorBlinkingCompartment = new Compartment()
