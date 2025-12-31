@@ -124,16 +124,15 @@ const stat = (path: string) => {
  * and falling back to copy-and-delete if rename fails.
  */
 async function move(source: string | URL, destination: string | URL) {
-  const type = (await fs.lstat(source)).isDirectory() ? 'dir' : 'file'
+  const isDir = (await fs.lstat(source)).isDirectory()
   return fs
     .rename(source, destination)
     .catch(async (e) => {
       if (e.code === 'ENOENT') {
         // We need to make the directories in the destination
-        const dirToMake =
-          type === 'dir'
-            ? destination
-            : destination.toString().split(path.sep).slice(0, -1).join(path.sep)
+        const dirToMake = isDir
+          ? destination
+          : destination.toString().split(path.sep).slice(0, -1).join(path.sep)
         await fs.mkdir(dirToMake, { recursive: true })
         return fs.rename(source, destination)
       }
