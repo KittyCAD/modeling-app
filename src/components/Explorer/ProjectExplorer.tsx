@@ -316,16 +316,29 @@ export const ProjectExplorer = ({
               file?.path?.startsWith(child.path) && canNavigate
 
             if (shouldWeNavigate && file && file.path) {
-              systemIOActor.send({
-                type: SystemIOMachineEvents.deleteFileOrFolderAndNavigate,
-                data: {
-                  requestedPath: child.path,
-                  requestedProjectName: project.name,
-                },
-              })
+              const src = child.path
+              toArchivePath(src)
+                .then((target) => {
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.moveRecursiveAndNavigate,
+                    data: {
+                      src,
+                      target,
+                      successMessage: 'Archived successfully',
+                      requestedProjectName: project.name,
+                    },
+                  })
+                  kclManager.dispatch(fsArchiveFile({ src, target }))
+                })
+                .catch((e) => {
+                  console.error(e)
+                  console.warn(
+                    `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
+                  )
+                })
             } else {
               const src = child.path
-              toArchivePath(child.path)
+              toArchivePath(src)
                 .then((target) => {
                   systemIOActor.send({
                     type: SystemIOMachineEvents.moveRecursive,

@@ -844,6 +844,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           src: string
           target: string
           successMessage?: string
+          requestedProjectName?: string
         }
       }) => {
         if (window.electron) {
@@ -852,11 +853,13 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           return {
             message: input.successMessage || 'Moved successfully',
             requestedAbsolutePath: '',
+            requestedProjectName: input.requestedProjectName || '',
           }
         } else {
           return {
             message: 'no file system found',
             requestedAbsolutePath: '',
+            requestedProjectName: input.requestedProjectName || '',
           }
         }
       }
