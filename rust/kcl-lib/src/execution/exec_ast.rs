@@ -1421,6 +1421,20 @@ impl Node<Name> {
         if self.path.is_empty() {
             let item_value = exec_state.stack().get(&self.name.name, self.into());
             if item_value.is_ok() {
+                if self.name.name == "PI"
+                    && exec_state.math_v1()
+                    && let Ok(KclValue::Number { value, ty, .. }) = item_value
+                    && *value == std::f64::consts::PI
+                    && *ty == NumericType::count()
+                {
+                    // PI in math v1 has unknown units. We implement it this way
+                    // so that different modules can use different math
+                    // versions, even though there's only one shared stdlib with
+                    // one PI defined. We compare the value so that if a program
+                    // shadowed PI with a different value, the different value
+                    // would correctly be returned.
+                    return exec_state.stack().get("_MATH_V1_PI", self.into());
+                }
                 return item_value;
             }
             return exec_state.stack().get(&mod_name, self.into());
@@ -3420,7 +3434,7 @@ y = x: number(Length)"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn one_warning_unknown() {
+    async fn one_warning_unknown_math_v1() {
         let ast = r#"
 // Should warn once
 a = PI * 2
@@ -3432,6 +3446,20 @@ c = ((PI * 2) / 3): number(deg)
 
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(result.exec_state.errors().len(), 2);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn math_v2_pi() {
+        let ast = r#"@settings(mathVersion = 2)
+
+// None of these should warn.
+a = PI * 2
+b = (PI * 2) / 3
+c = ((PI * 2) / 3): number(deg)
+"#;
+
+        let result = parse_execute(ast).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 0);
     }
 
     #[tokio::test(flavor = "multi_thread")]

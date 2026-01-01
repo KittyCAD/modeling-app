@@ -1325,7 +1325,7 @@ mod test {
             && d.name == "PI"
         {
             assert!(d.value.as_ref().unwrap().starts_with('3'));
-            assert_eq!(d.ty, Some("number(_?)".to_owned()));
+            assert_eq!(d.ty, Some("number".to_owned()));
             assert_eq!(d.qual_name, "std::math::PI");
             assert!(d.summary.is_some());
             assert!(!d.examples.is_empty());
