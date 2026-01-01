@@ -90,6 +90,11 @@ export const ConnectionStream = (props: {
       settings.modeling.cameraOrbit.current,
     ]
   )
+  const safariObjectFitClass = useMemo(() => {
+    // on safari we want to apply object-fit: fill to fix video resize bug
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+    return isSafari ? ' object-fill' : ''
+  }, [])
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = useCallback(
     (e) => {
@@ -458,7 +463,7 @@ export const ConnectionStream = (props: {
         key={id + 'video'}
         ref={videoRef}
         controls={false}
-        className="w-full cursor-pointer h-full"
+        className={`w-full cursor-pointer h-full${safariObjectFitClass}`}
         disablePictureInPicture
         id="video-stream"
       />
