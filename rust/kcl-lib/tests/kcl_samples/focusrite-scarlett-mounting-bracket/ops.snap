@@ -1201,7 +1201,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "type": "Number",
         "value": 3.141592653589793,
         "ty": {
-          "type": "Unknown"
+          "type": "Known",
+          "type": "Count"
         }
       },
       "visibility": "export",
@@ -1210,6 +1211,33 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
           {
             "type": "ProgramBodyItem",
             "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "VariableDeclaration",
+      "name": "_MATH_V1_PI",
+      "value": {
+        "type": "Number",
+        "value": 3.141592653589793,
+        "ty": {
+          "type": "Unknown"
+        }
+      },
+      "visibility": "export",
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1237,7 +1265,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 2
+            "index": 3
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1265,7 +1293,7 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 3
+            "index": 4
           },
           {
             "type": "VariableDeclarationDeclaration"
