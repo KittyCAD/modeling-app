@@ -725,7 +725,7 @@ impl NumericType {
     }
 
     /// Combine two types for multiplication-like operations.
-    pub fn combine_mul(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+    pub fn combine_mul_v1(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
             (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
@@ -739,7 +739,7 @@ impl NumericType {
     }
 
     /// Combine two types for division-like operations.
-    pub fn combine_div(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+    pub fn combine_div_v1(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
             (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
@@ -753,7 +753,7 @@ impl NumericType {
     }
 
     /// Combine two types for modulo-like operations.
-    pub fn combine_mod(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+    pub fn combine_mod_v1(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
             (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),

@@ -18,7 +18,7 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     let n: TyF64 = args.get_unlabeled_kw_arg("number to divide", &RuntimeType::num_any(), exec_state)?;
     let d: TyF64 = args.get_kw_arg("divisor", &RuntimeType::num_any(), exec_state)?;
 
-    let (n, d, ty) = NumericType::combine_mod(n, d);
+    let (n, d, ty) = NumericType::combine_mod_v1(n, d);
     if ty == NumericType::Unknown {
         exec_state.err(CompilationError::err(
             args.source_range,
