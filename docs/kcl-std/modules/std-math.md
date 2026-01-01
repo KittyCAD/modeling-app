@@ -15,6 +15,7 @@ Functions for mathematical operations and some useful constants.
 * [`E`](/docs/kcl-std/consts/std-math-E)
 * [`PI`](/docs/kcl-std/consts/std-math-PI)
 * [`TAU`](/docs/kcl-std/consts/std-math-TAU)
+* [`_MATH_V1_PI`](/docs/kcl-std/consts/std-math-_MATH_V1_PI)
 * [`abs`](/docs/kcl-std/functions/std-math-abs)
 * [`acos`](/docs/kcl-std/functions/std-math-acos)
 * [`asin`](/docs/kcl-std/functions/std-math-asin)
