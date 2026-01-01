@@ -168,6 +168,7 @@ layout: manual
   * [`E`](/docs/kcl-std/consts/std-math-E)
   * [`PI`](/docs/kcl-std/consts/std-math-PI)
   * [`TAU`](/docs/kcl-std/consts/std-math-TAU)
+  * [`_MATH_V1_PI`](/docs/kcl-std/consts/std-math-_MATH_V1_PI)
 * [**std::sweep**](/docs/kcl-std/modules/std-sweep)
   * [`sweep::SKETCH_PLANE`](/docs/kcl-std/consts/std-sweep-SKETCH_PLANE)
   * [`sweep::TRAJECTORY`](/docs/kcl-std/consts/std-sweep-TRAJECTORY)
