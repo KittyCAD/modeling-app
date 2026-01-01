@@ -238,6 +238,10 @@ impl ExecState {
             .collect();
     }
 
+    pub fn math_v1(&self) -> bool {
+        self.mod_local.settings.math_version != "2"
+    }
+
     pub fn errors(&self) -> &[CompilationError] {
         &self.global.errors
     }
@@ -758,6 +762,7 @@ pub struct MetaSettings {
     pub default_angle_units: UnitAngle,
     pub experimental_features: annotations::WarningLevel,
     pub kcl_version: String,
+    pub math_version: String,
 }
 
 impl Default for MetaSettings {
@@ -767,6 +772,7 @@ impl Default for MetaSettings {
             default_angle_units: UnitAngle::Degrees,
             experimental_features: annotations::WarningLevel::Deny,
             kcl_version: "1.0".to_owned(),
+            math_version: "1".to_owned(),
         }
     }
 }
@@ -797,6 +803,10 @@ impl MetaSettings {
                 annotations::SETTINGS_VERSION => {
                     let value = annotations::expect_number(&p.inner.value)?;
                     self.kcl_version = value;
+                }
+                annotations::SETTINGS_MATH_VERSION => {
+                    let value = annotations::expect_number(&p.inner.value)?;
+                    self.math_version = value;
                 }
                 annotations::SETTINGS_EXPERIMENTAL_FEATURES => {
                     let value = annotations::expect_ident(&p.inner.value)?;
