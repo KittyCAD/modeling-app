@@ -132,7 +132,11 @@ export const settingsMachine = setup({
         settings: SettingsType
         commandBarActor: ActorRefFrom<typeof commandBarMachine>
       },
-      { settings: SettingsType; actor: AnyActorRef }
+      {
+        settings: SettingsType
+        actor: AnyActorRef
+        commandBarActor: ActorRefFrom<typeof commandBarMachine>
+      }
     >(({ input, receive }) => {
       // If the user wants to hide the settings commands
       //from the command bar don't add them.
@@ -175,8 +179,11 @@ export const settingsMachine = setup({
         addCommands(commandBarActor)
       })
 
-      console.log('commands bs', input)
+      // Initial command registration
+      // Note: Async hideOnPlatform values are already resolved in loadAndValidateSettings,
+      // so we can just register commands synchronously here
       commands = updateCommands(input.settings)
+      addCommands(input.commandBarActor)
     }),
   },
   actions: {
@@ -187,6 +194,9 @@ export const settingsMachine = setup({
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
     setAllowOrbitInSketchMode: () => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
+    },
+    setEditorLineWrapping: () => {
       // Implementation moved to singletons.ts to provide necessary singletons.
     },
     toastSuccess: ({ event }) => {
@@ -221,11 +231,8 @@ export const settingsMachine = setup({
      * Update the --cursor-color CSS variable
      * based on the setting textEditor.blinkingCursor.current
      */
-    setCursorColor: ({ context }) => {
-      document.documentElement.style.setProperty(
-        `--cursor-color`,
-        context.textEditor.blinkingCursor.current ? 'auto' : 'transparent'
-      )
+    setCursorBlinking: ({ context, self }) => {
+      // Implementation moved to singletons.ts to provide necessary singletons.
     },
     /** Unload the project-level setting values from memory */
     clearProjectSettings: assign(({ context }) => {
@@ -338,7 +345,7 @@ export const settingsMachine = setup({
                   ({ event }) => event.type === 'set.textEditor.blinkingCursor'
                 )
               ) {
-                enqueue('setCursorColor')
+                enqueue('setCursorBlinking')
               }
             }),
           ],
@@ -389,6 +396,16 @@ export const settingsMachine = setup({
             'sendThemeToWatcher',
           ],
         },
+        'set.textEditor.textWrapping': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel', 'setEditorLineWrapping'],
+        },
+        'set.textEditor.blinkingCursor': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel', 'setCursorBlinking'],
+        },
 
         'set.app.streamIdleMode': {
           target: 'persisting settings',
@@ -435,6 +452,8 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setEditorLineWrapping',
+            'setCursorBlinking',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -453,6 +472,8 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setEditorLineWrapping',
+            'setCursorBlinking',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -532,6 +553,8 @@ export const settingsMachine = setup({
             'setEngineTheme',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setEditorLineWrapping',
+            'setCursorBlinking',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({
@@ -567,6 +590,8 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setEngineHighlightEdges',
+            'setEditorLineWrapping',
+            'setCursorBlinking',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
             sendTo('registerCommands', ({ context }) => ({

@@ -155,7 +155,7 @@ const appMachineActors = {
         // create a detection loop with the file-system watcher.
         if (input.doNotPersist) return
 
-        // This flag is not used by the settings file watcher in RouteProvider so it doesn't do anything..
+        // This flag is not used by the settings file watcher in RouteProvider so this line doesn't do anything..
         kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
         const {
           currentProject,
@@ -191,6 +191,18 @@ const appMachineActors = {
         engineCommandManager
           .setTheme(context.app.theme.current)
           .catch(reportRejection)
+      },
+      setEditorLineWrapping: ({ context }) => {
+        kclManager.setEditorLineWrapping(
+          context.textEditor.textWrapping.current
+        )
+      },
+      setCursorBlinking: ({ context }) => {
+        document.documentElement.style.setProperty(
+          `--cursor-color`,
+          context.textEditor.blinkingCursor.current ? 'auto' : 'transparent'
+        )
+        kclManager.setCursorBlinking(context.textEditor.blinkingCursor.current)
       },
       setEngineHighlightEdges: ({ context }) => {
         engineCommandManager

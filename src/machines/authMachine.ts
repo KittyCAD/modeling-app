@@ -51,13 +51,11 @@ export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 /**
  * Determine which token do we have persisted to initialize the auth machine
  */
-const persistedCookie = getCookie()
-const persistedDevToken = env().VITE_ZOO_API_TOKEN
-export const persistedToken = persistedDevToken || persistedCookie || ''
+export const persistedToken = getTokenFromEnvOrCookie()
 console.log('Initial persisted token')
 console.table([
-  ['cookie', !!persistedCookie],
-  ['api token', !!persistedDevToken],
+  ['cookie', !!getCookie()],
+  ['api token', !!env().VITE_ZOO_API_TOKEN],
 ])
 
 export const authMachine = setup({
@@ -256,6 +254,18 @@ export function getCookie(): string | null {
   } else {
     return getCookieByName(COOKIE_NAME_PREFIX + baseDomain)
   }
+}
+
+/**
+ * Get token from environment variable or cookie.
+ * This is a synchronous utility function that can be used in both
+ * React hooks and non-React contexts (like singleton initialization).
+ * @returns The token string, or empty string if neither source has a token
+ */
+export function getTokenFromEnvOrCookie(): string {
+  const envToken = env().VITE_ZOO_API_TOKEN
+  const cookieToken = getCookie()
+  return envToken || cookieToken || ''
 }
 
 function getCookieByName(cname: string): string | null {
