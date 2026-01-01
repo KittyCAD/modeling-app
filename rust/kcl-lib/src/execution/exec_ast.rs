@@ -2341,17 +2341,29 @@ impl Node<BinaryExpression> {
                 KclValue::Number { value: l - r, meta, ty }
             }
             BinaryOperator::Mul => {
-                let (l, r, ty) = NumericType::combine_mul_v1(left, right);
+                let (l, r, ty) = if exec_state.math_v1() {
+                    NumericType::combine_mul_v1(left, right)
+                } else {
+                    NumericType::combine_factors(left, right, exec_state, self.as_source_range())
+                };
                 self.warn_on_unknown(&ty, "Multiplying", exec_state);
                 KclValue::Number { value: l * r, meta, ty }
             }
             BinaryOperator::Div => {
-                let (l, r, ty) = NumericType::combine_div_v1(left, right);
+                let (l, r, ty) = if exec_state.math_v1() {
+                    NumericType::combine_div_v1(left, right)
+                } else {
+                    NumericType::combine_factors(left, right, exec_state, self.as_source_range())
+                };
                 self.warn_on_unknown(&ty, "Dividing", exec_state);
                 KclValue::Number { value: l / r, meta, ty }
             }
             BinaryOperator::Mod => {
-                let (l, r, ty) = NumericType::combine_mod_v1(left, right);
+                let (l, r, ty) = if exec_state.math_v1() {
+                    NumericType::combine_mod_v1(left, right)
+                } else {
+                    NumericType::combine_factors(left, right, exec_state, self.as_source_range())
+                };
                 self.warn_on_unknown(&ty, "Modulo of", exec_state);
                 KclValue::Number { value: l % r, meta, ty }
             }

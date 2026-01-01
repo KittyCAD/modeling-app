@@ -532,6 +532,11 @@ impl NumericType {
         NumericType::Known(UnitType::Length(UnitLength::Millimeters))
     }
 
+    #[cfg(test)]
+    pub const fn inches() -> Self {
+        NumericType::Known(UnitType::Length(UnitLength::Inches))
+    }
+
     pub const fn radians() -> Self {
         NumericType::Known(UnitType::Angle(UnitAngle::Radians))
     }
@@ -590,6 +595,27 @@ impl NumericType {
             }
 
             _ => (a.n, b.n, Unknown),
+        }
+    }
+
+    /// Combine two types that are operands to multiplication, division, or
+    /// similar operation, erring on the side of less coercion. To be precise,
+    /// only adjusting one number or the other when they are of known types.
+    pub fn combine_factors(
+        a: TyF64,
+        b: TyF64,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> (f64, f64, NumericType) {
+        use NumericType::*;
+        match (a.ty, b.ty) {
+            (t @ Default { .. }, Known(UnitType::Count)) => (a.n, b.n, t),
+            (Known(UnitType::Count), t @ Default { .. }) => (a.n, b.n, t),
+            (t @ Known(UnitType::Length(_)), Known(UnitType::Count)) => (a.n, b.n, t),
+            (Known(UnitType::Count), t @ Known(UnitType::Length(_))) => (a.n, b.n, t),
+            (t @ Known(UnitType::Angle(_)), Known(UnitType::Count)) => (a.n, b.n, t),
+            (Known(UnitType::Count), t @ Known(UnitType::Angle(_))) => (a.n, b.n, t),
+            _ => Self::combine_eq(a, b, exec_state, source_range),
         }
     }
 
@@ -2489,7 +2515,7 @@ mod test {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn combine_numeric() {
+    async fn combine_numeric_v1() {
         let program = r#"a = 5 + 4
 b = 5 - 2
 c = 5mm - 2mm + 10mm
@@ -2542,12 +2568,75 @@ u = min([3rad, 4in])
         assert_value_and_type("n", &result, 5.0, NumericType::Unknown);
         assert_value_and_type("o", &result, 1.0, NumericType::mm());
         assert_value_and_type("p", &result, 1.0, NumericType::count());
-        assert_value_and_type(
-            "q",
-            &result,
-            2.0,
-            NumericType::Known(UnitType::Length(UnitLength::Inches)),
+        assert_value_and_type("q", &result, 2.0, NumericType::inches());
+
+        assert_value_and_type("r", &result, 0.0, NumericType::default());
+        assert_value_and_type("s", &result, -42.0, NumericType::mm());
+        assert_value_and_type("t", &result, 3.0, NumericType::Unknown);
+        assert_value_and_type("u", &result, 3.0, NumericType::Unknown);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn combine_numeric_v2() {
+        let program = r#"@settings(mathVersion = 2)
+a = 5 + 4
+b = 5 - 2
+c = 5mm - 2mm + 10mm
+d = 5mm - 2 + 10
+e = 5 - 2mm + 10
+f = 30mm - 1inch
+
+g = 2 * 10
+h = 2 * 10mm
+i = 2mm * 10mm
+j = 2_ * 10
+k = 2_ * 3mm * 3mm
+
+l = 1 / 10
+m = 2mm / 1mm
+n = 10inch / 2mm
+o = 3mm / 3
+p = 3_ / 4
+q = 4inch / 2_
+
+r = min([0, 3, 42])
+s = min([0, 3mm, -42])
+t = min([100, 3in, 142mm])
+u = min([3rad, 4in])
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert_eq!(
+            result.exec_state.errors().len(),
+            2,
+            "errors: {:?}",
+            result.exec_state.errors()
         );
+
+        assert_value_and_type("a", &result, 9.0, NumericType::default());
+        assert_value_and_type("b", &result, 3.0, NumericType::default());
+        assert_value_and_type("c", &result, 13.0, NumericType::mm());
+        assert_value_and_type("d", &result, 13.0, NumericType::mm());
+        assert_value_and_type("e", &result, 13.0, NumericType::mm());
+        assert_value_and_type("f", &result, 5.0, NumericType::mm());
+
+        assert_value_and_type("g", &result, 20.0, NumericType::default());
+        assert_value_and_type("h", &result, 20.0, NumericType::mm());
+        // In v1, this was unknown.
+        assert_value_and_type("i", &result, 20.0, NumericType::mm());
+        assert_value_and_type("j", &result, 20.0, NumericType::default());
+        // In v1, this was unknown.
+        assert_value_and_type("k", &result, 18.0, NumericType::mm());
+
+        assert_value_and_type("l", &result, 0.0, NumericType::default());
+        // In v1, this was count.
+        assert_value_and_type("m", &result, 2.0, NumericType::mm());
+        // In v1, this was 5.0 with unknown units.
+        assert_value_and_type("n", &result, 127.0, NumericType::inches());
+        assert_value_and_type("o", &result, 1.0, NumericType::mm());
+        // In v1, this was count.
+        assert_value_and_type("p", &result, 1.0, NumericType::default());
+        assert_value_and_type("q", &result, 2.0, NumericType::inches());
 
         assert_value_and_type("r", &result, 0.0, NumericType::default());
         assert_value_and_type("s", &result, -42.0, NumericType::mm());
