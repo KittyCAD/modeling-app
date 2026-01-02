@@ -96,7 +96,7 @@ const Toolbar_ = memo(
         modelingState: props.state,
         modelingSend: props.send,
         sketchPathId,
-        editorHasFocus: kclManager.getEditorView()?.hasFocus,
+        editorHasFocus: kclManager.editorView.hasFocus,
         isActive: false, // Default value - individual items will override this
       }),
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -107,7 +107,7 @@ const Toolbar_ = memo(
         commandBarActor.send,
         sketchPathId,
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        kclManager.getEditorView()?.hasFocus,
+        kclManager.editorView.hasFocus,
       ]
     )
 
