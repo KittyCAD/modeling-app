@@ -318,6 +318,13 @@ export function sketchFromKclValueOptional(
 ): Sketch | Reason {
   if (obj?.type === 'Sketch') return obj.value
   if (obj?.type === 'Solid') return obj.value.sketch
+  if (obj?.type === 'HomArray') {
+    // Note: no artifact id, finding the first sketch
+    const sketch = obj.value.find((sk) => sk.type === 'Sketch')
+    if (sketch) {
+      return sketch.value
+    }
+  }
   if (!varName) {
     varName = 'a KCL value'
   }
