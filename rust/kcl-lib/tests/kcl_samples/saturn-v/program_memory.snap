@@ -85,8 +85,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 6000.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 3
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -194,8 +197,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 6000.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 3
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -247,7 +253,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 6000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 3
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -279,7 +288,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 6000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 3
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -311,7 +323,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 20000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 4
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -343,7 +358,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 20000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 4
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -482,8 +500,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 2
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -647,8 +668,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 2
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -812,8 +836,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 2
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -977,8 +1004,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 2
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1108,8 +1138,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 2
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1161,7 +1194,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
+      "sceneInfo": {
+        "kind": "YZ",
+        "object_id": 2
+      },
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -1276,8 +1312,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1417,8 +1456,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1558,8 +1600,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1699,8 +1744,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1813,8 +1861,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 1
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1866,7 +1917,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
+      "sceneInfo": {
+        "kind": "YZ",
+        "object_id": 1
+      },
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -2070,8 +2124,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 12
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2252,8 +2309,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "XZ",
+          "object_id": 12
+        },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2305,7 +2365,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
+      "sceneInfo": {
+        "kind": "XZ",
+        "object_id": 12
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2408,8 +2471,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 38000.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 5
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2466,7 +2532,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 38000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 5
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2549,8 +2618,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 38000.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 5
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2653,8 +2725,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 38000.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 5
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2706,7 +2781,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 38000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 5
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2809,8 +2887,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 38000.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 5
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2950,8 +3031,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3091,8 +3175,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3232,8 +3319,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3373,8 +3463,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3487,8 +3580,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -3540,7 +3636,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
+      "sceneInfo": {
+        "kind": "YZ",
+        "object_id": 0
+      },
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -3631,8 +3730,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 47000.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 6
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3689,7 +3791,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 47000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 6
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3749,8 +3854,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 47000.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 6
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3802,7 +3910,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 47000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 6
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3875,8 +3986,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 20000.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 4
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3961,8 +4075,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 20000.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 4
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4055,8 +4172,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 78000.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 11
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4113,7 +4233,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 69000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 10
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4173,8 +4296,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 69000.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 10
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4226,7 +4352,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 69000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 10
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4258,7 +4387,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 78000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 11
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4318,8 +4450,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 78000.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 11
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4371,7 +4506,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 78000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 11
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4444,8 +4582,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 69000.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 10
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4602,8 +4743,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 8
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -4733,8 +4877,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 8
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -4786,7 +4933,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
+      "sceneInfo": {
+        "kind": "YZ",
+        "object_id": 8
+      },
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -4918,8 +5068,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 8
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -5049,8 +5202,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 8
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -5202,8 +5358,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 9
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -5333,8 +5492,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 9
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -5386,7 +5548,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
+      "sceneInfo": {
+        "kind": "YZ",
+        "object_id": 9
+      },
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -5518,8 +5683,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 9
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -5649,8 +5817,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 9
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -5702,7 +5873,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 49000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 7
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -5762,8 +5936,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 49000.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 7
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -5815,7 +5992,10 @@ description: Variables in memory after executing saturn-v.kcl
         "z": 49000.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 7
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -5888,8 +6068,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 49000.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 7
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6017,8 +6200,11 @@ description: Variables in memory after executing saturn-v.kcl
             "z": 6000.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 3
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -6126,8 +6312,11 @@ description: Variables in memory after executing saturn-v.kcl
           "z": 6000.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 3
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

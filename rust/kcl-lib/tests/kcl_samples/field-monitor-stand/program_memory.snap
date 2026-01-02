@@ -23,7 +23,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "YZ",
+      "sceneInfo": {
+        "kind": "YZ",
+        "object_id": 0
+      },
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -308,8 +311,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -538,8 +544,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -715,8 +724,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -829,8 +841,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "YZ",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -1311,8 +1326,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
                       "z": 0.0,
                       "units": "mm"
                     },
+                    "sceneInfo": {
+                      "kind": "YZ",
+                      "object_id": 0
+                    },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -1737,8 +1755,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
                       "z": 0.0,
                       "units": "mm"
                     },
+                    "sceneInfo": {
+                      "kind": "YZ",
+                      "object_id": 0
+                    },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -2163,8 +2184,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
                       "z": 0.0,
                       "units": "mm"
                     },
+                    "sceneInfo": {
+                      "kind": "YZ",
+                      "object_id": 0
+                    },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -2589,8 +2613,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
                       "z": 0.0,
                       "units": "mm"
                     },
+                    "sceneInfo": {
+                      "kind": "YZ",
+                      "object_id": 0
+                    },
                     "type": "plane",
-                    "value": "YZ",
                     "xAxis": {
                       "x": 0.0,
                       "y": 1.0,
@@ -3016,8 +3043,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "z": 0.0,
                     "units": "mm"
                   },
+                  "sceneInfo": {
+                    "kind": "YZ",
+                    "object_id": 0
+                  },
                   "type": "plane",
-                  "value": "YZ",
                   "xAxis": {
                     "x": 0.0,
                     "y": 1.0,
@@ -3424,8 +3454,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "z": 0.0,
                     "units": "mm"
                   },
+                  "sceneInfo": {
+                    "kind": "YZ",
+                    "object_id": 0
+                  },
                   "type": "plane",
-                  "value": "YZ",
                   "xAxis": {
                     "x": 0.0,
                     "y": 1.0,
@@ -3832,8 +3865,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "z": 0.0,
                     "units": "mm"
                   },
+                  "sceneInfo": {
+                    "kind": "YZ",
+                    "object_id": 0
+                  },
                   "type": "plane",
-                  "value": "YZ",
                   "xAxis": {
                     "x": 0.0,
                     "y": 1.0,
@@ -4240,8 +4276,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "z": 0.0,
                     "units": "mm"
                   },
+                  "sceneInfo": {
+                    "kind": "YZ",
+                    "object_id": 0
+                  },
                   "type": "plane",
-                  "value": "YZ",
                   "xAxis": {
                     "x": 0.0,
                     "y": 1.0,
@@ -4709,8 +4748,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "z": 0.0,
               "units": "mm"
             },
+            "sceneInfo": {
+              "kind": "YZ",
+              "object_id": 0
+            },
             "type": "plane",
-            "value": "YZ",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
@@ -5052,8 +5094,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "YZ",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,

@@ -9,7 +9,37 @@ description: Result of parsing sketch_block_failed_unit_conversion.kcl
         "commentStart": 0,
         "end": 0,
         "expression": {
-          "arguments": [],
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "on",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "XY",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              }
+            }
+          ],
           "body": {
             "commentStart": 0,
             "end": 0,

@@ -121,8 +121,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XZ",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -289,8 +292,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -454,8 +460,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -619,8 +628,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -784,8 +796,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -949,8 +964,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1114,8 +1132,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1279,8 +1300,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1449,8 +1473,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1613,9 +1640,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1779,8 +1809,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1943,9 +1976,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2109,8 +2145,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2273,9 +2312,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2439,8 +2481,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2603,9 +2648,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2769,8 +2817,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2933,9 +2984,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3099,8 +3153,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3263,9 +3320,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3429,8 +3489,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3593,9 +3656,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3759,8 +3825,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3924,8 +3993,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4088,9 +4160,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4254,8 +4329,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4418,9 +4496,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4584,8 +4665,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4748,9 +4832,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4914,8 +5001,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5078,9 +5168,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5244,8 +5337,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5409,8 +5505,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5573,9 +5672,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5739,8 +5841,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5903,9 +6008,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6069,8 +6177,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6233,9 +6344,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6399,8 +6513,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6563,9 +6680,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6729,8 +6849,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6894,8 +7017,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7058,9 +7184,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7224,8 +7353,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7388,9 +7520,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7554,8 +7689,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7718,9 +7856,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7884,8 +8025,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8048,9 +8192,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8214,8 +8361,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8379,8 +8529,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8543,9 +8696,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8709,8 +8865,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8873,9 +9032,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9039,8 +9201,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9203,9 +9368,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9369,8 +9537,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9533,9 +9704,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9699,8 +9873,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9864,8 +10041,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10028,9 +10208,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10194,8 +10377,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10358,9 +10544,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10524,8 +10713,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10688,9 +10880,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -10854,8 +11049,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11018,9 +11216,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11184,8 +11385,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11349,8 +11553,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11513,9 +11720,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11679,8 +11889,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -11843,9 +12056,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12009,8 +12225,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12173,9 +12392,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12339,8 +12561,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12503,9 +12728,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12669,8 +12897,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12834,8 +13065,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -12998,9 +13232,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13164,8 +13401,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13328,9 +13568,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13494,8 +13737,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13658,9 +13904,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13824,8 +14073,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -13988,9 +14240,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -14154,8 +14409,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -14319,8 +14577,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -14483,9 +14744,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -14649,8 +14913,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -14813,9 +15080,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -14979,8 +15249,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15143,9 +15416,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15309,8 +15585,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15473,9 +15752,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15639,8 +15921,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15804,8 +16089,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -15968,9 +16256,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16134,8 +16425,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16298,9 +16592,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16464,8 +16761,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16628,9 +16928,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16794,8 +17097,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -16958,9 +17264,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -17124,8 +17433,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -17289,8 +17601,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -17453,9 +17768,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -17619,8 +17937,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -17783,9 +18104,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -17949,8 +18273,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18113,9 +18440,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18279,8 +18609,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18443,9 +18776,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18609,8 +18945,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18774,8 +19113,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18938,9 +19280,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -19104,8 +19449,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -19268,9 +19616,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -19434,8 +19785,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -19598,9 +19952,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -19764,8 +20121,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -19928,9 +20288,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -20094,8 +20457,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -20259,8 +20625,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -20423,9 +20792,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -20589,8 +20961,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -20753,9 +21128,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -20919,8 +21297,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -21083,9 +21464,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -21249,8 +21633,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -21413,9 +21800,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -21579,8 +21969,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -21744,8 +22137,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -21908,9 +22304,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -22074,8 +22473,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -22238,9 +22640,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -22404,8 +22809,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -22568,9 +22976,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -22734,8 +23145,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -22898,9 +23312,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23064,8 +23481,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23229,8 +23649,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23393,9 +23816,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23559,8 +23985,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23723,9 +24152,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -23889,8 +24321,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -24053,9 +24488,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -24219,8 +24657,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -24383,9 +24824,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -24549,8 +24993,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -24714,8 +25161,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -24878,9 +25328,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -25044,8 +25497,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -25208,9 +25664,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -25374,8 +25833,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -25538,9 +26000,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -25704,8 +26169,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -25868,9 +26336,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -26034,8 +26505,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -26199,8 +26673,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -26363,9 +26840,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -26529,8 +27009,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -26693,9 +27176,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -26859,8 +27345,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -27023,9 +27512,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -27189,8 +27681,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -27353,9 +27848,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -27519,8 +28017,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -27684,8 +28185,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -27848,9 +28352,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28014,8 +28521,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28178,9 +28688,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28344,8 +28857,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28508,9 +29024,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28674,8 +29193,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -28838,9 +29360,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -29004,8 +29529,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -29169,8 +29697,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -29333,9 +29864,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -29499,8 +30033,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -29663,9 +30200,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -29829,8 +30369,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -29993,9 +30536,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -30159,8 +30705,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -30323,9 +30872,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -30489,8 +31041,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -30654,8 +31209,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -30818,9 +31376,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -30984,8 +31545,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -31148,9 +31712,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -31314,8 +31881,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -31478,9 +32048,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -31644,8 +32217,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -31808,9 +32384,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -31974,8 +32553,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -32139,8 +32721,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -32303,9 +32888,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -32469,8 +33057,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -32633,9 +33224,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -32799,8 +33393,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -32963,9 +33560,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -33129,8 +33729,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -33293,9 +33896,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -33459,8 +34065,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -33624,8 +34233,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -33788,9 +34400,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -33954,8 +34569,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -34118,9 +34736,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -34284,8 +34905,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -34448,9 +35072,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -34614,8 +35241,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -34778,9 +35408,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -34944,8 +35577,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -35109,8 +35745,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -35273,9 +35912,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -35439,8 +36081,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -35603,9 +36248,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -35769,8 +36417,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -35933,9 +36584,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -36099,8 +36753,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -36263,9 +36920,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -36429,8 +37089,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -36594,8 +37257,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -36758,9 +37424,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -36924,8 +37593,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -37088,9 +37760,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -37254,8 +37929,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -37418,9 +38096,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -37584,8 +38265,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -37748,9 +38432,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -37914,8 +38601,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -38079,8 +38769,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -38243,9 +38936,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -38409,8 +39105,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -38573,9 +39272,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -38739,8 +39441,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -38903,9 +39608,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -39069,8 +39777,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -39233,9 +39944,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -39399,8 +40113,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -39564,8 +40281,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -39728,9 +40448,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -39894,8 +40617,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -40058,9 +40784,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -40224,8 +40953,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -40388,9 +41120,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -40554,8 +41289,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -40718,9 +41456,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -40884,8 +41625,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -41049,8 +41793,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -41213,9 +41960,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -41379,8 +42129,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -41543,9 +42296,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -41709,8 +42465,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -41873,9 +42632,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -42039,8 +42801,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -42203,9 +42968,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -42369,8 +43137,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -42534,8 +43305,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -42698,9 +43472,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -42864,8 +43641,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -43028,9 +43808,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -43194,8 +43977,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -43358,9 +44144,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -43524,8 +44313,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -43688,9 +44480,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -43854,8 +44649,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -44019,8 +44817,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -44183,9 +44984,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -44349,8 +45153,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -44513,9 +45320,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -44679,8 +45489,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -44843,9 +45656,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45009,8 +45825,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45173,9 +45992,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45339,8 +46161,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45504,8 +46329,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45668,9 +46496,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45834,8 +46665,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -45998,9 +46832,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -46164,8 +47001,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -46328,9 +47168,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -46494,8 +47337,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -46658,9 +47504,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -46824,8 +47673,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -46989,8 +47841,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -47153,9 +48008,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -47319,8 +48177,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -47483,9 +48344,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -47649,8 +48513,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -47813,9 +48680,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -47979,8 +48849,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -48143,9 +49016,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -48309,8 +49185,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -48474,8 +49353,11 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -48638,9 +49520,12 @@ description: Variables in memory after executing circular_pattern3d_a_pattern.kc
                 "y": 0.0,
                 "z": 0.0,
                 "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,

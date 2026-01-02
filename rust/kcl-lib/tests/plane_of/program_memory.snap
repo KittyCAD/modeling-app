@@ -8,14 +8,16 @@ description: Variables in memory after executing plane_of.kcl
     "value": {
       "artifactId": "[uuid]",
       "id": "[uuid]",
-      "objectId": 1,
       "origin": {
         "x": 0.0,
         "y": 0.0,
         "z": 1828.8,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 1
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -130,8 +132,11 @@ description: Variables in memory after executing plane_of.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XY",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

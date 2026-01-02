@@ -803,8 +803,11 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XY",
+            "object_id": 8
+          },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

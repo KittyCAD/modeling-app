@@ -178,8 +178,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 165.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 9
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -343,8 +346,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 165.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 9
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -479,8 +485,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 165.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 9
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -615,8 +624,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 165.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 9
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -711,7 +723,10 @@ description: Variables in memory after executing utility-sink.kcl
         "z": 165.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 9
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -761,7 +776,10 @@ description: Variables in memory after executing utility-sink.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
+      "sceneInfo": {
+        "kind": "XY",
+        "object_id": 0
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -837,8 +855,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 11
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -936,8 +957,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XZ",
+                "object_id": 11
+              },
               "type": "plane",
-              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1050,7 +1074,10 @@ description: Variables in memory after executing utility-sink.kcl
         "z": 780.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 10
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1182,8 +1209,11 @@ description: Variables in memory after executing utility-sink.kcl
           "z": 780.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 10
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1264,8 +1294,11 @@ description: Variables in memory after executing utility-sink.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "XZ",
+          "object_id": 11
+        },
         "type": "plane",
-        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1317,7 +1350,10 @@ description: Variables in memory after executing utility-sink.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XZ",
+      "sceneInfo": {
+        "kind": "XZ",
+        "object_id": 11
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1468,8 +1504,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1604,8 +1643,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1740,8 +1782,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1876,8 +1921,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2064,8 +2112,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 150.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2200,8 +2251,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 150.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2370,8 +2424,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 150.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2506,8 +2563,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 150.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2593,7 +2653,10 @@ description: Variables in memory after executing utility-sink.kcl
         "z": 150.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 1
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2744,8 +2807,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 165.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 9
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2880,8 +2946,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 165.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 9
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3077,8 +3146,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 163.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3213,8 +3285,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 163.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 2
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3282,7 +3357,10 @@ description: Variables in memory after executing utility-sink.kcl
         "z": 163.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 2
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3563,8 +3641,11 @@ description: Variables in memory after executing utility-sink.kcl
                   "z": 850.0,
                   "units": "mm"
                 },
+                "sceneInfo": {
+                  "kind": "Custom",
+                  "object_id": 4
+                },
                 "type": "plane",
-                "value": "Custom",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3879,8 +3960,11 @@ description: Variables in memory after executing utility-sink.kcl
                   "z": 850.0,
                   "units": "mm"
                 },
+                "sceneInfo": {
+                  "kind": "Custom",
+                  "object_id": 4
+                },
                 "type": "plane",
-                "value": "Custom",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -4132,8 +4216,11 @@ description: Variables in memory after executing utility-sink.kcl
               "z": 850.0,
               "units": "mm"
             },
+            "sceneInfo": {
+              "kind": "Custom",
+              "object_id": 4
+            },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -4315,8 +4402,11 @@ description: Variables in memory after executing utility-sink.kcl
               "z": 850.0,
               "units": "mm"
             },
+            "sceneInfo": {
+              "kind": "Custom",
+              "object_id": 4
+            },
             "type": "plane",
-            "value": "Custom",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -4518,8 +4608,11 @@ description: Variables in memory after executing utility-sink.kcl
             "z": 850.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 4
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4576,7 +4669,10 @@ description: Variables in memory after executing utility-sink.kcl
         "z": 850.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 4
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -4658,8 +4754,11 @@ description: Variables in memory after executing utility-sink.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 8
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4757,8 +4856,11 @@ description: Variables in memory after executing utility-sink.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 7
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4856,8 +4958,11 @@ description: Variables in memory after executing utility-sink.kcl
             "z": 850.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 6
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -4955,8 +5060,11 @@ description: Variables in memory after executing utility-sink.kcl
             "z": 850.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 5
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5123,8 +5231,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 847.5,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 3
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5259,8 +5370,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 847.5,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 3
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5429,8 +5543,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 847.5,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 3
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5565,8 +5682,11 @@ description: Variables in memory after executing utility-sink.kcl
                 "z": 847.5,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 3
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5634,7 +5754,10 @@ description: Variables in memory after executing utility-sink.kcl
         "z": 847.5,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 3
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

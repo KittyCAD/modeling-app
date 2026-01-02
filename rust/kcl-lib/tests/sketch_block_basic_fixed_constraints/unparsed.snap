@@ -6,7 +6,7 @@ description: Result of unparsing sketch_block_basic_fixed_constraints.kcl
 
 myParam = 4
 
-s = sketch() {
+s = sketch(on = XY) {
   x = var 0
   y = var +10
 x == 1 + 2

@@ -116,7 +116,10 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
         "z": 0.0,
         "units": "in"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 0
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -265,8 +268,11 @@ description: Variables in memory after executing elliptic_curve_inches_regressio
           "z": 0.0,
           "units": "in"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

@@ -117,7 +117,7 @@ description: Operations executed sketch_block_lines_coincident_simple.kcl
     },
     {
       "type": "SketchSolve",
-      "sketchId": 0,
+      "sketchId": 1,
       "nodePath": {
         "steps": [
           {

@@ -130,8 +130,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "z": 0.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "XY",
+            "object_id": 0
+          },
           "type": "plane",
-          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -215,7 +218,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
         "z": 0.0,
         "units": "mm"
       },
-      "value": "XY",
+      "sceneInfo": {
+        "kind": "XY",
+        "object_id": 0
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -320,8 +326,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
           "z": 0.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "XY",
+          "object_id": 0
+        },
         "type": "plane",
-        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -489,8 +498,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
             "z": 50.0,
             "units": "mm"
           },
+          "sceneInfo": {
+            "kind": "Custom",
+            "object_id": 1
+          },
           "type": "plane",
-          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -547,7 +559,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
         "z": 50.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 1
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -652,8 +667,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
           "z": 50.0,
           "units": "mm"
         },
+        "sceneInfo": {
+          "kind": "Custom",
+          "object_id": 1
+        },
         "type": "plane",
-        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -705,7 +723,10 @@ description: Variables in memory after executing linear-shelf-system.kcl
         "z": 50.0,
         "units": "mm"
       },
-      "value": "Custom",
+      "sceneInfo": {
+        "kind": "Custom",
+        "object_id": 1
+      },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -847,8 +868,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1012,8 +1036,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1177,8 +1204,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1342,8 +1372,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1507,144 +1540,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -0.2,
-                0.0
-              ],
-              "to": [
-                -0.2,
-                0.0
-              ],
-              "units": "m",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.2,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.2,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.2,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  -0.4
-                ],
-                "tag": null,
-                "to": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.18000000000000002,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -0.2,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
               },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1779,8 +1679,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1915,8 +1818,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2051,8 +1957,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2187,8 +2096,150 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
+            },
+            "start": {
+              "from": [
+                -0.2,
+                0.0
+              ],
+              "to": [
+                -0.2,
+                0.0
+              ],
+              "units": "m",
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.2,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.2,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.2,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  -0.4
+                ],
+                "tag": null,
+                "to": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -0.18000000000000002,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  -0.2,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
+              "type": "plane",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2352,8 +2403,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2517,8 +2571,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2682,8 +2739,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2847,8 +2907,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3012,8 +3075,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3177,8 +3243,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3342,8 +3411,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3507,8 +3579,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3672,8 +3747,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3837,8 +3915,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4002,8 +4083,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4167,8 +4251,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4332,8 +4419,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4497,8 +4587,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4662,8 +4755,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4827,8 +4923,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4992,8 +5091,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5157,8 +5259,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5322,8 +5427,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5487,8 +5595,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5652,8 +5763,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5817,8 +5931,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5982,8 +6099,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6147,8 +6267,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6312,8 +6435,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6477,8 +6603,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6642,8 +6771,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6807,8 +6939,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6972,8 +7107,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7137,8 +7275,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7302,8 +7443,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7467,8 +7611,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7632,8 +7779,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7797,8 +7947,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7962,8 +8115,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8195,8 +8351,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8360,8 +8519,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8525,8 +8687,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8690,8 +8855,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -8855,8 +9023,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9020,8 +9191,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 50.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "Custom",
+                "object_id": 1
+              },
               "type": "plane",
-              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9165,8 +9339,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
               "z": 0.0,
               "units": "mm"
             },
+            "sceneInfo": {
+              "kind": "XY",
+              "object_id": 0
+            },
             "type": "plane",
-            "value": "XY",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -9291,8 +9468,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
               "z": 0.0,
               "units": "mm"
             },
+            "sceneInfo": {
+              "kind": "XY",
+              "object_id": 0
+            },
             "type": "plane",
-            "value": "XY",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -9456,8 +9636,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9592,8 +9775,11 @@ description: Variables in memory after executing linear-shelf-system.kcl
                 "z": 0.0,
                 "units": "mm"
               },
+              "sceneInfo": {
+                "kind": "XY",
+                "object_id": 0
+              },
               "type": "plane",
-              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
