@@ -737,6 +737,35 @@ appearance(
 )`)
     })
 
+    it('should add a call with opacity', async () => {
+      const {
+        artifactGraph,
+        ast,
+        sketches: objects,
+      } = await getAstAndSketchSelections(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addAppearance({
+        ast,
+        artifactGraph,
+        objects,
+        color: '#FF0000',
+        opacity: await getKclCommandValue(
+          '0.5',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${box}
+appearance(extrude001, color = "#FF0000", opacity = 0.5)`)
+    })
+
     async function runEditAppearanceTest(
       code: string,
       nodeToEdit: PathToNode,
@@ -809,6 +838,49 @@ appearance(extrude001, color = "#00FF00")`
         kclManagerInThisFile,
         rustContextInThisFile
       )
+      expect(newCode).toContain(expectedNewCode)
+    })
+
+    it('should edit a call to add opacity', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+appearance(extrude001, color = "#FF0000")`
+      const expectedNewCode = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+appearance(extrude001, color = "#FF0000", opacity = 0.75)`
+      const nodeToEdit: PathToNode = [
+        ['body', ''],
+        [3, 'index'],
+        ['expression', 'ExpressionStatement'],
+      ]
+
+      const {
+        artifactGraph,
+        ast,
+        sketches: objects,
+      } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addAppearance({
+        ast,
+        artifactGraph,
+        objects,
+        color: '#FF0000',
+        opacity: await getKclCommandValue(
+          '0.75',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        nodeToEdit,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(expectedNewCode)
     })
 
