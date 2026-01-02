@@ -154,7 +154,6 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { EditorView } from 'codemirror'
 
 export type ModelingMachineEvent =
   | {
@@ -1472,16 +1471,6 @@ export const modelingMachine = setup({
               },
             })
           if (codeMirrorSelection) {
-            kclManager.editorView.dispatch({
-              selection: codeMirrorSelection,
-              effects: setSelections.scrollIntoView
-                ? [
-                    EditorView.scrollIntoView(codeMirrorSelection.ranges[0], {
-                      y: 'center',
-                    }),
-                  ]
-                : [],
-            })
             theKclEditorMachine.send({
               type: 'setLastSelectionEvent',
               data: {
@@ -1537,10 +1526,6 @@ export const modelingMachine = setup({
           const codeMirrorSelection = kclManager.createEditorSelection(
             setSelections.selection
           )
-
-          kclManager.editorView.dispatch({
-            selection: codeMirrorSelection,
-          })
 
           // This turns the selection into blue, needed when selecting with ctrl+A
           const { updateSceneObjectColors } = handleSelectionBatch({

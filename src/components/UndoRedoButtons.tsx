@@ -1,3 +1,4 @@
+import { redoDepth, undoDepth } from '@codemirror/commands'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import type { KclManager } from '@src/lang/KclManager'
@@ -5,14 +6,12 @@ import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
-import { type HTMLProps, type MouseEventHandler } from 'react'
-import { useSignals } from '@preact/signals-react/runtime'
+import type { HTMLProps, MouseEventHandler } from 'react'
 
 export function UndoRedoButtons({
   kclManager,
   ...props
 }: HTMLProps<HTMLDivElement> & { kclManager: KclManager }) {
-  useSignals()
   return (
     <div {...props}>
       <UndoOrRedoButton
@@ -21,7 +20,7 @@ export function UndoRedoButtons({
         iconName="arrowTurnLeft"
         onClick={() => kclManager.undo()}
         className="rounded-r-none"
-        disabled={kclManager.undoDepth.value === 0}
+        disabled={undoDepth(kclManager.editorState) === 0}
       />
       <UndoOrRedoButton
         label="Redo"
@@ -29,7 +28,7 @@ export function UndoRedoButtons({
         iconName="arrowTurnRight"
         onClick={() => kclManager.redo()}
         className="rounded-none"
-        disabled={kclManager.redoDepth.value === 0}
+        disabled={redoDepth(kclManager.editorState) === 0}
       />
       {/** TODO: Remove the refresh button when users don't need it so much. */}
       <UndoOrRedoButton

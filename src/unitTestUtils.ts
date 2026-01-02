@@ -124,30 +124,13 @@ export async function buildTheWorldAndConnectToEngine() {
   }
 }
 
-/**
- * Loads the WASM wrapper module. Left sync
- * because some systems in our app await the Promise anyway.
- */
-async function loadWasm() {
-  const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
-  const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
-  return instancePromise
-}
-
-/**
- * "Building the world" in Node consists of only the WASM module.
- *
- * Must use for Node integration tests, because some non-Node systems
- * like `kclManager.editorView` rely on browser window APIs that break in Node
- * testing environments.
- */
-export async function buildTheWorldNode() {
-  const instance = loadWasm()
-  return { instance }
-}
-
 // Initialize all the singletons and the WASM blob but do not connect to the engine
 export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
+  async function loadWasm() {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
+    return instancePromise
+  }
   const instancePromise = mockWasm
     ? Promise.resolve({} as ModuleType)
     : loadWasm()
