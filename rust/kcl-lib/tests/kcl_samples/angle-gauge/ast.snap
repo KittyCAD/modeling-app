@@ -2428,6 +2428,7 @@ description: Result of parsing angle-gauge.kcl
         "preComments": [
           "// Angle Gauge",
           "// Simple angle gauge function to generate a gauge given an angle",
+          "// Categories: Construction",
           "",
           "",
           "// Set units in inches (in)"

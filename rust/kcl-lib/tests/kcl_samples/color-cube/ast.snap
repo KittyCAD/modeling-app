@@ -2370,6 +2370,7 @@ description: Result of parsing color-cube.kcl
         "preComments": [
           "// Color Cube",
           "// This is a color cube centered about the origin. It is used to help determine orientation in the scene.",
+          "// Categories: Maker",
           "",
           "",
           "// Set units"

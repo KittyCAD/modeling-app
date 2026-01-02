@@ -4750,6 +4750,7 @@ description: Result of parsing makeup-mirror.kcl
         "preComments": [
           "// Makeup Mirror",
           "// A circular vanity mirror mounted on a swiveling arm with pivot joints, used for personal grooming.",
+          "// Categories: Construction, Maker",
           "",
           "",
           "// Set units"

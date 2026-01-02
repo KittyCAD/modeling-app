@@ -6351,6 +6351,7 @@ description: Result of parsing exhaust-manifold.kcl
         "preComments": [
           "// Exhaust Manifold",
           "// A welded exhaust header for an inline 4-cylinder engine",
+          "// Categories: Automotive",
           "",
           "",
           "// Set units"
