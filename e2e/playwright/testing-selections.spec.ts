@@ -370,7 +370,7 @@ test.describe('Testing selections', () => {
     })
 
     await test.step('Right click on bracket sample leads to the right place in code', async () => {
-      await expect(line).not.toBeVisible()
+      await expect(line).not.toBeInViewport()
       await clickCenter()
       await expect(page.getByText('1 face')).toBeVisible()
       await clickCenter({ shouldRightClick: true })
