@@ -523,6 +523,8 @@ ipcMain.handle('disable-menu', (event, data) => {
   disableMenu(menuId)
 })
 
+ipcMain.handle('get-path-userdata', () => app.getPath('userData'))
+
 app.on('ready', () => {
   // Disable auto updater on non-versioned builds
   if (packageJSON.version === '0.0.0' && viteEnv.MODE !== 'production') {

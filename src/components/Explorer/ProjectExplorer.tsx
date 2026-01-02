@@ -14,6 +14,7 @@ import type {
   FileExplorerEntry,
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
+import { fsArchiveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { FILE_EXT } from '@src/lib/constants'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
@@ -26,6 +27,7 @@ import {
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
+  toArchivePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { kclManager, systemIOActor, useSettings } from '@src/lib/singletons'
@@ -314,20 +316,46 @@ export const ProjectExplorer = ({
               file?.path?.startsWith(child.path) && canNavigate
 
             if (shouldWeNavigate && file && file.path) {
-              systemIOActor.send({
-                type: SystemIOMachineEvents.deleteFileOrFolderAndNavigate,
-                data: {
-                  requestedPath: child.path,
-                  requestedProjectName: project.name,
-                },
-              })
+              const src = child.path
+              toArchivePath(src)
+                .then((target) => {
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.moveRecursiveAndNavigate,
+                    data: {
+                      src,
+                      target,
+                      successMessage: 'Archived successfully',
+                      requestedProjectName: project.name,
+                    },
+                  })
+                  kclManager.dispatch(fsArchiveFile({ src, target }))
+                })
+                .catch((e) => {
+                  console.error(e)
+                  console.warn(
+                    `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
+                  )
+                })
             } else {
-              systemIOActor.send({
-                type: SystemIOMachineEvents.deleteFileOrFolder,
-                data: {
-                  requestedPath: child.path,
-                },
-              })
+              const src = child.path
+              toArchivePath(src)
+                .then((target) => {
+                  systemIOActor.send({
+                    type: SystemIOMachineEvents.moveRecursive,
+                    data: {
+                      src,
+                      target,
+                      successMessage: 'Archived successfully',
+                    },
+                  })
+                  kclManager.dispatch(fsArchiveFile({ src, target }))
+                })
+                .catch((e) => {
+                  console.error(e)
+                  console.warn(
+                    `Error while archiving: the deletion of ${child.path} may have been unrecoverable.`
+                  )
+                })
             }
           },
           onOpenInNewWindow: () => {
@@ -553,13 +581,14 @@ export const ProjectExplorer = ({
                     },
                   })
                 } else {
+                  const requestedAbsolutePath = joinOSPaths(
+                    getParentAbsolutePath(row.path),
+                    fileNameForcedWithOriginalExt
+                  )
                   systemIOActor.send({
                     type: SystemIOMachineEvents.createBlankFile,
                     data: {
-                      requestedAbsolutePath: joinOSPaths(
-                        getParentAbsolutePath(row.path),
-                        fileNameForcedWithOriginalExt
-                      ),
+                      requestedAbsolutePath,
                     },
                   })
                 }

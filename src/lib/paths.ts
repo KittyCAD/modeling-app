@@ -1,6 +1,6 @@
 import type { PlatformPath } from 'path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
+import { ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
 import type { IElectronAPI } from '@root/interface'
 import { fsManager } from '@src/lang/std/fileSystemManager'
@@ -322,4 +322,18 @@ export function getFilePathRelativeToProject(
   const sliceOffset = projectNameWithSeparators.length - 1
 
   return absoluteFilePath.slice(projectIndexInPath + sliceOffset) ?? ''
+}
+
+/**  */
+async function getArchiveBasePath() {
+  return window.electron
+    ? window.electron.join(await window.electron.getPathUserData(), ARCHIVE_DIR)
+    : `/${ARCHIVE_DIR}`
+}
+
+export async function toArchivePath(absolutePath: string) {
+  const basePath = await getArchiveBasePath()
+  return window.electron
+    ? window.electron.join(basePath, absolutePath)
+    : webSafeJoin([basePath, absolutePath])
 }
