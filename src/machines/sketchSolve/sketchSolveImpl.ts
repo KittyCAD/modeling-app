@@ -28,7 +28,7 @@ import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
 import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
-import { deferredCallback } from '@src/lib/utils'
+import { deferExecution } from '@src/lib/utils'
 import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
@@ -687,7 +687,7 @@ export function initializeInitialSceneGraph({
 // This allows us to cancel editor updates if a double-click is detected
 // The debounce delay is short (100ms) to minimize perceived lag while still allowing cancellation
 // We store the latest kclManager reference so the debounced function can access it
-const debouncedEditorUpdate = deferredCallback(
+const debouncedEditorUpdate = deferExecution(
   ({ text, kclManager }: { text: string; kclManager: KclManager }) =>
     kclManager.updateCodeEditor(text),
   200
