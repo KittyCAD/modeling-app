@@ -1,6 +1,7 @@
 [
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "angle-gauge/main.kcl",
     "multipleFiles": false,
     "title": "Angle Gauge",
@@ -11,6 +12,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "axial-fan/main.kcl",
     "multipleFiles": true,
     "title": "PC Fan",
@@ -25,6 +27,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "ball-bearing/main.kcl",
     "multipleFiles": false,
     "title": "Ball Bearing",
@@ -35,6 +38,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "battery-module-cooling-plate/main.kcl",
     "multipleFiles": false,
     "title": "Battery Module Cooling Plates",
@@ -45,6 +49,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "bench/main.kcl",
     "multipleFiles": true,
     "title": "Bench",
@@ -56,6 +61,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "bench-for-kids/main.kcl",
     "multipleFiles": false,
     "title": "Bench for kids.",
@@ -66,6 +72,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "bike-hub-washer/main.kcl",
     "multipleFiles": false,
     "title": "Bike hub washer",
@@ -76,6 +83,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "bone-plate/main.kcl",
     "multipleFiles": false,
     "title": "Bone Plate",
@@ -86,6 +94,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "bottle/main.kcl",
     "multipleFiles": false,
     "title": "Bottle",
@@ -96,6 +105,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "box/main.kcl",
     "multipleFiles": false,
     "title": "Box",
@@ -106,6 +116,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "bracket/main.kcl",
     "multipleFiles": false,
     "title": "Shelf Bracket",
@@ -116,6 +127,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "brake-rotor/main.kcl",
     "multipleFiles": false,
     "title": "Brake Rotor",
@@ -126,6 +138,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "c-shape-solid/main.kcl",
     "multipleFiles": false,
     "title": "C-Shape Solid (Abstract Geometry Demo)",
@@ -136,6 +149,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "car-wheel-assembly/main.kcl",
     "multipleFiles": true,
     "title": "Car Wheel Assembly",
@@ -152,6 +166,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "cassette/main.kcl",
     "multipleFiles": false,
     "title": "Sprocket Cassette",
@@ -162,6 +177,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "clock/main.kcl",
     "multipleFiles": false,
     "title": "Clock",
@@ -172,6 +188,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "coilover-assembly/main.kcl",
     "multipleFiles": true,
     "title": "Coilover Assembly",
@@ -186,6 +203,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "cold-plate/main.kcl",
     "multipleFiles": false,
     "title": "Cold Plate",
@@ -196,6 +214,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "color-cube/main.kcl",
     "multipleFiles": false,
     "title": "Color Cube",
@@ -206,6 +225,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "cone/main.kcl",
     "multipleFiles": false,
     "title": "Cone",
@@ -216,6 +236,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "counterdrilled-weldment/main.kcl",
     "multipleFiles": false,
     "title": "Counterdrilled Weldment",
@@ -226,6 +247,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "countersunk-plate/main.kcl",
     "multipleFiles": false,
     "title": "Plate with countersunk holes",
@@ -236,6 +258,11 @@
   },
   {
     "file": "main.kcl",
+    "categories": [
+      "lions",
+      "tigers",
+      "bears"
+    ],
     "pathFromProjectDirectoryToFirstFile": "cpu-cooler/main.kcl",
     "multipleFiles": true,
     "title": "CPU Cooler",
@@ -253,6 +280,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "crash-box/main.kcl",
     "multipleFiles": false,
     "title": "Crash-box with beam cutout and mounting holes",
@@ -263,6 +291,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "curtain-wall-anchor-plate/main.kcl",
     "multipleFiles": false,
     "title": "Curtain Wall Anchor Plate",
@@ -273,6 +302,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "cycloidal-gear/main.kcl",
     "multipleFiles": false,
     "title": "Cycloidal Gear",
@@ -283,6 +313,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "cylinder/main.kcl",
     "multipleFiles": false,
     "title": "Cylinder",
@@ -293,6 +324,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "desk-edge-stopper/main.kcl",
     "multipleFiles": false,
     "title": "Desk-Edge Stopper",
@@ -303,6 +335,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "dining-table/main.kcl",
     "multipleFiles": false,
     "title": "Dining Table",
@@ -313,6 +346,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "dodecahedron/main.kcl",
     "multipleFiles": false,
     "title": "Dodecahedron",
@@ -323,6 +357,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "enclosure/main.kcl",
     "multipleFiles": false,
     "title": "Enclosure",
@@ -333,6 +368,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "end-effector-gripper-fingers/main.kcl",
     "multipleFiles": false,
     "title": "End Effector Grippers",
@@ -343,6 +379,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "engine-valve/main.kcl",
     "multipleFiles": false,
     "title": "Engine Valve",
@@ -353,6 +390,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "exhaust-manifold/main.kcl",
     "multipleFiles": false,
     "title": "Exhaust Manifold",
@@ -363,6 +401,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "field-monitor-stand/main.kcl",
     "multipleFiles": false,
     "title": "Field monitor stand",
@@ -373,6 +412,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "flange/main.kcl",
     "multipleFiles": false,
     "title": "Flange",
@@ -383,6 +423,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "flat-bladed-impeller/main.kcl",
     "multipleFiles": false,
     "title": "Impeller (Flat-bladed)",
@@ -393,6 +434,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "focusrite-scarlett-mounting-bracket/main.kcl",
     "multipleFiles": false,
     "title": "A mounting bracket for the Focusrite Scarlett Solo audio interface",
@@ -403,6 +445,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "food-service-spatula/main.kcl",
     "multipleFiles": false,
     "title": "Food Service Spatula",
@@ -413,6 +456,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "french-press/main.kcl",
     "multipleFiles": false,
     "title": "French Press",
@@ -423,6 +467,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "gallows-bracket/main.kcl",
     "multipleFiles": true,
     "title": "Gallows Bracket",
@@ -434,6 +479,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "gear-rack/main.kcl",
     "multipleFiles": false,
     "title": "100mm Gear Rack",
@@ -444,6 +490,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "gingerbread-man/main.kcl",
     "multipleFiles": false,
     "title": "Gingerbread Man",
@@ -454,6 +501,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "gingerbread-man-cookie-cutter/main.kcl",
     "multipleFiles": false,
     "title": "Gingerbread Man Cookie Cutter",
@@ -464,6 +512,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "golf-tee/main.kcl",
     "multipleFiles": false,
     "title": "Golf Tee",
@@ -474,6 +523,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "gridfinity-baseplate/main.kcl",
     "multipleFiles": false,
     "title": "Gridfinity Baseplate",
@@ -484,6 +534,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "gridfinity-baseplate-magnets/main.kcl",
     "multipleFiles": false,
     "title": "Gridfinity Baseplate With Magnets",
@@ -494,6 +545,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "gridfinity-bins/main.kcl",
     "multipleFiles": false,
     "title": "Gridfinity Bins",
@@ -504,6 +556,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "gridfinity-bins-stacking-lip/main.kcl",
     "multipleFiles": false,
     "title": "Gridfinity Bins With A Stacking Lip",
@@ -514,6 +567,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "hammer/main.kcl",
     "multipleFiles": false,
     "title": "Claw Hammer",
@@ -524,6 +578,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "hand-trolley/main.kcl",
     "multipleFiles": true,
     "title": "Hand Trolley",
@@ -538,6 +593,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "helical-gear/main.kcl",
     "multipleFiles": false,
     "title": "Helical Gear",
@@ -548,6 +604,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "helical-planetary-gearset/main.kcl",
     "multipleFiles": false,
     "title": "Helical Planetary Gearset",
@@ -558,6 +615,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "helium-tank/main.kcl",
     "multipleFiles": false,
     "title": "Helium Tank",
@@ -568,6 +626,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "herringbone-gear/main.kcl",
     "multipleFiles": false,
     "title": "Herringbone Gear",
@@ -578,6 +637,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "herringbone-planetary-gearset/main.kcl",
     "multipleFiles": false,
     "title": "Herringbone Planetary Gearset",
@@ -588,6 +648,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "hex-nut/main.kcl",
     "multipleFiles": false,
     "title": "Hex Nut",
@@ -598,6 +659,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "hex-nut-with-chamfer/main.kcl",
     "multipleFiles": false,
     "title": "Hex Nut with Chamfered Ends and Through-Hole",
@@ -608,6 +670,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "holder-rod-angle/main.kcl",
     "multipleFiles": false,
     "title": "Holder for (shower) rod at a ~45° angle",
@@ -618,6 +681,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "i-beam/main.kcl",
     "multipleFiles": false,
     "title": "I-beam",
@@ -628,6 +692,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "inner-thread/main.kcl",
     "multipleFiles": false,
     "title": "Inner Thread",
@@ -638,6 +703,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "keyboard/main.kcl",
     "multipleFiles": false,
     "title": "Zoo Keyboard",
@@ -648,6 +714,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "kitt/main.kcl",
     "multipleFiles": false,
     "title": "Kitt",
@@ -658,6 +725,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "lego/main.kcl",
     "multipleFiles": false,
     "title": "Lego Brick",
@@ -668,6 +736,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "linear-shelf-system/main.kcl",
     "multipleFiles": false,
     "title": "Linear Shelf System",
@@ -678,6 +747,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "makeup-mirror/main.kcl",
     "multipleFiles": false,
     "title": "Makeup Mirror",
@@ -688,6 +758,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "manhole-cover/main.kcl",
     "multipleFiles": false,
     "title": "Vented Manhole Cover",
@@ -698,6 +769,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "marine-ladder/main.kcl",
     "multipleFiles": false,
     "title": "Marine Ladder",
@@ -708,6 +780,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "modular-shelf-grid/main.kcl",
     "multipleFiles": false,
     "title": "Modular Shelf Grid",
@@ -718,6 +791,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "mounting-plate/main.kcl",
     "multipleFiles": false,
     "title": "Mounting Plate",
@@ -728,6 +802,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "mug/main.kcl",
     "multipleFiles": false,
     "title": "Mug",
@@ -738,6 +813,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "multi-axis-robot/main.kcl",
     "multipleFiles": true,
     "title": "Robot Arm",
@@ -753,6 +829,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "parametric-shelf-unit/main.kcl",
     "multipleFiles": false,
     "title": "Parametric Shelf Unit",
@@ -763,6 +840,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "pdu-faceplate/main.kcl",
     "multipleFiles": false,
     "title": "Power Distribution Unit (PDU) faceplate with European plug sockets and switch",
@@ -773,6 +851,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "pergola/main.kcl",
     "multipleFiles": false,
     "title": "Stylized Pergola",
@@ -783,6 +862,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "pillow-block-bearing/main.kcl",
     "multipleFiles": true,
     "title": "Pillow Block Bearing",
@@ -796,6 +876,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "pipe/main.kcl",
     "multipleFiles": false,
     "title": "Pipe",
@@ -806,6 +887,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "pipe-flange-assembly/main.kcl",
     "multipleFiles": true,
     "title": "Pipe and Flange Assembly",
@@ -823,6 +905,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "pipe-manifold/main.kcl",
     "multipleFiles": false,
     "title": "Pipe manifold",
@@ -833,6 +916,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "pipe-with-bend/main.kcl",
     "multipleFiles": false,
     "title": "Pipe with bend",
@@ -843,6 +927,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "poopy-shoe/main.kcl",
     "multipleFiles": false,
     "title": "Poopy Shoe",
@@ -853,6 +938,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "propellant-line-brackets/main.kcl",
     "multipleFiles": false,
     "title": "Propellant Line Bracket",
@@ -863,6 +949,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "propeller/main.kcl",
     "multipleFiles": false,
     "title": "Ceiling Propeller",
@@ -873,6 +960,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "prosthetic-hip/main.kcl",
     "multipleFiles": false,
     "title": "Prosthetic Hip",
@@ -883,6 +971,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "rack-blanking-panel/main.kcl",
     "multipleFiles": false,
     "title": "Rack Blanking Panel - 1U",
@@ -893,6 +982,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "radial-flow-centrifugal-impeller/main.kcl",
     "multipleFiles": false,
     "title": "Impeller (Radial-flow)",
@@ -903,6 +993,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "rectangle-table/main.kcl",
     "multipleFiles": false,
     "title": "Rectangle Table",
@@ -913,6 +1004,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "round-table/main.kcl",
     "multipleFiles": false,
     "title": "Round Table",
@@ -923,6 +1015,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "router-template-cross-bar/main.kcl",
     "multipleFiles": false,
     "title": "Router template for a cross bar",
@@ -933,6 +1026,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "router-template-slate/main.kcl",
     "multipleFiles": false,
     "title": "Router Template for a Slate",
@@ -943,6 +1037,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "sash-window/main.kcl",
     "multipleFiles": false,
     "title": "Sash Window",
@@ -953,6 +1048,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "saturn-v/main.kcl",
     "multipleFiles": false,
     "title": "Saturn V Rocket",
@@ -963,6 +1059,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "scrub-daddy-holder/main.kcl",
     "multipleFiles": false,
     "title": "Scrub Daddy Sponge Holder",
@@ -973,6 +1070,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "shaft-grommet/main.kcl",
     "multipleFiles": false,
     "title": "Shaft Grommet",
@@ -983,6 +1081,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "sheet-metal-bracket/main.kcl",
     "multipleFiles": false,
     "title": "Sheet Metal Bracket",
@@ -993,6 +1092,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "shepherds-hook-bolt/main.kcl",
     "multipleFiles": false,
     "title": "Shepherd’s Hook Bolt",
@@ -1003,6 +1103,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "single-impeller-blade/main.kcl",
     "multipleFiles": false,
     "title": "Impeller Blade (Single)",
@@ -1013,6 +1114,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "sls/main.kcl",
     "multipleFiles": false,
     "title": "Artemis SLS Rocket",
@@ -1023,6 +1125,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "socket-head-cap-screw/main.kcl",
     "multipleFiles": false,
     "title": "Socket Head Cap Screw",
@@ -1033,6 +1136,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "sphere/main.kcl",
     "multipleFiles": false,
     "title": "Sphere",
@@ -1043,6 +1147,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "spinning-highrise-tower/main.kcl",
     "multipleFiles": false,
     "title": "Spinning Highrise Tower",
@@ -1053,6 +1158,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "split-washer-flat-version/main.kcl",
     "multipleFiles": false,
     "title": "Split Washer (Flat Version)",
@@ -1063,6 +1169,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "split-washer-spring-version/main.kcl",
     "multipleFiles": false,
     "title": "Split Washer (Spring Version)",
@@ -1073,6 +1180,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "spool/main.kcl",
     "multipleFiles": false,
     "title": "Spool",
@@ -1083,6 +1191,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "sprocket/main.kcl",
     "multipleFiles": false,
     "title": "Sprocket",
@@ -1093,6 +1202,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "spur-gear/main.kcl",
     "multipleFiles": false,
     "title": "Spur Gear",
@@ -1103,6 +1213,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "spur-reduction-gearset/main.kcl",
     "multipleFiles": false,
     "title": "Spur Reduction Gearset",
@@ -1113,6 +1224,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "starlink-mini-bracket/main.kcl",
     "multipleFiles": false,
     "title": "Starlink Mini Bracket",
@@ -1123,6 +1235,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "straight-rung-ladder/main.kcl",
     "multipleFiles": false,
     "title": "Straight Rung Ladder",
@@ -1133,6 +1246,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "stylized-car/main.kcl",
     "multipleFiles": false,
     "title": "Stylized Car",
@@ -1143,6 +1257,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "stylized-cybertruck/main.kcl",
     "multipleFiles": false,
     "title": "Stylized Cybertruck",
@@ -1153,6 +1268,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "stylized-dump-truck/main.kcl",
     "multipleFiles": false,
     "title": "Stylized Dump Truck",
@@ -1163,6 +1279,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "stylized-firetruck/main.kcl",
     "multipleFiles": false,
     "title": "Stylized Fire Truck",
@@ -1173,6 +1290,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "stylized-mini-bus/main.kcl",
     "multipleFiles": false,
     "title": "Stylized Mini-Bus",
@@ -1183,6 +1301,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "stylized-pickup-truck/main.kcl",
     "multipleFiles": false,
     "title": "Stylized Pickup Truck",
@@ -1193,6 +1312,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "surgical-drill-guide/main.kcl",
     "multipleFiles": false,
     "title": "Surgical Drill Guide",
@@ -1203,6 +1323,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "t-slot-frame/main.kcl",
     "multipleFiles": false,
     "title": "T-Slotted Rectangle Frame",
@@ -1213,6 +1334,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "t-slot-rail/main.kcl",
     "multipleFiles": false,
     "title": "T-Slotted Framing Rail",
@@ -1223,6 +1345,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "t-slot-rectangle/main.kcl",
     "multipleFiles": false,
     "title": "T-Slotted Rectangle Frame",
@@ -1233,6 +1356,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "t-slot-shelf/main.kcl",
     "multipleFiles": false,
     "title": "T-Slotted Rectangle Frame with Shelf",
@@ -1243,6 +1367,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "teapot/main.kcl",
     "multipleFiles": false,
     "title": "Teapot",
@@ -1253,6 +1378,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "telemetry-antenna/main.kcl",
     "multipleFiles": false,
     "title": "Aircraft telemetry antenna plate",
@@ -1263,6 +1389,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "thermal-block-insert/main.kcl",
     "multipleFiles": false,
     "title": "Thermal Block Insert",
@@ -1273,6 +1400,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "tooling-nest-block/main.kcl",
     "multipleFiles": false,
     "title": "Tooling Nest Block",
@@ -1283,6 +1411,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "torus/main.kcl",
     "multipleFiles": false,
     "title": "Torus",
@@ -1293,6 +1422,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "truss-structure/main.kcl",
     "multipleFiles": false,
     "title": "Truss Structure",
@@ -1303,6 +1433,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "tube-manifold/main.kcl",
     "multipleFiles": false,
     "title": "Tube manifold",
@@ -1313,6 +1444,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "utility-sink/main.kcl",
     "multipleFiles": false,
     "title": "Utility Sink",
@@ -1323,6 +1455,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "v-block/main.kcl",
     "multipleFiles": false,
     "title": "V-Block",
@@ -1333,6 +1466,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "walkie-talkie/main.kcl",
     "multipleFiles": true,
     "title": "Walkie Talkie",
@@ -1351,6 +1485,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "washer/main.kcl",
     "multipleFiles": false,
     "title": "Washer",
@@ -1361,6 +1496,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "wedge/main.kcl",
     "multipleFiles": false,
     "title": "Wedge",
@@ -1371,6 +1507,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "wind-turbine-blade-root-inserts/main.kcl",
     "multipleFiles": false,
     "title": "Wind Turbine Blade",
@@ -1381,6 +1518,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "wing-spar/main.kcl",
     "multipleFiles": false,
     "title": "Wing Spar",
@@ -1391,6 +1529,7 @@
   },
   {
     "file": "main.kcl",
+    "categories": [],
     "pathFromProjectDirectoryToFirstFile": "zoo-logo/main.kcl",
     "multipleFiles": false,
     "title": "Zoo Logo",
