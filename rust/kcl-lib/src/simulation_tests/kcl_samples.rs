@@ -266,7 +266,7 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
         return None;
     }
 
-    // Extract title and description from the first two lines
+    // Extract title, description, and categories from the first three lines
     let title = lines[0].trim_start_matches(COMMENT_PREFIX).trim().to_string();
     let description = lines[1].trim_start_matches(COMMENT_PREFIX).trim().to_string();
     let categories = if let Some(categories_line) = lines[2]
@@ -274,7 +274,7 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
         .trim()
         .strip_prefix("Categories: ")
     {
-        categories_line.split(',').map(|s| s.to_string()).collect()
+        categories_line.split(',').map(|s| s.trim().to_string()).collect()
     } else {
         Vec::new()
     };
