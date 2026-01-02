@@ -234,6 +234,7 @@ const COMMENT_PREFIX: &str = "//";
 #[serde(rename_all = "camelCase")]
 struct KclMetadata {
     file: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     categories: Vec<String>,
     path_from_project_directory_to_first_file: String,
     multiple_files: bool,
