@@ -79,6 +79,15 @@ export function RouteProvider({ children }: { children: ReactNode }) {
         return
       }
 
+      // ZOOKEEPER BEHAVIOR EXCEPTION
+      // If the changes are caused by Zookeeper, ignore. The files are bulk
+      // created, but because they are created one-by-one on disk, the system
+      // races between reading and execution.
+      // The mlEphantManagerMachine will set a special exception in kclManager.
+      // Why not pull the actor context in here? Because this RouteProvider
+      // is very high in the context tree, higher than mlEphant's.
+      if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem) return
+
       const isCurrentFile = loadedProject?.file?.path === path
       if (isCurrentFile) {
         if (window.electron) {
