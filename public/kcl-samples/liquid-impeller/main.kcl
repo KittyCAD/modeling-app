@@ -5,7 +5,7 @@
 @settings(defaultLengthUnit = in)
 
 // Define parameters
-impellerDiamter = 4
+impellerDiameter = 4
 plateHeight = 0.1
 vaneCount = 7
 vaneHeight = 0.3
@@ -25,9 +25,9 @@ mountingHole = startSketchOn(XY)
 // Revolve the base plate of the impeller
 basePlate = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> xLine(length = impellerDiamter / 2)
+  |> xLine(length = impellerDiameter / 2)
   |> yLine(length = plateHeight)
-  |> xLine(length = -impellerDiamter / 2.6, tag = $seg01)
+  |> xLine(length = -impellerDiameter / 2.6, tag = $seg01)
   |> tangentialArc(angle = -45deg, radius = plateHeight, tag = $seg02)
   |> angledLine(angle = tangentToEnd(seg02), endAbsoluteX = mountDiameter)
   |> xLine(endAbsolute = profileStartX())
@@ -40,10 +40,10 @@ basePlate = startSketchOn(XZ)
 
 // Model a vane of the impeller
 vane = startSketchOn(basePlate, face = seg01)
-  |> startProfile(at = polar(angle = 15, length = impellerDiamter / 2))
-  |> arc(angleStart = 0, angleEnd = -100, radius = impellerDiamter / 3)
+  |> startProfile(at = polar(angle = 15, length = impellerDiameter / 2))
+  |> arc(angleStart = 0, angleEnd = -100, radius = impellerDiameter / 3)
   |> tangentialArc(angle = -180deg, diameter = vaneThickness)
-  |> tangentialArc(angle = 100deg, radius = impellerDiamter / 3 - vaneThickness)
+  |> tangentialArc(angle = 100deg, radius = impellerDiameter / 3 - vaneThickness)
   |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = vaneHeight)
