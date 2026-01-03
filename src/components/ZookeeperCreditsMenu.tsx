@@ -25,6 +25,8 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
           error={props.billingContext.error}
           credits={props.billingContext.credits}
           allowance={props.billingContext.allowance}
+          paymentMethods={props.billingContext.paymentMethods}
+          userPaymentBalance={props.billingContext.userPaymentBalance}
         />
         {!props.billingContext.error && (
           <Tooltip
@@ -44,6 +46,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
           error={props.billingContext.error}
           credits={props.billingContext.credits}
           allowance={props.billingContext.allowance}
+          userPaymentBalance={props.billingContext.userPaymentBalance}
         />
       </Popover.Panel>
     </Popover>
