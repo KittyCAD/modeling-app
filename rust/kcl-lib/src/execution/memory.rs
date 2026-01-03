@@ -610,7 +610,7 @@ impl Stack {
         // Move the variables in the popped env into the current env.
         let env = self.memory.get_env(self.current_env.index());
         for (k, (e, v)) in old_env.as_mut().take_bindings() {
-            env.insert(k, e, v.map_env_ref(old.0, self.current_env.0), self.id);
+            env.insert(k, e, v.map_env_ref(old, self.current_env), self.id);
         }
     }
 
@@ -640,6 +640,52 @@ impl Stack {
         env.insert(key, self.memory.epoch.load(Ordering::Relaxed), value, self.id);
 
         Ok(())
+    }
+
+    /// Add a closure value to the program memory (in the current scope) such
+    /// that the closure can refer to itself. The value must not already exist.
+    /// This is one of the few functions in the memory module that needs to know
+    /// about the internals of KclValue so that it can fix up the placeholder
+    /// env ref in a function value.
+    pub fn add_recursive_closure(
+        &mut self,
+        key: String,
+        value: KclValue,
+        placeholder_env_ref: EnvironmentRef,
+        source_range: SourceRange,
+    ) -> Result<KclValue, KclError> {
+        let original_env = self.current_env;
+        let env = self.memory.get_env(self.current_env.index());
+        if env.contains_key(&key) {
+            return Err(KclError::new_value_already_defined(KclErrorDetails::new(
+                format!("Cannot redefine `{key}`"),
+                vec![source_range],
+            )));
+        }
+
+        self.memory.stats.mutation_count.fetch_add(1, Ordering::Relaxed);
+
+        // Add the value like a normal binding.
+        let epoch = self.current_epoch();
+        env.insert(key.clone(), epoch, value.clone(), self.id);
+
+        // Fix up the placeholder env ref now that the name is bound.
+        let fixed_env_ref = self.snapshot();
+        let fixed_closure = value.map_env_ref_and_epoch(placeholder_env_ref, fixed_env_ref);
+        // Update memory with the fixed closure.
+        let env = self.memory.get_env(original_env.index());
+        env.update(
+            &key,
+            |closure, _| {
+                *closure = fixed_closure.clone();
+            },
+            epoch,
+            self.id,
+        );
+
+        // Return the closure with the env ref placeholder properly pointing to
+        // the environment with the recursive binding.
+        Ok(fixed_closure)
     }
 
     /// Update a variable in memory. `key` must exist in memory. If it doesn't, this function will panic
@@ -828,9 +874,18 @@ impl EnvironmentRef {
         self.0 == usize::MAX
     }
 
-    pub fn replace_env(&mut self, old: usize, new: usize) {
-        if self.0 == old {
-            self.0 = new;
+    /// Replace only the env index if it matches `old`.
+    pub fn replace_env(&mut self, old: Self, new: Self) {
+        if self.0 == old.0 {
+            self.0 = new.0;
+        }
+    }
+
+    /// Replace if it matches `old`.
+    pub fn replace_env_and_epoch(&mut self, old: Self, new: Self) {
+        if self.0 == old.0 && self.1 == old.1 {
+            self.0 = new.0;
+            self.1 = new.1;
         }
     }
 }
@@ -912,7 +967,10 @@ mod env {
         /// Create a new environment, parent points to it's surrounding lexical scope or the std
         /// env if it's a root scope.
         pub(super) fn new(parent: Option<EnvironmentRef>, might_be_refed: bool, owner: usize) -> Self {
-            assert!(parent.map(|p| p.is_regular()).unwrap_or(true));
+            assert!(
+                parent.map(|p| p.is_regular()).unwrap_or(true),
+                "Parent env ref must be regular: {parent:?}"
+            );
             Self {
                 bindings: UnsafeCell::new(IndexMap::new()),
                 parent,
