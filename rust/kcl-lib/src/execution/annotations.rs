@@ -18,6 +18,7 @@ pub(crate) const SETTINGS: &str = "settings";
 pub(crate) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
 pub(crate) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
 pub(crate) const SETTINGS_VERSION: &str = "kclVersion";
+pub(crate) const SETTINGS_MATH_VERSION: &str = "mathVersion";
 pub(crate) const SETTINGS_EXPERIMENTAL_FEATURES: &str = "experimentalFeatures";
 
 pub(super) const NO_PRELUDE: &str = "no_std";
