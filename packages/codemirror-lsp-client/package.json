@@ -19,7 +19,7 @@
   "private": false,
   "dependencies": {
     "@codemirror/autocomplete": "6.20.0",
-    "@codemirror/language": "^6.11.3",
+    "@codemirror/language": "^6.12.1",
     "@codemirror/state": "^6.5.2",
     "@lezer/highlight": "^1.2.1",
     "@ts-stack/markdown": "^1.5.0",
