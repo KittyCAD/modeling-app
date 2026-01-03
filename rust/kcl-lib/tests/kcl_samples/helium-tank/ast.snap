@@ -8068,6 +8068,7 @@ description: Result of parsing helium-tank.kcl
         "preComments": [
           "// Helium Tank",
           "// A helium tank is a portable pressure vessel used to store and dispense helium gas for a variety of commercial and entertainment purposes",
+          "// Categories: Medical, Aerospace",
           "",
           "",
           "// Set units"

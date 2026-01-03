@@ -3664,6 +3664,7 @@ description: Result of parsing field-monitor-stand.kcl
         "preComments": [
           "// Field monitor stand",
           "// Stand for a Feelworld FW760 7 inch Field Monitor",
+          "// Categories: Computer Hardware",
           "",
           "",
           "// Set units"

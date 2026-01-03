@@ -1,5 +1,6 @@
 // PC Fan
 // A small axial fan, used to push or draw airflow over components to remove excess heat
+// Categories: Computer Hardware
 
 // Set units
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

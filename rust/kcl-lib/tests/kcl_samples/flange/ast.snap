@@ -2311,6 +2311,7 @@ description: Result of parsing flange.kcl
         "preComments": [
           "// Flange",
           "// A flange is a flat rim, collar, or rib, typically forged or cast, that is used to strengthen an object, guide it, or attach it to another object. Flanges are known for their use in various applications, including piping, plumbing, and mechanical engineering, among others.",
+          "// Categories: Construction",
           "",
           "",
           "// Set units"

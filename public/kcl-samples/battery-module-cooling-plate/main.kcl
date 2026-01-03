@@ -1,5 +1,6 @@
 // Battery Module Cooling Plates
 // A battery module cooling plate is a thermal management component used in battery packs—particularly in electric vehicles (EVs), energy storage systems, and other high-power applications—to regulate the temperature of individual battery cells or entire modules.
+// Categories: Automotive
 
 // Define units
 @settings(defaultLengthUnit = mm)

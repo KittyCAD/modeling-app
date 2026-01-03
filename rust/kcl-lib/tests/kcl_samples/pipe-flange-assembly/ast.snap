@@ -3319,6 +3319,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "preComments": [
           "// Pipe and Flange Assembly",
           "// A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint.",
+          "// Categories: Manufacturing, Construction",
           "",
           "",
           "// Set units"

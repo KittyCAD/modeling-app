@@ -1,5 +1,6 @@
 // Sash Window
 // A traditional wooden sash window with two vertically sliding panels and a central locking mechanism
+// Categories: Construction
 
 // Set units in millimeters (mm)
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

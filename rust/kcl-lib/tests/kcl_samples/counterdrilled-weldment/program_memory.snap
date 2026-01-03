@@ -413,10 +413,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 867,
-            "end": 888,
+            "commentStart": 910,
+            "end": 931,
             "moduleId": 0,
-            "start": 867,
+            "start": 910,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -427,10 +427,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 976,
-            "end": 997,
+            "commentStart": 1019,
+            "end": 1040,
             "moduleId": 0,
-            "start": 976,
+            "start": 1019,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -441,10 +441,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1099,
-            "end": 1120,
+            "commentStart": 1142,
+            "end": 1163,
             "moduleId": 0,
-            "start": 1099,
+            "start": 1142,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -455,10 +455,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1190,
-            "end": 1211,
+            "commentStart": 1233,
+            "end": 1254,
             "moduleId": 0,
-            "start": 1190,
+            "start": 1233,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
@@ -486,10 +486,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "tag": {
-              "commentStart": 867,
-              "end": 888,
+              "commentStart": 910,
+              "end": 931,
               "moduleId": 0,
-              "start": 867,
+              "start": 910,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -510,10 +510,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               -2.25
             ],
             "tag": {
-              "commentStart": 976,
-              "end": 997,
+              "commentStart": 1019,
+              "end": 1040,
               "moduleId": 0,
-              "start": 976,
+              "start": 1019,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -534,10 +534,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 1099,
-              "end": 1120,
+              "commentStart": 1142,
+              "end": 1163,
               "moduleId": 0,
-              "start": 1099,
+              "start": 1142,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -558,10 +558,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
               2.25
             ],
             "tag": {
-              "commentStart": 1190,
-              "end": 1211,
+              "commentStart": 1233,
+              "end": 1254,
               "moduleId": 0,
-              "start": 1190,
+              "start": 1233,
               "type": "TagDeclarator",
               "value": "rectangleSegmentD001"
             },
@@ -746,10 +746,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             -2.25
           ],
           "tag": {
-            "commentStart": 867,
-            "end": 888,
+            "commentStart": 910,
+            "end": 931,
             "moduleId": 0,
-            "start": 867,
+            "start": 910,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -770,10 +770,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             -2.25
           ],
           "tag": {
-            "commentStart": 976,
-            "end": 997,
+            "commentStart": 1019,
+            "end": 1040,
             "moduleId": 0,
-            "start": 976,
+            "start": 1019,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -794,10 +794,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 1099,
-            "end": 1120,
+            "commentStart": 1142,
+            "end": 1163,
             "moduleId": 0,
-            "start": 1099,
+            "start": 1142,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -818,10 +818,10 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             2.25
           ],
           "tag": {
-            "commentStart": 1190,
-            "end": 1211,
+            "commentStart": 1233,
+            "end": 1254,
             "moduleId": 0,
-            "start": 1190,
+            "start": 1233,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },

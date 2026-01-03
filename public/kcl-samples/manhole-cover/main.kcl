@@ -1,5 +1,6 @@
 // Vented Manhole Cover
 // Made of cast iron, these covers are strong enough to handle high-volume foot and vehicle traffic. Use them to cover manholes on roads, parking lots, or walkways. ADA Compliant—Covers that are ADA Compliant prevent narrow wheels from getting stuck since they have 1/2" wide slots.
+// Categories: Construction
 
 @settings(defaultLengthUnit = in)
 

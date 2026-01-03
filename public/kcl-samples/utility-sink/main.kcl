@@ -1,5 +1,6 @@
 // Utility Sink
 // A stainless steel sink unit with a configurable number of rectangular basins and under-counter storage compartments.
+// Categories: Manufacturing
 
 // Set units
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

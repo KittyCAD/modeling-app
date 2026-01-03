@@ -1,5 +1,6 @@
 // Field monitor stand
 // Stand for a Feelworld FW760 7 inch Field Monitor
+// Categories: Computer Hardware
 
 // Set units
 @settings(defaultLengthUnit = mm)

@@ -1,5 +1,6 @@
 // Aircraft telemetry antenna plate
 // Consists of a circular base plate 3 inches in diameter and 0.08 inches thick, with a tapered monopole antenna mounted at the top with a base diameter of 0.65 inches and height of 1.36 inches. Also consists of a mounting base and connector at the bottom of the plate. The plate also has 6 countersunk holes at a defined pitch circle diameter.
+// Categories: Aerospace
 
 // Set units
 @settings(defaultLengthUnit = in)

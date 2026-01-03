@@ -1,5 +1,6 @@
 // Helical Gear
 // A helical gear is a type of cylindrical gear where the teeth are slanted at an angle relative to the axis of rotation. This greatly reduces noise and wear when transmitting torque across meshed spinning gears
+// Categories: Automotive, Aerospace
 
 // Set units
 @settings(defaultLengthUnit = mm)

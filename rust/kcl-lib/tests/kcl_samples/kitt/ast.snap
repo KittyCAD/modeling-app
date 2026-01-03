@@ -800,6 +800,7 @@ description: Result of parsing kitt.kcl
         "preComments": [
           "// Kitt",
           "// The beloved KittyCAD mascot in a voxelized style.",
+          "// Categories: Maker",
           "",
           "",
           "// Pixel box function"

@@ -7070,6 +7070,7 @@ description: Result of parsing surgical-drill-guide.kcl
         "preComments": [
           "// Surgical Drill Guide",
           "// A surgical drill guide is a tool used in medical procedures to assist in drilling holes to a desired depth, ensuring proper orientation and minimizing intraosseal pressure",
+          "// Categories: Medical",
           "",
           "",
           "// Set units"

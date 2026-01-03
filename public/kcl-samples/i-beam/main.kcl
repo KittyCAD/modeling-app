@@ -1,5 +1,6 @@
 // I-beam
 // A structural metal beam with an I shaped cross section. Often used in construction and architecture
+// Categories: Construction
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)

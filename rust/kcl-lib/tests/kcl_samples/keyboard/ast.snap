@@ -14689,6 +14689,7 @@ description: Result of parsing keyboard.kcl
         "preComments": [
           "// Zoo Keyboard",
           "// A custom keyboard with Zoo brand lettering",
+          "// Categories: Maker",
           "",
           "",
           "// Set units"

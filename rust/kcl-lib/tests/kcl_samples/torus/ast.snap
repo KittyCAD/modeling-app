@@ -699,7 +699,19 @@ description: Result of parsing torus.kcl
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
-            "value": "A torus is defined by it's diameter and height.",
+            "value": "A torus is defined by its diameter and height.",
+            "style": "line"
+          }
+        },
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Categories: Maker",
             "style": "line"
           }
         },

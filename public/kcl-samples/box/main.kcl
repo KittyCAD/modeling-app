@@ -1,5 +1,6 @@
 // Box
 // A box is a rectangular prism defined by it's length, width, and height.
+// Categories: Maker
 
 @settings(defaultLengthUnit = mm)
 

@@ -1,5 +1,6 @@
 // Pipe manifold
 // A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Each port provides an attachment point for a threaded pipe fitting
+// Categories: Automotive, Aerospace, Construction, Manufacturing
 
 // Set units
 @settings(defaultLengthUnit = mm, experimentalFeatures = allow)

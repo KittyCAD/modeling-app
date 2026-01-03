@@ -1,5 +1,6 @@
 // Spur Reduction Gearset
 // A pair of spur gears meshed together, with an equal module and different number of teeth
+// Categories: Automotive, Aerospace
 
 // Set units
 @settings(defaultLengthUnit = mm)

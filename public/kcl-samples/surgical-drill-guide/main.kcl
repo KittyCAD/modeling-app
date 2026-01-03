@@ -1,5 +1,6 @@
 // Surgical Drill Guide
 // A surgical drill guide is a tool used in medical procedures to assist in drilling holes to a desired depth, ensuring proper orientation and minimizing intraosseal pressure
+// Categories: Medical
 
 // Set units
 @settings(defaultLengthUnit = mm)

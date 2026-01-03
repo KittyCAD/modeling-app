@@ -2453,6 +2453,7 @@ description: Result of parsing thermal-block-insert.kcl
         "preComments": [
           "// Thermal Block Insert",
           "// Interlocking insulation insert for masonry walls, designed with a tongue-and-groove profile for modular alignment and thermal efficiency",
+          "// Categories: Automotive, Computer Hardware",
           "",
           "",
           "// Set units in millimeters (mm)"

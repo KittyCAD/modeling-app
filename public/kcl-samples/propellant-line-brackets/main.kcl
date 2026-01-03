@@ -1,5 +1,6 @@
 // Propellant Line Bracket
 // A propellant line bracket is a mechanical support structure used to secure and stabilize propellant lines in an aerospace vehicle — such as a rocket, spacecraft, or launch platform. These brackets ensure that the fluid lines remain safely in place throughout the vehicle's lifecycle: during assembly, launch, flight, and possibly reentry or landing. These typically come with p-clamps or other types of clamping to secure the tubes.
+// Categories: Aerospace
 
 // Define units
 @settings(defaultLengthUnit = in)

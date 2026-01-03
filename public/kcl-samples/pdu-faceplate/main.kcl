@@ -1,5 +1,6 @@
 // Power Distribution Unit (PDU) faceplate with European plug sockets and switch
 // Designed for standard 19-inch rack systems with 1U height and 8 sockets
+// Categories: Computer Hardware
 
 // Set units in millimeters (mm)
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

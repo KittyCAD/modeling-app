@@ -9510,6 +9510,7 @@ description: Result of parsing prosthetic-hip.kcl
         "preComments": [
           "// Prosthetic Hip",
           "// A prosthetic hip is a surgically implanted ball-and-socket intended to replace a damaged or worn hip joint",
+          "// Categories: Medical",
           "",
           "",
           "// Set units"

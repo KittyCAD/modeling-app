@@ -1,5 +1,6 @@
 // Plate with countersunk holes
 // A small mounting plate with a countersunk hole at each end
+// Categories: Manufacturing, Construction
 
 // Set units
 @settings(defaultLengthUnit = in)

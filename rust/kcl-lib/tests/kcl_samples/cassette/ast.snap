@@ -3801,6 +3801,7 @@ description: Result of parsing cassette.kcl
         "preComments": [
           "// Sprocket Cassette",
           "// A sprocket cassette is a stack of individual sprockets that mount together on a splined hub to provide multiple gear ratios",
+          "// Categories: Automotive",
           "",
           "",
           "// Set Units"

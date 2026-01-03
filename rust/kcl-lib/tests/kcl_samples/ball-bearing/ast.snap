@@ -4195,6 +4195,7 @@ description: Result of parsing ball-bearing.kcl
         "preComments": [
           "// Ball Bearing",
           "// A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.",
+          "// Categories: Manufacturing, Automotive, Aerospace",
           "",
           "",
           "// Set units"

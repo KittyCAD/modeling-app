@@ -1,5 +1,6 @@
 // Sphere
 // A sphere is a primitive shape defined by its diameter.
+// Categories: Maker
 
 @settings(defaultLengthUnit = mm)
 

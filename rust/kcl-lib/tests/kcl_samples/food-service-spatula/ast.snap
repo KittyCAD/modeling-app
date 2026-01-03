@@ -7748,6 +7748,7 @@ description: Result of parsing food-service-spatula.kcl
         "preComments": [
           "// Food Service Spatula",
           "// Use these spatulas for mixing, flipping, and scraping.",
+          "// Categories: Maker",
           "",
           "",
           "// Set units"

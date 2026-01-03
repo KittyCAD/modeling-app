@@ -1,5 +1,6 @@
 // Spinning Highrise Tower
 // A conceptual high-rise tower with a central core and rotating floor slabs, demonstrating dynamic form through vertical repetition and transformation
+// Categories: Maker
 
 @settings(defaultLengthUnit = m, kclVersion = 1.0)
 

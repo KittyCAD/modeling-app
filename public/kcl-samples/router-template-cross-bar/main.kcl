@@ -1,5 +1,6 @@
 // Router template for a cross bar
 // A guide for routing a notch into a cross bar.
+// Categories: Construction
 
 // Set units
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

@@ -1,5 +1,6 @@
 // Enclosure
 // An enclosure body and sealing lid for storing items
+// Categories: Computer Hardware, Maker
 
 // Set units
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

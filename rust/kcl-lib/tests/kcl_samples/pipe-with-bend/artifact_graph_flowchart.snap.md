@@ -1,22 +1,22 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[444, 515, 0]"]
+    2["Path<br>[487, 558, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    3["Segment<br>[444, 515, 0]"]
+    3["Segment<br>[487, 558, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     4[Solid2d]
   end
   subgraph path5 [Path]
-    5["Path<br>[575, 646, 0]"]
+    5["Path<br>[618, 689, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    6["Segment<br>[575, 646, 0]"]
+    6["Segment<br>[618, 689, 0]"]
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     7[Solid2d]
   end
-  1["Plane<br>[367, 384, 0]"]
+  1["Plane<br>[410, 427, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  8["Sweep Revolve<br>[803, 852, 0]"]
+  8["Sweep Revolve<br>[846, 895, 0]"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   9[Wall]
     %% face_code_ref=Missing NodePath

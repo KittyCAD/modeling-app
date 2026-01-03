@@ -1,5 +1,6 @@
 // T-Slotted Framing Rail
 // A T-slotted framing rail, or T-slot extrusion, is a rectangular or square aluminum profile with a "T" shaped slot along one or more sides. These slots allow for easy attachment of various hardware components like brackets, connectors, and fasteners, making it a versatile and customizable framing system.
+// Categories: Manufacturing, Construction
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
