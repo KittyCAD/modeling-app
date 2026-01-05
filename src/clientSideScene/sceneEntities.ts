@@ -3004,6 +3004,7 @@ export class SceneEntities {
   ) {
     let snappedPoint: Coords2d = [pos.x, pos.y]
 
+    // Note: these could also be calculated without intersects, just by using the mouse position coordinates
     const intersectsYAxis = intersects.find(
       (sceneObject) => sceneObject.object.name === Y_AXIS
     )
