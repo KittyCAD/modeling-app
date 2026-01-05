@@ -2441,6 +2441,20 @@ test([0, 0])
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_max_stack_size_exceeded_error() {
+        let ast = r#"
+fn forever(@n) {
+  return 1 + forever(n)
+}
+
+forever(1)
+"#;
+        let result = parse_execute(ast).await;
+        let err = result.unwrap_err();
+        assert!(err.to_string().contains("stack size exceeded"), "actual: {:?}", err);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_doubly_nested_parens() {
         let ast = r#"sigmaAllow = 35000 // psi
 width = 4 // inch
