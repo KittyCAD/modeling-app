@@ -232,6 +232,22 @@ impl FunctionSource {
         args: Args<Sugary>,
         callsite: SourceRange,
     ) -> Result<Option<KclValueControlFlow>, KclError> {
+        exec_state.inc_call_stack_size(callsite)?;
+
+        let result = self.inner_call_kw(fn_name, exec_state, ctx, args, callsite).await;
+
+        exec_state.dec_call_stack_size(callsite)?;
+        result
+    }
+
+    async fn inner_call_kw(
+        &self,
+        fn_name: Option<String>,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+        args: Args<Sugary>,
+        callsite: SourceRange,
+    ) -> Result<Option<KclValueControlFlow>, KclError> {
         if self.deprecated {
             exec_state.warn(
                 CompilationError::err(
@@ -348,7 +364,7 @@ impl FunctionSource {
         // - put this `prev_inside_stdlib` value back.
         // - called the pop_env.
         let result = match &self.body {
-            FunctionBody::Rust(f) => f(exec_state, args).await.map(|r| Some(r.continue_())),
+            FunctionBody::Rust(f) => f(exec_state, args).await.map(Some),
             FunctionBody::Kcl(_) => {
                 if let Err(e) = assign_args_to_params_kw(self, args, exec_state) {
                     exec_state.mod_local.inside_stdlib = prev_inside_stdlib;

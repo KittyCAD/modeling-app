@@ -577,4 +577,131 @@ profile003 = startProfile(sketch001, at = [0, -4.93])
       await editor.expectEditor.not.toContain('plane001 =')
     })
   })
+
+  test('User can edit sketch via right-click context menu when sketch is on face', async ({
+    homePage,
+    scene,
+    toolbar,
+    cmdBar,
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `@settings(defaultLengthUnit = mm)
+
+// Define dimensions
+controllerWidth = 102
+controllerHeight = 173
+controllerDepth = 14
+
+dpadSize = 20
+
+controllerBody = startSketchOn(XY)
+  |> startProfile(at = [
+       -controllerWidth / 2,
+       -controllerHeight / 2
+     ])
+  |> xLine(length = controllerWidth)
+  |> yLine(length = controllerHeight)
+  |> xLine(length = -controllerWidth)
+  |> close()
+  |> extrude(length = controllerDepth)
+
+// Simplified D-pad as a single rectangle
+test = startSketchOn(controllerBody, face = END)
+  |> startProfile(at = [-dpadSize / 2, -dpadSize / 2])
+  |> xLine(length = dpadSize)
+  |> yLine(length = dpadSize)
+  |> xLine(length = -dpadSize)
+  |> close()
+  |> extrude(length = 2)
+`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+    await toolbar.openFeatureTreePane()
+
+    await test.step('right-click on second sketch and select Edit', async () => {
+      // Get the second sketch (index 1) - the "test" sketch on controllerBody
+      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 1)
+      await sketchOperation.click({ button: 'right' })
+
+      // Click the Edit menu item from the context menu
+      const editMenuItem = page.getByRole('button', { name: 'Edit' })
+      await expect(editMenuItem).toBeVisible()
+      await editMenuItem.click()
+
+      // Wait for animation to complete
+      await page.waitForTimeout(600)
+    })
+
+    await test.step('verify we entered sketch mode', async () => {
+      await expect(
+        toolbar.exitSketchBtn,
+        'We should be in sketch mode now'
+      ).toBeVisible()
+      await expect(toolbar.exitSketchBtn).not.toBeDisabled()
+    })
+
+    await test.step('exit sketch mode', async () => {
+      await toolbar.exitSketchBtn.click()
+      await expect(toolbar.startSketchBtn).toBeVisible()
+    })
+  })
+
+  test('User can edit sketch via feature tree when sketch is used in patternLinear2d', async ({
+    homePage,
+    scene,
+    toolbar,
+    cmdBar,
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-3.75, 3.75])
+  |> line(end = [-4.98, -8.91])
+  |> line(end = [5.5, 1.5])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(instances = 3, distance = 10, axis = [1, 0])
+`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+    await toolbar.openFeatureTreePane()
+
+    await test.step('double-click on sketch to enter edit mode', async () => {
+      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
+      await sketchOperation.dblclick()
+
+      // Wait for animation to complete
+      await page.waitForTimeout(600)
+    })
+
+    await test.step('verify we entered sketch mode', async () => {
+      await expect(
+        toolbar.exitSketchBtn,
+        'We should be in sketch mode now'
+      ).toBeVisible()
+      await expect(toolbar.exitSketchBtn).not.toBeDisabled()
+    })
+
+    await test.step('verify segment overlays are visible', async () => {
+      // The sketch has 3 line segments plus close, so we expect 4 segment overlays
+      const segmentOverlays = page.getByTestId('segment-overlay')
+      await expect(segmentOverlays).toHaveCount(4, { timeout: 5000 })
+    })
+
+    await test.step('exit sketch mode', async () => {
+      await toolbar.exitSketchBtn.click()
+      await expect(toolbar.startSketchBtn).toBeVisible()
+    })
+  })
 })

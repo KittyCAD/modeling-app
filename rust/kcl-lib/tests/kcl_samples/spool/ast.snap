@@ -3704,6 +3704,7 @@ description: Result of parsing spool.kcl
         "preComments": [
           "// Spool",
           "// A spool is a winding device for storing large batches of filament, wire, tape, etc",
+          "// Categories: Manufacturing, Construction",
           "",
           "",
           "// Set units"
