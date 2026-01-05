@@ -1386,6 +1386,10 @@ pub struct SketchBlock {
     pub arguments: Vec<LabeledArg>,
     pub body: Node<Block>,
 
+    /// Transient field to indicate whether the sketch block is being edited.
+    #[serde(skip)]
+    pub is_being_edited: bool,
+
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
 

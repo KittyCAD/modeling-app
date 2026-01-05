@@ -47,7 +47,7 @@ export const UpdaterRestartModal = ({
           Element="button"
           onClick={() => onResolve({ wantRestart: true })}
           iconStart={{
-            icon: 'arrowRight',
+            icon: 'arrowShortRight',
             bgClassName: 'dark:bg-chalkboard-80',
           }}
           className="dark:hover:bg-chalkboard-80/50"

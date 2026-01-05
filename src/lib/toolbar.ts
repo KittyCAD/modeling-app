@@ -11,6 +11,7 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
@@ -39,7 +40,10 @@ export type ToolbarItem = {
   iconColor?: string
   alwaysDark?: true
   status: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
-  disabled?: (state: StateFrom<typeof modelingMachine>) => boolean
+  disabled?: (
+    state: StateFrom<typeof modelingMachine>,
+    wasmInstance: ModuleType
+  ) => boolean
   disableHotkey?: (state: StateFrom<typeof modelingMachine>) => boolean
   title: string | ((props: ToolbarItemCallbackProps) => string)
   showTitle?: boolean
@@ -710,7 +714,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             state.matches({ Sketch: 'SketchIdle' }) ||
             state.matches('Sketch no face')
           ),
-        icon: 'arrowLeft',
+        icon: 'arrowShortLeft',
         status: 'available',
         title: 'Exit sketch',
         showTitle: true,
@@ -793,11 +797,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 (!isEditingExistingSketch({
                   sketchDetails: state.context.sketchDetails,
                   kclManager: state.context.kclManager,
+                  wasmInstance: state.context.wasmInstance,
                 }) &&
                   !state.matches({ Sketch: 'Tangential arc to' })) ||
                 pipeHasCircle({
                   sketchDetails: state.context.sketchDetails,
                   kclManager: state.context.kclManager,
+                  wasmInstance: state.context.wasmInstance,
                 })
               )
             },
@@ -805,6 +811,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               return !isEditingExistingSketch({
                 sketchDetails: state.context.sketchDetails,
                 kclManager: state.context.kclManager,
+                wasmInstance: state.context.wasmInstance,
               }) && !state.matches({ Sketch: 'Tangential arc to' })
                 ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."
                 : undefined
@@ -964,7 +971,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         array: [
           {
             id: 'constraint-length',
-            disabled: (state) =>
+            disabled: (state, wasmInstance) =>
               !(
                 state.matches({ Sketch: 'SketchIdle' }) &&
                 state.can({
@@ -973,7 +980,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                     selection: state.context.selectionRanges,
                     // dummy data is okay for checking if the constrain is possible
                     length: {
-                      valueAst: createLiteral(1),
+                      valueAst: createLiteral(1, wasmInstance),
                       valueText: '1',
                       valueCalculated: '1',
                     },
@@ -1236,7 +1243,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           modelingSend({
             type: 'Exit sketch',
           }),
-        icon: 'arrowLeft',
+        icon: 'arrowShortLeft',
         status: 'available',
         title: 'Exit sketch',
         showTitle: true,
@@ -1279,12 +1286,33 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'oneDot',
         status: 'available',
         title: 'Point',
-        hotkey: 'L',
+        hotkey: 'P',
         description: 'Start drawing straight points',
         links: [],
         isActive: (state) =>
           state.matches('sketchSolveMode') &&
           state.context.sketchSolveToolName === 'pointTool',
+      },
+      {
+        id: 'center-arc',
+        onClick: ({ modelingSend, isActive }) =>
+          isActive
+            ? modelingSend({
+                type: 'unequip tool',
+              })
+            : modelingSend({
+                type: 'equip tool',
+                data: { tool: 'centerArcTool' },
+              }),
+        icon: 'arcCenter',
+        status: 'available',
+        title: 'Center Arc',
+        hotkey: 'A',
+        description: 'Draw an arc by center and two endpoints',
+        links: [],
+        isActive: (state) =>
+          state.matches('sketchSolveMode') &&
+          state.context.sketchSolveToolName === 'centerArcTool',
       },
       'break',
       {
@@ -1296,7 +1324,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'coincident',
         status: 'available',
         title: 'Coincident',
-        hotkey: 'L',
+        hotkey: 'C',
         description: 'Constrain points or curves to be coincident',
         links: [],
         isActive: (state) => false,
@@ -1310,7 +1338,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'parallel',
         status: 'available',
         title: 'Parallel',
-        hotkey: 'L',
+        hotkey: 'Shift+P',
         description: 'Constrain lines or curves to be parallel',
         links: [],
         isActive: (state) => false,
@@ -1324,7 +1352,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'equal',
         status: 'available',
         title: 'Equal Length',
-        hotkey: 'L',
+        hotkey: 'E',
         description: 'Constrain lines to have equal length',
         links: [],
         isActive: (state) => false,
@@ -1338,7 +1366,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'vertical',
         status: 'available',
         title: 'Vertical',
-        hotkey: 'L',
+        hotkey: 'V',
         description: 'Constrain lines to be vertical',
         links: [],
         isActive: (state) => false,
@@ -1352,7 +1380,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'horizontal',
         status: 'available',
         title: 'Horizontal',
-        hotkey: 'L',
+        hotkey: 'H',
         description: 'Constrain lines to be horizontal',
         links: [],
         isActive: (state) => false,
@@ -1366,11 +1394,45 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'dimension',
         status: 'available',
         title: 'Distance',
-        hotkey: 'L',
+        hotkey: 'D',
         description: 'Constrain distance between points or lines',
         links: [],
         isActive: (state) => false,
       },
     ],
   },
+}
+
+/**
+ * Derives a map of sketchSolve tool names to their icon names from the toolbar config.
+ * This ensures a single source of truth for tool-to-icon mappings.
+ * Extracts tool names by parsing the isActive function which references state.context.sketchSolveToolName.
+ */
+export function getSketchSolveToolIconMap(): Record<string, CustomIconName> {
+  const map: Record<string, CustomIconName> = {}
+  const items = toolbarConfig.sketchSolve.items
+
+  for (const item of items) {
+    // Skip 'break' strings
+    if (typeof item === 'string') continue
+
+    // Skip dropdowns (which don't have direct icons)
+    if ('array' in item) continue
+
+    // Now TypeScript knows item is ToolbarItem
+    // Only process items that have an icon and an isActive function (which indicates it's a tool)
+    if (item.icon && item.isActive) {
+      // Extract tool name from isActive function string representation
+      // The isActive function references the tool name like: state.context.sketchSolveToolName === 'toolName'
+      const isActiveStr = item.isActive.toString()
+      const toolNameMatch = isActiveStr.match(
+        /sketchSolveToolName\s*===\s*['"]([^'"]+)['"]/
+      )
+      if (toolNameMatch && toolNameMatch[1]) {
+        map[toolNameMatch[1]] = item.icon
+      }
+    }
+  }
+
+  return map
 }

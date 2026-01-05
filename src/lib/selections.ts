@@ -73,6 +73,7 @@ import toast from 'react-hot-toast'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -154,7 +155,8 @@ export async function getEventForSelectWithPoint(
 export function getEventForSegmentSelection(
   obj: Object3D<Object3DEventMap>,
   ast: Node<Program>,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
 ): ModelingMachineEvent | null {
   const group = getParentGroup(obj, SEGMENT_BODIES_PLUS_PROFILE_START)
   const axisGroup = getParentGroup(obj, [AXIS_GROUP])
@@ -182,7 +184,11 @@ export function getEventForSegmentSelection(
   const id = segWithMatchingPathToNode__Id
 
   if (!id && group) {
-    const node = getNodeFromPath<Expr>(ast, group.userData.pathToNode)
+    const node = getNodeFromPath<Expr>(
+      ast,
+      group.userData.pathToNode,
+      wasmInstance
+    )
     if (err(node)) return null
     return {
       type: 'Set selection',
@@ -200,7 +206,11 @@ export function getEventForSegmentSelection(
   if (!id || !group) return null
   const artifact = artifactGraph.get(id)
   if (!artifact) return null
-  const node = getNodeFromPath<Expr>(ast, group.userData.pathToNode)
+  const node = getNodeFromPath<Expr>(
+    ast,
+    group.userData.pathToNode,
+    wasmInstance
+  )
   if (err(node)) return null
   return {
     type: 'Set selection',
@@ -231,6 +241,7 @@ export function handleSelectionBatch({
   systemDeps: {
     sceneEntitiesManager: SceneEntities
     engineCommandManager: ConnectionManager
+    wasmInstance: ModuleType
   }
 }): {
   engineEvents: WebSocketRequest[]
@@ -304,6 +315,7 @@ export function processCodeMirrorRanges({
   systemDeps: {
     sceneEntitiesManager: SceneEntities
     engineCommandManager: ConnectionManager
+    wasmInstance: ModuleType
   }
 }): null | {
   modelingEvent: ModelingMachineEvent
@@ -391,8 +403,10 @@ function updateSceneObjectColors(
   ast: Node<Program>,
   {
     sceneEntitiesManager,
+    wasmInstance,
   }: {
     sceneEntitiesManager: SceneEntities
+    wasmInstance: ModuleType
   }
 ) {
   const updated = ast
@@ -402,6 +416,7 @@ function updateSceneObjectColors(
     const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(
       updated,
       segmentGroup.userData.pathToNode,
+      wasmInstance,
       ['CallExpressionKw']
     )
     if (err(nodeMeta)) return
@@ -801,7 +816,8 @@ export function updateSelections(
   pathToNodeMap: PathToNodeMap,
   prevSelectionRanges: Selections,
   ast: Program | Error,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
 ): Selections | Error {
   if (err(ast)) return ast
 
@@ -809,7 +825,7 @@ export function updateSelections(
     .map(([index, pathToNode]): Selection | undefined => {
       const previousSelection =
         prevSelectionRanges.graphSelections[Number(index)]
-      const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
+      const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode, wasmInstance)
       if (err(nodeMeta)) return undefined
       const node = nodeMeta.node
       let artifact: Artifact | null = null
@@ -840,7 +856,7 @@ export function updateSelections(
   // for when there is no artifact (sketch mode since mock execute does not update artifactGraph)
   const pathToNodeBasedSelections: Selections['graphSelections'] = []
   for (const pathToNode of Object.values(pathToNodeMap)) {
-    const node = getNodeFromPath<Expr>(ast, pathToNode)
+    const node = getNodeFromPath<Expr>(ast, pathToNode, wasmInstance)
     if (err(node)) return node
     pathToNodeBasedSelections.push({
       codeRef: {
@@ -1124,6 +1140,7 @@ export async function selectionBodyFace(
     sceneInfra: SceneInfra
     rustContext: RustContext
     sceneEntitiesManager: SceneEntities
+    wasmInstance: ModuleType
   }
 ): Promise<ExtrudeFacePlane | undefined> {
   const { sceneInfra } = systemDeps
@@ -1192,7 +1209,12 @@ export async function selectionBodyFace(
   const { z_axis, y_axis, origin } = faceInfo
   const sketchPathToNode = err(codeRef) ? [] : codeRef.pathToNode
 
-  const edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph)
+  const edgeCutMeta = getEdgeCutMeta(
+    artifact,
+    ast,
+    artifactGraph,
+    systemDeps.wasmInstance
+  )
   const _faceInfo: ExtrudeFacePlane['faceInfo'] = edgeCutMeta
     ? edgeCutMeta
     : artifact.type === 'cap'
@@ -1212,10 +1234,12 @@ export async function selectionBodyFace(
     { type: 'sweep', ...extrusion },
     artifactGraph
   )
-  const lastChildVariable = getLastVariable(children, ast, [
-    'sweep',
-    'compositeSolid',
-  ])
+  const lastChildVariable = getLastVariable(
+    children,
+    ast,
+    systemDeps.wasmInstance,
+    ['sweep', 'compositeSolid']
+  )
   const extrudePathToNode =
     lastChildVariable && !err(lastChildVariable)
       ? lastChildVariable.pathToNode

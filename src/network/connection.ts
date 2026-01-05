@@ -27,7 +27,7 @@ import {
 } from '@src/network/websocketConnection'
 import { EngineDebugger } from '@src/lib/debugger'
 import { promiseFactory, uuidv4 } from '@src/lib/utils'
-import { withWebSocketURL } from '@src/lib/withBaseURL'
+import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   WebSocketRequest,
   WebSocketResponse,
@@ -151,7 +151,7 @@ export class Connection extends EventTarget {
   }
 
   connectUnitTesting(callback: () => void) {
-    const url = withWebSocketURL(
+    const url = withKittycadWebSocketURL(
       `?video_res_width=${256}&video_res_height=${256}`
     )
     this.websocket = new WebSocket(url, [])

@@ -156,7 +156,8 @@ description: Artifact commands sketch_in_object.kcl
         "distance": -10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {
@@ -344,7 +345,8 @@ description: Artifact commands sketch_in_object.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "body_type": "solid"
       }
     },
     {

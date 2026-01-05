@@ -75,7 +75,7 @@ export async function executeAst({
   path?: string
 }): Promise<ExecutionResult> {
   try {
-    const settings = await jsAppSettings()
+    const settings = await jsAppSettings(rustContext.settingsActor)
     const execState = await rustContext.execute(ast, settings, path)
     await rustContext.waitForAllEngineCommands()
     return {
@@ -101,7 +101,7 @@ export async function executeAstMock({
   usePrevMemory?: boolean
 }): Promise<ExecutionResult> {
   try {
-    const settings = await jsAppSettings()
+    const settings = await jsAppSettings(rustContext.settingsActor)
     const execState = await rustContext.executeMock(
       ast,
       settings,
@@ -179,7 +179,7 @@ export async function lintAst({
 }: {
   ast: Program
   sourceCode: string
-  instance?: ModuleType
+  instance: ModuleType
 }): Promise<Array<Diagnostic>> {
   try {
     const discovered_findings = await kclLint(ast, instance)

@@ -6,6 +6,7 @@ import { joinOSPaths } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import toast from 'react-hot-toast'
@@ -134,7 +135,11 @@ export enum SystemIOMachineGuards {
 
 export const NO_PROJECT_DIRECTORY = ''
 
-export type SystemIOContext = {
+export type SystemIOInput = {
+  wasmInstancePromise: Promise<ModuleType>
+}
+
+export type SystemIOContext = SystemIOInput & {
   /** Only store folders under the projectDirectory, do not maintain folders outside this directory */
   folders: Project[]
   /** For this machines runtime, this is the default string when creating a project

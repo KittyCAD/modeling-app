@@ -1,10 +1,10 @@
 import toast from 'react-hot-toast'
 
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { rustContext } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { getModule, reloadModule } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
+import type RustContext from '@src/lib/rustContext'
 
 let initialized = false
 
@@ -14,7 +14,10 @@ let initialized = false
  * the global/DOM level. This will have to interface with whatever controlflow that needs to be picked up
  * within the error branch in the typescript to cover the application state.
  */
-export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
+export const initializeWindowExceptionHandler = (
+  kclManager: KclManager,
+  rustContext: RustContext
+) => {
   if (window && !initialized) {
     window.addEventListener('error', (event) => {
       void (async () => {
@@ -43,7 +46,7 @@ export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
              * ^-- this is the block of code that returns which prevents it from running a new execute
              */
             await rustContext?.clearSceneAndBustCache(
-              await jsAppSettings(),
+              await jsAppSettings(rustContext.settingsActor),
               undefined
             )
           } catch (e) {

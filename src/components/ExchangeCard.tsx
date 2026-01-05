@@ -4,7 +4,7 @@ import { Thinking } from '@src/components/Thinking'
 import {
   type Exchange,
   isMlCopilotUserRequest,
-} from '@src/machines/mlEphantManagerMachine2'
+} from '@src/machines/mlEphantManagerMachine'
 import ms from 'ms'
 import {
   useEffect,

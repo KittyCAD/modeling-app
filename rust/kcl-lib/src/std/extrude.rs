@@ -14,7 +14,7 @@ use kcmc::{
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
-    shared::{Angle, ExtrudeMethod, Point2d},
+    shared::{Angle, BodyType, ExtrudeMethod, Point2d},
 };
 use uuid::Uuid;
 
@@ -22,7 +22,8 @@ use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, ProfileClosed, Sketch,
+        SketchSurface, Solid,
         types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -58,6 +59,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let twist_center: Option<[TyF64; 2]> = args.get_kw_arg_opt("twistCenter", &RuntimeType::point2d(), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let method: Option<String> = args.get_kw_arg_opt("method", &RuntimeType::string(), exec_state)?;
+    let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
 
     let result = inner_extrude(
         sketches,
@@ -72,6 +74,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         twist_center,
         tolerance,
         method,
+        body_type,
         exec_state,
         args,
     )
@@ -94,9 +97,19 @@ async fn inner_extrude(
     twist_center: Option<[TyF64; 2]>,
     tolerance: Option<TyF64>,
     method: Option<String>,
+    body_type: Option<BodyType>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    let body_type = body_type.unwrap_or_default();
+
+    if matches!(body_type, BodyType::Solid) && sketches.iter().any(|sk| matches!(sk.is_closed, ProfileClosed::No)) {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot solid extrude an open profile. Either close the profile, or use a surface extrude.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
     // Extrude the element(s).
     let mut solids = Vec::new();
     let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
@@ -159,6 +172,7 @@ async fn inner_extrude(
                     total_rotation_angle,
                     angle_step_size,
                     tolerance,
+                    body_type,
                 })
             }
             (None, None, None, Some(length), None) => ModelingCmd::from(mcmd::Extrude {
@@ -167,6 +181,7 @@ async fn inner_extrude(
                 faces: Default::default(),
                 opposite: opposite.clone(),
                 extrude_method,
+                body_type,
             }),
             (None, None, None, None, Some(to)) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(mcmd::ExtrudeToReference {
@@ -180,6 +195,7 @@ async fn inner_extrude(
                     },
                     faces: Default::default(),
                     extrude_method,
+                    body_type,
                 }),
                 Point3dAxis3dOrGeometryReference::Axis { direction, origin } => {
                     ModelingCmd::from(mcmd::ExtrudeToReference {
@@ -198,6 +214,7 @@ async fn inner_extrude(
                         },
                         faces: Default::default(),
                         extrude_method,
+                        body_type,
                     })
                 }
                 Point3dAxis3dOrGeometryReference::Plane(plane) => {
@@ -223,6 +240,7 @@ async fn inner_extrude(
                         reference: ExtrudeReference::EntityReference { entity_id: plane_id },
                         faces: Default::default(),
                         extrude_method,
+                        body_type,
                     })
                 }
                 Point3dAxis3dOrGeometryReference::Edge(edge_ref) => {
@@ -232,6 +250,7 @@ async fn inner_extrude(
                         reference: ExtrudeReference::EntityReference { entity_id: edge_id },
                         faces: Default::default(),
                         extrude_method,
+                        body_type,
                     })
                 }
                 Point3dAxis3dOrGeometryReference::Face(face_tag) => {
@@ -241,6 +260,7 @@ async fn inner_extrude(
                         reference: ExtrudeReference::EntityReference { entity_id: face_id },
                         faces: Default::default(),
                         extrude_method,
+                        body_type,
                     })
                 }
                 Point3dAxis3dOrGeometryReference::Sketch(sketch_ref) => ModelingCmd::from(mcmd::ExtrudeToReference {
@@ -250,12 +270,14 @@ async fn inner_extrude(
                     },
                     faces: Default::default(),
                     extrude_method,
+                    body_type,
                 }),
                 Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(mcmd::ExtrudeToReference {
                     target: sketch.id.into(),
                     reference: ExtrudeReference::EntityReference { entity_id: solid.id },
                     faces: Default::default(),
                     extrude_method,
+                    body_type,
                 }),
                 Point3dAxis3dOrGeometryReference::TaggedEdgeOrFace(tag) => {
                     let tagged_edge_or_face = args.get_tag_engine_info(exec_state, tag)?;
@@ -267,6 +289,7 @@ async fn inner_extrude(
                         },
                         faces: Default::default(),
                         extrude_method,
+                        body_type,
                     })
                 }
             },
@@ -314,6 +337,7 @@ async fn inner_extrude(
                 &args,
                 None,
                 None,
+                body_type,
             )
             .await?,
         );
@@ -339,6 +363,7 @@ pub(crate) async fn do_post_extrude<'a>(
     args: &Args,
     edge_id: Option<Uuid>,
     clone_id_map: Option<&HashMap<Uuid, Uuid>>, // old sketch id -> new sketch id
+    body_type: BodyType,
 ) -> Result<Solid, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
@@ -380,7 +405,12 @@ pub(crate) async fn do_post_extrude<'a>(
     }
 
     let mut sketch = sketch.clone();
-    sketch.is_closed = true;
+    match body_type {
+        BodyType::Solid => {
+            sketch.is_closed = ProfileClosed::Explicitly;
+        }
+        BodyType::Surface => {}
+    }
 
     // If we were sketching on a face, we need the original face id.
     if let SketchSurface::Face(ref face) = sketch.on {

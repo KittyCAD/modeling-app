@@ -22,11 +22,12 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
-        Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
+        ProfileClosed, Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
     std::{
+        EQUAL_POINTS_DIST_EPSILON,
         args::{Args, TyF64},
         axis_or_reference::Axis2dOrEdgeReference,
         planes::inner_plane_of,
@@ -361,6 +362,9 @@ async fn straight_line(
         [from.x + point[0], from.y + point[1]]
     };
 
+    // Does it loop back on itself?
+    let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
+
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.ignore_units(),
@@ -378,10 +382,19 @@ async fn straight_line(
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
+    }
 
     new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
+}
+
+fn does_segment_close_sketch(end: [f64; 2], from: [f64; 2]) -> bool {
+    let same_x = (end[0] - from[0]).abs() < EQUAL_POINTS_DIST_EPSILON;
+    let same_y = (end[1] - from[1]).abs() < EQUAL_POINTS_DIST_EPSILON;
+    same_x && same_y
 }
 
 /// Draw a line on the x-axis.
@@ -561,6 +574,7 @@ async fn inner_angled_line_length(
     let relative = true;
 
     let to: [f64; 2] = [from.x + delta[0], from.y + delta[1]];
+    let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
 
     let id = exec_state.next_uuid();
 
@@ -596,6 +610,9 @@ async fn inner_angled_line_length(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -1203,7 +1220,7 @@ pub(crate) async fn inner_start_profile(
             Default::default()
         },
         start: current_path,
-        is_closed: false,
+        is_closed: ProfileClosed::No,
     };
     Ok(sketch)
 }
@@ -1260,7 +1277,7 @@ pub(crate) async fn inner_close(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    if sketch.is_closed {
+    if matches!(sketch.is_closed, ProfileClosed::Explicitly) {
         exec_state.warn(
             crate::CompilationError {
                 source_range: args.source_range,
@@ -1320,7 +1337,7 @@ pub(crate) async fn inner_close(
         );
     }
 
-    new_sketch.is_closed = true;
+    new_sketch.is_closed = ProfileClosed::Explicitly;
 
     Ok(new_sketch)
 }
@@ -1425,6 +1442,7 @@ pub async fn absolute_arc(
 
     let start = [from.x, from.y];
     let end = point_to_len_unit(end_absolute, from.units);
+    let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
 
     let current_path = Path::ArcThreePoint {
         base: BasePath {
@@ -1445,6 +1463,9 @@ pub async fn absolute_arc(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -1495,6 +1516,7 @@ pub async fn relative_arc(
         )
         .await?;
 
+    let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
     let current_path = Path::Arc {
         base: BasePath {
             from: from.ignore_units(),
@@ -1514,6 +1536,9 @@ pub async fn relative_arc(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -1665,6 +1690,7 @@ async fn inner_tangential_arc_radius_angle(
             (center, to, ccw)
         }
     };
+    let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
 
     let current_path = Path::TangentialArc {
         ccw,
@@ -1684,6 +1710,9 @@ async fn inner_tangential_arc_radius_angle(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -1724,6 +1753,7 @@ async fn inner_tangential_arc_to_point(
     } else {
         [from.x + point[0], from.y + point[1]]
     };
+    let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
     let [to_x, to_y] = to;
     let result = get_tangential_arc_to_info(TangentialArcInfoInput {
         arc_start_point: [from.x, from.y],
@@ -1777,6 +1807,9 @@ async fn inner_tangential_arc_to_point(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -2113,6 +2146,7 @@ pub(crate) async fn inner_elliptic(
         major_axis_magnitude * libm::cos(end_angle.to_radians()),
         minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
     ];
+    let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
     let major_axis_angle = libm::atan2(major_axis[1].n, major_axis[0].n);
 
     let point = [
@@ -2157,6 +2191,9 @@ pub(crate) async fn inner_elliptic(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -2281,6 +2318,7 @@ pub(crate) async fn inner_hyperbolic(
         y: end[1],
         units: from.units,
     };
+    let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
 
     let semi_major_u = semi_major.to_length_units(from.units);
     let semi_minor_u = semi_minor.to_length_units(from.units);
@@ -2321,6 +2359,9 @@ pub(crate) async fn inner_hyperbolic(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);

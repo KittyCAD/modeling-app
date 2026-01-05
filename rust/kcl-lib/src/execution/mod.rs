@@ -14,7 +14,6 @@ pub use cache::{bust_cache, clear_mem_cache};
 #[cfg(feature = "artifact-graph")]
 pub use cad_op::Group;
 pub use cad_op::Operation;
-pub(crate) use exec_ast::normalize_to_solver_unit;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
@@ -29,6 +28,7 @@ use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::{Deserialize, Serialize};
+pub(crate) use sketch_solve::normalize_to_solver_unit;
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
@@ -66,9 +66,78 @@ mod import_graph;
 pub(crate) mod kcl_value;
 mod memory;
 mod modeling;
+mod sketch_solve;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
+
+/// Convenience macro for handling control flow in execution by returning early
+/// if it is some kind of early return or stripping off the control flow
+/// otherwise.
+macro_rules! control_continue {
+    ($control_flow:expr) => {{
+        let cf = $control_flow;
+        if cf.is_some_return() {
+            return Ok(cf);
+        } else {
+            cf.into_value()
+        }
+    }};
+}
+// Expose the macro to other modules.
+pub(crate) use control_continue;
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
+pub enum ControlFlowKind {
+    #[default]
+    Continue,
+    Exit,
+}
+
+impl ControlFlowKind {
+    /// Returns true if this is any kind of early return.
+    pub fn is_some_return(&self) -> bool {
+        match self {
+            ControlFlowKind::Continue => false,
+            ControlFlowKind::Exit => true,
+        }
+    }
+}
+
+#[must_use = "You should always handle the control flow value when it is returned"]
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct KclValueControlFlow {
+    /// Use [control_continue] or [Self::into_value] to get the value.
+    value: KclValue,
+    pub control: ControlFlowKind,
+}
+
+impl KclValue {
+    pub(crate) fn continue_(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: self,
+            control: ControlFlowKind::Continue,
+        }
+    }
+
+    pub(crate) fn exit(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: self,
+            control: ControlFlowKind::Exit,
+        }
+    }
+}
+
+impl KclValueControlFlow {
+    /// Returns true if this is any kind of early return.
+    pub fn is_some_return(&self) -> bool {
+        self.control.is_some_return()
+    }
+
+    pub(crate) fn into_value(self) -> KclValue {
+        self.value
+    }
+}
 
 pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
@@ -113,6 +182,9 @@ pub struct ExecOutcome {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
+    /// True to do more costly analysis of whether the sketch block segments are
+    /// under-constrained.
+    pub freedom_analysis: bool,
     /// The segments that were edited that triggered this execution.
     #[cfg(feature = "artifact-graph")]
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
@@ -123,6 +195,7 @@ impl Default for MockConfig {
         Self {
             // By default, use previous memory. This is usually what you want.
             use_prev_memory: true,
+            freedom_analysis: false,
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited: AhashIndexSet::default(),
         }
@@ -441,13 +514,12 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
-        let pool = std::env::var("ZOO_ENGINE_POOL").ok();
         let (ws, _headers) = client
             .modeling()
             .commands_ws(
                 None,
                 None,
-                pool,
+                None,
                 if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
@@ -617,11 +689,12 @@ impl ExecutorContext {
             "To use mock execution, instantiate via ExecutorContext::new_mock, not ::new"
         );
 
+        let use_prev_memory = mock_config.use_prev_memory;
         #[cfg(not(feature = "artifact-graph"))]
         let mut exec_state = ExecState::new(self);
         #[cfg(feature = "artifact-graph")]
-        let mut exec_state = ExecState::new_sketch_mode(self, mock_config.segment_ids_edited.clone());
-        if mock_config.use_prev_memory {
+        let mut exec_state = ExecState::new_sketch_mode(self, mock_config);
+        if use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => {
                     *exec_state.mut_stack() = mem.0;
@@ -2622,7 +2695,7 @@ sketch = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, 10])
   |> line(end = [10, 0], tag = $tag0)
-  |> line(end = [0, 0])
+  |> line(endAbsolute = [0, 0])
 
 fn foo() {
   // tag0 tags an edge

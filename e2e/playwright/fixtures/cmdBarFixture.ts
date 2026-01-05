@@ -21,6 +21,7 @@ export type CmdBarSerialised =
       stage: 'review'
       headerArguments: Record<string, string>
       commandName: string
+      reviewValidationError?: string
     }
 
 export class CmdBarFixture {
@@ -68,15 +69,23 @@ export class CmdBarFixture {
     }
     const getCommandName = () =>
       this.page.getByTestId('command-name').textContent()
+    const getReviewValidationError = async () => {
+      const locator = this.page.getByTestId('cmd-bar-review-validation-error')
+      if (!(await locator.isVisible())) return undefined
+      return (await locator.textContent()) || undefined
+    }
     if (await reviewForm.isVisible()) {
-      const [headerArguments, commandName] = await Promise.all([
-        getHeaderArgs(),
-        getCommandName(),
-      ])
+      const [headerArguments, commandName, reviewValidationError] =
+        await Promise.all([
+          getHeaderArgs(),
+          getCommandName(),
+          getReviewValidationError(),
+        ])
       return {
         stage: 'review',
         headerArguments,
         commandName: commandName || '',
+        reviewValidationError,
       }
     }
 

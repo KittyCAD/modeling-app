@@ -30,7 +30,7 @@ sk3 = startSketchOn(XY)
 
       const ast = assertParse(code, instance)
       const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-      const _node = getNodeFromPath<any>(ast, nodePath)
+      const _node = getNodeFromPath<any>(ast, nodePath, instance)
       if (err(_node)) throw _node
       const { node } = _node
 
@@ -56,7 +56,7 @@ b1 = cube(pos = [0,0], scale = 10)`
 
       const ast = assertParse(code, instance)
       const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-      const _node = getNodeFromPath<Parameter>(ast, nodePath)
+      const _node = getNodeFromPath<Parameter>(ast, nodePath, instance)
       if (err(_node)) throw _node
       const node = _node.node
 
@@ -93,7 +93,7 @@ b1 = cube(pos = [0,0], scale = 10)`
 
       const ast = assertParse(code, instance)
       const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-      const _node = getNodeFromPath<Name>(ast, nodePath)
+      const _node = getNodeFromPath<Name>(ast, nodePath, instance)
       if (err(_node)) throw _node
       const node = _node.node
       expect(nodePath).toEqual([

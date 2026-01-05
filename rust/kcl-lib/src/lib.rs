@@ -154,6 +154,7 @@ pub mod pretty {
 }
 
 pub mod front {
+    pub(crate) use crate::frontend::modify::{find_defined_names, next_free_name_using_max};
     pub use crate::frontend::{
         FrontendState,
         api::{
@@ -162,8 +163,8 @@ pub mod front {
         },
         sketch::{
             Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, ExistingSegmentCtor, Freedom,
-            Horizontal, Line, LineCtor, LinesEqualLength, Parallel, Point, Point2d, PointCtor, Segment, SegmentCtor,
-            Sketch, SketchApi, SketchArgs, StartOrEnd, TangentArcCtor, Vertical,
+            Horizontal, Line, LineCtor, LinesEqualLength, Parallel, Perpendicular, Point, Point2d, PointCtor, Segment,
+            SegmentCtor, Sketch, SketchApi, SketchArgs, StartOrEnd, TangentArcCtor, Vertical,
         },
     };
 }

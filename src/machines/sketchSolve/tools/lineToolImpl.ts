@@ -78,7 +78,9 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
         )
         try {
           isEditInProgress = true
-          const settings = await jsAppSettings()
+          const settings = await jsAppSettings(
+            context.rustContext.settingsActor
+          )
           // Note: twoD comes from intersectionPoint.unscaledTwoD which is in world coordinates, and always mm
           const result = await context.rustContext.editSegments(
             0,
@@ -109,6 +111,7 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
             type: 'update sketch outcome',
             data: { ...result, writeToDisk: false },
           })
+          await new Promise((resolve) => requestAnimationFrame(resolve))
         } catch (err) {
           console.error('failed to edit segment', err)
         } finally {
@@ -345,16 +348,7 @@ export function storePendingSketchOutcome({
   }>
   self: ToolActionArgs['self']
 }) {
-  const output = event.output as {
-    kclSource?: SourceDelta
-    sceneGraphDelta?: SceneGraphDelta
-    newLineEndPointId?: number
-    newlyAddedEntities?: {
-      segmentIds: Array<number>
-      constraintIds: Array<number>
-    }
-    error?: string
-  }
+  const output = event.output
 
   const result: Partial<ToolContext> = {}
 
@@ -410,10 +404,7 @@ export function sendDeleteResultToParentWithDebounce({
 }) {
   // Send the delete result to parent (this removes the entities)
   if (event.output) {
-    const output = event.output as {
-      kclSource?: SourceDelta
-      sceneGraphDelta?: SceneGraphDelta
-    }
+    const output = event.output
     if (output.kclSource && output.sceneGraphDelta) {
       self._parent?.send({
         type: 'update sketch outcome',
@@ -440,10 +431,7 @@ export function sendDeleteResultToParent({
 }) {
   // Send the delete result to parent
   if (event.output) {
-    const output = event.output as {
-      kclSource?: SourceDelta
-      sceneGraphDelta?: SceneGraphDelta
-    }
+    const output = event.output
     if (output.kclSource && output.sceneGraphDelta) {
       self._parent?.send({
         type: 'update sketch outcome',

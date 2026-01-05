@@ -29,7 +29,7 @@ test.describe('Point-and-click tests', () => {
     await scene.settled(cmdBar)
 
     await test.step(`Edit first extrude via feature tree`, async () => {
-      await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+      await (await toolbar.getFeatureTreeOperation('bracketBody', 0)).dblclick()
       await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
@@ -55,7 +55,9 @@ test.describe('Point-and-click tests', () => {
     })
 
     await test.step(`Edit second extrude via feature tree`, async () => {
-      await (await toolbar.getFeatureTreeOperation('Extrude', 1)).dblclick()
+      await (
+        await toolbar.getFeatureTreeOperation('shelfMountingHoles', 0)
+      ).dblclick()
       await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
@@ -83,7 +85,9 @@ test.describe('Point-and-click tests', () => {
     })
 
     await test.step(`Edit third extrude via feature tree`, async () => {
-      await (await toolbar.getFeatureTreeOperation('Extrude', 2)).dblclick()
+      await (
+        await toolbar.getFeatureTreeOperation('wallMountingHoles', 0)
+      ).dblclick()
       await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
@@ -840,7 +844,7 @@ openSketch = startSketchOn(XY)
     await test.step('Delete offset plane via feature tree selection', async () => {
       await editor.closePane()
       const operationButton = await toolbar.getFeatureTreeOperation(
-        'Offset Plane',
+        'plane001',
         0
       )
       await operationButton.click({ button: 'left' })
@@ -1663,8 +1667,8 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
       await test.step('Delete standalone assigned fillet via feature tree selection', async () => {
         await test.step('Delete standalone assigned fillet', async () => {
           const operationButton = await toolbar.getFeatureTreeOperation(
-            'Fillet',
-            1
+            'fillet03',
+            0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
@@ -1685,7 +1689,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
         await test.step('Delete standalone unassigned fillet', async () => {
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Fillet',
-            1
+            0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
@@ -2144,8 +2148,8 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
         await test.step('Delete standalone assigned chamfer', async () => {
           await toolbar.openFeatureTreePane()
           const operationButton = await toolbar.getFeatureTreeOperation(
-            'Chamfer',
-            1
+            'chamfer03',
+            0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
@@ -2167,7 +2171,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           await toolbar.openFeatureTreePane()
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Chamfer',
-            1
+            0
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
@@ -2516,6 +2520,8 @@ box = extrude(profile, length = 30)`
             Objects: '1 path',
           },
           commandName: 'Translate',
+          reviewValidationError:
+            'semantic: Expected `x`, `y`, or `z` to be provided.',
         })
       })
 
@@ -2928,7 +2934,7 @@ solid001 = extrude(sketch001, length = 5)`
       await test.step('Open edit mode from feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const patternOperation = await toolbar.getFeatureTreeOperation(
-          'Circular Pattern',
+          'pattern001',
           0
         )
         await patternOperation.dblclick()
@@ -3174,7 +3180,7 @@ solid001 = extrude(sketch001, length = 5)`
     await test.step('Delete Pattern Circular 3D', async () => {
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const patternOperation = await toolbar.getFeatureTreeOperation(
-        'Circular Pattern',
+        'pattern001',
         0
       )
       // Delete the pattern operation
@@ -3370,7 +3376,7 @@ solid001 = extrude(sketch001, length = 5)`
         await toolbar.closePane(DefaultLayoutPaneID.Code)
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const patternOperation = await toolbar.getFeatureTreeOperation(
-          'Linear Pattern',
+          'pattern001',
           0
         )
         await patternOperation.dblclick()
@@ -3516,7 +3522,7 @@ solid001 = extrude(sketch001, length = 5)`
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
 
       const patternOperation = await toolbar.getFeatureTreeOperation(
-        'Linear Pattern',
+        'pattern001',
         0
       )
       await patternOperation.click({ button: 'left' })

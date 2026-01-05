@@ -97,7 +97,10 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
       )}
       {reviewValidationError && (
         <>
-          <p className="px-4 py-2 text-red-500 text-sm">
+          <p
+            className="px-4 py-2 text-red-500 text-sm"
+            data-testid="cmd-bar-review-validation-error"
+          >
             {reviewValidationError}
           </p>
           <CommandBarDivider />

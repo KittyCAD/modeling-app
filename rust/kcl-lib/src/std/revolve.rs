@@ -6,7 +6,10 @@ use kcmc::{
     length_unit::LengthUnit,
     shared::{Angle, Opposite},
 };
-use kittycad_modeling_cmds::{self as kcmc, shared::Point3d};
+use kittycad_modeling_cmds::{
+    self as kcmc,
+    shared::{BodyType, Point3d},
+};
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64};
 use crate::{
@@ -39,6 +42,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_angle: Option<TyF64> =
         args.get_kw_arg_opt("bidirectionalAngle", &RuntimeType::angle(), exec_state)?;
+    let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
 
     let value = inner_revolve(
         sketches,
@@ -49,6 +53,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         tag_end,
         symmetric,
         bidirectional_angle.map(|t| t.n),
+        body_type,
         exec_state,
         args,
     )
@@ -66,9 +71,11 @@ async fn inner_revolve(
     tag_end: Option<TagNode>,
     symmetric: Option<bool>,
     bidirectional_angle: Option<f64>,
+    body_type: Option<BodyType>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
+    let body_type = body_type.unwrap_or_default();
     if let Some(angle) = angle {
         // Return an error if the angle is zero.
         // We don't use validate() here because we want to return a specific error message that is
@@ -151,6 +158,7 @@ async fn inner_revolve(
                             tolerance: LengthUnit(tolerance),
                             axis_is_2d: true,
                             opposite: opposite.clone(),
+                            body_type,
                         }),
                     )
                     .await?;
@@ -167,6 +175,7 @@ async fn inner_revolve(
                             edge_id,
                             tolerance: LengthUnit(tolerance),
                             opposite: opposite.clone(),
+                            body_type,
                         }),
                     )
                     .await?;
@@ -209,6 +218,7 @@ async fn inner_revolve(
                 &args,
                 edge_id,
                 None,
+                body_type,
             )
             .await?,
         );

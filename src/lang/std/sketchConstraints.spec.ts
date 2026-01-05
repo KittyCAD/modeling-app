@@ -61,12 +61,7 @@ async function testingSwapSketchFnCall({
   const range = topLevelRange(startIndex, startIndex + callToSwap.length)
   const ast = assertParse(inputCode, instanceInThisFile)
 
-  const execState = await enginelessExecutor(
-    ast,
-    undefined,
-    undefined,
-    rustContextInThisFile
-  )
+  const execState = await enginelessExecutor(ast, rustContextInThisFile)
   const selections = {
     graphSelections: [
       {
@@ -76,7 +71,12 @@ async function testingSwapSketchFnCall({
     otherSelections: [],
   }
 
-  const transformInfos = getTransformInfos(selections, ast, constraintType)
+  const transformInfos = getTransformInfos(
+    selections,
+    ast,
+    constraintType,
+    instanceInThisFile
+  )
 
   if (!transformInfos)
     return Promise.reject(new Error('transformInfos undefined'))
@@ -401,8 +401,6 @@ part001 = startSketchOn(XY)
   it('normal case works', async () => {
     const execState = await enginelessExecutor(
       assertParse(code, instanceInThisFile),
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const index = code.indexOf('// normal-segment') - 7
@@ -427,8 +425,6 @@ part001 = startSketchOn(XY)
   it('verify it works when the segment is in the `start` property', async () => {
     const execState = await enginelessExecutor(
       assertParse(code, instanceInThisFile),
-      undefined,
-      undefined,
       rustContextInThisFile
     )
     const index = code.indexOf('// segment-in-start') - 7

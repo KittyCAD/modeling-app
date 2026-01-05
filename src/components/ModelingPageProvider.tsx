@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { use, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
@@ -12,7 +12,9 @@ import { markOnce } from '@src/lib/performance'
 import {
   engineCommandManager,
   kclManager,
+  rustContext,
   sceneInfra,
+  systemIOActor,
 } from '@src/lib/singletons'
 import { useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
@@ -30,6 +32,7 @@ export const ModelingPageProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
   const token = useToken()
@@ -161,6 +164,9 @@ export const ModelingPageProvider = ({
       },
       specialPropsForInsertCommand: { providedOptions },
       project,
+      rustContext,
+      systemIOActor,
+      wasmInstance,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager, project, file])
@@ -177,7 +183,7 @@ export const ModelingPageProvider = ({
         data: { commands: kclCommandMemo },
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    // eslint-disable-next-line react-hooks/exhaustive-deps, @typescript-eslint/unbound-method -- TODO: blanket-ignored fix me!
   }, [commandBarActor.send, kclCommandMemo])
 
   return <div>{children}</div>

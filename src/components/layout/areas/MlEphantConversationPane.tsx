@@ -1,0 +1,316 @@
+import { reportRejection } from '@src/lib/trap'
+import { NIL as uuidNIL } from 'uuid'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import type { KclManager } from '@src/lang/KclManager'
+import type { SystemIOActor } from '@src/lib/singletons'
+import { useEffect, useState, useRef } from 'react'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { MlEphantConversation } from '@src/components/MlEphantConversation'
+import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
+import {
+  MlEphantManagerStates,
+  MlEphantManagerTransitions,
+} from '@src/machines/mlEphantManagerMachine'
+import { collectProjectFiles } from '@src/machines/systemIO/utils'
+import { S } from '@src/machines/utils'
+import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
+import type { FileEntry, Project } from '@src/lib/project'
+import { useSelector } from '@xstate/react'
+import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
+import { useSearchParams } from 'react-router-dom'
+import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
+import { type useModelingContext } from '@src/hooks/useModelingContext'
+
+export const MlEphantConversationPane = (props: {
+  mlEphantManagerActor: MlEphantManagerActor
+  systemIOActor: SystemIOActor
+  kclManager: KclManager
+  theProject: Project | undefined
+  contextModeling: ModelingMachineContext
+  sendModeling: ReturnType<typeof useModelingContext>['send']
+  loaderFile: FileEntry | undefined
+  settings: SettingsType
+  user?: User
+}) => {
+  const [defaultPrompt, setDefaultPrompt] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const timeoutReconnect = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  )
+
+  let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.conversation
+  })
+
+  const abruptlyClosed = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.abruptlyClosed
+  })
+
+  if (
+    props.mlEphantManagerActor.getSnapshot().matches(S.Await) &&
+    !abruptlyClosed
+  ) {
+    conversation = undefined
+  }
+
+  const onProcess = async (request: string, mode: MlCopilotMode) => {
+    if (props.theProject === undefined) {
+      console.warn('theProject is `undefined` - should not be possible')
+      return
+    }
+    if (props.loaderFile === undefined) {
+      console.warn('loaderFile is `undefined` - should not be possible')
+      return
+    }
+
+    let project: Project = props.theProject
+
+    if (!window.electron) {
+      // If there is no project, we'll create a fake one. Expectation is for
+      // this to only happen on web.
+      project = {
+        metadata: null,
+        kcl_file_count: 1,
+        directory_count: 0,
+        default_file: '/main.kcl',
+        path: '/' + props.settings.meta.id.current,
+        name: props.settings.meta.id.current,
+        children: [
+          {
+            name: 'main.kcl',
+            path: `/main.kcl`,
+            children: null,
+          },
+        ],
+        readWriteAccess: true,
+      }
+    }
+
+    const projectFiles = await collectProjectFiles({
+      selectedFileContents: props.kclManager.code,
+      fileNames: props.kclManager.execState.filenames,
+      projectContext: project,
+    })
+
+    // Only on initial project creation do we call the create endpoint, which
+    // has more data for initial creations. Improvements to the TTC service
+    // will close this gap in performance.
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.MessageSend,
+      prompt: request,
+      projectForPromptOutput: project,
+      applicationProjectDirectory: props.settings.app.projectDirectory.current,
+      fileSelectedDuringPrompting: {
+        entry: props.loaderFile,
+        content: props.kclManager.code,
+      },
+      projectFiles,
+      selections: props.contextModeling.selectionRanges,
+      artifactGraph: props.kclManager.artifactGraph,
+      mode,
+    })
+
+    // Clear selections since new model
+    props.sendModeling({
+      type: 'Set selection',
+      data: { selection: undefined, selectionType: 'singleCodeCursor' },
+    })
+  }
+
+  const lastExchange = conversation?.exchanges.slice(-1) ?? []
+
+  const isProcessing = lastExchange[0]
+    ? lastExchange[0].responses.some(
+        (x: MlCopilotServerMessage) =>
+          'end_of_stream' in x || 'error' in x || 'info' in x
+      ) === false
+    : false
+
+  const needsReconnect = abruptlyClosed
+
+  const onReconnect = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.CacheSetupAndConnect,
+      refParentSend: props.mlEphantManagerActor.send,
+      conversationId:
+        props.mlEphantManagerActor.getSnapshot().context.conversationId,
+    })
+  }
+
+  const onInterrupt = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.Interrupt,
+    })
+  }
+
+  if (needsReconnect && timeoutReconnect.current === undefined) {
+    timeoutReconnect.current = setTimeout(() => {
+      onReconnect()
+      timeoutReconnect.current = undefined
+    }, 3000)
+  }
+
+  const onClickClearChat = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions.ConversationClose,
+    })
+    const sub = props.mlEphantManagerActor.subscribe((next) => {
+      if (!next.matches(S.Await)) {
+        return
+      }
+
+      props.mlEphantManagerActor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: props.mlEphantManagerActor.send,
+        conversationId: undefined,
+      })
+      sub.unsubscribe()
+    })
+  }
+
+  const tryToGetExchanges = () => {
+    const mlEphantConversations =
+      props.systemIOActor.getSnapshot().context.mlEphantConversations
+
+    // Not ready yet.
+    if (mlEphantConversations === undefined) {
+      return
+    }
+    if (props.settings.meta.id.current === uuidNIL) {
+      return
+    }
+
+    const conversationId = mlEphantConversations.get(
+      props.settings.meta.id.current
+    )
+
+    if (conversationId === uuidNIL) {
+      return
+    }
+
+    // We can now reliably use the mlConversations data.
+    // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
+    if (
+      props.theProject !== undefined &&
+      props.mlEphantManagerActor.getSnapshot().context.abruptlyClosed === false
+    ) {
+      props.mlEphantManagerActor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: props.mlEphantManagerActor.send,
+        conversationId,
+      })
+    }
+  }
+
+  useEffect(() => {
+    const subscriptionSystemIOActor = props.systemIOActor.subscribe(
+      (systemIOActorSnapshot) => {
+        if (systemIOActorSnapshot.value !== 'idle') {
+          return
+        }
+        if (props.settings.meta.id.current === uuidNIL) {
+          return
+        }
+        if (systemIOActorSnapshot.context.mlEphantConversations === undefined) {
+          props.systemIOActor.send({
+            type: SystemIOMachineEvents.getMlEphantConversations,
+          })
+          return
+        }
+
+        const { context } = props.mlEphantManagerActor.getSnapshot()
+
+        if (context.conversation !== undefined) {
+          return
+        }
+
+        tryToGetExchanges()
+      }
+    )
+
+    const subscriptionMlEphantManagerActor =
+      props.mlEphantManagerActor.subscribe((mlEphantManagerActorSnapshot) => {
+        const isProcessing =
+          (mlEphantManagerActorSnapshot.matches({
+            [MlEphantManagerStates.Ready]: {
+              [MlEphantManagerStates.Request]: S.Await,
+            },
+          }) || mlEphantManagerActorSnapshot.value === S.Await) === false
+
+        const { context } = mlEphantManagerActorSnapshot
+
+        if (isProcessing) {
+          return
+        }
+
+        if (context.conversation !== undefined) {
+          return
+        }
+
+        tryToGetExchanges()
+      })
+
+    props.systemIOActor.send({
+      type: SystemIOMachineEvents.getMlEphantConversations,
+    })
+
+    tryToGetExchanges()
+
+    return () => {
+      subscriptionSystemIOActor.unsubscribe()
+      subscriptionMlEphantManagerActor.unsubscribe()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [props.settings.meta.id.current])
+
+  // We watch the URL for a query parameter to set the defaultPrompt
+  // for the conversation.
+  useEffect(() => {
+    const ttcPromptParam = searchParams.get(SEARCH_PARAM_ML_PROMPT_KEY)
+    if (ttcPromptParam) {
+      setDefaultPrompt(ttcPromptParam)
+
+      // Now clear that param
+      const newSearchParams = new URLSearchParams(searchParams)
+      newSearchParams.delete(SEARCH_PARAM_ML_PROMPT_KEY)
+      setSearchParams(newSearchParams, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
+
+  const userBlockedOnPayment: () => boolean = () => {
+    if (!props.user || !props.user.block) {
+      return false
+    }
+
+    switch (props.user.block) {
+      case 'missing_payment_method':
+      case 'payment_method_failed':
+        return true
+      default:
+        props.user.block satisfies never // exhaustiveness check
+        return false
+    }
+  }
+
+  return (
+    <MlEphantConversation
+      isLoading={conversation === undefined}
+      contexts={[
+        { type: 'selections', data: props.contextModeling.selectionRanges },
+      ]}
+      conversation={conversation}
+      onProcess={(request: string, mode: MlCopilotMode) => {
+        onProcess(request, mode).catch(reportRejection)
+      }}
+      onClickClearChat={onClickClearChat}
+      onReconnect={onReconnect}
+      onInterrupt={onInterrupt}
+      disabled={isProcessing || needsReconnect}
+      needsReconnect={needsReconnect}
+      hasPromptCompleted={!isProcessing}
+      userAvatarSrc={props.user?.image}
+      userBlockedOnPayment={userBlockedOnPayment()}
+      defaultPrompt={defaultPrompt}
+    />
+  )
+}

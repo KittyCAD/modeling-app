@@ -106,7 +106,7 @@ description: Variables in memory after executing helix_simple.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "mm",
-      "isClosed": false
+      "isClosed": "no"
     }
   }
 }

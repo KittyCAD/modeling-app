@@ -1,4 +1,7 @@
+import isEqual from 'react-fast-compare'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import { LayoutType } from '@src/lib/layout/types'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type {
   SplitLayout as SplitLayoutType,
   PaneLayout as PaneLayoutType,
@@ -22,8 +25,10 @@ import {
   Fragment,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
+  memo,
 } from 'react'
 import {
   getOppositeSide,
@@ -112,60 +117,65 @@ interface LayoutRootNodeProps {
   layout: Layout
   getLayout: () => Layout | undefined
   setLayout: (layout: Layout) => void
+  // Values that affect the layout (pane buttons, menus, etc).
+  showDebugPanel: SettingsType['app']['showDebugPanel']['current']
+  notifications: boolean[]
+  artifactGraph: ArtifactGraph
   layoutName?: string
   /** Kind of a feature flag, remove in future */
   enableContextMenus?: boolean
 }
 
-export function LayoutRootNode({
-  areaLibrary,
-  actionLibrary,
-  layout,
-  getLayout,
-  setLayout,
-  layoutName = 'default',
-  enableContextMenus = false,
-}: LayoutRootNodeProps) {
-  const getLayoutWithFallback = () => getLayout() || defaultLayout
-  useEffect(() => {
-    saveLayout({ layout, layoutName })
-  }, [layout, layoutName])
+export const LayoutRootNode = memo(
+  function LayoutRootNode({
+    areaLibrary,
+    actionLibrary,
+    layout,
+    getLayout,
+    setLayout,
+    showDebugPanel,
+    layoutName = 'default',
+    enableContextMenus = false,
+  }: LayoutRootNodeProps) {
+    const getLayoutWithFallback = () => getLayout() || defaultLayout
+    useEffect(() => {
+      saveLayout({ layout, layoutName })
+    }, [layout, layoutName])
 
-  function updateSplitSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
-    const rootLayout = getLayoutWithFallback()
-    setLayout(
-      findAndUpdateSplitSizes({
-        rootLayout: structuredClone(rootLayout),
-        ...props,
-      })
-    )
-  }
+    function updateSplitSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
+      const rootLayout = getLayoutWithFallback()
+      setLayout(
+        findAndUpdateSplitSizes({
+          rootLayout: structuredClone(rootLayout),
+          ...props,
+        })
+      )
+    }
 
-  function replaceLayoutNode(
-    props: WithoutRootLayout<IReplaceLayoutChildNode>
-  ) {
-    const rootLayout = getLayoutWithFallback()
-    setLayout(
-      findAndReplaceLayoutChildNode({
-        rootLayout: structuredClone(rootLayout),
-        ...props,
-      })
-    )
-  }
+    function replaceLayoutNode(
+      props: WithoutRootLayout<IReplaceLayoutChildNode>
+    ) {
+      const rootLayout = getLayoutWithFallback()
+      setLayout(
+        findAndReplaceLayoutChildNode({
+          rootLayout: structuredClone(rootLayout),
+          ...props,
+        })
+      )
+    }
 
-  function togglePane(props: WithoutRootLayout<ITogglePane>) {
-    const rootLayout = getLayoutWithFallback()
-    setLayout(
-      togglePaneLayoutNode({
-        rootLayout: structuredClone(rootLayout),
-        ...props,
-      })
-    )
-  }
+    function togglePane(props: WithoutRootLayout<ITogglePane>) {
+      const rootLayout = getLayoutWithFallback()
+      setLayout(
+        togglePaneLayoutNode({
+          rootLayout: structuredClone(rootLayout),
+          ...props,
+        })
+      )
+    }
 
-  return (
-    <LayoutStateContext.Provider
-      value={{
+    const providerValue = useMemo(
+      () => ({
         areaLibrary: areaLibrary || nullAreaLibrary,
         actionLibrary: actionLibrary || nullActionLibrary,
         updateSplitSizes,
@@ -173,12 +183,31 @@ export function LayoutRootNode({
         togglePane,
         enableContextMenus,
         // More API here if needed within nested layout components
-      }}
-    >
-      <LayoutNode layout={layout} />
-    </LayoutStateContext.Provider>
-  )
-}
+        // The other properties are all callbacks which are set once.
+      }),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [
+        enableContextMenus,
+        areaLibrary,
+        actionLibrary,
+        togglePane,
+        showDebugPanel,
+      ]
+    )
+
+    return (
+      <LayoutStateContext.Provider value={providerValue}>
+        <LayoutNode layout={layout} />
+      </LayoutStateContext.Provider>
+    )
+  },
+  (oldProps, newProps) =>
+    isEqual(oldProps.layout, newProps.layout) &&
+    oldProps.enableContextMenus === newProps.enableContextMenus &&
+    oldProps.showDebugPanel === newProps.showDebugPanel &&
+    isEqual(oldProps.notifications, newProps.notifications) &&
+    isEqual(oldProps.artifactGraph, newProps.artifactGraph)
+)
 
 /*
  * A layout is a nested set of Areas (Splits or Panes),
@@ -196,7 +225,7 @@ function LayoutNode({
       return <PaneLayout layout={layout} key={`node-${layout.id}`} />
     default: {
       const { Component, ...props } = areaLibrary[layout.areaType]
-      return Component({ areaConfig: props, layout, onClose })
+      return <Component areaConfig={props} layout={layout} onClose={onClose} />
     }
   }
 }
