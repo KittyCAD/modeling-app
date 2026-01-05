@@ -8886,6 +8886,7 @@ description: Result of parsing zoo-logo.kcl
         "preComments": [
           "// Zoo Logo",
           "// The logo for the Zoo Corporation",
+          "// Categories: Maker",
           "",
           "",
           "// Set units in inches (in)"

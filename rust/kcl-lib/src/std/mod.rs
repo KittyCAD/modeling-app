@@ -20,6 +20,7 @@ pub mod mirror;
 pub mod patterns;
 pub mod planes;
 pub mod revolve;
+pub mod runtime;
 pub mod segment;
 pub mod shapes;
 pub mod shell;
@@ -30,16 +31,18 @@ pub mod utils;
 
 use anyhow::Result;
 pub use args::Args;
+use futures::future::FutureExt;
 
 use crate::{
     errors::KclError,
-    execution::{ExecState, KclValue, types::PrimitiveType},
+    execution::{ExecState, KclValue, KclValueControlFlow, types::PrimitiveType},
 };
 
-pub type StdFn = fn(
-    &mut ExecState,
-    Args,
-) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<KclValue, KclError>> + Send + '_>>;
+pub type StdFn =
+    fn(
+        &mut ExecState,
+        Args,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<KclValueControlFlow, KclError>> + Send + '_>>;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct StdFnProps {
@@ -55,452 +58,456 @@ impl StdFnProps {
 pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {
     match (path, fn_name) {
         ("gdt", "datum") => (
-            |e, a| Box::pin(crate::std::gdt::datum(e, a)),
+            |e, a| Box::pin(crate::std::gdt::datum(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::datum"),
         ),
         ("gdt", "flatness") => (
-            |e, a| Box::pin(crate::std::gdt::flatness(e, a)),
+            |e, a| Box::pin(crate::std::gdt::flatness(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::flatness"),
         ),
         ("math", "cos") => (
-            |e, a| Box::pin(crate::std::math::cos(e, a)),
+            |e, a| Box::pin(crate::std::math::cos(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::cos"),
         ),
         ("math", "sin") => (
-            |e, a| Box::pin(crate::std::math::sin(e, a)),
+            |e, a| Box::pin(crate::std::math::sin(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::sin"),
         ),
         ("math", "tan") => (
-            |e, a| Box::pin(crate::std::math::tan(e, a)),
+            |e, a| Box::pin(crate::std::math::tan(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::tan"),
         ),
         ("math", "acos") => (
-            |e, a| Box::pin(crate::std::math::acos(e, a)),
+            |e, a| Box::pin(crate::std::math::acos(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::acos"),
         ),
         ("math", "asin") => (
-            |e, a| Box::pin(crate::std::math::asin(e, a)),
+            |e, a| Box::pin(crate::std::math::asin(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::asin"),
         ),
         ("math", "atan") => (
-            |e, a| Box::pin(crate::std::math::atan(e, a)),
+            |e, a| Box::pin(crate::std::math::atan(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::atan"),
         ),
         ("math", "atan2") => (
-            |e, a| Box::pin(crate::std::math::atan2(e, a)),
+            |e, a| Box::pin(crate::std::math::atan2(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::atan2"),
         ),
         ("math", "sqrt") => (
-            |e, a| Box::pin(crate::std::math::sqrt(e, a)),
+            |e, a| Box::pin(crate::std::math::sqrt(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::sqrt"),
         ),
 
         ("math", "abs") => (
-            |e, a| Box::pin(crate::std::math::abs(e, a)),
+            |e, a| Box::pin(crate::std::math::abs(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::abs"),
         ),
         ("math", "rem") => (
-            |e, a| Box::pin(crate::std::math::rem(e, a)),
+            |e, a| Box::pin(crate::std::math::rem(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::rem"),
         ),
         ("math", "round") => (
-            |e, a| Box::pin(crate::std::math::round(e, a)),
+            |e, a| Box::pin(crate::std::math::round(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::round"),
         ),
         ("math", "floor") => (
-            |e, a| Box::pin(crate::std::math::floor(e, a)),
+            |e, a| Box::pin(crate::std::math::floor(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::floor"),
         ),
         ("math", "ceil") => (
-            |e, a| Box::pin(crate::std::math::ceil(e, a)),
+            |e, a| Box::pin(crate::std::math::ceil(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::ceil"),
         ),
         ("math", "min") => (
-            |e, a| Box::pin(crate::std::math::min(e, a)),
+            |e, a| Box::pin(crate::std::math::min(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::min"),
         ),
         ("math", "max") => (
-            |e, a| Box::pin(crate::std::math::max(e, a)),
+            |e, a| Box::pin(crate::std::math::max(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::max"),
         ),
         ("math", "pow") => (
-            |e, a| Box::pin(crate::std::math::pow(e, a)),
+            |e, a| Box::pin(crate::std::math::pow(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::pow"),
         ),
         ("math", "log") => (
-            |e, a| Box::pin(crate::std::math::log(e, a)),
+            |e, a| Box::pin(crate::std::math::log(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::log"),
         ),
         ("math", "log2") => (
-            |e, a| Box::pin(crate::std::math::log2(e, a)),
+            |e, a| Box::pin(crate::std::math::log2(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::log2"),
         ),
         ("math", "log10") => (
-            |e, a| Box::pin(crate::std::math::log10(e, a)),
+            |e, a| Box::pin(crate::std::math::log10(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::log10"),
         ),
         ("math", "ln") => (
-            |e, a| Box::pin(crate::std::math::ln(e, a)),
+            |e, a| Box::pin(crate::std::math::ln(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::ln"),
         ),
         ("math", "legLen") => (
-            |e, a| Box::pin(crate::std::math::leg_length(e, a)),
+            |e, a| Box::pin(crate::std::math::leg_length(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::legLen"),
         ),
         ("math", "legAngX") => (
-            |e, a| Box::pin(crate::std::math::leg_angle_x(e, a)),
+            |e, a| Box::pin(crate::std::math::leg_angle_x(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::legAngX"),
         ),
         ("math", "legAngY") => (
-            |e, a| Box::pin(crate::std::math::leg_angle_y(e, a)),
+            |e, a| Box::pin(crate::std::math::leg_angle_y(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::math::legAngY"),
         ),
         ("sketch", "circle") => (
-            |e, a| Box::pin(crate::std::shapes::circle(e, a)),
+            |e, a| Box::pin(crate::std::shapes::circle(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::circle"),
         ),
         ("sketch", "ellipse") => (
-            |e, a| Box::pin(crate::std::shapes::ellipse(e, a)),
+            |e, a| Box::pin(crate::std::shapes::ellipse(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::ellipse"),
         ),
         ("prelude", "helix") => (
-            |e, a| Box::pin(crate::std::helix::helix(e, a)),
+            |e, a| Box::pin(crate::std::helix::helix(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::helix"),
         ),
         ("transform", "mirror2d") => (
-            |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a)),
+            |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::transform::mirror2d"),
         ),
         ("transform", "translate") => (
-            |e, a| Box::pin(crate::std::transform::translate(e, a)),
+            |e, a| Box::pin(crate::std::transform::translate(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::transform::translate"),
         ),
         ("transform", "rotate") => (
-            |e, a| Box::pin(crate::std::transform::rotate(e, a)),
+            |e, a| Box::pin(crate::std::transform::rotate(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::transform::rotate"),
         ),
         ("transform", "scale") => (
-            |e, a| Box::pin(crate::std::transform::scale(e, a)),
+            |e, a| Box::pin(crate::std::transform::scale(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::transform::scale"),
         ),
         ("prelude", "offsetPlane") => (
-            |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
+            |e, a| Box::pin(crate::std::planes::offset_plane(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::offsetPlane"),
         ),
         ("prelude", "assert") => (
-            |e, a| Box::pin(crate::std::assert::assert(e, a)),
+            |e, a| Box::pin(crate::std::assert::assert(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::assert"),
         ),
         ("prelude", "assertIs") => (
-            |e, a| Box::pin(crate::std::assert::assert_is(e, a)),
+            |e, a| Box::pin(crate::std::assert::assert_is(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::assertIs"),
         ),
+        ("runtime", "exit") => (
+            |e, a| Box::pin(crate::std::runtime::exit(e, a)),
+            StdFnProps::default("std::runtime::exit"),
+        ),
         ("solid", "fillet") => (
-            |e, a| Box::pin(crate::std::fillet::fillet(e, a)),
+            |e, a| Box::pin(crate::std::fillet::fillet(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::fillet"),
         ),
         ("solid", "chamfer") => (
-            |e, a| Box::pin(crate::std::chamfer::chamfer(e, a)),
+            |e, a| Box::pin(crate::std::chamfer::chamfer(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::chamfer"),
         ),
         ("solid", "shell") => (
-            |e, a| Box::pin(crate::std::shell::shell(e, a)),
+            |e, a| Box::pin(crate::std::shell::shell(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::shell"),
         ),
         ("solid", "hollow") => (
-            |e, a| Box::pin(crate::std::shell::hollow(e, a)),
+            |e, a| Box::pin(crate::std::shell::hollow(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::hollow"),
         ),
         ("solid", "union") => (
-            |e, a| Box::pin(crate::std::csg::union(e, a)),
+            |e, a| Box::pin(crate::std::csg::union(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::union"),
         ),
         ("solid", "intersect") => (
-            |e, a| Box::pin(crate::std::csg::intersect(e, a)),
+            |e, a| Box::pin(crate::std::csg::intersect(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::intersect"),
         ),
         ("solid", "subtract") => (
-            |e, a| Box::pin(crate::std::csg::subtract(e, a)),
+            |e, a| Box::pin(crate::std::csg::subtract(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::subtract"),
         ),
         ("solid", "patternTransform") => (
-            |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a)),
+            |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::patternTransform"),
         ),
         ("solid", "patternLinear3d") => (
-            |e, a| Box::pin(crate::std::patterns::pattern_linear_3d(e, a)),
+            |e, a| Box::pin(crate::std::patterns::pattern_linear_3d(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::patternLinear3d"),
         ),
         ("solid", "patternCircular3d") => (
-            |e, a| Box::pin(crate::std::patterns::pattern_circular_3d(e, a)),
+            |e, a| Box::pin(crate::std::patterns::pattern_circular_3d(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::patternCircular3d"),
         ),
         ("solid", "appearance") => (
-            |e, a| Box::pin(crate::std::appearance::appearance(e, a)),
+            |e, a| Box::pin(crate::std::appearance::appearance(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::appearance"),
         ),
         ("array", "map") => (
-            |e, a| Box::pin(crate::std::array::map(e, a)),
+            |e, a| Box::pin(crate::std::array::map(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::array::map"),
         ),
         ("array", "reduce") => (
-            |e, a| Box::pin(crate::std::array::reduce(e, a)),
+            |e, a| Box::pin(crate::std::array::reduce(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::array::reduce"),
         ),
         ("array", "push") => (
-            |e, a| Box::pin(crate::std::array::push(e, a)),
+            |e, a| Box::pin(crate::std::array::push(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::array::push"),
         ),
         ("array", "pop") => (
-            |e, a| Box::pin(crate::std::array::pop(e, a)),
+            |e, a| Box::pin(crate::std::array::pop(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::array::pop"),
         ),
         ("array", "concat") => (
-            |e, a| Box::pin(crate::std::array::concat(e, a)),
+            |e, a| Box::pin(crate::std::array::concat(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::array::concat"),
         ),
         ("prelude", "clone") => (
-            |e, a| Box::pin(crate::std::clone::clone(e, a)),
+            |e, a| Box::pin(crate::std::clone::clone(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::clone"),
         ),
         ("sketch", "conic") => (
-            |e, a| Box::pin(crate::std::sketch::conic(e, a)),
+            |e, a| Box::pin(crate::std::sketch::conic(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::conic"),
         ),
         ("sketch", "parabolic") => (
-            |e, a| Box::pin(crate::std::sketch::parabolic(e, a)),
+            |e, a| Box::pin(crate::std::sketch::parabolic(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::parabolic"),
         ),
         ("sketch", "parabolicPoint") => (
-            |e, a| Box::pin(crate::std::sketch::parabolic_point(e, a)),
+            |e, a| Box::pin(crate::std::sketch::parabolic_point(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::parabolicPoint"),
         ),
         ("sketch", "hyperbolic") => (
-            |e, a| Box::pin(crate::std::sketch::hyperbolic(e, a)),
+            |e, a| Box::pin(crate::std::sketch::hyperbolic(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::hyperbolic"),
         ),
         ("sketch", "hyperbolicPoint") => (
-            |e, a| Box::pin(crate::std::sketch::hyperbolic_point(e, a)),
+            |e, a| Box::pin(crate::std::sketch::hyperbolic_point(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::hyperbolicPoint"),
         ),
         ("sketch", "elliptic") => (
-            |e, a| Box::pin(crate::std::sketch::elliptic(e, a)),
+            |e, a| Box::pin(crate::std::sketch::elliptic(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::elliptic"),
         ),
         ("sketch", "ellipticPoint") => (
-            |e, a| Box::pin(crate::std::sketch::elliptic_point(e, a)),
+            |e, a| Box::pin(crate::std::sketch::elliptic_point(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::ellipticPoint"),
         ),
         ("sketch", "rectangle") => (
-            |e, a| Box::pin(crate::std::shapes::rectangle(e, a)),
+            |e, a| Box::pin(crate::std::shapes::rectangle(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::rectangle"),
         ),
         ("sketch", "planeOf") => (
-            |e, a| Box::pin(crate::std::planes::plane_of(e, a)),
+            |e, a| Box::pin(crate::std::planes::plane_of(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::planeOf"),
         ),
         ("sketch", "extrude") => (
-            |e, a| Box::pin(crate::std::extrude::extrude(e, a)),
+            |e, a| Box::pin(crate::std::extrude::extrude(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::extrude"),
         ),
         ("sketch", "patternTransform2d") => (
-            |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
+            |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::patternTransform2d"),
         ),
         ("sketch", "revolve") => (
-            |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
+            |e, a| Box::pin(crate::std::revolve::revolve(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::revolve"),
         ),
         ("sketch", "sweep") => (
-            |e, a| Box::pin(crate::std::sweep::sweep(e, a)),
+            |e, a| Box::pin(crate::std::sweep::sweep(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::sweep"),
         ),
         ("sketch", "loft") => (
-            |e, a| Box::pin(crate::std::loft::loft(e, a)),
+            |e, a| Box::pin(crate::std::loft::loft(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::loft"),
         ),
         ("sketch", "polygon") => (
-            |e, a| Box::pin(crate::std::shapes::polygon(e, a)),
+            |e, a| Box::pin(crate::std::shapes::polygon(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::polygon"),
         ),
         ("sketch", "circleThreePoint") => (
-            |e, a| Box::pin(crate::std::shapes::circle_three_point(e, a)),
+            |e, a| Box::pin(crate::std::shapes::circle_three_point(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::circleThreePoint"),
         ),
         ("sketch", "getCommonEdge") => (
-            |e, a| Box::pin(crate::std::edge::get_common_edge(e, a)),
+            |e, a| Box::pin(crate::std::edge::get_common_edge(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::getCommonEdge"),
         ),
         ("sketch", "getNextAdjacentEdge") => (
-            |e, a| Box::pin(crate::std::edge::get_next_adjacent_edge(e, a)),
+            |e, a| Box::pin(crate::std::edge::get_next_adjacent_edge(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::getNextAdjacentEdge"),
         ),
         ("sketch", "getOppositeEdge") => (
-            |e, a| Box::pin(crate::std::edge::get_opposite_edge(e, a)),
+            |e, a| Box::pin(crate::std::edge::get_opposite_edge(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::revolve"),
         ),
         ("sketch", "getPreviousAdjacentEdge") => (
-            |e, a| Box::pin(crate::std::edge::get_previous_adjacent_edge(e, a)),
+            |e, a| Box::pin(crate::std::edge::get_previous_adjacent_edge(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::getPreviousAdjacentEdge"),
         ),
         ("sketch", "patternLinear2d") => (
-            |e, a| Box::pin(crate::std::patterns::pattern_linear_2d(e, a)),
+            |e, a| Box::pin(crate::std::patterns::pattern_linear_2d(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::patternLinear2d"),
         ),
         ("sketch", "patternCircular2d") => (
-            |e, a| Box::pin(crate::std::patterns::pattern_circular_2d(e, a)),
+            |e, a| Box::pin(crate::std::patterns::pattern_circular_2d(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::patternCircular2d"),
         ),
         ("sketch", "segEnd") => (
-            |e, a| Box::pin(crate::std::segment::segment_end(e, a)),
+            |e, a| Box::pin(crate::std::segment::segment_end(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::segEnd"),
         ),
         ("sketch", "segEndX") => (
-            |e, a| Box::pin(crate::std::segment::segment_end_x(e, a)),
+            |e, a| Box::pin(crate::std::segment::segment_end_x(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::segEndX"),
         ),
         ("sketch", "segEndY") => (
-            |e, a| Box::pin(crate::std::segment::segment_end_y(e, a)),
+            |e, a| Box::pin(crate::std::segment::segment_end_y(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::segEndY"),
         ),
         ("sketch", "segStart") => (
-            |e, a| Box::pin(crate::std::segment::segment_start(e, a)),
+            |e, a| Box::pin(crate::std::segment::segment_start(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::segStart"),
         ),
         ("sketch", "segStartX") => (
-            |e, a| Box::pin(crate::std::segment::segment_start_x(e, a)),
+            |e, a| Box::pin(crate::std::segment::segment_start_x(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::segStartX"),
         ),
         ("sketch", "segStartY") => (
-            |e, a| Box::pin(crate::std::segment::segment_start_y(e, a)),
+            |e, a| Box::pin(crate::std::segment::segment_start_y(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::segStartY"),
         ),
         ("sketch", "lastSegX") => (
-            |e, a| Box::pin(crate::std::segment::last_segment_x(e, a)),
+            |e, a| Box::pin(crate::std::segment::last_segment_x(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::lastSegX"),
         ),
         ("sketch", "lastSegY") => (
-            |e, a| Box::pin(crate::std::segment::last_segment_y(e, a)),
+            |e, a| Box::pin(crate::std::segment::last_segment_y(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::lastSegY"),
         ),
         ("sketch", "segLen") => (
-            |e, a| Box::pin(crate::std::segment::segment_length(e, a)),
+            |e, a| Box::pin(crate::std::segment::segment_length(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::segLen"),
         ),
         ("sketch", "segAng") => (
-            |e, a| Box::pin(crate::std::segment::segment_angle(e, a)),
+            |e, a| Box::pin(crate::std::segment::segment_angle(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::segAng"),
         ),
         ("sketch", "tangentToEnd") => (
-            |e, a| Box::pin(crate::std::segment::tangent_to_end(e, a)),
+            |e, a| Box::pin(crate::std::segment::tangent_to_end(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::tangentToEnd"),
         ),
         ("sketch", "profileStart") => (
-            |e, a| Box::pin(crate::std::sketch::profile_start(e, a)),
+            |e, a| Box::pin(crate::std::sketch::profile_start(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::profileStart"),
         ),
         ("sketch", "profileStartX") => (
-            |e, a| Box::pin(crate::std::sketch::profile_start_x(e, a)),
+            |e, a| Box::pin(crate::std::sketch::profile_start_x(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::profileStartX"),
         ),
         ("sketch", "profileStartY") => (
-            |e, a| Box::pin(crate::std::sketch::profile_start_y(e, a)),
+            |e, a| Box::pin(crate::std::sketch::profile_start_y(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::profileStartY"),
         ),
         ("sketch", "startSketchOn") => (
-            |e, a| Box::pin(crate::std::sketch::start_sketch_on(e, a)),
+            |e, a| Box::pin(crate::std::sketch::start_sketch_on(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::startSketchOn"),
         ),
         ("sketch", "startProfile") => (
-            |e, a| Box::pin(crate::std::sketch::start_profile(e, a)),
+            |e, a| Box::pin(crate::std::sketch::start_profile(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::startProfile"),
         ),
         ("sketch", "involuteCircular") => (
-            |e, a| Box::pin(crate::std::sketch::involute_circular(e, a)),
+            |e, a| Box::pin(crate::std::sketch::involute_circular(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::involuteCircular"),
         ),
         ("sketch", "line") => (
-            |e, a| Box::pin(crate::std::sketch::line(e, a)),
+            |e, a| Box::pin(crate::std::sketch::line(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::line"),
         ),
         ("sketch", "xLine") => (
-            |e, a| Box::pin(crate::std::sketch::x_line(e, a)),
+            |e, a| Box::pin(crate::std::sketch::x_line(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::xLine"),
         ),
         ("sketch", "yLine") => (
-            |e, a| Box::pin(crate::std::sketch::y_line(e, a)),
+            |e, a| Box::pin(crate::std::sketch::y_line(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::yLine"),
         ),
         ("sketch", "angledLine") => (
-            |e, a| Box::pin(crate::std::sketch::angled_line(e, a)),
+            |e, a| Box::pin(crate::std::sketch::angled_line(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::angledLine"),
         ),
         ("sketch", "angledLineThatIntersects") => (
-            |e, a| Box::pin(crate::std::sketch::angled_line_that_intersects(e, a)),
+            |e, a| Box::pin(crate::std::sketch::angled_line_that_intersects(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::angledLineThatIntersects"),
         ),
         ("sketch", "close") => (
-            |e, a| Box::pin(crate::std::sketch::close(e, a)),
+            |e, a| Box::pin(crate::std::sketch::close(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::close"),
         ),
         ("sketch", "arc") => (
-            |e, a| Box::pin(crate::std::sketch::arc(e, a)),
+            |e, a| Box::pin(crate::std::sketch::arc(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::arc"),
         ),
         ("sketch", "tangentialArc") => (
-            |e, a| Box::pin(crate::std::sketch::tangential_arc(e, a)),
+            |e, a| Box::pin(crate::std::sketch::tangential_arc(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::tangentialArc"),
         ),
         ("sketch", "bezierCurve") => (
-            |e, a| Box::pin(crate::std::sketch::bezier_curve(e, a)),
+            |e, a| Box::pin(crate::std::sketch::bezier_curve(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::bezierCurve"),
         ),
         ("sketch", "subtract2d") => (
-            |e, a| Box::pin(crate::std::sketch::subtract_2d(e, a)),
+            |e, a| Box::pin(crate::std::sketch::subtract_2d(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::subtract2d"),
         ),
         ("appearance", "hexString") => (
-            |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),
+            |e, a| Box::pin(crate::std::appearance::hex_string(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::appearance::hexString"),
         ),
         ("sketch2", "point") => (
-            |e, a| Box::pin(crate::std::constraints::point(e, a)),
+            |e, a| Box::pin(crate::std::constraints::point(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::point"),
         ),
         ("sketch2", "line") => (
-            |e, a| Box::pin(crate::std::constraints::line(e, a)),
+            |e, a| Box::pin(crate::std::constraints::line(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::line"),
         ),
         ("sketch2", "arc") => (
-            |e, a| Box::pin(crate::std::constraints::arc(e, a)),
+            |e, a| Box::pin(crate::std::constraints::arc(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::arc"),
         ),
         ("sketch2", "coincident") => (
-            |e, a| Box::pin(crate::std::constraints::coincident(e, a)),
+            |e, a| Box::pin(crate::std::constraints::coincident(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::coincident"),
         ),
         ("sketch2", "distance") => (
-            |e, a| Box::pin(crate::std::constraints::distance(e, a)),
+            |e, a| Box::pin(crate::std::constraints::distance(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::distance"),
         ),
         ("sketch2", "equalLength") => (
-            |e, a| Box::pin(crate::std::constraints::equal_length(e, a)),
+            |e, a| Box::pin(crate::std::constraints::equal_length(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::equalLength"),
         ),
         ("sketch2", "horizontal") => (
-            |e, a| Box::pin(crate::std::constraints::horizontal(e, a)),
+            |e, a| Box::pin(crate::std::constraints::horizontal(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::horizontal"),
         ),
         ("sketch2", "parallel") => (
-            |e, a| Box::pin(crate::std::constraints::parallel(e, a)),
+            |e, a| Box::pin(crate::std::constraints::parallel(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::parallel"),
         ),
         ("sketch2", "perpendicular") => (
-            |e, a| Box::pin(crate::std::constraints::perpendicular(e, a)),
+            |e, a| Box::pin(crate::std::constraints::perpendicular(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::perpendicular"),
         ),
         ("sketch2", "vertical") => (
-            |e, a| Box::pin(crate::std::constraints::vertical(e, a)),
+            |e, a| Box::pin(crate::std::constraints::vertical(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch2::vertical"),
         ),
         (module, fn_name) => {

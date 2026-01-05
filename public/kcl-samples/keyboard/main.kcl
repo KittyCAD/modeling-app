@@ -1,5 +1,6 @@
 // Zoo Keyboard
 // A custom keyboard with Zoo brand lettering
+// Categories: Maker
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)

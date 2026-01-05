@@ -1,5 +1,6 @@
 // Kitt
 // The beloved KittyCAD mascot in a voxelized style.
+// Categories: Maker
 
 // Pixel box function
 fn pixelBox(kitExtrude, extrudeTag, positionY, positionZ, width, height, depth) {

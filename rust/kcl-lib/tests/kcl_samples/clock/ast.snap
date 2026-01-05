@@ -41,6 +41,7 @@ description: Result of parsing clock.kcl
         "preComments": [
           "// Clock",
           "// A clock with roman numerals",
+          "// Categories: Maker",
           "",
           "",
           "// Define parameters"

@@ -4601,6 +4601,7 @@ description: Result of parsing cold-plate.kcl
         "preComments": [
           "// Cold Plate",
           "// A cold plate is a thermal management device used to remove heat from a device or component, typically by transferring heat to a liquid coolant that flows through the plate. It's a conductive cooling solution, commonly made of materials like aluminum or copper, with internal channels or tubes for the coolant",
+          "// Categories: Automotive, Aerospace, Computer Hardware",
           "",
           "",
           "// Set units"
