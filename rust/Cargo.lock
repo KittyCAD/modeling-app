@@ -2387,7 +2387,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.2.153"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena/show-seams#8ea93c2cb9f57507d13236c0bb02f3d15898df39"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena/show-seams#865dece9c8a1590490ea4200c2ac813d8aadfb9b"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2414,7 +2414,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena/show-seams#8ea93c2cb9f57507d13236c0bb02f3d15898df39"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena/show-seams#865dece9c8a1590490ea4200c2ac813d8aadfb9b"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2425,7 +2425,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena/show-seams#8ea93c2cb9f57507d13236c0bb02f3d15898df39"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena/show-seams#865dece9c8a1590490ea4200c2ac813d8aadfb9b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5987,8 +5987,3 @@ dependencies = [
  "cc",
  "pkg-config",
 ]
-
-[[patch.unused]]
-name = "kittycad-modeling-session"
-version = "0.1.6"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena/show-seams#8ea93c2cb9f57507d13236c0bb02f3d15898df39"

@@ -521,20 +521,23 @@ impl ExecutorContext {
         let (ws, _headers) = client
             .modeling()
             .commands_ws(
-                None,
-                None,
-                None,
-                if settings.enable_ssao {
+                kittycad::modeling::CommandsWsParams{
+                api_call_id: None,
+                fps: None,
+              order_independent_transparency:  None,
+                post_effect: if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
                     None
                 },
-                settings.replay.clone(),
-                if settings.show_grid { Some(true) } else { None },
-                None,
-                None,
-                None,
-                Some(false),
+                replay: settings.replay.clone(),
+                show_grid: if settings.show_grid { Some(true) } else { None },
+                pool: None,
+                pr: None,
+                unlocked_framerate: None,
+                webrtc: Some(false),
+                video_res_width: None,
+                video_res_height: None,}
             )
             .await?;
 

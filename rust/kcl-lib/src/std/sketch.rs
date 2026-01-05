@@ -3,7 +3,6 @@
 use std::f64;
 
 use anyhow::Result;
-use indexmap::IndexMap;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq};
@@ -22,7 +21,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         BasePath, ExecState, Face, GeoMeta, Geometry, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
-        ProfileClosed, Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
+        ProfileClosed, Sketch, SketchSurface, Solid, TagIdentifier, annotations,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -1209,24 +1208,8 @@ pub(crate) async fn inner_start_profile(
         mirror: Default::default(),
         clone: Default::default(),
         meta: vec![args.source_range.into()],
-        tags: if let Some(tag) = &tag {
-            let mut tag_identifier: TagIdentifier = tag.into();
-            tag_identifier.info = vec![(
-                exec_state.stack().current_epoch(),
-                TagEngineInfo {
-                    id: current_path.geo_meta.id,
-                    geometry: Geometry::Sketch(path_id),
-                    path: Some(Path::Base {
-                        base: current_path.clone(),
-                    }),
-                    surface: None,
-                },
-            )];
-            IndexMap::from([(tag.name.to_string(), tag_identifier)])
-        } else {
-            Default::default()
-        },
-        start: current_path,
+        tags: Default::default(),
+        start: current_path.clone(),
         is_closed: ProfileClosed::No,
     };
     if let Some(tag) = &tag {

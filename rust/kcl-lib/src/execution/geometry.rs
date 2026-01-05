@@ -772,6 +772,17 @@ impl Extrudable {
             },
         }
     }
+
+    pub fn is_closed(&self) -> ProfileClosed {
+        match self {
+            Extrudable::Sketch(sketch) => sketch.is_closed,
+            Extrudable::Face(face_tag) => match face_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => sketch.is_closed,
+                Some(Geometry::Solid(solid)) => solid.sketch.is_closed,
+                _ => ProfileClosed::Maybe,
+            },
+        }
+    }
 }
 
 impl From<Sketch> for Extrudable {
