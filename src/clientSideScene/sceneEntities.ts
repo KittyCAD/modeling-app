@@ -3018,7 +3018,7 @@ export class SceneEntities {
     let snappedToProfileStart = false
 
     const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
-    const forceDirectionSnapping = mouseEvent.shiftKey
+    const forceTangentSnapping = mouseEvent.shiftKey
     if (!disableTangentSnapping) {
       const segments: SafeArray<Group> = Object.values(this.activeSegments) // Using the order in the object feels wrong
       const currentIndex =
@@ -3081,7 +3081,7 @@ export class SceneEntities {
                 true
               )
               if (
-                forceDirectionSnapping ||
+                forceTangentSnapping ||
                 (this.sceneInfra.screenSpaceDistance(
                   closestPoint,
                   snappedPoint
