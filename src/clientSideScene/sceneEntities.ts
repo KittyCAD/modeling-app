@@ -1298,8 +1298,8 @@ export class SceneEntities {
             const snaps = {
               previousArcTag: '',
               negativeTangentDirection,
-              xAxis: !!intersectsXAxis,
-              yAxis: !!intersectsYAxis,
+              xAxis: intersectsXAxis,
+              yAxis: intersectsYAxis,
             }
 
             // This might need to become its own function if we want more
@@ -2992,7 +2992,7 @@ export class SceneEntities {
 
   getSnappedDragPoint(
     pos: Vector2,
-    intersects: Intersection<Object3D<Object3DEventMap>>[],
+    intersects: Intersection<Object3D>[],
     mouseEvent: MouseEvent,
     wasmInstance: ModuleType,
     // During draft segment mouse move:
@@ -3005,18 +3005,99 @@ export class SceneEntities {
     let snappedPoint: Coords2d = [pos.x, pos.y]
 
     // Note: these could also be calculated without intersects, just by using the mouse position coordinates
-    const intersectsYAxis = intersects.find(
+    const intersectsYAxis = intersects.some(
       (sceneObject) => sceneObject.object.name === Y_AXIS
     )
-    const intersectsXAxis = intersects.find(
+    const intersectsXAxis = intersects.some(
       (sceneObject) => sceneObject.object.name === X_AXIS
     )
+    const {
+      snappedToTangent,
+      negativeTangentDirection,
+      snappedPoint: snappedPointTangent,
+    } = this.trySnapToTangentDirection(
+      snappedPoint,
+      mouseEvent,
+      wasmInstance,
+      intersectsXAxis,
+      intersectsYAxis,
+      currentObject
+    )
+    if (snappedToTangent) {
+      snappedPoint = snappedPointTangent
+    }
 
-    // Snap to previous segment's tangent direction when drawing a straight segment
-    let snappedToTangent = false
-    let negativeTangentDirection = false
     let snappedToGrid = false
     let snappedToProfileStart = false
+
+    if (!snappedToTangent) {
+      // Highest priority: try snapping to profile start to close it
+      const snappedToProfileStartResult = this.maybeSnapToProfileStart(
+        snappedPoint,
+        sketchEntryNodePath
+      )
+      if (snappedToProfileStartResult) {
+        snappedToProfileStart = true
+        snappedPoint = snappedToProfileStartResult
+      }
+      if (!snappedToProfileStart) {
+        // If snapping to profileStart didn't occur, try snapping to axes, grid
+
+        // Snap to axes
+        snappedPoint = [
+          intersectsYAxis ? 0 : snappedPoint[0],
+          intersectsXAxis ? 0 : snappedPoint[1],
+        ] as const
+
+        // Snap to grid
+        ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
+          snappedPoint,
+          mouseEvent
+        ))
+
+        // After snapping to axis/grid, try snapping to profileStart AGAIN, this is because the newly snapped
+        // point might now line up with a profileStart, in which case we want to close the shape.
+        // This happens when profileStart is too far to snap from the mouse position, but after snapping to grid
+        // it's now close enough.
+        const snappedToProfileStartResult = this.maybeSnapToProfileStart(
+          snappedPoint,
+          sketchEntryNodePath
+        )
+        if (snappedToProfileStartResult) {
+          snappedToProfileStart = true
+          snappedPoint = snappedToProfileStartResult
+        }
+      }
+    }
+
+    return {
+      isSnapped:
+        intersectsYAxis ||
+        intersectsXAxis ||
+        snappedToTangent ||
+        snappedToGrid ||
+        snappedToProfileStart,
+      snappedToTangent,
+      snappedToProfileStart,
+      negativeTangentDirection,
+      snappedPoint,
+      intersectsXAxis,
+      intersectsYAxis,
+    }
+  }
+
+  // Snap to previous segment's tangent direction when drawing a straight segment
+  private trySnapToTangentDirection(
+    snappedPoint: Coords2d,
+    mouseEvent: MouseEvent,
+    wasmInstance: ModuleType,
+    intersectsXAxis: boolean,
+    intersectsYAxis: boolean,
+    currentObject?: Object3D | Group
+  ) {
+    snappedPoint = [...snappedPoint]
+    let snappedToTangent = false
+    let negativeTangentDirection = false
 
     const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
     const forceTangentSnapping = mouseEvent.shiftKey
@@ -3104,60 +3185,10 @@ export class SceneEntities {
       }
     }
 
-    if (!snappedToTangent) {
-      // Highest priority: try snapping to profile start to close it
-      const snappedToProfileStartResult = this.maybeSnapToProfileStart(
-        snappedPoint,
-        sketchEntryNodePath
-      )
-      if (snappedToProfileStartResult) {
-        snappedToProfileStart = true
-        snappedPoint = snappedToProfileStartResult
-      }
-      if (!snappedToProfileStart) {
-        // If snapping to profileStart didn't occur, try snapping to axes, grid
-
-        // Snap to axes
-        snappedPoint = [
-          intersectsYAxis ? 0 : snappedPoint[0],
-          intersectsXAxis ? 0 : snappedPoint[1],
-        ] as const
-
-        // Snap to grid
-        ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
-          snappedPoint,
-          mouseEvent
-        ))
-
-        // After snapping to axis/grid, try snapping to profileStart AGAIN, this is because the newly snapped
-        // point might now line up with a profileStart, in which case we want to close the shape.
-        // This happens when profileStart is too far to snap from the mouse position, but after snapping to grid
-        // it's now close enough.
-        const snappedToProfileStartResult = this.maybeSnapToProfileStart(
-          snappedPoint,
-          sketchEntryNodePath
-        )
-        if (snappedToProfileStartResult) {
-          snappedToProfileStart = true
-          snappedPoint = snappedToProfileStartResult
-        }
-      }
-    }
-
     return {
-      isSnapped: !!(
-        intersectsYAxis ||
-        intersectsXAxis ||
-        snappedToTangent ||
-        snappedToGrid ||
-        snappedToProfileStart
-      ),
       snappedToTangent,
-      snappedToProfileStart,
-      negativeTangentDirection,
       snappedPoint,
-      intersectsXAxis,
-      intersectsYAxis,
+      negativeTangentDirection,
     }
   }
 
