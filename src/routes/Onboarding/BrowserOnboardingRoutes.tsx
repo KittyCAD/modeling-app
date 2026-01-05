@@ -308,7 +308,7 @@ function PromptToEdit() {
           Zookeeper not only can <strong>create</strong> a part, but also{' '}
           <strong>modify</strong> an existing part. Still in the right sidebar,
           under the “Zookeeper” pane, you’ll be able to describe the change you
-          want for your part, and our AI will generate the change. minute.
+          want for your part, and our AI will generate the change.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
