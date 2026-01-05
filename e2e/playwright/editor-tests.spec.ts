@@ -670,14 +670,8 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
 
     await scene.connectionEstablished()
 
-    // Wait for highlighting to kick in, a good proxy that the LSP is ready.
-    await expect
-      .poll(() =>
-        page.evaluate(
-          () => document.querySelector('.cm-line > span[class*="ͼ"]') !== null
-        )
-      )
-      .toBe(true)
+    // Wait for the linter diagnostics to populate, a good proxy that the LSP is ready.
+    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
     // Expect the signature help to NOT be visible
     await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
@@ -699,9 +693,9 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     )
 
     // Make sure the tooltip goes away after a timeout.
-    await page.waitForTimeout(12000)
-
-    await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
+    await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible({
+      timeout: 15_000,
+    })
   })
 
   test('if you write kcl with lint errors you get lints', async ({
