@@ -231,8 +231,13 @@ async function tryConnecting({
            * It can break if a user disconnects their internet during this attempt process. We need to check by
            * the time it gets to this line did someone disconnect the engine, if they did, throw an error to exit this attempt.
            */
-          if (engineCommandManager.started === false && engineCommandManager.connection === undefined) {
-            throw new Error('engine disconnected before it finished the attempt')
+          if (
+            engineCommandManager.started === false &&
+            engineCommandManager.connection === undefined
+          ) {
+            throw new Error(
+              'engine disconnected before it finished the attempt'
+            )
           }
 
           isConnecting.current = false
