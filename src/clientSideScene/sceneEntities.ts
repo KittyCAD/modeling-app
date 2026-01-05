@@ -3110,9 +3110,9 @@ export class SceneEntities {
           snappedPoint,
           sketchEntryNodePath
         )
-        if (snappedToProfileStartResult.snappedToProfileStart) {
+        if (snappedToProfileStartResult) {
           snappedToProfileStart = true
-          snappedPoint = snappedToProfileStartResult.point
+          snappedPoint = snappedToProfileStartResult
         }
       }
       if (!snappedToProfileStart) {
@@ -3140,9 +3140,9 @@ export class SceneEntities {
             snappedPoint,
             sketchEntryNodePath
           )
-          if (snappedToProfileStartResult.snappedToProfileStart) {
+          if (snappedToProfileStartResult) {
             snappedToProfileStart = true
-            snappedPoint = snappedToProfileStartResult.point
+            snappedPoint = snappedToProfileStartResult
           }
         }
       }
@@ -3198,10 +3198,7 @@ export class SceneEntities {
       )
     })
 
-    const result = {
-      point: posWorld,
-      snappedToProfileStart: false,
-    }
+    let result: Coords2d | undefined
 
     if (profileStartGroup) {
       // Profile start in baseunit coordinates
@@ -3212,9 +3209,8 @@ export class SceneEntities {
         this.sceneInfra.screenSpaceDistance(posWorld, profileStartPoint) <
         20 * window.devicePixelRatio
 
-      result.snappedToProfileStart = snapped
       if (snapped) {
-        result.point = [...profileStartPoint]
+        result = [...profileStartPoint]
       }
     }
 
