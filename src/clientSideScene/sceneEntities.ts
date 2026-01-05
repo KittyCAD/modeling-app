@@ -3105,15 +3105,13 @@ export class SceneEntities {
 
     if (!snappedToTangent) {
       // Highest priority: try snapping to profile start to close it
-      if (sketchEntryNodePath) {
-        const snappedToProfileStartResult = this.maybeSnapToProfileStart(
-          snappedPoint,
-          sketchEntryNodePath
-        )
-        if (snappedToProfileStartResult) {
-          snappedToProfileStart = true
-          snappedPoint = snappedToProfileStartResult
-        }
+      const snappedToProfileStartResult = this.maybeSnapToProfileStart(
+        snappedPoint,
+        sketchEntryNodePath
+      )
+      if (snappedToProfileStartResult) {
+        snappedToProfileStart = true
+        snappedPoint = snappedToProfileStartResult
       }
       if (!snappedToProfileStart) {
         // If snapping to profileStart didn't occur, try snapping to axes, grid
@@ -3130,20 +3128,17 @@ export class SceneEntities {
           mouseEvent
         ))
 
-        if (sketchEntryNodePath) {
-          // After snapping to axis/grid, try snapping to profileStart AGAIN, this is because the newly snapped
-          // point might now line up with a profileStart, in which case we want to close the shape.
-          // This happens when profileStart is too far to snap from the mouse position, but after snapping to grid
-          // it's now close enough.
-
-          const snappedToProfileStartResult = this.maybeSnapToProfileStart(
-            snappedPoint,
-            sketchEntryNodePath
-          )
-          if (snappedToProfileStartResult) {
-            snappedToProfileStart = true
-            snappedPoint = snappedToProfileStartResult
-          }
+        // After snapping to axis/grid, try snapping to profileStart AGAIN, this is because the newly snapped
+        // point might now line up with a profileStart, in which case we want to close the shape.
+        // This happens when profileStart is too far to snap from the mouse position, but after snapping to grid
+        // it's now close enough.
+        const snappedToProfileStartResult = this.maybeSnapToProfileStart(
+          snappedPoint,
+          sketchEntryNodePath
+        )
+        if (snappedToProfileStartResult) {
+          snappedToProfileStart = true
+          snappedPoint = snappedToProfileStartResult
         }
       }
     }
@@ -3189,7 +3184,13 @@ export class SceneEntities {
     }
   }
   // Same purpose as maybeSnapProfileStartIntersect2d but takes sketchEntryNodePath instead of intersects.
-  maybeSnapToProfileStart(posWorld: Coords2d, sketchEntryNodePath: PathToNode) {
+  maybeSnapToProfileStart(
+    posWorld: Coords2d,
+    sketchEntryNodePath: PathToNode | undefined
+  ) {
+    if (!sketchEntryNodePath) {
+      return undefined
+    }
     const expressionIndex = Number(sketchEntryNodePath[1][0])
     const profileStartGroup = Object.values(this.activeSegments).find((seg) => {
       return (
