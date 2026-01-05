@@ -235,6 +235,8 @@ async function tryConnecting({
             engineCommandManager.started === false &&
             engineCommandManager.connection === undefined
           ) {
+            // This attempt needs to throw an error to use the internal logic for retry for the next attempt.
+            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
             throw new Error(
               'engine disconnected before it finished the attempt'
             )
