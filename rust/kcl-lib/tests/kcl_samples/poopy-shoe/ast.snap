@@ -8396,6 +8396,7 @@ description: Result of parsing poopy-shoe.kcl
         "preComments": [
           "// Poopy Shoe",
           "// poop shute for bambu labs printer - optimized for printing.",
+          "// Categories: Maker",
           "",
           "",
           "// Set units"

@@ -1,5 +1,6 @@
 // Bottle
 // A simple bottle with a hollow, watertight interior
+// Categories: Maker
 
 // Set Units
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

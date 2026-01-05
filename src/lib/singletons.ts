@@ -192,18 +192,6 @@ const appMachineActors = {
           .setTheme(context.app.theme.current)
           .catch(reportRejection)
       },
-      setEditorLineWrapping: ({ context }) => {
-        kclManager.setEditorLineWrapping(
-          context.textEditor.textWrapping.current
-        )
-      },
-      setCursorBlinking: ({ context }) => {
-        document.documentElement.style.setProperty(
-          `--cursor-color`,
-          context.textEditor.blinkingCursor.current ? 'auto' : 'transparent'
-        )
-        kclManager.setCursorBlinking(context.textEditor.blinkingCursor.current)
-      },
       setEngineHighlightEdges: ({ context }) => {
         engineCommandManager
           .setHighlightEdges(context.modeling.highlightEdges.current)
