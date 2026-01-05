@@ -225,6 +225,16 @@ async function tryConnecting({
             sceneInfra,
             settingsActor: rustContext.settingsActor,
           })
+
+          /**
+           * Attempt is a longer lifecycle promise that cannot be interrupted directly from external code.
+           * It can break if a user disconnects their internet during this attempt process. We need to check by
+           * the time it gets to this line did someone disconnect the engine, if they did, throw an error to exit this attempt.
+           */
+          if (engineCommandManager.started === false && engineCommandManager.connection === undefined) {
+            throw new Error('engine disconnected before it finished the attempt')
+          }
+
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAttempts.current = 0
