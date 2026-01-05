@@ -156,17 +156,24 @@ export function App() {
 
   useEngineConnectionSubscriptions()
 
+  const billingUpdate = () => {
+    billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
+  }
   useEffect(() => {
     // Not too useful for regular flows but on modeling view refresh,
     // fetch the token count. The regular flow is the count is initialized
     // by the Projects view.
-    billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
+    billingUpdate()
+    // TODO: we need it more reactive now, but there should be a way to receive the billing webhooks
+    const TEN_SECONDS_IN_MS = 10 * 1000
+    const billingUpdateInterval = setInterval(billingUpdate, TEN_SECONDS_IN_MS)
 
     // Tell engineStream to wait for dependencies to start streaming.
     // When leaving the modeling scene, cut the engine stream.
 
     return () => {
       // Add any logic to be called when the page gets unmounted.
+      clearInterval(billingUpdateInterval)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
