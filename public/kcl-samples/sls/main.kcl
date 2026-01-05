@@ -1,5 +1,6 @@
 // Artemis SLS Rocket
 // Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes
+// Categories: Aerospace
 
 @settings(defaultLengthUnit = m, kclVersion = 1.0)
 

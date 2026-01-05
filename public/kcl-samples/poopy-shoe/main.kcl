@@ -1,5 +1,6 @@
 // Poopy Shoe
 // poop shute for bambu labs printer - optimized for printing.
+// Categories: Maker
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
