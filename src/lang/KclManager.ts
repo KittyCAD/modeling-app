@@ -1661,7 +1661,7 @@ export class KclManager extends EventTarget {
       // Last write in memory must not be debounced to once per second
       // TODO: investigate if `lastWrite` is necessary anymore.
       this.lastWrite = {
-        code: this.code ?? '',
+        code: newCode ?? '',
         time: Date.now(),
       }
       return new Promise((resolve, reject) => {
