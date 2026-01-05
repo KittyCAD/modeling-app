@@ -1553,6 +1553,14 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "lProfileFn",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -2339,6 +2347,14 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "hexagonFn",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -3095,6 +3111,14 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "boltFn",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -4616,6 +4640,14 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "boltWithPlateAndNutFn",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -7146,6 +7178,7 @@ description: Result of parsing curtain-wall-anchor-plate.kcl
         "preComments": [
           "// Curtain Wall Anchor Plate",
           "// A structural steel L-plate used to anchor curtain wall systems to concrete slabs, with elongated holes for adjustability and bolts with nuts and base plates for secure fastening",
+          "// Categories: Construction",
           "",
           "",
           "// Set units in millimeters (mm)"

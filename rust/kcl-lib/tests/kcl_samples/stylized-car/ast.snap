@@ -3277,6 +3277,14 @@ description: Result of parsing stylized-car.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "makeWheelCutout",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -8244,6 +8252,14 @@ description: Result of parsing stylized-car.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "wheelFn",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -11456,6 +11472,7 @@ description: Result of parsing stylized-car.kcl
         "preComments": [
           "// Stylized Car",
           "// A simplified, parametric 3-D model of a small car intended for use as a low-poly prop in real-time engines, visualization scenes, or rapid prototyping.",
+          "// Categories: Maker, Automotive",
           "",
           "",
           "// The model includes:",

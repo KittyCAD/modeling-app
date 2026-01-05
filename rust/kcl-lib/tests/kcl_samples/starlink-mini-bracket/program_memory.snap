@@ -199,10 +199,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 506,
-            "end": 512,
+            "commentStart": 527,
+            "end": 533,
             "moduleId": 0,
-            "start": 506,
+            "start": 527,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -227,10 +227,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 651,
-            "end": 657,
+            "commentStart": 672,
+            "end": 678,
             "moduleId": 0,
-            "start": 651,
+            "start": 672,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -275,10 +275,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 506,
-              "end": 512,
+              "commentStart": 527,
+              "end": 533,
               "moduleId": 0,
-              "start": 506,
+              "start": 527,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -333,10 +333,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
               2.5
             ],
             "tag": {
-              "commentStart": 651,
-              "end": 657,
+              "commentStart": 672,
+              "end": 678,
               "moduleId": 0,
-              "start": 651,
+              "start": 672,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -670,10 +670,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 506,
-                  "end": 512,
+                  "commentStart": 527,
+                  "end": 533,
                   "moduleId": 0,
-                  "start": 506,
+                  "start": 527,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -698,10 +698,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 651,
-                  "end": 657,
+                  "commentStart": 672,
+                  "end": 678,
                   "moduleId": 0,
-                  "start": 651,
+                  "start": 672,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -746,10 +746,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 506,
-                    "end": 512,
+                    "commentStart": 527,
+                    "end": 533,
                     "moduleId": 0,
-                    "start": 506,
+                    "start": 527,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -804,10 +804,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                     2.5
                   ],
                   "tag": {
-                    "commentStart": 651,
-                    "end": 657,
+                    "commentStart": 672,
+                    "end": 678,
                     "moduleId": 0,
-                    "start": 651,
+                    "start": 672,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -1168,10 +1168,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 506,
-                  "end": 512,
+                  "commentStart": 527,
+                  "end": 533,
                   "moduleId": 0,
-                  "start": 506,
+                  "start": 527,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1196,10 +1196,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 651,
-                  "end": 657,
+                  "commentStart": 672,
+                  "end": 678,
                   "moduleId": 0,
-                  "start": 651,
+                  "start": 672,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1244,10 +1244,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 506,
-                    "end": 512,
+                    "commentStart": 527,
+                    "end": 533,
                     "moduleId": 0,
-                    "start": 506,
+                    "start": 527,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -1302,10 +1302,10 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                     2.5
                   ],
                   "tag": {
-                    "commentStart": 651,
-                    "end": 657,
+                    "commentStart": 672,
+                    "end": 678,
                     "moduleId": 0,
-                    "start": 651,
+                    "start": 672,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },

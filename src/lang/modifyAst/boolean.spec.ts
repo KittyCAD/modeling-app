@@ -80,10 +80,11 @@ describe('boolean', () => {
         artifactGraph,
         solids,
         tools,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
 
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
+      await enginelessExecutor(ast, rustContext)
       return recast(result.modifiedAst, instance)
     }
 

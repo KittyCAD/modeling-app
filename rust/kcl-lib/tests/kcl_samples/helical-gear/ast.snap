@@ -3115,6 +3115,14 @@ description: Result of parsing helical-gear.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "helicalGearSketch",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
                       "params": [
                         {
                           "type": "Parameter",
@@ -3589,6 +3597,14 @@ description: Result of parsing helical-gear.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "helicalGear",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -3839,6 +3855,7 @@ description: Result of parsing helical-gear.kcl
         "preComments": [
           "// Helical Gear",
           "// A helical gear is a type of cylindrical gear where the teeth are slanted at an angle relative to the axis of rotation. This greatly reduces noise and wear when transmitting torque across meshed spinning gears",
+          "// Categories: Automotive, Aerospace",
           "",
           "",
           "// Set units"

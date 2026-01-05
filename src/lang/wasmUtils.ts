@@ -1,8 +1,3 @@
-import {
-  import_file_extensions,
-  relevant_file_extensions,
-} from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-import { processEnv } from '@src/env'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule, init, reloadModule } from '@src/lib/wasm_lib_wrapper'
@@ -26,14 +21,7 @@ export const wasmUrl = () => {
   return fullUrl
 }
 // Initialise the wasm module.
-const initialiseWasm = async () => {
-  if (processEnv()?.VITEST) {
-    const message =
-      'wasmUtils is trying to call initialise. This will be blocked in VITEST runtimes.'
-    console.log(message)
-    return Promise.resolve(message)
-  }
-
+export const initialiseWasm = async (): Promise<ModuleType> => {
   try {
     await reloadModule()
     const fullUrl = wasmUrl()
@@ -47,21 +35,13 @@ const initialiseWasm = async () => {
   }
 }
 
-export const initPromise = initialiseWasm()
-
-export function importFileExtensions(wasmInstance?: ModuleType): string[] {
-  const the_import_file_extensions = wasmInstance
-    ? wasmInstance.import_file_extensions
-    : import_file_extensions
-  return the_import_file_extensions()
+export function importFileExtensions(wasmInstance: ModuleType): string[] {
+  return wasmInstance.import_file_extensions()
 }
 
 /**
  * All of these file extensions will be lowercase
  */
-export function relevantFileExtensions(wasmInstance?: ModuleType): string[] {
-  const the_relevant_file_extensions = wasmInstance
-    ? wasmInstance.relevant_file_extensions
-    : relevant_file_extensions
-  return the_relevant_file_extensions()
+export function relevantFileExtensions(wasmInstance: ModuleType): string[] {
+  return wasmInstance.relevant_file_extensions()
 }

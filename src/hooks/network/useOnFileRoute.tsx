@@ -4,6 +4,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { KclManager } from '@src/lang/KclManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export interface IUseOnFileRoute {
   file: FileEntry | undefined
@@ -13,6 +14,7 @@ export interface IUseOnFileRoute {
     engineCommandManager: ConnectionManager
     kclManager: KclManager
     sceneInfra: SceneInfra
+    settingsActor: SettingsActorType
   }
 }
 
@@ -26,7 +28,7 @@ export const useOnFileRoute = ({
   file,
   isStreamAcceptingInput,
   resetCameraPosition,
-  systemDeps: { engineCommandManager, kclManager, sceneInfra },
+  systemDeps: { engineCommandManager, kclManager, sceneInfra, settingsActor },
 }: IUseOnFileRoute) => {
   const seenFilePath = useRef('')
   useEffect(() => {
@@ -54,7 +56,11 @@ export const useOnFileRoute = ({
       try {
         console.log('file changed, executing code')
         await kclManager.executeCode()
-        await resetCameraPosition({ sceneInfra })
+        await resetCameraPosition({
+          sceneInfra,
+          engineCommandManager,
+          settingsActor,
+        })
       } catch (e) {
         console.warn(e)
       }
@@ -72,6 +78,7 @@ export const useOnFileRoute = ({
     engineCommandManager,
     kclManager,
     sceneInfra,
+    settingsActor,
     resetCameraPosition,
   ])
 }

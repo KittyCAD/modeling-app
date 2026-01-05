@@ -1,7 +1,6 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import { default_app_settings } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { NIL as uuidNIL, v4 } from 'uuid'
 
 import {
@@ -12,7 +11,6 @@ import {
   serializeConfiguration,
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import {
   cameraSystemToMouseControl,
   mouseControlsToCameraSystem,
@@ -26,10 +24,10 @@ import {
   writeProjectSettingsFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { Setting } from '@src/lib/settings/initialSettings'
 import {
   createSettings,
-  type settings,
+  type Setting,
+  type SettingsType,
 } from '@src/lib/settings/initialSettings'
 import type {
   SaveSettingsPayload,
@@ -38,6 +36,8 @@ import type {
 import { appThemeToTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 type OmitNull<T> = T extends null ? undefined : T
 const toUndefinedIfNull = (a: any): OmitNull<any> =>
@@ -279,9 +279,9 @@ function localStorageProjectSettingsPath() {
   return '/' + BROWSER_PROJECT_NAME + '/project.toml'
 }
 
-export function readLocalStorageAppSettingsFile():
-  | DeepPartial<Configuration>
-  | Error {
+export function readLocalStorageAppSettingsFile(
+  wasmInstance: ModuleType
+): DeepPartial<Configuration> | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored =
     localStorage.getItem(localStorageAppSettingsPath()) ??
@@ -289,16 +289,16 @@ export function readLocalStorageAppSettingsFile():
     ''
 
   if (stored === '') {
-    return defaultAppSettings()
+    return defaultAppSettings(wasmInstance)
   }
 
   try {
-    return parseAppSettings(stored)
+    return parseAppSettings(stored, wasmInstance)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
-    const settings = defaultAppSettings()
+    const settings = defaultAppSettings(wasmInstance)
     if (err(settings)) return settings
-    const tomlStr = serializeConfiguration(settings)
+    const tomlStr = serializeConfiguration(settings, wasmInstance)
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageAppSettingsPath(), tomlStr)
@@ -306,21 +306,21 @@ export function readLocalStorageAppSettingsFile():
   }
 }
 
-export function readLocalStorageProjectSettingsFile():
-  | DeepPartial<ProjectConfiguration>
-  | Error {
+export function readLocalStorageProjectSettingsFile(
+  wasmInstance: ModuleType
+): DeepPartial<ProjectConfiguration> | Error {
   // TODO: Remove backwards compatibility after a few releases.
   let stored = localStorage.getItem(localStorageProjectSettingsPath()) ?? ''
 
   if (stored === '') {
-    return defaultProjectSettings()
+    return defaultProjectSettings(wasmInstance)
   }
 
-  const projectSettings = parseProjectSettings(stored)
+  const projectSettings = parseProjectSettings(stored, wasmInstance)
   if (err(projectSettings)) {
-    const settings = defaultProjectSettings()
+    const settings = defaultProjectSettings(wasmInstance)
     if (err(settings)) return settings
-    const tomlStr = serializeProjectConfiguration(settings)
+    const tomlStr = serializeProjectConfiguration(settings, wasmInstance)
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
@@ -331,20 +331,28 @@ export function readLocalStorageProjectSettingsFile():
 }
 
 export interface AppSettings {
-  settings: ReturnType<typeof createSettings>
+  settings: SettingsType
   configuration: DeepPartial<Configuration>
 }
 
+/**
+ * Finds the TOML settings files for user-level (and project-level if projectPath is provided)
+ * settings, deserialize them and validate them, serialize and write the validated TOML back to the locations,
+ * and return the settings object and the raw "configuration" object returned from WASM.
+ *
+ * Relies on WASM for TOML de/serialization.
+ */
 export async function loadAndValidateSettings(
+  initPromise: Promise<ModuleType> | ModuleType,
   projectPath?: string
 ): Promise<AppSettings> {
   // Make sure we have wasm initialized.
-  await initPromise
+  const wasmInstance = await initPromise
 
   // Load the app settings from the file system or localStorage.
   const appSettingsPayload = window.electron
-    ? await readAppSettingsFile(window.electron)
-    : readLocalStorageAppSettingsFile()
+    ? await readAppSettingsFile(window.electron, wasmInstance)
+    : readLocalStorageAppSettingsFile(wasmInstance)
 
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
@@ -366,8 +374,12 @@ export async function loadAndValidateSettings(
   // Load the project settings if they exist
   if (projectPath) {
     let projectSettings = window.electron
-      ? await readProjectSettingsFile(window.electron, projectPath)
-      : readLocalStorageProjectSettingsFile()
+      ? await readProjectSettingsFile(
+          window.electron,
+          projectPath,
+          wasmInstance
+        )
+      : readLocalStorageProjectSettingsFile(wasmInstance)
 
     // An id was missing. Create one and write it to disk immediately.
     if (!err(projectSettings) && !projectSettings.settings?.meta?.id) {
@@ -379,7 +391,10 @@ export async function loadAndValidateSettings(
         },
       }
       // Duplicated from settingsUtils.ts
-      const projectTomlString = serializeProjectConfiguration(projectSettings)
+      const projectTomlString = serializeProjectConfiguration(
+        projectSettings,
+        wasmInstance
+      )
       if (err(projectTomlString))
         return Promise.reject(new Error('Failed to serialize project settings'))
       if (window.electron) {
@@ -412,7 +427,8 @@ export async function loadAndValidateSettings(
 
       // Duplicated from settingsUtils.ts
       const projectTomlString = serializeProjectConfiguration(
-        settingsPayloadToProjectConfiguration(projectSettingsNew)
+        settingsPayloadToProjectConfiguration(projectSettingsNew),
+        wasmInstance
       )
       if (err(projectTomlString))
         return Promise.reject(
@@ -452,7 +468,8 @@ export async function loadAndValidateSettings(
 
       // Duplicated from settingsUtils.ts
       const projectTomlString = serializeProjectConfiguration(
-        settingsPayloadToProjectConfiguration(projectSettingsNew)
+        settingsPayloadToProjectConfiguration(projectSettingsNew),
+        wasmInstance
       )
 
       if (err(projectTomlString))
@@ -484,6 +501,10 @@ export async function loadAndValidateSettings(
     )
   }
 
+  // Resolve all async hideOnPlatform values before returning
+  // This makes everything synchronous from this point on
+  await resolveAsyncHideOnPlatform(settingsNext)
+
   // Return the settings object
   return {
     settings: settingsNext,
@@ -491,17 +512,67 @@ export async function loadAndValidateSettings(
   }
 }
 
+/**
+ * Resolves all async hideOnPlatform functions in settings and replaces them with resolved values.
+ * This is called once during settings loading to make everything synchronous afterward.
+ */
+async function resolveAsyncHideOnPlatform(
+  settings: SettingsType
+): Promise<void> {
+  const settingsToResolve: Array<{ setting: Setting<unknown> }> = []
+
+  // Collect all settings with async hideOnPlatform functions
+  Object.entries(settings).forEach(([_, categorySettings]) => {
+    Object.entries(categorySettings).forEach(([_, setting]) => {
+      if (typeof setting.hideOnPlatform === 'function') {
+        settingsToResolve.push({ setting })
+      }
+    })
+  })
+
+  if (settingsToResolve.length === 0) {
+    return
+  }
+
+  // Resolve all async hideOnPlatform values in parallel
+  await Promise.all(
+    settingsToResolve.map(async ({ setting }) => {
+      const hideOnPlatform = setting.hideOnPlatform
+      if (typeof hideOnPlatform === 'function') {
+        try {
+          const resolved = await hideOnPlatform()
+          // Replace the function with the resolved value
+          // Convert null to undefined since the type doesn't allow null
+          setting.hideOnPlatform = resolved === null ? undefined : resolved
+        } catch (error) {
+          console.error('Error resolving hideOnPlatform:', error)
+          // Default to hidden on error
+          setting.hideOnPlatform = 'both'
+        }
+      }
+    })
+  )
+}
+
+/**
+ * Given a settings object, serialize it to TOML
+ * and write it to the appropriate location.
+ *
+ * Relies on WASM for TOML serialization.
+ */
 export async function saveSettings(
-  allSettings: typeof settings,
+  initPromise: Promise<ModuleType>,
+  allSettings: SettingsType,
   projectPath?: string
 ) {
   // Make sure we have wasm initialized.
-  await initPromise
+  const wasmInstance = await initPromise
 
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
   const appTomlString = serializeConfiguration(
-    settingsPayloadToConfiguration(jsAppSettings)
+    settingsPayloadToConfiguration(jsAppSettings),
+    wasmInstance
   )
   if (err(appTomlString)) return
 
@@ -520,7 +591,8 @@ export async function saveSettings(
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
   const projectTomlString = serializeProjectConfiguration(
-    settingsPayloadToProjectConfiguration(jsProjectSettings)
+    settingsPayloadToProjectConfiguration(jsProjectSettings),
+    wasmInstance
   )
   if (err(projectTomlString)) return
 
@@ -537,15 +609,15 @@ export async function saveSettings(
 }
 
 export function getChangedSettingsAtLevel(
-  allSettings: typeof settings,
+  allSettings: SettingsType,
   level: SettingsLevel
 ): Partial<SaveSettingsPayload> {
   const changedSettings = {} as Record<
-    keyof typeof settings,
+    keyof SettingsType,
     Record<string, unknown>
   >
   Object.entries(allSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof typeof settings
+    const categoryKey = category as keyof SettingsType
     Object.entries(settingsCategory).forEach(
       ([setting, settingValue]: [string, Setting]) => {
         // If setting is different its ancestors' non-undefined values,
@@ -571,15 +643,14 @@ export function getChangedSettingsAtLevel(
 }
 
 export function getAllCurrentSettings(
-  allSettings: typeof settings
+  allSettings: SettingsType
 ): SaveSettingsPayload {
   const currentSettings = {} as SaveSettingsPayload
   Object.entries(allSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof typeof settings
+    const categoryKey = category as keyof SettingsType
     Object.entries(settingsCategory).forEach(
       ([setting, settingValue]: [string, Setting]) => {
-        const settingKey =
-          setting as keyof (typeof settings)[typeof categoryKey]
+        const settingKey = setting as keyof SettingsType[typeof categoryKey]
         currentSettings[categoryKey] = {
           ...currentSettings[categoryKey],
           [settingKey]: settingValue.current,
@@ -592,7 +663,7 @@ export function getAllCurrentSettings(
 }
 
 export function clearSettingsAtLevel(
-  allSettings: typeof settings,
+  allSettings: SettingsType,
   level: SettingsLevel
 ) {
   Object.entries(allSettings).forEach(([_category, settingsCategory]) => {
@@ -607,12 +678,12 @@ export function clearSettingsAtLevel(
 }
 
 export function setSettingsAtLevel(
-  allSettings: typeof settings,
+  allSettings: SettingsType,
   level: SettingsLevel,
   newSettings: Partial<SaveSettingsPayload>
 ) {
   Object.entries(newSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof typeof settings
+    const categoryKey = category as keyof SettingsType
     if (!allSettings[categoryKey]) return // ignore unrecognized categories
     Object.entries(settingsCategory).forEach(([settingKey, settingValue]) => {
       // TODO: How do you get a valid type for allSettings[categoryKey][settingKey]?
@@ -628,43 +699,49 @@ export function setSettingsAtLevel(
 }
 
 /**
- * Returns true if the setting should be hidden
- * based on its config, the current settings level,
- * and the current platform.
+ * Synchronous version of shouldHideSetting
+ * Async hideOnPlatform functions should have been resolved in loadAndValidateSettings,
+ * so this works synchronously.
  */
 export function shouldHideSetting(
   setting: Setting<unknown>,
   settingsLevel: SettingsLevel
-) {
+): boolean {
+  // Async functions should have been resolved in loadAndValidateSettings,
+  // but if we encounter one (shouldn't happen), default to hidden
+  const hideOnPlatform = setting.hideOnPlatform
+  if (typeof hideOnPlatform === 'function') {
+    return true
+  }
+
   return (
     setting.hideOnLevel === settingsLevel ||
-    setting.hideOnPlatform === 'both' ||
-    (setting.hideOnPlatform && isDesktop()
-      ? setting.hideOnPlatform === 'desktop'
-      : setting.hideOnPlatform === 'web')
+    hideOnPlatform === 'both' ||
+    (hideOnPlatform && isDesktop()
+      ? hideOnPlatform === 'desktop'
+      : hideOnPlatform === 'web')
   )
 }
 
 /**
- * Returns true if the setting meets the requirements
- * to appear in the settings modal in this context
- * based on its config, the current settings level,
- * and the current platform
+ * Synchronous version of shouldShowSettingInput
+ * Async hideOnPlatform functions should have been resolved in loadAndValidateSettings,
+ * so this works synchronously.
  */
 export function shouldShowSettingInput(
   setting: Setting<unknown>,
   settingsLevel: SettingsLevel
-) {
-  return (
-    !shouldHideSetting(setting, settingsLevel) &&
-    (setting.Component ||
-      ['string', 'boolean', 'number'].some(
-        (t) => typeof setting.default === t
-      ) ||
-      (setting.commandConfig?.inputType &&
-        ['string', 'options', 'boolean', 'number'].some(
-          (t) => setting.commandConfig?.inputType === t
-        )))
+): boolean {
+  const isHidden = shouldHideSetting(setting, settingsLevel)
+  if (isHidden) return false
+
+  return !!(
+    setting.Component ||
+    ['string', 'boolean', 'number'].some((t) => typeof setting.default === t) ||
+    (setting.commandConfig?.inputType &&
+      ['string', 'options', 'boolean', 'number'].some(
+        (t) => setting.commandConfig?.inputType === t
+      ))
   )
 }
 
@@ -684,14 +761,44 @@ export function getSettingInputType(setting: Setting) {
   return typeof setting.default as 'string' | 'boolean' | 'number'
 }
 
-export const jsAppSettings = async (): Promise<DeepPartial<Configuration>> => {
-  let jsAppSettings = default_app_settings()
-  // TODO: https://github.com/KittyCAD/modeling-app/issues/6445
-  const settings = await import('@src/lib/singletons').then((module) =>
-    module.getSettings()
-  )
-  if (settings) {
-    jsAppSettings = getAllCurrentSettings(settings)
+export function getSettingsFromActorContext(
+  s: SettingsActorType
+): SettingsType {
+  const {
+    currentProject: _,
+    commandBarActor: _cmd,
+    ...settings
+  } = s.getSnapshot().context
+  return settings
+}
+
+export async function jsAppSettings(s: SettingsType | SettingsActorType) {
+  const settings = 'send' in s ? getSettingsFromActorContext(s) : s
+  return settingsPayloadToConfiguration(getAllCurrentSettings(settings))
+}
+
+/**
+ * Synchronous check if a setting is hidden on the given platform.
+ * For async hideOnPlatform functions, this returns false (not hidden) since
+ * we can't resolve them synchronously. The actual visibility will be resolved
+ * asynchronously and commands will be updated reactively.
+ */
+export function hiddenOnPlatform(setting: Setting, desktop: boolean): boolean {
+  const hideOnPlatform = setting.hideOnPlatform
+
+  // Async functions should have been resolved in loadAndValidateSettings,
+  // but if we encounter one (shouldn't happen), default to hidden
+  if (typeof hideOnPlatform === 'function') {
+    return true // Hidden until resolved
   }
-  return settingsPayloadToConfiguration(jsAppSettings)
+
+  // Handle sync values (including resolved async values)
+  if (hideOnPlatform === null || hideOnPlatform === undefined) {
+    return false // Not hidden
+  }
+
+  return (
+    hideOnPlatform === 'both' ||
+    hideOnPlatform === (desktop ? 'desktop' : 'web')
+  )
 }

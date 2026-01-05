@@ -41,31 +41,9 @@ import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import {
-  base64_decode,
-  change_default_units,
-  change_experimental_features,
-  coredump,
-  default_app_settings,
-  default_project_settings,
-  format_number_literal,
-  format_number_value,
-  get_kcl_version,
-  get_tangential_arc_to_info,
-  human_display_number,
-  is_kcl_empty_or_only_settings,
-  is_points_ccw,
-  kcl_lint,
-  kcl_settings,
-  node_path_from_range,
-  parse_app_settings,
-  parse_project_settings,
-  parse_wasm,
-  recast_wasm,
-  serialize_configuration,
-  serialize_project_configuration,
-} from '@src/lib/wasm_lib_wrapper'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
+import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -213,14 +191,13 @@ export function resultIsOk(result: ParseResult): result is SuccessParseResult {
 
 export const parse = (
   code: string | Error,
-  instance?: ModuleType
+  instance: ModuleType
 ): ParseResult | Error => {
   if (err(code)) return code
 
   try {
-    const parsed: [Node<Program>, CompilationError[]] = instance
-      ? instance.parse_wasm(code)
-      : parse_wasm(code)
+    const parsed: [Node<Program>, CompilationError[]] =
+      instance.parse_wasm(code)
     let errs = splitErrors(parsed[1])
     return new ParseResult(parsed[0], errs.errors, errs.warnings)
   } catch (e: any) {
@@ -245,10 +222,7 @@ export const parse = (
 /**
  * Parse and throw an exception if there are any errors (probably not suitable for use outside of testing).
  */
-export function assertParse(
-  code: string,
-  instance?: ModuleType
-): Node<Program> {
+export function assertParse(code: string, instance: ModuleType): Node<Program> {
   const result = parse(code, instance)
   // eslint-disable-next-line suggest-no-throw/suggest-no-throw
   if (err(result)) throw result
@@ -344,6 +318,13 @@ export function sketchFromKclValueOptional(
 ): Sketch | Reason {
   if (obj?.type === 'Sketch') return obj.value
   if (obj?.type === 'Solid') return obj.value.sketch
+  if (obj?.type === 'HomArray') {
+    // Note: no artifact id, finding the first sketch
+    const sketch = obj.value.find((sk) => sk.type === 'Sketch')
+    if (sketch) {
+      return sketch.value
+    }
+  }
   if (!varName) {
     varName = 'a KCL value'
   }
@@ -396,11 +377,10 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
 
 export const kclLint = async (
   ast: Program,
-  instance?: ModuleType
+  instance: ModuleType
 ): Promise<Array<Discovered>> => {
   try {
-    const theKclLint = instance ? instance.kcl_lint : kcl_lint
-    const discoveredFindings: Array<Discovered> = await theKclLint(
+    const discoveredFindings: Array<Discovered> = await instance.kcl_lint(
       JSON.stringify(ast)
     )
     return discoveredFindings
@@ -412,7 +392,7 @@ export const kclLint = async (
 export async function rustImplPathToNode(
   ast: Program,
   range: SourceRange,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): Promise<PathToNode> {
   const nodePath = await nodePathFromRange(ast, range, wasmInstance)
   if (!nodePath) {
@@ -425,12 +405,10 @@ export async function rustImplPathToNode(
 export async function nodePathFromRange(
   ast: Program,
   range: SourceRange,
-  instance?: ModuleType
+  instance: ModuleType
 ): Promise<NodePath | null> {
   try {
-    const node_path_from_range_fn = instance
-      ? instance.node_path_from_range
-      : node_path_from_range
+    const node_path_from_range_fn = instance.node_path_from_range
     const nodePath: NodePath | null = await node_path_from_range_fn(
       JSON.stringify(ast),
       JSON.stringify(range)
@@ -443,10 +421,8 @@ export async function nodePathFromRange(
   }
 }
 
-export const recast = (ast: Program, instance?: ModuleType): string | Error => {
-  return instance
-    ? instance.recast_wasm(JSON.stringify(ast))
-    : recast_wasm(JSON.stringify(ast))
+export const recast = (ast: Program, instance: ModuleType): string | Error => {
+  return instance.recast_wasm(JSON.stringify(ast))
 }
 
 /**
@@ -455,13 +431,10 @@ export const recast = (ast: Program, instance?: ModuleType): string | Error => {
 export function formatNumberLiteral(
   value: number,
   suffix: NumericSuffix,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): string | Error {
   try {
-    const the_format_number_literal = wasmInstance
-      ? wasmInstance.format_number_literal
-      : format_number_literal
-    return the_format_number_literal(value, JSON.stringify(suffix))
+    return wasmInstance.format_number_literal(value, JSON.stringify(suffix))
   } catch (e) {
     return new Error(
       `Error formatting number literal: value=${value}, suffix=${suffix}`,
@@ -476,12 +449,10 @@ export function formatNumberLiteral(
 export function formatNumberValue(
   value: number,
   numericType: NumericType,
-  instance?: ModuleType
+  instance: ModuleType
 ): string | Error {
   try {
-    const format_number_value_fn = instance
-      ? instance.format_number_value
-      : format_number_value
+    const format_number_value_fn = instance.format_number_value
     return format_number_value_fn(value, JSON.stringify(numericType))
   } catch (e) {
     return new Error(
@@ -497,12 +468,10 @@ export function formatNumberValue(
 export function humanDisplayNumber(
   value: number,
   ty: NumericType,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): string | Error {
   try {
-    const the_human_display_number = wasmInstance
-      ? wasmInstance.human_display_number
-      : human_display_number
+    const the_human_display_number = wasmInstance.human_display_number
     return the_human_display_number(value, JSON.stringify(ty))
   } catch (e) {
     return new Error(
@@ -512,9 +481,176 @@ export function humanDisplayNumber(
   }
 }
 
-export function isPointsCCW(points: Coords2d[], instance?: ModuleType): number {
-  const is_points_ccw_fn = instance ? instance.is_points_ccw : is_points_ccw
+export function isPointsCCW(points: Coords2d[], instance: ModuleType): number {
+  const is_points_ccw_fn = instance.is_points_ccw
   return is_points_ccw_fn(new Float64Array(points.flat()))
+}
+
+/**
+ * Convert a 2D point from one length unit to another.
+ */
+function pointToUnit(
+  point: [number, number],
+  fromLenUnit: UnitLength,
+  toLenUnit: UnitLength,
+  wasmInstance: ModuleType
+): Coords2d | Error {
+  try {
+    const result = wasmInstance.point_to_unit(
+      JSON.stringify(point),
+      JSON.stringify(fromLenUnit),
+      JSON.stringify(toLenUnit)
+    )
+    return [result[0], result[1]]
+  } catch (e: any) {
+    return new Error(
+      `Error converting point to length unit: ${point} with len unit ${fromLenUnit} to len unit ${toLenUnit}`,
+      { cause: e }
+    )
+  }
+}
+
+/**
+ * Convert a NumericSuffix string to UnitLength.
+ * Returns null if the suffix is not a length unit.
+ */
+function numericSuffixToUnitLength(suffix: NumericSuffix): UnitLength | null {
+  switch (suffix) {
+    case 'Mm':
+      return 'mm'
+    case 'Cm':
+      return 'cm'
+    case 'M':
+      return 'm'
+    case 'Inch':
+      return 'in'
+    case 'Ft':
+      return 'ft'
+    case 'Yd':
+      return 'yd'
+    // non length units for type completeness
+    case 'None':
+    case 'Deg':
+    case 'Rad':
+    case 'Count':
+    case 'Length':
+    case 'Angle':
+    case 'Unknown':
+      return null
+    default:
+      // this is more of a type completeness check
+      // rather then something we expect to hit at runtime
+      const _exhaustiveCheck: never = suffix
+      return null
+  }
+}
+
+/**
+ * Convert a UnitLength to NumericSuffix string.
+ */
+function unitLengthToNumericSuffix(unit: UnitLength): NumericSuffix {
+  switch (unit) {
+    case 'mm':
+      return 'Mm'
+    case 'cm':
+      return 'Cm'
+    case 'm':
+      return 'M'
+    case 'in':
+      return 'Inch'
+    case 'ft':
+      return 'Ft'
+    case 'yd':
+      return 'Yd'
+    default:
+      const _exhaustiveCheck: never = unit
+      return 'Mm'
+  }
+}
+
+/**
+ * Calculate the distance between two 2D points expressed as Expr coordinates.
+ * Both points are converted to a common unit (the unit of the first point) before calculation.
+ * Returns the distance value and the unit it's expressed in.
+ */
+export function distanceBetweenPoint2DExpr(
+  point1: { x: Number; y: Number },
+  point2: { x: Number; y: Number },
+  wasmInstance: ModuleType
+): { distance: number; units: NumericSuffix } | Error {
+  // Convert units to UnitLength
+  const x1Unit = numericSuffixToUnitLength(point1.x.units)
+  const y1Unit = numericSuffixToUnitLength(point1.y.units)
+  const x2Unit = numericSuffixToUnitLength(point2.x.units)
+  const y2Unit = numericSuffixToUnitLength(point2.y.units)
+
+  if (!x1Unit || !y1Unit || !x2Unit || !y2Unit) {
+    return new Error(
+      'Cannot calculate distance: one or more coordinates have non-length units'
+    )
+  }
+
+  // Use the first point's x unit as the target unit for conversion
+  const targetSuffix = point1.x.units
+  const targetUnit = numericSuffixToUnitLength(targetSuffix)
+  if (!targetUnit) {
+    return new Error(
+      `Cannot calculate distance: target unit ${targetSuffix} is not a length unit`
+    )
+  }
+
+  // Convert all coordinates to the target unit
+  const x1Converted = pointToUnit(
+    [point1.x.value, 0],
+    x1Unit,
+    targetUnit,
+    wasmInstance
+  )
+  const y1Converted = pointToUnit(
+    [point1.y.value, 0],
+    y1Unit,
+    targetUnit,
+    wasmInstance
+  )
+  const x2Converted = pointToUnit(
+    [point2.x.value, 0],
+    x2Unit,
+    targetUnit,
+    wasmInstance
+  )
+  const y2Converted = pointToUnit(
+    [point2.y.value, 0],
+    y2Unit,
+    targetUnit,
+    wasmInstance
+  )
+
+  if (
+    x1Converted instanceof Error ||
+    y1Converted instanceof Error ||
+    x2Converted instanceof Error ||
+    y2Converted instanceof Error
+  ) {
+    return new Error('Failed to convert coordinates for distance calculation')
+  }
+
+  // Calculate distance
+  const dx = x2Converted[0] - x1Converted[0]
+  const dy = y2Converted[0] - y1Converted[0]
+  const distance = Math.hypot(dx, dy)
+
+  return { distance, units: targetSuffix }
+}
+
+/**
+ * Convert BaseUnit to NumericSuffix for use in SegmentCtor.
+ * Handles the 'in' -> 'inch' conversion needed for unitLengthToNumericSuffix.
+ */
+export function baseUnitToNumericSuffix(
+  defaultLengthUnit?: UnitLength
+): NumericSuffix {
+  const currentUnit = defaultLengthUnit ?? DEFAULT_DEFAULT_LENGTH_UNIT
+  return unitLengthToNumericSuffix(currentUnit)
 }
 
 export function getTangentialArcToInfo({
@@ -528,7 +664,7 @@ export function getTangentialArcToInfo({
   arcEndPoint: Coords2d
   tanPreviousPoint: Coords2d
   obtuse?: boolean
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 }): {
   center: Coords2d
   arcMidPoint: Coords2d
@@ -538,9 +674,7 @@ export function getTangentialArcToInfo({
   ccw: boolean
   arcLength: number
 } {
-  const the_get_tangential_arc_to_info = wasmInstance
-    ? wasmInstance.get_tangential_arc_to_info
-    : get_tangential_arc_to_info
+  const the_get_tangential_arc_to_info = wasmInstance.get_tangential_arc_to_info
   const result = the_get_tangential_arc_to_info(
     arcStartPoint[0],
     arcStartPoint[1],
@@ -563,11 +697,13 @@ export function getTangentialArcToInfo({
 
 export async function coreDump(
   coreDumpManager: CoreDumpManager,
+  wasmInstancePromise: Promise<ModuleType>,
   openGithubIssue: boolean = false
 ): Promise<CoreDumpInfo> {
   try {
     console.warn('CoreDump: Initializing core dump')
-    const dump: CoreDumpInfo = await coredump(coreDumpManager)
+    const wasmInstance = await wasmInstancePromise
+    const dump: CoreDumpInfo = await wasmInstance.coredump(coreDumpManager)
     /* NOTE: this console output of the coredump should include the field
        `github_issue_url` which is not in the uploaded coredump file.
        `github_issue_url` is added after the file is uploaded
@@ -659,6 +795,9 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'VariableDeclarationInit':
         pathToNode.push(['init', ''])
         break
+      case 'FunctionExpressionName':
+        pathToNode.push(['name', 'FunctionExpression'])
+        break
       case 'FunctionExpressionParam':
         pathToNode.push(['params', 'FunctionExpression'])
         pathToNode.push([step.index, 'index'])
@@ -734,31 +873,38 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
   return pathToNode
 }
 
-export function defaultAppSettings(): DeepPartial<Configuration> | Error {
-  return default_app_settings()
+export function defaultAppSettings(
+  wasmInstance: ModuleType
+): DeepPartial<Configuration> | Error {
+  return wasmInstance.default_app_settings()
 }
 
 export function parseAppSettings(
-  toml: string
+  toml: string,
+  wasmInstance: ModuleType
 ): DeepPartial<Configuration> | Error {
-  return parse_app_settings(toml)
+  return wasmInstance.parse_app_settings(toml)
 }
 
-export function defaultProjectSettings():
-  | DeepPartial<ProjectConfiguration>
-  | Error {
-  return default_project_settings()
+export function defaultProjectSettings(
+  wasmInstance: ModuleType
+): DeepPartial<ProjectConfiguration> | Error {
+  return wasmInstance.default_project_settings()
 }
 
 export function parseProjectSettings(
-  toml: string
+  toml: string,
+  wasmInstance: ModuleType
 ): DeepPartial<ProjectConfiguration> | Error {
-  return parse_project_settings(toml)
+  return wasmInstance.parse_project_settings(toml)
 }
 
-export function base64Decode(base64: string): ArrayBuffer | Error {
+export function base64Decode(
+  base64: string,
+  wasmInstance: ModuleType
+): ArrayBuffer | Error {
   try {
-    const decoded = base64_decode(base64)
+    const decoded = wasmInstance.base64_decode(base64)
     return new Uint8Array(decoded).buffer
   } catch (e) {
     console.error('Caught error decoding base64 string', e)
@@ -772,7 +918,7 @@ export function base64Decode(base64: string): ArrayBuffer | Error {
  */
 export function kclSettings(
   kcl: string | Node<Program>,
-  instance?: ModuleType
+  instance: ModuleType
 ): MetaSettings | null | Error {
   let program: Node<Program>
   if (typeof kcl === 'string') {
@@ -786,8 +932,7 @@ export function kclSettings(
     program = kcl
   }
   try {
-    const theKclSettings = instance ? instance.kcl_settings : kcl_settings
-    return theKclSettings(JSON.stringify(program))
+    return instance.kcl_settings(JSON.stringify(program))
   } catch (e) {
     return new Error('Caught error getting kcl settings', { cause: e })
   }
@@ -799,10 +944,11 @@ export function kclSettings(
  */
 export function changeDefaultUnits(
   kcl: string,
-  len: UnitLength | null
+  len: UnitLength | null,
+  wasmInstance: ModuleType
 ): string | Error {
   try {
-    return change_default_units(kcl, JSON.stringify(len))
+    return wasmInstance.change_default_units(kcl, JSON.stringify(len))
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })
@@ -816,13 +962,11 @@ export function changeDefaultUnits(
 export function changeExperimentalFeatures(
   kcl: string,
   warningLevel: WarningLevel | null = null,
-  instance?: ModuleType
+  instance: ModuleType
 ): string | Error {
   try {
     const level = JSON.stringify(warningLevel)
-    return instance
-      ? instance.change_experimental_features(kcl, level)
-      : change_experimental_features(kcl, level)
+    return instance.change_experimental_features(kcl, level)
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })
@@ -833,14 +977,17 @@ export function changeExperimentalFeatures(
  * Returns true if the given KCL is empty or only contains settings that would
  * be auto-generated.
  */
-export function isKclEmptyOrOnlySettings(kcl: string): boolean {
+export function isKclEmptyOrOnlySettings(
+  kcl: string,
+  wasmInstance: ModuleType
+): boolean {
   if (kcl === '') {
     // Fast path.
     return true
   }
 
   try {
-    return is_kcl_empty_or_only_settings(kcl)
+    return wasmInstance.is_kcl_empty_or_only_settings(kcl)
   } catch (e) {
     console.debug('Caught error checking if KCL is empty', e)
     // If there's a parse error, it can't be empty or auto-generated.
@@ -851,18 +998,19 @@ export function isKclEmptyOrOnlySettings(kcl: string): boolean {
 /**
  * Get the KCL version currently being used.
  */
-export function getKclVersion(): string {
-  return get_kcl_version()
+export function getKclVersion(wasmInstance: ModuleType): string {
+  return wasmInstance.get_kcl_version()
 }
 
 /**
  * Serialize a project configuration to a TOML string.
  */
 export function serializeConfiguration(
-  configuration: DeepPartial<Configuration>
+  configuration: DeepPartial<Configuration>,
+  wasmInstance: ModuleType
 ): string | Error {
   try {
-    return serialize_configuration(configuration)
+    return wasmInstance.serialize_configuration(configuration)
   } catch (e: any) {
     return new Error(`Error serializing configuration: ${e}`)
   }
@@ -872,10 +1020,11 @@ export function serializeConfiguration(
  * Serialize a project configuration to a TOML string.
  */
 export function serializeProjectConfiguration(
-  configuration: DeepPartial<ProjectConfiguration>
+  configuration: DeepPartial<ProjectConfiguration>,
+  wasmInstance: ModuleType
 ): string | Error {
   try {
-    return serialize_project_configuration(configuration)
+    return wasmInstance.serialize_project_configuration(configuration)
   } catch (e: any) {
     return new Error(`Error serializing project configuration: ${e}`)
   }

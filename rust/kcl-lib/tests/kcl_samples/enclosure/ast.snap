@@ -2399,6 +2399,14 @@ description: Result of parsing enclosure.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "function001",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -8365,6 +8373,7 @@ description: Result of parsing enclosure.kcl
         "preComments": [
           "// Enclosure",
           "// An enclosure body and sealing lid for storing items",
+          "// Categories: Computer Hardware, Maker",
           "",
           "",
           "// Set units"

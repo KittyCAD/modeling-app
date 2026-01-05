@@ -2,7 +2,8 @@ import type { User } from '@kittycad/lib'
 import { users, oauth2 } from '@kittycad/lib'
 import env, {
   updateEnvironment,
-  updateEnvironmentPool,
+  updateEnvironmentKittycadWebSocketUrl,
+  updateEnvironmentMlephantWebSocketUrl,
   generateDomainsFromBaseDomain,
 } from '@src/env'
 import { assign, fromPromise, setup } from 'xstate'
@@ -12,8 +13,11 @@ import {
   COOKIE_NAME_PREFIX,
 } from '@src/lib/constants'
 import {
+  readEnvironmentConfigurationKittycadWebSocketUrl,
+  readEnvironmentConfigurationMlephantWebSocketUrl,
+} from '@src/lib/desktop'
+import {
   listAllEnvironments,
-  readEnvironmentConfigurationPool,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
   writeEnvironmentConfigurationToken,
@@ -47,13 +51,11 @@ export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 /**
  * Determine which token do we have persisted to initialize the auth machine
  */
-const persistedCookie = getCookie()
-const persistedDevToken = env().VITE_ZOO_API_TOKEN
-export const persistedToken = persistedDevToken || persistedCookie || ''
+export const persistedToken = getTokenFromEnvOrCookie()
 console.log('Initial persisted token')
 console.table([
-  ['cookie', !!persistedCookie],
-  ['api token', !!persistedDevToken],
+  ['cookie', !!getCookie()],
+  ['api token', !!env().VITE_ZOO_API_TOKEN],
 ])
 
 export const authMachine = setup({
@@ -178,12 +180,31 @@ async function getUser(input: { token?: string }) {
       ''
     updateEnvironment(environment)
 
-    // Update the pool
-    const cachedPool = await readEnvironmentConfigurationPool(
-      window.electron,
-      environment
-    )
-    updateEnvironmentPool(environment, cachedPool)
+    // Update the Engine WebSocket URL override
+    const cachedKittycadWebSocketUrl =
+      await readEnvironmentConfigurationKittycadWebSocketUrl(
+        window.electron,
+        environment
+      )
+    if (cachedKittycadWebSocketUrl) {
+      updateEnvironmentKittycadWebSocketUrl(
+        environment,
+        cachedKittycadWebSocketUrl
+      )
+    }
+
+    // Update the Zookeeper WebSocket URL override
+    const cachedMlephantWebSocketUrl =
+      await readEnvironmentConfigurationMlephantWebSocketUrl(
+        window.electron,
+        environment
+      )
+    if (cachedMlephantWebSocketUrl) {
+      updateEnvironmentMlephantWebSocketUrl(
+        environment,
+        cachedMlephantWebSocketUrl
+      )
+    }
   }
 
   let token = ''
@@ -233,6 +254,18 @@ export function getCookie(): string | null {
   } else {
     return getCookieByName(COOKIE_NAME_PREFIX + baseDomain)
   }
+}
+
+/**
+ * Get token from environment variable or cookie.
+ * This is a synchronous utility function that can be used in both
+ * React hooks and non-React contexts (like singleton initialization).
+ * @returns The token string, or empty string if neither source has a token
+ */
+export function getTokenFromEnvOrCookie(): string {
+  const envToken = env().VITE_ZOO_API_TOKEN
+  const cookieToken = getCookie()
+  return envToken || cookieToken || ''
 }
 
 function getCookieByName(cname: string): string | null {

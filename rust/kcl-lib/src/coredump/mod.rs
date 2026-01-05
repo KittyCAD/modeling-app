@@ -27,8 +27,6 @@ pub trait CoreDump: Clone {
 
     fn kcl_code(&self) -> Result<String>;
 
-    fn pool(&self) -> Result<String>;
-
     fn os(&self) -> Result<OsInfo>;
 
     fn is_desktop(&self) -> Result<bool>;
@@ -88,7 +86,6 @@ pub trait CoreDump: Clone {
             os,
             webrtc_stats,
             github_issue_url: None,
-            pool: self.pool()?,
             client_state,
         };
 
@@ -145,8 +142,6 @@ pub struct CoreDumpInfo {
     pub github_issue_url: Option<String>,
     /// The kcl code the user is using.
     pub kcl_code: String,
-    /// Engine pool the client is connected to.
-    pub pool: String,
     /// The client state (singletons and xstate).
     pub client_state: JValue,
 }

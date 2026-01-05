@@ -8,7 +8,7 @@ import {
 import type { ViewUpdate } from '@codemirror/view'
 import { EditorView, keymap } from '@codemirror/view'
 import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
@@ -26,7 +26,7 @@ import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
 import { kclManager, rustContext } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
-import { getSystemTheme } from '@src/lib/theme'
+import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { roundOff, roundOffWithUnits } from '@src/lib/utils'
@@ -34,6 +34,7 @@ import { varMentions } from '@src/lib/varCompletionExtension'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import styles from './CommandBarKclInput.module.css'
+import { editorTheme } from '@src/lib/codeEditor'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -51,6 +52,7 @@ function CommandBarKclInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const commandBarState = useCommandBarState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
@@ -67,7 +69,11 @@ function CommandBarKclInput({
     const nodeToEdit = commandBarState.context.argumentsToSubmit.nodeToEdit
     const pathToNode = isPathToNode(nodeToEdit) ? nodeToEdit : undefined
     const node = pathToNode
-      ? getNodeFromPath<Node<VariableDeclarator>>(kclManager.ast, pathToNode)
+      ? getNodeFromPath<Node<VariableDeclarator>>(
+          kclManager.ast,
+          pathToNode,
+          wasmInstance
+        )
       : undefined
     return !err(node) && node && node.node.type === 'VariableDeclarator'
       ? [node.node.start, node.node.end, node.node.moduleId]
@@ -78,11 +84,21 @@ function CommandBarKclInput({
     () =>
       arg.defaultValue
         ? arg.defaultValue instanceof Function
-          ? arg.defaultValue(commandBarState.context, argMachineContext)
+          ? arg.defaultValue(
+              commandBarState.context,
+              argMachineContext,
+              wasmInstance
+            )
           : arg.defaultValue
         : '',
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [arg.defaultValue, commandBarState.context, argMachineContext]
+    [
+      arg.defaultValue,
+      commandBarState.context,
+      argMachineContext,
+      argMachineContext,
+      wasmInstance,
+    ]
   )
   const initialVariableName = useMemo(() => {
     // Use the configured variable name if it exists
@@ -154,7 +170,7 @@ function CommandBarKclInput({
       if (typeof v.value !== 'number' || !v.ty) {
         return undefined
       }
-      const numWithUnits = formatNumberValue(v.value, v.ty)
+      const numWithUnits = formatNumberValue(v.value, v.ty, wasmInstance)
       if (err(numWithUnits)) {
         return undefined
       }
@@ -179,11 +195,9 @@ function CommandBarKclInput({
           ? previouslySetValue.valueText.length
           : defaultValue.length,
     },
-    theme:
-      settings.app.theme.current === 'system'
-        ? getSystemTheme()
-        : settings.app.theme.current,
     extensions: [
+      // Typically we prefer to update CodeMirror outside of React, but this "micro-editor" doesn't exist outside of React.
+      editorTheme[getResolvedTheme(settings.app.theme.current)],
       varMentionsExtension,
       EditorView.updateListener.of((vu: ViewUpdate) => {
         if (vu.docChanged) {

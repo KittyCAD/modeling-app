@@ -1301,6 +1301,14 @@ description: Result of parsing gridfinity-bins.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "face",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -7083,6 +7091,7 @@ description: Result of parsing gridfinity-bins.kcl
         "preComments": [
           "// Gridfinity Bins",
           "// Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion",
+          "// Categories: Maker",
           "",
           "",
           "// Set units in millimeters (mm)"

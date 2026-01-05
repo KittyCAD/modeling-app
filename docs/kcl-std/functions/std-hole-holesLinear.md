@@ -5,8 +5,6 @@ excerpt: "Place the given holes in a line. Basically like function `hole` but cu
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 Place the given holes in a line. Basically like function `hole` but cuts multiple holes in a line. Works like linear patterns.
 
 ```kcl

@@ -1,10 +1,14 @@
 //! The executor for the AST.
 
+#[cfg(feature = "artifact-graph")]
+use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, CodeRef, StartSketchOnFace, StartSketchOnPlane};
+pub use artifact::{
+    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, SketchBlock, StartSketchOnFace, StartSketchOnPlane,
+};
 use cache::GlobalState;
 pub use cache::{bust_cache, clear_mem_cache};
 #[cfg(feature = "artifact-graph")]
@@ -24,6 +28,7 @@ use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
 use serde::{Deserialize, Serialize};
+pub(crate) use sketch_solve::normalize_to_solver_unit;
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
@@ -41,6 +46,11 @@ use crate::{
     modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
 };
+#[cfg(feature = "artifact-graph")]
+use crate::{
+    collections::AhashIndexSet,
+    front::{Number, Object, ObjectId},
+};
 
 pub(crate) mod annotations;
 #[cfg(feature = "artifact-graph")]
@@ -56,9 +66,78 @@ mod import_graph;
 pub(crate) mod kcl_value;
 mod memory;
 mod modeling;
+mod sketch_solve;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
+
+/// Convenience macro for handling control flow in execution by returning early
+/// if it is some kind of early return or stripping off the control flow
+/// otherwise.
+macro_rules! control_continue {
+    ($control_flow:expr) => {{
+        let cf = $control_flow;
+        if cf.is_some_return() {
+            return Ok(cf);
+        } else {
+            cf.into_value()
+        }
+    }};
+}
+// Expose the macro to other modules.
+pub(crate) use control_continue;
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
+pub enum ControlFlowKind {
+    #[default]
+    Continue,
+    Exit,
+}
+
+impl ControlFlowKind {
+    /// Returns true if this is any kind of early return.
+    pub fn is_some_return(&self) -> bool {
+        match self {
+            ControlFlowKind::Continue => false,
+            ControlFlowKind::Exit => true,
+        }
+    }
+}
+
+#[must_use = "You should always handle the control flow value when it is returned"]
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct KclValueControlFlow {
+    /// Use [control_continue] or [Self::into_value] to get the value.
+    value: KclValue,
+    pub control: ControlFlowKind,
+}
+
+impl KclValue {
+    pub(crate) fn continue_(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: self,
+            control: ControlFlowKind::Continue,
+        }
+    }
+
+    pub(crate) fn exit(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: self,
+            control: ControlFlowKind::Exit,
+        }
+    }
+}
+
+impl KclValueControlFlow {
+    /// Returns true if this is any kind of early return.
+    pub fn is_some_return(&self) -> bool {
+        self.control.is_some_return()
+    }
+
+    pub(crate) fn into_value(self) -> KclValue {
+        self.value
+    }
+}
 
 pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
@@ -79,12 +158,48 @@ pub struct ExecOutcome {
     /// Output artifact graph.
     #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
+    /// Objects in the scene, created from execution.
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub scene_objects: Vec<Object>,
+    /// Map from source range to object ID for lookup of objects by their source
+    /// range.
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub var_solutions: Vec<(SourceRange, Number)>,
     /// Non-fatal errors and warnings.
     pub errors: Vec<CompilationError>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
+}
+
+/// Configuration for mock execution.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MockConfig {
+    pub use_prev_memory: bool,
+    /// True to do more costly analysis of whether the sketch block segments are
+    /// under-constrained.
+    pub freedom_analysis: bool,
+    /// The segments that were edited that triggered this execution.
+    #[cfg(feature = "artifact-graph")]
+    pub segment_ids_edited: AhashIndexSet<ObjectId>,
+}
+
+impl Default for MockConfig {
+    fn default() -> Self {
+        Self {
+            // By default, use previous memory. This is usually what you want.
+            use_prev_memory: true,
+            freedom_analysis: false,
+            #[cfg(feature = "artifact-graph")]
+            segment_ids_edited: AhashIndexSet::default(),
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -249,6 +364,20 @@ impl From<&Expr> for Metadata {
     }
 }
 
+impl Metadata {
+    pub fn to_source_ref(meta: &[Metadata]) -> crate::front::SourceRef {
+        if meta.len() == 1 {
+            let meta = &meta[0];
+            return crate::front::SourceRef::Simple {
+                range: meta.source_range,
+            };
+        }
+        crate::front::SourceRef::BackTrace {
+            ranges: meta.iter().map(|m| m.source_range).collect(),
+        }
+    }
+}
+
 /// The type of ExecutorContext being used
 #[derive(PartialEq, Debug, Default, Clone)]
 pub enum ContextType {
@@ -389,13 +518,12 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
-        let pool = std::env::var("ZOO_ENGINE_POOL").ok();
         let (ws, _headers) = client
             .modeling()
             .commands_ws(
                 None,
                 None,
-                pool,
+                None,
                 if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
@@ -558,14 +686,18 @@ impl ExecutorContext {
     pub async fn run_mock(
         &self,
         program: &crate::Program,
-        use_prev_memory: bool,
+        mock_config: &MockConfig,
     ) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(
             self.is_mock(),
             "To use mock execution, instantiate via ExecutorContext::new_mock, not ::new"
         );
 
+        let use_prev_memory = mock_config.use_prev_memory;
+        #[cfg(not(feature = "artifact-graph"))]
         let mut exec_state = ExecState::new(self);
+        #[cfg(feature = "artifact-graph")]
+        let mut exec_state = ExecState::new_sketch_mode(self, mock_config);
         if use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => {
@@ -1375,12 +1507,23 @@ impl ExecutorContext {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
 pub struct ArtifactId(Uuid);
 
 impl ArtifactId {
     pub fn new(uuid: Uuid) -> Self {
         Self(uuid)
+    }
+
+    /// A placeholder artifact ID that will be filled in later.
+    pub fn placeholder() -> Self {
+        Self(Uuid::nil())
+    }
+
+    /// The constraint artifact ID is a special. They don't need to be
+    /// represented in the artifact graph.
+    pub fn constraint() -> Self {
+        Self(Uuid::nil())
     }
 }
 
@@ -2474,7 +2617,7 @@ w = f() + f()
 
         let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
-        let result = ctx2.run_mock(&program2, true).await.unwrap();
+        let result = ctx2.run_mock(&program2, &MockConfig::default()).await.unwrap();
         assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
 
         ctx.close().await;
@@ -2485,16 +2628,20 @@ w = f() + f()
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_has_stable_ids() {
         let ctx = ExecutorContext::new_mock(None).await;
+        let mock_config = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
         let code = "sk = startSketchOn(XY)
         |> startProfile(at = [0, 0])";
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let result = ctx.run_mock(&program, false).await.unwrap();
+        let result = ctx.run_mock(&program, &mock_config).await.unwrap();
         let ids = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
         assert!(!ids.is_empty(), "IDs should not be empty");
 
         let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs(code).unwrap();
-        let result = ctx2.run_mock(&program2, false).await.unwrap();
+        let result = ctx2.run_mock(&program2, &mock_config).await.unwrap();
         let ids2 = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
 
         assert_eq!(ids, ids2, "Generated IDs should match");
@@ -2520,7 +2667,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let mock_program = crate::Program::parse_no_errs(code).unwrap();
-        let mock_result = mock_ctx.run_mock(&mock_program, true).await.unwrap();
+        let mock_result = mock_ctx.run_mock(&mock_program, &MockConfig::default()).await.unwrap();
         assert_eq!(mock_result.operations.len(), 1);
 
         let code2 = code.to_owned()
@@ -2552,7 +2699,7 @@ sketch = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, 10])
   |> line(end = [10, 0], tag = $tag0)
-  |> line(end = [0, 0])
+  |> line(endAbsolute = [0, 0])
 
 fn foo() {
   // tag0 tags an edge

@@ -233,12 +233,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
       selectionRanges: Selections['graphSelections']
     ) {
       const ast = assertParse(inputCode, instanceInThisFile)
-      const execState = await enginelessExecutor(
-        ast,
-        undefined,
-        undefined,
-        rustContextInThisFile
-      )
+      const execState = await enginelessExecutor(ast, rustContextInThisFile)
       const transformInfos = getTransformInfos(
         makeSelections(selectionRanges.slice(1)),
         ast,
@@ -373,12 +368,7 @@ part001 = startSketchOn(XY)
         }
       })
 
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges.slice(1)),
       ast,
@@ -469,16 +459,12 @@ part001 = startSketchOn(XY)
         }
       })
 
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
-      'horizontal'
+      'horizontal',
+      instanceInThisFile
     )
 
     const newAst = transformAstSketchLines({
@@ -487,6 +473,7 @@ part001 = startSketchOn(XY)
       transformInfos,
       memVars: execState.variables,
       referenceSegName: '',
+      wasmInstance: instanceInThisFile,
     })
     if (err(newAst)) return Promise.reject(newAst)
 
@@ -534,16 +521,12 @@ part001 = startSketchOn(XY)
         }
       })
 
-    const execState = await enginelessExecutor(
-      ast,
-      undefined,
-      undefined,
-      rustContextInThisFile
-    )
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
-      'vertical'
+      'vertical',
+      instanceInThisFile
     )
 
     const newAst = transformAstSketchLines({
@@ -552,6 +535,7 @@ part001 = startSketchOn(XY)
       transformInfos,
       memVars: execState.variables,
       referenceSegName: '',
+      wasmInstance: instanceInThisFile,
     })
     if (err(newAst)) return Promise.reject(newAst)
 
@@ -634,16 +618,12 @@ async function helperThing(
       }
     })
 
-  const execState = await enginelessExecutor(
-    ast,
-    undefined,
-    undefined,
-    rustContextInThisFile
-  )
+  const execState = await enginelessExecutor(ast, rustContextInThisFile)
   const transformInfos = getTransformInfos(
     makeSelections(selectionRanges.slice(1)),
     ast,
-    constraint
+    constraint,
+    instanceInThisFile
   )
 
   const newAst = transformSecondarySketchLinesTagFirst({
@@ -651,6 +631,7 @@ async function helperThing(
     selectionRanges: makeSelections(selectionRanges),
     transformInfos,
     memVars: execState.variables,
+    wasmInstance: instanceInThisFile,
   })
 
   if (err(newAst)) return Promise.reject(newAst)
@@ -702,7 +683,8 @@ part001 = startSketchOn(XY)
         const offsetIndex = index - 7
         const expectedConstraintLevel = getConstraintLevelFromSourceRange(
           topLevelRange(offsetIndex, offsetIndex),
-          ast
+          ast,
+          instanceInThisFile
         )
         if (err(expectedConstraintLevel)) {
           throw expectedConstraintLevel

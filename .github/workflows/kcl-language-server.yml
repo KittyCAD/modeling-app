@@ -48,9 +48,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
       - name: Install dependencies
@@ -105,7 +105,7 @@ jobs:
       RA_TARGET: ${{ matrix.target }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Use correct Rust toolchain
@@ -117,9 +117,10 @@ jobs:
         with:
           cache: rust
           components: rust-src
+          rustflags: '' # Use .cargo/config.toml
           target: ${{ matrix.target }}
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
       - name: Update apt repositories
@@ -190,7 +191,7 @@ jobs:
           cd rust/kcl-language-server
           npx vsce package --yarn -o ../build/kcl-language-server-no-server.vsix --pre-release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: release-${{ matrix.target }}
           path: ./rust/build
@@ -219,7 +220,7 @@ jobs:
             npm \
             yarn
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Use correct Rust toolchain
@@ -231,6 +232,7 @@ jobs:
         with:
           cache: rust
           components: rust-src
+          rustflags: '' # Use .cargo/config.toml
           target: ${{ matrix.target }}
       - name: build
         run: |
@@ -252,7 +254,7 @@ jobs:
           cd rust/kcl-language-server
           npx vsce package --yarn -o "../build/kcl-language-server-alpine-x64.vsix" --target alpine-x64 --pre-release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: release-x86_64-unknown-linux-musl
           path: ./rust/build
@@ -267,11 +269,11 @@ jobs:
       - run: echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - run: 'echo "TAG: $TAG"'
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Install Nodejs
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
       - run: echo "HEAD_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
@@ -322,11 +324,11 @@ jobs:
           mkdir -p releases/language-server/${{ env.TAG }}
           cp -r build/* releases/language-server/${{ env.TAG }}
       - name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v2.1.10"
+        uses: "google-github-actions/auth@v3.0.0"
         with:
           credentials_json: "${{ secrets.GOOGLE_CLOUD_DL_SA }}"
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2.1.4
+        uses: google-github-actions/setup-gcloud@v3.0.1
         with:
           project_id: kittycadapi
       - name: "upload files to gcp"

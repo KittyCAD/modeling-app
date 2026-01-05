@@ -2645,6 +2645,14 @@ description: Result of parsing food-service-spatula.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "slot",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -7740,6 +7748,7 @@ description: Result of parsing food-service-spatula.kcl
         "preComments": [
           "// Food Service Spatula",
           "// Use these spatulas for mixing, flipping, and scraping.",
+          "// Categories: Maker",
           "",
           "",
           "// Set units"

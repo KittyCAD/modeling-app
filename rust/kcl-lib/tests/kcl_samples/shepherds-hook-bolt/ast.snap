@@ -1212,6 +1212,14 @@ description: Result of parsing shepherds-hook-bolt.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "polarToCartesian",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -4062,6 +4070,7 @@ description: Result of parsing shepherds-hook-bolt.kcl
         "preComments": [
           "// Shepherd’s Hook Bolt",
           "// A bent bolt with a curved hook, typically used for hanging or anchoring loads. The threaded end allows secure attachment to surfaces or materials, while the curved hook resists pull-out under tension.",
+          "// Categories: Manufacturing",
           "",
           "",
           "// Set units in millimeters (mm)"

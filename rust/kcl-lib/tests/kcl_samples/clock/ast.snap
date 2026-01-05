@@ -41,6 +41,7 @@ description: Result of parsing clock.kcl
         "preComments": [
           "// Clock",
           "// A clock with roman numerals",
+          "// Categories: Maker",
           "",
           "",
           "// Define parameters"
@@ -11737,6 +11738,14 @@ description: Result of parsing clock.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "letterI",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -13719,6 +13728,14 @@ description: Result of parsing clock.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "letterX",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -14907,6 +14924,14 @@ description: Result of parsing clock.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "letterV",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",

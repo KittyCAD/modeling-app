@@ -17,6 +17,7 @@ import {
   type KclManager,
 } from '@src/lang/KclManager'
 import { deferExecution } from '@src/lib/utils'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import type { UpdateCanExecuteParams } from '@rust/kcl-lib/bindings/UpdateCanExecuteParams'
 import type { UpdateCanExecuteResponse } from '@rust/kcl-lib/bindings/UpdateCanExecuteResponse'
@@ -25,7 +26,13 @@ import type { UpdateUnitsResponse } from '@rust/kcl-lib/bindings/UpdateUnitsResp
 
 import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
 import { processCodeMirrorRanges } from '@src/lib/selections'
+import type {
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type RustContext from '@src/lib/rustContext'
 
 const changesDelay = 600
 
@@ -34,7 +41,9 @@ export class KclPlugin implements PluginValue {
   private viewUpdate: ViewUpdate | null = null
   private client: LanguageServerClient
   private readonly kclManager: KclManager
+  private readonly rustContext: RustContext
   private readonly sceneEntitiesManager: SceneEntities
+  private readonly wasmInstance: ModuleType
 
   constructor(
     client: LanguageServerClient,
@@ -42,11 +51,15 @@ export class KclPlugin implements PluginValue {
     systemDeps: {
       kclManager: KclManager
       sceneEntitiesManager: SceneEntities
+      wasmInstance: ModuleType
+      rustContext: RustContext
     }
   ) {
     this.client = client
     this.kclManager = systemDeps.kclManager
+    this.rustContext = systemDeps.rustContext
     this.sceneEntitiesManager = systemDeps.sceneEntitiesManager
+    this.wasmInstance = systemDeps.wasmInstance
 
     // Gotcha: Code can be written into the CodeMirror editor but not propagated to kclManager.code
     // because the update function has not run. We need to initialize the kclManager.code when lsp initializes
@@ -65,7 +78,7 @@ export class KclPlugin implements PluginValue {
   // document.
   private sendScheduledInput: number | null = null
 
-  private _deffererUserSelect = deferExecution(() => {
+  private _deffererUserSelect = deferExecution((wasmInstance: ModuleType) => {
     if (this.viewUpdate === null) {
       return
     }
@@ -73,7 +86,8 @@ export class KclPlugin implements PluginValue {
     this.kclManager.handleOnViewUpdate(
       this.viewUpdate,
       processCodeMirrorRanges,
-      this.sceneEntitiesManager
+      this.sceneEntitiesManager,
+      wasmInstance
     )
   }, 50)
 
@@ -127,7 +141,7 @@ export class KclPlugin implements PluginValue {
     // If we have a user select event, we want to update what parts are
     // highlighted.
     if (isUserSelect) {
-      this._deffererUserSelect(true)
+      this._deffererUserSelect(this.wasmInstance)
       return
     }
 
@@ -150,25 +164,69 @@ export class KclPlugin implements PluginValue {
   scheduleUpdateDoc() {
     if (this.sendScheduledInput != null)
       window.clearTimeout(this.sendScheduledInput)
-    this.sendScheduledInput = window.setTimeout(
-      () => this.updateDoc(),
-      changesDelay
-    )
+    this.sendScheduledInput = window.setTimeout(() => {
+      void this.updateDoc()
+    }, changesDelay)
   }
 
-  updateDoc() {
+  async updateDoc() {
     if (this.sendScheduledInput != null) {
       window.clearTimeout(this.sendScheduledInput)
       this.sendScheduledInput = null
     }
 
-    if (!this.client.ready) return
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.kclManager.executeCode()
+    if (!this.client.ready) {
+      return
+    }
+
+    // If we're in sketchSolveMode, update Rust state with the latest AST
+    // This handles the case where the user directly edits in the CodeMirror editor
+    // these are short term hacks while in rapid development for sketch revamp
+    // should be clean up.
+    try {
+      const modelingState = this.kclManager.modelingState
+      if (modelingState?.matches('sketchSolveMode')) {
+        await this.kclManager.executeCode()
+        const { sceneGraph, execOutcome } =
+          await this.rustContext.hackSetProgram(
+            this.kclManager.ast,
+            await jsAppSettings(
+              this.kclManager.singletons.rustContext.settingsActor
+            )
+          )
+
+        // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
+        const sceneGraphDelta: SceneGraphDelta = {
+          new_graph: sceneGraph,
+          new_objects: [],
+          invalidates_ids: false,
+          exec_outcome: execOutcome,
+        }
+
+        const kclSource: SourceDelta = {
+          text: this.kclManager.code,
+        }
+
+        // Send event to sketch solve machine via modeling machine
+        this.kclManager.sendModelingEvent({
+          type: 'update sketch outcome',
+          data: {
+            kclSource,
+            sceneGraphDelta,
+          },
+        })
+      } else {
+        await this.kclManager.executeCode()
+      }
+    } catch (error) {
+      console.error('Error when updating Rust state after user edit:', error)
+    }
   }
 
   ensureDocUpdated() {
-    if (this.sendScheduledInput != null) this.updateDoc()
+    if (this.sendScheduledInput != null) {
+      void this.updateDoc()
+    }
   }
 
   async updateUnits(
@@ -189,6 +247,8 @@ export function kclPlugin(
   systemDeps: {
     kclManager: KclManager
     sceneEntitiesManager: SceneEntities
+    wasmInstance: ModuleType
+    rustContext: RustContext
   }
 ): Extension {
   return [

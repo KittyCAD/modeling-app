@@ -8,7 +8,7 @@ import { SystemIOMachineLogicListenerWeb } from '@src/components/Providers/Syste
 import { RouteProvider } from '@src/components/RouteProvider'
 import { isDesktop } from '@src/lib/isDesktop'
 import { Outlet } from 'react-router-dom'
-import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import { useToken } from '@src/lib/singletons'
 
 // Root component will live for the entire applications runtime

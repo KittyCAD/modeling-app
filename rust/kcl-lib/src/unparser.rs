@@ -305,7 +305,7 @@ impl ImportStatement {
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub(crate) enum ExprContext {
     Pipe,
-    Decl,
+    FnDecl,
     Other,
 }
 
@@ -317,7 +317,7 @@ impl Expr {
         indentation_level: usize,
         mut ctxt: ExprContext,
     ) {
-        let is_decl = matches!(ctxt, ExprContext::Decl);
+        let is_decl = matches!(ctxt, ExprContext::FnDecl);
         if is_decl {
             // Just because this expression is being bound to a variable, doesn't mean that every child
             // expression is being bound. So, reset the expression context if necessary.
@@ -336,6 +336,10 @@ impl Expr {
             Expr::FunctionExpression(func_exp) => {
                 if !is_decl {
                     buf.push_str("fn");
+                    if let Some(name) = &func_exp.name {
+                        buf.push(' ');
+                        buf.push_str(&name.name);
+                    }
                 }
                 func_exp.recast(buf, options, indentation_level);
             }
@@ -537,9 +541,9 @@ impl VariableDeclaration {
             ItemVisibility::Export => buf.push_str("export "),
         };
 
-        let (keyword, eq) = match self.kind {
-            VariableKind::Fn => ("fn ", ""),
-            VariableKind::Const => ("", " = "),
+        let (keyword, eq, ctxt) = match self.kind {
+            VariableKind::Fn => ("fn ", "", ExprContext::FnDecl),
+            VariableKind::Const => ("", " = ", ExprContext::Other),
         };
         buf.push_str(keyword);
         buf.push_str(&self.declaration.id.name);
@@ -553,7 +557,7 @@ impl VariableDeclaration {
         let mut tmp_buf = String::new();
         self.declaration
             .init
-            .recast(&mut tmp_buf, options, indentation_level, ExprContext::Decl);
+            .recast(&mut tmp_buf, options, indentation_level, ctxt);
         buf.push_str(tmp_buf.trim_start());
     }
 }

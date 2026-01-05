@@ -1,0 +1,39 @@
+@settings(experimentalFeatures = allow)
+
+// Test point-segment coincident constraint
+// This tests the syntax: coincident([line5.start, line4]) where one is a point and one is a segment
+s1 = sketch(on = XY) {
+  // Create a line segment
+  line4 = sketch2::line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+
+  // Constrain the line segment endpoints
+line4.start.at[0] == 0
+line4.start.at[1] == 0
+line4.end.at[0] == 10
+line4.end.at[1] == 0
+
+  // Create another line with a start point
+  line5 = sketch2::line(start = [var, var], end = [var, var])
+
+  // Constrain line5 endpoints
+  // Note: We don't constrain line5.start.at[0] directly
+  // and instead let the coincident constraint determine it
+line5.end.at[0] == 15
+line5.end.at[1] == 0
+
+  // Make line5.start coincident with line4 (point-segment)
+  // This matches the user's example syntax: coincident([line5.start, line4])
+  sketch2::coincident([line5.start, line4])
+
+  // We'll verify that line5.start is somewhere on line4
+  // which means its y-coordinate should be 0
+}
+
+// Use tolerance to account for floating-point precision in solver results
+assert(s1.line4.start.at[0], isEqualTo = 0, tolerance = 0.000001)
+assert(s1.line4.start.at[1], isEqualTo = 0, tolerance = 0.000001)
+assert(s1.line4.end.at[0], isEqualTo = 10, tolerance = 0.000001)
+assert(s1.line4.end.at[1], isEqualTo = 0, tolerance = 0.000001)
+// We don't assert the exact x-coordinate of line5.start
+// since the coincident constraint only ensures it's somewhere on line4
+assert(s1.line5.start.at[1], isEqualTo = 0, tolerance = 0.000001)

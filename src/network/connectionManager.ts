@@ -6,7 +6,7 @@ import {
   getThemeColorForEngine,
   Themes,
 } from '@src/lib/theme'
-import { withWebSocketURL } from '@src/lib/withBaseURL'
+import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   IEventListenerTracked,
   ManagerTearDown,
@@ -99,7 +99,6 @@ export class ConnectionManager extends EventTarget {
     height: 256,
   }
   settings: SettingsViaQueryString = {
-    pool: null,
     theme: Themes.Dark,
     highlightEdges: true,
     enableSSAO: true,
@@ -141,7 +140,6 @@ export class ConnectionManager extends EventTarget {
     } else {
       // Gotcha: This runs in testing environments
       this.settings = {
-        pool: null,
         theme: Themes.Dark,
         highlightEdges: true,
         enableSSAO: true,
@@ -345,7 +343,7 @@ export class ConnectionManager extends EventTarget {
     const onEngineConnectionOpened = createOnEngineConnectionOpened({
       rustContext: this.rustContext,
       settings: this.settings,
-      jsAppSettings: await jsAppSettings(),
+      jsAppSettings: await jsAppSettings(this.rustContext.settingsActor),
       path: this.kclManager?.currentFilePath || '',
       sendSceneCommand: this.sendSceneCommand.bind(this),
       setTheme: this.setTheme.bind(this),
@@ -391,9 +389,8 @@ export class ConnectionManager extends EventTarget {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
-    const pool = !this.settings.pool ? '' : `&pool=${this.settings.pool}`
-    const url = withWebSocketURL(
-      `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}${pool}`
+    const url = withKittycadWebSocketURL(
+      `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
     return url
   }
@@ -487,6 +484,80 @@ export class ConnectionManager extends EventTarget {
       type: 'darkModeMatcher',
     })
     darkModeMatcher?.addEventListener('change', onDarkThemeMediaQueryChange)
+  }
+
+  /** Set the edge highlighting setting in the engine, with debug logging */
+  async setHighlightEdges(shouldHighlight: boolean) {
+    const cmd = {
+      type: 'edge_lines_visible',
+      hidden: !shouldHighlight,
+    } as const
+    const debugLog = (event: string) =>
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: `setHighlightEdges - set_highlight_edges - ${event}`,
+        metadata: {
+          cmd,
+        },
+      })
+
+    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: 'setHighlightEdges, websocket is not ready',
+        metadata: {
+          readyState: this.connection?.websocket?.readyState,
+        },
+      })
+      return
+    }
+
+    await this.connection.deferredConnection?.promise
+
+    debugLog('start')
+    await this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd,
+    })
+    debugLog('done')
+  }
+
+  /** Set the "show scale grid" setting in the engine, with debug logging */
+  async setShowScaleGrid(shouldShowGrid: boolean) {
+    const cmd = {
+      type: 'edge_lines_visible',
+      hidden: !shouldShowGrid,
+    } as const
+    const debugLog = (event: string) =>
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: `setHighlightEdges - set_highlight_edges - ${event}`,
+        metadata: {
+          cmd,
+        },
+      })
+
+    if (this.connection?.websocket?.readyState !== WebSocket.OPEN) {
+      EngineDebugger.addLog({
+        label: 'connectionManager',
+        message: 'setHighlightEdges, websocket is not ready',
+        metadata: {
+          readyState: this.connection?.websocket?.readyState,
+        },
+      })
+      return
+    }
+
+    await this.connection.deferredConnection?.promise
+
+    debugLog('start')
+    await this.sendSceneCommand({
+      cmd_id: uuidv4(),
+      type: 'modeling_cmd_req',
+      cmd,
+    })
+    debugLog('done')
   }
 
   async sendSceneCommand(

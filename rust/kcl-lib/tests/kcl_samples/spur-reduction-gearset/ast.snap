@@ -1949,6 +1949,14 @@ description: Result of parsing spur-reduction-gearset.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "spurGear",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -2541,6 +2549,7 @@ description: Result of parsing spur-reduction-gearset.kcl
         "preComments": [
           "// Spur Reduction Gearset",
           "// A pair of spur gears meshed together, with an equal module and different number of teeth",
+          "// Categories: Automotive, Aerospace",
           "",
           "",
           "// Set units"

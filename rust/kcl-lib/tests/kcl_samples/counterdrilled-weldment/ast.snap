@@ -3317,6 +3317,14 @@ description: Result of parsing counterdrilled-weldment.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "counterdrill",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -5882,6 +5890,14 @@ description: Result of parsing counterdrilled-weldment.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "fin",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -6038,6 +6054,7 @@ description: Result of parsing counterdrilled-weldment.kcl
         "preComments": [
           "// Counterdrilled Weldment",
           "// A metal weldment consisting of a counterdrilled plate, a centrally mounted housing tube, and four structural support fins.",
+          "// Categories: Manufacturing, Construction",
           "",
           "",
           "// Set units"

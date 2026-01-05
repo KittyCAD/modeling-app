@@ -12,7 +12,7 @@ KCL samples conform to a set of style guidelines to ensure consistency and reada
 
 1. **File Naming:** Name your KCL files descriptively and concisely, using hyphens to separate words (e.g., flange.kcl, ball-bearing.kcl).
 
-2. **File Header:** Include a title comment at the top of each file, followed by a brief description explaining what the model is and its typical use cases.
+2. **File Header:** The first comment line should be the file's title. The second - a brief description explaining what the model is and its typical use cases. Optionally, but preferred, the third comment line should be "Categories:" followed by a category value or comma separated category values. Leaving this off won't break anything, but will list the sample on the website as "Uncategorized".
 
 3. **Inline Comments:** Use inline comments to explain non-obvious parts of the code. Each major section should have a comment describing its purpose.
 
@@ -35,6 +35,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![bench](screenshots/bench.png)](bench/main.kcl)
 #### [bench-for-kids](bench-for-kids/main.kcl) ([screenshot](screenshots/bench-for-kids.png))
 [![bench-for-kids](screenshots/bench-for-kids.png)](bench-for-kids/main.kcl)
+#### [bike-hub-washer](bike-hub-washer/main.kcl) ([screenshot](screenshots/bike-hub-washer.png))
+[![bike-hub-washer](screenshots/bike-hub-washer.png)](bike-hub-washer/main.kcl)
 #### [bone-plate](bone-plate/main.kcl) ([screenshot](screenshots/bone-plate.png))
 [![bone-plate](screenshots/bone-plate.png)](bone-plate/main.kcl)
 #### [bottle](bottle/main.kcl) ([screenshot](screenshots/bottle.png))
@@ -49,6 +51,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![c-shape-solid](screenshots/c-shape-solid.png)](c-shape-solid/main.kcl)
 #### [car-wheel-assembly](car-wheel-assembly/main.kcl) ([screenshot](screenshots/car-wheel-assembly.png))
 [![car-wheel-assembly](screenshots/car-wheel-assembly.png)](car-wheel-assembly/main.kcl)
+#### [cassette](cassette/main.kcl) ([screenshot](screenshots/cassette.png))
+[![cassette](screenshots/cassette.png)](cassette/main.kcl)
 #### [clock](clock/main.kcl) ([screenshot](screenshots/clock.png))
 [![clock](screenshots/clock.png)](clock/main.kcl)
 #### [coilover-assembly](coilover-assembly/main.kcl) ([screenshot](screenshots/coilover-assembly.png))
@@ -87,6 +91,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![engine-valve](screenshots/engine-valve.png)](engine-valve/main.kcl)
 #### [exhaust-manifold](exhaust-manifold/main.kcl) ([screenshot](screenshots/exhaust-manifold.png))
 [![exhaust-manifold](screenshots/exhaust-manifold.png)](exhaust-manifold/main.kcl)
+#### [field-monitor-stand](field-monitor-stand/main.kcl) ([screenshot](screenshots/field-monitor-stand.png))
+[![field-monitor-stand](screenshots/field-monitor-stand.png)](field-monitor-stand/main.kcl)
 #### [flange](flange/main.kcl) ([screenshot](screenshots/flange.png))
 [![flange](screenshots/flange.png)](flange/main.kcl)
 #### [flat-bladed-impeller](flat-bladed-impeller/main.kcl) ([screenshot](screenshots/flat-bladed-impeller.png))
@@ -117,6 +123,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![gridfinity-bins-stacking-lip](screenshots/gridfinity-bins-stacking-lip.png)](gridfinity-bins-stacking-lip/main.kcl)
 #### [hammer](hammer/main.kcl) ([screenshot](screenshots/hammer.png))
 [![hammer](screenshots/hammer.png)](hammer/main.kcl)
+#### [hand-trolley](hand-trolley/main.kcl) ([screenshot](screenshots/hand-trolley.png))
+[![hand-trolley](screenshots/hand-trolley.png)](hand-trolley/main.kcl)
 #### [helical-gear](helical-gear/main.kcl) ([screenshot](screenshots/helical-gear.png))
 [![helical-gear](screenshots/helical-gear.png)](helical-gear/main.kcl)
 #### [helical-planetary-gearset](helical-planetary-gearset/main.kcl) ([screenshot](screenshots/helical-planetary-gearset.png))
@@ -223,6 +231,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![split-washer-spring-version](screenshots/split-washer-spring-version.png)](split-washer-spring-version/main.kcl)
 #### [spool](spool/main.kcl) ([screenshot](screenshots/spool.png))
 [![spool](screenshots/spool.png)](spool/main.kcl)
+#### [sprocket](sprocket/main.kcl) ([screenshot](screenshots/sprocket.png))
+[![sprocket](screenshots/sprocket.png)](sprocket/main.kcl)
 #### [spur-gear](spur-gear/main.kcl) ([screenshot](screenshots/spur-gear.png))
 [![spur-gear](screenshots/spur-gear.png)](spur-gear/main.kcl)
 #### [spur-reduction-gearset](spur-reduction-gearset/main.kcl) ([screenshot](screenshots/spur-reduction-gearset.png))

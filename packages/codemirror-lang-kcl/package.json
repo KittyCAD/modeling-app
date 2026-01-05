@@ -20,7 +20,7 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@codemirror/language": "^6.11.3",
-    "@codemirror/state": "^6.5.2",
+    "@codemirror/state": "^6.5.3",
     "@lezer/highlight": "^1.2.1",
     "typescript": "^5.7.2"
   },
@@ -29,8 +29,8 @@
     "@rollup/plugin-typescript": "^12.1.4",
     "rollup": "^4.40.0",
     "rollup-plugin-dts": "^6.2.3",
-    "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.0.3"
+    "vite-tsconfig-paths": "^6.0.3",
+    "vitest": "^4.0.16"
   },
   "files": ["dist/"]
 }

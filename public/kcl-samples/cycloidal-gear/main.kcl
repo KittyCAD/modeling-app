@@ -1,5 +1,6 @@
 // Cycloidal Gear
 // A cycloidal gear is a gear with a continuous, curved tooth profile. They are used in watchmaking and high precision robotics actuation
+// Categories: Manufacturing, Medical
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)

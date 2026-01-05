@@ -613,8 +613,7 @@ async function animateCameraToQuaternion(
     await camControls.tweenCameraToQuaternion(
       targetQuat,
       camControls.target.clone(),
-      500,
-      false // !isPerspective: this doesn't work
+      500
     )
   } catch (e) {
     console.warn(e)

@@ -564,9 +564,22 @@ fn minus_sign(i: &mut TokenSlice) -> ModalResult<Token> {
     .parse_next(i)
 }
 
+fn plus_sign(i: &mut TokenSlice) -> ModalResult<Token> {
+    any.verify_map(|token: Token| {
+        if token.token_type == TokenType::Operator && token.value == "+" {
+            Some(token)
+        } else {
+            None
+        }
+    })
+    .context(expected("a plus sign `+`"))
+    .parse_next(i)
+}
+
 /// Numeric literal with suffix and optional leading negative sign.
 fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
-    let negative_token = opt(minus_sign).parse_next(i)?;
+    let prefix_token = opt(alt((minus_sign, plus_sign))).parse_next(i)?;
+    let is_negative = prefix_token.as_ref().is_some_and(|tok| tok.value == "-");
     let (value, suffix, number_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
@@ -585,14 +598,14 @@ fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
         })
         .context(expected("a number literal (e.g. 3 or 12.5)"))
         .parse_next(i)?;
-    let start = negative_token.as_ref().map(|t| t.start).unwrap_or(number_token.start);
+    let start = prefix_token.as_ref().map(|t| t.start).unwrap_or(number_token.start);
     Ok(Node::new(
         NumericLiteral {
-            value: if negative_token.is_some() { -value } else { value },
+            value: if is_negative { -value } else { value },
             suffix,
             raw: format!(
                 "{}{}",
-                negative_token.map(|t| t.value).unwrap_or_default(),
+                prefix_token.map(|t| t.value).unwrap_or_default(),
                 number_token.value
             ),
             digest: None,
@@ -1488,7 +1501,11 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
 fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     let fn_tok = opt(fun).parse_next(i)?;
     ignore_whitespace(i);
-    let result = function_decl.parse_next(i)?;
+    let name = opt(binding_name).parse_next(i)?;
+    ignore_whitespace(i);
+    let mut result = function_decl.parse_next(i)?;
+    // Make the function expression aware of its name.
+    result.name = name;
     if fn_tok.is_none() {
         let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
         return Err(ErrMode::Cut(err.into()));
@@ -1521,6 +1538,7 @@ fn function_decl(i: &mut TokenSlice) -> ModalResult<Node<FunctionExpression>> {
     let end = close.end;
     let result = Node::new(
         FunctionExpression {
+            name: None,
             params,
             body: body.into(),
             return_type,
@@ -2430,6 +2448,11 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
             ignore_whitespace(i);
 
             let val = function_decl
+                .map(|mut func| {
+                    // Make the function expression aware of its name.
+                    func.name = Some(id.clone());
+                    func
+                })
                 .map(Box::new)
                 .map(Expr::FunctionExpression)
                 .context(expected("a KCL function expression, like () { return 1 }"))
@@ -2768,6 +2791,7 @@ fn unary_expression(i: &mut TokenSlice) -> ModalResult<Node<UnaryExpression>> {
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Operator if token.value == "-" => Ok((UnaryOperator::Neg, token)),
+            TokenType::Operator if token.value == "+" => Ok((UnaryOperator::Plus, token)),
             TokenType::Operator => Err(CompilationError::fatal(
                  token.as_source_range(),
                  format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
@@ -3446,6 +3470,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             inner: SketchBlock {
                 arguments,
                 body,
+                is_being_edited: false,
                 non_code_meta,
                 digest: None,
             },
@@ -4917,15 +4942,6 @@ e
     }
 
     #[test]
-    fn test_parse_weird_lots_of_slashes() {
-        assert_err_contains(
-            r#"J///////////o//+///////////P++++*++++++P///////˟
-++4"#,
-            "Unexpected token: +",
-        );
-    }
-
-    #[test]
     fn test_optional_param_order() {
         for (i, (params, expect_ok)) in [
             (
@@ -5017,6 +5033,18 @@ e
     fn function_defined_with_var() {
         let code = r#"
         foo = fn(@x) {
+            return x
+        }
+        answer = foo(2)
+        "#;
+        let (_, errs) = assert_no_err(code);
+        assert!(errs[0].message.contains("Define a function with `fn name()` instead") && errs[0].suggestion.is_some());
+    }
+
+    #[test]
+    fn function_defined_with_var_and_recursive_name() {
+        let code = r#"
+        foo = fn bar(@x) {
             return x
         }
         answer = foo(2)

@@ -3277,6 +3277,14 @@ description: Result of parsing stylized-pickup-truck.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "makeWheelCutout",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -9322,6 +9330,14 @@ description: Result of parsing stylized-pickup-truck.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "wheelFn",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -12534,6 +12550,7 @@ description: Result of parsing stylized-pickup-truck.kcl
         "preComments": [
           "// Stylized Pickup Truck",
           "// A simplified, parametric 3-D model of a pickup truck intended for use as a low-poly prop in real-time engines, visualization scenes, or rapid prototyping.",
+          "// Categories: Automotive, Maker",
           "",
           "",
           "// The model includes:",

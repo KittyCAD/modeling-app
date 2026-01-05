@@ -36,12 +36,14 @@ import type { Selection } from '@src/machines/modelingSharedTypes'
 import { err, reportRejection } from '@src/lib/trap'
 import { isArray, roundOff } from '@src/lib/utils'
 import { deleteEdgeTreatment } from '@src/lang/modifyAst/edges'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export async function deleteFromSelection(
   ast: Node<Program>,
   selection: Selection,
   variables: VariableMap,
   artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType,
   getFaceDetails: (id: string) => Promise<FaceIsPlanar> = () => ({}) as any
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
@@ -84,6 +86,7 @@ export async function deleteFromSelection(
       const varDec = getNodeFromPath<VariableDeclarator>(
         ast,
         path.codeRef.pathToNode,
+        wasmInstance,
         'VariableDeclarator'
       )
       if (err(varDec)) return varDec
@@ -124,6 +127,7 @@ export async function deleteFromSelection(
   const statement = getNodeFromPath<ImportStatement>(
     astClone,
     selection.codeRef.pathToNode,
+    wasmInstance,
     'ImportStatement'
   )
   if (
@@ -132,7 +136,11 @@ export async function deleteFromSelection(
     selection.codeRef.pathToNode[1] &&
     typeof selection.codeRef.pathToNode[1][0] === 'number'
   ) {
-    const pipes = findPipesWithImportAlias(ast, selection.codeRef.pathToNode)
+    const pipes = findPipesWithImportAlias(
+      ast,
+      selection.codeRef.pathToNode,
+      wasmInstance
+    )
     for (const { pathToNode: pathToPipeNode } of pipes.reverse()) {
       if (typeof pathToPipeNode[1][0] === 'number') {
         const pipeWithImportAliasIndex = pathToPipeNode[1][0]
@@ -149,6 +157,7 @@ export async function deleteFromSelection(
   const varDec = getNodeFromPath<VariableDeclarator>(
     ast,
     selection?.codeRef?.pathToNode,
+    wasmInstance,
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
@@ -212,6 +221,7 @@ export async function deleteFromSelection(
         const callExp = getNodeFromPath<CallExpressionKw>(
           astClone,
           pathToNode,
+          wasmInstance,
           ['CallExpressionKw']
         )
         if (err(callExp)) return callExp
@@ -232,7 +242,8 @@ export async function deleteFromSelection(
               variable: KclValue
             }
           } = {}
-          const roundLiteral = (x: number) => createLiteral(roundOff(x))
+          const roundLiteral = (x: number) =>
+            createLiteral(roundOff(x), wasmInstance)
           const modificationDetails: {
             parentPipe: PipeExpression['body']
             parentInit: VariableDeclarator
@@ -299,11 +310,13 @@ export async function deleteFromSelection(
             // so `parent[lastKey]` does the trick, if there's a better way of doing this I'm all years
             const parentPipe = getNodeFromPath<PipeExpression['body']>(
               astClone,
-              path.slice(0, -1)
+              path.slice(0, -1),
+              wasmInstance
             )
             const parentInit = getNodeFromPath<VariableDeclarator>(
               astClone,
-              path.slice(0, -1)
+              path.slice(0, -1),
+              wasmInstance
             )
             if (err(parentPipe) || err(parentInit)) {
               return
@@ -402,7 +415,7 @@ export async function deleteFromSelection(
     // await prom
     return astClone
   } else if (selection.artifact?.type === 'edgeCut') {
-    return deleteEdgeTreatment(astClone, selection)
+    return deleteEdgeTreatment(astClone, selection, wasmInstance)
   } else if (varDec.node.init.type === 'PipeExpression') {
     const pipeBody = varDec.node.init.body
     const doNotDeleteProfileIfItHasBeenExtruded = !(
