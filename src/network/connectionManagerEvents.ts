@@ -147,7 +147,7 @@ export const createOnEngineConnectionOpened = ({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
-        type: 'set_default_backface_color',
+        type: 'set_default_system_properties',
         backface_color: settings.backfaceColor,
       },
     })

@@ -2406,8 +2406,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.148"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/default_backface#40ac70f49a79c47b6e7af0c062a9254c6dfd52e7"
+version = "0.2.153"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3d37d46a90d3618629806758c2e8e66c04c1a6d24f927f3a13480b9c86bc756c"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2434,7 +2435,8 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/default_backface#40ac70f49a79c47b6e7af0c062a9254c6dfd52e7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb9bb1a594541b878adc1c8dcb821328774bf7aa09b65b104a206b1291a5235c"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2445,7 +2447,8 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/default_backface#40ac70f49a79c47b6e7af0c062a9254c6dfd52e7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fdb4ee23cc996aa2dca7584d410e8826e08161e1ac4335bb646d5ede33f37cb3"
 dependencies = [
  "proc-macro2",
  "quote",
