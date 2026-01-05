@@ -29,6 +29,8 @@ jobs:
 
   npm-build-wasm:
     uses: ./.github/workflows/build-wasm.yml
+    secrets:
+      TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
   npm-tsc:
     runs-on: namespace-profile-ubuntu-2-cores

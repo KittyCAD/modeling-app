@@ -352,7 +352,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
             <div className="overflow-auto" ref={refScroll}>
               {props.userBlockedOnPayment ? (
                 <StarterCard
-                  text={`Zookeeper is unavailable because you have run out of credits for the month. Please check your [account page](${withSiteBaseURL('/account/billing')}) to view usage or upgrade your plan.`}
+                  text={`Zookeeper is unavailable because your balance is zero. Please check your [account page](${withSiteBaseURL('/account/billing')}) to view usage or upgrade your plan.`}
                 />
               ) : props.isLoading === false || props.needsReconnect ? (
                 exchangeCards !== undefined && exchangeCards.length > 0 ? (
