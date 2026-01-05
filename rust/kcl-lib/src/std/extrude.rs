@@ -21,7 +21,6 @@ use uuid::Uuid;
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    exec::Sketch,
     execution::{
         ArtifactId, ExecState, Extrudable, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, ProfileClosed, Sketch,
         SketchSurface, Solid,
