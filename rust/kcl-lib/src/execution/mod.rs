@@ -520,11 +520,10 @@ impl ExecutorContext {
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
         let (ws, _headers) = client
             .modeling()
-            .commands_ws(
-                kittycad::modeling::CommandsWsParams{
+            .commands_ws(kittycad::modeling::CommandsWsParams {
                 api_call_id: None,
                 fps: None,
-              order_independent_transparency:  None,
+                order_independent_transparency: None,
                 post_effect: if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
@@ -537,8 +536,8 @@ impl ExecutorContext {
                 unlocked_framerate: None,
                 webrtc: Some(false),
                 video_res_width: None,
-                video_res_height: None,}
-            )
+                video_res_height: None,
+            })
             .await?;
 
         let engine: Arc<Box<dyn EngineManager>> =
