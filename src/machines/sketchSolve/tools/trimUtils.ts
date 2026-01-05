@@ -8,6 +8,7 @@ import type {
   SceneGraphDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
+import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import type RustContext from '@src/lib/rustContext'
 import type { DeepPartial } from '@src/lib/types'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
@@ -614,60 +615,42 @@ type DeleteConstraintsOperation = {
   constraintIds: Array<number>
 }
 
-type CreateCoincidentLineSegmentOperation = {
-  type: 'createCoincidentLineSegment'
-  segmentOrPointToMakeCoincidentToId: number
-  ctor: Extract<SegmentCtor, { type: 'Line' | 'Arc' }>
-  constraintsToMoveToNewSegmentEnd?: Array<{
-    constraintId: number
-    segmentOrPointId: number
-  }>
+type ConstraintToMigrate = {
+  constraintId: number // The constraint to delete
+  otherEntityId: number // The other point or segment in the constraint
+  isPointPoint: boolean // true if otherEntityId is a point, false if it's a segment
+  attachToEndpoint: 'start' | 'end' | 'segment' // Which endpoint of new segment to attach to, or 'segment' to replace old segment with new segment
+}
+
+type SplitSegmentOperation = {
+  type: 'splitSegment'
+  segmentId: number
+  leftTrimCoords: Coords2d
+  rightTrimCoords: Coords2d
+  originalEndCoords: Coords2d
+  leftSide: TrimTermination
+  rightSide: TrimTermination
+  leftSideCoincidentData: {
+    intersectingSegId: number
+    intersectingEndpointPointId?: number
+    existingPointSegmentConstraintId?: number
+  }
+  rightSideCoincidentData: {
+    intersectingSegId: number
+    intersectingEndpointPointId?: number
+    existingPointSegmentConstraintId?: number
+  }
+  constraintsToMigrate: ConstraintToMigrate[] // All constraints that move to new segment
+  constraintsToDelete: number[] // Constraints to delete (including migrated ones)
 }
 
 type TrimOperation =
   | SimpleTrimOperation
   | EditSegmentOperation
   | AddCoincidentConstraintOperation
-  | CreateCoincidentLineSegmentOperation
+  | SplitSegmentOperation
   | DeleteConstraintsOperation
 
-/**
- * For the trim spawn segment, and the intersection point on that segment,
- * we need to travel both directions to find the "trim terminations", thas is ends of the trim spawn.
- * It can either be
- * ## segEndPoint: A end of the segment (whether it's coincident or not)
- *
- *   ========0
- * OR
- *   ========0
- *            \
- *             \
- *  For this condition it checks that there are no intersections between the trim spawn point
- *  and the segment end. If it find one right at the end because of a numerical precision issue,
- *  if the end of that segment has a coincident with the end of our trim spawn segment its still
- *  considered "segEndPoint"
- *
- * ## intersection: It could intersect with another segment
- *            /
- *           /
- *  ========X=====
- *         /
- *        /
- *  For this condition it checks for intersections between the trim spawn point, it's the most basic check
- *
- * ## trimSpawnSegmentCoincidentWithAnotherSegmentPoint: Or the most subtle is another segment could have one of it's endpoints
- * coincident with the trim spawn segment
- *
- *  ========0=====
- *         /
- *        /
- *
- *   For this condition it checks if any segments endpoint's perpendicular distance to the trim spawn segment is within epsilon between the
- *   trim spawn point and the segment end AND it the segment's endpoint is coincident with the trim spawn segment
- *
- *
- *  ## Fall back, if none of the above are found, we should default to "segEndPoint" but log an error to the console
- */
 /**
  * Helper to project a point onto a line segment and get its parametric position
  * Returns t where t=0 at start, t=1 at end, t<0 before start, t>1 after end
@@ -854,6 +837,55 @@ function perpendicularDistanceToSegment(
   return Math.sqrt(distDx * distDx + distDy * distDy)
 }
 
+/**
+ * For the trim spawn segment and the intersection point on that segment,
+ * finds the "trim terminations" in both directions (left and right from the intersection point).
+ * A termination is the point where trimming should stop in each direction.
+ *
+ * The function searches for candidates in each direction and selects the closest one,
+ * with the following priority when distances are equal: coincident > intersection > endpoint.
+ *
+ * ## segEndPoint: The segment's own endpoint
+ *
+ *   ========0
+ * OR
+ *   ========0
+ *            \
+ *             \
+ *
+ *  Returns this when:
+ *  - No other candidates are found between the intersection point and the segment end
+ *  - An intersection is found at the segment's own endpoint (even if due to numerical precision)
+ *  - An intersection is found at another segment's endpoint (without a coincident constraint)
+ *  - The closest candidate is the segment's own endpoint
+ *
+ * ## intersection: Intersection with another segment's body
+ *            /
+ *           /
+ *  ========X=====
+ *         /
+ *        /
+ *
+ *  Returns this when:
+ *  - A geometric intersection is found with another segment's body (not at an endpoint)
+ *  - The intersection is not at our own segment's endpoint
+ *  - The intersection is not at the other segment's endpoint (which would be segEndPoint)
+ *
+ * ## trimSpawnSegmentCoincidentWithAnotherSegmentPoint: Another segment's endpoint coincident with our segment
+ *
+ *  ========0=====
+ *         /
+ *        /
+ *
+ *  Returns this when:
+ *  - Another segment's endpoint has a coincident constraint with our trim spawn segment
+ *  - The endpoint's perpendicular distance to our segment is within epsilon
+ *  - The endpoint is geometrically on our segment (between start and end)
+ *  - This takes priority over intersections when at the same location
+ *
+ * ## Fallback
+ *  If no candidates are found in a direction, defaults to "segEndPoint" and logs an error to the console.
+ */
 export function getTrimSpawnTerminations({
   trimSpawnSegId,
   trimSpawnCoords,
@@ -900,7 +932,13 @@ export function getTrimSpawnTerminations({
 
   // Find intersection point between polyline and trim spawn segment
   // trimSpawnCoords is a polyline, so we check each segment
-  let intersectionPoint: Coords2d | null = null
+  // We need to find ALL intersections and use a consistent one to avoid
+  // different results for different trim lines in the same area
+  const allIntersections: Array<{
+    point: Coords2d
+    segmentIndex: number
+  }> = []
+
   for (let i = 0; i < trimSpawnCoords.length - 1; i++) {
     const p1 = trimSpawnCoords[i]
     const p2 = trimSpawnCoords[i + 1]
@@ -913,8 +951,7 @@ export function getTrimSpawnTerminations({
         segmentEnd
       )
       if (intersection) {
-        intersectionPoint = intersection
-        break
+        allIntersections.push({ point: intersection, segmentIndex: i })
       }
     } else if (trimSpawnSeg.kind.segment.type === 'Arc' && segmentCenter) {
       const intersection = lineArcIntersection(
@@ -925,9 +962,35 @@ export function getTrimSpawnTerminations({
         segmentEnd
       )
       if (intersection) {
-        intersectionPoint = intersection
-        break
+        allIntersections.push({ point: intersection, segmentIndex: i })
       }
+    }
+  }
+
+  // Use the intersection that's closest to the middle of the polyline
+  // This ensures consistent results regardless of which segment intersects first
+  let intersectionPoint: Coords2d | null = null
+  if (allIntersections.length > 0) {
+    // Find the middle of the polyline
+    const midIndex = Math.floor((trimSpawnCoords.length - 1) / 2)
+    const midPoint = trimSpawnCoords[midIndex]
+
+    // Find the intersection closest to the middle
+    let minDist = Infinity
+    for (const intersection of allIntersections) {
+      const dist = Math.sqrt(
+        (intersection.point[0] - midPoint[0]) ** 2 +
+          (intersection.point[1] - midPoint[1]) ** 2
+      )
+      if (dist < minDist) {
+        minDist = dist
+        intersectionPoint = intersection.point
+      }
+    }
+
+    // Fallback: if no intersection is close to middle, use the first one
+    if (!intersectionPoint) {
+      intersectionPoint = allIntersections[0].point
     }
   }
 
@@ -1369,9 +1432,12 @@ function findTerminationInDirection(
   }
 
   // Filter candidates to exclude the intersection point itself and those on the wrong side
+  // Use a slightly larger epsilon to account for numerical precision variations
+  // when different trim line segments intersect at slightly different points
+  const intersectionEpsilon = EPSILON_POINT_ON_SEGMENT * 10 // 0.0001mm
   const filteredCandidates = candidates.filter((candidate) => {
     const distFromIntersection = Math.abs(candidate.t - intersectionT)
-    if (distFromIntersection < EPSILON_POINT_ON_SEGMENT) {
+    if (distFromIntersection < intersectionEpsilon) {
       return false // Too close to intersection point
     }
 
@@ -1388,24 +1454,23 @@ function findTerminationInDirection(
   const endpointT = direction === 'left' ? 0 : 1
 
   // Sort candidates by distance from intersection (closest first)
-  // But prioritize coincident over intersection
+  // When distances are equal, prioritize: coincident > intersection > endpoint
+  // This ensures that constraint-based terminations (coincident) are preferred over
+  // geometric intersections when they occur at the same location
   filteredCandidates.sort((a, b) => {
-    // Priority: coincident > intersection > endpoint
-    const priority = (type: string) => {
+    const distA = Math.abs(a.t - intersectionT)
+    const distB = Math.abs(b.t - intersectionT)
+    const distDiff = distA - distB
+    if (Math.abs(distDiff) > EPSILON_POINT_ON_SEGMENT) {
+      return distDiff
+    }
+    // Distances are effectively equal - prioritize by type
+    const typePriority = (type: string) => {
       if (type === 'coincident') return 0
       if (type === 'intersection') return 1
       return 2 // endpoint
     }
-
-    const priorityDiff = priority(a.type) - priority(b.type)
-    if (priorityDiff !== 0) {
-      return priorityDiff
-    }
-
-    // If same priority, sort by distance
-    const distA = Math.abs(a.t - intersectionT)
-    const distB = Math.abs(b.t - intersectionT)
-    return distA - distB
+    return typePriority(a.type) - typePriority(b.type)
   })
 
   // Find the first valid termination
@@ -1551,6 +1616,8 @@ function findTerminationInDirection(
 
   // Return appropriate termination type
   if (closestCandidate.type === 'coincident') {
+    // Even if at endpoint, return coincident type because it's a constraint-based termination
+    // and might need to be migrated in the case of a segment split
     return {
       type: 'trimSpawnSegmentCoincidentWithAnotherSegmentPoint',
       trimTerminationCoords: closestCandidate.point,
@@ -1821,6 +1888,243 @@ export function trimStrategy({
     return constraints
   }
 
+  // Helper to find point-segment constraints that involve the segment ID itself (not just endpoints)
+  // These need to be converted to point-point constraints and moved to the appropriate endpoint
+  // Returns constraints that involve the segment ID but NOT the endpoint IDs (to avoid duplicates)
+  const findPointSegmentConstraintsOnSegment = (
+    segmentId: number,
+    startPointId: number,
+    endPointId: number,
+    splitPointCoords: Coords2d | null = null
+  ): {
+    startConstraints: Array<{ constraintId: number; pointId: number }>
+    endConstraints: Array<{ constraintId: number; pointId: number }>
+  } => {
+    const startConstraints: Array<{ constraintId: number; pointId: number }> =
+      []
+    const endConstraints: Array<{ constraintId: number; pointId: number }> = []
+
+    // Get the segment to determine its type and get endpoint coordinates
+    const segment = objects.find(
+      (obj) => obj.id === segmentId && obj.kind?.type === 'Segment'
+    )
+    if (!segment || segment.kind?.type !== 'Segment') {
+      return { startConstraints, endConstraints }
+    }
+
+    // Get endpoint coordinates for distance calculation
+    let segmentStartCoords: Coords2d | null = null
+    let segmentEndCoords: Coords2d | null = null
+
+    if (segment.kind.segment.type === 'Line') {
+      segmentStartCoords = getPositionCoordsForLine(segment, 'start', objects)
+      segmentEndCoords = getPositionCoordsForLine(segment, 'end', objects)
+    } else if (segment.kind.segment.type === 'Arc') {
+      segmentStartCoords = getPositionCoordsFromArc(segment, 'start', objects)
+      segmentEndCoords = getPositionCoordsFromArc(segment, 'end', objects)
+    }
+
+    if (!segmentStartCoords || !segmentEndCoords) {
+      return { startConstraints, endConstraints }
+    }
+
+    // Calculate split point parametric position if provided
+    let splitPointT: number | null = null
+    if (splitPointCoords) {
+      if (segment.kind.segment.type === 'Line') {
+        splitPointT = projectPointOntoSegment(
+          splitPointCoords,
+          segmentStartCoords,
+          segmentEndCoords
+        )
+      } else if (segment.kind.segment.type === 'Arc') {
+        const segmentCenter = getPositionCoordsFromArc(
+          segment,
+          'center',
+          objects
+        )
+        if (segmentCenter) {
+          splitPointT = projectPointOntoArc(
+            splitPointCoords,
+            segmentCenter,
+            segmentStartCoords,
+            segmentEndCoords
+          )
+        }
+      }
+    }
+
+    for (const obj of objects) {
+      if (
+        obj?.kind?.type === 'Constraint' &&
+        obj.kind.constraint.type === 'Coincident'
+      ) {
+        const constraintSegments = obj.kind.constraint.segments
+        // Only consider constraints that involve the segment ID
+        if (!constraintSegments.includes(segmentId)) {
+          continue
+        }
+
+        // Skip if the constraint also involves the endpoint IDs directly
+        // (those constraints stay on the endpoints and are not moved)
+        if (
+          constraintSegments.includes(startPointId) ||
+          constraintSegments.includes(endPointId)
+        ) {
+          continue
+        }
+
+        // Find the other segment/point in the constraint
+        const otherId = constraintSegments.find((id) => id !== segmentId)
+        if (otherId === undefined) {
+          continue
+        }
+
+        const otherObj = objects[otherId]
+        // Check if the other is a point (point-segment constraint)
+        const isPoint =
+          otherObj?.kind?.type === 'Segment' &&
+          otherObj.kind.segment.type === 'Point'
+
+        if (!isPoint) {
+          continue
+        }
+
+        // Get the point's coordinates to determine which endpoint it's closer to
+        const pointObj = objects[otherId]
+        if (
+          !pointObj ||
+          pointObj.kind?.type !== 'Segment' ||
+          pointObj.kind.segment.type !== 'Point'
+        ) {
+          continue
+        }
+
+        const pointCoords: Coords2d = [
+          pointObj.kind.segment.position.x.value,
+          pointObj.kind.segment.position.y.value,
+        ]
+
+        // Project the point onto the segment to get its parametric position
+        let t: number
+        if (segment.kind.segment.type === 'Line') {
+          t = projectPointOntoSegment(
+            pointCoords,
+            segmentStartCoords,
+            segmentEndCoords
+          )
+        } else if (segment.kind.segment.type === 'Arc') {
+          const segmentCenter = getPositionCoordsFromArc(
+            segment,
+            'center',
+            objects
+          )
+          if (!segmentCenter) {
+            continue
+          }
+          t = projectPointOntoArc(
+            pointCoords,
+            segmentCenter,
+            segmentStartCoords,
+            segmentEndCoords
+          )
+        } else {
+          continue
+        }
+
+        // Check if there's a point-point constraint between the point and an endpoint
+        // If there is, the constraint should stay on that endpoint (not move)
+        let isCoincidentWithStartPoint = false
+        let isCoincidentWithEndPoint = false
+        for (const constraintId of findPointPointCoincidentConstraints(
+          otherId
+        )) {
+          const constraintObj = objects[constraintId]
+          if (
+            constraintObj?.kind?.type === 'Constraint' &&
+            constraintObj.kind.constraint.type === 'Coincident'
+          ) {
+            const constraintSegments = constraintObj.kind.constraint.segments
+            if (constraintSegments.includes(startPointId)) {
+              isCoincidentWithStartPoint = true
+            }
+            if (constraintSegments.includes(endPointId)) {
+              isCoincidentWithEndPoint = true
+            }
+          }
+        }
+
+        // Geometric checks: distance to endpoints and parametric position
+        const distToStart = Math.sqrt(
+          (pointCoords[0] - segmentStartCoords[0]) ** 2 +
+            (pointCoords[1] - segmentStartCoords[1]) ** 2
+        )
+        const distToEnd = Math.sqrt(
+          (pointCoords[0] - segmentEndCoords[0]) ** 2 +
+            (pointCoords[1] - segmentEndCoords[1]) ** 2
+        )
+        const isAtStart =
+          Math.abs(t - 0) < EPSILON_POINT_ON_SEGMENT ||
+          distToStart < EPSILON_POINT_ON_SEGMENT
+        const isAtEnd =
+          Math.abs(t - 1) < EPSILON_POINT_ON_SEGMENT ||
+          distToEnd < EPSILON_POINT_ON_SEGMENT
+
+        // Decision table for split trims:
+        // - Constraints at/coincident with start endpoint → stay on original start (not moved)
+        // - Constraints at/coincident with end endpoint → stay on original end initially, but will migrate to new segment's end
+        // - Constraints on segment body before split point → stay on original segment (not moved, original segment still exists)
+        // - Constraints on segment body after split point → migrate to new segment's end
+        if (isCoincidentWithStartPoint || isAtStart) {
+          // Point is at/coincident with start endpoint - constraint stays on original start (not moved)
+          // Don't add to either list
+        } else if (isCoincidentWithEndPoint || isAtEnd) {
+          // Point is at/coincident with end endpoint - this will be handled by endpoint constraint migration
+          // Don't add to either list (endpoint constraints are handled separately)
+        } else if (splitPointT !== null) {
+          // Use split point to determine which side of the split the constraint is on
+          // If constraint is before split point (closer to start), it stays on original segment (not migrated)
+          // If constraint is after split point (closer to end), migrate to new segment's end
+          // If constraint is AT the split point (within epsilon), don't migrate as point-segment constraint
+          // because it would pull arc1.end and arc3.start together. Instead, keep it on the original segment.
+          const distToSplitPoint = Math.abs(t - splitPointT)
+          if (distToSplitPoint < EPSILON_POINT_ON_SEGMENT * 100) {
+            // Point is at the split point - don't migrate as point-segment constraint
+            // Keep it on the original segment to avoid pulling both halves of the split segment together
+            // Don't add to either list
+          } else if (t < splitPointT) {
+            // Constraint is on the left side of the split (between start and split point)
+            // Original segment still exists from start to split point, so constraint stays (not migrated)
+            // Don't add to either list
+          } else {
+            // Constraint is on the right side of the split (between split point and end)
+            // This part becomes the new segment, so migrate to new segment's end
+            endConstraints.push({
+              constraintId: obj.id,
+              pointId: otherId,
+            })
+          }
+        } else {
+          // Fallback: use distance to endpoints (geometric check)
+          // If closer to start, it stays on original (not migrated)
+          // If closer to end, migrate to new segment's end
+          if (distToStart < distToEnd) {
+            // Constraint is closer to start - stays on original segment (not migrated)
+            // Don't add to either list
+          } else {
+            // Constraint is closer to end - migrate to new segment's end
+            endConstraints.push({
+              constraintId: obj.id,
+              pointId: otherId,
+            })
+          }
+        }
+      }
+    }
+
+    return { startConstraints, endConstraints }
+  }
+
   if (leftSideNeedsTailCut || rightSideNeedsTailCut) {
     const side = leftSideNeedsTailCut ? leftSide : rightSide
     if (side.type === 'segEndPoint') {
@@ -1939,97 +2243,509 @@ export function trimStrategy({
             leftSide.intersectingSegId
           )
 
-    // Find the endpoint that will be trimmed for the left side cutTail
-    // This is also the original end that will become the new segment's end
-    const trimSeg = objects.find(
-      (obj) => obj.id === trimSpawnId && obj.kind?.type === 'Segment'
-    )
+    const rightCoincidentData =
+      rightSide.type === 'trimSpawnSegmentCoincidentWithAnotherSegmentPoint'
+        ? {
+            intersectingEndpointPointId:
+              rightSide.trimSpawnSegmentCoincidentWithAnotherSegmentPointId,
+            ...findExistingPointSegmentCoincident(
+              trimSpawnId,
+              rightSide.intersectingSegId
+            ),
+          }
+        : findExistingPointSegmentCoincident(
+            trimSpawnId,
+            rightSide.intersectingSegId
+          )
+
+    // Find the endpoints of the segment being split
+    // Use trimSpawnSegment directly (passed as parameter) to ensure we get the original segment
+    // before any editing operations
+    let originalStartPointId: number | undefined
     let originalEndPointId: number | undefined
-    if (trimSeg?.kind?.type === 'Segment') {
-      if (
-        trimSeg.kind.segment.type === 'Line' ||
-        trimSeg.kind.segment.type === 'Arc'
-      ) {
-        originalEndPointId = trimSeg.kind.segment.end // The end that gets trimmed and becomes the new segment's end
+    let originalEndPointCoords: Coords2d | null = null
+    if (
+      trimSpawnSegment.kind?.type === 'Segment' &&
+      (trimSpawnSegment.kind.segment.type === 'Line' ||
+        trimSpawnSegment.kind.segment.type === 'Arc')
+    ) {
+      originalStartPointId = trimSpawnSegment.kind.segment.start
+      originalEndPointId = trimSpawnSegment.kind.segment.end // The end that gets trimmed and becomes the new segment's end
+
+      // Get the original end point coordinates before editing
+      if (trimSpawnSegment.kind.segment.type === 'Line') {
+        originalEndPointCoords = getPositionCoordsForLine(
+          trimSpawnSegment,
+          'end',
+          objects
+        )
+      } else if (trimSpawnSegment.kind.segment.type === 'Arc') {
+        originalEndPointCoords = getPositionCoordsFromArc(
+          trimSpawnSegment,
+          'end',
+          objects
+        )
       }
     }
-    // Find point-point constraints on the original end - these get deleted
-    const pointPointConstraintsToDelete =
-      originalEndPointId !== undefined
-        ? findPointPointCoincidentConstraints(originalEndPointId)
-        : []
 
-    // Find point-segment constraints on the original end - these get moved to the new segment's end
-    const pointSegmentConstraintsToMove =
+    // Find point-point constraints on both endpoints
+    // For the original end point: these should move to new segment's end
+    // For the original start point: these should stay on original start (NOT migrated, NOT deleted)
+    const pointPointConstraintsToMoveToEnd: Array<{
+      constraintId: number
+      otherPointId: number
+    }> = []
+
+    // Point-point constraints on start endpoint stay on original segment (not migrated)
+    // Point-point constraints on end endpoint migrate to new segment's end
+    if (originalEndPointId !== undefined) {
+      // Point-point constraints on end should move to new segment's end
+      const endPointPointConstraints =
+        findPointPointCoincidentConstraints(originalEndPointId)
+      for (const constraintId of endPointPointConstraints) {
+        const constraintObj = objects[constraintId]
+        if (
+          constraintObj?.kind?.type === 'Constraint' &&
+          constraintObj.kind.constraint.type === 'Coincident'
+        ) {
+          const constraintSegments = constraintObj.kind.constraint.segments
+          // Find the other point ID (not originalEndPointId)
+          const otherPointId = constraintSegments.find(
+            (id) => id !== originalEndPointId
+          )
+          if (otherPointId !== undefined) {
+            pointPointConstraintsToMoveToEnd.push({
+              constraintId,
+              otherPointId,
+            })
+          }
+        }
+      }
+    }
+
+    // In a split trim:
+    // - Constraints on original end endpoint → migrate to new segment's end
+    // - Constraints on original start endpoint → stay on original (NOT migrated)
+    // - Constraints on segment body before split → migrate to new segment's start
+    // - Constraints on segment body after split → migrate to new segment's end
+    // So we need to identify point-segment constraints on endpoints
+    // Note: Point-segment constraints on start endpoint stay on original (not migrated)
+    // Point-segment constraints on end endpoint migrate to new segment's end
+    const pointSegmentConstraintsToMoveToEnd =
       originalEndPointId !== undefined
         ? findPointSegmentCoincidentConstraints(originalEndPointId)
         : []
+    // Point-segment constraints on start endpoint stay on original segment (not migrated)
+    // We don't need to track these for migration
 
-    const operations: TrimOperation[] = []
-
-    // Edit the left side segment (trim end to left intersection)
-    operations.push({
-      type: 'editSegment',
-      segmentId: trimSpawnId,
-      endpointChanged: 'end',
-      ctor: {
-        ...trimSpawnSegment.kind.segment.ctor,
-        end: coordsToApiPoint(leftSide.trimTerminationCoords),
-      },
-    })
-
-    // Add coincident constraint for left side after editing
-    operations.push({
-      type: 'addCoincidentConstraint',
-      segmentId: trimSpawnId,
-      endpointChanged: 'end',
-      segmentOrPointToMakeCoincidentTo: leftSide.intersectingSegId,
-      ...(leftCoincidentData.intersectingEndpointPointId !== undefined
-        ? {
-            intersectingEndpointPointId:
-              leftCoincidentData.intersectingEndpointPointId,
+    // Also find point-segment constraints [pointId, segmentId] where the point is geometrically at the original end point
+    // These should migrate to [newSegmentEndPointId, pointId] (point-point), not [pointId, newSegmentId] (point-segment)
+    // We need to find these by checking all point-segment constraints involving the segment ID
+    // and checking if the point is at the original end point
+    const pointSegmentConstraintsAtOriginalEnd: Array<{
+      constraintId: number
+      pointId: number
+    }> = []
+    if (originalEndPointCoords) {
+      for (const obj of objects) {
+        if (
+          obj?.kind?.type === 'Constraint' &&
+          obj.kind.constraint.type === 'Coincident'
+        ) {
+          const constraintSegments = obj.kind.constraint.segments
+          // Only consider constraints that involve the segment ID but NOT the endpoint IDs
+          if (
+            !constraintSegments.includes(trimSpawnId) ||
+            constraintSegments.includes(originalStartPointId ?? -1) ||
+            constraintSegments.includes(originalEndPointId ?? -1)
+          ) {
+            continue
           }
-        : {}),
-    })
 
-    // Create new segment for right side: from right intersection to original end
-    // Include constraints that need to be moved to the new segment's end
-    operations.push({
-      type: 'createCoincidentLineSegment',
-      segmentOrPointToMakeCoincidentToId: rightSide.intersectingSegId,
-      ctor: {
-        ...trimSpawnSegment.kind.segment.ctor,
-        start: coordsToApiPoint(rightSide.trimTerminationCoords),
-        // Keep original end point
-      },
-      ...(pointSegmentConstraintsToMove.length > 0
-        ? { constraintsToMoveToNewSegmentEnd: pointSegmentConstraintsToMove }
-        : {}),
-    })
+          // Find the other entity (should be a point)
+          const otherId = constraintSegments.find((id) => id !== trimSpawnId)
+          if (otherId === undefined) {
+            continue
+          }
 
-    // Delete old constraints last (must be last since deletes invalidate IDs)
-    // Batch all constraint deletions into a single operation
-    const allConstraintIdsToDelete: number[] = []
+          const otherObj = objects[otherId]
+          const isPoint =
+            otherObj?.kind?.type === 'Segment' &&
+            otherObj.kind.segment.type === 'Point'
+          if (!isPoint) {
+            continue
+          }
+
+          // Check if the point is at the original end point (geometrically)
+          // Use post-solve coordinates for both to ensure they match if constraints have moved them
+          // TypeScript needs explicit narrowing here
+          if (
+            otherObj.kind.type !== 'Segment' ||
+            otherObj.kind.segment.type !== 'Point'
+          ) {
+            continue
+          }
+          const pointCoords: Coords2d = [
+            otherObj.kind.segment.position.x.value,
+            otherObj.kind.segment.position.y.value,
+          ]
+          // Also get post-solve coordinates for original end point for comparison
+          const originalEndPointObj = objects[originalEndPointId ?? -1]
+          const originalEndPointPostSolveCoords: Coords2d | null =
+            originalEndPointObj?.kind?.type === 'Segment' &&
+            originalEndPointObj.kind.segment.type === 'Point'
+              ? [
+                  originalEndPointObj.kind.segment.position.x.value,
+                  originalEndPointObj.kind.segment.position.y.value,
+                ]
+              : null
+
+          // Check if point is at original end point (geometrically)
+          // Use post-solve coordinates if available, otherwise fall back to ctor coordinates
+          const referenceCoords =
+            originalEndPointPostSolveCoords ?? originalEndPointCoords
+          const distToOriginalEnd = Math.sqrt(
+            (pointCoords[0] - referenceCoords[0]) ** 2 +
+              (pointCoords[1] - referenceCoords[1]) ** 2
+          )
+
+          if (distToOriginalEnd < EPSILON_POINT_ON_SEGMENT) {
+            // Point is at the original end point - this should migrate to [newSegmentEndPointId, pointId] (point-point)
+            // Also check if there's already a point-point constraint between this point and the original end point
+            // If so, the point-segment constraint is redundant and should just be deleted, not migrated
+            const hasPointPointConstraint = findPointPointCoincidentConstraints(
+              originalEndPointId ?? -1
+            ).some((constraintId) => {
+              const constraintObj = objects[constraintId]
+              if (
+                constraintObj?.kind?.type === 'Constraint' &&
+                constraintObj.kind.constraint.type === 'Coincident'
+              ) {
+                return constraintObj.kind.constraint.segments.includes(otherId)
+              }
+              return false
+            })
+
+            if (!hasPointPointConstraint) {
+              // No existing point-point constraint - migrate as point-point constraint
+              pointSegmentConstraintsAtOriginalEnd.push({
+                constraintId: obj.id,
+                pointId: otherId,
+              })
+            }
+            // If there's already a point-point constraint, the point-segment constraint is redundant
+            // and will be deleted (it's already in constraintsToDelete via the normal flow)
+          }
+        }
+      }
+    }
+
+    // Find point-segment constraints that involve the segment ID itself (not just endpoints)
+    // These need to be converted to point-point constraints
+    // We need to track which constraints we've already found via endpoints to avoid duplicates
+    const endpointConstraintIds = new Set<number>()
+    pointSegmentConstraintsToMoveToEnd.forEach((c) =>
+      endpointConstraintIds.add(c.constraintId)
+    )
+    // Also track constraints where the point is at the original end point
+    pointSegmentConstraintsAtOriginalEnd.forEach((c) =>
+      endpointConstraintIds.add(c.constraintId)
+    )
+
+    // Get split point coordinates (left and right intersections are the same point)
+    // When one side is a point-segment coincident, use the intersection point from the other side
+    // as the split point, since the point-segment coincident point should be at the intersection
+    // When both sides are intersections, they should be the same point, so use either one
+    let splitPointCoords: Coords2d
+    if (leftSide.type === 'intersection' && rightSide.type === 'intersection') {
+      // Both sides are intersections - they should be the same point
+      splitPointCoords = leftSide.trimTerminationCoords
+    } else if (leftSide.type === 'intersection') {
+      splitPointCoords = leftSide.trimTerminationCoords
+    } else if (rightSide.type === 'intersection') {
+      splitPointCoords = rightSide.trimTerminationCoords
+    } else {
+      // Both sides are point-segment coincident - use left side's coords
+      splitPointCoords = leftSide.trimTerminationCoords
+    }
+    // Use splitPointCoords (which prioritizes intersection coords if available)
+    // Even if left and right aren't exactly the same due to floating point precision,
+    // we use the computed splitPointCoords which should be the most accurate
+    const splitPoint = splitPointCoords
+
+    const segmentConstraints =
+      originalStartPointId !== undefined && originalEndPointId !== undefined
+        ? findPointSegmentConstraintsOnSegment(
+            trimSpawnId,
+            originalStartPointId,
+            originalEndPointId,
+            splitPoint
+          )
+        : { startConstraints: [], endConstraints: [] }
+
+    // Filter out constraints we already found via endpoints to avoid duplicates
+    const segmentEndConstraints = segmentConstraints.endConstraints.filter(
+      (c) =>
+        !endpointConstraintIds.has(c.constraintId) &&
+        !pointSegmentConstraintsAtOriginalEnd.some(
+          (pc) => pc.constraintId === c.constraintId
+        )
+    )
+
+    // In a split trim:
+    // - The new segment's end equals the original segment's end point, so constraints on the original end should move to the new segment's end
+    // - The new segment's start is the split point, so constraints on the original segment (closer to start) should move to the new segment's start
+    // So we move constraints from segmentStartConstraints to the new segment's start
+    // And we move constraints from segmentEndConstraints to the new segment's end
+
+    // Get the original end point coordinates to preserve it in the new segment
+    // We MUST use originalEndPointCoords which was captured before any editing
+    // If it's null, we have a critical error - we can't create the new segment correctly
+    if (!originalEndPointCoords) {
+      return new Error(
+        'Could not get original end point coordinates before editing - this is required for split trim'
+      )
+    }
+    const originalEndCoords = originalEndPointCoords
+
+    // Calculate trim coordinates for both sides
+    // Use the actual termination coordinates from leftSide and rightSide
+    // These represent the desired new endpoints after considering all geometric entities
+    const leftTrimCoords = leftSide.trimTerminationCoords
+    const rightTrimCoords = rightSide.trimTerminationCoords
+
+    // Check if the split point is at the original end point
+    // If so, we shouldn't create a new segment (it would have zero length)
+    const distToOriginalEnd = Math.sqrt(
+      (rightTrimCoords[0] - originalEndCoords[0]) ** 2 +
+        (rightTrimCoords[1] - originalEndCoords[1]) ** 2
+    )
+    if (distToOriginalEnd < EPSILON_POINT_ON_SEGMENT) {
+      // Split point is at the original end point - this is actually a cutTail, not a split
+      // Don't create a new segment, just trim the original segment
+      return new Error(
+        'Split point is at original end point - this should be handled as cutTail, not split'
+      )
+    }
+
+    // Build constraintsToMigrate: all constraints that need to move to the new segment
+    // Decision table:
+    // - Constraints on original start endpoint → stay on original (NOT migrated)
+    // - Constraints on original end endpoint → migrate to new segment's end
+    // - Constraints on segment body before split point → migrate to new segment's start
+    // - Constraints on segment body after split point → migrate to new segment's end
+    const constraintsToMigrate: ConstraintToMigrate[] = []
+
+    // Migrate constraints from original end endpoint to new segment's end
+    for (const c of pointPointConstraintsToMoveToEnd) {
+      constraintsToMigrate.push({
+        constraintId: c.constraintId,
+        otherEntityId: c.otherPointId,
+        isPointPoint: true,
+        attachToEndpoint: 'end',
+      })
+    }
+
+    // Migrate point-segment constraints from original end endpoint to new segment's end
+    // If the other entity is the segment being trimmed, replace it with the new segment
+    // Otherwise, attach to the new segment's end endpoint
+    for (const c of pointSegmentConstraintsToMoveToEnd) {
+      const otherObj = objects[c.segmentOrPointId]
+      const isOtherPoint =
+        otherObj?.kind?.type === 'Segment' &&
+        otherObj.kind.segment.type === 'Point'
+      const isOtherSegmentBeingTrimmed = c.segmentOrPointId === trimSpawnId
+      constraintsToMigrate.push({
+        constraintId: c.constraintId,
+        otherEntityId: c.segmentOrPointId,
+        isPointPoint: isOtherPoint,
+        attachToEndpoint: isOtherSegmentBeingTrimmed ? 'segment' : 'end', // If other is the segment being trimmed, replace segment; otherwise attach to endpoint
+      })
+    }
+
+    // Migrate point-segment constraints where the point is at the original end point
+    // These should become [newSegmentEndPointId, pointId] (point-point), not [pointId, newSegmentId] (point-segment)
+    for (const c of pointSegmentConstraintsAtOriginalEnd) {
+      constraintsToMigrate.push({
+        constraintId: c.constraintId,
+        otherEntityId: c.pointId,
+        isPointPoint: true, // Convert to point-point constraint
+        attachToEndpoint: 'end', // Attach to new segment's end
+      })
+    }
+
+    // Migrate constraints from segment body (before split) to new segment's start
+    // These are segment ID constraints that are closer to start
+    // Note: Point-segment constraints on start endpoint stay on original (not migrated)
+
+    // Migrate segment ID constraints that are closer to end (after split point)
+    // Note: Constraints closer to start (before split point) stay on original segment
+    // because the original segment still exists (just trimmed)
+    // These are point-segment constraints [pointId, segmentId] where the point is on the segment body
+    // They should become [pointId, newSegmentId] (replacing the segment)
+    // BUT: If the point is at the original end point, it should migrate to [newSegmentEndPointId, pointId] (point-point)
+    // not [pointId, newSegmentId] (point-segment), because the point is at the endpoint
+    // Also: If the point is very close to the split point, we should NOT migrate it as a point-segment constraint
+    // because it would pull the two segment halves together. Instead, keep it on the original segment.
+    for (const c of segmentEndConstraints) {
+      // Check if the point is at the original end point (geometrically)
+      // If so, it should be handled by endpoint constraint migration, not segment constraint migration
+      const pointObj = objects[c.pointId]
+      if (
+        pointObj?.kind?.type === 'Segment' &&
+        pointObj.kind.segment.type === 'Point' &&
+        originalEndPointCoords
+      ) {
+        const pointCoords: Coords2d = [
+          pointObj.kind.segment.position.x.value,
+          pointObj.kind.segment.position.y.value,
+        ]
+        const distToOriginalEnd = Math.sqrt(
+          (pointCoords[0] - originalEndPointCoords[0]) ** 2 +
+            (pointCoords[1] - originalEndPointCoords[1]) ** 2
+        )
+        if (distToOriginalEnd < EPSILON_POINT_ON_SEGMENT) {
+          // Point is at the original end point - this should be handled by endpoint constraint migration
+          // Skip migrating as segment constraint (it will be handled as endpoint constraint)
+          continue
+        }
+      }
+
+      // Point is on the segment body (not at endpoint, not at split point) - migrate as point-segment constraint
+      constraintsToMigrate.push({
+        constraintId: c.constraintId,
+        otherEntityId: c.pointId,
+        isPointPoint: false, // Keep as point-segment, but replace the segment
+        attachToEndpoint: 'segment', // Replace old segment with new segment
+      })
+    }
+
+    // Build constraintsToDelete: all constraints that need to be deleted
+    // This includes:
+    // - Constraints that are being migrated (they'll be recreated on new segment)
+    // - Existing point-segment constraints from terminations (they become point-point)
+    // Note: Constraints on original start endpoint stay on original (NOT deleted)
+    const constraintsToDelete = new Set<number>()
+
+    // Delete existing point-segment constraints from terminations
+    // These become point-point constraints after the split
     if (leftCoincidentData.existingPointSegmentConstraintId !== undefined) {
-      allConstraintIdsToDelete.push(
+      constraintsToDelete.add(
         leftCoincidentData.existingPointSegmentConstraintId
       )
     }
-    if (pointPointConstraintsToDelete.length > 0) {
-      allConstraintIdsToDelete.push(...pointPointConstraintsToDelete)
-    }
-    // Also delete the constraints that will be moved to the new segment's end
-    if (pointSegmentConstraintsToMove.length > 0) {
-      allConstraintIdsToDelete.push(
-        ...pointSegmentConstraintsToMove.map((c) => c.constraintId)
+    if (rightCoincidentData.existingPointSegmentConstraintId !== undefined) {
+      constraintsToDelete.add(
+        rightCoincidentData.existingPointSegmentConstraintId
       )
     }
-    if (allConstraintIdsToDelete.length > 0) {
-      operations.push({
-        type: 'deleteConstraints',
-        constraintIds: allConstraintIdsToDelete,
-      })
+
+    // Delete all constraints being migrated (they'll be recreated on new segment)
+    for (const c of constraintsToMigrate) {
+      constraintsToDelete.add(c.constraintId)
     }
+
+    // Find and delete any remaining constraints that involve the segment ID
+    // but are not endpoint constraints (those are handled above)
+    // These are segment-body constraints that we might have missed
+    for (const obj of objects) {
+      if (
+        obj?.kind?.type === 'Constraint' &&
+        obj.kind.constraint.type === 'Coincident'
+      ) {
+        const constraintSegments = obj.kind.constraint.segments
+        if (constraintSegments.includes(trimSpawnId)) {
+          // This constraint involves the segment ID
+          // Skip if already marked for deletion
+          if (constraintsToDelete.has(obj.id)) {
+            continue
+          }
+
+          // Check if this constraint involves an endpoint
+          const involvesStartEndpoint =
+            originalStartPointId !== undefined &&
+            constraintSegments.includes(originalStartPointId)
+          const involvesEndEndpoint =
+            originalEndPointId !== undefined &&
+            constraintSegments.includes(originalEndPointId)
+
+          // If it involves start endpoint, it stays on original (don't delete)
+          // If it involves end endpoint, it should have been in constraintsToMigrate
+          // If it's a segment-body constraint, we need to check if it should be migrated
+          if (!involvesStartEndpoint) {
+            // This is either an end endpoint constraint or a segment-body constraint
+            // If it's an end endpoint constraint, it should be in constraintsToMigrate
+            // If it's a segment-body constraint, check if it's on the right side of split
+            if (!involvesEndEndpoint) {
+              // This is a segment-body constraint that we haven't identified yet
+              // Check if the point is on the right side of the split
+              const otherId = constraintSegments.find(
+                (id) => id !== trimSpawnId
+              )
+              if (otherId !== undefined) {
+                const otherObj = objects[otherId]
+                const isOtherPoint =
+                  otherObj?.kind?.type === 'Segment' &&
+                  otherObj.kind.segment.type === 'Point'
+                if (isOtherPoint) {
+                  // This is a point-segment constraint on the segment body
+                  // We need to determine which side of the split it's on
+                  // For now, if we haven't identified it, it might be a duplicate or edge case
+                  // Don't delete it unless we're sure it should be migrated
+                  // Actually, if it's not in constraintsToMigrate and not on an endpoint,
+                  // it might be a constraint we missed - but to be safe, don't delete it
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    const operations: TrimOperation[] = []
+
+    // Create split segment operation
+    operations.push({
+      type: 'splitSegment',
+      segmentId: trimSpawnId,
+      leftTrimCoords: leftTrimCoords,
+      rightTrimCoords: rightTrimCoords,
+      originalEndCoords: originalEndCoords,
+      leftSide,
+      rightSide,
+      leftSideCoincidentData: {
+        intersectingSegId: leftSide.intersectingSegId,
+        ...(leftCoincidentData.intersectingEndpointPointId !== undefined
+          ? {
+              intersectingEndpointPointId:
+                leftCoincidentData.intersectingEndpointPointId,
+            }
+          : {}),
+        ...(leftCoincidentData.existingPointSegmentConstraintId !== undefined
+          ? {
+              existingPointSegmentConstraintId:
+                leftCoincidentData.existingPointSegmentConstraintId,
+            }
+          : {}),
+      },
+      rightSideCoincidentData: {
+        intersectingSegId: rightSide.intersectingSegId,
+        ...(rightCoincidentData.intersectingEndpointPointId !== undefined
+          ? {
+              intersectingEndpointPointId:
+                rightCoincidentData.intersectingEndpointPointId,
+            }
+          : {}),
+        ...(rightCoincidentData.existingPointSegmentConstraintId !== undefined
+          ? {
+              existingPointSegmentConstraintId:
+                rightCoincidentData.existingPointSegmentConstraintId,
+            }
+          : {}),
+      },
+      constraintsToMigrate,
+      constraintsToDelete: Array.from(constraintsToDelete),
+    })
 
     return operations
   }
@@ -2236,26 +2952,200 @@ export async function executeTrimStrategy({
       } catch (error) {
         return new Error(`Failed to delete constraints: ${error}`)
       }
-    } else if (operation.type === 'createCoincidentLineSegment') {
-      // Add a new segment
+    } else if (operation.type === 'splitSegment') {
+      // Split segment operation: edit original segment, create new segment, migrate constraints
       try {
+        // Step 1: Edit the original segment (trim left side)
+        const originalSegment = objects.find(
+          (obj) => obj.id === operation.segmentId
+        )
+        if (!originalSegment || originalSegment.kind?.type !== 'Segment') {
+          return new Error(
+            `Failed to find original segment ${operation.segmentId}`
+          )
+        }
+
+        // We know from trimStrategy that the segment must be Line or Arc
+        if (
+          originalSegment.kind.segment.type !== 'Line' &&
+          originalSegment.kind.segment.type !== 'Arc'
+        ) {
+          return new Error('Original segment is not a Line or Arc')
+        }
+
+        // Extract units from the existing ctor
+        // We use the ctor (not solved values) because units are part of the constructor definition,
+        // not the solved position. The ctor defines the units that should be used for this segment.
+        const originalCtorRaw = originalSegment.kind.segment.ctor
+        if (!originalCtorRaw) {
+          return new Error('Original segment has no ctor')
+        }
+        const segmentType = originalSegment.kind.segment.type
+        if (
+          !('type' in originalCtorRaw) ||
+          (segmentType === 'Line' && originalCtorRaw.type !== 'Line') ||
+          (segmentType === 'Arc' &&
+            originalCtorRaw.type !== 'Arc' &&
+            originalCtorRaw.type !== 'TangentArc')
+        ) {
+          return new Error('Original segment ctor type mismatch')
+        }
+        // At this point we know originalCtorRaw is a SegmentCtor matching the segment type
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        const originalCtor = originalCtorRaw as SegmentCtor
+
+        // Extract units - for Line or Arc, we can get units from the start point
+        let units: NumericSuffix = 'Mm'
+        if (originalCtor.type === 'Line' || originalCtor.type === 'Arc') {
+          const startX = originalCtor.start.x
+          if (startX.type === 'Var' || startX.type === 'Number') {
+            units = startX.units
+          }
+        }
+
+        // Helper to convert Coords2d to ApiPoint2d with units
+        const coordsToApiPoint = (coords: Coords2d): ApiPoint2d<Expr> => ({
+          x: { type: 'Var', value: roundOff(coords[0], 2), units },
+          y: { type: 'Var', value: roundOff(coords[1], 2), units },
+        })
+
+        // Create the edited ctor - we know originalCtor matches segmentType
+        const editedCtor: SegmentCtor =
+          segmentType === 'Line'
+            ? {
+                type: 'Line',
+                start: (
+                  originalCtor as {
+                    type: 'Line'
+                    start: ApiPoint2d<Expr>
+                    end: ApiPoint2d<Expr>
+                  }
+                ).start,
+                end: coordsToApiPoint(operation.leftTrimCoords),
+              }
+            : {
+                type: 'Arc',
+                start: (
+                  originalCtor as {
+                    type: 'Arc'
+                    start: ApiPoint2d<Expr>
+                    end: ApiPoint2d<Expr>
+                    center: ApiPoint2d<Expr>
+                  }
+                ).start,
+                end: coordsToApiPoint(operation.leftTrimCoords),
+                center: (
+                  originalCtor as {
+                    type: 'Arc'
+                    start: ApiPoint2d<Expr>
+                    end: ApiPoint2d<Expr>
+                    center: ApiPoint2d<Expr>
+                  }
+                ).center,
+              }
+
+        const editResult = await rustContext.editSegments(
+          0,
+          sketchId,
+          [
+            {
+              id: operation.segmentId,
+              ctor: editedCtor,
+            },
+          ],
+          settings
+        )
+        lastResult = editResult
+        invalidates_ids =
+          invalidates_ids || editResult.sceneGraphDelta.invalidates_ids
+        if (editResult.sceneGraphDelta.new_graph.objects) {
+          objects = editResult.sceneGraphDelta.new_graph.objects
+        }
+
+        // Step 2: Add coincident constraint for left side
+        const editedSegment = objects.find(
+          (obj) => obj.id === operation.segmentId
+        )
+        if (!editedSegment || editedSegment.kind?.type !== 'Segment') {
+          return new Error(
+            `Failed to find edited segment ${operation.segmentId}`
+          )
+        }
+
+        const segment = editedSegment.kind.segment
+        if (segment.type !== 'Line' && segment.type !== 'Arc') {
+          return new Error(
+            `Unsupported segment type for split: ${segment.type}`
+          )
+        }
+
+        const leftSideEndpointPointId = segment.end
+
+        const leftCoincidentSegments =
+          operation.leftSideCoincidentData.intersectingEndpointPointId !==
+          undefined
+            ? [
+                leftSideEndpointPointId,
+                operation.leftSideCoincidentData.intersectingEndpointPointId,
+              ]
+            : [
+                leftSideEndpointPointId,
+                operation.leftSideCoincidentData.intersectingSegId,
+              ]
+
+        const leftConstraintResult = await rustContext.addConstraint(
+          0,
+          sketchId,
+          {
+            type: 'Coincident',
+            segments: leftCoincidentSegments,
+          } as ApiConstraint,
+          settings
+        )
+        lastResult = leftConstraintResult
+        invalidates_ids =
+          invalidates_ids ||
+          leftConstraintResult.sceneGraphDelta.invalidates_ids
+        if (leftConstraintResult.sceneGraphDelta.new_graph.objects) {
+          objects = leftConstraintResult.sceneGraphDelta.new_graph.objects
+        }
+
+        // Step 3: Create new segment (right side)
+        const newSegmentCtor: SegmentCtor =
+          segmentType === 'Line'
+            ? {
+                type: 'Line',
+                start: coordsToApiPoint(operation.rightTrimCoords),
+                end: coordsToApiPoint(operation.originalEndCoords),
+              }
+            : {
+                type: 'Arc',
+                start: coordsToApiPoint(operation.rightTrimCoords),
+                end: coordsToApiPoint(operation.originalEndCoords),
+                center:
+                  originalCtor.type === 'Arc'
+                    ? originalCtor.center
+                    : {
+                        x: { type: 'Var', value: 0, units: 'Mm' },
+                        y: { type: 'Var', value: 0, units: 'Mm' },
+                      },
+              }
+
         const addResult = await rustContext.addSegment(
           0,
           sketchId,
-          operation.ctor,
+          newSegmentCtor,
           undefined, // label
           settings
         )
         lastResult = addResult
         invalidates_ids =
           invalidates_ids || addResult.sceneGraphDelta.invalidates_ids
-        // Update objects array for subsequent operations
         if (addResult.sceneGraphDelta.new_graph.objects) {
           objects = addResult.sceneGraphDelta.new_graph.objects
         }
 
-        // Find the newly created segment to get its start point ID
-        // The new segment should be in new_objects
+        // Step 4: Find the newly created segment and get its endpoint IDs
         const newSegmentId = addResult.sceneGraphDelta.new_objects.find(
           (id) => {
             const obj = objects[id]
@@ -2277,7 +3167,6 @@ export async function executeTrimStrategy({
           return new Error('Newly created segment is not a segment')
         }
 
-        // Get the start and end point IDs of the new segment
         let newSegmentStartPointId: number | null = null
         let newSegmentEndPointId: number | null = null
         if (newSegment.kind.segment.type === 'Line') {
@@ -2288,66 +3177,247 @@ export async function executeTrimStrategy({
           newSegmentEndPointId = newSegment.kind.segment.end
         }
 
-        if (newSegmentStartPointId !== null) {
-          // Add coincident constraint between the new segment's start point and the specified point/segment
-          const constraintResult = await rustContext.addConstraint(
-            0,
-            sketchId,
-            {
-              type: 'Coincident',
-              segments: [
-                newSegmentStartPointId,
-                operation.segmentOrPointToMakeCoincidentToId,
-              ],
-            } as ApiConstraint,
-            settings
+        if (newSegmentStartPointId === null || newSegmentEndPointId === null) {
+          return new Error(
+            'Failed to get endpoint IDs from newly created segment'
           )
-          lastResult = constraintResult
-          invalidates_ids =
-            invalidates_ids || constraintResult.sceneGraphDelta.invalidates_ids
-          if (constraintResult.sceneGraphDelta.new_graph.objects) {
-            objects = constraintResult.sceneGraphDelta.new_graph.objects
+        }
+
+        // Step 5: Add coincident constraint for right side (new segment's start)
+        // For intersections, we need to find if the intersection point corresponds to an endpoint
+        // of the intersecting segment. If so, use point-point constraint. Otherwise, use point-segment.
+        let rightCoincidentSegments: number[]
+        if (operation.rightSide.type === 'intersection') {
+          // For intersections, check if the intersection point is at an endpoint of the intersecting segment
+          const intersectingSeg = objects.find(
+            (obj) =>
+              obj.id === operation.rightSideCoincidentData.intersectingSegId
+          )
+          let intersectionPointId: number | undefined = undefined
+
+          if (intersectingSeg && intersectingSeg.kind?.type === 'Segment') {
+            const intersectionCoords = operation.rightSide.trimTerminationCoords
+            const endpointEpsilon = EPSILON_POINT_ON_SEGMENT * 1000 // 0.001mm
+
+            if (intersectingSeg.kind.segment.type === 'Line') {
+              const otherStart = getPositionCoordsForLine(
+                intersectingSeg,
+                'start',
+                objects
+              )
+              const otherEnd = getPositionCoordsForLine(
+                intersectingSeg,
+                'end',
+                objects
+              )
+              if (otherStart) {
+                const distToStart = Math.sqrt(
+                  (intersectionCoords[0] - otherStart[0]) ** 2 +
+                    (intersectionCoords[1] - otherStart[1]) ** 2
+                )
+                if (distToStart < endpointEpsilon) {
+                  intersectionPointId = intersectingSeg.kind.segment.start
+                }
+              }
+              if (otherEnd && intersectionPointId === undefined) {
+                const distToEnd = Math.sqrt(
+                  (intersectionCoords[0] - otherEnd[0]) ** 2 +
+                    (intersectionCoords[1] - otherEnd[1]) ** 2
+                )
+                if (distToEnd < endpointEpsilon) {
+                  intersectionPointId = intersectingSeg.kind.segment.end
+                }
+              }
+            } else if (intersectingSeg.kind.segment.type === 'Arc') {
+              const otherStart = getPositionCoordsFromArc(
+                intersectingSeg,
+                'start',
+                objects
+              )
+              const otherEnd = getPositionCoordsFromArc(
+                intersectingSeg,
+                'end',
+                objects
+              )
+              if (otherStart) {
+                const distToStart = Math.sqrt(
+                  (intersectionCoords[0] - otherStart[0]) ** 2 +
+                    (intersectionCoords[1] - otherStart[1]) ** 2
+                )
+                if (distToStart < endpointEpsilon) {
+                  intersectionPointId = intersectingSeg.kind.segment.start
+                }
+              }
+              if (otherEnd && intersectionPointId === undefined) {
+                const distToEnd = Math.sqrt(
+                  (intersectionCoords[0] - otherEnd[0]) ** 2 +
+                    (intersectionCoords[1] - otherEnd[1]) ** 2
+                )
+                if (distToEnd < endpointEpsilon) {
+                  intersectionPointId = intersectingSeg.kind.segment.end
+                }
+              }
+            }
+          }
+
+          rightCoincidentSegments =
+            intersectionPointId !== undefined
+              ? [newSegmentStartPointId, intersectionPointId]
+              : [
+                  newSegmentStartPointId,
+                  operation.rightSideCoincidentData.intersectingSegId,
+                ]
+        } else {
+          // For point-segment coincident, use the existing logic
+          rightCoincidentSegments =
+            operation.rightSideCoincidentData.intersectingEndpointPointId !==
+            undefined
+              ? [
+                  newSegmentStartPointId,
+                  operation.rightSideCoincidentData.intersectingEndpointPointId,
+                ]
+              : [
+                  newSegmentStartPointId,
+                  operation.rightSideCoincidentData.intersectingSegId,
+                ]
+        }
+
+        const rightConstraintResult = await rustContext.addConstraint(
+          0,
+          sketchId,
+          {
+            type: 'Coincident',
+            segments: rightCoincidentSegments,
+          } as ApiConstraint,
+          settings
+        )
+        lastResult = rightConstraintResult
+        invalidates_ids =
+          invalidates_ids ||
+          rightConstraintResult.sceneGraphDelta.invalidates_ids
+        if (rightConstraintResult.sceneGraphDelta.new_graph.objects) {
+          objects = rightConstraintResult.sceneGraphDelta.new_graph.objects
+        }
+
+        // Step 6: Migrate constraints to new segment
+        // Track which points are already constrained to new segment endpoints via point-point constraints
+        // to avoid creating redundant point-segment constraints
+        const pointsConstrainedToNewSegmentStart = new Set<number>()
+        const pointsConstrainedToNewSegmentEnd = new Set<number>()
+        if (
+          operation.rightSideCoincidentData.intersectingEndpointPointId !==
+          undefined
+        ) {
+          // The right side has a point that becomes coincident with new segment's start
+          pointsConstrainedToNewSegmentStart.add(
+            operation.rightSideCoincidentData.intersectingEndpointPointId
+          )
+        }
+
+        // Also track points that will be constrained to new segment's end via point-point constraints
+        // (from pointSegmentConstraintsAtOriginalEnd and pointPointConstraintsToMoveToEnd)
+        for (const constraintToMigrate of operation.constraintsToMigrate) {
+          if (
+            constraintToMigrate.attachToEndpoint === 'end' &&
+            constraintToMigrate.isPointPoint
+          ) {
+            // This is a point-point constraint that will attach to new segment's end
+            pointsConstrainedToNewSegmentEnd.add(
+              constraintToMigrate.otherEntityId
+            )
           }
         }
 
-        // Move constraints from the original segment's end to the new segment's end
-        if (
-          newSegmentEndPointId !== null &&
-          operation.constraintsToMoveToNewSegmentEnd &&
-          operation.constraintsToMoveToNewSegmentEnd.length > 0
-        ) {
-          for (const constraintToMove of operation.constraintsToMoveToNewSegmentEnd) {
-            try {
-              const constraintResult = await rustContext.addConstraint(
-                0,
-                sketchId,
-                {
-                  type: 'Coincident',
-                  segments: [
-                    newSegmentEndPointId,
-                    constraintToMove.segmentOrPointId,
-                  ],
-                } as ApiConstraint,
-                settings
-              )
-              lastResult = constraintResult
-              invalidates_ids =
-                invalidates_ids ||
-                constraintResult.sceneGraphDelta.invalidates_ids
-              if (constraintResult.sceneGraphDelta.new_graph.objects) {
-                objects = constraintResult.sceneGraphDelta.new_graph.objects
+        for (const constraintToMigrate of operation.constraintsToMigrate) {
+          try {
+            // Skip migrating point-segment constraints if the point is already constrained
+            // to the new segment's endpoint via a point-point constraint (redundant)
+            if (constraintToMigrate.attachToEndpoint === 'segment') {
+              // This is a point-segment constraint [pointId, newSegmentId]
+              // Check if pointId is already constrained to newSegmentStartPointId or newSegmentEndPointId
+              // If so, the point-point constraint already covers it, so skip the point-segment constraint
+              if (
+                pointsConstrainedToNewSegmentStart.has(
+                  constraintToMigrate.otherEntityId
+                ) ||
+                pointsConstrainedToNewSegmentEnd.has(
+                  constraintToMigrate.otherEntityId
+                )
+              ) {
+                // Point is already constrained to new segment's endpoint via point-point constraint
+                // Skip creating redundant point-segment constraint
+                continue
               }
-            } catch (error) {
-              // If constraint addition fails, log but don't fail the operation
-              console.error(
-                'Failed to move constraint to new segment end:',
-                error
-              )
             }
+
+            let constraintSegments: number[]
+            if (constraintToMigrate.attachToEndpoint === 'segment') {
+              // Replace old segment with new segment in point-segment constraint
+              // Original: [pointId, oldSegmentId] -> New: [pointId, newSegmentId]
+              constraintSegments = [
+                constraintToMigrate.otherEntityId,
+                newSegmentId,
+              ]
+            } else {
+              // Attach to new segment's endpoint
+              const targetEndpointId =
+                constraintToMigrate.attachToEndpoint === 'start'
+                  ? newSegmentStartPointId
+                  : newSegmentEndPointId
+              constraintSegments = [
+                targetEndpointId,
+                constraintToMigrate.otherEntityId,
+              ]
+            }
+
+            const constraintResult = await rustContext.addConstraint(
+              0,
+              sketchId,
+              {
+                type: 'Coincident',
+                segments: constraintSegments,
+              } as ApiConstraint,
+              settings
+            )
+            lastResult = constraintResult
+            invalidates_ids =
+              invalidates_ids ||
+              constraintResult.sceneGraphDelta.invalidates_ids
+            if (constraintResult.sceneGraphDelta.new_graph.objects) {
+              objects = constraintResult.sceneGraphDelta.new_graph.objects
+            }
+          } catch (error) {
+            // If constraint addition fails, log but don't fail the operation
+            console.error(
+              `Failed to migrate constraint ${constraintToMigrate.constraintId} to new segment:`,
+              error
+            )
+          }
+        }
+
+        // Step 7: Delete old constraints (must be last since deletes invalidate IDs)
+        if (operation.constraintsToDelete.length > 0) {
+          try {
+            const deleteResult = await rustContext.deleteObjects(
+              0,
+              sketchId,
+              operation.constraintsToDelete,
+              [], // segmentIds
+              settings
+            )
+            lastResult = deleteResult
+            invalidates_ids =
+              invalidates_ids || deleteResult.sceneGraphDelta.invalidates_ids
+            if (deleteResult.sceneGraphDelta.new_graph.objects) {
+              objects = deleteResult.sceneGraphDelta.new_graph.objects
+            }
+          } catch (error) {
+            // If constraint deletion fails, log but don't fail the operation
+            console.error('Failed to delete constraints:', error)
           }
         }
       } catch (error) {
-        return new Error(`Failed to create coincident line segment: ${error}`)
+        return new Error(`Failed to split segment: ${error}`)
       }
     }
   }
@@ -2509,18 +3579,6 @@ export function createOnAreaSelectEndCallback({
           rightSide: terminations.rightSide,
           objects,
         })
-        if (strategy instanceof Error) {
-          console.error('Error determining trim strategy:', strategy)
-          const oldStartIndex = startIndex
-          startIndex = nextTrimResult.nextIndex
-
-          // Fail-safe: if nextIndex didn't advance, force it to advance
-          if (startIndex <= oldStartIndex) {
-            startIndex = oldStartIndex + 1
-          }
-          continue
-        }
-
         if (strategy instanceof Error) {
           console.error('Error determining trim strategy:', strategy)
           const oldStartIndex = startIndex
