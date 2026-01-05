@@ -3038,25 +3038,23 @@ export class SceneEntities {
             const SNAP_MIN_DISTANCE_PIXELS = 10 * window.devicePixelRatio
             const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
-            // See if snapDirection intersects with any of the axes
             if (intersectsXAxis || intersectsYAxis) {
               let intersectionPoint: Coords2d | undefined
               if (intersectsXAxis && intersectsYAxis) {
-                // Current mouse position intersects with both axes (origin) -> that has precedence over tangent so we snap to the origin.
-                intersectionPoint = [0, 0]
+                // Current mouse position is close to the origin (mouse intersects both axes)
+                intersectionPoint = calculateIntersectionOfTwoLines({
+                  // Could be either x or y axis line since we're intersecting both
+                  line1: xAxisLine,
+                  line2Angle: getAngle([0, 0], snapDirection),
+                  line2Point: current.userData.from,
+                })
               } else {
-                // Intersects only one axis
+                // Mouse intersects only one axis
                 const axisLine: [Coords2d, Coords2d] = intersectsXAxis
-                  ? [
-                      [0, 0],
-                      [1, 0],
-                    ]
-                  : [
-                      [0, 0],
-                      [0, 1],
-                    ]
+                  ? xAxisLine
+                  : yAxisLine
                 // See if that axis line intersects with the tangent direction
-                // Note: this includes both positive and negative tangent directions as it just checks 2 lines.
+                // Note: this includes both positive and negative tangent directions as it checks 2 lines.
                 intersectionPoint = calculateIntersectionOfTwoLines({
                   line1: axisLine,
                   line2Angle: getAngle([0, 0], snapDirection),
@@ -4446,3 +4444,12 @@ function findTangentDirection(segmentGroup: Group, wasmInstance: ModuleType) {
   }
   return tangentDirection
 }
+
+const xAxisLine: [Coords2d, Coords2d] = [
+  [0, 0],
+  [1, 0],
+]
+const yAxisLine: [Coords2d, Coords2d] = [
+  [0, 0],
+  [0, 1],
+]
