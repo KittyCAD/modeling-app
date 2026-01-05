@@ -1,4 +1,8 @@
-import { BillingError, type IBillingInfo, getBillingInfo } from '@kittycad/react-shared'
+import {
+  BillingError,
+  type IBillingInfo,
+  getBillingInfo,
+} from '@kittycad/react-shared'
 import { createKCClient } from '@src/lib/kcClient'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
@@ -27,7 +31,7 @@ export interface BillingUpdateEvent {
 }
 
 export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
-  credits: undefined,
+  balance: undefined,
   allowance: undefined,
   paymentMethods: [],
   userPaymentBalance: undefined,
@@ -72,7 +76,7 @@ export const billingMachine = setup({
 
         return {
           ...BILLING_CONTEXT_DEFAULTS,
-          credits: billing.credits,
+          balance: billing.balance,
           allowance: billing.allowance,
           paymentMethods: billing.paymentMethods,
           userPaymentBalance: billing.userPaymentBalance,

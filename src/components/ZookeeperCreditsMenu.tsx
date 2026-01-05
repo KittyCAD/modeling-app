@@ -23,7 +23,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
         <BillingRemaining
           mode={BillingRemainingMode.ProgressBarFixed}
           error={props.billingContext.error}
-          credits={props.billingContext.credits}
+          balance={props.billingContext.balance}
           allowance={props.billingContext.allowance}
           paymentMethods={props.billingContext.paymentMethods}
           userPaymentBalance={props.billingContext.userPaymentBalance}
@@ -35,7 +35,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
             hoverOnly
             wrapperClassName="ui-open:!hidden"
           >
-            Zookeeper credits
+            Zoo balance
           </Tooltip>
         )}
       </Popover.Button>
@@ -44,7 +44,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
           upgradeHref={withSiteBaseURL('/design-studio-pricing')}
           upgradeClick={openExternalBrowserIfDesktop()}
           error={props.billingContext.error}
-          credits={props.billingContext.credits}
+          balance={props.billingContext.balance}
           allowance={props.billingContext.allowance}
           userPaymentBalance={props.billingContext.userPaymentBalance}
         />
