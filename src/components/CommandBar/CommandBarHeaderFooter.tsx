@@ -188,7 +188,8 @@ function CommandBarHeaderFooter({
                             kclManager.astSignal.value,
                             argValue as Selections
                           )
-                        ) : arg.inputType === 'kcl' ? (
+                        ) : arg.inputType === 'kcl' &&
+                          (argValue as KclCommandValue).valueCalculated ? (
                           roundOffWithUnits(
                             (argValue as KclCommandValue).valueCalculated,
                             4

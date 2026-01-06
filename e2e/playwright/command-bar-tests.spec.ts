@@ -49,11 +49,11 @@ test.describe('Command bar tests', () => {
       currentArgValue: '',
       headerArguments: {
         Profiles: '',
+        Length: '5',
       },
       highlightedHeaderArg: 'Profiles',
     })
     await cmdBar.progressCmdBar()
-    await cmdBar.clickOptionalArgument('length')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -252,13 +252,13 @@ test.describe('Command bar tests', () => {
       currentArgValue: '',
       headerArguments: {
         Profiles: '',
+        Length: '5',
       },
       highlightedHeaderArg: 'Profiles',
     })
     // Select a face
     await editor.selectText('startProfile(at = [-6.95, 10.98])')
     await cmdBar.progressCmdBar()
-    await cmdBar.clickOptionalArgument('length')
 
     // Assert that we're on the distance step
     await cmdBar.expectState({
@@ -268,7 +268,7 @@ test.describe('Command bar tests', () => {
       currentArgValue: '5',
       headerArguments: {
         Profiles: '1 profile',
-        Length: '',
+        Length: '5',
       },
       highlightedHeaderArg: 'length',
     })
