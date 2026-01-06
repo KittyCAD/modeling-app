@@ -1,5 +1,6 @@
 // Food Service Spatula
 // Use these spatulas for mixing, flipping, and scraping.
+// Categories: Maker
 
 // Set units
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

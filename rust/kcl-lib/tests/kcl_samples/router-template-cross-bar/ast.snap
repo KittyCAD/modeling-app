@@ -5674,6 +5674,7 @@ description: Result of parsing router-template-cross-bar.kcl
         "preComments": [
           "// Router template for a cross bar",
           "// A guide for routing a notch into a cross bar.",
+          "// Categories: Construction",
           "",
           "",
           "// Set units"

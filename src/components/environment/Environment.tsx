@@ -4,15 +4,16 @@ import { commandBarActor } from '@src/lib/singletons'
 
 export function EnvironmentChip() {
   let label = env().VITE_ZOO_BASE_DOMAIN
-  const url = new URL(env().VITE_KITTYCAD_WEBSOCKET_URL || '')
-  if (
-    url.hostname === 'localhost' ||
-    url.hostname === '127.0.0.1' ||
-    url.hostname === '0.0.0.0'
-  ) {
-    label = `${label} + local`
-  } else if (url.search) {
-    label = `${label} + ${url.search.substring(1)}`
+  const urls = [
+    new URL(env().VITE_KITTYCAD_WEBSOCKET_URL ?? ''),
+    new URL(env().VITE_MLEPHANT_WEBSOCKET_URL ?? ''),
+  ]
+  for (const url of urls) {
+    if (['localhost', '127.0.0.1', '0.0.0.0'].includes(url.hostname)) {
+      label = `${label} + local`
+    } else if (url.search) {
+      label = `${label} + ${url.search.substring(1)}`
+    }
   }
   return (
     <div className="flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50">
@@ -28,7 +29,7 @@ export function EnvironmentDescription() {
       <div
         className={`flex flex-col p-2 mb-2 rounded-t-sm bg-chalkboard-20 text-chalkboard-100 dark:bg-chalkboard-80 dark:text-chalkboard-10`}
       >
-        <p className="flex flex-row justify-between items-center">
+        <div className="flex flex-row justify-between items-center">
           <h2 className="text-sm font-sans font-normal">Environment</h2>
           <p
             data-testid="environment"
@@ -57,7 +58,7 @@ export function EnvironmentDescription() {
               {fullEnvironmentName}
             </ActionButton>
           </p>
-        </p>
+        </div>
       </div>
       <ul>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
@@ -95,8 +96,27 @@ export function EnvironmentDescription() {
           <p className="text-chalkboard-100 dark:text-chalkboard-10">
             Zookeeper
           </p>{' '}
-          <p className="text-chalkboard-60 dark:text-chalkboard-40">
-            {env().VITE_MLEPHANT_WEBSOCKET_URL}
+          <p className="text-chalkboard-60 dark:text-chalkboard-40 flex flex-row justify-between items-center">
+            <span className="flex-1 min-w-0 truncate">
+              {env().VITE_MLEPHANT_WEBSOCKET_URL}
+            </span>
+            <ActionButton
+              Element="button"
+              onClick={() => {
+                commandBarActor.send({
+                  type: 'Find and select command',
+                  data: {
+                    groupId: 'application',
+                    name: 'override-zookeeper',
+                    argDefaultValues: {
+                      url: env().VITE_MLEPHANT_WEBSOCKET_URL,
+                    },
+                  },
+                })
+              }}
+              iconEnd={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
+              className="ml-3 p-0.5 pr-2 flex-shrink-0"
+            />
           </p>
         </li>
       </ul>

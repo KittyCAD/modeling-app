@@ -15,6 +15,7 @@ import {
   appActor,
   commandBarActor,
   kclManager,
+  rustContext,
   systemIOActor,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -22,19 +23,21 @@ import reportWebVitals from '@src/reportWebVitals'
 import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 
 markOnce('code/willAuth')
-initializeWindowExceptionHandler(kclManager)
+initializeWindowExceptionHandler(kclManager, rustContext)
 
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.
 kclManager.wasmInstancePromise
-  .then(() => {
+  .then((wasmInstance) => {
     appActor.start()
     // Application commands must be created after the initPromise because
     // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency
     commandBarActor.send({
       type: 'Add commands',
       data: {
-        commands: [...createApplicationCommands({ systemIOActor })],
+        commands: [
+          ...createApplicationCommands({ systemIOActor, wasmInstance }),
+        ],
       },
     })
   })

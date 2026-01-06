@@ -1819,7 +1819,8 @@ pub enum SegmentKind {
     Point {
         position: [TyF64; 2],
         ctor: Box<PointCtor>,
-        freedom: Freedom,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        freedom: Option<Freedom>,
     },
     Line {
         start: [TyF64; 2],
@@ -1827,8 +1828,10 @@ pub enum SegmentKind {
         ctor: Box<LineCtor>,
         start_object_id: ObjectId,
         end_object_id: ObjectId,
-        start_freedom: Freedom,
-        end_freedom: Freedom,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start_freedom: Option<Freedom>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        end_freedom: Option<Freedom>,
     },
     Arc {
         start: [TyF64; 2],
@@ -1838,9 +1841,12 @@ pub enum SegmentKind {
         start_object_id: ObjectId,
         end_object_id: ObjectId,
         center_object_id: ObjectId,
-        start_freedom: Freedom,
-        end_freedom: Freedom,
-        center_freedom: Freedom,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start_freedom: Option<Freedom>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        end_freedom: Option<Freedom>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        center_freedom: Option<Freedom>,
     },
 }
 

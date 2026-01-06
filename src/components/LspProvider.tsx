@@ -7,7 +7,7 @@ import {
   LanguageServerClient,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import React, { createContext, useContext, useMemo, useState } from 'react'
+import React, { createContext, use, useContext, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type * as LSP from 'vscode-languageserver-protocol'
 
@@ -24,7 +24,11 @@ import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { kclManager, sceneEntitiesManager } from '@src/lib/singletons'
+import {
+  kclManager,
+  rustContext,
+  sceneEntitiesManager,
+} from '@src/lib/singletons'
 import { useToken } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
@@ -67,6 +71,7 @@ type LspContext = {
 
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
@@ -164,13 +169,13 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
             }
           },
         },
-        { kclManager, sceneEntitiesManager }
+        { kclManager, sceneEntitiesManager, wasmInstance, rustContext }
       )
 
       plugin = lsp
     }
     return plugin
-  }, [kclLspClient, isKclLspReady])
+  }, [kclLspClient, isKclLspReady, wasmInstance])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '') {

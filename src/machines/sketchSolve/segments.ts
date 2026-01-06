@@ -1,16 +1,28 @@
 import type { SegmentCtor } from '@rust/kcl-lib/bindings/FrontendApi'
-import { SKETCH_POINT_HANDLE } from '@src/clientSideScene/sceneUtils'
-import { type Themes } from '@src/lib/theme'
 import {
+  SKETCH_LAYER,
+  SKETCH_POINT_HANDLE,
+  SKETCH_SOLVE_GROUP,
+} from '@src/clientSideScene/sceneUtils'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { type Themes } from '@src/lib/theme'
+import { hasNumericValue } from '@src/lib/kclHelpers'
+import {
+  BufferGeometry,
   ExtrudeGeometry,
   Group,
+  Line,
+  LineBasicMaterial,
   LineCurve3,
   Mesh,
   MeshBasicMaterial,
   Vector3,
 } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { createLineShape } from '@src/clientSideScene/segments'
+import {
+  createLineShape,
+  createArcGeometry,
+} from '@src/clientSideScene/segments'
 import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
 import {
   KCL_DEFAULT_COLOR,
@@ -22,6 +34,9 @@ import {
 
 export const SEGMENT_TYPE_POINT = 'POINT'
 export const SEGMENT_TYPE_LINE = 'LINE'
+export const SEGMENT_TYPE_ARC = 'ARC'
+export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
+export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
 
 interface CreateSegmentArgs {
   input: SegmentCtor
@@ -218,7 +233,7 @@ class PointSegment implements SketchEntityUtils {
     }
     const { input, group, scale, selectedIds, id, isDraft } = args
     const { x, y } = input.position
-    if (!('value' in x && 'value' in y)) {
+    if (!(hasNumericValue(x) && hasNumericValue(y))) {
       return new Error('Invalid position values for PointSegment')
     }
     group.scale.set(scale, scale, scale)
@@ -285,10 +300,10 @@ class LineSegment implements SketchEntityUtils {
     const { input, theme, id, scale } = args
     if (
       !(
-        'value' in input.start.x &&
-        'value' in input.start.y &&
-        'value' in input.end.x &&
-        'value' in input.end.y
+        hasNumericValue(input.start.x) &&
+        hasNumericValue(input.start.y) &&
+        hasNumericValue(input.end.x) &&
+        hasNumericValue(input.end.y)
       )
     ) {
       return new Error('Invalid position values for LineSegment')
@@ -338,10 +353,10 @@ class LineSegment implements SketchEntityUtils {
     const { input, group, id, scale, selectedIds, isDraft } = args
     if (
       !(
-        'value' in input.start.x &&
-        'value' in input.start.y &&
-        'value' in input.end.x &&
-        'value' in input.end.y
+        hasNumericValue(input.start.x) &&
+        hasNumericValue(input.start.y) &&
+        hasNumericValue(input.end.x) &&
+        hasNumericValue(input.end.y)
       )
     ) {
       return new Error('Invalid position values for LineSegment')
@@ -375,21 +390,271 @@ class LineSegment implements SketchEntityUtils {
   }
 }
 
-export const segmentUtilsMap = {
-  PointSegment: new PointSegment(),
-  LineSegment: new LineSegment(),
+class ArcSegment implements SketchEntityUtils {
+  /**
+   * Validates and extracts arc data from input, calculating radius and angles.
+   * Returns an error if validation fails, otherwise returns the calculated values.
+   */
+  private extractArcData(input: SegmentCtor):
+    | Error
+    | {
+        centerX: number
+        centerY: number
+        startX: number
+        startY: number
+        endX: number
+        endY: number
+        radius: number
+        startAngle: number
+        endAngle: number
+      } {
+    if (input.type !== 'Arc') {
+      return new Error('Invalid input type for ArcSegment')
+    }
+
+    if (
+      !(
+        hasNumericValue(input.center.x) &&
+        hasNumericValue(input.center.y) &&
+        hasNumericValue(input.start.x) &&
+        hasNumericValue(input.start.y) &&
+        hasNumericValue(input.end.x) &&
+        hasNumericValue(input.end.y)
+      )
+    ) {
+      return new Error('Invalid position values for ArcSegment')
+    }
+
+    const centerX = input.center.x.value
+    const centerY = input.center.y.value
+    const startX = input.start.x.value
+    const startY = input.start.y.value
+    const endX = input.end.x.value
+    const endY = input.end.y.value
+
+    // Calculate radius (distance from center to start/end points)
+    // For a center arc, both start and end should be at the same radius from center
+    const dxStart = startX - centerX
+    const dyStart = startY - centerY
+    const radiusStart = Math.hypot(dxStart, dyStart)
+
+    const dxEnd = endX - centerX
+    const dyEnd = endY - centerY
+    const radiusEnd = Math.hypot(dxEnd, dyEnd)
+
+    // Use average radius in case of small floating point differences
+    const radius = (radiusStart + radiusEnd) / 2
+
+    // Calculate angles
+    const startAngle = Math.atan2(startY - centerY, startX - centerX)
+    const endAngle = Math.atan2(endY - centerY, endX - centerX)
+
+    return {
+      centerX,
+      centerY,
+      startX,
+      startY,
+      endX,
+      endY,
+      radius,
+      startAngle,
+      endAngle,
+    }
+  }
+
+  /**
+   * Updates the arc segment mesh color based on selection and hover state
+   */
+  updateArcColors(
+    mesh: Mesh,
+    isSelected: boolean,
+    isHovered: boolean,
+    isDraft?: boolean
+  ): void {
+    const material = mesh.material
+    if (!(material instanceof MeshBasicMaterial)) {
+      return
+    }
+
+    if (isHovered) {
+      material.color.set(
+        packRgbToColor(SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7)))
+      )
+    } else if (isSelected) {
+      material.color.set(SKETCH_SELECTION_COLOR)
+    } else if (isDraft) {
+      // Draft segments are grey (0x888888)
+      material.color.set(0x888888)
+    } else {
+      material.color.set(KCL_DEFAULT_COLOR)
+    }
+  }
+
+  /**
+   * Ensures there is a preview circle for a center arc and updates its radius.
+   * The preview circle is a simple gray line loop that lives in the sketch solve group.
+   */
+  updatePreviewCircle({
+    sceneInfra,
+    center,
+    radius,
+  }: {
+    sceneInfra: SceneInfra
+    center: [number, number]
+    radius: number
+  }): void {
+    if (!Number.isFinite(radius) || radius < 1e-6) return
+
+    const sketchGroup =
+      sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP) ?? sceneInfra.scene
+
+    let preview = sketchGroup.getObjectByName(ARC_PREVIEW_CIRCLE) as Line | null
+
+    const segments = 64
+    const points = []
+    for (let i = 0; i <= segments; i++) {
+      const t = (i / segments) * Math.PI * 2
+      const x = center[0] + radius * Math.cos(t)
+      const y = center[1] + radius * Math.sin(t)
+      points.push(new Vector3(x, y, 0))
+    }
+    const geometry = new BufferGeometry().setFromPoints(points)
+
+    if (!preview) {
+      const material = new LineBasicMaterial({ color: 0x888888 })
+      preview = new Line(geometry, material)
+      preview.name = ARC_PREVIEW_CIRCLE
+      preview.layers.set(SKETCH_LAYER)
+      sketchGroup.add(preview)
+    } else {
+      preview.geometry.dispose()
+      preview.geometry = geometry
+    }
+  }
+
+  /**
+   * Removes and disposes the preview circle if it exists.
+   */
+  removePreviewCircle(sceneInfra: SceneInfra): void {
+    const sketchGroup =
+      sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP) ?? sceneInfra.scene
+    const preview = sketchGroup.getObjectByName(ARC_PREVIEW_CIRCLE)
+    if (preview instanceof Line) {
+      preview.geometry.dispose()
+      if (preview.material instanceof LineBasicMaterial) {
+        preview.material.dispose()
+      }
+      preview.parent?.remove(preview)
+    }
+  }
+
+  init = (args: CreateSegmentArgs) => {
+    const { input, theme, id, scale } = args
+    const arcData = this.extractArcData(input)
+    if (arcData instanceof Error) {
+      return arcData
+    }
+
+    const { centerX, centerY, radius, startAngle, endAngle } = arcData
+
+    // Always draw arcs CCW from start to end.
+    // The solver also uses a CCW convention from start to end, so we keep
+    // the angles as-is and force ccw = true to match that behaviour.
+    const ccw = true
+
+    const segmentGroup = new Group()
+    // Coordinates need to be divided by scale to match LineSegment pattern
+    // The geometry is created in local space, then scaled by the group
+    // Draft arcs should be grey but NOT dashed (different design direction from clientSideScene)
+    const geometry = createArcGeometry({
+      center: [centerX, centerY],
+      radius,
+      startAngle,
+      endAngle,
+      ccw,
+      isDashed: false,
+      scale,
+    })
+    const body = new MeshBasicMaterial({ color: KCL_DEFAULT_COLOR })
+    const mesh = new Mesh(geometry, body)
+
+    mesh.userData.type = ARC_SEGMENT_BODY
+    mesh.name = ARC_SEGMENT_BODY
+    segmentGroup.name = id.toString()
+    segmentGroup.userData = {
+      type: SEGMENT_TYPE_ARC,
+    }
+
+    segmentGroup.add(mesh)
+
+    this.update({
+      input: input,
+      theme: theme,
+      id: id,
+      scale: scale,
+      group: segmentGroup,
+      selectedIds: [],
+      isDraft: args.isDraft,
+    })
+
+    return segmentGroup
+  }
+
+  update(args: UpdateSegmentArgs) {
+    const { input, group, id, scale, selectedIds, isDraft } = args
+    const arcData = this.extractArcData(input)
+    if (arcData instanceof Error) {
+      return arcData
+    }
+
+    const { centerX, centerY, radius, startAngle, endAngle } = arcData
+
+    // Always draw arcs CCW from start to end to match the solver.
+    const ccw = true
+
+    const arcSegmentBody = group.children.find(
+      (child) => child.userData.type === ARC_SEGMENT_BODY
+    )
+    if (!(arcSegmentBody && arcSegmentBody instanceof Mesh)) {
+      console.error('No arc segment body found in group')
+      return
+    }
+
+    // Match LineSegment.update pattern: use coordinates directly (not divided by scale)
+    // LineSegment.update uses input.start.x.value directly without dividing by scale
+    // The client-side scene also passes coordinates directly to createArcGeometry (not divided by scale)
+    // So we should use coordinates directly here too (not divided by scale)
+    // Draft arcs should be grey but NOT dashed (different design direction from clientSideScene)
+    const newGeometry = createArcGeometry({
+      center: [centerX, centerY],
+      radius: radius,
+      startAngle,
+      endAngle,
+      ccw,
+      isDashed: false,
+      scale,
+    })
+    arcSegmentBody.geometry.dispose()
+    arcSegmentBody.geometry = newGeometry
+
+    // Update mesh color based on selection
+    const isSelected = selectedIds.includes(id)
+    // Check if this segment is currently hovered (stored in userData)
+    const isHovered = arcSegmentBody.userData.isHovered === true
+    this.updateArcColors(arcSegmentBody, isSelected, isHovered, isDraft)
+  }
 }
 
 /**
- * Updates the hover state of a line segment mesh
+ * Updates the hover state of a segment mesh (line or arc)
  */
-export function updateLineSegmentHover(
+export function updateSegmentHover(
   mesh: Mesh | null,
   isHovered: boolean,
   selectedIds: Array<number>,
   draftEntityIds?: Array<number>
 ): void {
-  if (!mesh || mesh.userData.type !== STRAIGHT_SEGMENT_BODY) {
+  if (!mesh) {
     return
   }
 
@@ -409,12 +674,23 @@ export function updateLineSegmentHover(
 
   const isSelected = selectedIds.includes(segmentId)
   const isDraft = draftEntityIds?.includes(segmentId) ?? false
-  segmentUtilsMap.LineSegment.updateLineColors(
-    mesh,
-    isSelected,
-    isHovered,
-    isDraft
-  )
+
+  // Dispatch based on segment body type
+  if (mesh.userData.type === STRAIGHT_SEGMENT_BODY) {
+    segmentUtilsMap.LineSegment.updateLineColors(
+      mesh,
+      isSelected,
+      isHovered,
+      isDraft
+    )
+  } else if (mesh.userData.type === ARC_SEGMENT_BODY) {
+    segmentUtilsMap.ArcSegment.updateArcColors(
+      mesh,
+      isSelected,
+      isHovered,
+      isDraft
+    )
+  }
 }
 
 /**
@@ -490,4 +766,10 @@ export function htmlHelper(
   })
 
   return elements
+}
+
+export const segmentUtilsMap = {
+  PointSegment: new PointSegment(),
+  LineSegment: new LineSegment(),
+  ArcSegment: new ArcSegment(),
 }

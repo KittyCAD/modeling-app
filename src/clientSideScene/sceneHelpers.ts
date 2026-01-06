@@ -27,7 +27,6 @@ function disposeObject(obj: Object3D): void {
   // CSS2DObject needs special handling: remove its DOM element from the DOM
   // before removing it from the Three.js scene graph
   if (obj instanceof CSS2DObject) {
-    console.log('did a thing?', obj.element)
     obj.element.remove()
   }
 

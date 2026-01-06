@@ -1,5 +1,5 @@
 import { Popover } from '@headlessui/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -45,6 +45,7 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
+import { getSketchSolveToolIconMap } from '@src/lib/toolbar'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -178,6 +179,11 @@ export const ClientSideScene = ({
     } else {
       cursor = 'default'
     }
+  } else if (
+    state.matches('sketchSolveMode') &&
+    context.sketchSolveToolName !== null
+  ) {
+    cursor = 'crosshair'
   }
 
   return (
@@ -195,7 +201,68 @@ export const ClientSideScene = ({
         }`}
       ></div>
       <Overlays />
+      <SketchSolveToolIconOverlay />
     </>
+  )
+}
+
+// Map sketchSolve tool names to their corresponding icon names
+// Derived from toolbar config to maintain a single source of truth
+const toolIconMap = getSketchSolveToolIconMap()
+const getToolIconName = (toolName: string | null): CustomIconName | null => {
+  if (!toolName) return null
+  return toolIconMap[toolName] || null
+}
+
+const SketchSolveToolIconOverlay = () => {
+  const { state, context } = useModelingContext()
+  const [mousePosition, setMousePosition] = useState<{
+    x: number
+    y: number
+  } | null>(null)
+
+  // Only show overlay when in sketchSolveMode with a tool equipped
+  const isToolEquipped =
+    state.matches('sketchSolveMode') && context.sketchSolveToolName !== null
+  const iconName = isToolEquipped
+    ? getToolIconName(context.sketchSolveToolName)
+    : null
+
+  useEffect(() => {
+    if (!isToolEquipped) {
+      setMousePosition(null)
+      return
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [isToolEquipped])
+
+  if (!isToolEquipped || !iconName || !mousePosition) {
+    return null
+  }
+
+  // Position icon below and to the right of cursor
+  // Offset: 16px right, 16px down (typical cursor size is ~16px)
+  const offsetX = 8
+  const offsetY = 8
+
+  return (
+    <div
+      className="fixed pointer-events-none z-[9999] w-5 h-5 left-0 top-0"
+      style={{
+        opacity: 0.2,
+        transform: `translate(${mousePosition.x + offsetX}px, ${mousePosition.y + offsetY}px)`,
+      }}
+    >
+      <CustomIcon name={iconName} className="w-6 h-6" />
+    </div>
   )
 }
 
@@ -243,6 +310,7 @@ const Overlay = ({
   overlayIndex: number
   pathToNodeString: string
 }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const { context, send, state } = useModelingContext()
 
   // Simple check directly from localStorage
@@ -257,6 +325,7 @@ const Overlay = ({
   const _node1 = getNodeFromPath<Node<CallExpressionKw>>(
     kclManager.ast,
     overlay.pathToNode,
+    wasmInstance,
     ['CallExpressionKw']
   )
 
@@ -377,8 +446,13 @@ const SegmentMenu = ({
   pathToNode: PathToNode
   stdLibFnName: string
 }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const { send } = useModelingContext()
-  const dependentSourceRanges = findUsesOfTagInPipe(kclManager.ast, pathToNode)
+  const dependentSourceRanges = findUsesOfTagInPipe(
+    kclManager.ast,
+    pathToNode,
+    wasmInstance
+  )
   return (
     <Popover className="relative">
       {({ open }) => (
@@ -436,6 +510,7 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const { context } = useModelingContext()
   const varNameMap: {
     [key in ConstrainInfo['type']]: {
@@ -519,7 +594,7 @@ const ConstraintSymbol = ({
   const implicitDesc = varNameMap[_type]?.implicitConstraintDesc
 
   const _node = useMemo(
-    () => getNodeFromPath<Expr>(kclManager.ast, pathToNode),
+    () => getNodeFromPath<Expr>(kclManager.ast, pathToNode, wasmInstance),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [kclManager.ast, pathToNode]
   )
@@ -571,10 +646,11 @@ const ConstraintSymbol = ({
               },
             })
           } else if (isConstrained) {
+            const wasmInstance = await kclManager.wasmInstancePromise
             try {
               const pResult = parse(
-                recast(kclManager.ast),
-                await kclManager.wasmInstancePromise
+                recast(kclManager.ast, wasmInstance),
+                wasmInstance
               )
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
@@ -582,6 +658,7 @@ const ConstraintSymbol = ({
               const _node1 = getNodeFromPath<CallExpressionKw>(
                 pResult.program,
                 pathToNode,
+                wasmInstance,
                 ['CallExpressionKw'],
                 true
               )
@@ -595,7 +672,8 @@ const ConstraintSymbol = ({
                 kclManager.ast,
                 kclManager.variables,
                 removeSingleConstraint,
-                transformAstSketchLines
+                transformAstSketchLines,
+                wasmInstance
               )
 
               if (!transform) return
@@ -604,7 +682,7 @@ const ConstraintSymbol = ({
               await kclManager.updateAst(modifiedAst, true)
 
               // Code editor will be updated in the modelingMachine.
-              const newCode = recast(modifiedAst)
+              const newCode = recast(modifiedAst, wasmInstance)
               if (err(newCode)) return
               kclManager.updateCodeEditor(newCode)
             } catch (e) {

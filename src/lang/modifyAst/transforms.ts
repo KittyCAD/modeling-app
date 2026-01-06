@@ -20,11 +20,13 @@ import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function addTranslate({
   ast,
   artifactGraph,
   objects,
+  wasmInstance,
   x,
   y,
   z,
@@ -34,6 +36,7 @@ export function addTranslate({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
+  wasmInstance: ModuleType
   x?: KclCommandValue
   y?: KclCommandValue
   z?: KclCommandValue
@@ -50,6 +53,7 @@ export function addTranslate({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -62,7 +66,7 @@ export function addTranslate({
   const yExpr = y ? [createLabeledArg('y', valueOrVariable(y))] : []
   const zExpr = z ? [createLabeledArg('z', valueOrVariable(z))] : []
   const globalExpr = global
-    ? [createLabeledArg('global', createLiteral(global))]
+    ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
     : []
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
@@ -92,6 +96,7 @@ export function addTranslate({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: undefined, // No variable declaration for translate
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -107,6 +112,7 @@ export function addRotate({
   ast,
   artifactGraph,
   objects,
+  wasmInstance,
   roll,
   pitch,
   yaw,
@@ -116,6 +122,7 @@ export function addRotate({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
+  wasmInstance: ModuleType
   roll?: KclCommandValue
   pitch?: KclCommandValue
   yaw?: KclCommandValue
@@ -132,6 +139,7 @@ export function addRotate({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -146,7 +154,7 @@ export function addRotate({
     : []
   const yawExpr = yaw ? [createLabeledArg('yaw', valueOrVariable(yaw))] : []
   const globalExpr = global
-    ? [createLabeledArg('global', createLiteral(global))]
+    ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
     : []
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
@@ -176,6 +184,7 @@ export function addRotate({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: undefined, // No variable declaration for transforms
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -191,6 +200,7 @@ export function addScale({
   ast,
   artifactGraph,
   objects,
+  wasmInstance,
   x,
   y,
   z,
@@ -201,6 +211,7 @@ export function addScale({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
+  wasmInstance: ModuleType
   x?: KclCommandValue
   y?: KclCommandValue
   z?: KclCommandValue
@@ -218,6 +229,7 @@ export function addScale({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -233,7 +245,7 @@ export function addScale({
     ? [createLabeledArg('factor', valueOrVariable(factor))]
     : []
   const globalExpr = global
-    ? [createLabeledArg('global', createLiteral(global))]
+    ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
     : []
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
@@ -267,6 +279,7 @@ export function addScale({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: undefined, // No variable declaration for translate
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -284,12 +297,14 @@ export function addClone({
   objects,
   variableName,
   nodeToEdit,
+  wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   objects: Selections
   variableName: string
   nodeToEdit?: PathToNode
+  wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
@@ -301,6 +316,7 @@ export function addClone({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -333,6 +349,7 @@ export function addAppearance({
   artifactGraph,
   objects,
   color,
+  wasmInstance,
   metalness,
   roughness,
   nodeToEdit,
@@ -341,6 +358,7 @@ export function addAppearance({
   artifactGraph: ArtifactGraph
   objects: Selections
   color: string
+  wasmInstance: ModuleType
   metalness?: KclCommandValue
   roughness?: KclCommandValue
   nodeToEdit?: PathToNode
@@ -355,6 +373,7 @@ export function addAppearance({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
+    wasmInstance,
     mNodeToEdit,
     lastChildLookup,
     artifactGraph
@@ -363,7 +382,9 @@ export function addAppearance({
     return vars
   }
 
-  const colorExpr = [createLabeledArg('color', createLiteral(color))]
+  const colorExpr = [
+    createLabeledArg('color', createLiteral(color, wasmInstance)),
+  ]
   const metalnessExpr = metalness
     ? [createLabeledArg('metalness', valueOrVariable(metalness))]
     : []
@@ -393,6 +414,7 @@ export function addAppearance({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: undefined, // No variable declaration for transforms
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode

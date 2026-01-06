@@ -35,7 +35,6 @@ import type { FileEntry, Project } from '@src/lib/project'
 import { err, reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { getModule } from '@src/lib/wasm_lib_wrapper'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { Signal } from '@src/lib/signal'
@@ -78,13 +77,14 @@ export default class RustContext {
   }
 
   /** Create a new context instance */
-  private create(): Context {
-    this.rustInstance = getModule()
+  private async createContextFromWasm(): Promise<Context> {
+    this.rustInstance = await this._wasmInstancePromise
 
     const ctxInstance = new this.rustInstance.Context(
       this.engineCommandManager,
       projectFsManager
     )
+    this.rustInstance
 
     return ctxInstance
   }
@@ -132,7 +132,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const result = await instance.execute(
@@ -161,7 +161,7 @@ export default class RustContext {
     path?: string,
     usePrevMemory?: boolean
   ): Promise<ExecState> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     if (usePrevMemory === undefined) {
       usePrevMemory = true
@@ -186,7 +186,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     toastId: string
   ): Promise<ModelingAppFile[] | undefined> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       return await instance.export(
@@ -236,7 +236,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const result = await instance.bustCacheAndResetScene(
@@ -270,7 +270,7 @@ export default class RustContext {
 
   /** Send a response back to the rust side, that we got back from the engine. */
   async sendResponse(response: WebSocketResponse): Promise<void> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const serialized = msgpackEncode(response)
@@ -293,7 +293,7 @@ export default class RustContext {
     sceneGraph: SceneGraph
     execOutcome: ExecOutcome
   }> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const result: [SceneGraph, ExecOutcome] = await instance.hack_set_program(
@@ -323,7 +323,7 @@ export default class RustContext {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const result: [SourceDelta, SceneGraphDelta] =
@@ -355,7 +355,7 @@ export default class RustContext {
     sceneGraphDelta: SceneGraphDelta
     sketchId: ApiObjectId
   }> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const result: [SourceDelta, SceneGraphDelta, ApiObjectId] =
@@ -386,7 +386,7 @@ export default class RustContext {
     sketch: ApiObjectId,
     settings: DeepPartial<Configuration>
   ): Promise<SceneGraphDelta> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const result: SceneGraphDelta = await instance.edit_sketch(
@@ -410,7 +410,7 @@ export default class RustContext {
     sketch: ApiObjectId,
     settings: DeepPartial<Configuration>
   ): Promise<SceneGraphDelta> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const result: SceneGraphDelta = await instance.exit_sketch(
@@ -435,7 +435,7 @@ export default class RustContext {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const result: [SourceDelta, SceneGraphDelta] =
@@ -466,7 +466,7 @@ export default class RustContext {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const result: [SourceDelta, SceneGraphDelta] = await instance.add_segment(
@@ -497,7 +497,7 @@ export default class RustContext {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const result: [SourceDelta, SceneGraphDelta] =
@@ -529,7 +529,7 @@ export default class RustContext {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const result: [SourceDelta, SceneGraphDelta] =
@@ -561,7 +561,7 @@ export default class RustContext {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
   }> {
-    const instance = this._checkInstance()
+    const instance = await this._checkContextInstance()
 
     try {
       const result: [SourceDelta, SceneGraphDelta] =
@@ -582,11 +582,46 @@ export default class RustContext {
     }
   }
 
+  /** Chain a segment to a previous segment by adding it and creating a coincident constraint. */
+  async chainSegment(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    previousSegmentEndPointId: ApiObjectId,
+    segment: SegmentCtor,
+    label: string | undefined,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      const result: [SourceDelta, SceneGraphDelta] =
+        await instance.chain_segment(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(previousSegmentEndPointId),
+          JSON.stringify(segment),
+          label,
+          JSON.stringify(settings)
+        )
+      return {
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
   /** Helper to check if context instance exists */
-  private _checkInstance(): Context {
+  private async _checkContextInstance(): Promise<Context> {
     if (!this.ctxInstance) {
       // Create the context instance.
-      this.ctxInstance = this.create()
+      this.ctxInstance = await this.createContextFromWasm()
     }
 
     return this.ctxInstance

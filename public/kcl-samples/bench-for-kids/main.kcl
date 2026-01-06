@@ -1,5 +1,6 @@
 // Bench for kids.
 // Shaped like a friendly animal and sturdy enough for climbing.
+// Categories: Maker
 
 @settings(defaultLengthUnit = cm)
 

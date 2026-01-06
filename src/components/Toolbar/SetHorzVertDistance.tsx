@@ -23,17 +23,22 @@ import {
   type VariableDeclarator,
 } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { kclManager } from '@src/lib/singletons'
+import type { KclManager } from '@src/lang/KclManager'
 import { cleanErrs, err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
 export function horzVertDistanceInfo({
   selectionRanges,
   constraint,
+  kclManager,
+  wasmInstance,
 }: {
   selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
+  kclManager: KclManager
+  wasmInstance: ModuleType
 }):
   | {
       transforms: TransformInfo[]
@@ -41,7 +46,11 @@ export function horzVertDistanceInfo({
     }
   | Error {
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
+    const tmp = getNodeFromPath<Expr>(
+      kclManager.ast,
+      codeRef.pathToNode,
+      wasmInstance
+    )
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -54,6 +63,7 @@ export function horzVertDistanceInfo({
     const tmp = getNodeFromPath<VariableDeclarator>(
       kclManager.ast,
       codeRef.pathToNode,
+      wasmInstance,
       'VariableDeclarator'
     )
     if (err(tmp)) return tmp
@@ -80,7 +90,8 @@ export function horzVertDistanceInfo({
       graphSelections: selectionRanges.graphSelections.slice(1),
     },
     kclManager.ast,
-    constraint
+    constraint,
+    wasmInstance
   )
   const _enableEqual =
     secondaryVarDecs.length === 1 &&
@@ -93,9 +104,11 @@ export function horzVertDistanceInfo({
 export async function applyConstraintHorzVertDistance({
   selectionRanges,
   constraint,
+  kclManager,
 }: {
   selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
+  kclManager: KclManager
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
@@ -104,6 +117,8 @@ export async function applyConstraintHorzVertDistance({
   const info = horzVertDistanceInfo({
     selectionRanges: selectionRanges,
     constraint,
+    kclManager,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(info)) return Promise.reject(info)
   const transformInfos = info.transforms
@@ -112,6 +127,7 @@ export async function applyConstraintHorzVertDistance({
     selectionRanges,
     transformInfos,
     memVars: kclManager.variables,
+    wasmInstance: await kclManager.wasmInstancePromise,
   })
   if (err(transformed)) return Promise.reject(transformed)
   const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
@@ -143,7 +159,12 @@ export async function applyConstraintHorzVertDistance({
   } else {
     if (!isExprBinaryPart(valueNode))
       return Promise.reject('Invalid valueNode, is not a BinaryPart')
-    let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
+    let finalValue = removeDoubleNegatives(
+      valueNode,
+      sign,
+      await kclManager.wasmInstancePromise,
+      variableName
+    )
     // transform again but forcing certain values
     const transformed = transformSecondarySketchLinesTagFirst({
       ast: kclManager.ast,
@@ -152,6 +173,7 @@ export async function applyConstraintHorzVertDistance({
       memVars: kclManager.variables,
       forceSegName: segName,
       forceValueUsedInTransform: finalValue,
+      wasmInstance: await kclManager.wasmInstancePromise,
     })
 
     if (err(transformed)) return Promise.reject(transformed)
@@ -184,9 +206,13 @@ export async function applyConstraintHorzVertDistance({
 export function applyConstraintHorzVertAlign({
   selectionRanges,
   constraint,
+  wasmInstance,
+  kclManager,
 }: {
   selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
+  wasmInstance: ModuleType
+  kclManager: KclManager
 }):
   | {
       modifiedAst: Node<Program>
@@ -196,16 +222,19 @@ export function applyConstraintHorzVertAlign({
   const info = horzVertDistanceInfo({
     selectionRanges,
     constraint,
+    kclManager,
+    wasmInstance,
   })
   if (err(info)) return info
   const transformInfos = info.transforms
-  let finalValue = createLiteral(0)
+  let finalValue = createLiteral(0, wasmInstance)
   const retval = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
     selectionRanges,
     transformInfos,
     memVars: kclManager.variables,
     forceValueUsedInTransform: finalValue,
+    wasmInstance,
   })
   if (err(retval)) return retval
   const { modifiedAst, pathToNodeMap } = retval
