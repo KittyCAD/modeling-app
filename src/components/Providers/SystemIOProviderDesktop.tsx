@@ -13,10 +13,12 @@ import {
   webSafePathSplit,
 } from '@src/lib/paths'
 import {
+  billingActor,
   engineCommandManager,
   kclManager,
   systemIOActor,
   useSettings,
+  useToken,
 } from '@src/lib/singletons'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine'
 import {
@@ -43,6 +45,7 @@ export function SystemIOMachineLogicListenerDesktop() {
   const hasListedProjects = useHasListedProjects()
   const navigate = useNavigate()
   const settings = useSettings()
+  const token = useToken()
   const { onFileOpen, onFileClose } = useLspContext()
   const { pathname } = useLocation()
 
@@ -232,10 +235,12 @@ export function SystemIOMachineLogicListenerDesktop() {
     )
   }
 
-  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
+  const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   useWatchForNewFileRequestsFromMlEphant(
-    mlEphantManagerActor2,
+    mlEphantManagerActor,
+    billingActor,
+    token,
     (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {
       if (
         toolOutput.type !== 'text_to_cad' &&
@@ -286,7 +291,7 @@ export function SystemIOMachineLogicListenerDesktop() {
   )
 
   // Save the conversation id for the project id if necessary.
-  useProjectIdToConversationId(mlEphantManagerActor2, systemIOActor, settings)
+  useProjectIdToConversationId(mlEphantManagerActor, systemIOActor, settings)
 
   useGlobalProjectNavigation()
   useGlobalFileNavigation()

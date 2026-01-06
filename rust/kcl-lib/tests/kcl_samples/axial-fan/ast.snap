@@ -179,6 +179,7 @@ description: Result of parsing axial-fan.kcl
         "preComments": [
           "// PC Fan",
           "// A small axial fan, used to push or draw airflow over components to remove excess heat",
+          "// Categories: Computer Hardware",
           "",
           "",
           "// Set units"

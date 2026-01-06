@@ -645,10 +645,10 @@ description: Variables in memory after executing teapot.kcl
             110.55
           ],
           "tag": {
-            "commentStart": 1786,
-            "end": 1792,
+            "commentStart": 1807,
+            "end": 1813,
             "moduleId": 0,
-            "start": 1786,
+            "start": 1807,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1024,10 +1024,10 @@ description: Variables in memory after executing teapot.kcl
             26.0
           ],
           "tag": {
-            "commentStart": 485,
-            "end": 491,
+            "commentStart": 506,
+            "end": 512,
             "moduleId": 0,
-            "start": 485,
+            "start": 506,
             "type": "TagDeclarator",
             "value": "seg01"
           },

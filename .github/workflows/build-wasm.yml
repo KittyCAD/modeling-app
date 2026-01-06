@@ -2,6 +2,9 @@ name: Build WASM
 
 on:
   workflow_call:
+    secrets:
+      TAB_API_KEY:
+        required: false
 
 permissions:
   contents: read
@@ -11,6 +14,16 @@ jobs:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
       - uses: actions/checkout@v6
+
+      - name: Track setup
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: integration
+          CI_STEP: setup
 
       - uses: actions/setup-node@v6
         with:

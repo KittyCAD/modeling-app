@@ -5029,6 +5029,7 @@ description: Result of parsing mug.kcl
         "preComments": [
           "// Mug",
           "// A cup with straight sides and a handle, typically used for hot drinks",
+          "// Categories: Maker",
           "",
           "",
           "// Set units"
