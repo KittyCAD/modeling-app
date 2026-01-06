@@ -211,11 +211,11 @@ export class EditorFixture {
   scrollToText(text: string, placeCursor?: boolean) {
     return this.page.evaluate(
       (args: { text: string; placeCursor?: boolean }) => {
-        const editorView = window.kclManager.editorView
+        const editorView = window.kclManager.getEditorView()
         // error TS2339: Property 'docView' does not exist on type 'EditorView'.
         // Except it does so :shrug:
         // @ts-ignore
-        const index = editorView.docView.view.state.doc
+        const index = editorView?.docView.view.state.doc
           .toString()
           .indexOf(args.text)
         editorView?.focus()
