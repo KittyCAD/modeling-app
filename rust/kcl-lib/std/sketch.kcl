@@ -631,15 +631,12 @@ export fn extrude(
   twistCenter?: Point2d,
   /// The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`.
   method?: string,
-<<<<<<< HEAD
   /// Whether or not to hide the seams between the original and resulting object.
   /// Only used if a face is extruded and method = MERGE
   hideSeams?: bool,
-=======
   /// What type of body to produce (solid or surface).
   /// Defaults to "solid".
   bodyType?: string = "solid",
->>>>>>> main
 ): [Solid; 1+] {}
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
