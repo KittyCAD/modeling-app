@@ -53,7 +53,6 @@ export const billingMachine = setup({
       async ({
         input,
       }: { input: { context: BillingContext; event: BillingUpdateEvent } }) => {
-        console.log('BillingTransition.Update invoked', { input })
         // Rate limit on the client side to 1 request per second.
         if (
           input.context.lastFetch &&
