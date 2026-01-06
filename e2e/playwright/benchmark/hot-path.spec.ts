@@ -92,7 +92,7 @@ test.describe('Hot path', () => {
       await page.keyboard.type('1')
     })
 
-    await test.step('Click Continue, see no more error, and click Submit', async () => {
+    await test.step('Click Continue, expect the review page without errors, and click Submit', async () => {
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
