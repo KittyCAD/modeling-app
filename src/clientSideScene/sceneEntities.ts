@@ -3011,38 +3011,36 @@ export class SceneEntities {
     const intersectsXAxis = intersects.some(
       (sceneObject) => sceneObject.object.name === X_AXIS
     )
-    const {
-      snappedToTangent,
-      negativeTangentDirection,
-      snappedPoint: snappedPointTangent,
-    } = this.trySnapToTangentDirection(
-      snappedPoint,
-      mouseEvent,
-      wasmInstance,
-      intersectsXAxis,
-      intersectsYAxis,
-      currentObject
-    )
-    if (snappedToTangent) {
-      snappedPoint = snappedPointTangent
-    }
 
     let snappedToGrid = false
     let snappedToProfileStart = false
+    let negativeTangentDirection = false
+    let snappedToTangent = false
 
-    if (!snappedToTangent) {
-      // Highest priority: try snapping to profile start to close it
-      const snappedToProfileStartResult = this.maybeSnapToProfileStart(
+    // Highest priority: try snapping to profileStart to close it
+    const snappedToProfileStartResult = this.maybeSnapToProfileStart(
+      snappedPoint,
+      sketchEntryNodePath
+    )
+    if (snappedToProfileStartResult) {
+      snappedToProfileStart = true
+      snappedPoint = snappedToProfileStartResult
+    } else {
+      // Snap to tangent
+      const snappedToTangentResult = this.trySnapToTangentDirection(
         snappedPoint,
-        sketchEntryNodePath
+        mouseEvent,
+        wasmInstance,
+        intersectsXAxis,
+        intersectsYAxis,
+        currentObject
       )
-      if (snappedToProfileStartResult) {
-        snappedToProfileStart = true
-        snappedPoint = snappedToProfileStartResult
-      }
-      if (!snappedToProfileStart) {
-        // If snapping to profileStart didn't occur, try snapping to axes, grid
-
+      if (snappedToTangentResult.snappedToTangent) {
+        snappedToTangent = true
+        snappedPoint = snappedToTangentResult.snappedPoint
+        negativeTangentDirection =
+          snappedToTangentResult.negativeTangentDirection
+      } else {
         // Snap to axes
         snappedPoint = [
           intersectsYAxis ? 0 : snappedPoint[0],
