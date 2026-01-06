@@ -1116,7 +1116,7 @@ sketch001 = startSketchOn(XZ)
       currentArgValue: '5',
       headerArguments: {
         Profiles: '1 profile',
-        Length: '',
+        Length: '5',
       },
       highlightedHeaderArg: 'length',
       commandName: 'Extrude',
