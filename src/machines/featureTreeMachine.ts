@@ -58,6 +58,7 @@ type FeatureTreeEvent =
     }
   | { type: 'goToError' }
   | { type: 'codePaneOpened' }
+  | { type: 'selected' }
   | { type: 'done' }
   | { type: 'xstate.error.actor.prepareEditCommand'; error: Error }
   | { type: 'xstate.error.actor.prepareDeleteCommand'; error: Error }
@@ -188,7 +189,8 @@ export const featureTreeMachine = setup({
         },
 
         selectOperation: {
-          actions: ['saveTargetSourceRange', 'sendSelectionEvent'],
+          target: 'selecting',
+          actions: 'saveTargetSourceRange',
         },
 
         enterEditFlow: {
@@ -252,6 +254,16 @@ export const featureTreeMachine = setup({
 
     goingToKclSource: {
       states: {
+        selecting: {
+          on: {
+            selected: {
+              target: 'done',
+            },
+          },
+
+          entry: ['sendSelectionEvent'],
+        },
+
         done: {
           entry: ['clearContext'],
           always: '#featureTree.idle',
@@ -259,10 +271,7 @@ export const featureTreeMachine = setup({
 
         openingCodePane: {
           on: {
-            codePaneOpened: {
-              target: 'done',
-              actions: ['sendSelectionEvent'],
-            },
+            codePaneOpened: 'selecting',
           },
 
           entry: 'openCodePane',
@@ -273,15 +282,31 @@ export const featureTreeMachine = setup({
     },
 
     selecting: {
-      always: '#featureTree.idle',
-      entry: 'sendSelectionEvent',
-      exit: 'clearContext',
+      states: {
+        selecting: {
+          on: {
+            selected: 'done',
+          },
+
+          entry: 'sendSelectionEvent',
+        },
+
+        done: {
+          always: '#featureTree.idle',
+          entry: 'clearContext',
+        },
+      },
+
+      initial: 'selecting',
     },
 
     enteringTranslateFlow: {
       states: {
         enteringTranslateFlow: {
-          always: 'done',
+          on: {
+            selected: 'done',
+          },
+
           entry: 'sendTranslateCommand',
         },
 
@@ -297,7 +322,10 @@ export const featureTreeMachine = setup({
     enteringRotateFlow: {
       states: {
         enteringRotateFlow: {
-          always: 'done',
+          on: {
+            selected: 'done',
+          },
+
           entry: 'sendRotateCommand',
         },
 
@@ -313,7 +341,10 @@ export const featureTreeMachine = setup({
     enteringScaleFlow: {
       states: {
         enteringScaleFlow: {
-          always: 'done',
+          on: {
+            selected: 'done',
+          },
+
           entry: 'sendScaleCommand',
         },
 
@@ -329,6 +360,10 @@ export const featureTreeMachine = setup({
     enteringCloneFlow: {
       states: {
         enteringCloneFlow: {
+          on: {
+            selected: 'done',
+          },
+
           entry: 'sendCloneCommand',
         },
 
@@ -344,8 +379,11 @@ export const featureTreeMachine = setup({
     enteringAppearanceFlow: {
       states: {
         enteringAppearanceFlow: {
+          on: {
+            selected: 'done',
+          },
+
           entry: 'sendAppearanceCommand',
-          always: 'done',
         },
 
         done: {
@@ -359,6 +397,15 @@ export const featureTreeMachine = setup({
 
     enteringEditFlow: {
       states: {
+        selecting: {
+          on: {
+            selected: {
+              target: 'prepareEditCommand',
+              reenter: true,
+            },
+          },
+        },
+
         done: {
           always: '#featureTree.idle',
         },
@@ -400,13 +447,22 @@ export const featureTreeMachine = setup({
         },
       },
 
-      initial: 'prepareEditCommand',
+      initial: 'selecting',
       entry: 'sendSelectionEvent',
       exit: ['clearContext'],
     },
 
     deletingOperation: {
       states: {
+        selecting: {
+          on: {
+            selected: {
+              target: 'deletingSelection',
+              reenter: true,
+            },
+          },
+        },
+
         done: {
           always: '#featureTree.idle',
         },
@@ -448,13 +504,21 @@ export const featureTreeMachine = setup({
         },
       },
 
-      initial: 'deletingSelection',
+      initial: 'selecting',
       entry: 'sendSelectionEvent',
       exit: ['clearContext'],
     },
 
     goingToError: {
       states: {
+        openingCodePane: {
+          entry: 'openCodePane',
+
+          on: {
+            codePaneOpened: 'done',
+          },
+        },
+
         done: {
           entry: 'scrollToError',
 
@@ -462,8 +526,7 @@ export const featureTreeMachine = setup({
         },
       },
 
-      initial: 'goingToError',
-      entry: ['openCodePane'],
+      initial: 'openingCodePane',
     },
   },
 
