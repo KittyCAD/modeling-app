@@ -1,5 +1,6 @@
 // Tube manifold
 // A manifold is a type of fitting that can be used to split or merge fluid flow in a system. Clamped tubes are typically refered to by their inner diameters, so the fittings are parameterized by their outer diameters
+// Categories: Automotive, Aerospace
 
 // Set units
 @settings(defaultLengthUnit = in)

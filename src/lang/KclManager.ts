@@ -1658,16 +1658,18 @@ export class KclManager extends EventTarget {
       // and file-system watchers which read, will receive empty data during
       // writes.
       clearTimeout(this.timeoutWriter)
+      // Last write in memory must not be debounced to once per second
+      // TODO: investigate if `lastWrite` is necessary anymore.
+      this.lastWrite = {
+        code: newCode ?? '',
+        time: Date.now(),
+      }
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
           if (!this._currentFilePath)
             return reject(new Error('currentFilePath not set'))
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
-          this.lastWrite = {
-            code: this.code ?? '',
-            time: Date.now(),
-          }
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
           electron
             .writeFile(this._currentFilePath, newCode)

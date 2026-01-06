@@ -2443,6 +2443,7 @@ export const modelingMachine = setup({
 
         for (const variable of Object.values(kclManager.execState.variables)) {
           // find programMemory that matches path artifact
+          // Note: this is similar to sketchFromKclValueOptional(), could be combined?
           if (
             variable?.type === 'Sketch' &&
             variable.value.artifactId === mainPath
@@ -2453,7 +2454,6 @@ export const modelingMachine = setup({
           if (
             // if the variable is an sweep, check if the underlying sketch matches the artifact
             variable?.type === 'Solid' &&
-            variable.value.sketch.on.type === 'plane' &&
             variable.value.sketch.artifactId === mainPath
           ) {
             sketch = {
@@ -2461,6 +2461,15 @@ export const modelingMachine = setup({
               value: variable.value.sketch,
             }
             break
+          }
+          if (variable?.type === 'HomArray') {
+            const sketchInHomArray = variable.value.find(
+              (sk) => sk.type === 'Sketch' && sk.value.artifactId === mainPath
+            )
+            if (sketchInHomArray) {
+              sketch = sketchInHomArray
+              break
+            }
           }
           if (variable?.type === 'Plane' && plane.id === variable.value.id) {
             planeVar = variable.value
