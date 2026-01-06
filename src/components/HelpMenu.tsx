@@ -131,7 +131,7 @@ export function HelpMenu() {
                 const targetPath = location.pathname.includes(PATHS.FILE)
                   ? filePath + PATHS.SETTINGS_KEYBINDINGS
                   : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
-                navigate(targetPath)
+                void navigate(targetPath)
               }}
               data-testid="keybindings-button"
             >

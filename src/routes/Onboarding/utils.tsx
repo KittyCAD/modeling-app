@@ -84,7 +84,7 @@ export function useNextClick(newStatus: OnboardingStatus) {
       data: { level: 'user', value: newStatus },
     })
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
-    navigate(targetRoute)
+    void navigate(targetRoute)
   }, [filePath, newStatus, navigate])
 }
 
@@ -105,7 +105,7 @@ export function useDismiss() {
       })
       waitFor(settingsActor, (state) => state.matches('idle'))
         .then(() => {
-          navigate(filePath)
+          void navigate(filePath)
           toast.success(
             'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
             {
@@ -328,7 +328,7 @@ export async function resetCodeAndAdvanceOnboarding({
   kclManager.updateCodeStateEditor(browserAxialFan)
   kclManager.writeToFile().catch(reportRejection)
   kclManager.executeCode().catch(reportRejection)
-  navigate(
+  void navigate(
     makeUrlPathRelative(
       joinRouterPaths(String(PATHS.ONBOARDING), resolvedOnboardingStatus)
     )
