@@ -11,6 +11,10 @@ import {
 import { useSelector } from '@xstate/react'
 import { useEffect } from 'react'
 import { NIL as uuidNIL } from 'uuid'
+import {
+  type BillingActor,
+  BillingTransition,
+} from '@src/machines/billingMachine'
 
 export const useRequestedProjectName = () =>
   useSelector(systemIOActor, (state) => state.context.requestedProjectName)
@@ -33,14 +37,14 @@ export const useClearURLParams = () =>
   useSelector(systemIOActor, (state) => state.context.clearURLParams)
 
 export const useProjectIdToConversationId = (
-  mlEphantManagerActor2: MlEphantManagerActor,
+  mlEphantManagerActor: MlEphantManagerActor,
   systemIOActor: SystemIOActor,
   settings2: SettingsType
 ) => {
   useEffect(() => {
     let lastConversationId =
-      mlEphantManagerActor2.getSnapshot().context.conversationId
-    const subscription2 = mlEphantManagerActor2.subscribe((next) => {
+      mlEphantManagerActor.getSnapshot().context.conversationId
+    const subscription = mlEphantManagerActor.subscribe((next) => {
       if (settings2.meta.id.current === undefined) {
         return
       }
@@ -73,7 +77,7 @@ export const useProjectIdToConversationId = (
     })
 
     return () => {
-      subscription2.unsubscribe()
+      subscription.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settings2.meta.id.current])
@@ -81,8 +85,10 @@ export const useProjectIdToConversationId = (
 
 // Watch MlEphant for any responses that require files to be created.
 export const useWatchForNewFileRequestsFromMlEphant = (
-  mlEphantManagerActor2: MlEphantManagerActor,
-  fn2: (
+  mlEphantManagerActor: MlEphantManagerActor,
+  billingActor: BillingActor,
+  token: string,
+  fn: (
     toolOutputTextToCad: MlToolResult,
     projectNameCurrentlyOpened: string,
     fileFocusedOnInEditor?: FileEntry
@@ -90,7 +96,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
 ) => {
   useEffect(() => {
     let lastId: number | undefined = undefined
-    const subscription2 = mlEphantManagerActor2.subscribe((next) => {
+    const subscription = mlEphantManagerActor.subscribe((next) => {
       if (next.context.lastMessageId === lastId) return
       lastId = next.context.lastMessageId
 
@@ -105,15 +111,21 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       // We don't know what project to write to, so do nothing.
       if (!next.context.projectNameCurrentlyOpened) return
 
-      fn2(
+      fn(
         lastResponse.tool_output.result,
         next.context.projectNameCurrentlyOpened,
         next.context.fileFocusedOnInEditor
       )
+
+      // TODO: Move elsewhere eventually, decouple from SystemIOActor
+      billingActor.send({
+        type: BillingTransition.Update,
+        apiToken: token,
+      })
     })
 
     return () => {
-      subscription2.unsubscribe()
+      subscription.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
