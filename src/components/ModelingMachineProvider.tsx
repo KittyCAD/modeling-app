@@ -163,7 +163,7 @@ export const ModelingMachineProvider = ({
     },
   } = useSettings()
   const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
-  const loaderData = useLoaderData() as IndexLoaderData
+  const loaderData = useLoaderData<IndexLoaderData>()
   const projects = useFolders()
   const { project, file } = loaderData
   const theProject = useRef<Project | undefined>(project)

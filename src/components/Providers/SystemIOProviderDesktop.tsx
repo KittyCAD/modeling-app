@@ -103,7 +103,7 @@ export function SystemIOMachineLogicListenerDesktop() {
     }
 
     kclManager.isExecuting = false
-    navigate(requestedPath)
+    void navigate(requestedPath)
   }
 
   /**
