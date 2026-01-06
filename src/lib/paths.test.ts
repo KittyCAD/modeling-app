@@ -13,7 +13,7 @@ describe('testing parseProjectRoute', () => {
       },
     }
     const route = '/home/somebody/projects/project'
-    expect(parseProjectRoute(config, route, path)).toEqual({
+    expect(parseProjectRoute(config, route)).toEqual({
       projectName: 'project',
       projectPath: route,
       currentFileName: null,
@@ -29,7 +29,7 @@ describe('testing parseProjectRoute', () => {
       },
     }
     const route = '/home/somebody/projects'
-    expect(parseProjectRoute(config, route, path)).toEqual({
+    expect(parseProjectRoute(config, route)).toEqual({
       projectName: null,
       projectPath: route,
       currentFileName: null,
@@ -45,7 +45,7 @@ describe('testing parseProjectRoute', () => {
       },
     }
     const route = '/home/somebody/projects/assembly/main.kcl'
-    expect(parseProjectRoute(config, route, path)).toEqual({
+    expect(parseProjectRoute(config, route)).toEqual({
       projectName: 'assembly',
       projectPath: '/home/somebody/projects/assembly',
       currentFileName: 'main.kcl',
@@ -61,7 +61,7 @@ describe('testing parseProjectRoute', () => {
       },
     }
     const route = '/home/somebody/projects/assembly/subdir/main.kcl'
-    expect(parseProjectRoute(config, route, path)).toEqual({
+    expect(parseProjectRoute(config, route)).toEqual({
       projectName: 'assembly',
       projectPath: '/home/somebody/projects/assembly',
       currentFileName: 'main.kcl',
@@ -71,7 +71,7 @@ describe('testing parseProjectRoute', () => {
   it('should work in the browser context', async () => {
     let config = {}
     const route = '/browser/main.kcl'
-    expect(parseProjectRoute(config, route, undefined)).toEqual({
+    expect(parseProjectRoute(config, route)).toEqual({
       projectName: 'browser',
       projectPath: '/browser',
       currentFileName: 'main.kcl',

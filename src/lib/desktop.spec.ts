@@ -135,13 +135,12 @@ describe('desktop utilities', () => {
     it('does not list .git directories', async () => {
       const { instance } = await buildTheWorldNode()
       if (!window.electron) throw new Error('Electron not found')
-      const projects = await listProjects(window.electron, instance, mockConfig)
+      const projects = await listProjects(instance, mockConfig)
       expect(projects.map((p) => p.name)).not.toContain('.git')
     })
     it('lists projects excluding hidden and without .kcl files', async () => {
       const { instance } = await buildTheWorldNode()
-      if (!window.electron) throw new Error('Electron not found')
-      const projects = await listProjects(window.electron, instance, mockConfig)
+      const projects = await listProjects(instance, mockConfig)
 
       // Verify only non-dot projects with .kcl files were included
       expect(projects.map((p) => p.name)).toEqual([
@@ -165,8 +164,7 @@ describe('desktop utilities', () => {
 
     it('correctly counts directories and files', async () => {
       const { instance } = await buildTheWorldNode()
-      if (!window.electron) throw new Error('Electron not found')
-      const projects = await listProjects(window.electron, instance, mockConfig)
+      const projects = await listProjects(instance, mockConfig)
       // Verify that directories and files are counted correctly
       expect(projects[0].directory_count).toEqual(1)
       expect(projects[0].kcl_file_count).toEqual(2)
@@ -180,7 +178,7 @@ describe('desktop utilities', () => {
       // Adjust mockFileSystem to simulate empty directory
       mockFileSystem['/test/projects'] = TEST_PROJECTS_CLEARED
 
-      const projects = await listProjects(window.electron, instance, mockConfig)
+      const projects = await listProjects(instance, mockConfig)
 
       // Restore for future tests!
       mockFileSystem['/test/projects'] = TEST_PROJECTS_DEFAULT
@@ -193,7 +191,6 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       const expected = '/appData//envs/development.json'
       const actual = await getEnvironmentConfigurationPath(
-        window.electron,
         'development'
       )
       expect(actual).toBe(expected)
@@ -203,7 +200,6 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const actual = await getEnvironmentConfigurationPath(
-        window.electron,
         'development'
       )
       mockElectron.packageJson.name = ''
@@ -214,7 +210,6 @@ describe('desktop utilities', () => {
       const expected = '/appData/zoo-modeling-app/envs/production.json'
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const actual = await getEnvironmentConfigurationPath(
-        window.electron,
         'production'
       )
       mockElectron.packageJson.name = ''
@@ -226,14 +221,14 @@ describe('desktop utilities', () => {
     it('should return a wonky path because appConfig is not set by default', async () => {
       if (!window.electron) throw new Error('Electron not found')
       const expected = '/appData//environment.txt'
-      const actual = await getEnvironmentFilePath(window.electron)
+      const actual = await getEnvironmentFilePath()
       expect(actual).toBe(expected)
     })
     it('should return path to the environment.txt file', async () => {
       if (!window.electron) throw new Error('Electron not found')
       const expected = '/appData/zoo-modeling-app/environment.txt'
       mockElectron.packageJson.name = 'zoo-modeling-app'
-      const actual = await getEnvironmentFilePath(window.electron)
+      const actual = await getEnvironmentFilePath()
       mockElectron.packageJson.name = ''
       expect(actual).toBe(expected)
     })
@@ -244,7 +239,6 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       const expected = null
       const actual = await readEnvironmentConfigurationFile(
-        window.electron,
         'dev.zoo.dev'
       )
       expect(actual).toBe(expected)
@@ -261,7 +255,6 @@ describe('desktop utilities', () => {
         token: '',
       }
       const actual = await readEnvironmentConfigurationFile(
-        window.electron,
         'dev.zoo.dev'
       )
 
@@ -281,7 +274,6 @@ describe('desktop utilities', () => {
         token: '',
       }
       const actual = await readEnvironmentConfigurationFile(
-        window.electron,
         'zoo.dev'
       )
 
@@ -325,7 +317,6 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       const expected = ''
       const actual = await readEnvironmentConfigurationToken(
-        window.electron,
         'dev.zoo.dev'
       )
       expect(actual).toBe(expected)
@@ -334,7 +325,6 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       const expected = ''
       const actual = await readEnvironmentConfigurationToken(
-        window.electron,
         'zoo.dev'
       )
       expect(actual).toBe(expected)
@@ -348,7 +338,6 @@ describe('desktop utilities', () => {
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected = 'dog-dog-dog'
       const actual = await readEnvironmentConfigurationToken(
-        window.electron,
         'development'
       )
       // mock clean up
@@ -364,7 +353,6 @@ describe('desktop utilities', () => {
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected = 'cat-cat-cat'
       const actual = await readEnvironmentConfigurationToken(
-        window.electron,
         'production'
       )
       // mock clean up

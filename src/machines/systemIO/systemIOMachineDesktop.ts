@@ -54,7 +54,7 @@ const sharedBulkCreateWorkflow = async ({
     override?: boolean
   }
 }) => {
-  const configuration = await readAppSettingsFile(electron, input.wasmInstance)
+  const configuration = await readAppSettingsFile(input.wasmInstance)
   for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
     const file = input.files[fileIndex]
     const requestedProjectName = file.requestedProjectName
@@ -186,7 +186,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           if (!isDirectory) {
             continue
           }
-          const project: Project = await getProjectInfo(projectPath,
+          const project: Project = await getProjectInfo(
+            projectPath,
             await context.wasmInstancePromise
           )
           if (
@@ -211,7 +212,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         const requestedProjectName = input.requestedProjectName
         const uniqueName = getUniqueProjectName(requestedProjectName, folders)
         await createNewProjectDirectory(
-          window.electron,
           uniqueName,
           await input.context.wasmInstancePromise
         )
@@ -371,6 +371,9 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           return { value: true, error: undefined }
         }
         const result = await canReadWriteDirectory(requestProjectDirectoryPath)
+        if (result instanceof Error) {
+          return { value: false, error: result }
+        }
         return result
       }
     ),
@@ -384,12 +387,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedFileName: string
         }
       }) => {
-        const path = path.join(
+        const pathToRemove = path.join(
           input.context.projectDirectoryPath,
           input.requestedProjectName,
           input.requestedFileName
         )
-        await fsZds.rm(path)
+        await fsZds.rm(pathToRemove)
         return {
           message: 'File deleted successfully',
           projectName: input.requestedProjectName,
@@ -692,7 +695,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         } catch (e) {
           console.error(e)
         }
-        await fsZds.writeFile(input.requestedAbsolutePath, '')
+        await fsZds.writeFile(input.requestedAbsolutePath, new Uint8Array())
         return {
           message: `File ${fileNameWithExtension} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
@@ -815,7 +818,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
             path.dirname(await getAppSettingsFilePath()),
             ML_CONVERSATIONS_FILE_NAME
           ),
-          'utf-8'
+          { encoding: 'utf-8' },
         )
         return jsonToMlConversations(json ?? '')
       } catch (e) {
@@ -841,12 +844,13 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           args.input.event.data.conversationId
         )
         const json = mlConversationsToJson(next)
+        const te = new TextEncoder()
         await fsZds.writeFile(
           path.join(
             path.dirname(await getAppSettingsFilePath()),
             ML_CONVERSATIONS_FILE_NAME
           ),
-          json
+          te.encode(json)
         )
         return next
       }

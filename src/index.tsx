@@ -26,7 +26,6 @@ import {
   commandBarActor,
   kclManager,
   rustContext,
-  mlEphantManagerActor,
   systemIOActor,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -47,7 +46,10 @@ kclManager.wasmInstancePromise
       type: 'Add commands',
       data: {
         commands: [
-          ...createApplicationCommands({ systemIOActor, mlEphantManagerActor, wasmInstance }),
+          ...createApplicationCommands({
+            systemIOActor,
+            wasmInstance,
+          }),
         ],
       },
     })

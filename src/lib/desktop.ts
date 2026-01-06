@@ -1,5 +1,6 @@
 import type { User } from '@kittycad/lib'
 import fsZds, { fsZdsConstants } from '@src/lib/fs-zds'
+import { type IStat } from '@src/lib/fs-zds/interface'
 import { users } from '@kittycad/lib'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import path from 'path'
@@ -38,8 +39,8 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
 import type { Stats } from 'fs'
 
-const convertStatsToFileMetadata = (
-  stats: Stats | null
+const convertIStatToFileMetadata = (
+  stats: IStat | null
 ): FileMetadata | null => {
   if (!stats) {
     return null
@@ -142,7 +143,6 @@ export async function createNewProjectDirectory(
     (await ensureProjectDirectoryExists(configuration))
 
   if (!projectName) {
-    debugger
     return Promise.reject('Project name cannot be empty.')
   }
 
@@ -170,17 +170,17 @@ export async function createNewProjectDirectory(
     wasmInstance
   )
   if (err(codeToWrite)) return Promise.reject(codeToWrite)
-  await fsZds.writeFile(projectFile, codeToWrite)
+  await fsZds.writeFile(projectFile, new TextEncoder().encode(codeToWrite))
   let metadata: FileMetadata | null = null
   try {
-    metadata = convertStatsToFileMetadata(await fsZds.stat(projectFile))
+    metadata = convertIStatToFileMetadata(await fsZds.stat(projectFile))
   } catch (e) {
     if (e === 'ENOENT') {
       console.error('File does not exist')
       return Promise.reject(new Error(`File ${projectFile} does not exist`))
     }
   }
-  if (metadata === undefined) {
+  if (metadata === undefined || metadata === null) {
     console.error('File does not exist')
     return Promise.reject(new Error(`File ${projectFile} does not exist`))
   }
@@ -193,12 +193,9 @@ export async function createNewProjectDirectory(
     children: null,
     default_file: projectFile,
     metadata: {
-      modified: metadata.mtimeMs,
-      accessed: metadata.atimeMs,
-      created: metadata.ctimeMs,
+      ...metadata,
       type: 'directory',
       size: metadata.size,
-      permission: metadata.mode,
     },
     kcl_file_count: 1,
     directory_count: 0,
@@ -215,12 +212,10 @@ export async function listProjects(
   const wasmInstance = await initPromise
 
   if (configuration === undefined) {
-    configuration = await readAppSettingsFile(wasmInstance).catch(
-      (e) => {
-        console.error(e)
-        return e
-      }
-    )
+    configuration = await readAppSettingsFile(wasmInstance).catch((e) => {
+      console.error(e)
+      return e
+    })
   }
 
   if (err(configuration) || !configuration) return Promise.reject(configuration)
@@ -388,7 +383,7 @@ export async function getDefaultKclFileForDir(
           }
         }
         // If we didn't find a kcl file, create one.
-        await fsZds.writeFile(defaultFilePath, '')
+        await fsZds.writeFile(defaultFilePath, new Uint8Array())
         return defaultFilePath
       }
     }
@@ -437,7 +432,7 @@ export async function getProjectInfo(
   wasmInstance: ModuleType
 ): Promise<Project> {
   // Check the directory.
-  let stats: Stats | undefined
+  let stats: IStat | undefined
   try {
     stats = await fsZds.stat(projectPath)
   } catch (e) {
@@ -478,7 +473,7 @@ export async function getProjectInfo(
 
   let project = {
     ...walked,
-    metadata: convertStatsToFileMetadata(stats ?? null),
+    metadata: convertIStatToFileMetadata(stats ?? null),
     kcl_file_count: 0,
     directory_count: 0,
     default_file,
@@ -501,7 +496,7 @@ export async function writeProjectSettingsFile(
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
   if (err(tomlStr)) return Promise.reject(tomlStr)
-  return fsZds.writeFile(projectSettingsFilePath, tomlStr)
+  return fsZds.writeFile(projectSettingsFilePath, new TextEncoder().encode(tomlStr))
 }
 
 // Important for saving settings.
@@ -616,7 +611,7 @@ const getTelemetryFilePath = async () => {
   let fullPath = path.join(appConfig, getAppFolderName())
 
   if (isTestEnv && window.electron) {
-    const testSettingsPath = await electron.getAppTestProperty(
+    const testSettingsPath = await window.electron.getAppTestProperty(
       'TEST_SETTINGS_FILE_KEY'
     )
     fullPath = path.resolve(testSettingsPath, '..')
@@ -640,7 +635,7 @@ const getRawTelemetryFilePath = async () => {
   let fullPath = path.join(appConfig, getAppFolderName())
 
   if (isTestEnv && window.electron) {
-    const testSettingsPath = await electron.getAppTestProperty(
+    const testSettingsPath = await window.electron.getAppTestProperty(
       'TEST_SETTINGS_FILE_KEY'
     )
     fullPath = path.resolve(testSettingsPath, '..')
@@ -710,9 +705,7 @@ export const readProjectSettingsFile = async (
 /**
  * Read the app settings file, or creates an initial one if it doesn't exist.
  */
-export const readAppSettingsFile = async (
-  wasmInstance: ModuleType
-) => {
+export const readAppSettingsFile = async (wasmInstance: ModuleType): Promise<DeepPartial<Configuration>> => {
   let settingsPath = await getAppSettingsFilePath()
   const initialProjectDirConfig: DeepPartial<
     NonNullable<Required<Configuration>['settings']['project']>
@@ -731,6 +724,10 @@ export const readAppSettingsFile = async (
 
     const hasProjectDirectorySetting =
       parsedAppConfig.settings?.project?.directory
+
+    if (hasProjectDirectorySetting === undefined) {
+      return Promise.reject(new Error('project directory setting is undefined'))
+    }
 
     if (hasProjectDirectorySetting) {
       return parsedAppConfig
@@ -751,15 +748,10 @@ export const readAppSettingsFile = async (
     }
   } catch (_e) {
     // The file doesn't exist, create a new one.
-    const defaultAppConfig = defaultAppSettings()
+    const defaultAppConfig = defaultAppSettings(wasmInstance)
     if (err(defaultAppConfig)) {
       return Promise.reject(defaultAppConfig)
     }
-
-  // The file doesn't exist, create a new one.
-  const defaultAppConfig = defaultAppSettings(wasmInstance)
-  if (err(defaultAppConfig)) {
-    return Promise.reject(defaultAppConfig)
 
     // inject the default project directory setting
     const mergedDefaultConfig: DeepPartial<Configuration> = {
@@ -780,7 +772,7 @@ export const readAppSettingsFile = async (
 export const writeAppSettingsFile = async (tomlStr: string) => {
   const appSettingsFilePath = await getAppSettingsFilePath()
   if (err(tomlStr)) return Promise.reject(tomlStr)
-  return fsZds.writeFile(appSettingsFilePath, tomlStr)
+  return fsZds.writeFile(appSettingsFilePath, new TextEncoder().encode(tomlStr))
 }
 
 export const readEnvironmentConfigurationFile = async (
@@ -809,7 +801,7 @@ export const writeEnvironmentConfigurationToken = async (
     await getEnvironmentConfigurationObject(environmentName)
   environmentConfiguration.token = token
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await fsZds.writeFile(path, requestedConfiguration)
+  const result = await fsZds.writeFile(path, new TextEncoder().encode(requestedConfiguration))
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
@@ -822,12 +814,11 @@ export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
   kittycadWebSocketUrl = kittycadWebSocketUrl.trim()
   const path = await getEnvironmentConfigurationPath(environmentName)
   const environmentConfiguration = await getEnvironmentConfigurationObject(
-    electron,
     environmentName
   )
   environmentConfiguration.kittycadWebSocketUrl = kittycadWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await fsZds.writeFile(path, requestedConfiguration)
+  const result = await fsZds.writeFile(path, new TextEncoder().encode(requestedConfiguration))
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
@@ -861,7 +852,6 @@ export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
   environmentName: string
 ) => {
   const environmentConfiguration = await readEnvironmentConfigurationFile(
-    electron,
     environmentName
   )
   if (!environmentConfiguration?.kittycadWebSocketUrl) return ''
@@ -874,9 +864,8 @@ export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (
   mlephantWebSocketUrl: string
 ) => {
   mlephantWebSocketUrl = mlephantWebSocketUrl.trim()
-  const path = await getEnvironmentConfigurationPath(electron, environmentName)
+  const path = await getEnvironmentConfigurationPath(environmentName)
   const environmentConfiguration = await getEnvironmentConfigurationObject(
-    electron,
     environmentName
   )
   environmentConfiguration.mlephantWebSocketUrl = mlephantWebSocketUrl
@@ -891,7 +880,6 @@ export const readEnvironmentConfigurationMlephantWebSocketUrl = async (
   environmentName: string
 ) => {
   const environmentConfiguration = await readEnvironmentConfigurationFile(
-    electron,
     environmentName
   )
   if (!environmentConfiguration?.mlephantWebSocketUrl) return ''
@@ -921,7 +909,7 @@ export const writeEnvironmentFile = async (environment: string) => {
   environment = environment.trim()
   const environmentFilePath = await getEnvironmentFilePath()
   if (err(environment)) return Promise.reject(environment)
-  const result = fsZds.writeFile(environmentFilePath, environment)
+  const result = fsZds.writeFile(environmentFilePath, new TextEncoder().encode(environment))
   console.log('environment written to disk')
   return result
 }
@@ -955,13 +943,13 @@ export const listAllEnvironmentsWithTokens = async () => {
 export const writeTelemetryFile = async (content: string) => {
   const telemetryFilePath = await getTelemetryFilePath()
   if (err(content)) return Promise.reject(content)
-  return fsZds.writeFile(telemetryFilePath, content)
+  return fsZds.writeFile(telemetryFilePath, new TextEncoder().encode(content))
 }
 
 export const writeRawTelemetryFile = async (content: string) => {
   const rawTelemetryFilePath = await getRawTelemetryFilePath()
   if (err(content)) return Promise.reject(content)
-  return fsZds.writeFile(rawTelemetryFilePath, content)
+  return fsZds.writeFile(rawTelemetryFilePath, new TextEncoder().encode(content))
 }
 
 let appStateStore: Project | undefined = undefined
@@ -1005,16 +993,16 @@ export const writeProjectThumbnailFile = async (
 
 export function getPathFilenameInVariableCase(targetPath: string) {
   // from https://nodejs.org/en/learn/manipulating-files/nodejs-file-paths#example
-  const basenameNoExt = targetPath.basename(targetPath, path.extname(path))
+  const basenameNoExt = path.basename(targetPath, path.extname(targetPath))
   return getInVariableCase(basenameNoExt)
 }
 
 export const canReadWriteDirectory = async (
   targetPath: string
-): Promise<{ value: boolean; error: unknown } | Error> => {
+): Promise<{ value: boolean; error: unknown }> => {
   const isDirectory = await statIsDirectory(targetPath)
   if (!isDirectory) {
-    return new Error('path is not a directory. Do not send a file path.')
+    return { value: false, error: new Error('path is not a directory. Do not send a file path.') }
   }
 
   // bitwise OR to check read and write permissions

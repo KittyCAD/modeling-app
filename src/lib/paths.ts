@@ -62,7 +62,7 @@ export async function getProjectMetaByRouteId(
     return Promise.reject(new Error('No configuration found'))
   }
 
-  const route = parseProjectRoute(configuration, id, path)
+  const route = parseProjectRoute(configuration, id)
 
   if (err(route)) return Promise.reject(route)
 

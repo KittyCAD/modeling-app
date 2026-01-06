@@ -313,7 +313,6 @@ contextBridge.exposeInMainWorld('electron', {
   rename,
   rm: fs.rm,
   stat,
-  statIsDirectory,
   mkdir: fs.mkdir,
   // opens a dialog
   open,

@@ -366,7 +366,10 @@ export async function loadAndValidateSettings(
 
   // Load the project settings if they exist
   if (projectPath) {
-    let projectSettings = await readProjectSettingsFile(projectPath, wasmInstance)
+    let projectSettings = await readProjectSettingsFile(
+      projectPath,
+      wasmInstance
+    )
 
     // An id was missing. Create one and write it to disk immediately.
     if (!err(projectSettings) && !projectSettings.settings?.meta?.id) {

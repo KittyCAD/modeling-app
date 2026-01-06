@@ -1,7 +1,7 @@
 export interface IStat {
   dev: number
   ino: number
-  mode: 'read' | 'write' | 'execute' | null
+  mode: number // 'read' | 'write' | 'execute' | null
   nlink: number
   uid: number
   gid: number
@@ -9,10 +9,10 @@ export interface IStat {
   size: number
   blksize: number
   blocks: number
-  atimeMs: string
-  mtimeMs: string
-  ctimeMs: string
-  birthtimeMs: string
+  atimeMs: number
+  mtimeMs: number
+  ctimeMs: number
+  birthtimeMs: number
   atime: Date
   mtime: Date
   ctime: Date
@@ -22,7 +22,7 @@ export interface IStat {
 
 export interface IZooDesignStudioFS {
   getPath: (type: 'appData' | 'documents' | 'userData') => Promise<string>
-  access: (path: string, bitflags: number) => Promise<undefined>
+  access: (path: string, bitflags: number) => Promise<void>
   cp: (
     src: string,
     dest: string,
@@ -32,7 +32,7 @@ export interface IZooDesignStudioFS {
     // I (lee) made this definition to satisfy other calls, but I'm pretty
     // sure 'utf8' is not a valid identifier...
     ((src: string, options: 'utf8') => Promise<string>) &
-    ((src: string, options: {} | undefined) => Promise<Uint8Array>)
+    ((src: string, options?: {} | undefined) => Promise<Uint8Array>)
   rename: (src: string, dest: string, options?: any) => Promise<undefined>
   writeFile: (
     src: string,

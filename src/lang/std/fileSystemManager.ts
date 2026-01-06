@@ -64,9 +64,9 @@ export class FileSystemManager {
           })
       | BufferEncoding
       | null
-  ): Promise<string | Buffer> {
+  ): Promise<string | Uint8Array<ArrayBufferLike>> {
     const filePath = this.join(this.dir, targetPath)
-    const data = await this._fs.readFile(filePath, options)
+    const data = await this._fs.readFile(filePath, options || undefined)
     return data
   }
 

@@ -405,7 +405,7 @@ export function createApplicationCommands({
         const requestedEnvironmentFormatted = returnSelfOrGetHostNameFromURL(
           data.environment
         )
-        writeEnvironmentFile(window.electron, requestedEnvironmentFormatted)
+        writeEnvironmentFile(requestedEnvironmentFormatted)
           .then(() => {
             // Reload the application and it will trigger the correct sign in workflow for the new environment
             window.location.reload()
@@ -580,12 +580,11 @@ export function createApplicationCommands({
         switchEnvironmentsCommand,
         overrideEngineCommand,
         overrideZookeeperCommand,
+      ]
     : [
-        textToCADCommand,
         addKCLFileToProject,
         resetLayoutCommand,
         setLayoutCommand,
         createASampleDesktopOnly,
       ]
-    : [addKCLFileToProject, resetLayoutCommand, setLayoutCommand]
 }

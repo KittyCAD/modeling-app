@@ -46,8 +46,9 @@ export interface IElectronAPI {
   watchFileOff: (path: string, key: string) => void
   writeFile: (path: string, data: string | Uint8Array) => Promise<undefined>
   readdir: (path: string) => Promise<string[]>
-  getPath: (name: string) => Promise<string>
+  getPath: (name: 'appData' | 'documents' | 'userData') => Promise<string>
   rm: typeof fs.rm
+  access: typeof fs.access
   stat: (path: string) => Promise<Stats>
   statIsDirectory: (path: string) => Promise<boolean>
   canReadWriteDirectory: (

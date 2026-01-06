@@ -111,11 +111,11 @@ const SignIn = () => {
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in')
-      await writeEnvironmentFile(electron, '')
+      await writeEnvironmentFile('')
       return
     }
 
-    writeEnvironmentFile(electron, selectedEnvironment).catch(reportRejection)
+    writeEnvironmentFile(selectedEnvironment).catch(reportRejection)
     authActor.send({ type: 'Log in', token })
   }
 

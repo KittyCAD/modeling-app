@@ -62,7 +62,7 @@ const stat = async (path: string): Promise<IStat> => {
     return {
       dev: 0,
       ino: 0,
-      mode: null,
+      mode: 0,
       nlink: 0,
       uid: 0,
       gid: 0,
@@ -70,10 +70,10 @@ const stat = async (path: string): Promise<IStat> => {
       size: file.size,
       blksize: 0,
       blocks: 0,
-      atimeMs: file.lastModified.toString(),
-      mtimeMs: file.lastModified.toString(),
-      ctimeMs: file.lastModified.toString(),
-      birthtimeMs: file.lastModified.toString(),
+      atimeMs: file.lastModified,
+      mtimeMs: file.lastModified,
+      ctimeMs: file.lastModified,
+      birthtimeMs: file.lastModified,
       atime: new Date(file.lastModified),
       mtime: new Date(file.lastModified),
       ctime: new Date(file.lastModified),
@@ -86,7 +86,7 @@ const stat = async (path: string): Promise<IStat> => {
   return {
     dev: 0,
     ino: 0,
-    mode: null,
+    mode: 0,
     nlink: 0,
     uid: 0,
     gid: 0,
@@ -94,10 +94,10 @@ const stat = async (path: string): Promise<IStat> => {
     size: 0,
     blksize: 0,
     blocks: 0,
-    atimeMs: '0',
-    mtimeMs: '0',
-    ctimeMs: '0',
-    birthtimeMs: '0',
+    atimeMs: 0,
+    mtimeMs: 0,
+    ctimeMs: 0,
+    birthtimeMs: 0,
     atime: new Date(),
     mtime: new Date(),
     ctime: new Date(),
@@ -133,7 +133,6 @@ const readFile = async <T extends ReadFileOptions>(
     const file = await handle.getFile()
     if (
       options === 'utf8' ||
-      options === 'utf-8' ||
       options?.encoding === 'utf-8'
     ) {
       return (await file.text()) as ReadFileReturn<T>
@@ -153,7 +152,8 @@ const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
     for (const part of parts) {
       // Indicative we're at /
       if (part === '') continue
-      current = await (await current).getDirectoryHandle(part, { create: true })
+      // await
+      current = (await current).getDirectoryHandle(part, { create: true })
     }
     return undefined
   }
@@ -198,12 +198,12 @@ const writeFile = async (
   return undefined
 }
 
-const getPath: IZooDesignStudioFS['getPath'] = (type) => {
+const getPath: IZooDesignStudioFS['getPath'] = async (type) => {
   return path.sep + type
 }
 
 // In OPFS the system always has read-write permissions.
-const access = async (_path: src, _bitflags: number): Promise<undefined> => {
+const access = async (_path: string, _bitflags: number): Promise<undefined> => {
   return undefined
 }
 

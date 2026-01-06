@@ -81,7 +81,8 @@ export const fileLoader =
       const urlObj = new URL(routerData.request.url)
 
       if (!urlObj.pathname.endsWith('/settings')) {
-        const fallbackFile = (await getProjectInfo(projectPath, wasmInstance)).default_file
+        const fallbackFile = (await getProjectInfo(projectPath, wasmInstance))
+          .default_file
         let fileExists = true
         if (currentFilePath && fileExists) {
           try {
@@ -104,7 +105,12 @@ export const fileLoader =
           return redirect(requestUrlWithDefaultFile)
         }
 
-        if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
+        if (
+          !fileExists ||
+          !currentFileName ||
+          !currentFilePath ||
+          !projectName
+        ) {
           return redirect(
             `${PATHS.FILE}/${encodeURIComponent(fallbackFile)}${new URL(routerData.request.url).search || ''}`
           )

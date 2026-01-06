@@ -303,7 +303,6 @@ async function getAndSyncStoredToken(input: {
   const fileToken =
     window.electron && environmentName
       ? await readEnvironmentConfigurationToken(
-          window.electron,
           environmentName
         )
       : ''
@@ -355,7 +354,7 @@ async function logoutEnvironment(requestedDomain?: string) {
       const domain = requestedDomain || env().VITE_ZOO_BASE_DOMAIN
       let token = ''
       if (domain) {
-        token = await readEnvironmentConfigurationToken(window.electron, domain)
+        token = await readEnvironmentConfigurationToken(domain)
       } else {
         return new Error('Unable to logout, cannot find domain')
       }
@@ -411,7 +410,7 @@ async function logoutAllEnvironments() {
   if (!window.electron) {
     return new Error('unimplemented for web')
   }
-  const environments = await listAllEnvironments(window.electron)
+  const environments = await listAllEnvironments()
   for (let i = 0; i < environments.length; i++) {
     const environmentName = environments[i]
     // Make the oauth2/token/revoke request per environment

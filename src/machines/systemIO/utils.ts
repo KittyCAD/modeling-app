@@ -302,7 +302,7 @@ export const collectProjectFiles = async (args: {
                   execStateNameToIndexMap[absolutePathToFileNameWithExtension],
               }
             }
-            const blob = new Blob([file], {
+            const blob = new Blob([new Uint8Array(file)], {
               type: 'application/octet-stream',
             })
             return {

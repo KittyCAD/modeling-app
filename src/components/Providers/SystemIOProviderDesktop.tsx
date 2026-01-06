@@ -201,7 +201,7 @@ export function SystemIOMachineLogicListenerDesktop() {
 
   const useWatchingApplicationProjectDirectory = () => {
     useFileSystemWatcher(
-      async (eventType, path) => {
+      async (eventType, targetPath) => {
         // Gotcha: Chokidar is buggy. It will emit addDir or add on files that did not get created.
         // This means while the application initialize and Chokidar initializes you cannot tell if
         // a directory or file is actually created or they are buggy signals. This means you must
@@ -218,7 +218,7 @@ export function SystemIOMachineLogicListenerDesktop() {
         if (
           folderName !== NO_PROJECT_DIRECTORY &&
           (eventType === 'unlinkDir' || eventType === 'unlink') &&
-          path.includes(folderPath)
+          targetPath.includes(folderPath)
         ) {
           // NO OP: The systemIOMachine will be triggering the read in the state transition, don't spam it again
           // once this event is processed after the deletion.

@@ -79,6 +79,8 @@ export const ModelingPageProvider = ({
   // Due to the route provider, i've moved this to the ModelingPageProvider instead of CommandBarProvider
   // This will register the commands to route to Telemetry, Home, and Settings.
   useEffect(() => {
+    if (file?.path === undefined) return
+
     const filePath = PATHS.FILE + '/' + encodeURIComponent(file?.path)
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)

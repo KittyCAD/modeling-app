@@ -84,40 +84,43 @@ export function EnvironmentDescription() {
                     argDefaultValues: {
                       url: env().VITE_KITTYCAD_WEBSOCKET_URL,
                     },
-                  })
-                }}
-              >
-                <span className="py-2 lg:py-0">Edit</span>
-              </ActionButton>
-              {env().POOL !== '' && (
-                <ActionButton
-                  onClick={() => {
-                    const environment = env().VITE_ZOO_BASE_DOMAIN
-                    if (environment) {
-                      if (!window.electron) {
-                        console.error("Can't access electron")
-                        return
-                      }
-                      writeEnvironmentConfigurationPool(
-                        window.electron,
-                        environment,
-                        ''
-                      )
-                        .then(() => {
-                          window.location.reload()
-                        })
-                        .catch(reportRejection)
-                    }
-                  }}
-                  Element="button"
-                >
-                  <span className="py-2 lg:py-0">Clear</span>
-                </ActionButton>
-              )}
-            </div>
+                  },
+                })
+              }}
+              iconEnd={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
+              className="ml-3 p-0.5 pr-2 flex-shrink-0"
+            />
+          </p>
+        </li>
+        <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
+          <p className="text-chalkboard-100 dark:text-chalkboard-10">
+            Zookeeper
+          </p>{' '}
+          <p className="text-chalkboard-60 dark:text-chalkboard-40 flex flex-row justify-between items-center">
+            <span className="flex-1 min-w-0 truncate">
+              {env().VITE_MLEPHANT_WEBSOCKET_URL}
+            </span>
+            <ActionButton
+              Element="button"
+              onClick={() => {
+                commandBarActor.send({
+                  type: 'Find and select command',
+                  data: {
+                    groupId: 'application',
+                    name: 'override-zookeeper',
+                    argDefaultValues: {
+                      url: env().VITE_MLEPHANT_WEBSOCKET_URL,
+                    },
+                  },
+                })
+              }}
+              iconEnd={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
+              className="ml-3 p-0.5 pr-2 flex-shrink-0"
+            />
           </p>
         </li>
       </ul>
     </div>
   )
 }
+
