@@ -6,6 +6,12 @@ import {
   arcArcIntersection,
   getPositionCoordsForLine,
   getPositionCoordsFromArc,
+  isPointOnLineSegment,
+  lineSegmentIntersection,
+  isPointOnArc,
+  lineArcIntersection,
+  projectPointOntoSegment,
+  perpendicularDistanceToSegment,
 } from '@src/machines/sketchSolve/tools/trimToolImpl'
 import { isArray } from '@src/lib/utils'
 
@@ -288,6 +294,279 @@ describe('trimUtils', () => {
       const point = createApiObjectPoint([0, 0], 0, 0)
       const result = getPositionCoordsFromArc(point, 'start', [point])
       expect(result).toBeNull()
+    })
+  })
+
+  describe('isPointOnLineSegment', () => {
+    it('should return point when point is exactly on segment', () => {
+      const result = isPointOnLineSegment([5, 5], [0, 0], [10, 10])
+      expect(result).not.toBeNull()
+      if (result) {
+        expect(result[0]).toBeCloseTo(5, 5)
+        expect(result[1]).toBeCloseTo(5, 5)
+      }
+    })
+
+    it('should return point when point is at segment start', () => {
+      const result = isPointOnLineSegment([0, 0], [0, 0], [10, 10])
+      expect(result).not.toBeNull()
+      if (result) {
+        expect(result[0]).toBe(0)
+        expect(result[1]).toBe(0)
+      }
+    })
+
+    it('should return point when point is at segment end', () => {
+      const result = isPointOnLineSegment([10, 10], [0, 0], [10, 10])
+      expect(result).not.toBeNull()
+      if (result) {
+        expect(result[0]).toBe(10)
+        expect(result[1]).toBe(10)
+      }
+    })
+
+    it('should return null when point is before segment start', () => {
+      const result = isPointOnLineSegment([-1, -1], [0, 0], [10, 10])
+      expect(result).toBeNull()
+    })
+
+    it('should return null when point is after segment end', () => {
+      const result = isPointOnLineSegment([11, 11], [0, 0], [10, 10])
+      expect(result).toBeNull()
+    })
+
+    it('should return null when point is off to the side', () => {
+      const result = isPointOnLineSegment([5, 6], [0, 0], [10, 10])
+      expect(result).toBeNull()
+    })
+
+    it('should handle horizontal segment', () => {
+      const result = isPointOnLineSegment([5, 0], [0, 0], [10, 0])
+      expect(result).not.toBeNull()
+      if (result) {
+        expect(result[0]).toBe(5)
+        expect(result[1]).toBe(0)
+      }
+    })
+
+    it('should handle vertical segment', () => {
+      const result = isPointOnLineSegment([0, 5], [0, 0], [0, 10])
+      expect(result).not.toBeNull()
+      if (result) {
+        expect(result[0]).toBe(0)
+        expect(result[1]).toBe(5)
+      }
+    })
+
+    it('should handle degenerate segment (point)', () => {
+      const result = isPointOnLineSegment([0, 0], [0, 0], [0, 0])
+      expect(result).not.toBeNull()
+      if (result) {
+        expect(result[0]).toBe(0)
+        expect(result[1]).toBe(0)
+      }
+    })
+
+    it('should return null for point far from degenerate segment', () => {
+      const result = isPointOnLineSegment([1, 1], [0, 0], [0, 0])
+      expect(result).toBeNull()
+    })
+  })
+
+  describe('lineSegmentIntersection', () => {
+    it('should find intersection of two crossing segments', () => {
+      const result = lineSegmentIntersection([0, 0], [10, 10], [0, 10], [10, 0])
+      expect(result).not.toBeNull()
+      if (result) {
+        expect(result[0]).toBeCloseTo(5, 5)
+        expect(result[1]).toBeCloseTo(5, 5)
+      }
+    })
+
+    it('should return endpoint when segments share an endpoint', () => {
+      const result = lineSegmentIntersection([0, 0], [5, 5], [5, 5], [10, 10])
+      expect(result).not.toBeNull()
+      if (result) {
+        expect(result[0]).toBeCloseTo(5, 5)
+        expect(result[1]).toBeCloseTo(5, 5)
+      }
+    })
+
+    it('should return null for parallel segments', () => {
+      const result = lineSegmentIntersection([0, 0], [10, 0], [0, 5], [10, 5])
+      expect(result).toBeNull()
+    })
+
+    it('should return null for non-intersecting segments', () => {
+      const result = lineSegmentIntersection([0, 0], [5, 5], [10, 10], [15, 15])
+      expect(result).toBeNull()
+    })
+
+    it('should return null when intersection is outside both segments', () => {
+      const result = lineSegmentIntersection([0, 0], [5, 5], [10, 10], [20, 20])
+      expect(result).toBeNull()
+    })
+
+    it('should handle T-intersection (endpoint on segment)', () => {
+      const result = lineSegmentIntersection([0, 0], [10, 0], [5, -5], [5, 5])
+      expect(result).not.toBeNull()
+      if (result) {
+        expect(result[0]).toBeCloseTo(5, 5)
+        expect(result[1]).toBeCloseTo(0, 5)
+      }
+    })
+  })
+
+  describe('isPointOnArc', () => {
+    it('should return true for point on arc', () => {
+      // Arc from [1, 0] to [0, 1] with center at [0, 0] (quarter circle)
+      // Use a point that's exactly on the unit circle
+      const angle = Math.PI / 4 // 45 degrees
+      const point: Coords2d = [Math.cos(angle), Math.sin(angle)]
+      const result = isPointOnArc(point, [0, 0], [1, 0], [0, 1])
+      expect(result).toBe(true)
+    })
+
+    it('should return true for point at arc start', () => {
+      const result = isPointOnArc([1, 0], [0, 0], [1, 0], [0, 1])
+      expect(result).toBe(true)
+    })
+
+    it('should return true for point at arc end', () => {
+      const result = isPointOnArc([0, 1], [0, 0], [1, 0], [0, 1])
+      expect(result).toBe(true)
+    })
+
+    it('should return false for point off the arc', () => {
+      // Point on circle but not on the arc (opposite side)
+      const result = isPointOnArc([-1, 0], [0, 0], [1, 0], [0, 1])
+      expect(result).toBe(false)
+    })
+
+    it('should return false for point not on circle', () => {
+      const result = isPointOnArc([2, 0], [0, 0], [1, 0], [0, 1])
+      expect(result).toBe(false)
+    })
+
+    it('should handle arc that wraps around', () => {
+      // Arc from 350° to 10° (wraps around)
+      const center: Coords2d = [0, 0]
+      const start: Coords2d = [
+        Math.cos((350 * Math.PI) / 180),
+        Math.sin((350 * Math.PI) / 180),
+      ]
+      const end: Coords2d = [
+        Math.cos((10 * Math.PI) / 180),
+        Math.sin((10 * Math.PI) / 180),
+      ]
+      const point: Coords2d = [
+        Math.cos((5 * Math.PI) / 180),
+        Math.sin((5 * Math.PI) / 180),
+      ]
+      const result = isPointOnArc(point, center, start, end)
+      expect(result).toBe(true)
+    })
+  })
+
+  describe('lineArcIntersection', () => {
+    it('should find intersection of line and arc', () => {
+      // Horizontal line at y=0.5 intersecting arc from [1,0] to [0,1] centered at [0,0]
+      const result = lineArcIntersection(
+        [-1, 0.5],
+        [1, 0.5],
+        [0, 0],
+        [1, 0],
+        [0, 1]
+      )
+      expect(result).not.toBeNull()
+      if (result) {
+        // Should intersect at approximately [0.866, 0.5] or [-0.866, 0.5]
+        expect(Math.abs(result[0])).toBeCloseTo(0.866, 2)
+        expect(result[1]).toBeCloseTo(0.5, 2)
+      }
+    })
+
+    it('should return null when line does not intersect arc', () => {
+      const result = lineArcIntersection(
+        [10, 10],
+        [20, 20],
+        [0, 0],
+        [1, 0],
+        [0, 1]
+      )
+      expect(result).toBeNull()
+    })
+
+    it('should return endpoint when line starts at arc endpoint', () => {
+      const result = lineArcIntersection([1, 0], [2, 0], [0, 0], [1, 0], [0, 1])
+      expect(result).not.toBeNull()
+      if (result) {
+        expect(result[0]).toBeCloseTo(1, 5)
+        expect(result[1]).toBeCloseTo(0, 5)
+      }
+    })
+  })
+
+  describe('projectPointOntoSegment', () => {
+    it('should return 0 for point at segment start', () => {
+      const result = projectPointOntoSegment([0, 0], [0, 0], [10, 10])
+      expect(result).toBeCloseTo(0, 5)
+    })
+
+    it('should return 1 for point at segment end', () => {
+      const result = projectPointOntoSegment([10, 10], [0, 0], [10, 10])
+      expect(result).toBeCloseTo(1, 5)
+    })
+
+    it('should return 0.5 for point at segment midpoint', () => {
+      const result = projectPointOntoSegment([5, 5], [0, 0], [10, 10])
+      expect(result).toBeCloseTo(0.5, 5)
+    })
+
+    it('should return negative value for point before segment start', () => {
+      const result = projectPointOntoSegment([-1, -1], [0, 0], [10, 10])
+      expect(result).toBeLessThan(0)
+    })
+
+    it('should return value > 1 for point after segment end', () => {
+      const result = projectPointOntoSegment([11, 11], [0, 0], [10, 10])
+      expect(result).toBeGreaterThan(1)
+    })
+
+    it('should handle horizontal segment', () => {
+      const result = projectPointOntoSegment([5, 0], [0, 0], [10, 0])
+      expect(result).toBeCloseTo(0.5, 5)
+    })
+
+    it('should handle vertical segment', () => {
+      const result = projectPointOntoSegment([0, 5], [0, 0], [0, 10])
+      expect(result).toBeCloseTo(0.5, 5)
+    })
+  })
+
+  describe('perpendicularDistanceToSegment', () => {
+    it('should return 0 for point on segment', () => {
+      const result = perpendicularDistanceToSegment([5, 5], [0, 0], [10, 10])
+      expect(result).toBeCloseTo(0, 5)
+    })
+
+    it('should return correct distance for point perpendicular to segment', () => {
+      // Point at [5, 5] with segment from [0, 0] to [10, 0]
+      // Perpendicular distance should be 5
+      const result = perpendicularDistanceToSegment([5, 5], [0, 0], [10, 0])
+      expect(result).toBeCloseTo(5, 5)
+    })
+
+    it('should return distance to endpoint when point projects outside segment', () => {
+      // Point at [-1, 0] with segment from [0, 0] to [10, 0]
+      // Should return distance to start point (1)
+      const result = perpendicularDistanceToSegment([-1, 0], [0, 0], [10, 0])
+      expect(result).toBeCloseTo(1, 5)
+    })
+
+    it('should handle degenerate segment', () => {
+      const result = perpendicularDistanceToSegment([1, 1], [0, 0], [0, 0])
+      expect(result).toBeCloseTo(Math.sqrt(2), 5)
     })
   })
 })

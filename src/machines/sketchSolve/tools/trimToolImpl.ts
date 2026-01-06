@@ -99,8 +99,9 @@ export function getPositionCoordsFromArc(
 
 /**
  * Helper to check if a point is on a line segment (within epsilon distance)
+ * @internal - exported for testing
  */
-function isPointOnLineSegment(
+export function isPointOnLineSegment(
   point: Coords2d,
   segmentStart: Coords2d,
   segmentEnd: Coords2d,
@@ -149,8 +150,9 @@ function isPointOnLineSegment(
 
 /**
  * Helper to calculate intersection point of two line segments
+ * @internal - exported for testing
  */
-function lineSegmentIntersection(
+export function lineSegmentIntersection(
   line1Start: Coords2d,
   line1End: Coords2d,
   line2Start: Coords2d,
@@ -217,8 +219,9 @@ function lineSegmentIntersection(
 
 /**
  * Helper to check if a point is on an arc segment (CCW from start to end)
+ * @internal - exported for testing
  */
-function isPointOnArc(
+export function isPointOnArc(
   point: Coords2d,
   center: Coords2d,
   start: Coords2d,
@@ -273,8 +276,9 @@ function isPointOnArc(
 
 /**
  * Helper to calculate intersection between a line segment and an arc
+ * @internal - exported for testing
  */
-function lineArcIntersection(
+export function lineArcIntersection(
   lineStart: Coords2d,
   lineEnd: Coords2d,
   arcCenter: Coords2d,
@@ -654,8 +658,9 @@ type TrimOperation =
 /**
  * Helper to project a point onto a line segment and get its parametric position
  * Returns t where t=0 at start, t=1 at end, t<0 before start, t>1 after end
+ * @internal - exported for testing
  */
-function projectPointOntoSegment(
+export function projectPointOntoSegment(
   point: Coords2d,
   segmentStart: Coords2d,
   segmentEnd: Coords2d
@@ -800,8 +805,9 @@ function isPointCoincidentWithSegment(
 
 /**
  * Helper to calculate perpendicular distance from a point to a line segment
+ * @internal - exported for testing
  */
-function perpendicularDistanceToSegment(
+export function perpendicularDistanceToSegment(
   point: Coords2d,
   segmentStart: Coords2d,
   segmentEnd: Coords2d
