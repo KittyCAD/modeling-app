@@ -1822,6 +1822,14 @@ description: Result of parsing exhaust-manifold.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "primaryTube",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -6343,6 +6351,7 @@ description: Result of parsing exhaust-manifold.kcl
         "preComments": [
           "// Exhaust Manifold",
           "// A welded exhaust header for an inline 4-cylinder engine",
+          "// Categories: Automotive",
           "",
           "",
           "// Set units"

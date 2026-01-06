@@ -1676,6 +1676,14 @@ description: Result of parsing end-effector-gripper-fingers.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "sectionSketch",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -13804,6 +13812,7 @@ description: Result of parsing end-effector-gripper-fingers.kcl
         "preComments": [
           "// End Effector Grippers",
           "// End effector grippers are devices attached to a robot's arm that allow it to interact with its environment and perform tasks like picking up, moving, and manipulating objects. They are essential for robots to perform useful work. Grippers are one type of end effector, but end effectors can also be tools like welding torches or cameras",
+          "// Categories: Manufacturing",
           "",
           "",
           "// Set units"

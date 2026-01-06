@@ -332,7 +332,9 @@ description: Artifact commands countersunk-plate.kcl
         "distance": 9.524999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -461,7 +463,9 @@ description: Artifact commands countersunk-plate.kcl
         "distance": -9.524999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -612,7 +616,9 @@ description: Artifact commands countersunk-plate.kcl
         "distance": -9.524999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {

@@ -523,7 +523,9 @@ description: Artifact commands radial-flow-centrifugal-impeller.kcl
         "distance": -6.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -652,7 +654,9 @@ description: Artifact commands radial-flow-centrifugal-impeller.kcl
         "distance": 40.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -837,7 +841,9 @@ description: Artifact commands radial-flow-centrifugal-impeller.kcl
         "distance": 57.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {

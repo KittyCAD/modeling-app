@@ -159,7 +159,9 @@ description: Artifact commands import_whole_transitive_import.kcl
         "distance": 254.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {

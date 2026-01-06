@@ -28,6 +28,8 @@ export import "std::sweep"
 export import "std::appearance"
 export import "std::vector"
 export import "std::hole"
+@(experimental = true)
+export import * from "std::runtime"
 
 /// An abstract 3d plane aligned with the X and Y axes. Its normal is the positive Z axis.
 export XY = {
@@ -80,6 +82,13 @@ export NEW = "new": string
 /// Specifies that the extrusion will be pulled into or pushed out of the existing object,
 /// modifying it without creating a new object.
 export MERGE = "merge": string
+
+/// When bodies are solid, they have a top and bottom, and enclose all space between them.
+export SOLID = "solid": string
+
+/// When bodies are surfaces, they have zero thickness. They are perfectly flat and do not
+/// enclose any space.
+export SURFACE = "surface": string
 
 /// Create a helix.
 ///

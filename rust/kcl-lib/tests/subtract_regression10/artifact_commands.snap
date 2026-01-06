@@ -543,7 +543,8 @@ description: Artifact commands subtract_regression10.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -741,7 +742,9 @@ description: Artifact commands subtract_regression10.kcl
         "distance": 314.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -950,7 +953,9 @@ description: Artifact commands subtract_regression10.kcl
         "distance": 92.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1205,7 +1210,9 @@ description: Artifact commands subtract_regression10.kcl
         "distance": 314.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1667,7 +1674,9 @@ description: Artifact commands subtract_regression10.kcl
         "distance": 54.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1916,7 +1925,9 @@ description: Artifact commands subtract_regression10.kcl
         "distance": 554.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -2090,7 +2101,9 @@ description: Artifact commands subtract_regression10.kcl
         "distance": 54.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -2227,7 +2240,9 @@ description: Artifact commands subtract_regression10.kcl
         "distance": 54.0,
         "faces": null,
         "opposite": "Symmetric",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -2445,7 +2460,9 @@ description: Artifact commands subtract_regression10.kcl
         "distance": 300.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -2506,7 +2523,9 @@ description: Artifact commands subtract_regression10.kcl
         "distance": 300.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {

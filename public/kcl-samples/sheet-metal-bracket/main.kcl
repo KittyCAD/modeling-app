@@ -1,5 +1,6 @@
 // Sheet Metal Bracket
 // A component typically made from flat sheet metal through various manufacturing processes such as bending, punching, cutting, and forming. These brackets are used to support, attach, or mount other hardware components, often providing a structural or functional base for assembly.
+// Categories: Construction, Manufacturing
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)

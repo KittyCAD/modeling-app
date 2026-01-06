@@ -1,6 +1,6 @@
 import { useMachine, useSelector } from '@xstate/react'
 import type React from 'react'
-import { createContext, useContext, useEffect, useRef } from 'react'
+import { createContext, use, useContext, useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -10,6 +10,7 @@ import { assign, fromPromise } from 'xstate'
 
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
@@ -47,11 +48,12 @@ import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import {
   commandBarActor,
   getLayout,
+  useCommandBarState,
   setLayout,
   settingsActor,
 } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
-import { platform, uuidv4 } from '@src/lib/utils'
+import { getDeleteKeys, uuidv4 } from '@src/lib/utils'
 
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
@@ -91,6 +93,7 @@ import {
   updateSelections,
   getEventForSegmentSelection,
   updateExtraSegments,
+  getPlaneDataFromSketchBlock,
 } from '@src/lib/selections'
 import {
   engineCommandManager,
@@ -117,6 +120,9 @@ import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
+import type { SketchArgs } from '@rust/kcl-lib/bindings/FrontendApi'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { toPlaneName } from '@src/lib/planes'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -145,6 +151,7 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const {
     app: { allowOrbitInSketchMode },
     modeling: {
@@ -487,6 +494,7 @@ export const ModelingMachineProvider = ({
               const varDec = getNodeFromPath<VariableDeclaration>(
                 newAst,
                 sketchDetails.planeNodePath,
+                await kclManager.wasmInstancePromise,
                 'VariableDeclaration'
               )
               if (err(varDec)) return reject(new Error('No varDec'))
@@ -526,7 +534,10 @@ export const ModelingMachineProvider = ({
         'animate-to-sketch-solve': fromPromise(
           async ({
             input: artifactOrPlaneId,
-          }): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane> => {
+          }): Promise<{
+            plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+            sketchSolveId: number
+          }> => {
             if (!artifactOrPlaneId) {
               const errorMessage = 'No artifact or plane ID provided'
               toast.error(errorMessage)
@@ -542,7 +553,6 @@ export const ModelingMachineProvider = ({
             if (!err(defaultResult) && defaultResult) {
               result = defaultResult
             }
-            console.log('result', result)
 
             // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
             if (!result) {
@@ -555,14 +565,13 @@ export const ModelingMachineProvider = ({
                 result = offsetResult
               }
             }
-            console.log('result', result)
             if (!result) {
               const sweepFaceSelected = await selectionBodyFace(
                 artifactOrPlaneId,
                 kclManager.artifactGraph,
                 kclManager.astSignal.value,
                 kclManager.execState,
-                systemDeps
+                { ...systemDeps, wasmInstance }
               )
               if (sweepFaceSelected) {
                 result = sweepFaceSelected
@@ -578,8 +587,146 @@ export const ModelingMachineProvider = ({
               result.type === 'extrudeFace' ? result.faceId : result.planeId
             await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
             sceneInfra.camControls.syncDirection = 'clientToEngine'
-            console.log('result', result)
-            return result
+
+            // Call newSketch API
+            let sketchId: number | undefined
+            try {
+              const project = theProject.current
+              if (!project) {
+                console.warn('No project available for newSketch call')
+              } else {
+                // Construct SketchArgs based on the result
+                let sketchArgs: SketchArgs
+
+                // Determine the plane type from the result
+                if (result.type === 'defaultPlane') {
+                  sketchArgs = {
+                    on: { default: toPlaneName(result.plane) },
+                  }
+                } else {
+                  sketchArgs = { on: { default: 'xy' } }
+                }
+
+                await rustContext.hackSetProgram(
+                  kclManager.ast,
+                  await jsAppSettings(rustContext.settingsActor)
+                )
+                const newSketchResult = await rustContext.newSketch(
+                  0, // projectId - using 0 as placeholder
+                  0, // fileId - using 0 as placeholder
+                  0, // version - using 0 as placeholder
+                  sketchArgs,
+                  { settings: { modeling: { base_unit: defaultUnit.current } } }
+                )
+                kclManager.updateCodeEditor(newSketchResult.kclSource.text)
+                sketchId = newSketchResult.sketchId
+              }
+            } catch (error) {
+              console.error('Error calling newSketch:', error)
+            }
+
+            if (sketchId === undefined) {
+              const errorMessage = 'Failed to create sketch'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            return {
+              plane: result,
+              sketchSolveId: sketchId,
+            }
+          }
+        ),
+        'animate-to-existing-sketch-solve': fromPromise(
+          async ({
+            input: artifactId,
+          }): Promise<{
+            plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+            sketchSolveId: number
+            initialSceneGraphDelta: SceneGraphDelta
+          }> => {
+            if (!artifactId) {
+              const errorMessage = 'No artifact ID provided'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            // Get the sketchBlock artifact from the artifact graph
+            const artifact = kclManager.artifactGraph.get(artifactId)
+            if (!artifact || artifact.type !== 'sketchBlock') {
+              const errorMessage = 'Invalid sketchBlock artifact'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            if (typeof artifact.sketchId !== 'number') {
+              const errorMessage = 'SketchBlock does not have a sketchId'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            // Get plane/face data from the sketchBlock
+            const planeData = await getPlaneDataFromSketchBlock(
+              artifact,
+              kclManager.artifactGraph,
+              systemDeps
+            )
+            if (!planeData) {
+              console.trace('yo!!')
+
+              const errorMessage = 'Could not determine plane/face information'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            const sketchId = artifact.sketchId
+
+            const id =
+              planeData.type === 'extrudeFace'
+                ? planeData.faceId
+                : planeData.planeId
+            await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+            // Call editSketch API
+            let editSketchSceneGraph: SceneGraphDelta | undefined
+            try {
+              const project = theProject.current
+              if (!project) {
+                console.warn('No project available for editSketch call')
+              } else {
+                await rustContext.hackSetProgram(
+                  kclManager.ast,
+                  await jsAppSettings(rustContext.settingsActor)
+                )
+                editSketchSceneGraph = await rustContext.editSketch(
+                  0, // projectId
+                  0, // fileId
+                  0, // version
+                  sketchId,
+                  { settings: { modeling: { base_unit: defaultUnit.current } } }
+                )
+                // Note: editSketch doesn't return kclSource, so we don't update the editor
+              }
+              if (!editSketchSceneGraph) {
+                const errorMessage = 'Failed to edit sketch'
+                toast.error(errorMessage)
+                return reject(new Error(errorMessage))
+              }
+            } catch (error) {
+              console.error('Error calling editSketch:', error)
+              return reject(
+                error instanceof Error
+                  ? error
+                  : new Error('Failed to edit sketch')
+              )
+            }
+
+            return {
+              plane: planeData,
+              sketchSolveId: sketchId,
+              initialSceneGraphDelta: editSketchSceneGraph,
+            }
           }
         ),
         'animate-to-face': fromPromise(async ({ input }) => {
@@ -593,12 +740,14 @@ export const ModelingMachineProvider = ({
                     input.sketchPathToNode,
                     input.extrudePathToNode,
                     addTagForSketchOnFace,
+                    await kclManager.wasmInstancePromise,
                     input.faceInfo
                   )
                 : sketchOnOffsetPlane(
                     kclManager.ast,
                     input.pathToNode,
-                    input.negated
+                    input.negated,
+                    wasmInstance
                   )
             if (err(sketched)) {
               const sketchedError = new Error(
@@ -632,7 +781,8 @@ export const ModelingMachineProvider = ({
           }
           const { modifiedAst, pathToNode } = startSketchOnDefault(
             kclManager.ast,
-            input.plane
+            input.plane,
+            await kclManager.wasmInstancePromise
           )
           await kclManager.updateAst(modifiedAst, false)
           sceneInfra.camControls.enableRotate =
@@ -655,13 +805,18 @@ export const ModelingMachineProvider = ({
           }
         }),
         'Get horizontal info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
+          async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
+            const wasmInstance = await kclManager.wasmInstancePromise
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setHorzDistance',
                 selectionRanges,
+                kclManager,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -702,7 +857,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -715,13 +871,18 @@ export const ModelingMachineProvider = ({
           }
         ),
         'Get vertical info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
+          async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
+            const wasmInstance = await kclManager.wasmInstancePromise
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setVertDistance',
                 selectionRanges,
+                kclManager,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -761,7 +922,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -774,21 +936,28 @@ export const ModelingMachineProvider = ({
           }
         ),
         'Get angle info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
+          async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
             const info = angleBetweenInfo({
               selectionRanges,
+              kclManager,
+              wasmInstance: await kclManager.wasmInstancePromise,
             })
             if (err(info)) return Promise.reject(info)
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await (info.enabled
                 ? applyConstraintAngleBetween({
                     selectionRanges,
+                    kclManager,
                   })
                 : applyConstraintAngleLength({
                     selectionRanges,
                     angleOrLength: 'setAngle',
+                    kclManager,
                   }))
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -830,7 +999,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -844,18 +1014,23 @@ export const ModelingMachineProvider = ({
         ),
         astConstrainLength: fromPromise(
           async ({
-            input: { selectionRanges, sketchDetails, lengthValue },
+            input: { selectionRanges, sketchDetails, lengthValue, kclManager },
           }) => {
+            const wasmInstance = await kclManager.wasmInstancePromise
             if (!lengthValue)
               return Promise.reject(new Error('No length value'))
             const constraintResult = await applyConstraintLength({
               selectionRanges,
               length: lengthValue,
+              kclManager,
             })
             if (err(constraintResult)) return Promise.reject(constraintResult)
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               constraintResult
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -894,7 +1069,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -907,12 +1083,17 @@ export const ModelingMachineProvider = ({
           }
         ),
         'Get perpendicular distance info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
+          async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
+            const wasmInstance = await kclManager.wasmInstancePromise
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintIntersect({
                 selectionRanges,
+                kclManager,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -951,7 +1132,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -964,13 +1146,18 @@ export const ModelingMachineProvider = ({
           }
         ),
         'Get ABS X info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
+          async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
+            const wasmInstance = await kclManager.wasmInstancePromise
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintAbsDistance({
                 constraint: 'xAbs',
                 selectionRanges,
+                kclManager,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -1009,7 +1196,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -1022,13 +1210,18 @@ export const ModelingMachineProvider = ({
           }
         ),
         'Get ABS Y info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
+          async ({ input: { selectionRanges, sketchDetails, kclManager } }) => {
+            const wasmInstance = await kclManager.wasmInstancePromise
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
               await applyConstraintAbsDistance({
                 constraint: 'yAbs',
                 selectionRanges,
+                kclManager,
               })
-            const pResult = parse(recast(modifiedAst))
+            const pResult = parse(
+              recast(modifiedAst, wasmInstance),
+              wasmInstance
+            )
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
@@ -1067,7 +1260,8 @@ export const ModelingMachineProvider = ({
               pathToNodeMap,
               selectionRanges,
               updatedAst.newAst,
-              kclManager.artifactGraph
+              kclManager.artifactGraph,
+              wasmInstance
             )
             if (err(selection)) return Promise.reject(selection)
             return {
@@ -1213,7 +1407,8 @@ export const ModelingMachineProvider = ({
             }
             const doesNeedSplitting = doesSketchPipeNeedSplitting(
               kclManager.ast,
-              sketchDetails.sketchEntryNodePath
+              sketchDetails.sketchEntryNodePath,
+              wasmInstance
             )
             if (err(doesNeedSplitting)) return reject(doesNeedSplitting)
             let moddedAst: Node<Program> = structuredClone(kclManager.ast)
@@ -1222,7 +1417,8 @@ export const ModelingMachineProvider = ({
             if (doesNeedSplitting) {
               const splitResult = splitPipedProfile(
                 moddedAst,
-                sketchDetails.sketchEntryNodePath
+                sketchDetails.sketchEntryNodePath,
+                wasmInstance
               )
               if (err(splitResult)) return reject(splitResult)
               moddedAst = splitResult.modifiedAst
@@ -1240,6 +1436,7 @@ export const ModelingMachineProvider = ({
               const pipe = getNodeFromPath<PipeExpression>(
                 moddedAst,
                 pathToProfile,
+                await kclManager.wasmInstancePromise,
                 'PipeExpression'
               )
               if (err(pipe)) {
@@ -1302,6 +1499,8 @@ export const ModelingMachineProvider = ({
         sceneInfra,
         rustContext,
         sceneEntitiesManager,
+        // React Suspense will await this
+        wasmInstance,
         store: {
           useNewSketchMode,
           cameraProjection,
@@ -1500,10 +1699,18 @@ export const ModelingMachineProvider = ({
 
   // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
   // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
-  const deleteKeys =
-    platform() === 'macos' ? ['backspace', 'delete', 'del'] : ['delete', 'del']
+  const deleteKeys = getDeleteKeys()
 
   useHotkeys(deleteKeys, () => {
+    // Check if we're in sketch solve mode
+    const inSketchSolveMode = modelingState.matches('sketchSolveMode')
+    if (inSketchSolveMode) {
+      // Forward delete event to sketch solve mode
+      // it's probably save to send this regardless of inSketchSolveMode, but still
+      modelingSend({ type: 'delete selected' })
+      return
+    }
+
     // When the current selection is a segment, delete that directly ('Delete selection' doesn't support it)
     const segmentNodePaths = Object.keys(modelingState.context.segmentOverlays)
     const selections =
@@ -1535,7 +1742,11 @@ export const ModelingMachineProvider = ({
     modelingSend({ type: 'Center camera on selection' })
   })
   useHotkeys(['mod + alt + x'], () => {
-    resetCameraPosition({ sceneInfra }).catch(reportRejection)
+    resetCameraPosition({
+      sceneInfra,
+      engineCommandManager,
+      settingsActor,
+    }).catch(reportRejection)
   })
 
   // Toggle Snap to grid
@@ -1569,6 +1780,27 @@ export const ModelingMachineProvider = ({
     {
       enableOnContentEditable: false,
     }
+  )
+
+  const commandBarState = useCommandBarState()
+
+  // Global Esc handler for sketch solve mode when command bar is closed
+  useHotkeys(
+    'esc',
+    () => {
+      // Only handle Esc if we're in sketch solve mode and command bar is closed
+      if (
+        modelingState.matches('sketchSolveMode') &&
+        commandBarState.matches('Closed')
+      ) {
+        modelingSend({ type: 'Cancel' })
+      }
+    },
+    {
+      enableOnFormTags: false,
+      enableOnContentEditable: false,
+    },
+    [modelingState, commandBarState, modelingSend]
   )
 
   useModelingMachineCommands({

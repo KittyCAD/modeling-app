@@ -430,7 +430,8 @@ description: Artifact commands bone-plate.kcl
           "value": 65.0
         },
         "tolerance": 0.0000001,
-        "opposite": "Symmetric"
+        "opposite": "Symmetric",
+        "body_type": "solid"
       }
     },
     {
@@ -585,7 +586,9 @@ description: Artifact commands bone-plate.kcl
         "distance": -100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -747,7 +750,9 @@ description: Artifact commands bone-plate.kcl
         "distance": -100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -909,7 +914,9 @@ description: Artifact commands bone-plate.kcl
         "distance": -100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1071,7 +1078,9 @@ description: Artifact commands bone-plate.kcl
         "distance": -100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1233,7 +1242,9 @@ description: Artifact commands bone-plate.kcl
         "distance": -100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1395,7 +1406,9 @@ description: Artifact commands bone-plate.kcl
         "distance": -100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1557,7 +1570,9 @@ description: Artifact commands bone-plate.kcl
         "distance": -100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1719,7 +1734,9 @@ description: Artifact commands bone-plate.kcl
         "distance": -100.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {

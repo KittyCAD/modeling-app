@@ -56,6 +56,14 @@ description: Result of parsing pipe_as_arg.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "cube",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -168,6 +176,14 @@ description: Result of parsing pipe_as_arg.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "double",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -243,6 +259,14 @@ description: Result of parsing pipe_as_arg.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "width",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [],
             "start": 0,
             "type": "FunctionExpression",

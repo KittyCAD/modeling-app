@@ -173,7 +173,9 @@ description: Artifact commands keyboard.kcl
         "distance": 345.44,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -579,7 +581,9 @@ description: Artifact commands keyboard.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -636,7 +640,9 @@ description: Artifact commands keyboard.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -693,7 +699,9 @@ description: Artifact commands keyboard.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -750,7 +758,9 @@ description: Artifact commands keyboard.kcl
         "distance": 3.8099999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1037,7 +1047,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1351,7 +1363,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1724,7 +1738,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -2038,7 +2054,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -2352,7 +2370,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -2666,7 +2686,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -2980,7 +3002,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -3294,7 +3318,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -3608,7 +3634,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -4184,7 +4212,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -4498,7 +4528,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -4812,7 +4844,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -5417,7 +5451,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -5731,7 +5767,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -6045,7 +6083,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -6679,7 +6719,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -6993,7 +7035,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -7656,7 +7700,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -7970,7 +8016,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -8284,7 +8332,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -8918,7 +8968,9 @@ description: Artifact commands keyboard.kcl
         "distance": 2.54,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -9346,7 +9398,9 @@ description: Artifact commands keyboard.kcl
         "distance": -0.7619999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -9576,7 +9630,9 @@ description: Artifact commands keyboard.kcl
         "distance": -0.7619999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -9806,7 +9862,9 @@ description: Artifact commands keyboard.kcl
         "distance": -0.7619999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -10036,7 +10094,9 @@ description: Artifact commands keyboard.kcl
         "distance": -0.7619999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -10266,7 +10326,9 @@ description: Artifact commands keyboard.kcl
         "distance": -0.7619999999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {

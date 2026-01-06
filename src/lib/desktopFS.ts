@@ -8,6 +8,7 @@ import {
   getEXTWithPeriod,
   isExtensionARelevantExtension,
 } from '@src/lib/paths'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
@@ -137,14 +138,16 @@ export async function getNextFileName({
   electron: _electron,
   entryName,
   baseDir,
+  wasmInstance,
 }: {
   electron: IElectronAPI
   entryName: string
   baseDir: string
+  wasmInstance: ModuleType
 }) {
   // Check if the file is relevantFile by not using the period
   const extensionNoPeriod = getEXTNoPeriod(entryName)
-  const extensions = relevantFileExtensions()
+  const extensions = relevantFileExtensions(wasmInstance)
   const isRelevantFile =
     extensionNoPeriod &&
     isExtensionARelevantExtension(extensionNoPeriod, extensions)

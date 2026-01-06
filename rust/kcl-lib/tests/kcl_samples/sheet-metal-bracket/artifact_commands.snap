@@ -471,7 +471,9 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": 139.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -684,7 +686,9 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -741,7 +745,9 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -910,7 +916,9 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -967,7 +975,9 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1216,7 +1226,9 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1273,7 +1285,9 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1330,7 +1344,9 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1387,7 +1403,9 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1516,7 +1534,9 @@ description: Artifact commands sheet-metal-bracket.kcl
         "distance": -3.175,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {

@@ -224,7 +224,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": 1000.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -374,7 +376,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -431,7 +435,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -488,7 +494,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -545,7 +553,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -602,7 +612,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -659,7 +671,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -716,7 +730,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -773,7 +789,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -830,7 +848,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -887,7 +907,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -944,7 +966,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1001,7 +1025,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1058,7 +1084,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1115,7 +1143,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1172,7 +1202,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1229,7 +1261,9 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "distance": -750.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1465,7 +1499,8 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -2004,7 +2039,8 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {

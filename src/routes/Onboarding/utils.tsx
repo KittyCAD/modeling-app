@@ -46,6 +46,7 @@ import {
 } from '@src/lib/layout'
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -212,7 +213,7 @@ export function OnboardingButtons({
           iconStart={{
             icon:
               previousStep && previousStep !== 'dismissed'
-                ? 'arrowLeft'
+                ? 'arrowShortLeft'
                 : 'close',
             className: 'text-chalkboard-10',
             bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
@@ -245,7 +246,9 @@ export function OnboardingButtons({
           }}
           iconStart={{
             icon:
-              nextStep && nextStep !== 'completed' ? 'arrowRight' : 'checkmark',
+              nextStep && nextStep !== 'completed'
+                ? 'arrowShortRight'
+                : 'checkmark',
             bgClassName: 'dark:bg-chalkboard-80',
           }}
           className="dark:hover:bg-chalkboard-80/50"
@@ -297,7 +300,10 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     return Promise.resolve()
   }
 
-  const isCodeResettable = hasResetReadyCode(deps.kclManager)
+  const isCodeResettable = hasResetReadyCode(
+    deps.kclManager,
+    await deps.kclManager.wasmInstancePromise
+  )
   if (isCodeResettable) {
     return resetCodeAndAdvanceOnboarding(deps)
   }
@@ -329,9 +335,9 @@ export async function resetCodeAndAdvanceOnboarding({
   )
 }
 
-function hasResetReadyCode(kclManager: KclManager) {
+function hasResetReadyCode(kclManager: KclManager, wasmInstance: ModuleType) {
   return (
-    isKclEmptyOrOnlySettings(kclManager.codeSignal.value) ||
+    isKclEmptyOrOnlySettings(kclManager.codeSignal.value, wasmInstance) ||
     kclManager.codeSignal.value === browserAxialFan
   )
 }
@@ -466,7 +472,7 @@ export function TutorialRequestToast(
         <ActionButton
           Element="button"
           iconStart={{
-            icon: 'arrowRight',
+            icon: 'arrowShortRight',
           }}
           name="accept"
           onClick={onAccept}

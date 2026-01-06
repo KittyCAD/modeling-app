@@ -1,0 +1,66 @@
+// Hand Trolley Wheel
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Revolve a wheel that mounts to the trolley axle
+wheel = startSketchOn(offsetPlane(XY, offset = wheelDiameter / 2))
+  |> startProfile(at = [
+       -frameWidth / 2 - 0.65,
+       -3.67 + 0.75 / 2
+     ])
+  |> xLine(length = -2.7)
+  |> yLine(endAbsolute = -3.67)
+  |> xLine(length = -0.5)
+  |> yLine(length = 0.44)
+  |> tangentialArc(angle = -85deg, radius = 0.2, tag = $seg21)
+  |> angledLine(angle = tangentToEnd(seg21), length = 1.14)
+  |> tangentialArc(angle = 85deg, radius = 0.1, tag = $seg22)
+  |> angledLine(angle = tangentToEnd(seg22), length = 1.28)
+  |> tangentialArc(angle = 85deg, radius = 0.1, tag = $seg23)
+  |> angledLine(angle = tangentToEnd(seg23), length = 0.95)
+  |> tangentialArc(angle = -80deg, radius = 0.2, tag = $seg24)
+  |> angledLine(angle = tangentToEnd(seg24), length = 0.77)
+  |> xLine(length = 0.15)
+  |> angledLine(angle = tangentToEnd(seg24), length = -0.7)
+  |> xLine(length = 2)
+  |> angledLine(angle = -tangentToEnd(seg24), length = -0.7)
+  |> xLine(length = 0.12)
+  |> angledLine(angle = -tangentToEnd(seg24), length = 0.77)
+  |> tangentialArc(angle = -80deg, radius = 0.2, tag = $seg25)
+  |> angledLine(angle = tangentToEnd(seg25), length = 0.43)
+  |> tangentialArc(angle = 85deg, radius = 0.1)
+  |> yLine(length = -0.91)
+  |> tangentialArc(angle = 85deg, radius = 0.1)
+  |> angledLine(angle = -tangentToEnd(seg25), endAbsoluteX = profileStartX())
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(axis = {
+       direction = [1.0, 0.0],
+       origin = [0.0, -3.67]
+     })
+  |> appearance(color, metalness, roughness)
+
+tire = startSketchOn(offsetPlane(XY, offset = wheelDiameter / 2))
+  |> startProfile(at = [-frameWidth / 2 - 3.55, -1.05])
+  |> angledLine(angle = 100, length = 0.73, tag = $seg26)
+  |> tangentialArc(endAbsolute = [lastSegX(), wheelDiameter / 2.1 - 3.67])
+  |> tangentialArc(angle = 10deg, radius = 1)
+  |> tangentialArc(angle = -90deg, radius = wheelDiameter / 100, tag = $seg12)
+  |> angledLine(angle = tangentToEnd(seg12), length = 2.25)
+  |> tangentialArc(angle = -90deg, radius = wheelDiameter / 100)
+  |> tangentialArc(angle = 10deg, radius = 1)
+  |> tangentialArc(endAbsolute = [lastSegX(), segEndY(seg26)], tag = $seg13)
+  |> angledLine(angle = -100deg, length = segLen(seg26))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(axis = {
+       direction = [1.0, 0.0],
+       origin = [0.0, -3.67]
+     })
+  |> appearance(color = "#010101", metalness = 10, roughness = 70)
+
+[wheel, tire]

@@ -13,6 +13,7 @@ import {
   createVariableExpressionsArray,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
+  createPoint2dExpression,
 } from '@src/lang/modifyAst'
 import {
   modifyAstWithTagsForSelection,
@@ -37,16 +38,23 @@ import type {
   VariableDeclaration,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import {
+  KCL_DEFAULT_CONSTANT_PREFIXES,
+  type KclPreludeExtrudeMethod,
+  type KclPreludeBodyType,
+} from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { toUtf16 } from '@src/lang/errors'
 
 export function addExtrude({
   ast,
   artifactGraph,
   sketches,
+  wasmInstance,
   length,
   to,
   symmetric,
@@ -63,6 +71,7 @@ export function addExtrude({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   sketches: Selections
+  wasmInstance: ModuleType
   length?: KclCommandValue
   to?: Selections
   symmetric?: boolean
@@ -72,8 +81,8 @@ export function addExtrude({
   twistAngle?: KclCommandValue
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
-  method?: string
-  bodyType?: string
+  method?: KclPreludeExtrudeMethod
+  bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
   | {
@@ -104,7 +113,8 @@ export function addExtrude({
       const tagResult = modifyAstWithTagsForSelection(
         modifiedAst,
         faceSelection,
-        artifactGraph
+        artifactGraph,
+        wasmInstance
       )
       if (err(tagResult)) {
         console.warn('Failed to add tag for face selection', tagResult)
@@ -130,6 +140,7 @@ export function addExtrude({
     const res = getVariableExprsFromSelection(
       sketches,
       modifiedAst,
+      wasmInstance,
       mNodeToEdit
     )
     if (err(res)) {
@@ -151,14 +162,15 @@ export function addExtrude({
     const tagResult = modifyAstWithTagsForSelection(
       modifiedAst,
       to.graphSelections[0],
-      artifactGraph
+      artifactGraph,
+      wasmInstance
     )
     if (err(tagResult)) return tagResult
     modifiedAst = tagResult.modifiedAst
     toExpr = [createLabeledArg('to', createLocalName(tagResult.tags[0]))]
   }
   const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric))]
+    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
     : []
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
@@ -180,9 +192,15 @@ export function addExtrude({
   const twistAngleStepExpr = twistAngleStep
     ? [createLabeledArg('twistAngleStep', valueOrVariable(twistAngleStep))]
     : []
-  const twistCenterExpr = twistCenter
-    ? [createLabeledArg('twistCenter', valueOrVariable(twistCenter))]
-    : []
+  let twistCenterExpr: LabeledArg[] = []
+  if (twistCenter) {
+    const twistCenterExpression = createPoint2dExpression(
+      twistCenter,
+      wasmInstance
+    )
+    if (err(twistCenterExpression)) return twistCenterExpression
+    twistCenterExpr = [createLabeledArg('twistCenter', twistCenterExpression)]
+  }
   const methodExpr = method
     ? [createLabeledArg('method', createLocalName(method))]
     : []
@@ -246,6 +264,7 @@ export function addExtrude({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -269,6 +288,7 @@ export function addSweep({
   ast,
   sketches,
   path,
+  wasmInstance,
   sectional,
   relativeTo,
   tagStart,
@@ -278,6 +298,7 @@ export function addSweep({
   ast: Node<Program>
   sketches: Selections
   path: Selections
+  wasmInstance: ModuleType
   sectional?: boolean
   relativeTo?: SweepRelativeTo
   tagStart?: string
@@ -295,7 +316,12 @@ export function addSweep({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
+  const vars = getVariableExprsFromSelection(
+    sketches,
+    modifiedAst,
+    wasmInstance,
+    mNodeToEdit
+  )
   if (err(vars)) {
     return vars
   }
@@ -305,6 +331,7 @@ export function addSweep({
   const pathDeclaration = getNodeFromPath<VariableDeclaration>(
     ast,
     path.graphSelections[0].codeRef.pathToNode,
+    wasmInstance,
     'VariableDeclaration'
   )
   if (err(pathDeclaration)) {
@@ -314,7 +341,7 @@ export function addSweep({
   // Extra labeled args expressions
   const pathExpr = createLocalName(pathDeclaration.node.declaration.id.name)
   const sectionalExpr = sectional
-    ? [createLabeledArg('sectional', createLiteral(sectional))]
+    ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
     : []
   const relativeToExpr = relativeTo
     ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
@@ -343,6 +370,7 @@ export function addSweep({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -357,6 +385,7 @@ export function addSweep({
 export function addLoft({
   ast,
   sketches,
+  wasmInstance,
   vDegree,
   bezApproximateRational,
   baseCurveIndex,
@@ -366,6 +395,7 @@ export function addLoft({
 }: {
   ast: Node<Program>
   sketches: Selections
+  wasmInstance: ModuleType
   vDegree?: KclCommandValue
   bezApproximateRational?: boolean
   baseCurveIndex?: KclCommandValue
@@ -384,7 +414,12 @@ export function addLoft({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
+  const vars = getVariableExprsFromSelection(
+    sketches,
+    modifiedAst,
+    wasmInstance,
+    mNodeToEdit
+  )
   if (err(vars)) {
     return vars
   }
@@ -397,7 +432,7 @@ export function addLoft({
     ? [
         createLabeledArg(
           'bezApproximateRational',
-          createLiteral(bezApproximateRational)
+          createLiteral(bezApproximateRational, wasmInstance)
         ),
       ]
     : []
@@ -440,6 +475,7 @@ export function addLoft({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.LOFT,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -455,6 +491,7 @@ export function addRevolve({
   ast,
   sketches,
   angle,
+  wasmInstance,
   axis,
   edge,
   symmetric,
@@ -466,6 +503,7 @@ export function addRevolve({
   ast: Node<Program>
   sketches: Selections
   angle: KclCommandValue
+  wasmInstance: ModuleType
   axis?: string
   edge?: Selections
   symmetric?: boolean
@@ -485,20 +523,30 @@ export function addRevolve({
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
+  const vars = getVariableExprsFromSelection(
+    sketches,
+    modifiedAst,
+    wasmInstance,
+    mNodeToEdit
+  )
   if (err(vars)) {
     return vars
   }
 
   // Retrieve axis expression depending on mode
-  const getAxisResult = getAxisExpressionAndIndex(axis, edge, modifiedAst)
+  const getAxisResult = getAxisExpressionAndIndex(
+    axis,
+    edge,
+    modifiedAst,
+    wasmInstance
+  )
   if (err(getAxisResult) || !getAxisResult.generatedAxis) {
     return new Error('Generated axis selection is missing.')
   }
 
   // Extra labeled args expressions
   const symmetricExpr = symmetric
-    ? [createLabeledArg('symmetric', createLiteral(symmetric))]
+    ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
     : []
   const bidirectionalAngleExpr = bidirectionalAngle
     ? [
@@ -550,6 +598,7 @@ export function addRevolve({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE,
+    wasmInstance,
   })
   if (err(pathToNode)) {
     return pathToNode
@@ -566,14 +615,19 @@ export function addRevolve({
 export function getAxisExpressionAndIndex(
   axis: string | undefined,
   edge: Selections | undefined,
-  ast: Node<Program>
+  ast: Node<Program>,
+  wasmInstance: ModuleType
 ) {
   if (edge) {
     const pathToAxisSelection = getNodePathFromSourceRange(
       ast,
       edge.graphSelections[0]?.codeRef.range
     )
-    const tagResult = mutateAstWithTagForSketchSegment(ast, pathToAxisSelection)
+    const tagResult = mutateAstWithTagForSketchSegment(
+      ast,
+      pathToAxisSelection,
+      wasmInstance
+    )
 
     // Have the tag whether it is already created or a new one is generated
     if (err(tagResult)) {
@@ -719,7 +773,7 @@ export function retrieveTagDeclaratorFromOpArg(
 ): string {
   const dollarSignOffset = 1
   return code.slice(
-    opArg.sourceRange[0] + dollarSignOffset,
-    opArg.sourceRange[1]
+    toUtf16(opArg.sourceRange[0], code) + dollarSignOffset,
+    toUtf16(opArg.sourceRange[1], code)
   )
 }

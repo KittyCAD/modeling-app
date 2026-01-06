@@ -5914,6 +5914,7 @@ description: Result of parsing starlink-mini-bracket.kcl
         "preComments": [
           "// Starlink Mini Bracket",
           "// Bracket for holding a starlink device",
+          "// Categories: Maker",
           "",
           "",
           "// Set units in inches (in)"

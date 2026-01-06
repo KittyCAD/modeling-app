@@ -190,7 +190,9 @@ description: Artifact commands starlink-mini-bracket.kcl
         "distance": 31.75,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -413,7 +415,9 @@ description: Artifact commands starlink-mini-bracket.kcl
         "distance": -50.8,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -636,7 +640,9 @@ description: Artifact commands starlink-mini-bracket.kcl
         "distance": -50.8,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -874,7 +880,9 @@ description: Artifact commands starlink-mini-bracket.kcl
         "distance": 27.94,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1003,7 +1011,9 @@ description: Artifact commands starlink-mini-bracket.kcl
         "distance": -27.94,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1214,7 +1224,9 @@ description: Artifact commands starlink-mini-bracket.kcl
         "distance": -5.600699999999999,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {

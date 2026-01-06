@@ -3,44 +3,61 @@
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
 
-import Point2d from "std::types"
+import Point2d, Segment from "std::types"
 
-@(impl = std_constrainable, experimental = true, feature_tree = false)
-export type Line = {
-  start: Point2d | none,
-  end: Point2d | none,
-  midpoint: Point2d | none,
-}
+@(impl = std_rust_constrainable, experimental = true, feature_tree = false)
+export fn point(
+  at: Point2d,
+): Segment {}
 
-@(impl = std_constrainable, experimental = true, feature_tree = false)
+@(impl = std_rust_constrainable, experimental = true, feature_tree = false)
 export fn line(
   start: Point2d,
   end?: Point2d,
   midpoint?: Point2d,
-): Line {
-  { start, end, midpoint }
-}
+): Segment {}
 
-@(impl = std_constrainable, experimental = true, feature_tree = false)
-export type Arc = {
-  start: Point2d,
-  end: Point2d,
-  center: Point2d | none,
-  interior: Point2d | none,
-}
-
-@(impl = std_constrainable, experimental = true, feature_tree = false)
+/// A circular arc. The arc segment always sweeps counterclockwise from start to end.
+/// To change direction, swap the start and end points.
+@(impl = std_rust_constrainable, experimental = true, feature_tree = false)
 export fn arc(
   start: Point2d,
   end: Point2d,
-  center?: Point2d,
-  interior?: Point2d,
-): Arc {
-  { start, end, center, interior }
-}
+  center: Point2d,
+): Segment {}
 
-@(experimental = true)
-export type Segment = Arc | Line
-
+/// Constrain points, or a point and a segment to be coincident.
+///
+/// Supports two points, or one point and one segment (line/arc).
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
-export fn parallel(@input: [Line; 2+], distance?: number(Length)) {}
+export fn coincident(@points: [Segment; 2]) {}
+
+/// Constrain the distance between two points.
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn distance(@points: [Segment; 2]) {}
+
+/// Constrain lines to have equal length.
+///
+/// Currently limited to two lines.
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn equalLength(@lines: [Segment; 2]) {}
+
+/// Constrain lines to be parallel.
+///
+/// Currently limited to two lines.
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn parallel(@input: [Segment; 2+]) {}
+
+/// Constrain lines to be perpendicular.
+///
+/// Currently limited to two lines.
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn perpendicular(@input: [Segment; 2+]) {}
+
+/// Constrain a line to be horizontal.
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn horizontal(@input: Segment) {}
+
+/// Constrain a line to be vertical.
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn vertical(@input: Segment) {}

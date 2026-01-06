@@ -4,7 +4,7 @@ use crate::{
     ExecutorContext, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState,
+        ControlFlowKind, ExecState,
         fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclValue},
         types::RuntimeType,
@@ -59,6 +59,17 @@ async fn call_map_closure(
             source_ranges,
         ))
     })?;
+    let output = match output.control {
+        ControlFlowKind::Continue => output.into_value(),
+        ControlFlowKind::Exit => {
+            let message = "Early return inside map function is currently not supported".to_owned();
+            debug_assert!(false, "{}", &message);
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message,
+                vec![source_range],
+            )));
+        }
+    };
     Ok(output)
 }
 
@@ -116,6 +127,17 @@ async fn call_reduce_closure(
             source_ranges.clone(),
         ))
     })?;
+    let out = match out.control {
+        ControlFlowKind::Continue => out.into_value(),
+        ControlFlowKind::Exit => {
+            let message = "Early return inside reduce function is currently not supported".to_owned();
+            debug_assert!(false, "{}", &message);
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message,
+                vec![source_range],
+            )));
+        }
+    };
     Ok(out)
 }
 

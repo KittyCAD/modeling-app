@@ -20,6 +20,8 @@ extrude(
   twistAngleStep?: number(Angle),
   twistCenter?: Point2d,
   method?: string,
+  hideSeams?: bool,
+  bodyType?: string,
 ): [Solid; 1+]
 ```
 
@@ -46,6 +48,8 @@ can change this behavior by using the `method` parameter. See
 | `twistAngleStep` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The size of each intermediate angle as the sketch twists around. Must be between 4 and 90 degrees. Only used if `twistAngle` is given, defaults to 15 degrees. | No |
 | `twistCenter` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center around which the sketch will be twisted. Relative to the sketch's center. Only used if `twistAngle` is given, defaults to [0, 0] i.e. sketch's center. | No |
 | `method` | [`string`](/docs/kcl-std/types/std-types-string) | The method used during extrusion, either `NEW` or `MERGE`. `NEW` creates a new object. `MERGE` merges the extruded objects together. The default is `MERGE`. | No |
+| `hideSeams` | [`bool`](/docs/kcl-std/types/std-types-bool) | Whether or not to hide the seams between the original and resulting object. Only used if a face is extruded and method = MERGE | No |
+| `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
 
 ### Returns
 
@@ -279,6 +283,57 @@ cylinder4 = circle(sketch006, center = [2.5, 0.5], radius = 0.25)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude6.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Surface extrude of an open profile
+openProfile = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> line(end = [4, 0])
+  |> arc(angleStart = 120deg, angleEnd = 0, radius = 5)
+  |> line(end = [5, 0])
+  |> line(end = [0, 10])
+// Surface extrude
+extrude(openProfile, length = 2, bodyType = SURFACE)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude7_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude7.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Surface extrude of a closed profile
+closedProfile = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> circle(center = [0, 0], diameter = 10)
+// Surface extrude
+extrude(closedProfile, length = 5, bodyType = SURFACE)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude8_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude8.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

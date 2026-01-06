@@ -699,6 +699,14 @@ description: Result of parsing kitt.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "pixelBox",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -792,6 +800,7 @@ description: Result of parsing kitt.kcl
         "preComments": [
           "// Kitt",
           "// The beloved KittyCAD mascot in a voxelized style.",
+          "// Categories: Maker",
           "",
           "",
           "// Pixel box function"
@@ -13507,6 +13516,14 @@ description: Result of parsing kitt.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kitLeg",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -15826,6 +15843,14 @@ description: Result of parsing kitt.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kitEar",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",

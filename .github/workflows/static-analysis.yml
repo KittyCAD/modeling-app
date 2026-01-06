@@ -19,8 +19,8 @@ jobs:
   npm-fmt-check:
     runs-on: 'ubuntu-22.04'
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -29,14 +29,16 @@ jobs:
 
   npm-build-wasm:
     uses: ./.github/workflows/build-wasm.yml
+    secrets:
+      TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 
   npm-tsc:
     runs-on: namespace-profile-ubuntu-2-cores
     needs: npm-build-wasm
 
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -65,8 +67,8 @@ jobs:
     needs: npm-build-wasm
 
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -95,8 +97,8 @@ jobs:
     needs: npm-build-wasm
 
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -125,8 +127,8 @@ jobs:
     needs: npm-build-wasm
 
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -154,6 +156,6 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Run codespell
-        uses: crate-ci/typos@v1.38.1
+        uses: crate-ci/typos@v1.40.0

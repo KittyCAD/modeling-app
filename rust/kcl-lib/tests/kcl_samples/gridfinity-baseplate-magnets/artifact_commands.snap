@@ -196,7 +196,9 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         "distance": 34.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -442,7 +444,8 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
           "value": -90.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -2660,7 +2663,9 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         "distance": -2.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -3317,7 +3322,9 @@ description: Artifact commands gridfinity-baseplate-magnets.kcl
         "distance": -2.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {

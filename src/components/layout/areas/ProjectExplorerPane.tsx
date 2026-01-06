@@ -13,19 +13,20 @@ import {
   isExtensionARelevantExtension,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import { systemIOActor, commandBarActor } from '@src/lib/singletons'
+import { systemIOActor, commandBarActor, kclManager } from '@src/lib/singletons'
 import {
   useFolders,
   useProjectDirectoryPath,
 } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, use } from 'react'
 import toast from 'react-hot-toast'
 import { useRouteLoaderData } from 'react-router-dom'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const projects = useFolders()
   const projectDirectoryPath = useProjectDirectoryPath()
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
@@ -68,7 +69,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       projectDirectoryPath
     )
 
-    const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
+    const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions(wasmInstance)
     const isRelevantFile = (filename: string): boolean => {
       const extension = getEXTNoPeriod(filename)
       if (!extension) {

@@ -130,7 +130,9 @@ description: Artifact commands revolve_on_face.kcl
         "distance": 7.1,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -294,7 +296,8 @@ description: Artifact commands revolve_on_face.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {

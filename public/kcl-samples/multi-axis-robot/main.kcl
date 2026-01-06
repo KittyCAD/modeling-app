@@ -1,5 +1,6 @@
 // Robot Arm
 // A 4 axis robotic arm for industrial use. These machines can be used for assembly, packaging, organization of goods, and quality inspection processes
+// Categories: Manufacturing, Automotive
 
 // Set Units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)

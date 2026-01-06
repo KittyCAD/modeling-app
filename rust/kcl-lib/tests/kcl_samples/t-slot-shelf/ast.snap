@@ -2655,6 +2655,14 @@ description: Result of parsing t-slot-shelf.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "railTslot",
+              "start": 0,
+              "type": "Identifier"
+            },
             "params": [
               {
                 "type": "Parameter",
@@ -5044,6 +5052,7 @@ description: Result of parsing t-slot-shelf.kcl
         "preComments": [
           "// T-Slotted Rectangle Frame with Shelf",
           "// A box frame with interior shelf made up of T-slotted rails",
+          "// Categories: Manufacturing, Construction",
           "",
           "",
           "// Set units"

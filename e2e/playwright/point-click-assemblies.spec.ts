@@ -249,6 +249,8 @@ test.describe('Point-and-click assemblies tests', () => {
             Objects: '1 other',
           },
           commandName: 'Translate',
+          reviewValidationError:
+            'semantic: Expected `x`, `y`, or `z` to be provided.',
         })
         await cmdBar.clickOptionalArgument('x')
         await cmdBar.expectState({
@@ -303,6 +305,8 @@ test.describe('Point-and-click assemblies tests', () => {
             Objects: '1 other',
           },
           commandName: 'Scale',
+          reviewValidationError:
+            'semantic: Expected `x`, `y`, `z` or `factor` to be provided.',
         })
         await cmdBar.clickOptionalArgument('x')
         await cmdBar.expectState({
@@ -360,6 +364,8 @@ test.describe('Point-and-click assemblies tests', () => {
             Objects: '1 other',
           },
           commandName: 'Rotate',
+          reviewValidationError:
+            'semantic: Expected `roll`, `pitch`, and `yaw` or `axis` and `angle` to be provided.',
         })
         await cmdBar.clickOptionalArgument('roll')
         await cmdBar.expectState({
@@ -520,32 +526,31 @@ test.describe('Point-and-click assemblies tests', () => {
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
       })
 
-      // TODO: enable once deleting the first import is fixed
-      // await test.step('Delete first part using the feature tree', async () => {
-      //   page.on('console', console.log)
-      //   await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      //   const op = await toolbar.getFeatureTreeOperation('cube', 0)
-      //   await op.click({ button: 'right' })
-      //   await page.getByTestId('context-menu-delete').click()
-      //   await scene.settled(cmdBar)
-      //   await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await test.step('Delete first part using the feature tree', async () => {
+        page.on('console', console.log)
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const op = await toolbar.getFeatureTreeOperation('cube', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
-      //   // Expect only the import statement to be there
-      //   await toolbar.openPane(DefaultLayoutPaneID.Code)
-      //   await editor.expectEditor.not.toContain(`import "cube.step" as cube`)
-      //   await toolbar.closePane(DefaultLayoutPaneID.Code)
-      //   await editor.expectEditor.toContain(
-      //     `
-      //     import "${complexPlmFileName}" as cubeSw
-      //   `,
-      //     { shouldNormalise: true }
-      //   )
-      //   await toolbar.closePane(DefaultLayoutPaneID.Code)
-      // })
+        // Expect only the import statement to be there
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.not.toContain(`import "cube.step" as cube`)
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `
+          import "${complexPlmFileName}" as cubeSw
+        `,
+          { shouldNormalise: true }
+        )
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+      })
 
       await test.step('Delete second part using the feature tree', async () => {
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        const op = await toolbar.getFeatureTreeOperation('cube_Complex', 0)
+        const op = await toolbar.getFeatureTreeOperation('cubeSw', 0)
         await op.click({ button: 'right' })
         await page.getByTestId('context-menu-delete').click()
         await scene.settled(cmdBar)
@@ -557,10 +562,6 @@ test.describe('Point-and-click assemblies tests', () => {
           `import "${complexPlmFileName}" as cubeSw`
         )
         await toolbar.closePane(DefaultLayoutPaneID.Code)
-        // TODO: enable once deleting the first import is fixed
-        // don't re-enable because we don't want pixel-based tests anymore, but the behavior
-        // still needs fixed.
-        // await scene.expectPixelColorNotToBe(partColor, midPoint, tolerance)
       })
     }
   )

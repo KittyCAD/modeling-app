@@ -1,5 +1,5 @@
 import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
 import type { StateFrom } from 'xstate'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
@@ -32,6 +32,7 @@ function CommandBarSelectionInput({
   stepBack: () => void
   onSubmit: (data: unknown) => void
 }) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = useCommandBarState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -67,6 +68,7 @@ function CommandBarSelectionInput({
           new Promise(() =>
             kclManager.setSelectionFilterToDefault(
               sceneEntitiesManager,
+              wasmInstance,
               selection
             )
           ),
@@ -154,11 +156,19 @@ function CommandBarSelectionInput({
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter &&
-      kclManager.setSelectionFilter(arg.selectionFilter, sceneEntitiesManager)
+      kclManager.setSelectionFilter(
+        arg.selectionFilter,
+        sceneEntitiesManager,
+        wasmInstance
+      )
     return () =>
-      kclManager.setSelectionFilterToDefault(sceneEntitiesManager, selection)
+      kclManager.setSelectionFilterToDefault(
+        sceneEntitiesManager,
+        wasmInstance,
+        selection
+      )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [arg.selectionFilter])
+  }, [arg.selectionFilter, wasmInstance])
 
   return (
     <form id="arg-form" onSubmit={handleSubmit}>

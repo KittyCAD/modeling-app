@@ -1,9 +1,13 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { use, useEffect, useMemo, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  kclManager,
+  useCommandBarState,
+} from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, toSync } from '@src/lib/utils'
 import { useSelector } from '@xstate/react'
@@ -26,6 +30,7 @@ function CommandBarPathInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const commandBarState = useCommandBarState()
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
@@ -37,11 +42,15 @@ function CommandBarPathInput({
     () =>
       arg.defaultValue
         ? arg.defaultValue instanceof Function
-          ? arg.defaultValue(commandBarState.context, argMachineContext)
+          ? arg.defaultValue(
+              commandBarState.context,
+              argMachineContext,
+              wasmInstance
+            )
           : arg.defaultValue
         : '',
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    [arg.defaultValue, commandBarState.context, argMachineContext]
+    [arg.defaultValue, commandBarState.context, argMachineContext, wasmInstance]
   )
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {

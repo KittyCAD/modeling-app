@@ -9,6 +9,11 @@ import {
 import type { KclExpression } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
 import type RustContext from '@src/lib/rustContext'
+import { forceSuffix } from '@src/lang/util'
+import { roundOff } from '@src/lib/utils'
+import type { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { Vector2 } from 'three'
+import { toUtf16 } from '@src/lang/errors'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 
@@ -34,7 +39,8 @@ export async function getCalculatedKclExpressionValue(
 ) {
   // Create a one-line program that assigns the value to a variable
   const dummyProgramCode = `${DUMMY_VARIABLE_NAME} = ${value}`
-  const pResult = parse(dummyProgramCode, rustContext.getRustInstance())
+  const wasmInstance = await rustContext.wasmInstancePromise
+  const pResult = parse(dummyProgramCode, wasmInstance)
   if (err(pResult) || !resultIsOk(pResult)) return pResult
   const ast = pResult.program
 
@@ -83,11 +89,7 @@ export async function getCalculatedKclExpressionValue(
 
     const arrayValues = varValue.value.map((item: KclValue) => {
       if (isNumberValueItem(item)) {
-        const formatted = formatNumberValue(
-          item.value,
-          item.ty,
-          rustContext.getRustInstance()
-        )
+        const formatted = formatNumberValue(item.value, item.ty, wasmInstance)
         if (!err(formatted)) {
           return formatted
         }
@@ -112,7 +114,7 @@ export async function getCalculatedKclExpressionValue(
     const formatted = formatNumberValue(
       varValue.value,
       varValue.ty,
-      rustContext.getRustInstance()
+      wasmInstance
     )
     if (err(formatted)) return undefined
     return formatted
@@ -141,6 +143,7 @@ export async function stringToKclExpression(
     allowArrays?: boolean
   }
 ) {
+  debugger
   const calculatedResult = await getCalculatedKclExpressionValue(
     value,
     providedRustContext,
@@ -159,5 +162,76 @@ export async function stringToKclExpression(
 }
 
 export function getStringValue(code: string, range: SourceRange): string {
-  return code.slice(range[0], range[1]).replaceAll(`'`, ``).replaceAll(`"`, ``)
+  return code
+    .slice(...range.map((r) => toUtf16(r, code)))
+    .replaceAll(`'`, ``)
+    .replaceAll(`"`, ``)
+}
+
+/**
+ * Helper function to apply a drag vector to a Point2D Expr.
+ * Returns a new Expr with the vector applied.
+ */
+export function applyVectorToPoint2D(
+  point: { x: Expr; y: Expr },
+  vector: Vector2
+): { x: Expr; y: Expr } {
+  const xValue = extractNumericValue(point.x)
+  const yValue = extractNumericValue(point.y)
+
+  if (!xValue || !yValue) {
+    // If we can't extract values, return original
+    return point
+  }
+
+  return {
+    x: {
+      type: 'Var',
+      value: roundOff(xValue.value + vector.x),
+      units: forceSuffix(xValue.units),
+    },
+    y: {
+      type: 'Var',
+      value: roundOff(yValue.value + vector.y),
+      units: forceSuffix(yValue.units),
+    },
+  }
+}
+
+/**
+ * Helper function to extract numeric value from an Expr.
+ * Returns the value and units, or null if the Expr doesn't contain a numeric value.
+ */
+function extractNumericValue(
+  expr: Expr
+): { value: number; units: string } | null {
+  if (expr.type === 'Number' || expr.type === 'Var') {
+    return {
+      value: expr.value,
+      units: expr.units,
+    }
+  }
+  return null
+}
+
+/**
+ * Checks if an Expr has a numeric value (is a Number or Var type).
+ * Returns true if the Expr contains a numeric value, false otherwise.
+ * This is a type predicate that narrows the type for TypeScript.
+ */
+export function hasNumericValue(
+  expr: Expr
+): expr is Extract<Expr, { type: 'Number' | 'Var' }> {
+  return expr.type === 'Number' || expr.type === 'Var'
+}
+
+/**
+ * Extracts the numeric value from an Expr (Number or Var type).
+ * Returns the value if the Expr is a Number or Var, otherwise returns the default value (0).
+ */
+export function getNumericValue(expr: Expr, defaultValue = 0): number {
+  if (expr.type === 'Number' || expr.type === 'Var') {
+    return expr.value
+  }
+  return defaultValue
 }

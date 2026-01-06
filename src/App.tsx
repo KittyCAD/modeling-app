@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
@@ -28,6 +28,7 @@ import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
+  DEFAULT_EXPERIMENTAL_FEATURES,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
@@ -54,17 +55,23 @@ import {
   TutorialRequestToast,
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
-import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
+import {
+  defaultLayout,
+  DefaultLayoutPaneID,
+  getOpenPanes,
+  LayoutRootNode,
+} from '@src/lib/layout'
 import { defaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { defaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { getResolvedTheme } from '@src/lib/theme'
 import {
   MlEphantManagerReactContext,
-  MlEphantManagerTransitions2,
-} from '@src/machines/mlEphantManagerMachine2'
+  MlEphantManagerTransitions,
+} from '@src/machines/mlEphantManagerMachine'
 import { useSignalEffect } from '@preact/signals-react'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
+import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -75,7 +82,7 @@ if (window.electron) {
 export function App() {
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects(kclManager)
-  const { project, file } = useLoaderData() as IndexLoaderData
+  const loaderData = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
@@ -85,24 +92,28 @@ export function App() {
   const { onProjectOpen } = useLspContext()
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
+
   // We need the ref for the outermost div so we can screenshot the app for
   // the coredump.
 
   // Stream related refs and data
   const [searchParams] = useSearchParams()
 
-  const projectName = project?.name || null
-  const projectPath = project?.path || null
+  const projectName = loaderData.project?.name || null
+  const projectPath = loaderData.project?.path || null
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
-    onProjectOpen({ name: projectName, path: projectPath }, file || null)
-  }, [onProjectOpen, projectName, projectPath, file])
+    onProjectOpen(
+      { name: projectName, path: projectPath },
+      loaderData.file || null
+    )
+  }, [onProjectOpen, projectName, projectPath, loaderData.file])
 
   useEffect(() => {
     // Clear conversation
     mlEphantManagerActor2.send({
-      type: MlEphantManagerTransitions2.ConversationClose,
+      type: MlEphantManagerTransitions.ConversationClose,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [projectName, projectPath])
@@ -236,22 +247,64 @@ export function App() {
         .catch(reportRejection)
     }
   }, [])
+
+  const experimentalFeaturesLevel =
+    kclManager.fileSettings.experimentalFeatures ??
+    DEFAULT_EXPERIMENTAL_FEATURES
+  const experimentalFeaturesLocalStatusBarItems: StatusBarItemType[] =
+    experimentalFeaturesLevel.type !== 'Deny'
+      ? [
+          {
+            id: 'experimental-features',
+            component: ExperimentalFeaturesMenu,
+          },
+        ]
+      : []
+
+  const zookeeperLocalStatusBarItems: StatusBarItemType[] = useMemo(
+    () =>
+      getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.TTC)
+        ? [
+            {
+              id: 'zookeeper-credits',
+              component: ZookeeperCreditsMenu,
+            },
+          ]
+        : [],
+    [layout]
+  )
+
+  const undoRedoButtons = useMemo(
+    () => (
+      <UndoRedoButtons
+        data-testid="app-header-undo-redo"
+        kclManager={kclManager}
+        className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
+      />
+    ),
+    []
+  )
+
+  const notifications: boolean[] = Object.values(defaultAreaLibrary).map(
+    (x) => {
+      if ('useNotifications' in x) {
+        const obj = x.useNotifications?.()
+        return obj !== undefined && Boolean(obj.value)
+      }
+      return false
+    }
+  )
+
   return (
     <div className="h-screen flex flex-col overflow-hidden select-none">
       <div className="relative flex flex-1 flex-col">
         <div className="relative flex items-center flex-col">
           <AppHeader
             className="transition-opacity transition-duration-75"
-            project={{ project, file }}
+            project={loaderData}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
-            projectMenuChildren={
-              <UndoRedoButtons
-                data-testid="app-header-undo-redo"
-                kclManager={kclManager}
-                className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
-              />
-            }
+            projectMenuChildren={undoRedoButtons}
           >
             <CommandBarOpenButton />
             <ShareButton />
@@ -265,6 +318,9 @@ export function App() {
             setLayout={setLayout}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
+            showDebugPanel={settings.app.showDebugPanel.current}
+            notifications={notifications}
+            artifactGraph={kclManager.artifactGraph}
           />
         </section>
         <StatusBar
@@ -306,10 +362,8 @@ export function App() {
               id: 'units',
               component: UnitsMenu,
             },
-            {
-              id: 'experimental-features',
-              component: ExperimentalFeaturesMenu,
-            },
+            ...experimentalFeaturesLocalStatusBarItems,
+            ...zookeeperLocalStatusBarItems,
             ...defaultLocalStatusBarItems,
           ]}
         />

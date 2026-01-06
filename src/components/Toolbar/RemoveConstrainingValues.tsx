@@ -12,15 +12,14 @@ import type { TransformInfo } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { Expr, PathToNode, Program } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { KclManager } from '@src/lang/KclManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function removeConstrainingValuesInfo(
   pathToNodes: Array<PathToNode>,
-  providedKclManager?: KclManager,
-  wasmInstance?: ModuleType
+  kclManager: KclManager,
+  wasmInstance: ModuleType
 ):
   | {
       transforms: TransformInfo[]
@@ -28,17 +27,8 @@ export function removeConstrainingValuesInfo(
       updatedSelectionRanges: Selections
     }
   | Error {
-  const theKclManager = providedKclManager ? providedKclManager : kclManager
   const _nodes = pathToNodes.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(
-      theKclManager.ast,
-      pathToNode,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      wasmInstance
-    )
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode, wasmInstance)
     if (tmp instanceof Error) return tmp
     return tmp.node
   })
@@ -52,7 +42,7 @@ export function removeConstrainingValuesInfo(
       (node): Selection => ({
         codeRef: codeRefFromRange(
           topLevelRange(node.start, node.end),
-          theKclManager.ast
+          kclManager.ast
         ),
       })
     ),
@@ -65,7 +55,7 @@ export function removeConstrainingValuesInfo(
 
   const transforms = getRemoveConstraintsTransforms(
     updatedSelectionRanges,
-    theKclManager.ast,
+    kclManager.ast,
     wasmInstance
   )
   if (err(transforms)) return transforms
@@ -77,20 +67,19 @@ export function removeConstrainingValuesInfo(
 export function applyRemoveConstrainingValues({
   selectionRanges,
   pathToNodes,
-  providedKclManager,
+  kclManager,
   wasmInstance,
 }: {
   selectionRanges: Selections
   pathToNodes?: Array<PathToNode>
-  providedKclManager?: KclManager
-  wasmInstance?: ModuleType
+  kclManager: KclManager
+  wasmInstance: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
       pathToNodeMap: PathToNodeMap
     }
   | Error {
-  const theKclManager = providedKclManager ? providedKclManager : kclManager
   pathToNodes =
     pathToNodes ||
     selectionRanges.graphSelections.map(({ codeRef }) => {
@@ -98,17 +87,18 @@ export function applyRemoveConstrainingValues({
     })
   const constraint = removeConstrainingValuesInfo(
     pathToNodes,
-    theKclManager,
+    kclManager,
     wasmInstance
   )
   if (err(constraint)) return constraint
   const { transforms, updatedSelectionRanges } = constraint
 
   return transformAstSketchLines({
-    ast: theKclManager.ast,
+    ast: kclManager.ast,
     selectionRanges: updatedSelectionRanges,
     transformInfos: transforms,
-    memVars: theKclManager.variables,
+    memVars: kclManager.variables,
     referenceSegName: '',
+    wasmInstance,
   })
 }

@@ -743,7 +743,9 @@ description: Artifact commands i_shape.kcl
         "distance": 3.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {

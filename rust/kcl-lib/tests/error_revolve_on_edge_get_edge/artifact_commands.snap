@@ -156,7 +156,9 @@ description: Artifact commands error_revolve_on_edge_get_edge.kcl
         "distance": 10.0,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -302,7 +304,8 @@ description: Artifact commands error_revolve_on_edge_get_edge.kcl
           "value": 90.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {

@@ -256,7 +256,9 @@ description: Artifact commands ball-bearing.kcl
         "distance": 7.9502,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -415,7 +417,8 @@ description: Artifact commands ball-bearing.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -622,7 +625,8 @@ description: Artifact commands ball-bearing.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -795,7 +799,8 @@ description: Artifact commands ball-bearing.kcl
           "value": 36.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -1097,7 +1102,9 @@ description: Artifact commands ball-bearing.kcl
         "distance": 7.9502,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {

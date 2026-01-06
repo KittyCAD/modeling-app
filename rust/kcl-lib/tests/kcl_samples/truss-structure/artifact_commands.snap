@@ -413,7 +413,9 @@ description: Artifact commands truss-structure.kcl
         "distance": 50.8,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -624,7 +626,9 @@ description: Artifact commands truss-structure.kcl
         "distance": 45.72,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -796,7 +800,9 @@ description: Artifact commands truss-structure.kcl
         "distance": 45.72,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1142,7 +1148,9 @@ description: Artifact commands truss-structure.kcl
         "distance": -1221.74,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1203,7 +1211,9 @@ description: Artifact commands truss-structure.kcl
         "distance": -1221.74,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1535,7 +1545,9 @@ description: Artifact commands truss-structure.kcl
         "distance": -2082.7999999999997,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1865,7 +1877,9 @@ description: Artifact commands truss-structure.kcl
         "distance": 2082.7999999999997,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1926,7 +1940,9 @@ description: Artifact commands truss-structure.kcl
         "distance": 2082.7999999999997,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {

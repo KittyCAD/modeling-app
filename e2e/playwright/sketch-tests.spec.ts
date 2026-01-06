@@ -263,8 +263,8 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
 
     await test.step('Select the offset plane', async () => {
       await toolbar.openFeatureTreePane()
-
-      await page.getByRole('button', { name: 'Offset plane' }).click()
+      const opButton = await toolbar.getFeatureTreeOperation('plane001', 0)
+      await opButton.click()
 
       await page.waitForTimeout(600)
 
@@ -597,6 +597,8 @@ sketch001 = startSketchOn(XZ)
       stage: 'review',
       headerArguments: { Profiles: '1 profile' },
       commandName: 'Extrude',
+      reviewValidationError:
+        'semantic: Either `length` or `to` parameter must be provided for extrusion.',
     })
   })
   test("Existing sketch with bad code delete user's code", async ({
@@ -779,7 +781,9 @@ solid001 = subtract([extrude001], tools = [extrude002])
       await toolbar.circleBtn.click()
       await expect
         .poll(async () => {
-          const circleBtn = page.getByRole('button', { name: 'circle Circle' })
+          const circleBtn = toolbar.locator.getByRole('button', {
+            name: 'center circle',
+          })
           return circleBtn.getAttribute('aria-pressed')
         })
         .toBe('true')

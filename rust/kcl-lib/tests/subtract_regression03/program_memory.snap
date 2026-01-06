@@ -1223,7 +1223,7 @@ description: Variables in memory after executing subtract_regression03.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "in",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "sketch003": {

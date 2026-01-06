@@ -130,7 +130,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 0.7874,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -259,7 +261,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -0.7874,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -634,7 +638,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 17.525999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -763,7 +769,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 1.5239999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -892,7 +900,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1021,7 +1031,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1394,7 +1406,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 17.525999999999996,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1523,7 +1537,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 1.5239999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1652,7 +1668,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 6.35,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -1781,7 +1799,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -25.4,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -2042,7 +2062,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 0.8128,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -2171,7 +2193,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -0.8128,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -2558,7 +2582,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -15.875,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -2777,7 +2803,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -11.90625,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -2906,7 +2934,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 63.5,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -3220,7 +3250,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 13.890625,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -3349,7 +3381,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -13.890625,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -3576,7 +3610,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 152.39999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -3705,7 +3741,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -152.39999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -3938,7 +3976,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": 152.39999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -4067,7 +4107,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         "distance": -152.39999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {

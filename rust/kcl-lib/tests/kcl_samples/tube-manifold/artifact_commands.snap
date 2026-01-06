@@ -130,7 +130,9 @@ description: Artifact commands tube-manifold.kcl
         "distance": 152.39999999999998,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -415,7 +417,8 @@ description: Artifact commands tube-manifold.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {
@@ -737,7 +740,9 @@ description: Artifact commands tube-manifold.kcl
         "opposite": {
           "Other": 127.0
         },
-        "extrude_method": "merge"
+        "extrude_method": "merge",
+        "merge_coplanar_faces": null,
+        "body_type": "solid"
       }
     },
     {
@@ -981,7 +986,8 @@ description: Artifact commands tube-manifold.kcl
           "value": 360.0
         },
         "tolerance": 0.0000001,
-        "opposite": "None"
+        "opposite": "None",
+        "body_type": "solid"
       }
     },
     {

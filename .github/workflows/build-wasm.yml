@@ -2,6 +2,9 @@ name: Build WASM
 
 on:
   workflow_call:
+    secrets:
+      TAB_API_KEY:
+        required: false
 
 permissions:
   contents: read
@@ -10,9 +13,19 @@ jobs:
   npm-build-wasm:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - name: Track setup
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: integration
+          CI_STEP: setup
+
+      - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -29,6 +42,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # configured below
+          rustflags: '' # Use .cargo/config.toml
 
       - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
         with:
@@ -43,13 +57,13 @@ jobs:
         shell: bash
         run: npm run build:wasm
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: prepared-wasm
           path: |
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: prepared-ts-rs-bindings
           path: |
