@@ -1395,6 +1395,7 @@ export class KclManager extends EventTarget {
     sceneEntitiesManager: SceneEntities,
     wasmInstance: ModuleType
   ): void {
+    console.log("======")
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
     }
@@ -1430,6 +1431,7 @@ export class KclManager extends EventTarget {
         wasmInstance,
       },
     })
+    console.log('eventInfo', eventInfo)
     if (!eventInfo) {
       return
     }
@@ -1452,6 +1454,7 @@ export class KclManager extends EventTarget {
     this._modelingSend(eventInfo.modelingEvent)
     eventInfo.engineEvents.forEach((event) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      console.log('event!', event)
       this.engineCommandManager.sendSceneCommand(event)
     })
   }
