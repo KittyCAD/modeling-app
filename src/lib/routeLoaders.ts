@@ -192,7 +192,7 @@ export const fileLoader =
       kclManager.updateCurrentFilePath(projectData.file?.path || '')
       // We pass true on the end here to clear the code editor history.
       // This way undo and redo are not super weird when opening new files.
-      kclManager.updateCodeStateEditor(code, true)
+      kclManager.updateCodeStateEditor(code, true, [])
 
       return {
         ...projectData,

@@ -1624,7 +1624,11 @@ export class KclManager extends EventTarget {
    * Update the code in the editor.
    * This is invoked when a segment is being dragged on the canvas, among other things.
    */
-  updateCodeEditor(code: string, clearHistory?: boolean): void {
+  updateCodeEditor(
+    code: string,
+    clearHistory?: boolean,
+    annotations = [editorCodeUpdateEvent]
+  ): void {
     this.code = code
     if (clearHistory) {
       clearCodeMirrorHistory(this)
@@ -1636,7 +1640,7 @@ export class KclManager extends EventTarget {
         insert: code,
       },
       annotations: [
-        editorCodeUpdateEvent,
+        ...(annotations || []),
         Transaction.addToHistory.of(!clearHistory),
       ],
     })
@@ -1644,10 +1648,14 @@ export class KclManager extends EventTarget {
   /**
    * Update the code, state, and the code the code mirror editor sees.
    */
-  updateCodeStateEditor(code: string, clearHistory?: boolean): void {
+  updateCodeStateEditor(
+    code: string,
+    clearHistory?: boolean,
+    annotations = [editorCodeUpdateEvent]
+  ): void {
     if (this._code.value !== code) {
       this.code = code
-      this.updateCodeEditor(code, clearHistory)
+      this.updateCodeEditor(code, clearHistory, annotations)
     }
   }
   async writeToFile(newCode = this.code) {
