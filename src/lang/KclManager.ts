@@ -99,7 +99,7 @@ import {
   themeCompartment,
   appSettingsThemeEffect,
   settingsUpdateAnnotation,
-} from '@src/lib/codeEditor'
+} from '@src/editor/plugins/theme'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import {
   createEmptyAst,

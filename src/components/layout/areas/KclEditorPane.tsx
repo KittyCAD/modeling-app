@@ -66,7 +66,7 @@ import {
 } from '@src/machines/kclEditorMachine'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { editorTheme, themeCompartment } from '@src/lib/codeEditor'
+import { editorTheme, themeCompartment } from '@src/editor/plugins/theme'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { getResolvedTheme } from '@src/lib/theme'
 import { kclAstExtension } from '@src/editor/plugins/ast'
