@@ -1767,12 +1767,37 @@ profile001 = startProfile(sketch001, at = [0, 0])
   }
 )
 
-test.describe('Project id', () => {
-  // Should work on both web and desktop.
+test.describe('Project ID', () => {
   test(
-    'is created on new project',
+    'is created on new desktop project',
     {
-      tag: ['@desktop', '@web'],
+      tag: ['@desktop'],
+    },
+    async ({ page, toolbar, context, homePage }, testInfo) => {
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
+
+      const inputProjectId = page.getByTestId('project-id')
+
+      await test.step('Open the project settings modal', async () => {
+        await toolbar.projectSidebarToggle.click()
+        await page.getByTestId('project-settings').click()
+        // Give time to system for writing to a persistent store
+        await page.waitForTimeout(1000)
+      })
+
+      await test.step('Check project id is not the NIL UUID and not empty', async () => {
+        await expect(inputProjectId).not.toHaveValue(uuidNIL)
+        await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+      })
+    }
+  )
+  test(
+    'is created on new web project',
+    {
+      tag: ['@web'],
     },
     async ({ page, toolbar, context, homePage }, testInfo) => {
       const u = await getUtils(page)
