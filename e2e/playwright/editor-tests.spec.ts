@@ -1110,7 +1110,6 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(200)
     await toolbar.extrudeButton.click()
     await cmdBar.progressCmdBar()
-    await cmdBar.clickOptionalArgument('length')
     await cmdBar.expectState({
       stage: 'arguments',
       currentArgKey: 'length',

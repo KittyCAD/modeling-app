@@ -144,14 +144,13 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
         await cmdBar.progressCmdBar()
       })
       await test.step('Set length', async () => {
-        await cmdBar.clickOptionalArgument('length')
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'length',
           currentArgValue: '5',
           headerArguments: {
             Profiles: '1 profile',
-            Length: '',
+            Length: '5',
           },
           highlightedHeaderArg: 'length',
           commandName: 'Extrude',

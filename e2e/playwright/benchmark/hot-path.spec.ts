@@ -67,6 +67,7 @@ test.describe('Hot path', () => {
         currentArgValue: '',
         headerArguments: {
           Profiles: '',
+          Length: '5',
         },
         highlightedHeaderArg: 'Profiles',
         commandName: 'Extrude',
@@ -74,29 +75,15 @@ test.describe('Hot path', () => {
       await clickCenter()
     })
 
-    await test.step('Click Continue, see error about missing args on review page', async () => {
+    await test.step('Click Continue and set a length', async () => {
       await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Profiles: '1 profile',
-        },
-        commandName: 'Extrude',
-        reviewValidationError:
-          'semantic: Either `length` or `to` parameter must be provided for extrusion.',
-      })
-      await page.waitForTimeout(timeout)
-    })
-
-    await test.step('Click Length and set a length', async () => {
-      await cmdBar.clickOptionalArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
         currentArgValue: '5',
         headerArguments: {
           Profiles: '1 profile',
-          Length: '',
+          Length: '5',
         },
         highlightedHeaderArg: 'length',
         commandName: 'Extrude',
