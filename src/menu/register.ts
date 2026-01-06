@@ -59,13 +59,13 @@ export function modelingMenuCallbackMostActions(
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
-      navigate(filePath + PATHS.SETTINGS_USER)
+      void navigate(filePath + PATHS.SETTINGS_USER)
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
-      navigate(filePath + PATHS.SETTINGS_KEYBINDINGS)
+      void navigate(filePath + PATHS.SETTINGS_KEYBINDINGS)
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      navigate(filePath + PATHS.SETTINGS_USER + '#projectDirectory')
+      void navigate(filePath + PATHS.SETTINGS_USER + '#projectDirectory')
     } else if (data.menuLabel === 'File.Preferences.Project settings') {
-      navigate(filePath + PATHS.SETTINGS_PROJECT)
+      void navigate(filePath + PATHS.SETTINGS_PROJECT)
     } else if (data.menuLabel === 'File.Sign out') {
       authActor.send({ type: 'Log out' })
     } else if (
@@ -82,7 +82,7 @@ export function modelingMenuCallbackMostActions(
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User default units') {
-      navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
+      void navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
     } else if (data.menuLabel === 'File.Add file to project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({

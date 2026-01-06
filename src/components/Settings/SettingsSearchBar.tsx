@@ -80,7 +80,7 @@ export function SettingsSearchBar() {
   }, [query])
 
   function handleSelection({ level, name }: SettingsSearchItem) {
-    navigate(`?tab=${level}#${name}`)
+    void navigate(`?tab=${level}#${name}`)
   }
 
   return (

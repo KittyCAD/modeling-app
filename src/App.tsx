@@ -82,7 +82,7 @@ if (window.electron) {
 export function App() {
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects(kclManager)
-  const loaderData = useLoaderData() as IndexLoaderData
+  const loaderData = useLoaderData<IndexLoaderData>()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
@@ -139,7 +139,9 @@ export function App() {
   })
   useHotkeyWrapper(
     [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
-    () => navigate(filePath + PATHS.SETTINGS),
+    () => {
+      void navigate(filePath + PATHS.SETTINGS)
+    },
     kclManager,
     {
       splitKey: '|',
