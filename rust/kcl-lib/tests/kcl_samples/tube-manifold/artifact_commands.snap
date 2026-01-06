@@ -131,6 +131,7 @@ description: Artifact commands tube-manifold.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -740,6 +741,7 @@ description: Artifact commands tube-manifold.kcl
           "Other": 127.0
         },
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

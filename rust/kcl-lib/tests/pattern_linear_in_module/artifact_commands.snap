@@ -316,6 +316,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -378,6 +379,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -440,6 +442,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -502,6 +505,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -564,6 +568,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -626,6 +631,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -688,6 +694,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1038,6 +1045,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1100,6 +1108,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1162,6 +1171,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1224,6 +1234,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1286,6 +1297,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1348,6 +1360,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1410,6 +1423,7 @@ description: Artifact commands pattern_linear_in_module.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

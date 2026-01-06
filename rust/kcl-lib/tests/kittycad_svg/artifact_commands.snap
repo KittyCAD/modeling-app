@@ -4883,6 +4883,7 @@ description: Artifact commands kittycad_svg.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

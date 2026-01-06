@@ -223,6 +223,7 @@ description: Artifact commands parametric_with_tan_arc.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

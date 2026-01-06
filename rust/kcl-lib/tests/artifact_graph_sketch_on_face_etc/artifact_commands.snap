@@ -157,6 +157,7 @@ description: Artifact commands artifact_graph_sketch_on_face_etc.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -313,6 +314,7 @@ description: Artifact commands artifact_graph_sketch_on_face_etc.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -469,6 +471,7 @@ description: Artifact commands artifact_graph_sketch_on_face_etc.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -625,6 +628,7 @@ description: Artifact commands artifact_graph_sketch_on_face_etc.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

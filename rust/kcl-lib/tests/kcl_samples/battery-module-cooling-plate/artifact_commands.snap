@@ -174,6 +174,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -304,6 +305,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -434,6 +436,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -564,6 +567,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -694,6 +698,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1122,6 +1127,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1550,6 +1556,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1978,6 +1985,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -2406,6 +2414,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -2834,6 +2843,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -3343,6 +3353,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -3852,6 +3863,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -4361,6 +4373,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -4870,6 +4883,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -5379,6 +5393,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -5827,6 +5842,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -6000,6 +6016,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -6254,6 +6271,7 @@ description: Artifact commands battery-module-cooling-plate.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

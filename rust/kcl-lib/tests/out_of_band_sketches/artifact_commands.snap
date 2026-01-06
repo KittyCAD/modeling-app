@@ -284,6 +284,7 @@ description: Artifact commands out_of_band_sketches.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -346,6 +347,7 @@ description: Artifact commands out_of_band_sketches.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

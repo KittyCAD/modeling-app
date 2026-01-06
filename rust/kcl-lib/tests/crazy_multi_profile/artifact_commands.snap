@@ -157,6 +157,7 @@ description: Artifact commands crazy_multi_profile.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -723,6 +724,7 @@ description: Artifact commands crazy_multi_profile.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1286,6 +1288,7 @@ description: Artifact commands crazy_multi_profile.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

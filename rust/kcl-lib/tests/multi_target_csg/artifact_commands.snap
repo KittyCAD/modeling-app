@@ -368,6 +368,7 @@ description: Artifact commands multi_target_csg.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -729,6 +730,7 @@ description: Artifact commands multi_target_csg.kcl
           "Other": 2.54
         },
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -793,6 +795,7 @@ description: Artifact commands multi_target_csg.kcl
           "Other": 2.54
         },
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -979,6 +982,7 @@ description: Artifact commands multi_target_csg.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

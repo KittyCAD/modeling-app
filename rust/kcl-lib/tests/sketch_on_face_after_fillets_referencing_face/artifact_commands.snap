@@ -191,6 +191,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -418,6 +419,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
+        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
