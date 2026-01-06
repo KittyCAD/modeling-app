@@ -81,7 +81,7 @@ const Home = () => {
   const apiToken = useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = useSelector(billingActor, ({ context }) => context)
-  const hasUnlimitedCredits = billingContext.credits === Infinity
+  const hasUnlimitedCredits = billingContext.balance === Infinity
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -313,7 +313,7 @@ const Home = () => {
                     upgradeHref={withSiteBaseURL('/design-studio-pricing')}
                     upgradeClick={openExternalBrowserIfDesktop()}
                     error={billingContext.error}
-                    credits={billingContext.credits}
+                    balance={billingContext.balance}
                     allowance={billingContext.allowance}
                   />
                 </div>

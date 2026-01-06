@@ -1,5 +1,6 @@
 // French Press
 // A french press immersion coffee maker
+// Categories: Maker
 
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)

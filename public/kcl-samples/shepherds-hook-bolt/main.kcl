@@ -1,5 +1,6 @@
 // Shepherd’s Hook Bolt
 // A bent bolt with a curved hook, typically used for hanging or anchoring loads. The threaded end allows secure attachment to surfaces or materials, while the curved hook resists pull-out under tension.
+// Categories: Manufacturing
 
 // Set units in millimeters (mm)
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

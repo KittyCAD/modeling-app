@@ -1,5 +1,6 @@
 // Hand Trolley
 // A hand trolley, also known as a hand truck, is a small, wheeled cart with a weldment frame, used to move heavy or bulky items over short distances. It's essentially a simple lever system that makes lifting and moving objects much easier
+// Categories: Manufacturing, Construction
 
 // Set units
 @settings(defaultLengthUnit = in)

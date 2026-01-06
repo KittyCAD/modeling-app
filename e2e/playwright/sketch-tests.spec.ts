@@ -781,7 +781,9 @@ solid001 = subtract([extrude001], tools = [extrude002])
       await toolbar.circleBtn.click()
       await expect
         .poll(async () => {
-          const circleBtn = page.getByRole('button', { name: 'circle Circle' })
+          const circleBtn = toolbar.locator.getByRole('button', {
+            name: 'center circle',
+          })
           return circleBtn.getAttribute('aria-pressed')
         })
         .toBe('true')

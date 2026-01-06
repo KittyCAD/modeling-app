@@ -1,5 +1,6 @@
 // Helical Planetary Gearset
 // A helical planetary gearset is a type of planetary gear system where the teeth of the sun gear, planet gears, and/or ring gear are helical rather than straight. This design allows for smoother, quieter operation, greater load-carrying capacity, and more flexible shaft alignment.
+// Categories: Automotive, Aerospace
 
 // Set units
 @settings(defaultLengthUnit = mm)

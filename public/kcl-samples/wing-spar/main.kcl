@@ -1,5 +1,6 @@
 // Wing Spar
 // In a fixed-wing aircraft, the spar is often the main structural member of the wing, running spanwise at right angles (or thereabouts depending on wing sweep) to the fuselage. The spar carries flight loads and the weight of the wings while on the ground. Other structural and forming members such as ribs may be attached to the spars
+// Categories: Aerospace
 
 // Set units
 @settings(defaultLengthUnit = mm)

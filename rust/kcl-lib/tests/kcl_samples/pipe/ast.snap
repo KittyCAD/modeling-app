@@ -772,6 +772,7 @@ description: Result of parsing pipe.kcl
         "preComments": [
           "// Pipe",
           "// Piping for the pipe flange assembly",
+          "// Categories: Construction, Manufacturing",
           "",
           "",
           "// Set units"
