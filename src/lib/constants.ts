@@ -313,6 +313,14 @@ export const LAYOUT_SAVE_THROTTLE = 500
 // Copilot input
 export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
 
+// Default backface color
+export const DEFAULT_BACKFACE_COLOR = {
+  a: 1.0,
+  b: 0.05,
+  g: 0.05,
+  r: 0.05,
+}
+
 /**
  * KCL constants defined in rust/kcl-lib/std/prelude.kcl
  * TODO: figure if how we could keep this in sync automatically
