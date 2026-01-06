@@ -196,10 +196,11 @@ export class KclPlugin implements PluginValue {
           )
 
         // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
+        // Always invalidate IDs for direct edits since we don't know what the user changed
         const sceneGraphDelta: SceneGraphDelta = {
           new_graph: sceneGraph,
           new_objects: [],
-          invalidates_ids: false,
+          invalidates_ids: true,
           exec_outcome: execOutcome,
         }
 
