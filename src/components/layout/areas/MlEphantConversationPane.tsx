@@ -132,7 +132,6 @@ export const MlEphantConversationPane = (props: {
   const needsReconnect = abruptlyClosed
 
   const onReconnect = () => {
-    props.sendBillingUpdate()
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
@@ -156,7 +155,6 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onClickClearChat = () => {
-    props.sendBillingUpdate()
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.ConversationClose,
     })
@@ -175,7 +173,6 @@ export const MlEphantConversationPane = (props: {
   }
 
   const tryToGetExchanges = () => {
-    props.sendBillingUpdate()
     const mlEphantConversations =
       props.systemIOActor.getSnapshot().context.mlEphantConversations
 
@@ -249,6 +246,9 @@ export const MlEphantConversationPane = (props: {
         if (isProcessing) {
           return
         }
+
+        // End of processing, trigger a billing update
+        props.sendBillingUpdate()
 
         if (context.conversation !== undefined) {
           return
