@@ -14,7 +14,7 @@ import {
   createOnAreaSelectEndCallback,
   executeTrimStrategy,
   getTrimSpawnTerminations,
-} from '@src/machines/sketchSolve/tools/trimUtils'
+} from '@src/machines/sketchSolve/tools/trimToolImpl'
 import type { Coords2d } from '@src/lang/util'
 
 let instanceInThisFile: ModuleType = null!

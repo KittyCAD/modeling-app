@@ -6,7 +6,7 @@ import {
   arcArcIntersection,
   getPositionCoordsForLine,
   getPositionCoordsFromArc,
-} from '@src/machines/sketchSolve/tools/trimUtils'
+} from '@src/machines/sketchSolve/tools/trimToolImpl'
 import { isArray } from '@src/lib/utils'
 
 const otherParams = Object.freeze({

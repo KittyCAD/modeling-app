@@ -9,7 +9,7 @@ import { BufferGeometry, Line, LineBasicMaterial, Vector3 } from 'three'
 import {
   createOnAreaSelectEndCallback,
   executeTrimStrategy,
-} from '@src/machines/sketchSolve/tools/trimUtils'
+} from '@src/machines/sketchSolve/tools/trimToolImpl'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 // Trim tool draws an ephemeral polyline during an area-select drag.
