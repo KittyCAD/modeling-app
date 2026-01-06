@@ -190,18 +190,14 @@ describe('desktop utilities', () => {
     it('should return a wonky path because appConfig is not set by default', async () => {
       if (!window.electron) throw new Error('Electron not found')
       const expected = '/appData//envs/development.json'
-      const actual = await getEnvironmentConfigurationPath(
-        'development'
-      )
+      const actual = await getEnvironmentConfigurationPath('development')
       expect(actual).toBe(expected)
     })
     it('should return path to the configuration file for development', async () => {
       const expected = '/appData/zoo-modeling-app/envs/development.json'
       if (!window.electron) throw new Error('Electron not found')
       mockElectron.packageJson.name = 'zoo-modeling-app'
-      const actual = await getEnvironmentConfigurationPath(
-        'development'
-      )
+      const actual = await getEnvironmentConfigurationPath('development')
       mockElectron.packageJson.name = ''
       expect(actual).toBe(expected)
     })
@@ -209,9 +205,7 @@ describe('desktop utilities', () => {
       if (!window.electron) throw new Error('Electron not found')
       const expected = '/appData/zoo-modeling-app/envs/production.json'
       mockElectron.packageJson.name = 'zoo-modeling-app'
-      const actual = await getEnvironmentConfigurationPath(
-        'production'
-      )
+      const actual = await getEnvironmentConfigurationPath('production')
       mockElectron.packageJson.name = ''
       expect(actual).toBe(expected)
     })
@@ -238,9 +232,7 @@ describe('desktop utilities', () => {
     it('should return null for development', async () => {
       if (!window.electron) throw new Error('Electron not found')
       const expected = null
-      const actual = await readEnvironmentConfigurationFile(
-        'dev.zoo.dev'
-      )
+      const actual = await readEnvironmentConfigurationFile('dev.zoo.dev')
       expect(actual).toBe(expected)
     })
     it('should return a empty string object for development', async () => {
@@ -254,9 +246,7 @@ describe('desktop utilities', () => {
         domain: 'dev.zoo.dev',
         token: '',
       }
-      const actual = await readEnvironmentConfigurationFile(
-        'dev.zoo.dev'
-      )
+      const actual = await readEnvironmentConfigurationFile('dev.zoo.dev')
 
       // mock clean up
       mockElectron.packageJson.name = ''
@@ -273,9 +263,7 @@ describe('desktop utilities', () => {
         domain: 'zoo.dev',
         token: '',
       }
-      const actual = await readEnvironmentConfigurationFile(
-        'zoo.dev'
-      )
+      const actual = await readEnvironmentConfigurationFile('zoo.dev')
 
       // mock clean up
       mockElectron.packageJson.name = ''
@@ -316,17 +304,13 @@ describe('desktop utilities', () => {
     it('should return the empty string for dev.zoo.dev', async () => {
       if (!window.electron) throw new Error('Electron not found')
       const expected = ''
-      const actual = await readEnvironmentConfigurationToken(
-        'dev.zoo.dev'
-      )
+      const actual = await readEnvironmentConfigurationToken('dev.zoo.dev')
       expect(actual).toBe(expected)
     })
     it('should return the empty string for production', async () => {
       if (!window.electron) throw new Error('Electron not found')
       const expected = ''
-      const actual = await readEnvironmentConfigurationToken(
-        'zoo.dev'
-      )
+      const actual = await readEnvironmentConfigurationToken('zoo.dev')
       expect(actual).toBe(expected)
     })
     it('should return the string dog-dog-dog for development', async () => {
@@ -337,9 +321,7 @@ describe('desktop utilities', () => {
       })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected = 'dog-dog-dog'
-      const actual = await readEnvironmentConfigurationToken(
-        'development'
-      )
+      const actual = await readEnvironmentConfigurationToken('development')
       // mock clean up
       mockElectron.packageJson.name = ''
       expect(actual).toBe(expected)
@@ -352,9 +334,7 @@ describe('desktop utilities', () => {
       })
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const expected = 'cat-cat-cat'
-      const actual = await readEnvironmentConfigurationToken(
-        'production'
-      )
+      const actual = await readEnvironmentConfigurationToken('production')
       // mock clean up
       mockElectron.packageJson.name = ''
       expect(actual).toBe(expected)

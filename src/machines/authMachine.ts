@@ -302,9 +302,7 @@ async function getAndSyncStoredToken(input: {
   const cookieToken = getCookie()
   const fileToken =
     window.electron && environmentName
-      ? await readEnvironmentConfigurationToken(
-          environmentName
-        )
+      ? await readEnvironmentConfigurationToken(environmentName)
       : ''
   const token = inputToken || cookieToken || fileToken
 

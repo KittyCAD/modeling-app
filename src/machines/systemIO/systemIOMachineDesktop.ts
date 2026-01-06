@@ -818,7 +818,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
             path.dirname(await getAppSettingsFilePath()),
             ML_CONVERSATIONS_FILE_NAME
           ),
-          { encoding: 'utf-8' },
+          { encoding: 'utf-8' }
         )
         return jsonToMlConversations(json ?? '')
       } catch (e) {

@@ -17,7 +17,6 @@ export interface IStat {
   mtime: Date
   ctime: Date
   birthtime: Date
-  isDirectory: () => boolean
 }
 
 export interface IZooDesignStudioFS {

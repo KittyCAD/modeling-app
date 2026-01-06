@@ -3,6 +3,8 @@ import noopfs, { NoopFSOptions } from './noopfs'
 import electronfs, { ElectronFSOptions } from './electronfs'
 import opfs, { OPFSOptions } from './opfs'
 
+export { fsZdsConstants } from './constants'
+
 function isAnFsBacking(x: unknown): x is IZooDesignStudioFS {
   return (
     typeof x === 'object' &&
@@ -69,13 +71,6 @@ export const useFsViaModuleImport = async (backing: StorageBacking) => {
 
   // Do not return the object to be potentially misused by consumers.
   // If you want it, use `useFsViaObject` instead.
-}
-
-export const fsZdsConstants = {
-  F_OK: 0,
-  X_OK: 1,
-  W_OK: 2,
-  R_OK: 3,
 }
 
 // This reference is modified by `useFsViaModuleImport`, to support using fs

@@ -496,7 +496,10 @@ export async function writeProjectSettingsFile(
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
   if (err(tomlStr)) return Promise.reject(tomlStr)
-  return fsZds.writeFile(projectSettingsFilePath, new TextEncoder().encode(tomlStr))
+  return fsZds.writeFile(
+    projectSettingsFilePath,
+    new TextEncoder().encode(tomlStr)
+  )
 }
 
 // Important for saving settings.
@@ -705,7 +708,9 @@ export const readProjectSettingsFile = async (
 /**
  * Read the app settings file, or creates an initial one if it doesn't exist.
  */
-export const readAppSettingsFile = async (wasmInstance: ModuleType): Promise<DeepPartial<Configuration>> => {
+export const readAppSettingsFile = async (
+  wasmInstance: ModuleType
+): Promise<DeepPartial<Configuration>> => {
   let settingsPath = await getAppSettingsFilePath()
   const initialProjectDirConfig: DeepPartial<
     NonNullable<Required<Configuration>['settings']['project']>
@@ -724,10 +729,6 @@ export const readAppSettingsFile = async (wasmInstance: ModuleType): Promise<Dee
 
     const hasProjectDirectorySetting =
       parsedAppConfig.settings?.project?.directory
-
-    if (hasProjectDirectorySetting === undefined) {
-      return Promise.reject(new Error('project directory setting is undefined'))
-    }
 
     if (hasProjectDirectorySetting) {
       return parsedAppConfig
@@ -801,7 +802,10 @@ export const writeEnvironmentConfigurationToken = async (
     await getEnvironmentConfigurationObject(environmentName)
   environmentConfiguration.token = token
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await fsZds.writeFile(path, new TextEncoder().encode(requestedConfiguration))
+  const result = await fsZds.writeFile(
+    path,
+    new TextEncoder().encode(requestedConfiguration)
+  )
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
@@ -813,12 +817,14 @@ export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
 ) => {
   kittycadWebSocketUrl = kittycadWebSocketUrl.trim()
   const path = await getEnvironmentConfigurationPath(environmentName)
-  const environmentConfiguration = await getEnvironmentConfigurationObject(
-    environmentName
-  )
+  const environmentConfiguration =
+    await getEnvironmentConfigurationObject(environmentName)
   environmentConfiguration.kittycadWebSocketUrl = kittycadWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
-  const result = await fsZds.writeFile(path, new TextEncoder().encode(requestedConfiguration))
+  const result = await fsZds.writeFile(
+    path,
+    new TextEncoder().encode(requestedConfiguration)
+  )
   console.log(`wrote ${environmentName}.json to disk`)
   return result
 }
@@ -851,9 +857,8 @@ export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
   electron: IElectronAPI,
   environmentName: string
 ) => {
-  const environmentConfiguration = await readEnvironmentConfigurationFile(
-    environmentName
-  )
+  const environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
   if (!environmentConfiguration?.kittycadWebSocketUrl) return ''
   return environmentConfiguration.kittycadWebSocketUrl.trim()
 }
@@ -865,9 +870,8 @@ export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (
 ) => {
   mlephantWebSocketUrl = mlephantWebSocketUrl.trim()
   const path = await getEnvironmentConfigurationPath(environmentName)
-  const environmentConfiguration = await getEnvironmentConfigurationObject(
-    environmentName
-  )
+  const environmentConfiguration =
+    await getEnvironmentConfigurationObject(environmentName)
   environmentConfiguration.mlephantWebSocketUrl = mlephantWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
   const result = await electron.writeFile(path, requestedConfiguration)
@@ -879,9 +883,8 @@ export const readEnvironmentConfigurationMlephantWebSocketUrl = async (
   electron: IElectronAPI,
   environmentName: string
 ) => {
-  const environmentConfiguration = await readEnvironmentConfigurationFile(
-    environmentName
-  )
+  const environmentConfiguration =
+    await readEnvironmentConfigurationFile(environmentName)
   if (!environmentConfiguration?.mlephantWebSocketUrl) return ''
   return environmentConfiguration.mlephantWebSocketUrl.trim()
 }
@@ -909,7 +912,10 @@ export const writeEnvironmentFile = async (environment: string) => {
   environment = environment.trim()
   const environmentFilePath = await getEnvironmentFilePath()
   if (err(environment)) return Promise.reject(environment)
-  const result = fsZds.writeFile(environmentFilePath, new TextEncoder().encode(environment))
+  const result = fsZds.writeFile(
+    environmentFilePath,
+    new TextEncoder().encode(environment)
+  )
   console.log('environment written to disk')
   return result
 }
@@ -949,7 +955,10 @@ export const writeTelemetryFile = async (content: string) => {
 export const writeRawTelemetryFile = async (content: string) => {
   const rawTelemetryFilePath = await getRawTelemetryFilePath()
   if (err(content)) return Promise.reject(content)
-  return fsZds.writeFile(rawTelemetryFilePath, new TextEncoder().encode(content))
+  return fsZds.writeFile(
+    rawTelemetryFilePath,
+    new TextEncoder().encode(content)
+  )
 }
 
 let appStateStore: Project | undefined = undefined
@@ -1002,7 +1011,10 @@ export const canReadWriteDirectory = async (
 ): Promise<{ value: boolean; error: unknown }> => {
   const isDirectory = await statIsDirectory(targetPath)
   if (!isDirectory) {
-    return { value: false, error: new Error('path is not a directory. Do not send a file path.') }
+    return {
+      value: false,
+      error: new Error('path is not a directory. Do not send a file path.'),
+    }
   }
 
   // bitwise OR to check read and write permissions
@@ -1024,7 +1036,7 @@ export const canReadWriteDirectory = async (
 export async function statIsDirectory(targetPath: string): Promise<boolean> {
   try {
     const res = await fsZds.stat(targetPath)
-    return res.isDirectory()
+    return res.mode & fsZdsConstants.S_IFDIR
   } catch (e) {
     if (e === 'ENOENT') {
       console.error('File does not exist', e)

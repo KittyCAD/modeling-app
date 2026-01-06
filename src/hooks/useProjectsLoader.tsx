@@ -25,9 +25,7 @@ export const useProjectsLoader = (deps?: [number]) => {
       const { configuration } = await loadAndValidateSettings(
         kclManager.wasmInstancePromise
       )
-      const _projectsDir = await ensureProjectDirectoryExists(
-        configuration
-      )
+      const _projectsDir = await ensureProjectDirectoryExists(configuration)
       setProjectsDir(_projectsDir)
 
       if (projectsDir) {

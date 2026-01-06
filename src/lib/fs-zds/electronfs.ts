@@ -12,7 +12,7 @@ export type ElectronFSOptions = {}
 // window is not available. Not even the variable name is.
 
 const impl: IZooDesignStudioFS =
-  typeof window === 'undefined'
+  (typeof window === 'undefined' || window.electron === undefined)
     ? noopfs.impl
     : {
         getPath: window.electron!.getPath,

@@ -4,6 +4,7 @@ import type { ConfigEnv, UserConfig } from 'vite'
 import { defineConfig } from 'vite'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 import { indexHtmlCsp, pluginExposeRenderer } from './vite.base.config'
 
@@ -24,6 +25,9 @@ export default defineConfig((env) => {
     optimizeDeps: { esbuildOptions: { target: 'es2022' } },
     plugins: [
       indexHtmlCsp(mode !== 'development'),
+      nodePolyfills({
+        include: ['path'],
+      }),
       pluginExposeRenderer(name),
       viteTsconfigPaths(),
       lezer(),

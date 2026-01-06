@@ -1,5 +1,6 @@
 // The Origin Private File System. Used for browser environments.
 import { IZooDesignStudioFS, IStat } from './interface'
+export { fsZdsConstants } from './constants'
 import path from 'path'
 
 const noopAsync = async (..._args: any[]) =>
@@ -78,7 +79,6 @@ const stat = async (path: string): Promise<IStat> => {
       mtime: new Date(file.lastModified),
       ctime: new Date(file.lastModified),
       birthtime: new Date(file.lastModified),
-      isDirectory: () => false,
     }
   }
 
@@ -87,7 +87,7 @@ const stat = async (path: string): Promise<IStat> => {
     dev: 0,
     ino: 0,
     mode: 0,
-    nlink: 0,
+    mode: fsZdsConstants.S_IFDIR,
     uid: 0,
     gid: 0,
     rdev: 0,
@@ -102,7 +102,6 @@ const stat = async (path: string): Promise<IStat> => {
     mtime: new Date(),
     ctime: new Date(),
     birthtime: new Date(),
-    isDirectory: () => true,
   }
 }
 
@@ -131,10 +130,7 @@ const readFile = async <T extends ReadFileOptions>(
 
   if (handle instanceof FileSystemFileHandle) {
     const file = await handle.getFile()
-    if (
-      options === 'utf8' ||
-      options?.encoding === 'utf-8'
-    ) {
+    if (options === 'utf8' || options?.encoding === 'utf-8') {
       return (await file.text()) as ReadFileReturn<T>
     }
 

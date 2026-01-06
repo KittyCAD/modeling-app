@@ -1839,7 +1839,10 @@ export class KclManager extends EventTarget {
         }
         this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
         fsZds
-          .writeFile(this._currentFilePath, new TextEncoder().encode(this.code ?? ''))
+          .writeFile(
+            this._currentFilePath,
+            new TextEncoder().encode(this.code ?? '')
+          )
           .then(resolve)
           .catch((err: Error) => {
             // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
