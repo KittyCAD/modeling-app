@@ -38,7 +38,7 @@ import type {
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferredCallback } from '@src/lib/utils'
+import { deferExecution } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { EngineDebugger } from '@src/lib/debugger'
@@ -50,7 +50,6 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import {
-  processCodeMirrorRanges,
   type handleSelectionBatch as handleSelectionBatchFn,
   type processCodeMirrorRanges as processCodeMirrorRangesFn,
 } from '@src/lib/selections'
@@ -60,20 +59,25 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import { history, redo, redoDepth, undo, undoDepth } from '@codemirror/commands'
+import {
+  defaultKeymap,
+  history,
+  historyKeymap,
+  redo,
+  undo,
+} from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
 import {
   Annotation,
-  Compartment,
   EditorSelection,
   EditorState,
   Transaction,
   type TransactionSpec,
 } from '@codemirror/state'
 import type { KeyBinding, ViewUpdate } from '@codemirror/view'
-import { drawSelection, EditorView, keymap } from '@codemirror/view'
+import { EditorView, keymap } from '@codemirror/view'
 import type { StateFrom } from 'xstate'
 
 import {
@@ -95,7 +99,7 @@ import {
   themeCompartment,
   appSettingsThemeEffect,
   settingsUpdateAnnotation,
-} from '@src/editor/plugins/theme'
+} from '@src/lib/codeEditor'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import {
   createEmptyAst,
@@ -103,16 +107,6 @@ import {
   updateAstAnnotation,
 } from '@src/editor/plugins/ast'
 import { setKclVersion } from '@src/lib/kclVersion'
-import {
-  baseEditorExtensions,
-  cursorBlinkingCompartment,
-  lineWrappingCompartment,
-} from '@src/editor'
-import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
-import type {
-  SceneGraphDelta,
-  SourceDelta,
-} from '@rust/kcl-lib/bindings/FrontendApi'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -144,8 +138,6 @@ window.EditorView = EditorView
 
 const PERSIST_CODE_KEY = 'persistCode'
 
-const keymapCompartment = new Compartment()
-
 const editorCodeUpdateAnnotation = Annotation.define<boolean>()
 export const editorCodeUpdateEvent = editorCodeUpdateAnnotation.of(true)
 
@@ -157,8 +149,6 @@ export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 
 const setDiagnosticsAnnotation = Annotation.define<boolean>()
 export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
-
-export const hotkeyRegisteredAnnotation = Annotation.define<string>()
 
 export class KclManager extends EventTarget {
   // SYSTEM DEPENDENCIES
@@ -197,7 +187,12 @@ export class KclManager extends EventTarget {
 
   // CORE STATE
 
-  private _editorView: EditorView
+  /** TODO: make this be the source of truth for all editor state,
+   * and make it `readonly`
+   */
+  private _editorView: EditorView | null = null
+  /** TODO: remove this field, and only refer to it through `EditorView`. */
+  private _editorState: EditorState
 
   /**
    * The core state in KclManager are the code and the selection.
@@ -209,7 +204,7 @@ export class KclManager extends EventTarget {
     this._code.value = code
   }
   get code(): string {
-    return this.editorView.state.doc.toString()
+    return this._code.value
   }
   get codeSignal() {
     return this._code
@@ -249,12 +244,6 @@ export class KclManager extends EventTarget {
     otherSelections: [],
     graphSelections: [],
   }
-  undoDepth = signal(0)
-  redoDepth = signal(0)
-  undoListenerEffect = EditorView.updateListener.of((vu) => {
-    this.undoDepth.value = undoDepth(vu.state)
-    this.redoDepth.value = redoDepth(vu.state)
-  })
   /**
    * A client-side representation of the commands that have been sent,
    * the geometry they represent, and the connections between them.
@@ -452,131 +441,6 @@ export class KclManager extends EventTarget {
     this._wasmInitFailed.value = wasmInitFailed
   }
 
-  /**
-   * This is a CodeMirror extension that listens for selection events
-   * and fires off engine commands to highlight the corresponding engine entities.
-   * It is not debounced.
-   */
-  private highlightEngineEntitiesEffect = EditorView.updateListener.of(
-    (update: ViewUpdate) => {
-      if (update.transactions.some((tr) => tr.isUserEvent('select'))) {
-        this.wasmInstancePromise
-          .then((wasmInstance) =>
-            this.handleOnViewUpdate(
-              update,
-              processCodeMirrorRanges,
-              wasmInstance
-            )
-          )
-          .catch(reportRejection)
-      }
-    }
-  )
-
-  /**
-   * This is a CodeMirror extension that watches for updates to the document,
-   * discerns if the change is a kind that we want to re-execute on,
-   * then fires (and forgets) an execution with a debounce.
-   */
-  private executeKclEffect = EditorView.updateListener.of((update) => {
-    this.code = update.view.state.doc.toString()
-
-    const shouldExecute =
-      this.engineCommandManager.started &&
-      update.docChanged &&
-      update.transactions.some((tr) => {
-        // The old KCL ViewPlugin had checks that seemed to check for
-        // certain events, but really they just set the already-true to true.
-        // Leaving here in case we need to switch to an opt-in listener.
-        // const relevantEvents = [
-        //   tr.isUserEvent('input'),
-        //   tr.isUserEvent('delete'),
-        //   tr.isUserEvent('undo'),
-        //   tr.isUserEvent('redo'),
-        //   tr.isUserEvent('move'),
-        //   tr.annotation(lspRenameEvent.type),
-        //   tr.annotation(lspCodeActionEvent.type),
-        // ]
-        const ignoredEvents = [
-          tr.annotation(editorCodeUpdateEvent.type),
-          tr.annotation(copilotPluginEvent.type),
-          tr.annotation(updateOutsideEditorEvent.type),
-          tr.annotation(hotkeyRegisteredAnnotation),
-        ]
-
-        return !ignoredEvents.some((v) => Boolean(v))
-      })
-
-    if (shouldExecute) {
-      const newCode = update.state.doc.toString()
-      this.deferredExecution(newCode)
-    }
-  })
-
-  private deferredExecution = deferredCallback(async (newCode: string) => {
-    // We don't want to block on file writing
-    void this.writeToFile(newCode)
-
-    // If we're in sketchSolveMode, update Rust state with the latest AST
-    // This handles the case where the user directly edits in the CodeMirror editor
-    // these are short term hacks while in rapid development for sketch revamp
-    // should be clean up.
-    try {
-      if (this.modelingState?.matches('sketchSolveMode')) {
-        await this.executeCode(newCode)
-        const { sceneGraph, execOutcome } =
-          await this.singletons.rustContext.hackSetProgram(
-            this.ast,
-            await jsAppSettings(this.singletons.rustContext.settingsActor)
-          )
-
-        // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
-        // Always invalidate IDs for direct edits since we don't know what the user changed
-        const sceneGraphDelta: SceneGraphDelta = {
-          new_graph: sceneGraph,
-          new_objects: [],
-          invalidates_ids: true,
-          exec_outcome: execOutcome,
-        }
-
-        const kclSource: SourceDelta = {
-          text: this.code,
-        }
-
-        // Send event to sketch solve machine via modeling machine
-        this.sendModelingEvent({
-          type: 'update sketch outcome',
-          data: {
-            kclSource,
-            sceneGraphDelta,
-          },
-        })
-      } else {
-        await this.executeCode(newCode)
-      }
-    } catch (error) {
-      console.error('Error when updating Rust state after user edit:', error)
-    }
-  }, 300)
-
-  private createEditorExtensions() {
-    return [
-      baseEditorExtensions(),
-      keymapCompartment.of(keymap.of(this.getCodemirrorHotkeys())),
-      this.highlightEngineEntitiesEffect,
-      this.undoListenerEffect,
-      this.executeKclEffect,
-    ]
-  }
-  private createEditorView() {
-    return new EditorView({
-      state: EditorState.create({
-        doc: '',
-        extensions: this.createEditorExtensions(),
-      }),
-    })
-  }
-
   constructor(
     engineCommandManager: ConnectionManager,
     wasmInstance: Promise<ModuleType>,
@@ -588,7 +452,13 @@ export class KclManager extends EventTarget {
     this.singletons = singletons
 
     /** Merged code from EditorManager and CodeManager classes */
-    this._editorView = this.createEditorView()
+    this._editorState = EditorState.create({
+      doc: '',
+      extensions: [
+        historyCompartment.of(history()),
+        keymap.of([...defaultKeymap, ...historyKeymap]),
+      ],
+    })
 
     if (isDesktop()) {
       this.code = ''
@@ -605,9 +475,9 @@ export class KclManager extends EventTarget {
       zustandStore.state.code = ''
       safeLSSetItem('store', JSON.stringify(zustandStore))
     } else if (storedCode === null) {
-      this.updateCodeStateEditor(bracket)
+      this.code = bracket
     } else {
-      this.updateCodeStateEditor(storedCode || '')
+      this.code = storedCode || ''
     }
     /** End merged code from EditorManager and CodeManager */
 
@@ -680,13 +550,16 @@ export class KclManager extends EventTarget {
    */
   private dispatchUpdateAst(newAst: Node<Program>) {
     // Push the artifact graph into the editor state so annotations/decorations update
-    this.editorView.dispatch({
-      effects: [setAstEffect.of(newAst)],
-      annotations: [
-        updateAstAnnotation.of(true),
-        Transaction.addToHistory.of(false),
-      ],
-    })
+    const editorView = this.getEditorView()
+    if (editorView) {
+      editorView.dispatch({
+        effects: [setAstEffect.of(newAst)],
+        annotations: [
+          updateAstAnnotation.of(true),
+          Transaction.addToHistory.of(false),
+        ],
+      })
+    }
   }
 
   private async updateArtifactGraph(
@@ -696,7 +569,7 @@ export class KclManager extends EventTarget {
     this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
 
     // Push the artifact graph into the editor state so annotations/decorations update
-    const editorView = this.editorView
+    const editorView = this.getEditorView()
     if (editorView) {
       editorView.dispatch({
         effects: [setArtifactGraphEffect.of(this.artifactGraph)],
@@ -710,13 +583,13 @@ export class KclManager extends EventTarget {
       // TODO: we wanna remove this logic from xstate, it is racey
       // This defer is bullshit but playwright wants it
       // It was like this in engineConnection.ts already
-      deferredCallback((_a?: null) => {
+      deferExecution((_a?: null) => {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph populated',
         })
       }, 200)(null)
     } else {
-      deferredCallback((_a?: null) => {
+      deferExecution((_a?: null) => {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph emptied',
         })
@@ -724,7 +597,7 @@ export class KclManager extends EventTarget {
     }
 
     // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
-    deferredCallback((_a?: null) => {
+    deferExecution((_a?: null) => {
       if (this.defaultPlanes) {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph initialized',
@@ -942,8 +815,8 @@ export class KclManager extends EventTarget {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(newCode = this.code): Promise<void> {
-    const ast = await this.safeParse(newCode, await this.wasmInstancePromise)
+  async executeCode(): Promise<void> {
+    const ast = await this.safeParse(this.code, await this.wasmInstancePromise)
 
     if (!ast) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
@@ -1190,11 +1063,12 @@ export class KclManager extends EventTarget {
     )
   }
 
+  /** TODO: make this and `editorState` always guaranteed present */
   get editorView() {
     return this._editorView
   }
   get editorState(): EditorState {
-    return this._editorView.state
+    return this._editorView?.state || this._editorState
   }
   get state() {
     return this.editorState
@@ -1206,11 +1080,20 @@ export class KclManager extends EventTarget {
     return this._copilotEnabled
   }
   // Invoked when editorView is created and each time when it is updated (eg. user is sketching)..
-  // setEditorView(editorView: EditorView) {
-  //   this.overrideTreeHighlighterUpdateForPerformanceTracking()
-  // }
-
-  /** TODO: Investigate if this is still needed in the new world */
+  setEditorView(editorView: EditorView | null) {
+    // Update editorState to the latest editorView state.
+    // This is needed because if kcl pane is closed, editorView will become null but we still want to use the last state.
+    this._editorState = editorView?.state || this._editorState
+    this._editorView = editorView
+    kclEditorActor.send({
+      type: 'setKclEditorMounted',
+      data: Boolean(editorView),
+    })
+    this.overrideTreeHighlighterUpdateForPerformanceTracking()
+  }
+  getEditorView(): EditorView | null {
+    return this._editorView
+  }
   overrideTreeHighlighterUpdateForPerformanceTracking() {
     // @ts-ignore
     this._editorView?.plugins.forEach((e) => {
@@ -1319,44 +1202,19 @@ export class KclManager extends EventTarget {
     }
   }
   setEditorTheme(theme: 'light' | 'dark') {
-    this._editorView.dispatch({
-      effects: [
-        appSettingsThemeEffect.of(theme),
-        themeCompartment.reconfigure(editorTheme[theme]),
-      ],
-      annotations: [
-        settingsUpdateAnnotation.of(null),
-        Transaction.addToHistory.of(false),
-      ],
-    })
+    if (this._editorView) {
+      this._editorView.dispatch({
+        effects: [
+          appSettingsThemeEffect.of(theme),
+          themeCompartment.reconfigure(editorTheme[theme]),
+        ],
+        annotations: [
+          settingsUpdateAnnotation.of(null),
+          Transaction.addToHistory.of(false),
+        ],
+      })
+    }
   }
-  setEditorLineWrapping(shouldWrap: boolean) {
-    this._editorView.dispatch({
-      effects: [
-        lineWrappingCompartment.reconfigure(
-          shouldWrap ? EditorView.lineWrapping : []
-        ),
-      ],
-      annotations: [
-        settingsUpdateAnnotation.of(null),
-        Transaction.addToHistory.of(false),
-      ],
-    })
-  }
-  setCursorBlinking(shouldBlink: boolean) {
-    this._editorView.dispatch({
-      effects: [
-        cursorBlinkingCompartment.reconfigure(
-          drawSelection({ cursorBlinkRate: shouldBlink ? 1200 : 0 })
-        ),
-      ],
-      annotations: [
-        settingsUpdateAnnotation.of(null),
-        Transaction.addToHistory.of(false),
-      ],
-    })
-  }
-
   /**
    * Given an array of Diagnostics remove any duplicates by hashing a key
    * in the format of from + ' ' + to + ' ' + message.
@@ -1440,10 +1298,10 @@ export class KclManager extends EventTarget {
   undo() {
     if (this._editorView) {
       undo(this._editorView)
-    } else if (this.editorState) {
+    } else if (this._editorState) {
       const undoPerformed = undo(this) // invokes dispatch which updates this._editorState
       if (undoPerformed) {
-        const newState = this.editorState
+        const newState = this._editorState
         // Update the code, this is similar to kcl/index.ts / update, updateDoc,
         // needed to update the code, so sketch segments can update themselves.
         // In the editorView case this happens within the kcl plugin's update method being called during updates.
@@ -1455,10 +1313,10 @@ export class KclManager extends EventTarget {
   redo() {
     if (this._editorView) {
       redo(this._editorView)
-    } else if (this.editorState) {
+    } else if (this._editorState) {
       const redoPerformed = redo(this)
       if (redoPerformed) {
-        const newState = this.editorState
+        const newState = this._editorState
         this.code = newState.doc.toString()
         void this.executeCode()
       }
@@ -1467,7 +1325,11 @@ export class KclManager extends EventTarget {
   // Invoked by codeMirror during undo/redo.
   // Call with incorrect "this" so it needs to be an arrow function.
   dispatch = (spec: TransactionSpec) => {
-    this._editorView.dispatch(spec)
+    if (this._editorView) {
+      this._editorView.dispatch(spec)
+    } else if (this._editorState) {
+      this._editorState = this._editorState.update(spec).state
+    }
   }
   set convertToVariableEnabled(enabled: boolean) {
     this._convertToVariableEnabled = enabled
@@ -1530,14 +1392,17 @@ export class KclManager extends EventTarget {
   handleOnViewUpdate(
     viewUpdate: ViewUpdate,
     processCodeMirrorRanges: typeof processCodeMirrorRangesFn,
+    sceneEntitiesManager: SceneEntities,
     wasmInstance: ModuleType
   ): void {
-    const sceneEntitiesManager = this._sceneEntitiesManager
+    if (!this._editorView) {
+      this.setEditorView(viewUpdate.view)
+    }
     const ranges = viewUpdate?.state?.selection?.ranges || []
     if (ranges.length === 0) {
       return
     }
-    if (!this._modelingState || !sceneEntitiesManager) {
+    if (!this._modelingState) {
       return
     }
     if (this._modelingState.matches({ Sketch: 'Change Tool' })) {
@@ -1595,12 +1460,6 @@ export class KclManager extends EventTarget {
   }
   registerHotkey(hotkey: string, callback: () => void) {
     this._hotkeys[hotkey] = callback
-    this.editorView.dispatch({
-      effects: keymapCompartment.reconfigure(
-        keymap.of(this.getCodemirrorHotkeys())
-      ),
-      annotations: hotkeyRegisteredAnnotation.of(hotkey),
-    })
   }
   getCodemirrorHotkeys(): KeyBinding[] {
     return Object.keys(this._hotkeys).map((key) => ({
@@ -1633,7 +1492,7 @@ export class KclManager extends EventTarget {
     this.dispatch({
       changes: {
         from: 0,
-        to: this.editorState.doc.length || 0,
+        to: this.editorState?.doc.length || 0,
         insert: code,
       },
       annotations: [
@@ -1651,7 +1510,7 @@ export class KclManager extends EventTarget {
       this.updateCodeEditor(code, clearHistory)
     }
   }
-  async writeToFile(newCode = this.code) {
+  async writeToFile() {
     if (this.isBufferMode) return
     if (window.electron) {
       const electron = window.electron
@@ -1659,21 +1518,19 @@ export class KclManager extends EventTarget {
       // and file-system watchers which read, will receive empty data during
       // writes.
       clearTimeout(this.timeoutWriter)
-      // Last write in memory must not be debounced to once per second
-      // TODO: investigate if `lastWrite` is necessary anymore.
-      this.lastWrite = {
-        code: newCode ?? '',
-        time: Date.now(),
-      }
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
           if (!this._currentFilePath)
             return reject(new Error('currentFilePath not set'))
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
+          this.lastWrite = {
+            code: this.code ?? '',
+            time: Date.now(),
+          }
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
           electron
-            .writeFile(this._currentFilePath, newCode)
+            .writeFile(this._currentFilePath, this.code ?? '')
             .then(resolve)
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
@@ -1684,7 +1541,7 @@ export class KclManager extends EventTarget {
         }, 1000)
       })
     } else {
-      safeLSSetItem(PERSIST_CODE_KEY, newCode)
+      safeLSSetItem(PERSIST_CODE_KEY, this.code)
     }
   }
   async updateEditorWithAstAndWriteToFile(
