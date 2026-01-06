@@ -28,6 +28,7 @@ export const MlEphantConversationPane = (props: {
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
   sendModeling: ReturnType<typeof useModelingContext>['send']
+  sendBillingUpdate: () => void
   loaderFile: FileEntry | undefined
   settings: SettingsType
   user?: User
@@ -110,6 +111,8 @@ export const MlEphantConversationPane = (props: {
       mode,
     })
 
+    props.sendBillingUpdate()
+
     // Clear selections since new model
     props.sendModeling({
       type: 'Set selection',
@@ -129,6 +132,7 @@ export const MlEphantConversationPane = (props: {
   const needsReconnect = abruptlyClosed
 
   const onReconnect = () => {
+    props.sendBillingUpdate()
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.CacheSetupAndConnect,
       refParentSend: props.mlEphantManagerActor.send,
@@ -138,6 +142,7 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onInterrupt = () => {
+    props.sendBillingUpdate()
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.Interrupt,
     })
@@ -151,6 +156,7 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onClickClearChat = () => {
+    props.sendBillingUpdate()
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.ConversationClose,
     })
@@ -169,6 +175,7 @@ export const MlEphantConversationPane = (props: {
   }
 
   const tryToGetExchanges = () => {
+    props.sendBillingUpdate()
     const mlEphantConversations =
       props.systemIOActor.getSnapshot().context.mlEphantConversations
 
