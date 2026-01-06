@@ -1,7 +1,6 @@
 import type { ExecState } from '@src/lang/wasm'
 import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { isDesktop } from '@src/lib/isDesktop'
 import { joinOSPaths } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'

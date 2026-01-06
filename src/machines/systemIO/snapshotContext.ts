@@ -2,6 +2,7 @@ import { getEXTNoPeriod, isExtensionAnImportExtension } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import { isArray } from '@src/lib/utils'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
+import path from 'path'
 
 export function getAllSubDirectoriesAtProjectRoot(
   context: SystemIOContext,
@@ -47,7 +48,7 @@ export function listAllImportFilesWithinProject(
     return folder.name === projectFolderName
   })
   const clonedProjectFolder = structuredClone(projectFolder)
-  if (window.electron && clonedProjectFolder?.children) {
+  if (clonedProjectFolder?.children) {
     const projectPath = clonedProjectFolder.path
     let children = clonedProjectFolder.children
     while (children.length > 0) {
@@ -61,10 +62,7 @@ export function listAllImportFilesWithinProject(
         continue
       }
 
-      const relativeFilePath = v.path.replace(
-        projectPath + window.electron.sep,
-        ''
-      )
+      const relativeFilePath = v.path.replace(projectPath + path.sep, '')
       const extension = getEXTNoPeriod(relativeFilePath)
       if (
         extension &&

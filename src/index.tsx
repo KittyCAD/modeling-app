@@ -1,11 +1,11 @@
-import { useFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 // Earliest as possible, configure the fs layer.
 // In the future we can have the user switch between them at run-time, but
 // for now, there is no intention.
 if (window.electron) {
-  useFsViaModuleImport({ type: StorageName.ElectronFS, options: {} })
+  void moduleFsViaModuleImport({ type: StorageName.ElectronFS, options: {} })
 } else {
-  useFsViaModuleImport({ type: StorageName.OPFS, options: {} })
+  void moduleFsViaModuleImport({ type: StorageName.OPFS, options: {} })
 }
 
 import { AppStreamProvider } from '@src/AppState'

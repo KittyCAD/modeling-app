@@ -1,8 +1,6 @@
-import type { PlatformPath } from 'path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
-import type { IElectronAPI } from '@root/interface'
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,

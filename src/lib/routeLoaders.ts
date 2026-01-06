@@ -10,11 +10,9 @@ import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
   FILE_EXT,
-  PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { getProjectInfo } from '@src/lib/desktop'
 import { readAppSettingsFile } from '@src/lib/desktop'
-import { isDesktop } from '@src/lib/isDesktop'
 import {
   BROWSER_PATH,
   PATHS,

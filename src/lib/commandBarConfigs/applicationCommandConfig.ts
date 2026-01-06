@@ -1,5 +1,5 @@
 import env from '@src/env'
-import fsZds from '@src/lib/fs-zds'
+import path from 'path'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
@@ -9,11 +9,7 @@ import {
 } from '@src/lib/desktop'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
-import {
-  everyKclSample,
-  findKclSample,
-  kclSamplesManifestWithNoMultipleFiles,
-} from '@src/lib/kclSamples'
+import { everyKclSample, findKclSample } from '@src/lib/kclSamples'
 import {
   getStringAfterLastSeparator,
   joinOSPaths,
@@ -160,34 +156,38 @@ export function createApplicationCommands({
           ? getUniqueProjectName(requestedProjectName, folders)
           : requestedProjectName
 
-        const kclSample = findKclSample(data.sample)
-        if (
-          data.source === 'kcl-samples' &&
-          kclSample &&
-          kclSample.files.length >= 1
-        ) {
-          onSubmitKCLSampleCreation({
-            sample: data.sample,
-            kclSample,
-            uniqueNameIfNeeded,
-            systemIOActor,
-            isProjectNew,
-          })
-        } else if (data.source === 'local' && data.path) {
-          const clonePath = data.path
-          const fileNameWithExtension = getStringAfterLastSeparator(clonePath)
-          const readFileContentsAndCreateNewFile = async () => {
-            const text = await fsZds.readFile(clonePath, 'utf8')
+        if (data.source === 'kcl-samples') {
+          const kclSample = findKclSample(data.sample)
+          if (!kclSample || kclSample.files.length >= 1) {
+            toast.error("Couldn't find KCL sample")
+          } else {
+            onSubmitKCLSampleCreation({
+              sample: data.sample,
+              kclSample,
+              uniqueNameIfNeeded,
+              systemIOActor,
+              isProjectNew,
+            })
+          }
+        } else if (data.source === 'local' && data.files) {
+          const fileNameWithExtension = getStringAfterLastSeparator(
+            data.files[0].name
+          )
+          const fr = new FileReader()
+          fr.addEventListener('load', () => {
             systemIOActor.send({
               type: SystemIOMachineEvents.importFileFromURL,
               data: {
                 requestedProjectName: uniqueNameIfNeeded,
                 requestedFileNameWithExtension: fileNameWithExtension,
-                requestedCode: text,
+                requestedCode:
+                  typeof fr.result === 'string'
+                    ? fr.result
+                    : '// Tried importing a binary',
               },
             })
-          }
-          readFileContentsAndCreateNewFile().catch(reportRejection)
+          })
+          fr.readAsText(data.files[0])
         } else {
           toast.error("The command couldn't be submitted, check the arguments.")
         }
@@ -198,23 +198,19 @@ export function createApplicationCommands({
         inputType: 'options',
         required: true,
         skip: false,
-        defaultValue: isDesktop() ? 'local' : 'kcl-samples',
+        defaultValue: 'local',
         options() {
           return [
+            {
+              value: 'local',
+              name: 'Local Drive',
+              isCurrent: false,
+            },
             {
               value: 'kcl-samples',
               name: 'KCL Samples',
               isCurrent: true,
             },
-            ...(isDesktop()
-              ? [
-                  {
-                    value: 'local',
-                    name: 'Local Drive',
-                    isCurrent: false,
-                  },
-                ]
-              : []),
           ]
         },
       },
@@ -236,9 +232,7 @@ export function createApplicationCommands({
           return value
         },
         options: () => {
-          const samples = isDesktop()
-            ? everyKclSample
-            : kclSamplesManifestWithNoMultipleFiles
+          const samples = everyKclSample
           return samples.map((sample) => {
             return {
               value: sample.pathFromProjectDirectoryToFirstFile,
@@ -252,7 +246,7 @@ export function createApplicationCommands({
         required: true,
         skip: true,
         options: ({ argumentsToSubmit }, _) => {
-          if (isDesktop() && typeof argumentsToSubmit.sample === 'string') {
+          if (typeof argumentsToSubmit.sample === 'string') {
             return [
               { name: 'New project', value: 'newProject', isCurrent: true },
               { name: 'Existing project', value: 'existingProject' },
@@ -262,20 +256,15 @@ export function createApplicationCommands({
           }
         },
         valueSummary(value) {
-          return isDesktop()
-            ? value === 'newProject'
-              ? 'New project'
-              : 'Existing project'
-            : 'Overwrite'
+          return value === 'newProject' ? 'New project' : 'Existing project'
         },
       },
       projectName: {
         inputType: 'options',
         required: (commandsContext) =>
-          isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        defaultValue: isDesktop() ? undefined : 'browser',
+        defaultValue: undefined,
         options: (_, _context) => {
           const { folders } = systemIOActor.getSnapshot().context
           const options: CommandArgumentOption<string>[] = []
@@ -292,20 +281,22 @@ export function createApplicationCommands({
       newProjectName: {
         inputType: 'text',
         required: (commandsContext) =>
-          isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'newProject',
         skip: true,
       },
-      path: {
+      files: {
         inputType: 'path',
         skip: true,
-        hidden: !isDesktop(),
+        hidden: false,
         defaultValue: '',
         valueSummary: (value) => {
-          return window.electron ? window.electron.path.basename(value) : ''
+          return (
+            value.files &&
+            value.files.length > 0 &&
+            path.basename(value.files[0].name)
+          )
         },
         required: (commandContext) =>
-          isDesktop() &&
           ['local'].includes(commandContext.argumentsToSubmit.source as string),
         filters: [
           {
@@ -364,7 +355,7 @@ export function createApplicationCommands({
         inputType: 'text',
         required: true,
         skip: false,
-        defaultValue: 'kcl-samples',
+        defaultValue: 'local',
         hidden: true,
       },
       sample: {

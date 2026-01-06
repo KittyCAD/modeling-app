@@ -1,7 +1,9 @@
 // A no-op FS. Does nothing!
-import { IZooDesignStudioFS } from './interface'
+import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 
 const noopAsync = async (..._args: any[]) => Promise.reject()
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type NoopFSOptions = {}
 
 const impl: IZooDesignStudioFS = {

@@ -1,5 +1,6 @@
 import type { User } from '@kittycad/lib'
-import fsZds, { fsZdsConstants } from '@src/lib/fs-zds'
+import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { type IStat } from '@src/lib/fs-zds/interface'
 import { users } from '@kittycad/lib'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
@@ -34,10 +35,9 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import env, { processEnv } from '@src/env'
+import env from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
-import type { Stats } from 'fs'
 
 const convertIStatToFileMetadata = (
   stats: IStat | null
@@ -747,7 +747,8 @@ export const readAppSettingsFile = async (
       }
       return mergedConfig
     }
-  } catch (_e) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_e: unknown) {
     // The file doesn't exist, create a new one.
     const defaultAppConfig = defaultAppSettings(wasmInstance)
     if (err(defaultAppConfig)) {
@@ -787,7 +788,8 @@ export const readEnvironmentConfigurationFile = async (
     })
     if (!configurationJSON) return null
     return JSON.parse(configurationJSON)
-  } catch (_e) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_e: unknown) {
     return null
   }
 }
@@ -899,7 +901,8 @@ export const readEnvironmentFile = async (electron: IElectronAPI) => {
     })
     if (!environment) return ''
     return environment.trim()
-  } catch (_e) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_e: unknown) {
     return ''
   }
 }
@@ -1036,7 +1039,7 @@ export const canReadWriteDirectory = async (
 export async function statIsDirectory(targetPath: string): Promise<boolean> {
   try {
     const res = await fsZds.stat(targetPath)
-    return res.mode & fsZdsConstants.S_IFDIR
+    return Boolean(res.mode & fsZdsConstants.S_IFDIR)
   } catch (e) {
     if (e === 'ENOENT') {
       console.error('File does not exist', e)

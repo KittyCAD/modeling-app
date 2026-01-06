@@ -13,7 +13,6 @@ import { assign, createActor, fromPromise, setup, spawnChild } from 'xstate'
 
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { isDesktop } from '@src/lib/isDesktop'
 import {
   createSettings,
   type SettingsType,
@@ -32,7 +31,6 @@ import {
 } from '@src/machines/settingsMachine'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { systemIOMachineDesktop } from '@src/machines/systemIO/systemIOMachineDesktop'
-import { systemIOMachineWeb } from '@src/machines/systemIO/systemIOMachineWeb'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'

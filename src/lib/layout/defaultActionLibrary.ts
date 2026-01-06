@@ -39,7 +39,6 @@ export const defaultActionLibrary = Object.freeze({
           argDefaultValues: {
             method: 'existingProject',
             projectName: currentProject?.name,
-            ...(!isDesktop() ? { source: 'kcl-samples' } : {}),
           },
         },
       })

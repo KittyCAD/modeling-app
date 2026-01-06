@@ -1,4 +1,4 @@
-import { fsZdsConstants } from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { Stats } from 'fs'
 import * as path from 'path'
 import {

@@ -1,10 +1,12 @@
 // The Origin Private File System. Used for browser environments.
-import { IZooDesignStudioFS, IStat } from './interface'
-export { fsZdsConstants } from './constants'
+import type { IZooDesignStudioFS, IStat } from '@src/lib/fs-zds/interface'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import path from 'path'
 
 const noopAsync = async (..._args: any[]) =>
   Promise.reject(new Error('unimplemented'))
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type OPFSOptions = {}
 
 // NOTE TO SELF OR ANYONE ELSE IN CASE: RETURN PROMISE.REJECT IN FAILURE CASES!
@@ -86,7 +88,7 @@ const stat = async (path: string): Promise<IStat> => {
   return {
     dev: 0,
     ino: 0,
-    mode: 0,
+    nlink: 0,
     mode: fsZdsConstants.S_IFDIR,
     uid: 0,
     gid: 0,
@@ -110,7 +112,7 @@ const readdir = async (path: string) => {
   if (dir === undefined) return []
   if (!(dir instanceof FileSystemDirectoryHandle)) return []
   let entries = []
-  for await (let [name, entry] of dir.entries()) {
+  for await (let [name] of dir.entries()) {
     entries.push(name)
   }
   return entries
@@ -155,7 +157,7 @@ const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
   }
 
   // If not recursive, try to walk to the parent first, then create.
-  const parent = parts.slice(0, -1).join('/')
+  const parent = parts.slice(0, -1).join(path.sep)
   const handle = await walk(parent)
   if (handle === undefined) return Promise.reject('ENOENT')
   if (handle instanceof FileSystemFileHandle) return Promise.reject('EISFILE')

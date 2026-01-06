@@ -26,12 +26,14 @@ export interface IZooDesignStudioFS {
     src: string,
     dest: string,
     options?: any
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ) => Promise<undefined | void> | void
   readFile: ((src: string, options: { encoding: 'utf-8' }) => Promise<string>) &
     // I (lee) made this definition to satisfy other calls, but I'm pretty
     // sure 'utf8' is not a valid identifier...
     ((src: string, options: 'utf8') => Promise<string>) &
-    ((src: string, options?: {} | undefined) => Promise<Uint8Array>)
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    ((src: string, options?: {}) => Promise<Uint8Array>)
   rename: (src: string, dest: string, options?: any) => Promise<undefined>
   writeFile: (
     src: string,
@@ -41,7 +43,10 @@ export interface IZooDesignStudioFS {
   readdir: (path: string, options?: any) => Promise<string[]>
   stat: (path: string, options?: any) => Promise<IStat>
   mkdir: (path: string, options?: any) => Promise<undefined | string>
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   rm: (path: string, options?: any) => Promise<undefined | void>
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   detach: () => Promise<undefined | void>
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   attach: () => Promise<undefined | void>
 }

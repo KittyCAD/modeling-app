@@ -1,5 +1,3 @@
-import * as path from 'path'
-
 import { expect, describe, it } from 'vitest'
 import { getFilePathRelativeToProject, parseProjectRoute } from '@src/lib/paths'
 

@@ -1,4 +1,3 @@
-import type { IElectronAPI } from '@root/interface'
 import fsZds from '@src/lib/fs-zds'
 import path from 'path'
 import {

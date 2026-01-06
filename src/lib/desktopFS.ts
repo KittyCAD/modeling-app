@@ -1,4 +1,3 @@
-import type { IElectronAPI } from '@root/interface'
 import fsZds from '@src/lib/fs-zds'
 import path from 'path'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
@@ -169,11 +168,12 @@ export async function getNextFileName({
       createdPath = path.join(baseDir, createdName)
       i++
     }
-  } catch (_e) {
+  } catch (e) {
     // I (lee) know, the behavior is weird. It's because `stat` is the way to
     // check for file existence, and on throw, it will escape this loop, which
     // I did not originally write - this code used the synchronous, deprecated
     // `exists` method.
+    console.error(e)
   }
 
   return {
@@ -204,7 +204,9 @@ export async function getNextDirName({
       createdPath = path.join(baseDir, createdName)
       i++
     }
-  } catch (_e) {}
+  } catch (e) {
+    console.error(e)
+  }
   return {
     name: createdName,
     path: createdPath,

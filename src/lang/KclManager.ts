@@ -86,7 +86,6 @@ import type {
 } from '@src/machines/modelingMachine'
 import { historyCompartment } from '@src/editor/compartments'
 import { bracket } from '@src/lib/exampleKcl'
-import { isDesktop } from '@src/lib/isDesktop'
 import toast from 'react-hot-toast'
 import { signal } from '@preact/signals-core'
 import {

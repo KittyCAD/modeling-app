@@ -5,4 +5,3 @@ export const fsZdsConstants = {
   R_OK: 3,
   S_IFDIR: 0x4000,
 }
-
