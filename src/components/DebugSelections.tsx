@@ -300,7 +300,16 @@ export function DebugSelections() {
                 return (
                   <div
                     className={`ml-4 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
-                    onClick={() => {}}
+                    onClick={() => {
+                      const highlightMyRange =
+                        range?.join(',') === selectedRange
+                      const codeRef = {
+                        range: range,
+                      }
+                      selectionFromRange(codeRef)
+                      const rangeString = codeRef.range.join(',')
+                      setSelectedRange(rangeString)
+                    }}
                   >
                     {`[${range}]` || ''}
                   </div>
