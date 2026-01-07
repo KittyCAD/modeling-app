@@ -198,16 +198,13 @@ impl ExecOutcome {
     pub fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
         #[cfg(feature = "artifact-graph")]
         {
-            if let Some(first_object) = self.scene_objects.first() {
-                // The scene objects are stored in order, but they may start
-                // with a non-zero ID. If so, shift the ID down to get the
-                // index.
-                debug_assert!(id.0 >= first_object.id.0);
-                let index = id.0.checked_sub(first_object.id.0);
-                index.and_then(|i| self.scene_objects.get(i))
-            } else {
-                None
-            }
+            debug_assert!(
+                id.0 < self.scene_objects.len(),
+                "Requested object ID {} but only have {} objects",
+                id.0,
+                self.scene_objects.len()
+            );
+            self.scene_objects.get(id.0)
         }
         #[cfg(not(feature = "artifact-graph"))]
         {
