@@ -317,9 +317,11 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 
   const itemsFilteredNulls = items.filter((x: ReactNode | null) => x !== null)
 
+  const markdownRef = useRef<HTMLSpanElement>(null)
   const deltasAggregatedMarkdown = useMemo(() => {
     return props.deltasAggregated !== '' ? (
       <span
+        ref={markdownRef}
         className="parsed-markdown whitespace-normal"
         dangerouslySetInnerHTML={{
           __html: Marked.parse(props.deltasAggregated, {
@@ -330,6 +332,12 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       ></span>
     ) : null
   }, [props.deltasAggregated])
+
+  useEffect(() => {
+    if (markdownRef.current === null) return
+    console.log('attaching safe link handler')
+    attachSafeLinkHandler(markdownRef.current)
+  }, [markdownRef.current])
 
   return (
     <ChatBubble
@@ -348,10 +356,6 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   )
 }
 
-useEffect(() => {
-  console.log('attaching safe link handler')
-  attachSafeLinkHandler()
-}, [])
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
   let [startedAt] = useState<Date>(new Date())
