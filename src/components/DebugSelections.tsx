@@ -148,12 +148,9 @@ function parseOutAllSelectAddEntities(eventInfo) {
   return ids
 }
 
-function artifactToCodeRange (id) {
+function artifactToCodeRange(id) {
   if (id) {
-    const codeRefs = getCodeRefsByArtifactId(
-      id,
-      kclManager.artifactGraph
-    )
+    const codeRefs = getCodeRefsByArtifactId(id, kclManager.artifactGraph)
     if (codeRefs) {
       return codeRefs.map(({ range }) => range)
     }
@@ -168,8 +165,16 @@ function artifactToCodeRange (id) {
 }
 
 export function DebugSelections() {
-  const [selectedId, setSelectedId] = useState('')
-  const [selectedRange, setSelectedRange] = useState('')
+  const [selectedId, _setSelectedId] = useState('')
+  const [selectedRange, _setSelectedRange] = useState('')
+  const setSelectedId = (id: string) => {
+    _setSelectedId(id)
+    _setSelectedRange('')
+  }
+  const setSelectedRange = (range: string) => {
+    _setSelectedId('')
+    _setSelectedRange(range)
+  }
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const highlightMinor = 'bg-red-950'
   const highlightMajor = 'bg-red-800'
@@ -209,19 +214,13 @@ export function DebugSelections() {
               </div>
             </div>
             <div className="text-xs flex flex-col justify-between">
-              <div
-                className="ml-2"
-              >
-                Ranges
-              </div>
+              <div className="ml-2">Ranges</div>
               {a.artifactIdtoCodeRefs.map((range) => {
                 const highlightMyRange = range.join(',') === selectedRange
                 return (
                   <div
-                className={`ml-4 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
-                    onClick={() => {
-
-                    }}
+                    className={`ml-4 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
+                    onClick={() => {}}
                   >
                     {`[${range}]` || ''}
                   </div>
