@@ -1,3 +1,4 @@
+import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -38,6 +39,7 @@ import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import {
   billingActor,
+  systemIOActor,
   getSettings,
   kclManager,
   useLayout,
@@ -101,6 +103,17 @@ export function App() {
 
   const projectName = loaderData.project?.name || null
   const projectPath = loaderData.project?.path || null
+
+  // ZOOKEEPER BEHAVIOR EXCEPTION
+  // Only fires on state changes, to deal with Zookeeper control.
+  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
+  useEffect(() => {
+    if (systemIOState !== 'idle') return
+    if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false)
+      return
+    void kclManager.executeCode()
+    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
+  }, [systemIOState])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
