@@ -188,6 +188,7 @@ export type ModelingCommandSchema = {
     tagEnd?: string
     symmetric?: boolean
     bidirectionalAngle?: KclCommandValue
+    bodyType?: KclPreludeBodyType
   }
   Shell: {
     // Enables editing workflow
@@ -864,6 +865,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       tagEnd: {
         inputType: 'tagDeclarator',
         required: false,
+      },
+      bodyType: {
+        inputType: 'options',
+        required: false,
+        options: KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
+          name: capitaliseFC(value.toLowerCase()),
+          value,
+        })),
       },
     },
   },

@@ -832,6 +832,41 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
       )
     })
 
+    it('should add basic revolve call with surface bodyType', async () => {
+      const { ast, sketches } = await getAstAndSketchSelections(
+        circleCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(sketches.graphSelections).toHaveLength(1)
+      const angle = await getKclCommandValue(
+        '10',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const axis = 'X'
+      const result = addRevolve({
+        ast,
+        sketches,
+        angle,
+        axis,
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(circleCode)
+      expect(newCode).toContain(
+        `revolve001 = revolve(
+  profile001,
+  angle = 10,
+  axis = X,
+  bodyType = SURFACE,
+)`
+      )
+    })
+
     it('should add basic revolve call with symmetric true', async () => {
       const { ast, sketches } = await getAstAndSketchSelections(
         circleCode,

@@ -1349,6 +1349,21 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     tagEnd = retrieveTagDeclaratorFromOpArg(operation.labeledArgs.tagEnd, code)
   }
 
+  // bodyType argument from a string
+  let bodyType: KclPreludeBodyType | undefined
+  if ('bodyType' in operation.labeledArgs && operation.labeledArgs.bodyType) {
+    const result = code.slice(
+      ...operation.labeledArgs.bodyType.sourceRange.map(boundToUtf16)
+    )
+    if (result === KCL_PRELUDE_BODY_TYPE_SOLID) {
+      bodyType = KCL_PRELUDE_BODY_TYPE_SOLID
+    } else if (result === KCL_PRELUDE_BODY_TYPE_SURFACE) {
+      bodyType = KCL_PRELUDE_BODY_TYPE_SURFACE
+    } else {
+      return { reason: "Couldn't retrieve bodyType argument" }
+    }
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -1362,6 +1377,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     bidirectionalAngle,
     tagStart,
     tagEnd,
+    bodyType,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
