@@ -1485,16 +1485,49 @@ export class KclManager extends EventTarget {
    * This is invoked when a segment is being dragged on the canvas, among other things.
    */
   updateCodeEditor(code: string, clearHistory?: boolean): void {
+    // If the code hasn't changed, skip the update to preserve cursor position
+    // However, if clearHistory is true, we still need to clear the history
+    const currentCode = this.editorState.doc.toString()
+    if (currentCode === code) {
+      if (clearHistory) {
+        // Code is the same but we need to clear history (e.g., opening a new file with same content)
+        clearCodeMirrorHistory(this)
+      }
+      return
+    }
+
+    // Preserve the current selection/cursor position
+    const currentSelection = this.editorState.selection
+    const newDocLength = code.length
+
+    // Map each selection range through the document change
+    // Since we're replacing the entire document, we need to clamp positions
+    // to the new document length if they exceed it
+    const preservedRanges = currentSelection.ranges.map((range) => {
+      const from = Math.min(range.from, newDocLength)
+      const to = Math.min(range.to, newDocLength)
+      // Ensure from <= to
+      if (from === to) {
+        return EditorSelection.cursor(from)
+      }
+      return EditorSelection.range(from, to)
+    })
+
     this.code = code
     if (clearHistory) {
       clearCodeMirrorHistory(this)
     }
+
     this.dispatch({
       changes: {
         from: 0,
         to: this.editorState?.doc.length || 0,
         insert: code,
       },
+      selection: EditorSelection.create(
+        preservedRanges,
+        currentSelection.mainIndex
+      ),
       annotations: [
         editorCodeUpdateEvent,
         Transaction.addToHistory.of(!clearHistory),
