@@ -4,6 +4,7 @@ import {
 } from '@src/lib/constants'
 import {
   billingActor,
+  engineCommandManager,
   systemIOActor,
   useSettings,
   useToken,
@@ -50,6 +51,7 @@ export function SystemIOMachineLogicListenerWeb() {
     mlEphantManagerActor,
     billingActor,
     token,
+    engineCommandManager.modelingSend,
     (toolOutput, projectNameCurrentlyOpened) => {
       if (
         toolOutput.type !== 'text_to_cad' &&
