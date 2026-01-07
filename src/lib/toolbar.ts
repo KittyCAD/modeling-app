@@ -1328,7 +1328,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: 'Trim',
         hotkey: 'T',
         description:
-          'Experimental trim tool. Arcs not supported. Some operations require point-to-line coincident constraints which can not be added yet.',
+          'Draw a trimming line through parts of segments to be removed',
         links: [],
         isActive: (state) =>
           state.matches('sketchSolveMode') &&
