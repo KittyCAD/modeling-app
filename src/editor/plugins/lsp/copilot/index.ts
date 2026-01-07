@@ -30,7 +30,7 @@ import {
   posToOffset,
 } from '@kittycad/codemirror-lsp-client'
 import { reportRejection } from '@src/lib/trap'
-import { deferExecution } from '@src/lib/utils'
+import { deferredCallback } from '@src/lib/utils'
 
 import type { CopilotAcceptCompletionParams } from '@rust/kcl-lib/bindings/CopilotAcceptCompletionParams'
 import type { CopilotCompletionResponse } from '@rust/kcl-lib/bindings/CopilotCompletionResponse'
@@ -198,7 +198,7 @@ export class CompletionRequester implements PluginValue {
 
   private queuedUids: string[] = []
 
-  private _deffererUserSelect = deferExecution(() => {
+  private _deffererUserSelect = deferredCallback(() => {
     this.rejectSuggestionCommand()
   }, changesDelay)
 

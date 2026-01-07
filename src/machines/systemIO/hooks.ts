@@ -15,6 +15,7 @@ import {
   type BillingActor,
   BillingTransition,
 } from '@src/machines/billingMachine'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const useRequestedProjectName = () =>
   useSelector(systemIOActor, (state) => state.context.requestedProjectName)
@@ -88,6 +89,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
   mlEphantManagerActor: MlEphantManagerActor,
   billingActor: BillingActor,
   token: string,
+  engineCommandManager: ConnectionManager,
   fn: (
     toolOutputTextToCad: MlToolResult,
     projectNameCurrentlyOpened: string,
@@ -121,6 +123,12 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       billingActor.send({
         type: BillingTransition.Update,
         apiToken: token,
+      })
+
+      // Clear selections since new model
+      engineCommandManager.modelingSend({
+        type: 'Set selection',
+        data: { selection: undefined, selectionType: 'singleCodeCursor' },
       })
     })
 

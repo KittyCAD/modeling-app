@@ -38,7 +38,7 @@ import type {
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferExecution } from '@src/lib/utils'
+import { deferredCallback } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { EngineDebugger } from '@src/lib/debugger'
@@ -99,7 +99,7 @@ import {
   themeCompartment,
   appSettingsThemeEffect,
   settingsUpdateAnnotation,
-} from '@src/lib/codeEditor'
+} from '@src/editor/plugins/theme'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import {
   createEmptyAst,
@@ -276,6 +276,7 @@ export class KclManager extends EventTarget {
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+  public mlEphantManagerMachineBulkManipulatingFileSystem = false
   // The last code written by the app, used to compare against external changes to the current file
   public lastWrite: {
     code: string // last code written by ZDS
@@ -583,13 +584,13 @@ export class KclManager extends EventTarget {
       // TODO: we wanna remove this logic from xstate, it is racey
       // This defer is bullshit but playwright wants it
       // It was like this in engineConnection.ts already
-      deferExecution((_a?: null) => {
+      deferredCallback((_a?: null) => {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph populated',
         })
       }, 200)(null)
     } else {
-      deferExecution((_a?: null) => {
+      deferredCallback((_a?: null) => {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph emptied',
         })
@@ -597,7 +598,7 @@ export class KclManager extends EventTarget {
     }
 
     // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
-    deferExecution((_a?: null) => {
+    deferredCallback((_a?: null) => {
       if (this.defaultPlanes) {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph initialized',
@@ -1485,16 +1486,49 @@ export class KclManager extends EventTarget {
    * This is invoked when a segment is being dragged on the canvas, among other things.
    */
   updateCodeEditor(code: string, clearHistory?: boolean): void {
+    // If the code hasn't changed, skip the update to preserve cursor position
+    // However, if clearHistory is true, we still need to clear the history
+    const currentCode = this.editorState.doc.toString()
+    if (currentCode === code) {
+      if (clearHistory) {
+        // Code is the same but we need to clear history (e.g., opening a new file with same content)
+        clearCodeMirrorHistory(this)
+      }
+      return
+    }
+
+    // Preserve the current selection/cursor position
+    const currentSelection = this.editorState.selection
+    const newDocLength = code.length
+
+    // Map each selection range through the document change
+    // Since we're replacing the entire document, we need to clamp positions
+    // to the new document length if they exceed it
+    const preservedRanges = currentSelection.ranges.map((range) => {
+      const from = Math.min(range.from, newDocLength)
+      const to = Math.min(range.to, newDocLength)
+      // Ensure from <= to
+      if (from === to) {
+        return EditorSelection.cursor(from)
+      }
+      return EditorSelection.range(from, to)
+    })
+
     this.code = code
     if (clearHistory) {
       clearCodeMirrorHistory(this)
     }
+
     this.dispatch({
       changes: {
         from: 0,
         to: this.editorState?.doc.length || 0,
         insert: code,
       },
+      selection: EditorSelection.create(
+        preservedRanges,
+        currentSelection.mainIndex
+      ),
       annotations: [
         editorCodeUpdateEvent,
         Transaction.addToHistory.of(!clearHistory),
