@@ -240,8 +240,6 @@ export const FeatureTreePaneContents = memo(() => {
     ['VariableDeclaration']
   )
 
-  window.dog = operationList
-
   // Watch for changes in the open panes and send an event to the feature tree machine
   useEffect(() => {
     const codeOpen = getOpenPanes({ rootLayout: layout }).includes(
