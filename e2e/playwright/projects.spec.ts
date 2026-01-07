@@ -865,23 +865,27 @@ test.describe(`Project management commands`, { tag: '@desktop' }, () => {
   })
 })
 
-test(`Create a few projects
+test(
+  `Create a few projects
 using the
-default project name`, async ({ homePage, toolbar }) => {
-  for (let i = 0; i < 12; i++) {
-    await test.step(`Create project ${i}`, async () => {
-      await homePage.expectState({
-        projectCards: Array.from({ length: i }, (_, i) => ({
-          title: i === 0 ? 'untitled' : `untitled-${i}`,
-          fileCount: 1,
-        })).toReversed(),
-        sortBy: 'last-modified-desc',
+default project name`,
+  { tag: '@desktop' },
+  async ({ homePage, toolbar }) => {
+    for (let i = 0; i < 12; i++) {
+      await test.step(`Create project ${i}`, async () => {
+        await homePage.expectState({
+          projectCards: Array.from({ length: i }, (_, i) => ({
+            title: i === 0 ? 'untitled' : `untitled-${i}`,
+            fileCount: 1,
+          })).toReversed(),
+          sortBy: 'last-modified-desc',
+        })
+        await homePage.createAndGoToProject()
+        await toolbar.logoLink.click()
       })
-      await homePage.createAndGoToProject()
-      await toolbar.logoLink.click()
-    })
+    }
   }
-})
+)
 
 test(
   'project title case sensitive duplication',
