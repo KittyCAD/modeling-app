@@ -51,7 +51,7 @@ export function SystemIOMachineLogicListenerWeb() {
     mlEphantManagerActor,
     billingActor,
     token,
-    engineCommandManager.modelingSend,
+    engineCommandManager,
     (toolOutput, projectNameCurrentlyOpened) => {
       if (
         toolOutput.type !== 'text_to_cad' &&

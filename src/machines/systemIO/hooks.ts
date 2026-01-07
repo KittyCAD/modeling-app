@@ -15,7 +15,7 @@ import {
   type BillingActor,
   BillingTransition,
 } from '@src/machines/billingMachine'
-import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const useRequestedProjectName = () =>
   useSelector(systemIOActor, (state) => state.context.requestedProjectName)
@@ -89,7 +89,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
   mlEphantManagerActor: MlEphantManagerActor,
   billingActor: BillingActor,
   token: string,
-  modelingSend: ReturnType<typeof useModelingContext>['send'],
+  engineCommandManager: ConnectionManager,
   fn: (
     toolOutputTextToCad: MlToolResult,
     projectNameCurrentlyOpened: string,
@@ -126,8 +126,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       })
 
       // Clear selections since new model
-      console.log('Clearing selection due to new file from MlEphant')
-      modelingSend({
+      engineCommandManager.modelingSend({
         type: 'Set selection',
         data: { selection: undefined, selectionType: 'singleCodeCursor' },
       })
