@@ -17,7 +17,7 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { SafeRenderer } from '@src/lib/markdown'
+import { attachSafeLinkHandler, SafeRenderer } from '@src/lib/markdown'
 import { Marked } from '@ts-stack/markdown'
 import { MARKED_OPTIONS } from '@src/lib/constants'
 
@@ -347,6 +347,11 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
     </ChatBubble>
   )
 }
+
+useEffect(() => {
+  console.log('attaching safe link handler')
+  attachSafeLinkHandler()
+}, [])
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
   let [startedAt] = useState<Date>(new Date())
