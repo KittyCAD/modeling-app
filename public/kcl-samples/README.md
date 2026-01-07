@@ -12,7 +12,7 @@ KCL samples conform to a set of style guidelines to ensure consistency and reada
 
 1. **File Naming:** Name your KCL files descriptively and concisely, using hyphens to separate words (e.g., flange.kcl, ball-bearing.kcl).
 
-2. **File Header:** Include a title comment at the top of each file, followed by a brief description explaining what the model is and its typical use cases.
+2. **File Header:** The first comment line should be the file's title. The second - a brief description explaining what the model is and its typical use cases. Optionally, but preferred, the third comment line should be "Categories:" followed by a category value or comma separated category values. Leaving this off won't break anything, but will list the sample on the website as "Uncategorized".
 
 3. **Inline Comments:** Use inline comments to explain non-obvious parts of the code. Each major section should have a comment describing its purpose.
 

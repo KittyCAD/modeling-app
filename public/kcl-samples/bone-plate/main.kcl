@@ -1,5 +1,6 @@
 // Bone Plate
 // A bone plate is a medical device used in orthopedics to stabilize and fix bone fractures during the healing process. They are typically made of stainless steel or titanium and are secured to the bone with screws. Bone plates come in various types, including locking, compression, and bridge plates, each with specific applications
+// Categories: Medical
 
 // Set units
 @settings(defaultLengthUnit = mm)

@@ -81,7 +81,7 @@ const Home = () => {
   const apiToken = useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = useSelector(billingActor, ({ context }) => context)
-  const hasUnlimitedCredits = billingContext.credits === Infinity
+  const hasUnlimitedCredits = billingContext.balance === Infinity
 
   // Only create the native file menus on desktop
   useEffect(() => {
@@ -147,13 +147,13 @@ const Home = () => {
         },
       })
     } else if (data.menuLabel === 'File.Preferences.User settings') {
-      navigate(PATHS.HOME + PATHS.SETTINGS)
+      void navigate(PATHS.HOME + PATHS.SETTINGS)
     } else if (data.menuLabel === 'File.Preferences.Keybindings') {
-      navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+      void navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
+      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
+      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
     } else if (data.menuLabel === 'File.Sign out') {
       authActor.send({ type: 'Log out' })
     } else if (
@@ -192,7 +192,9 @@ const Home = () => {
   })
   useHotkeys(
     isDesktop() ? 'mod+,' : 'shift+mod+,',
-    () => navigate(PATHS.HOME + PATHS.SETTINGS),
+    () => {
+      void navigate(PATHS.HOME + PATHS.SETTINGS)
+    },
     {
       splitKey: '|',
     }
@@ -313,7 +315,7 @@ const Home = () => {
                     upgradeHref={withSiteBaseURL('/design-studio-pricing')}
                     upgradeClick={openExternalBrowserIfDesktop()}
                     error={billingContext.error}
-                    credits={billingContext.credits}
+                    balance={billingContext.balance}
                     allowance={billingContext.allowance}
                   />
                 </div>

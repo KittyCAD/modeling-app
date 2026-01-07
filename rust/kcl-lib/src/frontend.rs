@@ -1301,10 +1301,10 @@ impl FrontendState {
 
         // Execute.
         let mock_config = MockConfig {
-            use_prev_memory: !is_delete,
             freedom_analysis: is_delete,
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited,
+            ..Default::default()
         };
         let outcome = ctx.run_mock(&truncated_program, &mock_config).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to

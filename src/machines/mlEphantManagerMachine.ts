@@ -1,3 +1,4 @@
+import ms from 'ms'
 import { decode as msgpackDecode } from '@msgpack/msgpack'
 import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
 import type {
@@ -167,6 +168,76 @@ function isString(x: unknown): x is string {
 
 function isPresent<T>(x: undefined | T): x is T {
   return x !== null && x !== undefined
+}
+
+export const MlEphantConversationToMarkdown = (
+  conversation?: Conversation
+): string => {
+  if (conversation === undefined) return ''
+
+  let agg = ''
+  let meta = ''
+
+  for (const exchange of conversation.exchanges) {
+    let entry = ''
+    let reason = ''
+    if (exchange.request) {
+      if ('content' in exchange.request) {
+        entry += '## You:\n\n'
+        entry += exchange.request.content + '\n\n'
+      }
+    }
+    for (const response of exchange.responses) {
+      if ('reasoning' in response) {
+        if ('content' in response.reasoning) {
+          if (
+            [
+              'created_kcl_file',
+              'updated_kcl_file',
+              'deleted_kcl_file',
+            ].includes(response.reasoning.type) === false
+          ) {
+            const contentWithoutCode = response.reasoning.content.replace(
+              /```[\s\S]*?```/gm,
+              '~~Code redacted~~'
+            )
+            reason += `${contentWithoutCode}\n\n`
+          }
+        }
+        if ('error' in response.reasoning) {
+          reason += `**${response.reasoning.error}**\n\n`
+        }
+
+        // We will ignore code. It adds a lot of noise. We can look at honeycomb
+        // with the api call id if we really want it.
+        if ('code' in response.reasoning) {
+          reason += '~~Code redacted~~\n\n'
+        }
+
+        if ('steps' in response.reasoning) {
+          for (const step of response.reasoning.steps) {
+            reason += `* ${step.filepath_to_edit}: ${step.edit_instructions}\n\n`
+          }
+        }
+      }
+      if ('end_of_stream' in response) {
+        const time = ms(
+          new Date(response.end_of_stream.completed_at ?? 0).getTime() -
+            new Date(response.end_of_stream.started_at ?? 0).getTime(),
+          { long: true }
+        )
+        entry += `## Zookeeper (${time}):\n\n`
+        entry += reason + '\n'
+        entry += new Array(80).fill('-').join('') + '\n\n'
+        entry += response.end_of_stream.whole_response ?? '' + '\n'
+
+        meta = `#### Conversation Id: ${response.end_of_stream.conversation_id}\n`
+      }
+    }
+    agg += entry + '\n\n'
+  }
+
+  return meta + '\n' + agg + '\n\n'
 }
 
 function xor(a: boolean, b: boolean): boolean {

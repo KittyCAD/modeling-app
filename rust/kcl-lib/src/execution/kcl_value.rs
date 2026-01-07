@@ -541,7 +541,7 @@ impl KclValue {
         }
     }
 
-    pub(crate) fn map_env_ref(&self, old_env: usize, new_env: usize) -> Self {
+    pub(crate) fn map_env_ref(&self, old_env: EnvironmentRef, new_env: EnvironmentRef) -> Self {
         let mut result = self.clone();
         if let KclValue::Function { ref mut value, .. } = result
             && let FunctionSource {
@@ -550,6 +550,20 @@ impl KclValue {
             } = &mut **value
         {
             memory.replace_env(old_env, new_env);
+        }
+
+        result
+    }
+
+    pub(crate) fn map_env_ref_and_epoch(&self, old_env: EnvironmentRef, new_env: EnvironmentRef) -> Self {
+        let mut result = self.clone();
+        if let KclValue::Function { ref mut value, .. } = result
+            && let FunctionSource {
+                body: FunctionBody::Kcl(memory),
+                ..
+            } = &mut **value
+        {
+            memory.replace_env_and_epoch(old_env, new_env);
         }
 
         result

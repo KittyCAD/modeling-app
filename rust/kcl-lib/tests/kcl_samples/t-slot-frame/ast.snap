@@ -4203,6 +4203,7 @@ description: Result of parsing t-slot-frame.kcl
         "preComments": [
           "// T-Slotted Rectangle Frame",
           "// A box frame made up of T-slotted rails",
+          "// Categories: Construction, Manufacturing",
           "",
           "",
           "// Set units"

@@ -1298,8 +1298,8 @@ export class SceneEntities {
             const snaps = {
               previousArcTag: '',
               negativeTangentDirection,
-              xAxis: !!intersectsXAxis,
-              yAxis: !!intersectsYAxis,
+              xAxis: intersectsXAxis,
+              yAxis: intersectsYAxis,
             }
 
             // This might need to become its own function if we want more
@@ -2992,7 +2992,7 @@ export class SceneEntities {
 
   getSnappedDragPoint(
     pos: Vector2,
-    intersects: Intersection<Object3D<Object3DEventMap>>[],
+    intersects: Intersection<Object3D>[],
     mouseEvent: MouseEvent,
     wasmInstance: ModuleType,
     // During draft segment mouse move:
@@ -3004,21 +3004,101 @@ export class SceneEntities {
   ) {
     let snappedPoint: Coords2d = [pos.x, pos.y]
 
-    const intersectsYAxis = intersects.find(
+    // Note: these could also be calculated without intersects, just by using the mouse position coordinates
+    const intersectsYAxis = intersects.some(
       (sceneObject) => sceneObject.object.name === Y_AXIS
     )
-    const intersectsXAxis = intersects.find(
+    const intersectsXAxis = intersects.some(
       (sceneObject) => sceneObject.object.name === X_AXIS
     )
 
-    // Snap to previous segment's tangent direction when drawing a straight segment
-    let snappedToTangent = false
-    let negativeTangentDirection = false
     let snappedToGrid = false
     let snappedToProfileStart = false
+    let negativeTangentDirection = false
+    let snappedToTangent = false
+
+    // Highest priority: try snapping to profileStart to close it
+    const snappedToProfileStartResult = this.maybeSnapToProfileStart(
+      snappedPoint,
+      sketchEntryNodePath
+    )
+    if (snappedToProfileStartResult) {
+      snappedToProfileStart = true
+      snappedPoint = snappedToProfileStartResult
+    } else {
+      // Snap to tangent
+      const snappedToTangentResult = this.trySnapToTangentDirection(
+        snappedPoint,
+        mouseEvent,
+        wasmInstance,
+        intersectsXAxis,
+        intersectsYAxis,
+        currentObject
+      )
+      if (snappedToTangentResult.snappedToTangent) {
+        snappedToTangent = true
+        snappedPoint = snappedToTangentResult.snappedPoint
+        negativeTangentDirection =
+          snappedToTangentResult.negativeTangentDirection
+      } else {
+        // Snap to axes
+        snappedPoint = [
+          intersectsYAxis ? 0 : snappedPoint[0],
+          intersectsXAxis ? 0 : snappedPoint[1],
+        ] as const
+
+        // Snap to grid
+        ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
+          snappedPoint,
+          mouseEvent
+        ))
+
+        // After snapping to axis/grid, try snapping to profileStart AGAIN, this is because the newly snapped
+        // point might now line up with a profileStart, in which case we want to close the shape.
+        // This happens when profileStart is too far to snap from the mouse position, but after snapping to grid
+        // it's now close enough.
+        const snappedToProfileStartResult = this.maybeSnapToProfileStart(
+          snappedPoint,
+          sketchEntryNodePath
+        )
+        if (snappedToProfileStartResult) {
+          snappedToProfileStart = true
+          snappedPoint = snappedToProfileStartResult
+        }
+      }
+    }
+
+    return {
+      isSnapped:
+        intersectsYAxis ||
+        intersectsXAxis ||
+        snappedToTangent ||
+        snappedToGrid ||
+        snappedToProfileStart,
+      snappedToTangent,
+      snappedToProfileStart,
+      negativeTangentDirection,
+      snappedPoint,
+      intersectsXAxis,
+      intersectsYAxis,
+    }
+  }
+
+  // Snap to previous segment's tangent direction when drawing a straight segment
+  private trySnapToTangentDirection(
+    snappedPoint: Coords2d,
+    mouseEvent: MouseEvent,
+    wasmInstance: ModuleType,
+    intersectsXAxis: boolean,
+    intersectsYAxis: boolean,
+    currentObject?: Object3D | Group
+  ) {
+    snappedPoint = [...snappedPoint]
+    let snappedToTangent = false
+    let negativeTangentDirection = false
 
     const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
-    const forceDirectionSnapping = mouseEvent.shiftKey
+    const forceTangentSnapping = mouseEvent.shiftKey
     if (!disableTangentSnapping) {
       const segments: SafeArray<Group> = Object.values(this.activeSegments) // Using the order in the object feels wrong
       const currentIndex =
@@ -3038,25 +3118,23 @@ export class SceneEntities {
             const SNAP_MIN_DISTANCE_PIXELS = 10 * window.devicePixelRatio
             const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
 
-            // See if snapDirection intersects with any of the axes
             if (intersectsXAxis || intersectsYAxis) {
               let intersectionPoint: Coords2d | undefined
               if (intersectsXAxis && intersectsYAxis) {
-                // Current mouse position intersects with both axes (origin) -> that has precedence over tangent so we snap to the origin.
-                intersectionPoint = [0, 0]
+                // Current mouse position is close to the origin (mouse intersects both axes)
+                intersectionPoint = calculateIntersectionOfTwoLines({
+                  // Could be either x or y axis line since we're intersecting both
+                  line1: xAxisLine,
+                  line2Angle: getAngle([0, 0], snapDirection),
+                  line2Point: current.userData.from,
+                })
               } else {
-                // Intersects only one axis
+                // Mouse intersects only one axis
                 const axisLine: [Coords2d, Coords2d] = intersectsXAxis
-                  ? [
-                      [0, 0],
-                      [1, 0],
-                    ]
-                  : [
-                      [0, 0],
-                      [0, 1],
-                    ]
+                  ? xAxisLine
+                  : yAxisLine
                 // See if that axis line intersects with the tangent direction
-                // Note: this includes both positive and negative tangent directions as it just checks 2 lines.
+                // Note: this includes both positive and negative tangent directions as it checks 2 lines.
                 intersectionPoint = calculateIntersectionOfTwoLines({
                   line1: axisLine,
                   line2Angle: getAngle([0, 0], snapDirection),
@@ -3083,7 +3161,7 @@ export class SceneEntities {
                 true
               )
               if (
-                forceDirectionSnapping ||
+                forceTangentSnapping ||
                 (this.sceneInfra.screenSpaceDistance(
                   closestPoint,
                   snappedPoint
@@ -3105,65 +3183,10 @@ export class SceneEntities {
       }
     }
 
-    if (!snappedToTangent) {
-      // Highest priority: try snapping to profile start to close it
-      if (sketchEntryNodePath) {
-        const snappedToProfileStartResult = this.maybeSnapToProfileStart(
-          snappedPoint,
-          sketchEntryNodePath
-        )
-        if (snappedToProfileStartResult.snappedToProfileStart) {
-          snappedToProfileStart = true
-          snappedPoint = snappedToProfileStartResult.point
-        }
-      }
-      if (!snappedToProfileStart) {
-        // If snapping to profileStart didn't occur, try snapping to axes, grid
-
-        // Snap to axes
-        snappedPoint = [
-          intersectsYAxis ? 0 : snappedPoint[0],
-          intersectsXAxis ? 0 : snappedPoint[1],
-        ] as const
-
-        // Snap to grid
-        ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
-          snappedPoint,
-          mouseEvent
-        ))
-
-        if (sketchEntryNodePath) {
-          // After snapping to axis/grid, try snapping to profileStart AGAIN, this is because the newly snapped
-          // point might now line up with a profileStart, in which case we want to close the shape.
-          // This happens when profileStart is too far to snap from the mouse position, but after snapping to grid
-          // it's now close enough.
-
-          const snappedToProfileStartResult = this.maybeSnapToProfileStart(
-            snappedPoint,
-            sketchEntryNodePath
-          )
-          if (snappedToProfileStartResult.snappedToProfileStart) {
-            snappedToProfileStart = true
-            snappedPoint = snappedToProfileStartResult.point
-          }
-        }
-      }
-    }
-
     return {
-      isSnapped: !!(
-        intersectsYAxis ||
-        intersectsXAxis ||
-        snappedToTangent ||
-        snappedToGrid ||
-        snappedToProfileStart
-      ),
       snappedToTangent,
-      snappedToProfileStart,
-      negativeTangentDirection,
       snappedPoint,
-      intersectsXAxis,
-      intersectsYAxis,
+      negativeTangentDirection,
     }
   }
 
@@ -3191,7 +3214,13 @@ export class SceneEntities {
     }
   }
   // Same purpose as maybeSnapProfileStartIntersect2d but takes sketchEntryNodePath instead of intersects.
-  maybeSnapToProfileStart(posWorld: Coords2d, sketchEntryNodePath: PathToNode) {
+  maybeSnapToProfileStart(
+    posWorld: Coords2d,
+    sketchEntryNodePath: PathToNode | undefined
+  ) {
+    if (!sketchEntryNodePath) {
+      return undefined
+    }
     const expressionIndex = Number(sketchEntryNodePath[1][0])
     const profileStartGroup = Object.values(this.activeSegments).find((seg) => {
       return (
@@ -3200,10 +3229,7 @@ export class SceneEntities {
       )
     })
 
-    const result = {
-      point: posWorld,
-      snappedToProfileStart: false,
-    }
+    let result: Coords2d | undefined
 
     if (profileStartGroup) {
       // Profile start in baseunit coordinates
@@ -3214,9 +3240,8 @@ export class SceneEntities {
         this.sceneInfra.screenSpaceDistance(posWorld, profileStartPoint) <
         20 * window.devicePixelRatio
 
-      result.snappedToProfileStart = snapped
       if (snapped) {
-        result.point = [...profileStartPoint]
+        result = [...profileStartPoint]
       }
     }
 
@@ -4446,3 +4471,12 @@ function findTangentDirection(segmentGroup: Group, wasmInstance: ModuleType) {
   }
   return tangentDirection
 }
+
+const xAxisLine: [Coords2d, Coords2d] = [
+  [0, 0],
+  [1, 0],
+]
+const yAxisLine: [Coords2d, Coords2d] = [
+  [0, 0],
+  [0, 1],
+]

@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact commands recursive_function_factorial.kcl
+---
+{}

@@ -158,7 +158,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // Go home.
       if (loadedProject?.project?.path) {
         if (!(await fsManager.exists(loadedProject?.project?.path))) {
-          navigate(PATHS.HOME)
+          void navigate(PATHS.HOME)
           return
         }
       }
