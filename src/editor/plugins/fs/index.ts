@@ -1,6 +1,7 @@
 import { invertedEffects } from '@codemirror/commands'
-import type { Extension, TransactionSpec } from '@codemirror/state'
+import type { Extension } from '@codemirror/state'
 import { Annotation, Compartment, StateEffect } from '@codemirror/state'
+import type { TransactionSpecNoChanges } from '@src/editor/HistoryView'
 import type { KclManager } from '@src/lang/KclManager'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -13,7 +14,7 @@ export const fsIgnoreAnnotationType = Annotation.define<true>()
 type FSEffectProps = { src: string; target: string }
 const restoreFile = StateEffect.define<FSEffectProps>()
 const archiveFile = StateEffect.define<FSEffectProps>()
-const h = <T>(e: StateEffect<T>): TransactionSpec => ({
+const h = <T>(e: StateEffect<T>): TransactionSpecNoChanges => ({
   effects: e,
   // Hopefully, makes initial transactions ignored and undo/redo not ignored.
   annotations: [fsIgnoreAnnotationType.of(true)],
@@ -46,12 +47,12 @@ export function buildFSEffectExtension(
     }
   })
 
-  kclManager.editorView.dispatch({
+  kclManager.globalHistoryView.globalOnlyDispatch({
     effects: [fsEffectCompartment.reconfigure(fsWiredListener)],
   })
   // Teardown
   return () => {
-    kclManager.editorView.dispatch({
+    kclManager.globalHistoryView.globalOnlyDispatch({
       effects: [fsEffectCompartment.reconfigure([])],
     })
   }

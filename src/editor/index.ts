@@ -40,7 +40,7 @@ import { lineHighlightField } from '@src/editor/highlightextension'
 import { onMouseDragRegex, onMouseDragMakeANewNumber } from '@src/lib/utils'
 import { themeCompartment } from '@src/editor/plugins/theme'
 import { kclAstExtension } from '@src/editor/plugins/ast'
-import { fsEffectExtension } from '@src/editor/plugins/fs'
+import { localHistoryTarget } from '@src/editor/HistoryView'
 
 export const lineWrappingCompartment = new Compartment()
 export const cursorBlinkingCompartment = new Compartment()
@@ -55,7 +55,6 @@ export function baseEditorExtensions() {
     kclLspCompartment.of([]),
     kclAutocompleteCompartment.of([]),
     lineWrappingCompartment.of([]),
-    fsEffectExtension(),
     cursorBlinkingCompartment.of(
       drawSelection({
         cursorBlinkRate: 1200,
@@ -63,6 +62,7 @@ export function baseEditorExtensions() {
     ),
     lineHighlightField,
     historyCompartment.of(history()),
+    localHistoryTarget.of([]),
     kclAstExtension(),
     closeBrackets(),
     codeFolding(),

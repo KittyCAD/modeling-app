@@ -328,7 +328,9 @@ export const ProjectExplorer = ({
                       requestedProjectName: project.name,
                     },
                   })
-                  kclManager.dispatch(fsArchiveFile({ src, target }))
+                  kclManager.addGlobalHistoryEvent(
+                    fsArchiveFile({ src, target })
+                  )
                 })
                 .catch((e) => {
                   console.error(e)
@@ -348,7 +350,9 @@ export const ProjectExplorer = ({
                       successMessage: 'Archived successfully',
                     },
                   })
-                  kclManager.dispatch(fsArchiveFile({ src, target }))
+                  kclManager.addGlobalHistoryEvent(
+                    fsArchiveFile({ src, target })
+                  )
                 })
                 .catch((e) => {
                   console.error(e)
