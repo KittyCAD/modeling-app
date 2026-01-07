@@ -27,6 +27,7 @@ import {
   addSweep,
   getAxisExpressionAndIndex,
   retrieveAxisOrEdgeSelectionsFromOpArg,
+  retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -1190,6 +1191,42 @@ helix001 = helix(
       expect(result.edge).toBeDefined()
       expect(result.edge!.graphSelections[0].codeRef).toEqual(segId!.codeRef)
       expect(result.axis).toBeUndefined()
+    })
+  })
+
+  describe('Testing retrieveBodyTypeFromOpArg', () => {
+    async function findBodyTypeArg(code: string) {
+      const ast = assertParse(code, instanceInThisFile)
+      const { operations } = await enginelessExecutor(
+        ast,
+        rustContextInThisFile
+      )
+      const op = operations.find(
+        (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+      )
+      if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.bodyType) {
+        throw new Error('Extrude operation not found')
+      }
+
+      return op.labeledArgs.bodyType
+    }
+
+    it('should return SOLID bodyType from op argument', async () => {
+      const code = `${circleProfileCode}
+extrude001 = extrude(profile001, length = 1, bodyType = SOLID)`
+      const opArg = await findBodyTypeArg(code)
+      const result = retrieveBodyTypeFromOpArg(opArg, code)
+      if (err(result)) throw result
+      expect(result).toEqual('SOLID')
+    })
+
+    it('should return SURFACE bodyType from op argument', async () => {
+      const code = `${circleProfileCode}
+extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
+      const opArg = await findBodyTypeArg(code)
+      const result = retrieveBodyTypeFromOpArg(opArg, code)
+      if (err(result)) throw result
+      expect(result).toEqual('SURFACE')
     })
   })
 })
