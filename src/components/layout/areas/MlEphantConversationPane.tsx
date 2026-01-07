@@ -112,12 +112,6 @@ export const MlEphantConversationPane = (props: {
     })
 
     props.sendBillingUpdate()
-
-    // Clear selections since new model
-    props.sendModeling({
-      type: 'Set selection',
-      data: { selection: undefined, selectionType: 'singleCodeCursor' },
-    })
   }
 
   const lastExchange = conversation?.exchanges.slice(-1) ?? []

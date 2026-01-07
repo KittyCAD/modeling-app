@@ -241,6 +241,7 @@ export function SystemIOMachineLogicListenerDesktop() {
     mlEphantManagerActor,
     billingActor,
     token,
+    engineCommandManager,
     (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {
       if (
         toolOutput.type !== 'text_to_cad' &&
