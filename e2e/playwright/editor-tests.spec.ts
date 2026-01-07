@@ -54,7 +54,7 @@ profile002 = startProfile(sketch002, at = [-1.0, 0])
   await expect(element).toHaveAttribute('data-overlay-visible', 'true')
 }
 
-test.describe('Editor tests', () => {
+test.describe('Editor tests', { tag: '@desktop' }, () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -1229,42 +1229,43 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await editor.expectEditor.toContain(ogCode, { shouldNormalise: true })
   })
 
-  test(
-    `Can import a local OBJ file`,
-    { tag: '@desktop' },
-    async ({ page, context, scene, cmdBar }, testInfo) => {
-      await context.folderSetupFn(async (dir) => {
-        const bracketDir = join(dir, 'cube')
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('cube.obj'),
-          join(bracketDir, 'cube.obj')
-        )
-        await fsp.writeFile(join(bracketDir, 'main.kcl'), '')
-      })
+  test(`Can import a local OBJ file`, async ({
+    page,
+    context,
+    scene,
+    cmdBar,
+  }, testInfo) => {
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = join(dir, 'cube')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('cube.obj'),
+        join(bracketDir, 'cube.obj')
+      )
+      await fsp.writeFile(join(bracketDir, 'main.kcl'), '')
+    })
 
-      const viewportSize = { width: 1200, height: 500 }
-      await page.setBodyDimensions(viewportSize)
+    const viewportSize = { width: 1200, height: 500 }
+    await page.setBodyDimensions(viewportSize)
 
-      // Locators and constants
-      const u = await getUtils(page)
-      const projectLink = page.getByRole('link', { name: 'cube' })
-      const errorIndicators = page.locator('.cm-lint-marker-error')
+    // Locators and constants
+    const u = await getUtils(page)
+    const projectLink = page.getByRole('link', { name: 'cube' })
+    const errorIndicators = page.locator('.cm-lint-marker-error')
 
-      await test.step(`Open the empty file`, async () => {
-        await projectLink.click()
-        await scene.settled(cmdBar)
-      })
-      await test.step(`Write the import function line`, async () => {
-        await u.codeLocator.fill(`import 'cube.obj'\ncube`)
-        await page.waitForTimeout(800)
-      })
-      await test.step(`Verify that we see no errors`, async () => {
-        await scene.settled(cmdBar)
-        await expect(errorIndicators).toHaveCount(0)
-      })
-    }
-  )
+    await test.step(`Open the empty file`, async () => {
+      await projectLink.click()
+      await scene.settled(cmdBar)
+    })
+    await test.step(`Write the import function line`, async () => {
+      await u.codeLocator.fill(`import 'cube.obj'\ncube`)
+      await page.waitForTimeout(800)
+    })
+    await test.step(`Verify that we see no errors`, async () => {
+      await scene.settled(cmdBar)
+      await expect(errorIndicators).toHaveCount(0)
+    })
+  })
 
   test('Rectangle tool panning with middle click', async ({
     page,

@@ -6,7 +6,7 @@ import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.describe('Command bar tests', () => {
+test.describe('Command bar tests', { tag: '@desktop' }, () => {
   test('Extrude from command bar selects extrude line after', async ({
     page,
     homePage,
