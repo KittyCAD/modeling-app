@@ -356,7 +356,6 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   )
 }
 
-
 export const ExchangeCard = (props: ExchangeCardProps) => {
   let [startedAt] = useState<Date>(new Date())
   const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
