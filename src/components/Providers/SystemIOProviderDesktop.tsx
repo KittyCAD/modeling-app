@@ -277,7 +277,7 @@ export function SystemIOMachineLogicListenerDesktop() {
 
       kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
       systemIOActor.send({
-        type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+        type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
         data: {
           files: requestedFiles,
           override: true,
