@@ -321,8 +321,8 @@ export function processCodeMirrorRanges({
   modelingEvent: ModelingMachineEvent
   engineEvents: WebSocketRequest[]
 } {
-  console.log(selectionRanges)
-  console.log(codeMirrorRanges)
+  // console.log(selectionRanges)
+  // console.log(codeMirrorRanges)
   const isChange =
     codeMirrorRanges.length !== selectionRanges?.graphSelections?.length ||
     codeMirrorRanges.some(({ from, to }, i) => {
@@ -351,7 +351,7 @@ export function processCodeMirrorRanges({
     artifactGraph,
     artifactIndex
   )
-  console.log(idBasedSelections);
+  // console.log(idBasedSelections)
   const selections: Selection[] = []
   for (const { id, range } of idBasedSelections) {
     if (!id) {
@@ -381,8 +381,8 @@ export function processCodeMirrorRanges({
     }
   }
 
-  console.log('selections',selections)
-  console.log('selection ranges', selectionRanges)
+  // console.log('selections', selections)
+  // console.log('selection ranges', selectionRanges)
   if (!selectionRanges) return null
   updateSceneObjectColors(codeBasedSelections, ast, systemDeps)
   return {
