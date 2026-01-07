@@ -61,7 +61,6 @@ const ARC_PROPERTY_CENTER: &str = "center";
 #[derive(Debug, Clone, Copy)]
 enum EditDeleteKind {
     Edit,
-    DeleteSketch,
     DeleteNonSketch,
 }
 
@@ -70,14 +69,14 @@ impl EditDeleteKind {
     fn is_delete(&self) -> bool {
         match self {
             EditDeleteKind::Edit => false,
-            EditDeleteKind::DeleteSketch | EditDeleteKind::DeleteNonSketch => true,
+            EditDeleteKind::DeleteNonSketch => true,
         }
     }
 
     fn to_change_kind(self) -> ChangeKind {
         match self {
             EditDeleteKind::Edit => ChangeKind::Edit,
-            EditDeleteKind::DeleteSketch | EditDeleteKind::DeleteNonSketch => ChangeKind::Delete,
+            EditDeleteKind::DeleteNonSketch => ChangeKind::Delete,
         }
     }
 }
@@ -391,14 +390,7 @@ impl SketchApi for FrontendState {
         // Modify the AST to remove the sketch.
         self.mutate_ast(&mut new_ast, sketch_id, AstMutateCommand::DeleteNode)?;
 
-        self.execute_after_edit(
-            ctx,
-            sketch,
-            Default::default(),
-            EditDeleteKind::DeleteSketch,
-            &mut new_ast,
-        )
-        .await
+        self.execute_after_delete_sketch(ctx, &mut new_ast).await
     }
 
     async fn add_segment(
@@ -1321,13 +1313,10 @@ impl FrontendState {
 
         // Truncate after the sketch block for mock execution.
         let is_delete = edit_kind.is_delete();
-        let truncated_program = match edit_kind {
-            EditDeleteKind::DeleteSketch => new_program,
-            EditDeleteKind::Edit | EditDeleteKind::DeleteNonSketch => {
-                let mut truncated_program = new_program;
-                self.only_sketch_block(sketch, edit_kind.to_change_kind(), &mut truncated_program.ast)?;
-                truncated_program
-            }
+        let truncated_program = {
+            let mut truncated_program = new_program;
+            self.only_sketch_block(sketch, edit_kind.to_change_kind(), &mut truncated_program.ast)?;
+            truncated_program
         };
 
         #[cfg(not(feature = "artifact-graph"))]
@@ -1374,6 +1363,55 @@ impl FrontendState {
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: is_delete,
+            new_objects: Vec::new(),
+            exec_outcome: outcome,
+        };
+        Ok((src_delta, scene_graph_delta))
+    }
+
+    async fn execute_after_delete_sketch(
+        &mut self,
+        ctx: &ExecutorContext,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        // Convert to string source to create real source ranges.
+        let new_source = source_from_ast(new_ast);
+        // Parse the new KCL source.
+        let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
+        if !errors.is_empty() {
+            return Err(Error {
+                msg: format!("Error parsing KCL source after editing: {errors:?}"),
+            });
+        }
+        let Some(new_program) = new_program else {
+            return Err(Error {
+                msg: "No AST produced after editing".to_string(),
+            });
+        };
+
+        // Make sure to only set this if there are no errors.
+        self.program = new_program.clone();
+
+        // We deleted the entire sketch block. It doesn't make sense to truncate
+        // and execute only the sketch block. We execute the whole program with
+        // a real engine.
+
+        // Execute.
+        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+            // TODO: sketch-api: Yeah, this needs to change. We need to
+            // return the full error.
+            Error {
+                msg: err.error.message().to_owned(),
+            }
+        })?;
+        let freedom_analysis_ran = true;
+
+        let outcome = self.update_state_after_exec(outcome, freedom_analysis_ran);
+
+        let src_delta = SourceDelta { text: new_source };
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            invalidates_ids: true,
             new_objects: Vec::new(),
             exec_outcome: outcome,
         };
@@ -3219,7 +3257,7 @@ sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
-        let (src_delta, scene_delta) = frontend.delete_sketch(&mock_ctx, version, sketch_id).await.unwrap();
+        let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
@@ -3250,7 +3288,7 @@ s = sketch(on = XY) {}
         let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
         let sketch_id = sketch_object.id;
 
-        let (src_delta, scene_delta) = frontend.delete_sketch(&mock_ctx, version, sketch_id).await.unwrap();
+        let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)

@@ -249,7 +249,7 @@ impl Context {
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, true)
+            .create_executor_ctx(settings, None, false)
             .map_err(|e| format!("Could not create KCL executor context for delete sketch. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
