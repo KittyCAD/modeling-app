@@ -24,7 +24,7 @@ import {
   loadAndValidateSettings,
   readLocalStorageAppSettingsFile,
 } from '@src/lib/settings/settingsUtils'
-import type { KclManager } from '@src/lang/KclManager'
+import { KclManager } from '@src/lang/KclManager'
 import type { SystemIOActor } from '@src/lib/singletons'
 import type {
   FileLoaderData,
@@ -34,6 +34,7 @@ import type {
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type RustContext from '@src/lib/rustContext'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { Transaction } from '@codemirror/state'
 
 export const fileLoader =
   ({
@@ -140,7 +141,10 @@ export const fileLoader =
         kclManager.updateCurrentFilePath(currentFilePath)
         // We pass true on the end here to clear the code editor history.
         // This way undo and redo are not super weird when opening new files.
-        kclManager.updateCodeStateEditor(code, true, [])
+        kclManager.updateCodeStateEditor(code, true, [
+          KclManager.requestCameraResetAnnotation.of(true),
+          Transaction.addToHistory.of(false),
+        ])
       }
 
       // Set the file system manager to the project path

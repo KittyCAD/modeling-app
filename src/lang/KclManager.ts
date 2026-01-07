@@ -113,6 +113,7 @@ import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -474,6 +475,8 @@ export class KclManager extends EventTarget {
     }
   )
 
+  static requestCameraResetAnnotation = Annotation.define<boolean>()
+
   /**
    * This is a CodeMirror extension that watches for updates to the document,
    * discerns if the change is a kind that we want to re-execute on,
@@ -508,57 +511,74 @@ export class KclManager extends EventTarget {
         return !ignoredEvents.some((v) => Boolean(v))
       })
 
+    const shouldResetCamera = update.transactions.some((tr) =>
+      tr.annotation(KclManager.requestCameraResetAnnotation)
+    )
+
     if (shouldExecute) {
       const newCode = update.state.doc.toString()
-      this.deferredExecution(newCode)
+      this.deferredExecution({ newCode, shouldResetCamera })
     }
   })
 
-  private deferredExecution = deferredCallback(async (newCode: string) => {
-    // We don't want to block on file writing
-    void this.writeToFile(newCode)
+  private deferredExecution = deferredCallback(
+    async ({
+      newCode,
+      shouldResetCamera,
+    }: { newCode: string; shouldResetCamera: boolean }) => {
+      // We don't want to block on file writing
+      void this.writeToFile(newCode)
 
-    // If we're in sketchSolveMode, update Rust state with the latest AST
-    // This handles the case where the user directly edits in the CodeMirror editor
-    // these are short term hacks while in rapid development for sketch revamp
-    // should be clean up.
-    try {
-      if (this.modelingState?.matches('sketchSolveMode')) {
-        await this.executeCode(newCode)
-        const { sceneGraph, execOutcome } =
-          await this.singletons.rustContext.hackSetProgram(
-            this.ast,
-            await jsAppSettings(this.singletons.rustContext.settingsActor)
-          )
+      // If we're in sketchSolveMode, update Rust state with the latest AST
+      // This handles the case where the user directly edits in the CodeMirror editor
+      // these are short term hacks while in rapid development for sketch revamp
+      // should be clean up.
+      try {
+        if (this.modelingState?.matches('sketchSolveMode')) {
+          await this.executeCode(newCode)
+          const { sceneGraph, execOutcome } =
+            await this.singletons.rustContext.hackSetProgram(
+              this.ast,
+              await jsAppSettings(this.singletons.rustContext.settingsActor)
+            )
 
-        // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
-        // Always invalidate IDs for direct edits since we don't know what the user changed
-        const sceneGraphDelta: SceneGraphDelta = {
-          new_graph: sceneGraph,
-          new_objects: [],
-          invalidates_ids: true,
-          exec_outcome: execOutcome,
+          // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
+          // Always invalidate IDs for direct edits since we don't know what the user changed
+          const sceneGraphDelta: SceneGraphDelta = {
+            new_graph: sceneGraph,
+            new_objects: [],
+            invalidates_ids: true,
+            exec_outcome: execOutcome,
+          }
+
+          const kclSource: SourceDelta = {
+            text: this.code,
+          }
+
+          // Send event to sketch solve machine via modeling machine
+          this.sendModelingEvent({
+            type: 'update sketch outcome',
+            data: {
+              kclSource,
+              sceneGraphDelta,
+            },
+          })
+        } else {
+          await this.executeCode(newCode)
+          if (shouldResetCamera) {
+            await resetCameraPosition({
+              sceneInfra: this.singletons.sceneInfra,
+              engineCommandManager: this.engineCommandManager,
+              settingsActor: this.singletons.rustContext.settingsActor,
+            })
+          }
         }
-
-        const kclSource: SourceDelta = {
-          text: this.code,
-        }
-
-        // Send event to sketch solve machine via modeling machine
-        this.sendModelingEvent({
-          type: 'update sketch outcome',
-          data: {
-            kclSource,
-            sceneGraphDelta,
-          },
-        })
-      } else {
-        await this.executeCode(newCode)
+      } catch (error) {
+        console.error('Error when updating Rust state after user edit:', error)
       }
-    } catch (error) {
-      console.error('Error when updating Rust state after user edit:', error)
-    }
-  }, 300)
+    },
+    300
+  )
 
   private createEditorExtensions() {
     return [

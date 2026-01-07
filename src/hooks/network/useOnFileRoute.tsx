@@ -52,19 +52,6 @@ export const useOnFileRoute = ({
     // Keep track of the file you just saw
     seenFilePath.current = file?.path || ''
 
-    void (async () => {
-      try {
-        console.log('file changed, executing code')
-        await kclManager.executeCode()
-        await resetCameraPosition({
-          sceneInfra,
-          engineCommandManager,
-          settingsActor,
-        })
-      } catch (e) {
-        console.warn(e)
-      }
-    })()
     /**
      * Watch file not file?.path. Watching the object allows us to send the same file.path back to back
      * and still trigger the executeCode() function. JS should not be doing a cache check on the file path
