@@ -3416,7 +3416,8 @@ description: Artifact commands axial-fan.kcl
         "v_degree": 2,
         "bez_approximate_rational": false,
         "base_curve_index": null,
-        "tolerance": 0.0000001
+        "tolerance": 0.0000001,
+        "body_type": "solid"
       }
     },
     {

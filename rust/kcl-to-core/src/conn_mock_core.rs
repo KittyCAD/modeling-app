@@ -198,6 +198,7 @@ impl EngineConnection {
                 opposite: _,
                 extrude_method: _,
                 body_type: _, // Engine team please weigh in here
+                merge_coplanar_faces: _,
             }) => {
                 format!(
                     r#"
