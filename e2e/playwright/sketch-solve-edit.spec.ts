@@ -66,7 +66,7 @@ sketch(on = XZ) {
 }
 `
 
-test.describe('Sketch solve edit tests', () => {
+test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
   test("can edit an existing sketch and edit it's segments", async ({
     page,
     context,

@@ -42,7 +42,7 @@ const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
 test.describe(
   'Testing settings',
   {
-    tag: ['@linux', '@macos', '@windows'],
+    tag: ['@desktop', '@macos', '@windows'],
   },
   () => {
     test('Stored settings are validated and fall back to defaults', async ({
@@ -207,172 +207,161 @@ test.describe(
       })
     })
 
-    test(
-      `Load desktop app with no settings file`,
-      {
-        tag: '@desktop',
-      },
-      async ({ page }, testInfo) => {
-        await page.setBodyDimensions({ width: 1200, height: 500 })
+    test(`Load desktop app with no settings file`, async ({
+      page,
+    }, testInfo) => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
-        // Selectors and constants
-        const errorHeading = page.getByRole('heading', {
-          name: 'An unexpected error occurred',
-        })
-        const projectDirLink = page.getByText('Loaded from')
+      // Selectors and constants
+      const errorHeading = page.getByRole('heading', {
+        name: 'An unexpected error occurred',
+      })
+      const projectDirLink = page.getByText('Loaded from')
 
-        // If the app loads without exploding we're in the clear
-        await expect(errorHeading).not.toBeVisible()
+      // If the app loads without exploding we're in the clear
+      await expect(errorHeading).not.toBeVisible()
+      await expect(projectDirLink).toBeVisible()
+    })
+
+    test(`Load desktop app with a settings file, but no project directory setting`, async ({
+      page,
+      tronApp,
+    }) => {
+      if (!tronApp) throw new Error('tronApp is missing.')
+
+      await tronApp.cleanProjectDir({
+        modeling: {
+          base_unit: 'in',
+        },
+      })
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      // Selectors and constants
+      const errorHeading = page.getByRole('heading', {
+        name: 'An unexpected error occurred',
+      })
+      const projectDirLink = page.getByText('Loaded from')
+
+      // If the app loads without exploding we're in the clear
+      await expect(errorHeading).not.toBeVisible()
+      await expect(projectDirLink).toBeVisible()
+    })
+
+    test('project settings reload on external change', async ({
+      context,
+      page,
+      toolbar,
+    }) => {
+      const { dir: projectDirName } = await context.folderSetupFn(
+        async () => {}
+      )
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      const projectDirLink = page.getByText('Loaded from')
+
+      await test.step('Wait for project view', async () => {
         await expect(projectDirLink).toBeVisible()
-      }
-    )
+      })
 
-    test(
-      `Load desktop app with a settings file, but no project directory setting`,
-      {
-        tag: '@desktop',
-      },
-      async ({ page, tronApp }) => {
-        if (!tronApp) throw new Error('tronApp is missing.')
+      await createProject({ name: 'project-000', page })
 
-        await tronApp.cleanProjectDir({
-          modeling: {
-            base_unit: 'in',
-          },
-        })
-
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-
-        // Selectors and constants
-        const errorHeading = page.getByRole('heading', {
-          name: 'An unexpected error occurred',
-        })
-        const projectDirLink = page.getByText('Loaded from')
-
-        // If the app loads without exploding we're in the clear
-        await expect(errorHeading).not.toBeVisible()
-        await expect(projectDirLink).toBeVisible()
-      }
-    )
-
-    test(
-      'project settings reload on external change',
-      { tag: '@desktop' },
-      async ({ context, page, toolbar }) => {
-        const { dir: projectDirName } = await context.folderSetupFn(
-          async () => {}
+      const changeShowDebugPanelFs = async (show_debug_panel: boolean) => {
+        const tempSettingsFilePath = join(
+          projectDirName,
+          'project-000',
+          PROJECT_SETTINGS_FILE_NAME
         )
-
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-
-        const projectDirLink = page.getByText('Loaded from')
-
-        await test.step('Wait for project view', async () => {
-          await expect(projectDirLink).toBeVisible()
-        })
-
-        await createProject({ name: 'project-000', page })
-
-        const changeShowDebugPanelFs = async (show_debug_panel: boolean) => {
-          const tempSettingsFilePath = join(
-            projectDirName,
-            'project-000',
-            PROJECT_SETTINGS_FILE_NAME
-          )
-          await fsp.writeFile(
-            tempSettingsFilePath,
-            settingsToToml({
-              settings: {
-                app: {
-                  show_debug_panel,
-                },
-                // TODO: make sure this isn't just working around a bug
-                // where the existing data wouldn't be preserved?
-                meta: {
-                  id: '9379bcda-e1e4-4613-851e-a5c4f5c7e83d',
-                },
+        await fsp.writeFile(
+          tempSettingsFilePath,
+          settingsToToml({
+            settings: {
+              app: {
+                show_debug_panel,
               },
-            })
-          )
-        }
-
-        await test.step('Check the body theme is first starting as we expect', async () => {
-          await expect(toolbar.debugPaneBtn).not.toBeAttached()
-        })
-
-        await test.step('Check the theme changed', async () => {
-          await changeShowDebugPanelFs(true)
-          await expect(toolbar.debugPaneBtn).toBeAttached()
-        })
+              // TODO: make sure this isn't just working around a bug
+              // where the existing data wouldn't be preserved?
+              meta: {
+                id: '9379bcda-e1e4-4613-851e-a5c4f5c7e83d',
+              },
+            },
+          })
+        )
       }
-    )
 
-    test(
-      `Closing settings modal should go back to the original file being viewed`,
-      { tag: '@desktop' },
-      async ({ context, page }, testInfo) => {
-        await context.folderSetupFn(async (dir) => {
-          const bracketDir = join(dir, 'project-000')
-          await fsp.mkdir(bracketDir, { recursive: true })
-          await fsp.copyFile(
-            executorInputPath('cube.kcl'),
-            join(bracketDir, 'main.kcl')
-          )
-          await fsp.copyFile(
-            executorInputPath('cylinder.kcl'),
-            join(bracketDir, '2.kcl')
-          )
-        })
-        const kclCube = await fsp.readFile(
+      await test.step('Check the body theme is first starting as we expect', async () => {
+        await expect(toolbar.debugPaneBtn).not.toBeAttached()
+      })
+
+      await test.step('Check the theme changed', async () => {
+        await changeShowDebugPanelFs(true)
+        await expect(toolbar.debugPaneBtn).toBeAttached()
+      })
+    })
+
+    test(`Closing settings modal should go back to the original file being viewed`, async ({
+      context,
+      page,
+    }, testInfo) => {
+      await context.folderSetupFn(async (dir) => {
+        const bracketDir = join(dir, 'project-000')
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await fsp.copyFile(
           executorInputPath('cube.kcl'),
-          'utf-8'
+          join(bracketDir, 'main.kcl')
         )
-        const kclCylinder = await fsp.readFile(
+        await fsp.copyFile(
           executorInputPath('cylinder.kcl'),
-          'utf8'
+          join(bracketDir, '2.kcl')
         )
+      })
+      const kclCube = await fsp.readFile(executorInputPath('cube.kcl'), 'utf-8')
+      const kclCylinder = await fsp.readFile(
+        executorInputPath('cylinder.kcl'),
+        'utf8'
+      )
 
-        const {
-          openKclCodePanel,
-          openFilePanel,
-          waitForPageLoad,
-          selectFile,
-          editorTextMatches,
-        } = await getUtils(page, test)
+      const {
+        openKclCodePanel,
+        openFilePanel,
+        waitForPageLoad,
+        selectFile,
+        editorTextMatches,
+      } = await getUtils(page, test)
 
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        page.on('console', console.log)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      page.on('console', console.log)
 
-        await test.step('Precondition: Open to second project file', async () => {
-          await expect(page.getByTestId('home-section')).toBeVisible()
-          await page.getByText('project-000').click()
-          await waitForPageLoad()
-          await openKclCodePanel()
-          await openFilePanel()
-          await editorTextMatches(kclCube)
+      await test.step('Precondition: Open to second project file', async () => {
+        await expect(page.getByTestId('home-section')).toBeVisible()
+        await page.getByText('project-000').click()
+        await waitForPageLoad()
+        await openKclCodePanel()
+        await openFilePanel()
+        await editorTextMatches(kclCube)
 
-          await selectFile('2.kcl')
-          await editorTextMatches(kclCylinder)
-        })
+        await selectFile('2.kcl')
+        await editorTextMatches(kclCylinder)
+      })
 
-        const settingsOpenButton = page.getByRole('link', {
-          name: 'settings Settings',
-        })
-        const settingsCloseButton = page.getByTestId('settings-close-button')
+      const settingsOpenButton = page.getByRole('link', {
+        name: 'settings Settings',
+      })
+      const settingsCloseButton = page.getByTestId('settings-close-button')
 
-        await test.step('Open and close settings', async () => {
-          await settingsOpenButton.click()
-          await expect(
-            page.getByRole('heading', { name: 'Settings', exact: true })
-          ).toBeVisible()
-          await settingsCloseButton.click()
-        })
+      await test.step('Open and close settings', async () => {
+        await settingsOpenButton.click()
+        await expect(
+          page.getByRole('heading', { name: 'Settings', exact: true })
+        ).toBeVisible()
+        await settingsCloseButton.click()
+      })
 
-        await test.step('Postcondition: Same file content is in editor as before settings opened', async () => {
-          await editorTextMatches(kclCylinder)
-        })
-      }
-    )
+      await test.step('Postcondition: Same file content is in editor as before settings opened', async () => {
+        await editorTextMatches(kclCylinder)
+      })
+    })
 
     test('Changing modeling default unit', async ({ page, homePage }) => {
       await test.step(`Test setup`, async () => {

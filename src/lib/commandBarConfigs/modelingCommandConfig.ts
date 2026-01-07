@@ -586,6 +586,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: false,
+        prepopulate: true,
       },
       to: {
         inputType: 'selection',

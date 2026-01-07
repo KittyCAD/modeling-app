@@ -11,7 +11,7 @@ function countNewlines(input: string): number {
   return count
 }
 
-test.describe('Debug pane', () => {
+test.describe('Debug pane', { tag: '@desktop' }, () => {
   test('Artifact IDs in the artifact graph are stable across code edits', async ({
     page,
     context,
