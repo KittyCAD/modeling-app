@@ -13,7 +13,7 @@ import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import {
   groupOperationTypeStreaks,
-  filterOperations
+  filterOperations,
 } from '@src/lib/operations'
 
 async function clearSelection() {
@@ -49,7 +49,6 @@ async function makeHighlights(ids) {
 }
 
 function compute(artifactGraph, wasmInstance) {
-
   const operationList = generateOperationList()
 
   // name
@@ -64,13 +63,25 @@ function compute(artifactGraph, wasmInstance) {
     const codeRefToIds = codeRangeToEventInfo(codeRef, wasmInstance)
     const artifactIdtoCodeRefs = artifactToCodeRange(id) || []
     let featureTreeFromSourceRange = []
-      // huh?
-      const featureTrees = operationList.filter((feature) => {
-        return codeRef?.range[0] === feature.sourceRange[0] && codeRef?.range[1] === feature.sourceRange[1] && codeRef?.range[2] === feature.sourceRange[2]
+    // huh?
 
-      })
-      featureTreeFromSourceRange = featureTrees
-    return { id, type, codeRef, codeRefToIds, artifactIdtoCodeRefs, featureTreeFromSourceRange }
+    const result = computeOperationList(generateOperationList(), wasmInstance)
+    const featureTrees = result.filter((feature) => {
+      return (
+        codeRef?.range[0] === feature.sourceRange[0] &&
+        codeRef?.range[1] === feature.sourceRange[1] &&
+        codeRef?.range[2] === feature.sourceRange[2]
+      )
+    })
+    featureTreeFromSourceRange = featureTrees
+    return {
+      id,
+      type,
+      codeRef,
+      codeRefToIds,
+      artifactIdtoCodeRefs,
+      featureTreeFromSourceRange,
+    }
   })
   return idsWithTypes
 }
@@ -180,7 +191,7 @@ function artifactToCodeRange(id) {
   }
 }
 
-function generateOperationList () {
+function generateOperationList() {
   // If there are parse errors we show the last successful operations
   // and overlay a message on top of the pane
   const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine')
@@ -205,24 +216,26 @@ function generateOperationList () {
     kclManager.lastSuccessfulCode || kclManager.codeSignal.value
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList = groupOperationTypeStreaks(
-    filterOperations(unfilteredOperationList),
-    ['VariableDeclaration']
-  ) || []
+  const operationList =
+    groupOperationTypeStreaks(filterOperations(unfilteredOperationList), [
+      'VariableDeclaration',
+    ]) || []
 
   return operationList.flat()
 }
 
-function computeOperationList (operationList, wasmInstance) {
+function computeOperationList(operationList, wasmInstance) {
   const idsWithTypes = operationList.map((operation) => {
-    const codeRefToIds = codeRangeToEventInfo({
-      range: operation.sourceRange,
-      nodeToPath: operation.nodeToPath
-    }, wasmInstance)
-    return {codeRefToIds, ...operation}
+    const codeRefToIds = codeRangeToEventInfo(
+      {
+        range: operation.sourceRange,
+        nodeToPath: operation.nodeToPath,
+      },
+      wasmInstance
+    )
+    return { codeRefToIds, ...operation }
   })
   return idsWithTypes
-
 }
 
 export function DebugSelections() {
@@ -321,60 +334,91 @@ export function DebugSelections() {
               })}
             </div>
             <div className="ml-2 text-xs flex flex-col justify-between">
-              Feature Tree mappings {a.featureTreeFromSourceRange.length}
-            </div>
-          </div>
-        )
-      })}
-      <div>
-        Feature Tree
-      </div>
-      {
-
-        operationList.map((operation) => {
-        const highlightMyRange = operation?.sourceRange?.join(',') === selectedRange
-          const codeRef = {
-            range: operation.sourceRange,
-            nodeToPath: operation.nodeToPath
-                    }
-          return (
-            <div className="text-xs flex flex-col justify-between odd:bg-chalkboard-90">
-              <div className="flex flex-row justify-between">
-                <div>
-                  {operation.name || '<< NAME IS UNDEFINED >>'}
-                </div>
-                <div>
-                  {operation.type}
-                </div>
-                <div
-                  className={`ml-2 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
-                  onClick={() => {
-                    selectionFromRange(codeRef)
-                    const rangeString = codeRef.range.join(',')
-                    setSelectedRange(rangeString)
-                  }}
-                >
-                  {`[${codeRef?.range}]` || ''}
-                </div>
-              </div>
-              {operation.codeRefToIds.map((id) => {
-                const highlightMyId = id === selectedId
+              {a.featureTreeFromSourceRange.map((operation) => {
+                const highlightMyRange =
+                  operation?.sourceRange?.join(',') === selectedRange
+                const codeRef = {
+                  range: operation.sourceRange,
+                  nodeToPath: operation.nodeToPath,
+                }
                 return (
-                  <div
-                    className={`ml-4 cursor-pointer ${highlightMyId ? highlightMinor : ''}`}
-                    onClick={() => {
-                      selectionFromId(id)
-                      setSelectedId(id)
-                    }}
-                  >
-                    {id}
+                  <div className="text-xs flex flex-col justify-between odd:bg-chalkboard-90">
+                    <div className="flex flex-row justify-between">
+                      <div>{operation.name || '<< NAME IS UNDEFINED >>'}</div>
+                      <div>{operation.type}</div>
+                      <div
+                        className={`ml-2 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
+                        onClick={() => {
+                          selectionFromRange(codeRef)
+                          const rangeString = codeRef.range.join(',')
+                          setSelectedRange(rangeString)
+                        }}
+                      >
+                        {`[${codeRef?.range}]` || ''}
+                      </div>
+                    </div>
+                    {operation?.codeRefToIds?.map((id) => {
+                      const highlightMyId = id === selectedId
+                      return (
+                        <div
+                          className={`ml-4 cursor-pointer ${highlightMyId ? highlightMinor : ''}`}
+                          onClick={() => {
+                            selectionFromId(id)
+                            setSelectedId(id)
+                          }}
+                        >
+                          {id}
+                        </div>
+                      )
+                    })}
                   </div>
                 )
               })}
             </div>
-          )
-        })
-      }
+          </div>
+        )
+      })}
+      <div>Feature Tree</div>
+      {operationList.map((operation) => {
+        const highlightMyRange =
+          operation?.sourceRange?.join(',') === selectedRange
+        const codeRef = {
+          range: operation.sourceRange,
+          nodeToPath: operation.nodeToPath,
+        }
+        return (
+          <div className="text-xs flex flex-col justify-between odd:bg-chalkboard-90">
+            <div className="flex flex-row justify-between">
+              <div>{operation.name || '<< NAME IS UNDEFINED >>'}</div>
+              <div>{operation.type}</div>
+              <div
+                className={`ml-2 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
+                onClick={() => {
+                  selectionFromRange(codeRef)
+                  const rangeString = codeRef.range.join(',')
+                  setSelectedRange(rangeString)
+                }}
+              >
+                {`[${codeRef?.range}]` || ''}
+              </div>
+            </div>
+            {operation.codeRefToIds.map((id) => {
+              const highlightMyId = id === selectedId
+              return (
+                <div
+                  className={`ml-4 cursor-pointer ${highlightMyId ? highlightMinor : ''}`}
+                  onClick={() => {
+                    selectionFromId(id)
+                    setSelectedId(id)
+                  }}
+                >
+                  {id}
+                </div>
+              )
+            })}
+          </div>
+        )
+      })}
     </div>
   )
 }
