@@ -210,10 +210,18 @@ impl Default for MockConfig {
         Self {
             // By default, use previous memory. This is usually what you want.
             use_prev_memory: true,
-            freedom_analysis: false,
+            freedom_analysis: true,
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited: AhashIndexSet::default(),
         }
+    }
+}
+
+impl MockConfig {
+    #[must_use]
+    pub(crate) fn no_freedom_analysis(mut self) -> Self {
+        self.freedom_analysis = false;
+        self
     }
 }
 
