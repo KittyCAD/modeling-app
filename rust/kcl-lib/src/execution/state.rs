@@ -133,7 +133,8 @@ pub(super) struct ModuleState {
     /// Settings specified from annotations.
     pub settings: MetaSettings,
     /// True to do more costly analysis of whether the sketch block segments are
-    /// under-constrained.
+    /// under-constrained. The only time we disable this is when a user is
+    /// dragging segments.
     pub freedom_analysis: bool,
     pub(super) explicit_length_units: bool,
     pub(super) path: ModulePath,
@@ -158,7 +159,7 @@ impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
             global: GlobalState::new(&exec_context.settings, Default::default()),
-            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), 0, false),
+            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), 0, true),
         }
     }
 
@@ -189,7 +190,7 @@ impl ExecState {
                 ProgramMemory::new(),
                 Default::default(),
                 0,
-                false,
+                true,
             ),
         };
     }
