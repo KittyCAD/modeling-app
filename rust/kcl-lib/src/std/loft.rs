@@ -83,6 +83,7 @@ async fn inner_loft(
                 bez_approximate_rational,
                 tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
                 v_degree,
+                body_type: Default::default(), // TODO ben
             }),
         )
         .await?;

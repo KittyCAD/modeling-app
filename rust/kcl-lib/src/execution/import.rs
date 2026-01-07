@@ -310,6 +310,7 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
     // * Handedness: Right
     match format {
         FileImportFormat::Step => Ok(InputFormat3d::Step(kcmc::format::step::import::Options {
+            coords: ZOO_COORD_SYSTEM,
             split_closed_faces: false,
         })),
         FileImportFormat::Stl => Ok(InputFormat3d::Stl(kcmc::format::stl::import::Options {
