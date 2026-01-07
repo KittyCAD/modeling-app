@@ -1486,8 +1486,13 @@ export class KclManager extends EventTarget {
    */
   updateCodeEditor(code: string, clearHistory?: boolean): void {
     // If the code hasn't changed, skip the update to preserve cursor position
+    // However, if clearHistory is true, we still need to clear the history
     const currentCode = this.editorState.doc.toString()
     if (currentCode === code) {
+      if (clearHistory) {
+        // Code is the same but we need to clear history (e.g., opening a new file with same content)
+        clearCodeMirrorHistory(this)
+      }
       return
     }
 
