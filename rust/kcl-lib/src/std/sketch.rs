@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     shapes::{get_radius, get_radius_labelled},
-    utils::{untype_array, untype_point},
+    utils::untype_array,
 };
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
@@ -2119,7 +2119,7 @@ pub(crate) async fn inner_elliptic(
     let from: Point2d = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
 
-    let (center_u, _) = untype_point(center);
+    let center_u = point_to_len_unit(center, from.units);
 
     let major_axis = match (major_axis, major_radius) {
         (Some(_), Some(_)) | (None, None) => {
@@ -2311,8 +2311,8 @@ pub(crate) async fn inner_hyperbolic(
         }),
     };
 
-    let (interior, _) = untype_point(interior);
-    let (end, _) = untype_point(end);
+    let interior = point_to_len_unit(interior, from.units);
+    let end = point_to_len_unit(end, from.units);
     let end_point = Point2d {
         x: end[0],
         y: end[1],
@@ -2472,17 +2472,17 @@ pub(crate) async fn inner_parabolic(
 
     let (interior, end, relative) = match (coefficients.clone(), interior, end, interior_absolute, end_absolute) {
         (None, Some(interior), Some(end), None, None) => {
-            let (interior, _) = untype_point(interior);
-            let (end, _) = untype_point(end);
+            let interior = point_to_len_unit(interior, from.units);
+            let end = point_to_len_unit(end, from.units);
             (interior,end, true)
         },
         (None, None, None, Some(interior_absolute), Some(end_absolute)) => {
-            let (interior_absolute, _) = untype_point(interior_absolute);
-            let (end_absolute, _) = untype_point(end_absolute);
+            let interior_absolute = point_to_len_unit(interior_absolute, from.units);
+            let end_absolute = point_to_len_unit(end_absolute, from.units);
             (interior_absolute, end_absolute, false)
         }
         (Some(coefficients), _, Some(end), _, _) => {
-            let (end, _) = untype_point(end);
+            let end = point_to_len_unit(end, from.units);
             let interior =
             inner_parabolic_point(
                 Some(TyF64::count(0.5 * (from.x + end[0]))),
@@ -2494,7 +2494,7 @@ pub(crate) async fn inner_parabolic(
             (interior, end, true)
         }
         (Some(coefficients), _, _, _, Some(end)) => {
-            let (end, _) = untype_point(end);
+            let end = point_to_len_unit(end, from.units);
             let interior =
             inner_parabolic_point(
                 Some(TyF64::count(0.5 * (from.x + end[0]))),
@@ -2670,16 +2670,15 @@ pub(crate) async fn inner_conic(
         }),
     };
 
-    let (end, _) = untype_array(end);
-    let (interior, _) = untype_point(interior);
+    let end = point_to_len_unit(end, from.units);
+    let interior = point_to_len_unit(interior, from.units);
 
     let (start_tangent, end_tangent) = if let Some(coeffs) = coefficients {
         let (coeffs, _) = untype_array(coeffs);
         (conic_tangent(coeffs, [from.x, from.y]), conic_tangent(coeffs, end))
     } else {
         let start = if let Some(start_tangent) = start_tangent {
-            let (start, _) = untype_point(start_tangent);
-            start
+            point_to_len_unit(start_tangent, from.units)
         } else {
             let previous_point = sketch
                 .get_tangential_info_from_paths()
@@ -2694,7 +2693,7 @@ pub(crate) async fn inner_conic(
                 vec![args.source_range],
             )));
         };
-        let (end_tan, _) = untype_point(end_tangent);
+        let end_tan = point_to_len_unit(end_tangent, from.units);
         (start, end_tan)
     };
 

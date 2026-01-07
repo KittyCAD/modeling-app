@@ -37,6 +37,7 @@ import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToE
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { EngineDebugger } from '@src/lib/debugger'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
+import { DEFAULT_BACKFACE_COLOR } from '@src/lib/constants'
 
 const TIME_TO_CONNECT = 30_000
 
@@ -79,6 +80,7 @@ export const ConnectionStream = (props: {
       showScaleGrid: settings.modeling.showScaleGrid.current,
       cameraProjection: settings.modeling.cameraProjection.current,
       cameraOrbit: settings.modeling.cameraOrbit.current,
+      backfaceColor: DEFAULT_BACKFACE_COLOR,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [

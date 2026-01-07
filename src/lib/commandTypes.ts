@@ -144,6 +144,8 @@ export type CommandArgumentConfig<
         machineContext?: C
       ) => boolean)
   skip?: boolean
+  /** If `true`, this argument will be automatically prepopulated with default value, but may still be cleared */
+  prepopulate?: boolean
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */
@@ -326,6 +328,8 @@ export type CommandArgument<
         commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
         machineContext?: ContextFrom<T>
       ) => boolean)
+  /** If `true`, this argument will be automatically prepopulated with default value, but may still be cleared */
+  prepopulate?: boolean
   skip?: boolean
   machineActor?: Actor<T>
   /** For showing a summary display of the current value, such as in

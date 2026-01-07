@@ -593,12 +593,11 @@ sketch001 = startSketchOn(XZ)
     // sketch selection should already have been made.
     // otherwise the cmdbar would be waiting for a selection.
     await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
-      headerArguments: { Profiles: '1 profile' },
+      headerArguments: { Profiles: '1 profile', Length: '5' },
       commandName: 'Extrude',
-      reviewValidationError:
-        'semantic: Either `length` or `to` parameter must be provided for extrusion.',
     })
   })
   test("Existing sketch with bad code delete user's code", async ({

@@ -144,14 +144,13 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
         await cmdBar.progressCmdBar()
       })
       await test.step('Set length', async () => {
-        await cmdBar.clickOptionalArgument('length')
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'length',
           currentArgValue: '5',
           headerArguments: {
             Profiles: '1 profile',
-            Length: '',
+            Length: '5',
           },
           highlightedHeaderArg: 'length',
           commandName: 'Extrude',
@@ -474,7 +473,7 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>circle(center=[8,5],radius=2)`],
-        highlightedCode: 'circle(center=[8,5],radius=2)',
+        highlightedCode: '',
         diagnostics: [],
       })
     })
@@ -511,7 +510,7 @@ openSketch = startSketchOn(XY)
       await editor.openPane()
       await editor.expectState({
         activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
-        highlightedCode: 'tangentialArc(endAbsolute=[10,0])',
+        highlightedCode: '',
         diagnostics: [],
       })
     })

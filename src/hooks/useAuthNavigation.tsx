@@ -26,7 +26,7 @@ export function useAuthNavigation() {
       authState.matches('loggedIn') &&
       location.pathname.includes(PATHS.SIGN_IN)
     ) {
-      navigate(PATHS.INDEX)
+      void navigate(PATHS.INDEX)
     } else if (
       authState.matches('loggedOut') &&
       !location.pathname.includes(PATHS.SIGN_IN)
@@ -36,7 +36,7 @@ export function useAuthNavigation() {
         return
       }
 
-      navigate(PATHS.SIGN_IN + (location.search || ''))
+      void navigate(PATHS.SIGN_IN + (location.search || ''))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [authState, location.pathname])
