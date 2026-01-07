@@ -138,7 +138,7 @@ function ProjectMenuPopover({
             const targetPath = location.pathname.includes(PATHS.FILE)
               ? filePath + PATHS.SETTINGS_PROJECT
               : PATHS.HOME + PATHS.SETTINGS_PROJECT
-            navigate(targetPath)
+            void navigate(targetPath)
           },
         },
         'break',

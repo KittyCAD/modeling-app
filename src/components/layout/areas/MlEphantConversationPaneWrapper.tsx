@@ -29,7 +29,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
     send: sendModeling,
     theProject,
   } = useModelingContext()
-  const { file: loaderFile } = useLoaderData() as IndexLoaderData
+  const { file: loaderFile } = useLoaderData<IndexLoaderData>()
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
 
   return (

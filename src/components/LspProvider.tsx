@@ -263,7 +263,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     })
 
     if (redirect) {
-      navigate(PATHS.HOME)
+      void navigate(PATHS.HOME)
     }
   }
 
