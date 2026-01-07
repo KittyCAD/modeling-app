@@ -361,6 +361,7 @@ impl ExecState {
     #[cfg(feature = "artifact-graph")]
     pub fn add_scene_object(&mut self, obj: Object, source_range: SourceRange) -> ObjectId {
         let id = obj.id;
+        debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
         self.mod_local.artifacts.scene_objects.push(obj);
         self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
         id
@@ -370,6 +371,7 @@ impl ExecState {
     /// an ID before we have all the information to create the full object.
     #[cfg(feature = "artifact-graph")]
     pub fn add_placeholder_scene_object(&mut self, id: ObjectId, source_range: SourceRange) -> ObjectId {
+        debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
         self.mod_local
             .artifacts
             .scene_objects
