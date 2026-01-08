@@ -1395,7 +1395,6 @@ export class KclManager extends EventTarget {
     sceneEntitiesManager: SceneEntities,
     wasmInstance: ModuleType
   ): void {
-    console.log('======')
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
     }
