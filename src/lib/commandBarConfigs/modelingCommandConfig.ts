@@ -178,6 +178,7 @@ export type ModelingCommandSchema = {
     // TODO: figure out if we should expose `tolerance` or not
     tagStart?: string
     tagEnd?: string
+    bodyType?: KclPreludeBodyType
   }
   Revolve: {
     // Enables editing workflow
@@ -754,6 +755,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        description: `
+          Note: Only closed paths are allowed for now. Selection of open paths via segments for surface modeling is coming soon.
+        `.trim(),
       },
       vDegree: {
         inputType: 'kcl',
@@ -774,6 +778,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       tagEnd: {
         inputType: 'tagDeclarator',
         required: false,
+      },
+      bodyType: {
+        inputType: 'options',
+        required: false,
+        options: kclBodyTypeOptions,
       },
     },
   },
