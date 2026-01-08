@@ -51,14 +51,11 @@ export class SafeRenderer extends Renderer {
 // From https://github.com/KittyCAD/modeling-app/issues/9403#issuecomment-3718304883
 export function attachSafeLinkHandler(root: Document | HTMLElement = document) {
   root.addEventListener('click', (e) => {
-    console.log('safe link handler triggered')
     const target = e.target as HTMLElement | null
     if (!target) return
-
     const anchor = target.closest<HTMLAnchorElement>('a[data-safe-link]')
     if (!anchor) return
-
-    openExternalBrowserIfDesktop()(
+    openExternalBrowserIfDesktop(anchor.href)(
       e as unknown as React.MouseEvent<HTMLAnchorElement>
     )
   })
