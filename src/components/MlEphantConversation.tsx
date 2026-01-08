@@ -288,22 +288,11 @@ const StarterCard = ({ text }: { text: string }) => {
 
 export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
-  const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
-  const onProcess = (request: string, mode: MlCopilotMode) => {
-    setAutoScroll(true)
-    props.onProcess(request, mode)
-  }
-
-  // Scroll to bottom when:
-  // 1. A new message is added (exchanges length changes)
-  // 2. A prompt completes (hasPromptCompleted becomes true)
+  // Only case of autoscroll for the conversation, right after sending a prompt when the new exchange is added
   useEffect(() => {
     const exchangesLength = props.conversation?.exchanges.length ?? 0
-
-    if (autoScroll === false) return
-    if (refScroll.current === null) return
-    if (exchangesLength === 0 && !props.hasPromptCompleted) return
+    if (exchangesLength === 0) return
 
     requestAnimationFrame(() => {
       if (refScroll.current) {
@@ -313,11 +302,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
         })
       }
     })
-  }, [
-    props.conversation?.exchanges.length,
-    props.hasPromptCompleted,
-    autoScroll,
-  ])
+  }, [props.conversation?.exchanges.length])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
     (exchange: Exchange, exchangeIndex: number, list) => {
@@ -333,16 +318,6 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
       )
     }
   )
-
-  const hasCards = exchangeCards !== undefined && exchangeCards.length > 0
-
-  useEffect(() => {
-    if (refScroll.current === null) return
-    refScroll.current.scrollTo({
-      top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
-    })
-  }, [hasCards])
 
   return (
     <div className="relative">
@@ -375,7 +350,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               }
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
-              onProcess={onProcess}
+              onProcess={props.onProcess}
               onReconnect={props.onReconnect}
               onInterrupt={props.onInterrupt}
               defaultPrompt={props.defaultPrompt}
