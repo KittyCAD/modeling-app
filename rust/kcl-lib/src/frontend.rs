@@ -2051,7 +2051,10 @@ impl FrontendState {
 
     fn update_state_after_exec(&mut self, outcome: ExecOutcome, freedom_analysis_ran: bool) -> ExecOutcome {
         #[cfg(not(feature = "artifact-graph"))]
-        return outcome;
+        {
+            let _ = freedom_analysis_ran; // Only used when artifact-graph feature is enabled
+            outcome
+        }
         #[cfg(feature = "artifact-graph")]
         {
             let mut outcome = outcome;
