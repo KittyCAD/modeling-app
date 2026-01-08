@@ -101,7 +101,7 @@ export function isEnumMember(v: unknown, e: Record<string, unknown>): boolean {
 }
 
 // utility type to make all *nested* object properties optional
-// https://www.geodev.me/blog/deeppartial-in-typescript
+// from geodev.me/blog/deeppartial-in-typescript
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
 }
