@@ -267,6 +267,7 @@ export function DebugSelections() {
   }, [kclManager.artifactGraph])
   return (
     <div>
+      <h2>Selection Debugger</h2>
       {artifactGraphTree.map((artifact) => {
         const hightlightMyId = artifact.id === selectedId
         const highlightMyRange = artifact?.range?.join(',') === selectedRange
@@ -301,7 +302,7 @@ export function DebugSelections() {
               </div>
             </div>
             <div className="text-xs flex flex-col justify-between">
-              <div className="ml-2">Ranges</div>
+            <div className="ml-2">Range(s) from id</div>
               {artifact.sourceRanges.map((range) => {
                 const highlightMyRange = range.join(',') === selectedRange
                 return (
@@ -336,7 +337,7 @@ export function DebugSelections() {
                   }
                 }}
               >
-                {`[${artifact.range}]` || ''}
+            {`[${artifact.range}] range to id(s)` || ''}
               </div>
               {artifact.codeRefToIds.map((id) => {
                 const highlightMyId = id === selectedId
@@ -355,7 +356,10 @@ export function DebugSelections() {
                 )
               })}
             </div>
-            <div className="ml-2 text-xs flex flex-col justify-between">
+            <div className="ml-2 text-xs">
+              Range to Feature Tree item(s)
+            </div>
+            <div className="ml-4 text-xs flex flex-col justify-between">
               {artifact.featureTreeFromSourceRange.map((operation) => {
                 let highlightMyRange = false
                 let range: SourceRange = defaultSourceRange()
