@@ -1,4 +1,10 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
+
+// Mock WASM module to avoid loading it in CI
+vi.mock('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib', () => ({
+  default: {},
+}))
+
 import {
   deriveSegmentFreedom,
   getSegmentColor,

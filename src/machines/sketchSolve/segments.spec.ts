@@ -1,4 +1,10 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
+
+// Mock WASM module to avoid loading it in CI
+vi.mock('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib', () => ({
+  default: {},
+}))
+
 import {
   deriveSegmentFreedom,
   getSegmentColor,
@@ -243,7 +249,7 @@ describe('deriveSegmentFreedom', () => {
       expect(deriveSegmentFreedom(line, objects)).toBeNull()
     })
 
-    it('should return null when points have null freedom', () => {
+    it('should filter out null freedoms and use valid ones', () => {
       const startPoint: ApiObject = {
         id: 1,
         kind: {
@@ -266,6 +272,56 @@ describe('deriveSegmentFreedom', () => {
         source: { type: 'Simple', range: [0, 0, 0] },
       }
       const endPoint = createPointObject(2, 'Fixed')
+      const line = createLineSegmentObject(3, 1, 2)
+      const objects = [startPoint, endPoint, line]
+
+      // When one point has null freedom, it's filtered out and only the valid one is used
+      expect(deriveSegmentFreedom(line, objects)).toBe('Fixed')
+    })
+
+    it('should return null when all points have null freedom', () => {
+      const startPoint: ApiObject = {
+        id: 1,
+        kind: {
+          type: 'Segment',
+          segment: {
+            type: 'Point',
+            position: {
+              x: { value: 0, units: 'Mm' },
+              y: { value: 0, units: 'Mm' },
+            },
+            ctor: null,
+            owner: null,
+            freedom: null as any,
+            constraints: [],
+          },
+        },
+        label: '',
+        comments: '',
+        artifact_id: '0',
+        source: { type: 'Simple', range: [0, 0, 0] },
+      }
+      const endPoint: ApiObject = {
+        id: 2,
+        kind: {
+          type: 'Segment',
+          segment: {
+            type: 'Point',
+            position: {
+              x: { value: 0, units: 'Mm' },
+              y: { value: 0, units: 'Mm' },
+            },
+            ctor: null,
+            owner: null,
+            freedom: null as any,
+            constraints: [],
+          },
+        },
+        label: '',
+        comments: '',
+        artifact_id: '0',
+        source: { type: 'Simple', range: [0, 0, 0] },
+      }
       const line = createLineSegmentObject(3, 1, 2)
       const objects = [startPoint, endPoint, line]
 
