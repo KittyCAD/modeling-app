@@ -480,7 +480,6 @@ description: Artifact commands subtract_regression09.kcl
           "Other": 10.0
         },
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

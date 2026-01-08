@@ -302,7 +302,6 @@ description: Artifact commands field-monitor-stand.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -365,7 +364,6 @@ description: Artifact commands field-monitor-stand.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -712,7 +710,6 @@ description: Artifact commands field-monitor-stand.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "new",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -771,7 +768,6 @@ description: Artifact commands field-monitor-stand.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "new",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -830,7 +826,6 @@ description: Artifact commands field-monitor-stand.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "new",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -889,7 +884,6 @@ description: Artifact commands field-monitor-stand.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "new",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

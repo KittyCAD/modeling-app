@@ -174,7 +174,6 @@ description: Artifact commands artifact_graph_example_code1.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -348,7 +347,6 @@ description: Artifact commands artifact_graph_example_code1.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

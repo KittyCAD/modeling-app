@@ -84,7 +84,7 @@ insta = { opt-level = 3 }
 debug = "line-tables-only"
 
 #Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
-[patch.crates-io]
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "serena/show-seams" }
+# [patch.crates-io]
+# kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "serena/show-seams" }
 # kittycad-modeling-session = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "serena/show-seams" }
 # #kittycad-modeling-session = { path = "../../modeling-api/modeling-session" }

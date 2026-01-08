@@ -225,7 +225,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -377,7 +376,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -436,7 +434,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -495,7 +492,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -554,7 +550,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -613,7 +608,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -672,7 +666,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -731,7 +724,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -790,7 +782,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -849,7 +840,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -908,7 +898,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -967,7 +956,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1026,7 +1014,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1085,7 +1072,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1144,7 +1130,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1203,7 +1188,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1262,7 +1246,6 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -3074,7 +3057,8 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "v_degree": 2,
         "bez_approximate_rational": false,
         "base_curve_index": null,
-        "tolerance": 0.0000001
+        "tolerance": 0.0000001,
+        "body_type": "solid"
       }
     },
     {
@@ -3486,7 +3470,8 @@ description: Artifact commands wind-turbine-blade-root-inserts.kcl
         "v_degree": 2,
         "bez_approximate_rational": false,
         "base_curve_index": null,
-        "tolerance": 0.0000001
+        "tolerance": 0.0000001,
+        "body_type": "solid"
       }
     },
     {

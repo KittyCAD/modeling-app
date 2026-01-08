@@ -865,7 +865,7 @@ export fn extrude(
 /// closedTorus = startSketchOn(XY)
 ///     |> circle(center = [15, 0], radius = 5)
 ///     |> revolve(axis = Y, bodyType = SURFACE)
-///      |> translate(z = 30)
+///     |> translate(z = 30)
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn revolve(

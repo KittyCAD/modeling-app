@@ -225,7 +225,6 @@ description: Artifact commands split-washer-flat-version.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -455,7 +454,6 @@ description: Artifact commands split-washer-flat-version.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

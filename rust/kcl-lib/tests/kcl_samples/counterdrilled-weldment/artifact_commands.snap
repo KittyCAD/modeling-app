@@ -268,7 +268,6 @@ description: Artifact commands counterdrilled-weldment.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -527,7 +526,6 @@ description: Artifact commands counterdrilled-weldment.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -658,7 +656,6 @@ description: Artifact commands counterdrilled-weldment.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -811,7 +808,6 @@ description: Artifact commands counterdrilled-weldment.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -942,7 +938,6 @@ description: Artifact commands counterdrilled-weldment.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1095,7 +1090,6 @@ description: Artifact commands counterdrilled-weldment.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1226,7 +1220,6 @@ description: Artifact commands counterdrilled-weldment.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1379,7 +1372,6 @@ description: Artifact commands counterdrilled-weldment.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1510,7 +1502,6 @@ description: Artifact commands counterdrilled-weldment.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1696,7 +1687,6 @@ description: Artifact commands counterdrilled-weldment.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1986,7 +1976,6 @@ description: Artifact commands counterdrilled-weldment.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -2233,7 +2222,6 @@ description: Artifact commands counterdrilled-weldment.kcl
         "faces": null,
         "opposite": "Symmetric",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -2487,7 +2475,6 @@ description: Artifact commands counterdrilled-weldment.kcl
         "faces": null,
         "opposite": "Symmetric",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

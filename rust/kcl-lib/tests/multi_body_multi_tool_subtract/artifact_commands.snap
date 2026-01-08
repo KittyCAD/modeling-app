@@ -174,7 +174,6 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -412,7 +411,6 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "new",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -603,7 +601,6 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -777,7 +774,6 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "new",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -998,7 +994,6 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "new",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1345,7 +1340,6 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "new",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1404,7 +1398,6 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "new",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1463,7 +1456,6 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "new",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1522,7 +1514,6 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "new",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
