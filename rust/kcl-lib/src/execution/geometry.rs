@@ -605,10 +605,6 @@ pub struct Face {
     pub artifact_id: ArtifactId,
     /// The tag of the face.
     pub value: String,
-    /// What should the face's X axis be?
-    pub x_axis: Point3d,
-    /// What should the face's Y axis be?
-    pub y_axis: Point3d,
     /// The solid the face is on.
     pub solid: Box<Solid>,
     pub units: UnitLength,
@@ -757,18 +753,6 @@ impl SketchSurface {
         match self {
             SketchSurface::Plane(plane) => plane.id,
             SketchSurface::Face(face) => face.id,
-        }
-    }
-    pub(crate) fn x_axis(&self) -> Point3d {
-        match self {
-            SketchSurface::Plane(plane) => plane.info.x_axis,
-            SketchSurface::Face(face) => face.x_axis,
-        }
-    }
-    pub(crate) fn y_axis(&self) -> Point3d {
-        match self {
-            SketchSurface::Plane(plane) => plane.info.y_axis,
-            SketchSurface::Face(face) => face.y_axis,
         }
     }
 }
