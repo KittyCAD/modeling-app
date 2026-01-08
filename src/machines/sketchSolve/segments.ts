@@ -8,7 +8,14 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { type Themes } from '@src/lib/theme'
 import { hasNumericValue } from '@src/lib/kclHelpers'
 import type { Mesh } from 'three'
-import { BufferGeometry, Group, Line, LineBasicMaterial, Vector3 } from 'three'
+import {
+  BufferGeometry,
+  EllipseCurve,
+  Group,
+  Line,
+  LineBasicMaterial,
+  Vector3,
+} from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
@@ -559,16 +566,22 @@ class ArcSegment implements SketchEntityUtils {
       return
     }
 
+    // Always draw arcs CCW from start to end.
+    // The solver also uses a CCW convention from start to end, so we keep
+    // the angles as-is and force ccw = true to match that behaviour.
+    const ccw = true
     arcSegmentBody.geometry.setPositions(
-      arcPoints({
+      createArcPositions({
         center: [centerX, centerY],
         radius,
         startAngle,
         endAngle,
-        segments: 64,
+        ccw,
       })
     )
     arcSegmentBody.geometry.computeBoundingSphere()
+    arcSegmentBody.material.linewidth =
+      SEGMENT_WIDTH_PX * window.devicePixelRatio
 
     // Update mesh color based on selection
     const isSelected = selectedIds.includes(id)
@@ -576,36 +589,6 @@ class ArcSegment implements SketchEntityUtils {
     const isHovered = arcSegmentBody.userData.isHovered === true
     this.updateArcColors(arcSegmentBody, isSelected, isHovered, isDraft)
   }
-}
-
-function arcPoints({
-  center,
-  radius,
-  startAngle,
-  endAngle,
-  segments,
-}: {
-  center: [number, number]
-  radius: number
-  startAngle: number
-  endAngle: number
-  segments: number
-}): number[] {
-  let delta = endAngle - startAngle
-  while (delta > Math.PI) delta -= Math.PI * 2
-  while (delta < -Math.PI) delta += Math.PI * 2
-
-  const pts: number[] = []
-  for (let i = 0; i <= segments; i++) {
-    const t = i / segments
-    const a = startAngle + delta * t
-    pts.push(
-      center[0] + Math.cos(a) * radius,
-      center[1] + Math.sin(a) * radius,
-      0
-    )
-  }
-  return pts
 }
 
 function updateLineMaterial(
@@ -767,4 +750,42 @@ export const segmentUtilsMap = {
   PointSegment: new PointSegment(),
   LineSegment: new LineSegment(),
   ArcSegment: new ArcSegment(),
+}
+
+/**
+ * Similar to src/clientSideScene/segments.ts / createArcGeometry, but:
+ * - uses LineGeometry which supports screen space line thickness
+ * - isDashed parameter not supported (yet)
+ */
+function createArcPositions({
+  center,
+  radius,
+  startAngle,
+  endAngle,
+  ccw,
+}: {
+  center: [number, number]
+  radius: number
+  startAngle: number
+  endAngle: number
+  ccw: boolean
+}): number[] {
+  const arcStart = new EllipseCurve(
+    center[0],
+    center[1],
+    radius,
+    radius,
+    startAngle,
+    endAngle,
+    !ccw,
+    0
+  )
+
+  const points = arcStart.getPoints(50)
+  const positions: number[] = []
+  points.forEach((p) => {
+    positions.push(p.x, p.y, 0)
+  })
+
+  return positions
 }
