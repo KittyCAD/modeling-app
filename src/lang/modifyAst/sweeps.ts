@@ -41,6 +41,8 @@ import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
   type KclPreludeExtrudeMethod,
   type KclPreludeBodyType,
+  KCL_PRELUDE_BODY_TYPE_SOLID,
+  KCL_PRELUDE_BODY_TYPE_SURFACE,
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -453,6 +455,7 @@ export function addRevolve({
   bidirectionalAngle,
   tagStart,
   tagEnd,
+  bodyType,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -465,6 +468,7 @@ export function addRevolve({
   bidirectionalAngle?: KclCommandValue
   tagStart?: string
   tagEnd?: string
+  bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
   | {
@@ -517,6 +521,9 @@ export function addRevolve({
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
+  const bodyTypeExpr = bodyType
+    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
+    : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('revolve', sketchesExpr, [
@@ -526,6 +533,7 @@ export function addRevolve({
     ...bidirectionalAngleExpr,
     ...tagStartExpr,
     ...tagEndExpr,
+    ...bodyTypeExpr,
   ])
 
   // Insert variables for labeled arguments if provided
@@ -731,4 +739,22 @@ export function retrieveTagDeclaratorFromOpArg(
     toUtf16(opArg.sourceRange[0], code) + dollarSignOffset,
     toUtf16(opArg.sourceRange[1], code)
   )
+}
+
+export function retrieveBodyTypeFromOpArg(
+  opArg: OpArg,
+  code: string
+): KclPreludeBodyType | Error {
+  /** Version of `toUtf16` bound to our code, for mapping source range values. */
+  const boundToUtf16 = (n: number) => toUtf16(n, code)
+  const result = code.slice(...opArg.sourceRange.map(boundToUtf16))
+  if (result === KCL_PRELUDE_BODY_TYPE_SOLID) {
+    return KCL_PRELUDE_BODY_TYPE_SOLID
+  }
+
+  if (result === KCL_PRELUDE_BODY_TYPE_SURFACE) {
+    return KCL_PRELUDE_BODY_TYPE_SURFACE
+  }
+
+  return new Error("Couldn't retrieve bodyType argument")
 }
