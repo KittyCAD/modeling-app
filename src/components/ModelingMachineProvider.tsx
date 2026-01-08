@@ -123,7 +123,6 @@ import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import type { SketchArgs } from '@rust/kcl-lib/bindings/FrontendApi'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { toPlaneName } from '@src/lib/planes'
-import { Transaction } from '@codemirror/state'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -619,7 +618,10 @@ export const ModelingMachineProvider = ({
                   sketchArgs,
                   { settings: { modeling: { base_unit: defaultUnit.current } } }
                 )
-                kclManager.updateCodeEditor(newSketchResult.kclSource.text)
+                kclManager.updateCodeEditor(newSketchResult.kclSource.text, {
+                  shouldAddToHistory: false,
+                  shouldWriteToDisk: false,
+                })
                 sketchId = newSketchResult.sketchId
               }
             } catch (error) {
@@ -762,9 +764,10 @@ export const ModelingMachineProvider = ({
             const didReParse = await kclManager.executeAstMock(modifiedAst)
             if (err(didReParse)) {
               // there was a problem, restore the original code
-              kclManager.updateCodeStateEditor(originalCode, false, [
-                Transaction.addToHistory.of(false),
-              ])
+              kclManager.updateCodeEditor(originalCode, {
+                shouldAddToHistory: false,
+                shouldWriteToDisk: false,
+              })
               return reject(didReParse)
             }
 

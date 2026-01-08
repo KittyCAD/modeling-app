@@ -109,7 +109,7 @@ export function UnitsMenu() {
                           `Failed to set per-file units: ${newCode.message}`
                         )
                       } else {
-                        kclManager.updateCodeStateEditor(newCode)
+                        kclManager.updateCodeEditor(newCode)
                         Promise.all([
                           kclManager.writeToFile(),
                           kclManager.executeCode(),

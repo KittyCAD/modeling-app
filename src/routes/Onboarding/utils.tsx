@@ -325,7 +325,7 @@ export async function resetCodeAndAdvanceOnboarding({
     ? onboardingStartPath
     : onboardingStatus
   // We do want to update both the state and editor here.
-  kclManager.updateCodeStateEditor(browserAxialFan)
+  kclManager.updateCodeEditor(browserAxialFan)
   kclManager.writeToFile().catch(reportRejection)
   kclManager.executeCode().catch(reportRejection)
   void navigate(

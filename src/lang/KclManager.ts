@@ -120,6 +120,18 @@ interface ExecuteArgs {
   executionId?: number
 }
 
+type UpdateCodeEditorOptions = {
+  shouldExecute: boolean
+  shouldClearHistory: boolean
+  /** Only has an effect if `shouldClearHistory` is `false`.
+  if it is `true` then this will act as `false`. */
+  shouldAddToHistory: boolean
+  /** Only has an effect if `shouldExecute` is also `true`. */
+  shouldWriteToDisk: boolean
+  /** Only has an effect if `shouldExecute` is also `true`. */
+  shouldResetCamera: boolean
+}
+
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
 interface Singletons {
@@ -473,6 +485,13 @@ export class KclManager extends EventTarget {
   )
 
   static requestCameraResetAnnotation = Annotation.define<boolean>()
+  static requestSkipWriteToFile = Annotation.define<boolean>()
+
+  private syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
+    if (update.docChanged) {
+      this._code.value = update.view.state.doc.toString()
+    }
+  })
 
   /**
    * This is a CodeMirror extension that watches for updates to the document,
@@ -480,8 +499,6 @@ export class KclManager extends EventTarget {
    * then fires (and forgets) an execution with a debounce.
    */
   private executeKclEffect = EditorView.updateListener.of((update) => {
-    this._code.value = update.view.state.doc.toString()
-
     const shouldExecute =
       this.engineCommandManager.started &&
       update.docChanged &&
@@ -512,8 +529,20 @@ export class KclManager extends EventTarget {
       tr.annotation(KclManager.requestCameraResetAnnotation)
     )
 
+    const hasSkipWriteToFileEffect = update.transactions.some((tr) =>
+      tr.annotation(KclManager.requestSkipWriteToFile)
+    )
+    const shouldWriteToFile =
+      !this.isBufferMode && shouldExecute && !hasSkipWriteToFileEffect
+
     if (shouldExecute) {
       const newCode = update.state.doc.toString()
+
+      // We don't want to block on writing to file
+      if (shouldWriteToFile) {
+        void this.writeToFile(newCode)
+      }
+
       this.deferredExecution({ newCode, shouldResetCamera })
     }
   })
@@ -523,9 +552,6 @@ export class KclManager extends EventTarget {
       newCode,
       shouldResetCamera,
     }: { newCode: string; shouldResetCamera: boolean }) => {
-      // We don't want to block on file writing
-      void this.writeToFile(newCode)
-
       // If we're in sketchSolveMode, update Rust state with the latest AST
       // This handles the case where the user directly edits in the CodeMirror editor
       // these are short term hacks while in rapid development for sketch revamp
@@ -549,7 +575,7 @@ export class KclManager extends EventTarget {
           }
 
           const kclSource: SourceDelta = {
-            text: this.code,
+            text: newCode,
           }
 
           // Send event to sketch solve machine via modeling machine
@@ -577,13 +603,29 @@ export class KclManager extends EventTarget {
     300
   )
 
+  private deferredWriteToFile = deferredCallback(
+    (newCode: string) => this.writeToFile(newCode),
+    1_000
+  )
+  private writeToFileEffect = EditorView.updateListener.of((update) => {
+    const hasSkipWriteToFileEffect = update.transactions.some((tr) =>
+      tr.annotation(KclManager.requestSkipWriteToFile)
+    )
+
+    if (!this.isBufferMode && update.docChanged && !hasSkipWriteToFileEffect) {
+      this.deferredWriteToFile(update.state.doc.toString())
+    }
+  })
+
   private createEditorExtensions() {
     return [
       baseEditorExtensions(),
       keymapCompartment.of(keymap.of(this.getCodemirrorHotkeys())),
       this.highlightEngineEntitiesEffect,
       this.undoListenerEffect,
+      this.syncCodeSignalToDoc,
       this.executeKclEffect,
+      this.writeToFileEffect,
     ]
   }
   private createEditorView() {
@@ -623,11 +665,13 @@ export class KclManager extends EventTarget {
       zustandStore.state._code.value = ''
       safeLSSetItem('store', JSON.stringify(zustandStore))
     } else if (storedCode === null) {
-      this.updateCodeStateEditor(bracket)
+      this.updateCodeEditor(bracket, { shouldClearHistory: true })
     } else {
-      this.updateCodeStateEditor(storedCode || '')
+      this._code.value = storedCode || ''
+      this.updateCodeEditor(storedCode || '', {
+        shouldClearHistory: true,
+      })
     }
-    /** End merged code from EditorManager and CodeManager */
 
     this._wasmInstancePromise
       .then(async (wasmInstance) => {
@@ -960,7 +1004,7 @@ export class KclManager extends EventTarget {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(newCode = this.code): Promise<void> {
+  async executeCode(newCode = this.codeSignal.value): Promise<void> {
     const ast = await this.safeParse(newCode, await this.wasmInstancePromise)
 
     if (!ast) {
@@ -999,12 +1043,7 @@ export class KclManager extends EventTarget {
     if (originalCode === code) return
 
     // Update the code state and the editor.
-    this.updateCodeStateEditor(code)
-
-    // Write back to the file system.
-    void this.writeToFile()
-      .then(() => this.executeCode())
-      .catch(reportRejection)
+    this.updateCodeEditor(code, { shouldExecute: false })
   }
 
   // There's overlapping responsibility between updateAst and executeAst.
@@ -1482,6 +1521,20 @@ export class KclManager extends EventTarget {
       }
     }
   }
+  clearLocalHistory() {
+    // Clear history
+    this.editorView.dispatch({
+      effects: [historyCompartment.reconfigure([])],
+      annotations: [editorCodeUpdateEvent],
+    })
+
+    // Add history back
+    this.editorView.dispatch({
+      effects: [historyCompartment.reconfigure([history()])],
+      annotations: [editorCodeUpdateEvent],
+    })
+  }
+
   // Invoked by codeMirror during undo/redo.
   // Call with incorrect "this" so it needs to be an arrow function.
   dispatch = (spec: TransactionSpec) => {
@@ -1639,22 +1692,33 @@ export class KclManager extends EventTarget {
       this.lastWrite = null
     }
   }
+
+  static defaultUpdateCodeEditorOptions: UpdateCodeEditorOptions = {
+    shouldExecute: false,
+    shouldWriteToDisk: true,
+    shouldResetCamera: false,
+    shouldClearHistory: false,
+    shouldAddToHistory: true,
+  }
   /**
    * Update the code in the editor.
    * This is invoked when a segment is being dragged on the canvas, among other things.
    */
   updateCodeEditor(
     code: string,
-    clearHistory?: boolean,
-    annotations = [editorCodeUpdateEvent]
+    options: Partial<UpdateCodeEditorOptions> = KclManager.defaultUpdateCodeEditorOptions
   ): void {
+    const resolvedOptions: UpdateCodeEditorOptions = Object.assign(
+      structuredClone(KclManager.defaultUpdateCodeEditorOptions),
+      options
+    )
     // If the code hasn't changed, skip the update to preserve cursor position
     // However, if clearHistory is true, we still need to clear the history
     const currentCode = this.editorState.doc.toString()
     if (currentCode === code) {
-      if (clearHistory) {
+      if (resolvedOptions.shouldClearHistory) {
         // Code is the same but we need to clear history (e.g., opening a new file with same content)
-        clearCodeMirrorHistory(this)
+        this.clearLocalHistory()
       }
       return
     }
@@ -1676,12 +1740,11 @@ export class KclManager extends EventTarget {
       return EditorSelection.range(from, to)
     })
 
-    this._code.value = code
-    if (clearHistory) {
-      clearCodeMirrorHistory(this)
+    if (resolvedOptions.shouldClearHistory) {
+      this.clearLocalHistory()
     }
 
-    this.dispatch({
+    this.editorView.dispatch({
       changes: {
         from: 0,
         to: this.editorState.doc.length || 0,
@@ -1692,25 +1755,21 @@ export class KclManager extends EventTarget {
         currentSelection.mainIndex
       ),
       annotations: [
-        ...(annotations || []),
-        Transaction.addToHistory.of(!clearHistory),
+        Transaction.addToHistory.of(
+          resolvedOptions.shouldAddToHistory &&
+            !resolvedOptions.shouldClearHistory
+        ),
+        editorCodeUpdateAnnotation.of(!resolvedOptions.shouldExecute),
+        KclManager.requestSkipWriteToFile.of(
+          !resolvedOptions.shouldWriteToDisk
+        ),
+        KclManager.requestCameraResetAnnotation.of(
+          resolvedOptions.shouldResetCamera
+        ),
       ],
     })
   }
-  /**
-   * Update the code, state, and the code the code mirror editor sees.
-   */
-  updateCodeStateEditor(
-    code: string,
-    clearHistory?: boolean,
-    annotations = [editorCodeUpdateEvent]
-  ): void {
-    if (this._code.value !== code) {
-      this._code.value = code
-      this.updateCodeEditor(code, clearHistory, annotations)
-    }
-  }
-  async writeToFile(newCode = this.code) {
+  async writeToFile(newCode = this.codeSignal.value) {
     if (this.isBufferMode) return
     if (window.electron) {
       const electron = window.electron
@@ -1725,7 +1784,7 @@ export class KclManager extends EventTarget {
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
           this.lastWrite = {
-            code: this.code ?? '',
+            code: newCode ?? '',
             time: Date.now(),
           }
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
@@ -1765,12 +1824,12 @@ export class KclManager extends EventTarget {
       console.log('Recast code could not be parsed:', result, ast)
       return
     }
-    this.updateCodeStateEditor(newCode)
-    this.writeToFile().catch(reportRejection)
+    // Update code, execute, and write to disk
+    this.updateCodeEditor(newCode, { shouldAddToHistory: false })
   }
   goIntoTemporaryWorkspaceModeWithCode(code: string) {
     this.isBufferMode = true
-    this.updateCodeStateEditor(code, true)
+    this.updateCodeEditor(code, { shouldClearHistory: true })
   }
   exitFromTemporaryWorkspaceMode() {
     this.isBufferMode = false
@@ -1787,18 +1846,4 @@ function safeLSGetItem(key: string) {
 function safeLSSetItem(key: string, value: string) {
   if (typeof window === 'undefined') return
   localStorage?.setItem(key, value)
-}
-
-function clearCodeMirrorHistory(kclManager: KclManager) {
-  // Clear history
-  kclManager.dispatch({
-    effects: [historyCompartment.reconfigure([])],
-    annotations: [editorCodeUpdateEvent],
-  })
-
-  // Add history back
-  kclManager.dispatch({
-    effects: [historyCompartment.reconfigure([history()])],
-    annotations: [editorCodeUpdateEvent],
-  })
 }

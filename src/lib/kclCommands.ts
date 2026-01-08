@@ -98,7 +98,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
           } else {
-            commandProps.kclManager.updateCodeStateEditor(newCode)
+            commandProps.kclManager.updateCodeEditor(newCode)
             Promise.all([
               commandProps.kclManager.writeToFile(),
               commandProps.kclManager.executeCode(),
