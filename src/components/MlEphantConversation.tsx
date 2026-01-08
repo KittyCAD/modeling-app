@@ -290,8 +290,8 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
 
   const onProcess = (request: string, mode: MlCopilotMode) => {
-    // Manual scroll to the bottom here, case 2a
-    console.log('onProcess: Starting setTimeout')
+    // Only case of autoscroll for the conversation, right after sending a prompt
+    const rightAfter = 500
     setTimeout(() => {
       requestAnimationFrame(() => {
         if (refScroll.current) {
@@ -301,9 +301,8 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
           })
         }
       })
-    }, 500)
+    }, rightAfter)
 
-    // Send the process event upwards
     props.onProcess(request, mode)
   }
 
