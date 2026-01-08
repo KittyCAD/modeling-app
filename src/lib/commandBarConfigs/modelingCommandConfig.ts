@@ -112,6 +112,12 @@ const objectsTypesAndFilters: {
   selectionFilter: ['object'],
 }
 
+// For all surface modeling commands
+const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
+  name: capitaliseFC(value.toLowerCase()),
+  value,
+}))
+
 const hasEngineConnection = (
   engineCommandManager: ConnectionManager
 ): true | Error => {
@@ -638,10 +644,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       bodyType: {
         inputType: 'options',
         required: false,
-        options: KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
-          name: capitaliseFC(value.toLowerCase()),
-          value,
-        })),
+        options: kclBodyTypeOptions,
       },
     },
   },
@@ -869,10 +872,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       bodyType: {
         inputType: 'options',
         required: false,
-        options: KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
-          name: capitaliseFC(value.toLowerCase()),
-          value,
-        })),
+        options: kclBodyTypeOptions,
       },
     },
   },
