@@ -64,6 +64,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -644,6 +645,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "start",
           "xAxis": {
             "x": 1.0,

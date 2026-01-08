@@ -127,7 +127,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "Custom",
-          "objectId": 2,
+          "objectId": 10,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -350,7 +350,7 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "YZ",
-          "objectId": 1,
+          "objectId": 9,
           "origin": {
             "x": 0.0,
             "y": 0.0,

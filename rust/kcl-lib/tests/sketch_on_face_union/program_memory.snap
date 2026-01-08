@@ -358,6 +358,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "bottomFace",
           "xAxis": {
             "x": 0.0,
@@ -629,6 +630,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 2,
       "value": "bottomFace",
       "xAxis": {
         "x": 0.0,
@@ -949,6 +951,7 @@ description: Variables in memory after executing sketch_on_face_union.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 2,
         "value": "bottomFace",
         "xAxis": {
           "x": 0.0,

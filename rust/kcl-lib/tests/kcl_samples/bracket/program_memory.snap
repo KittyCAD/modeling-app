@@ -497,6 +497,7 @@ description: Variables in memory after executing bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg03",
               "xAxis": {
                 "x": 1.0,
@@ -906,6 +907,7 @@ description: Variables in memory after executing bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg03",
               "xAxis": {
                 "x": 1.0,
@@ -1315,6 +1317,7 @@ description: Variables in memory after executing bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg03",
               "xAxis": {
                 "x": 1.0,
@@ -1724,6 +1727,7 @@ description: Variables in memory after executing bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg03",
               "xAxis": {
                 "x": 1.0,
@@ -2183,6 +2187,7 @@ description: Variables in memory after executing bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg04",
               "xAxis": {
                 "x": 1.0,
@@ -2592,6 +2597,7 @@ description: Variables in memory after executing bracket.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg04",
               "xAxis": {
                 "x": 1.0,

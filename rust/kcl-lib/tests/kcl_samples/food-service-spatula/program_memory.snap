@@ -1194,6 +1194,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 3,
         "value": "gripEdgeTop",
         "xAxis": {
           "x": 0.342019894888923,
@@ -2494,6 +2495,7 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 3,
       "value": "gripEdgeTop",
       "xAxis": {
         "x": 0.342019894888923,

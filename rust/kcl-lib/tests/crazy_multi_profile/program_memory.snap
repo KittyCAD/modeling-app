@@ -272,6 +272,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "seg01",
           "xAxis": {
             "x": 1.0,
@@ -617,7 +618,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "XZ",
-          "objectId": 1,
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -855,6 +856,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg01",
         "xAxis": {
           "x": 1.0,
@@ -1155,6 +1157,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg01",
         "xAxis": {
           "x": 1.0,
@@ -1436,6 +1439,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg01",
         "xAxis": {
           "x": 1.0,
@@ -1683,6 +1687,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg01",
         "xAxis": {
           "x": 1.0,
@@ -1958,6 +1963,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg01",
         "xAxis": {
           "x": 1.0,
@@ -2216,7 +2222,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "kind": "XZ",
-        "objectId": 1,
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2327,7 +2333,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "kind": "XZ",
-        "objectId": 1,
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2437,7 +2443,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "kind": "XZ",
-        "objectId": 1,
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2519,7 +2525,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "kind": "XZ",
-        "objectId": 1,
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2653,7 +2659,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "kind": "XZ",
-        "objectId": 1,
+        "objectId": 2,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2806,6 +2812,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "seg01",
           "xAxis": {
             "x": 1.0,
@@ -3113,7 +3120,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "XZ",
-          "objectId": 1,
+          "objectId": 2,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3214,6 +3221,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 1,
       "value": "seg01",
       "xAxis": {
         "x": 1.0,
@@ -3413,7 +3421,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "XZ",
-      "objectId": 1,
+      "objectId": 2,
       "origin": {
         "x": 0.0,
         "y": 0.0,

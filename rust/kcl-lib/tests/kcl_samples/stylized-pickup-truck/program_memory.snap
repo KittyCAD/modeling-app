@@ -1733,7 +1733,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 10,
+              "objectId": 11,
               "origin": {
                 "x": -2000.0,
                 "y": 0.0,
@@ -1825,7 +1825,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 10,
+              "objectId": 11,
               "origin": {
                 "x": -2000.0,
                 "y": 0.0,
@@ -1904,7 +1904,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "Custom",
-      "objectId": 10,
+      "objectId": 11,
       "origin": {
         "x": -2000.0,
         "y": 0.0,
@@ -1968,7 +1968,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "artifactId": "[uuid]",
             "id": "[uuid]",
             "kind": "Custom",
-            "objectId": 10,
+            "objectId": 11,
             "origin": {
               "x": -2000.0,
               "y": 0.0,
@@ -2050,7 +2050,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "artifactId": "[uuid]",
             "id": "[uuid]",
             "kind": "Custom",
-            "objectId": 10,
+            "objectId": 11,
             "origin": {
               "x": -2000.0,
               "y": 0.0,
@@ -2115,7 +2115,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "Custom",
-      "objectId": 10,
+      "objectId": 11,
       "origin": {
         "x": -2000.0,
         "y": 0.0,
@@ -3033,7 +3033,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 11,
+              "objectId": 12,
               "origin": {
                 "x": 2000.0,
                 "y": 0.0,
@@ -3170,7 +3170,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 11,
+              "objectId": 12,
               "origin": {
                 "x": 2000.0,
                 "y": 0.0,
@@ -3267,7 +3267,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "Custom",
-      "objectId": 11,
+      "objectId": 12,
       "origin": {
         "x": 2000.0,
         "y": 0.0,
@@ -3376,7 +3376,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "artifactId": "[uuid]",
             "id": "[uuid]",
             "kind": "Custom",
-            "objectId": 11,
+            "objectId": 12,
             "origin": {
               "x": 2000.0,
               "y": 0.0,
@@ -3503,7 +3503,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "artifactId": "[uuid]",
             "id": "[uuid]",
             "kind": "Custom",
-            "objectId": 11,
+            "objectId": 12,
             "origin": {
               "x": 2000.0,
               "y": 0.0,
@@ -3568,7 +3568,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "Custom",
-      "objectId": 11,
+      "objectId": 12,
       "origin": {
         "x": 2000.0,
         "y": 0.0,
@@ -3717,6 +3717,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 6,
           "value": "seg01",
           "xAxis": {
             "x": 1.0,
@@ -4038,6 +4039,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 6,
         "value": "seg01",
         "xAxis": {
           "x": 1.0,
@@ -4262,6 +4264,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 6,
       "value": "seg01",
       "xAxis": {
         "x": 1.0,
@@ -4565,7 +4568,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XZ",
-              "objectId": 6,
+              "objectId": 7,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4665,7 +4668,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XZ",
-              "objectId": 6,
+              "objectId": 7,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4802,7 +4805,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XZ",
-              "objectId": 8,
+              "objectId": 9,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4902,7 +4905,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XZ",
-              "objectId": 8,
+              "objectId": 9,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5039,7 +5042,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XZ",
-              "objectId": 7,
+              "objectId": 8,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5139,7 +5142,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XZ",
-              "objectId": 7,
+              "objectId": 8,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5276,7 +5279,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XZ",
-              "objectId": 9,
+              "objectId": 10,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5376,7 +5379,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XZ",
-              "objectId": 9,
+              "objectId": 10,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,

@@ -59,6 +59,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 5,
           "value": "seg003",
           "xAxis": {
             "x": -1.0,
@@ -380,7 +381,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
                 "kind": "XZ",
-                "objectId": 1,
+                "objectId": 3,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -594,6 +595,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 0.0,
@@ -1125,6 +1127,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 0.0,
@@ -1656,6 +1659,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 0.0,
@@ -2727,6 +2731,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg02",
               "xAxis": {
                 "x": 0.0,
@@ -3258,6 +3263,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 2,
               "value": "seg02",
               "xAxis": {
                 "x": 0.0,
@@ -4137,7 +4143,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "XZ",
-          "objectId": 1,
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4280,7 +4286,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "XZ",
-      "objectId": 1,
+      "objectId": 3,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -4578,6 +4584,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg01",
         "xAxis": {
           "x": 0.0,
@@ -5091,6 +5098,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg01",
         "xAxis": {
           "x": 0.0,
@@ -5604,6 +5612,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg01",
         "xAxis": {
           "x": 0.0,
@@ -6117,6 +6126,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 2,
         "value": "seg02",
         "xAxis": {
           "x": 0.0,
@@ -6630,6 +6640,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 2,
         "value": "seg02",
         "xAxis": {
           "x": 0.0,
@@ -7301,7 +7312,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "kind": "XZ",
-        "objectId": 1,
+        "objectId": 3,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -7409,6 +7420,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 4,
         "value": "seg004",
         "xAxis": {
           "x": -1.0,
@@ -7730,7 +7742,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XZ",
-              "objectId": 1,
+              "objectId": 3,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7923,6 +7935,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 5,
         "value": "seg003",
         "xAxis": {
           "x": -1.0,
@@ -8244,7 +8257,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XZ",
-              "objectId": 1,
+              "objectId": 3,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8458,6 +8471,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 1,
       "value": "seg01",
       "xAxis": {
         "x": 0.0,
@@ -8922,6 +8936,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 2,
       "value": "seg02",
       "xAxis": {
         "x": 0.0,
@@ -9386,6 +9401,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 4,
       "value": "seg004",
       "xAxis": {
         "x": -1.0,
@@ -9707,7 +9723,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "artifactId": "[uuid]",
             "id": "[uuid]",
             "kind": "XZ",
-            "objectId": 1,
+            "objectId": 3,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -9851,6 +9867,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 5,
       "value": "seg003",
       "xAxis": {
         "x": -1.0,
@@ -10172,7 +10189,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "artifactId": "[uuid]",
             "id": "[uuid]",
             "kind": "XZ",
-            "objectId": 1,
+            "objectId": 3,
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -10367,6 +10384,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 4,
           "value": "seg004",
           "xAxis": {
             "x": -1.0,
@@ -10688,7 +10706,7 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
                 "kind": "XZ",
-                "objectId": 1,
+                "objectId": 3,
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,

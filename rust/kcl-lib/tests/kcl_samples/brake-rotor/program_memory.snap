@@ -763,6 +763,7 @@ description: Variables in memory after executing brake-rotor.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 4,
               "value": "seg04",
               "xAxis": {
                 "x": 0.0,
@@ -1160,6 +1161,7 @@ description: Variables in memory after executing brake-rotor.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 4,
               "value": "seg04",
               "xAxis": {
                 "x": 0.0,
@@ -1557,6 +1559,7 @@ description: Variables in memory after executing brake-rotor.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 4,
               "value": "seg04",
               "xAxis": {
                 "x": 0.0,
@@ -1954,6 +1957,7 @@ description: Variables in memory after executing brake-rotor.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 4,
               "value": "seg04",
               "xAxis": {
                 "x": 0.0,
@@ -2351,6 +2355,7 @@ description: Variables in memory after executing brake-rotor.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 4,
               "value": "seg04",
               "xAxis": {
                 "x": 0.0,
@@ -2833,6 +2838,7 @@ description: Variables in memory after executing brake-rotor.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 4,
             "value": "seg04",
             "xAxis": {
               "x": 0.0,
@@ -3212,6 +3218,7 @@ description: Variables in memory after executing brake-rotor.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 4,
             "value": "seg04",
             "xAxis": {
               "x": 0.0,
@@ -3591,6 +3598,7 @@ description: Variables in memory after executing brake-rotor.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 4,
             "value": "seg04",
             "xAxis": {
               "x": 0.0,
@@ -3970,6 +3978,7 @@ description: Variables in memory after executing brake-rotor.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 4,
             "value": "seg04",
             "xAxis": {
               "x": 0.0,
@@ -4349,6 +4358,7 @@ description: Variables in memory after executing brake-rotor.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 4,
             "value": "seg04",
             "xAxis": {
               "x": 0.0,
@@ -4977,6 +4987,7 @@ description: Variables in memory after executing brake-rotor.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 4,
       "value": "seg04",
       "xAxis": {
         "x": 0.0,

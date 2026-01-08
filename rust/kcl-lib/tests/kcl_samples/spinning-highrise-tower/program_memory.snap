@@ -304,7 +304,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "XY",
-          "objectId": 3,
+          "objectId": 4,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -500,7 +500,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -666,7 +666,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -832,7 +832,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -998,7 +998,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1164,7 +1164,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1330,7 +1330,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1496,7 +1496,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1662,7 +1662,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1828,7 +1828,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1994,7 +1994,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2160,7 +2160,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2326,7 +2326,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2492,7 +2492,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2658,7 +2658,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2824,7 +2824,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2990,7 +2990,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3156,7 +3156,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XY",
-              "objectId": 4,
+              "objectId": 5,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3749,6 +3749,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -4066,6 +4067,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -4383,6 +4385,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -4700,6 +4703,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -5017,6 +5021,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -5334,6 +5339,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -5651,6 +5657,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -5968,6 +5975,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -6285,6 +6293,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -6602,6 +6611,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -6919,6 +6929,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -7236,6 +7247,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -7553,6 +7565,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -7870,6 +7883,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -8187,6 +8201,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -8504,6 +8519,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -8821,6 +8837,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -9115,6 +9132,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 3,
         "value": "end",
         "xAxis": {
           "x": 1.0,

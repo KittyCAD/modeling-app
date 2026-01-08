@@ -645,7 +645,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 9,
+              "objectId": 11,
               "origin": {
                 "x": 30.0,
                 "y": 0.0,
@@ -907,7 +907,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 9,
+              "objectId": 11,
               "origin": {
                 "x": 30.0,
                 "y": 0.0,
@@ -1012,6 +1012,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 6,
               "value": "seg05",
               "xAxis": {
                 "x": 1.0,
@@ -1527,6 +1528,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 6,
               "value": "seg05",
               "xAxis": {
                 "x": 1.0,
@@ -2042,6 +2044,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 7,
               "value": "seg06",
               "xAxis": {
                 "x": 1.0,
@@ -2557,6 +2560,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 7,
               "value": "seg06",
               "xAxis": {
                 "x": 1.0,
@@ -3041,6 +3045,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 6,
       "value": "seg05",
       "xAxis": {
         "x": 1.0,
@@ -3489,6 +3494,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 7,
       "value": "seg06",
       "xAxis": {
         "x": 1.0,
@@ -3993,7 +3999,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "XZ",
-          "objectId": 8,
+          "objectId": 10,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4093,7 +4099,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "XZ",
-          "objectId": 8,
+          "objectId": 10,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4619,7 +4625,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "Custom",
-          "objectId": 7,
+          "objectId": 9,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -5159,7 +5165,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "Custom",
-          "objectId": 7,
+          "objectId": 9,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -5232,7 +5238,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "XZ",
-      "objectId": 8,
+      "objectId": 10,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -5512,7 +5518,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 10,
+              "objectId": 12,
               "origin": {
                 "x": 59.583278321848965,
                 "y": 0.0,
@@ -5815,7 +5821,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "Custom",
-              "objectId": 10,
+              "objectId": 12,
               "origin": {
                 "x": 59.583278321848965,
                 "y": 0.0,
@@ -5904,6 +5910,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 6,
         "value": "seg05",
         "xAxis": {
           "x": 1.0,
@@ -6401,6 +6408,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 6,
         "value": "seg05",
         "xAxis": {
           "x": 1.0,
@@ -6898,6 +6906,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 7,
         "value": "seg06",
         "xAxis": {
           "x": 1.0,
@@ -7395,6 +7404,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 7,
         "value": "seg06",
         "xAxis": {
           "x": 1.0,
@@ -8428,7 +8438,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XZ",
-              "objectId": 6,
+              "objectId": 8,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -8704,7 +8714,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               "artifactId": "[uuid]",
               "id": "[uuid]",
               "kind": "XZ",
-              "objectId": 6,
+              "objectId": 8,
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9242,7 +9252,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "XZ",
-          "objectId": 8,
+          "objectId": 10,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -9342,7 +9352,7 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "XZ",
-          "objectId": 8,
+          "objectId": 10,
           "origin": {
             "x": 0.0,
             "y": 0.0,

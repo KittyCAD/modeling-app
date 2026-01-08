@@ -8,6 +8,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 1,
       "value": "end",
       "xAxis": {
         "x": 1.0,
@@ -506,6 +507,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -843,6 +845,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -1584,6 +1587,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -2305,6 +2309,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -3026,6 +3031,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -3747,6 +3753,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -4468,6 +4475,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -5194,6 +5202,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -5915,6 +5924,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -6636,6 +6646,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -7357,6 +7368,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -8078,6 +8090,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -8776,6 +8789,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -9115,6 +9129,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -9386,6 +9401,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -9657,6 +9673,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -9928,6 +9945,7 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,

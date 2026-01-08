@@ -539,6 +539,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "start",
               "xAxis": {
                 "x": 1.0,
@@ -904,6 +905,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 3,
               "value": "start",
               "xAxis": {
                 "x": 1.0,

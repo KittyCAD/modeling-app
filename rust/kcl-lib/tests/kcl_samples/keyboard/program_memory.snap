@@ -343,6 +343,7 @@ description: Variables in memory after executing keyboard.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg04",
         "xAxis": {
           "x": 0.0,
@@ -708,6 +709,7 @@ description: Variables in memory after executing keyboard.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg04",
         "xAxis": {
           "x": 0.0,
@@ -1073,6 +1075,7 @@ description: Variables in memory after executing keyboard.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg04",
         "xAxis": {
           "x": 0.0,
@@ -1438,6 +1441,7 @@ description: Variables in memory after executing keyboard.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg04",
         "xAxis": {
           "x": 0.0,
@@ -2146,6 +2150,7 @@ description: Variables in memory after executing keyboard.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 1,
       "value": "seg04",
       "xAxis": {
         "x": 0.0,

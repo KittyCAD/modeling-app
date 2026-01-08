@@ -452,6 +452,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "start",
           "xAxis": {
             "x": 1.0,

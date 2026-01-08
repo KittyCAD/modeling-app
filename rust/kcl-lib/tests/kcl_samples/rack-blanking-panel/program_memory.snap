@@ -1100,6 +1100,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -1783,6 +1784,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "end",
         "xAxis": {
           "x": 1.0,
@@ -2546,6 +2548,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -3229,6 +3232,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "end",
         "xAxis": {
           "x": 1.0,
@@ -3869,6 +3873,7 @@ description: Variables in memory after executing rack-blanking-panel.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 1,
       "value": "end",
       "xAxis": {
         "x": 1.0,

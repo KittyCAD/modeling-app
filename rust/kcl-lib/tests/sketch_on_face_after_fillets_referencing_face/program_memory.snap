@@ -494,6 +494,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "seg01",
           "xAxis": {
             "x": 1.0,

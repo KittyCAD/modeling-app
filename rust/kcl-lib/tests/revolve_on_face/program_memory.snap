@@ -98,6 +98,7 @@ description: Variables in memory after executing revolve_on_face.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end002",
           "xAxis": {
             "x": 1.0,
@@ -324,6 +325,7 @@ description: Variables in memory after executing revolve_on_face.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "end002",
         "xAxis": {
           "x": 1.0,

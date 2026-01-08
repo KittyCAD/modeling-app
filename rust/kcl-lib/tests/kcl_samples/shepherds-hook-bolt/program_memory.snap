@@ -167,7 +167,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "XZ",
-          "objectId": 2,
+          "objectId": 3,
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -226,7 +226,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
       "artifactId": "[uuid]",
       "id": "[uuid]",
       "kind": "XZ",
-      "objectId": 2,
+      "objectId": 3,
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -349,7 +349,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         "artifactId": "[uuid]",
         "id": "[uuid]",
         "kind": "XZ",
-        "objectId": 2,
+        "objectId": 3,
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -991,6 +991,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -1164,6 +1165,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 2,
       "value": "end",
       "xAxis": {
         "x": 1.0,
@@ -1318,6 +1320,7 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 2,
         "value": "end",
         "xAxis": {
           "x": 1.0,

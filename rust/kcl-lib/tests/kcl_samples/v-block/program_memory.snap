@@ -63,6 +63,7 @@ description: Variables in memory after executing v-block.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "end",
             "xAxis": {
               "x": 0.0,
@@ -580,6 +581,7 @@ description: Variables in memory after executing v-block.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "end",
             "xAxis": {
               "x": 0.0,
@@ -1079,6 +1081,7 @@ description: Variables in memory after executing v-block.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 1,
       "value": "end",
       "xAxis": {
         "x": 0.0,
@@ -1592,6 +1595,7 @@ description: Variables in memory after executing v-block.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 0.0,
@@ -2127,6 +2131,7 @@ description: Variables in memory after executing v-block.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "end",
               "xAxis": {
                 "x": 0.0,

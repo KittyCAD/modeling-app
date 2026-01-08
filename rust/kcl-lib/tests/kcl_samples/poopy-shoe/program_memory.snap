@@ -1956,6 +1956,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 3,
           "value": "end",
           "xAxis": {
             "x": 0.0,
@@ -2587,7 +2588,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "Custom",
-          "objectId": 3,
+          "objectId": 4,
           "origin": {
             "x": -3.875,
             "y": 0.0,
@@ -2759,6 +2760,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 5,
           "value": "seg03",
           "xAxis": {
             "x": 0.0,
@@ -2955,7 +2957,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
                 "kind": "Custom",
-                "objectId": 3,
+                "objectId": 4,
                 "origin": {
                   "x": -3.875,
                   "y": 0.0,
@@ -3154,6 +3156,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 6,
           "value": "end",
           "xAxis": {
             "x": 0.0,
@@ -3494,6 +3497,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 3,
                 "value": "end",
                 "xAxis": {
                   "x": 0.0,
@@ -4080,7 +4084,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "artifactId": "[uuid]",
           "id": "[uuid]",
           "kind": "Custom",
-          "objectId": 4,
+          "objectId": 7,
           "origin": {
             "x": -3.875,
             "y": 0.0,

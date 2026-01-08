@@ -92,6 +92,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -277,6 +278,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 3,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -335,6 +337,7 @@ description: Variables in memory after executing engine-valve.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -547,6 +550,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 4,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -605,6 +609,7 @@ description: Variables in memory after executing engine-valve.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 3,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -663,6 +668,7 @@ description: Variables in memory after executing engine-valve.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 2,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -902,6 +908,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 5,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -960,6 +967,7 @@ description: Variables in memory after executing engine-valve.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 4,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -1018,6 +1026,7 @@ description: Variables in memory after executing engine-valve.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 3,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -1076,6 +1085,7 @@ description: Variables in memory after executing engine-valve.kcl
                             "type": "face",
                             "id": "[uuid]",
                             "artifactId": "[uuid]",
+                            "objectId": 2,
                             "value": "end",
                             "xAxis": {
                               "x": 1.0,
@@ -1342,6 +1352,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 6,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -1400,6 +1411,7 @@ description: Variables in memory after executing engine-valve.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 5,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -1458,6 +1470,7 @@ description: Variables in memory after executing engine-valve.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 4,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -1516,6 +1529,7 @@ description: Variables in memory after executing engine-valve.kcl
                             "type": "face",
                             "id": "[uuid]",
                             "artifactId": "[uuid]",
+                            "objectId": 3,
                             "value": "end",
                             "xAxis": {
                               "x": 1.0,
@@ -1574,6 +1588,7 @@ description: Variables in memory after executing engine-valve.kcl
                                   "type": "face",
                                   "id": "[uuid]",
                                   "artifactId": "[uuid]",
+                                  "objectId": 2,
                                   "value": "end",
                                   "xAxis": {
                                     "x": 1.0,
@@ -1867,6 +1882,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 7,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -1925,6 +1941,7 @@ description: Variables in memory after executing engine-valve.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 6,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -1983,6 +2000,7 @@ description: Variables in memory after executing engine-valve.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 5,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -2041,6 +2059,7 @@ description: Variables in memory after executing engine-valve.kcl
                             "type": "face",
                             "id": "[uuid]",
                             "artifactId": "[uuid]",
+                            "objectId": 4,
                             "value": "end",
                             "xAxis": {
                               "x": 1.0,
@@ -2099,6 +2118,7 @@ description: Variables in memory after executing engine-valve.kcl
                                   "type": "face",
                                   "id": "[uuid]",
                                   "artifactId": "[uuid]",
+                                  "objectId": 3,
                                   "value": "end",
                                   "xAxis": {
                                     "x": 1.0,
@@ -2157,6 +2177,7 @@ description: Variables in memory after executing engine-valve.kcl
                                         "type": "face",
                                         "id": "[uuid]",
                                         "artifactId": "[uuid]",
+                                        "objectId": 2,
                                         "value": "end",
                                         "xAxis": {
                                           "x": 1.0,
@@ -2505,6 +2526,7 @@ description: Variables in memory after executing engine-valve.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 8,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -2563,6 +2585,7 @@ description: Variables in memory after executing engine-valve.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 7,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -2621,6 +2644,7 @@ description: Variables in memory after executing engine-valve.kcl
                       "type": "face",
                       "id": "[uuid]",
                       "artifactId": "[uuid]",
+                      "objectId": 6,
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -2679,6 +2703,7 @@ description: Variables in memory after executing engine-valve.kcl
                             "type": "face",
                             "id": "[uuid]",
                             "artifactId": "[uuid]",
+                            "objectId": 5,
                             "value": "end",
                             "xAxis": {
                               "x": 1.0,
@@ -2737,6 +2762,7 @@ description: Variables in memory after executing engine-valve.kcl
                                   "type": "face",
                                   "id": "[uuid]",
                                   "artifactId": "[uuid]",
+                                  "objectId": 4,
                                   "value": "end",
                                   "xAxis": {
                                     "x": 1.0,
@@ -2795,6 +2821,7 @@ description: Variables in memory after executing engine-valve.kcl
                                         "type": "face",
                                         "id": "[uuid]",
                                         "artifactId": "[uuid]",
+                                        "objectId": 3,
                                         "value": "end",
                                         "xAxis": {
                                           "x": 1.0,
@@ -2853,6 +2880,7 @@ description: Variables in memory after executing engine-valve.kcl
                                               "type": "face",
                                               "id": "[uuid]",
                                               "artifactId": "[uuid]",
+                                              "objectId": 2,
                                               "value": "end",
                                               "xAxis": {
                                                 "x": 1.0,

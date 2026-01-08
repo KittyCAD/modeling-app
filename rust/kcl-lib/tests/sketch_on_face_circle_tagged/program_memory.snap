@@ -239,6 +239,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "end",
           "xAxis": {
             "x": 1.0,

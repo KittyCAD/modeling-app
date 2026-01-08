@@ -68,6 +68,7 @@ description: Variables in memory after executing flange.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 3,
           "value": "start",
           "xAxis": {
             "x": 1.0,
@@ -984,6 +985,7 @@ description: Variables in memory after executing flange.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 4,
           "value": "end",
           "xAxis": {
             "x": 1.0,
@@ -1042,6 +1044,7 @@ description: Variables in memory after executing flange.kcl
                 "type": "face",
                 "id": "[uuid]",
                 "artifactId": "[uuid]",
+                "objectId": 2,
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -1376,6 +1379,7 @@ description: Variables in memory after executing flange.kcl
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 2,
           "value": "end",
           "xAxis": {
             "x": 1.0,

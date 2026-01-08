@@ -1041,6 +1041,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 0.0,
@@ -1468,6 +1469,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 0.0,
@@ -1895,6 +1897,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 0.0,
@@ -2322,6 +2325,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "type": "face",
               "id": "[uuid]",
               "artifactId": "[uuid]",
+              "objectId": 1,
               "value": "seg01",
               "xAxis": {
                 "x": 0.0,
@@ -2750,6 +2754,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "seg01",
             "xAxis": {
               "x": 0.0,
@@ -3159,6 +3164,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "seg01",
             "xAxis": {
               "x": 0.0,
@@ -3568,6 +3574,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "seg01",
             "xAxis": {
               "x": 0.0,
@@ -3977,6 +3984,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "type": "face",
             "id": "[uuid]",
             "artifactId": "[uuid]",
+            "objectId": 1,
             "value": "seg01",
             "xAxis": {
               "x": 0.0,
@@ -4447,6 +4455,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
     "value": {
       "id": "[uuid]",
       "artifactId": "[uuid]",
+      "objectId": 1,
       "value": "seg01",
       "xAxis": {
         "x": 0.0,

@@ -312,6 +312,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "type": "face",
           "id": "[uuid]",
           "artifactId": "[uuid]",
+          "objectId": 1,
           "value": "seg02",
           "xAxis": {
             "x": 1.0,
@@ -793,6 +794,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         "type": "face",
         "id": "[uuid]",
         "artifactId": "[uuid]",
+        "objectId": 1,
         "value": "seg02",
         "xAxis": {
           "x": 1.0,
