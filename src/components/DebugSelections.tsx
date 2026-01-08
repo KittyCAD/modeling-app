@@ -128,7 +128,7 @@ function codeRangeToIds(
   if (!editorView) return []
 
   // We have to mock as if the user was selecting these instead of reading from the
-  // actual code mirror isntance
+  // actual code mirror instance
   const asIfItWasSelected = EditorSelection.create([
     EditorSelection.range(
       selections.graphSelections[0].codeRef.range[0],
@@ -269,13 +269,13 @@ export function DebugSelections() {
     <div>
       <h2>Selection Debugger</h2>
       {artifactGraphTree.map((artifact) => {
-        const hightlightMyId = artifact.id === selectedId
+        const highlightMyId = artifact.id === selectedId
         const highlightMyRange = artifact?.range?.join(',') === selectedRange
         return (
           <div className="text-xs flex flex-col justify-between">
             <div className="text-xs hover:bg-cyan-600 flex flex-row justify-between bg-chalkboard-80">
               <div
-                className={`cursor-pointer ${hightlightMyId ? highlightMajor : ''}`}
+                className={`cursor-pointer ${highlightMyId ? highlightMajor : ''}`}
                 role="button"
                 tabIndex={0}
                 onClick={() => {
