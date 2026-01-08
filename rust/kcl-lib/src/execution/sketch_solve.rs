@@ -325,12 +325,9 @@ pub(crate) struct Solved {
 impl Solved {
     /// Create a Solved from a kcl_ezpz::SolveOutcome, building the set of variables
     /// involved in unsatisfied constraints by examining the original constraints.
-    pub(crate) fn from_ezpz_outcome(
-        value: kcl_ezpz::SolveOutcome,
-        constraints: &[kcl_ezpz::Constraint],
-    ) -> Self {
+    pub(crate) fn from_ezpz_outcome(value: kcl_ezpz::SolveOutcome, constraints: &[kcl_ezpz::Constraint]) -> Self {
         let unsatisfied = value.unsatisfied().to_owned();
-        
+
         // Build a set of variables involved in unsatisfied constraints
         let mut variables_in_conflicts = AHashSet::new();
         for &constraint_idx in &unsatisfied {
@@ -338,7 +335,7 @@ impl Solved {
                 extract_variable_ids_from_constraint(constraint, &mut variables_in_conflicts);
             }
         }
-        
+
         Self {
             unsatisfied,
             final_values: value.final_values().to_owned(),
@@ -352,10 +349,7 @@ impl Solved {
 
 /// Extract variable IDs from a constraint and add them to the set.
 /// This is a helper function to find which variables are involved in a constraint.
-fn extract_variable_ids_from_constraint(
-    constraint: &kcl_ezpz::Constraint,
-    variable_set: &mut AHashSet<usize>,
-) {
+fn extract_variable_ids_from_constraint(constraint: &kcl_ezpz::Constraint, variable_set: &mut AHashSet<usize>) {
     match constraint {
         kcl_ezpz::Constraint::Fixed(id, _) => {
             variable_set.insert(*id as usize);
@@ -382,20 +376,14 @@ fn extract_variable_ids_from_constraint(
 
 /// Extract variable IDs from a DatumPoint.
 /// DatumPoint has public fields x_id and y_id that we can access directly.
-fn extract_ids_from_point(
-    pt: &kcl_ezpz::datatypes::inputs::DatumPoint,
-    variable_set: &mut AHashSet<usize>,
-) {
+fn extract_ids_from_point(pt: &kcl_ezpz::datatypes::inputs::DatumPoint, variable_set: &mut AHashSet<usize>) {
     variable_set.insert(pt.x_id as usize);
     variable_set.insert(pt.y_id as usize);
 }
 
 /// Extract variable IDs from a DatumLineSegment.
 /// DatumLineSegment has public fields p0 and p1 (start and end points).
-fn extract_ids_from_line(
-    line: &kcl_ezpz::datatypes::inputs::DatumLineSegment,
-    variable_set: &mut AHashSet<usize>,
-) {
+fn extract_ids_from_line(line: &kcl_ezpz::datatypes::inputs::DatumLineSegment, variable_set: &mut AHashSet<usize>) {
     extract_ids_from_point(&line.p0, variable_set);
     extract_ids_from_point(&line.p1, variable_set);
 }

@@ -1162,11 +1162,10 @@ impl Node<SketchBlock> {
         // Solve constraints.
         let config = kcl_ezpz::Config::default().with_max_iterations(50);
         let solve_result = if exec_state.mod_local.freedom_analysis {
-            kcl_ezpz::solve_analysis(&constraints, initial_guesses.clone(), config)
-                .map(|outcome| {
-                    let freedom_analysis = FreedomAnalysis::from(outcome.analysis);
-                    (outcome.outcome, Some(freedom_analysis))
-                })
+            kcl_ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
+                let freedom_analysis = FreedomAnalysis::from(outcome.analysis);
+                (outcome.outcome, Some(freedom_analysis))
+            })
         } else {
             kcl_ezpz::solve(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
         };
@@ -1177,7 +1176,7 @@ impl Node<SketchBlock> {
             .cloned()
             .chain(sketch_block_state.solver_optional_constraints.iter().cloned())
             .collect();
-        
+
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => (Solved::from_ezpz_outcome(solved, &all_constraints), freedom),
             Err(failure) => {
