@@ -103,7 +103,7 @@ export function SystemIOMachineLogicListenerDesktop() {
     }
 
     kclManager.isExecuting = false
-    navigate(requestedPath)
+    void navigate(requestedPath)
   }
 
   /**
@@ -241,6 +241,7 @@ export function SystemIOMachineLogicListenerDesktop() {
     mlEphantManagerActor,
     billingActor,
     token,
+    engineCommandManager,
     (toolOutput, projectNameCurrentlyOpened, fileFocusedOnInEditor) => {
       if (
         toolOutput.type !== 'text_to_cad' &&
@@ -274,8 +275,9 @@ export function SystemIOMachineLogicListenerDesktop() {
         projectNameCurrentlyOpened
       )
 
+      kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
       systemIOActor.send({
-        type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+        type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
         data: {
           files: requestedFiles,
           override: true,

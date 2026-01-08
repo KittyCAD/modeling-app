@@ -7,7 +7,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
  * mechanical engineers. See .github/CODEOWNERS for more details.
  */
 
-test.describe('Hot path', () => {
+test.describe('Hot path', { tag: '@desktop' }, () => {
   test(`Draw a circle and extrude it`, async ({
     page,
     homePage,
@@ -26,7 +26,9 @@ test.describe('Hot path', () => {
     await toolbar.openPane(DefaultLayoutPaneID.Code)
 
     // Mouse helpers
-    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, { format: 'ratio' })
+    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
+      format: 'ratio',
+    })
     const [clickABitOffCenter] = scene.makeMouseHelpers(0.55, 0.45, {
       format: 'ratio',
     })
@@ -67,6 +69,7 @@ test.describe('Hot path', () => {
         currentArgValue: '',
         headerArguments: {
           Profiles: '',
+          Length: '5',
         },
         highlightedHeaderArg: 'Profiles',
         commandName: 'Extrude',
@@ -74,29 +77,15 @@ test.describe('Hot path', () => {
       await clickCenter()
     })
 
-    await test.step('Click Continue, see error about missing args on review page', async () => {
+    await test.step('Click Continue and set a length', async () => {
       await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: {
-          Profiles: '1 profile',
-        },
-        commandName: 'Extrude',
-        reviewValidationError:
-          'semantic: Either `length` or `to` parameter must be provided for extrusion.',
-      })
-      await page.waitForTimeout(timeout)
-    })
-
-    await test.step('Click Length and set a length', async () => {
-      await cmdBar.clickOptionalArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
         currentArgValue: '5',
         headerArguments: {
           Profiles: '1 profile',
-          Length: '',
+          Length: '5',
         },
         highlightedHeaderArg: 'length',
         commandName: 'Extrude',
@@ -105,7 +94,7 @@ test.describe('Hot path', () => {
       await page.keyboard.type('1')
     })
 
-    await test.step('Click Continue, see no more error, and click Submit', async () => {
+    await test.step('Click Continue, expect the review page without errors, and click Submit', async () => {
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',

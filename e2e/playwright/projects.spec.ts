@@ -574,216 +574,221 @@ test(
   }
 )
 
-test.describe(`Project management commands`, () => {
-  test(
-    `Rename from project page`,
-    { tag: '@desktop' },
-    async ({ context, page, scene, cmdBar }, testInfo) => {
-      const projectName = `my_project_to_rename`
-      await context.folderSetupFn(async (dir) => {
-        await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
-        await fsp.copyFile(
-          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
-          `${dir}/${projectName}/main.kcl`
-        )
-      })
+test.describe(`Project management commands`, { tag: '@desktop' }, () => {
+  test(`Rename from project page`, async ({
+    context,
+    page,
+    scene,
+    cmdBar,
+  }, testInfo) => {
+    const projectName = `my_project_to_rename`
+    await context.folderSetupFn(async (dir) => {
+      await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
+      await fsp.copyFile(
+        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
+        `${dir}/${projectName}/main.kcl`
+      )
+    })
 
-      // Constants and locators
-      const projectHomeLink = page.getByTestId('project-link')
-      const commandButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', {
-        name: 'rename project',
-      })
-      const projectNameOption = page.getByRole('option', { name: projectName })
-      const projectRenamedName = `untitled`
-      // const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const commandContinueButton = page.getByRole('button', {
-        name: 'Continue',
-      })
-      const toastMessage = page.getByText(`Successfully renamed`)
+    // Constants and locators
+    const projectHomeLink = page.getByTestId('project-link')
+    const commandButton = page.getByRole('button', { name: 'Commands' })
+    const commandOption = page.getByRole('option', {
+      name: 'rename project',
+    })
+    const projectNameOption = page.getByRole('option', { name: projectName })
+    const projectRenamedName = `untitled`
+    // const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+    const commandContinueButton = page.getByRole('button', {
+      name: 'Continue',
+    })
+    const toastMessage = page.getByText(`Successfully renamed`)
 
-      await test.step(`Setup`, async () => {
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        page.on('console', console.log)
+    await test.step(`Setup`, async () => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      page.on('console', console.log)
 
-        await projectHomeLink.click()
-        await scene.settled(cmdBar)
-      })
+      await projectHomeLink.click()
+      await scene.settled(cmdBar)
+    })
 
-      await test.step(`Run rename command via command palette`, async () => {
-        await commandButton.click()
-        await commandOption.click()
-        await projectNameOption.click()
+    await test.step(`Run rename command via command palette`, async () => {
+      await commandButton.click()
+      await commandOption.click()
+      await projectNameOption.click()
 
-        await expect(commandContinueButton).toBeVisible()
-        await commandContinueButton.click()
+      await expect(commandContinueButton).toBeVisible()
+      await commandContinueButton.click()
 
-        await cmdBar.submit()
+      await cmdBar.submit()
 
-        await expect(toastMessage).toBeVisible()
-      })
+      await expect(toastMessage).toBeVisible()
+    })
 
-      // TODO: in future I'd like the behavior to be to
-      // navigate to the new project's page directly,
-      // see ProjectContextProvider.tsx:158
-      await test.step(`Check the project was renamed and we navigated home`, async () => {
-        await expect(projectHomeLink.first()).toBeVisible()
-        await expect(projectHomeLink.first()).toContainText(projectRenamedName)
-      })
-    }
-  )
+    // TODO: in future I'd like the behavior to be to
+    // navigate to the new project's page directly,
+    // see ProjectContextProvider.tsx:158
+    await test.step(`Check the project was renamed and we navigated home`, async () => {
+      await expect(projectHomeLink.first()).toBeVisible()
+      await expect(projectHomeLink.first()).toContainText(projectRenamedName)
+    })
+  })
 
-  test(
-    `Delete from project page`,
-    { tag: '@desktop' },
-    async ({ context, page, scene, cmdBar }, testInfo) => {
-      const projectName = `my_project_to_delete`
-      await context.folderSetupFn(async (dir) => {
-        await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
-        await fsp.copyFile(
-          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
-          `${dir}/${projectName}/main.kcl`
-        )
-      })
+  test(`Delete from project page`, async ({
+    context,
+    page,
+    scene,
+    cmdBar,
+  }, testInfo) => {
+    const projectName = `my_project_to_delete`
+    await context.folderSetupFn(async (dir) => {
+      await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
+      await fsp.copyFile(
+        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
+        `${dir}/${projectName}/main.kcl`
+      )
+    })
 
-      // Constants and locators
-      const projectHomeLink = page.getByTestId('project-link')
-      const commandButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', {
-        name: 'delete project',
-      })
-      const projectNameOption = page.getByRole('option', { name: projectName })
-      const commandWarning = page.getByText('Are you sure you want to delete?')
-      const toastMessage = page.getByText(`Successfully deleted`)
-      const noProjectsMessage = page.getByText('No projects found')
+    // Constants and locators
+    const projectHomeLink = page.getByTestId('project-link')
+    const commandButton = page.getByRole('button', { name: 'Commands' })
+    const commandOption = page.getByRole('option', {
+      name: 'delete project',
+    })
+    const projectNameOption = page.getByRole('option', { name: projectName })
+    const commandWarning = page.getByText('Are you sure you want to delete?')
+    const toastMessage = page.getByText(`Successfully deleted`)
+    const noProjectsMessage = page.getByText('No projects found')
 
-      await test.step(`Setup`, async () => {
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        page.on('console', console.log)
+    await test.step(`Setup`, async () => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      page.on('console', console.log)
 
-        await page.waitForTimeout(3000)
+      await page.waitForTimeout(3000)
 
-        await projectHomeLink.click()
-        await scene.settled(cmdBar)
-      })
+      await projectHomeLink.click()
+      await scene.settled(cmdBar)
+    })
 
-      await test.step(`Run delete command via command palette`, async () => {
-        await commandButton.click()
-        await commandOption.click()
-        await projectNameOption.click()
+    await test.step(`Run delete command via command palette`, async () => {
+      await commandButton.click()
+      await commandOption.click()
+      await projectNameOption.click()
 
-        await expect(commandWarning).toBeVisible()
-        await cmdBar.submit()
+      await expect(commandWarning).toBeVisible()
+      await cmdBar.submit()
 
-        await expect(toastMessage).toBeVisible()
-      })
+      await expect(toastMessage).toBeVisible()
+    })
 
-      await test.step(`Check the project was deleted and we navigated home`, async () => {
-        await expect(noProjectsMessage).toBeVisible()
-      })
-    }
-  )
-  test(
-    `Rename from home page`,
-    { tag: '@desktop' },
-    async ({ context, page, homePage, scene, cmdBar }, testInfo) => {
-      const projectName = `my_project_to_rename`
-      await context.folderSetupFn(async (dir) => {
-        await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
-        await fsp.copyFile(
-          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
-          `${dir}/${projectName}/main.kcl`
-        )
-      })
+    await test.step(`Check the project was deleted and we navigated home`, async () => {
+      await expect(noProjectsMessage).toBeVisible()
+    })
+  })
+  test(`Rename from home page`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    cmdBar,
+  }, testInfo) => {
+    const projectName = `my_project_to_rename`
+    await context.folderSetupFn(async (dir) => {
+      await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
+      await fsp.copyFile(
+        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
+        `${dir}/${projectName}/main.kcl`
+      )
+    })
 
-      // Constants and locators
-      const projectHomeLink = page.getByTestId('project-link')
-      const commandButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', {
-        name: 'rename project',
-      })
-      const projectNameOption = page.getByRole('option', { name: projectName })
-      const projectRenamedName = `untitled`
-      const commandContinueButton = page.getByRole('button', {
-        name: 'Continue',
-      })
-      const toastMessage = page.getByText(`Successfully renamed`)
+    // Constants and locators
+    const projectHomeLink = page.getByTestId('project-link')
+    const commandButton = page.getByRole('button', { name: 'Commands' })
+    const commandOption = page.getByRole('option', {
+      name: 'rename project',
+    })
+    const projectNameOption = page.getByRole('option', { name: projectName })
+    const projectRenamedName = `untitled`
+    const commandContinueButton = page.getByRole('button', {
+      name: 'Continue',
+    })
+    const toastMessage = page.getByText(`Successfully renamed`)
 
-      await test.step(`Setup`, async () => {
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        page.on('console', console.log)
-        await homePage.projectsLoaded()
-        await expect(projectHomeLink).toBeVisible()
-      })
+    await test.step(`Setup`, async () => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      page.on('console', console.log)
+      await homePage.projectsLoaded()
+      await expect(projectHomeLink).toBeVisible()
+    })
 
-      await test.step(`Run rename command via command palette`, async () => {
-        await commandButton.click()
-        await commandOption.click()
-        await projectNameOption.click()
+    await test.step(`Run rename command via command palette`, async () => {
+      await commandButton.click()
+      await commandOption.click()
+      await projectNameOption.click()
 
-        await expect(commandContinueButton).toBeVisible()
-        await commandContinueButton.click()
+      await expect(commandContinueButton).toBeVisible()
+      await commandContinueButton.click()
 
-        await cmdBar.submit()
+      await cmdBar.submit()
 
-        await expect(toastMessage).toBeVisible()
-      })
+      await expect(toastMessage).toBeVisible()
+    })
 
-      await test.step(`Check the project was renamed`, async () => {
-        await expect(
-          page.getByRole('link', { name: projectRenamedName })
-        ).toBeVisible()
-        await expect(projectHomeLink).not.toHaveText(projectName)
-      })
-    }
-  )
-  test(
-    `Delete from home page`,
-    { tag: '@desktop' },
-    async ({ context, page, scene, cmdBar }, testInfo) => {
-      const projectName = `my_project_to_delete`
-      await context.folderSetupFn(async (dir) => {
-        await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
-        await fsp.copyFile(
-          'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
-          `${dir}/${projectName}/main.kcl`
-        )
-      })
+    await test.step(`Check the project was renamed`, async () => {
+      await expect(
+        page.getByRole('link', { name: projectRenamedName })
+      ).toBeVisible()
+      await expect(projectHomeLink).not.toHaveText(projectName)
+    })
+  })
+  test(`Delete from home page`, async ({
+    context,
+    page,
+    scene,
+    cmdBar,
+  }, testInfo) => {
+    const projectName = `my_project_to_delete`
+    await context.folderSetupFn(async (dir) => {
+      await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
+      await fsp.copyFile(
+        'rust/kcl-lib/e2e/executor/inputs/router-template-slate.kcl',
+        `${dir}/${projectName}/main.kcl`
+      )
+    })
 
-      // Constants and locators
-      const projectHomeLink = page.getByTestId('project-link')
-      const commandButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', {
-        name: 'delete project',
-      })
-      const projectNameOption = page.getByRole('option', { name: projectName })
-      const commandWarning = page.getByText('Are you sure you want to delete?')
-      const toastMessage = page.getByText(`Successfully deleted`)
-      const noProjectsMessage = page.getByText('No projects found')
+    // Constants and locators
+    const projectHomeLink = page.getByTestId('project-link')
+    const commandButton = page.getByRole('button', { name: 'Commands' })
+    const commandOption = page.getByRole('option', {
+      name: 'delete project',
+    })
+    const projectNameOption = page.getByRole('option', { name: projectName })
+    const commandWarning = page.getByText('Are you sure you want to delete?')
+    const toastMessage = page.getByText(`Successfully deleted`)
+    const noProjectsMessage = page.getByText('No projects found')
 
-      await test.step(`Setup`, async () => {
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        page.on('console', console.log)
-        await expect(projectHomeLink).toBeVisible()
-      })
+    await test.step(`Setup`, async () => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      page.on('console', console.log)
+      await expect(projectHomeLink).toBeVisible()
+    })
 
-      await test.step(`Run delete command via command palette`, async () => {
-        await commandButton.click()
-        await commandOption.click()
-        await projectNameOption.click()
+    await test.step(`Run delete command via command palette`, async () => {
+      await commandButton.click()
+      await commandOption.click()
+      await projectNameOption.click()
 
-        await expect(commandWarning).toBeVisible()
-        await cmdBar.submit()
+      await expect(commandWarning).toBeVisible()
+      await cmdBar.submit()
 
-        await expect(toastMessage).toBeVisible()
-      })
+      await expect(toastMessage).toBeVisible()
+    })
 
-      await test.step(`Check the project was deleted`, async () => {
-        await expect(projectHomeLink).not.toBeVisible()
-        await expect(noProjectsMessage).toBeVisible()
-      })
-    }
-  )
+    await test.step(`Check the project was deleted`, async () => {
+      await expect(projectHomeLink).not.toBeVisible()
+      await expect(noProjectsMessage).toBeVisible()
+    })
+  })
   test('Create a new project with a colliding name', async ({
     context,
     homePage,
@@ -860,23 +865,27 @@ test.describe(`Project management commands`, () => {
   })
 })
 
-test(`Create a few projects
+test(
+  `Create a few projects
 using the
-default project name`, async ({ homePage, toolbar }) => {
-  for (let i = 0; i < 12; i++) {
-    await test.step(`Create project ${i}`, async () => {
-      await homePage.expectState({
-        projectCards: Array.from({ length: i }, (_, i) => ({
-          title: i === 0 ? 'untitled' : `untitled-${i}`,
-          fileCount: 1,
-        })).toReversed(),
-        sortBy: 'last-modified-desc',
+default project name`,
+  { tag: '@desktop' },
+  async ({ homePage, toolbar }) => {
+    for (let i = 0; i < 12; i++) {
+      await test.step(`Create project ${i}`, async () => {
+        await homePage.expectState({
+          projectCards: Array.from({ length: i }, (_, i) => ({
+            title: i === 0 ? 'untitled' : `untitled-${i}`,
+            fileCount: 1,
+          })).toReversed(),
+          sortBy: 'last-modified-desc',
+        })
+        await homePage.createAndGoToProject()
+        await toolbar.logoLink.click()
       })
-      await homePage.createAndGoToProject()
-      await toolbar.logoLink.click()
-    })
+    }
   }
-})
+)
 
 test(
   'project title case sensitive duplication',
@@ -1767,12 +1776,12 @@ profile001 = startProfile(sketch001, at = [0, 0])
   }
 )
 
-test.describe('Project id', () => {
+test.describe('Project id', { tag: '@desktop' }, () => {
   // Should work on both web and desktop.
   test(
     'is created on new project',
     {
-      tag: ['@desktop', '@web'],
+      tag: '@web',
     },
     async ({ page, toolbar, context, homePage }, testInfo) => {
       const u = await getUtils(page)
@@ -1795,39 +1804,40 @@ test.describe('Project id', () => {
       })
     }
   )
-  test(
-    'is created on existing project without one',
-    { tag: '@desktop' },
-    async ({ page, toolbar, context, homePage }, testInfo) => {
-      const u = await getUtils(page)
-      await context.folderSetupFn(async (rootDir) => {
-        const projectDir = path.join(rootDir, 'hoohee')
-        await fsp.mkdir(projectDir, { recursive: true })
-        await fsp.writeFile(
-          path.join(projectDir, 'project.toml'),
-          `[settings.app]
+  test('is created on existing project without one', async ({
+    page,
+    toolbar,
+    context,
+    homePage,
+  }, testInfo) => {
+    const u = await getUtils(page)
+    await context.folderSetupFn(async (rootDir) => {
+      const projectDir = path.join(rootDir, 'hoohee')
+      await fsp.mkdir(projectDir, { recursive: true })
+      await fsp.writeFile(
+        path.join(projectDir, 'project.toml'),
+        `[settings.app]
 theme = "dark"
 `
-        )
-      })
+      )
+    })
 
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await u.waitForPageLoad()
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
 
-      const inputProjectId = page.getByTestId('project-id')
+    const inputProjectId = page.getByTestId('project-id')
 
-      await test.step('Open the project settings modal', async () => {
-        await toolbar.projectSidebarToggle.click()
-        await page.getByTestId('project-settings').click()
-        // Give time to system for writing to a persistent store
-        await page.waitForTimeout(1000)
-      })
+    await test.step('Open the project settings modal', async () => {
+      await toolbar.projectSidebarToggle.click()
+      await page.getByTestId('project-settings').click()
+      // Give time to system for writing to a persistent store
+      await page.waitForTimeout(1000)
+    })
 
-      await test.step('Check project id is not the NIL UUID and not empty', async () => {
-        await expect(inputProjectId).not.toHaveValue(uuidNIL)
-        await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
-      })
-    }
-  )
+    await test.step('Check project id is not the NIL UUID and not empty', async () => {
+      await expect(inputProjectId).not.toHaveValue(uuidNIL)
+      await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+    })
+  })
 })

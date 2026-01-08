@@ -1410,6 +1410,14 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  perpendicular: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M10.5 11H13.5V14H16V15H4V14H9.5V5H10.5V11ZM10.5 14H12.5V12H10.5V14Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   person: (
     <svg
       viewBox="0 0 20 20"
