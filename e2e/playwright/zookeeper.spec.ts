@@ -8,7 +8,7 @@ import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 
-test.describe('Zookeeper tests', () => {
+test.describe('Zookeeper tests', { tag: '@desktop' }, () => {
   async function runCopilotHappyPathTest({
     page,
     editor,
@@ -70,19 +70,23 @@ test.describe('Zookeeper tests', () => {
     }
   )
 
-  test(
-    'Desktop copilot happy path: new project, easy prompt, good result',
-    { tag: ['@desktop'] },
-    async ({ page, editor, homePage, scene, toolbar, cmdBar, copilot }) => {
-      await runCopilotHappyPathTest({
-        page,
-        editor,
-        homePage,
-        scene,
-        toolbar,
-        cmdBar,
-        copilot,
-      })
-    }
-  )
+  test('Desktop copilot happy path: new project, easy prompt, good result', async ({
+    page,
+    editor,
+    homePage,
+    scene,
+    toolbar,
+    cmdBar,
+    copilot,
+  }) => {
+    await runCopilotHappyPathTest({
+      page,
+      editor,
+      homePage,
+      scene,
+      toolbar,
+      cmdBar,
+      copilot,
+    })
+  })
 })

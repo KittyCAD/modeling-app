@@ -127,9 +127,6 @@ export async function getCalculatedKclExpressionValue(
       ? String(resultRawValue)
       : 'NAN'
 
-  console.log('resultRawValue', resultRawValue)
-  console.log('valueAsString', valueAsString)
-
   return {
     astNode: variableDeclaratorAstNode,
     valueAsString,
@@ -143,7 +140,6 @@ export async function stringToKclExpression(
     allowArrays?: boolean
   }
 ) {
-  debugger
   const calculatedResult = await getCalculatedKclExpressionValue(
     value,
     providedRustContext,

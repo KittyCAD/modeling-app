@@ -9,6 +9,10 @@ import type * as LSP from 'vscode-languageserver-protocol'
 
 import { kclPlugin } from '@src/editor/plugins/lsp/kcl'
 import { colorPicker } from '@src/editor/plugins/lsp/kcl/colors'
+import type { KclManager } from '@src/lang/KclManager'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type RustContext from '@src/lib/rustContext'
 
 export interface LanguageOptions {
   workspaceFolders: LSP.WorkspaceFolder[]
@@ -20,15 +24,26 @@ export interface LanguageOptions {
   ) => void
 }
 
-export function kcl(options: LanguageOptions) {
+export function kcl(
+  options: LanguageOptions,
+  systemDeps: {
+    kclManager: KclManager
+    sceneEntitiesManager: SceneEntities
+    wasmInstance: ModuleType
+    rustContext: RustContext
+  }
+) {
   return new LanguageSupport(KclLanguage, [
     colorPicker,
-    kclPlugin({
-      documentUri: options.documentUri,
-      workspaceFolders: options.workspaceFolders,
-      allowHTMLContent: true,
-      client: options.client,
-      processLspNotification: options.processLspNotification,
-    }),
+    kclPlugin(
+      {
+        documentUri: options.documentUri,
+        workspaceFolders: options.workspaceFolders,
+        allowHTMLContent: true,
+        client: options.client,
+        processLspNotification: options.processLspNotification,
+      },
+      systemDeps
+    ),
   ])
 }

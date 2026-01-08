@@ -1364,6 +1364,20 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         isActive: (state) => false,
       },
       {
+        id: 'Perpendicular',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'Perpendicular',
+          }),
+        icon: 'perpendicular',
+        status: 'available',
+        title: 'Perpendicular',
+        hotkey: 'R',
+        description: 'Constrain lines or curves to be perpendicular',
+        links: [],
+        isActive: (state) => false,
+      },
+      {
         id: 'equalLength',
         onClick: ({ modelingSend, isActive }) =>
           modelingSend({

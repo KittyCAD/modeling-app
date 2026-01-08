@@ -58,6 +58,9 @@ export const billingMachine = setup({
           input.context.lastFetch &&
           Date.now() - input.context.lastFetch.getTime() < _TIME_1_SECOND
         ) {
+          console.log(
+            'BillingTransition.Update was skipped as it was recently fetched'
+          )
           return input.context
         }
 

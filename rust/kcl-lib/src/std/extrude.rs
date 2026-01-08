@@ -182,6 +182,7 @@ async fn inner_extrude(
                 opposite: opposite.clone(),
                 extrude_method,
                 body_type,
+                merge_coplanar_faces: Default::default(), // TODO serena
             }),
             (None, None, None, None, Some(to)) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(mcmd::ExtrudeToReference {
