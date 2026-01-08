@@ -33,7 +33,6 @@ import {
   packRgbToColor,
   SKETCH_SELECTION_COLOR,
   SKETCH_SELECTION_RGB,
-  SKETCH_SELECTION_RGB_STR,
 } from '@src/lib/constants'
 
 export const SEGMENT_TYPE_POINT = 'POINT'
@@ -59,11 +58,6 @@ export function deriveSegmentFreedom(
   segment: ApiObject,
   objects: Array<ApiObject>
 ): Freedom | null {
-  console.log('[deriveSegmentFreedom] start', {
-    segmentId: segment.id,
-    segmentKind: segment.kind.type,
-    objectsLength: objects.length,
-  })
   if (segment.kind.type !== 'Segment') {
     return null
   }
@@ -75,10 +69,6 @@ export function deriveSegmentFreedom(
 
   if (segmentData.type === 'Point') {
     // Points have freedom directly
-    console.log('[deriveSegmentFreedom] point freedom', {
-      segmentId: segment.id,
-      freedom: segmentData.freedom ?? null,
-    })
     return segmentData.freedom ?? null
   }
 
@@ -88,13 +78,6 @@ export function deriveSegmentFreedom(
   if (segmentData.type === 'Line') {
     const startPoint = getObjById(segmentData.start)
     const endPoint = getObjById(segmentData.end)
-    console.log('[deriveSegmentFreedom] line endpoints', {
-      segmentId: segment.id,
-      startId: segmentData.start,
-      endId: segmentData.end,
-      startFound: !!startPoint,
-      endFound: !!endPoint,
-    })
     if (
       startPoint?.kind?.type === 'Segment' &&
       startPoint.kind.segment.type === 'Point'
@@ -111,15 +94,6 @@ export function deriveSegmentFreedom(
     const startPoint = getObjById(segmentData.start)
     const endPoint = getObjById(segmentData.end)
     const centerPoint = getObjById(segmentData.center)
-    console.log('[deriveSegmentFreedom] arc endpoints', {
-      segmentId: segment.id,
-      startId: segmentData.start,
-      endId: segmentData.end,
-      centerId: segmentData.center,
-      startFound: !!startPoint,
-      endFound: !!endPoint,
-      centerFound: !!centerPoint,
-    })
     if (
       startPoint?.kind?.type === 'Segment' &&
       startPoint.kind.segment.type === 'Point'
@@ -142,11 +116,6 @@ export function deriveSegmentFreedom(
     // Circle has a start point (center) - need to check if there are other points
     // For now, just check the start point
     const startPoint = getObjById(segmentData.start)
-    console.log('[deriveSegmentFreedom] circle start', {
-      segmentId: segment.id,
-      startId: segmentData.start,
-      startFound: !!startPoint,
-    })
     if (
       startPoint?.kind?.type === 'Segment' &&
       startPoint.kind.segment.type === 'Point'
@@ -159,10 +128,6 @@ export function deriveSegmentFreedom(
   const validFreedoms = pointFreedoms.filter((f): f is Freedom => f !== null)
 
   if (validFreedoms.length === 0) {
-    console.log('[deriveSegmentFreedom] no point freedoms', {
-      segmentId: segment.id,
-      pointFreedoms,
-    })
     return null
   }
 
@@ -183,31 +148,15 @@ export function deriveSegmentFreedom(
   }
 
   if (hasConflict) {
-    console.log('[deriveSegmentFreedom] result Conflict', {
-      segmentId: segment.id,
-      pointFreedoms,
-    })
     return 'Conflict'
   }
   if (hasFree) {
-    console.log('[deriveSegmentFreedom] result Free', {
-      segmentId: segment.id,
-      pointFreedoms,
-    })
     return 'Free'
   }
   if (allFixed) {
-    console.log('[deriveSegmentFreedom] result Fixed', {
-      segmentId: segment.id,
-      pointFreedoms,
-    })
     return 'Fixed'
   }
 
-  console.log('[deriveSegmentFreedom] result null', {
-    segmentId: segment.id,
-    pointFreedoms,
-  })
   return null
 }
 
@@ -236,17 +185,8 @@ export function getSegmentColor({
   isSelected?: boolean
   freedom?: Freedom | null
 }): number {
-  // Log color calculation for debugging
-  console.log('[getSegmentColor]', {
-    isDraft,
-    isHovered,
-    isSelected,
-    freedom,
-  })
-
   // Priority 1: Draft color
   if (isDraft) {
-    console.log('[getSegmentColor] Returning draft color (grey)')
     return 0x888888 // Grey for draft
   }
 
@@ -256,38 +196,30 @@ export function getSegmentColor({
     const hoverColor = packRgbToColor(
       SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7))
     )
-    console.log('[getSegmentColor] Returning hover color')
     return hoverColor
   }
 
   // Priority 3: Select color
   if (isSelected) {
-    console.log('[getSegmentColor] Returning select color')
     return SKETCH_SELECTION_COLOR
   }
 
   // Priority 4: Conflict color (red)
   if (freedom === 'Conflict') {
-    console.log('[getSegmentColor] Returning conflict color (red)')
     return CONFLICT_COLOR
   }
 
   // Priority 5: Unconstrained color (blue)
   if (freedom === 'Free') {
-    console.log('[getSegmentColor] Returning unconstrained color (blue)')
     return UNCONSTRAINED_COLOR
   }
 
   // Priority 6: Constrained color (white) - Fixed or null (default to constrained)
   if (freedom === 'Fixed') {
-    console.log('[getSegmentColor] Returning constrained color (white)')
     return TEXT_COLOR
   }
 
   // Default: unconstrained color (blue) for null/unknown
-  console.log(
-    '[getSegmentColor] Returning unconstrained color (blue) - default'
-  )
   return UNCONSTRAINED_COLOR
 }
 
@@ -676,14 +608,6 @@ class LineSegment implements SketchEntityUtils {
     // Update userData for consistency
     group.userData.freedom = freedom
 
-    console.log('[LineSegment.update]', {
-      id,
-      isDraft,
-      isHovered,
-      isSelected,
-      freedom,
-    })
-
     this.updateLineColors(
       straightSegmentBody,
       isSelected,
@@ -774,7 +698,7 @@ class ArcSegment implements SketchEntityUtils {
     isSelected: boolean,
     isHovered: boolean,
     isDraft?: boolean,
-    isConstrained?: boolean
+    freedom?: Freedom | null
   ): void {
     const material = mesh.material
     if (!(material instanceof MeshBasicMaterial)) {
@@ -785,7 +709,7 @@ class ArcSegment implements SketchEntityUtils {
       isDraft,
       isHovered,
       isSelected,
-      isConstrained,
+      freedom,
     })
     material.color.set(color)
   }
@@ -949,14 +873,6 @@ class ArcSegment implements SketchEntityUtils {
     const freedom = args.freedom ?? group.userData.freedom ?? null
     // Update userData for consistency
     group.userData.freedom = freedom
-
-    console.log('[ArcSegment.update]', {
-      id,
-      isDraft,
-      isHovered,
-      isSelected,
-      freedom,
-    })
 
     this.updateArcColors(
       arcSegmentBody,

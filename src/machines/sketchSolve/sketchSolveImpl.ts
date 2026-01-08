@@ -276,26 +276,7 @@ export function updateSegmentGroup({
     const segmentObj = objects[idNum]
     if (segmentObj) {
       freedomResult = deriveSegmentFreedom(segmentObj, objects)
-      console.log('[updateSegmentGroup] Segment freedom derived', {
-        segmentId: idNum,
-        freedom: freedomResult,
-        objectsLength: objects.length,
-        segmentObjKind: segmentObj.kind.type,
-      })
-    } else {
-      console.log('[updateSegmentGroup] segmentObj not found in objects', {
-        segmentId: idNum,
-        objectsLength: objects.length,
-        objectIds: objects.map((o) => o?.id),
-      })
     }
-  } else {
-    console.log(
-      '[updateSegmentGroup] no objects provided for constraint derivation',
-      {
-        segmentId: idNum,
-      }
-    )
   }
 
   // Store freedom in userData for immediate use (not as a cache - Rust handles that)
@@ -362,10 +343,6 @@ function initSegmentGroup({
     const segmentObj = objects[id]
     if (segmentObj) {
       freedomResult = deriveSegmentFreedom(segmentObj, objects)
-      console.log('[initSegmentGroup] Segment freedom derived', {
-        segmentId: id,
-        freedom: freedomResult,
-      })
     }
   }
 
@@ -759,22 +736,6 @@ const debouncedEditorUpdate = deferredCallback(
 
 export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   assertEvent(event, 'update sketch outcome')
-  const freedomDebug = event.data.sceneGraphDelta.new_graph.objects
-    .filter((obj) => {
-      if (obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point') {
-        return true
-      }
-    })
-    .map((obj) => {
-      return {
-        id: obj.id,
-        position:
-          obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
-            ? obj.kind.segment.freedom
-            : null,
-      }
-    })
-  console.log('[FREEDOM]', freedomDebug)
 
   // Update scene immediately - no delay, no flicker
   updateSceneGraphFromDelta({
@@ -902,7 +863,6 @@ export async function deleteDraftEntitiesPromise({
       segmentIds,
       await jsAppSettings(context.rustContext.settingsActor)
     )
-    console.log('result', result)
 
     //
     return result || null

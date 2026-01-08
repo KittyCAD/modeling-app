@@ -1162,41 +1162,24 @@ impl Node<SketchBlock> {
         // Solve constraints.
         let config = kcl_ezpz::Config::default().with_max_iterations(50);
         let solve_result = if exec_state.mod_local.freedom_analysis {
-            #[cfg(target_arch = "wasm32")]
-            {
-                use web_sys::console;
-                console::log_1(&format!(
-                    "[FREEDOM] Running freedom analysis - constraints: {}, solver variables: {} (note: each point has 2 variables: x and y), sketch_id: {:?}",
-                    constraints.len(),
-                    initial_guesses.len(),
-                    sketch_id
-                ).into());
-            }
             kcl_ezpz::solve_analysis(&constraints, initial_guesses.clone(), config)
                 .map(|outcome| {
                     let freedom_analysis = FreedomAnalysis::from(outcome.analysis);
-                    #[cfg(target_arch = "wasm32")]
-                    {
-                        use web_sys::console;
-                        let underconstrained_count = freedom_analysis.underconstrained.len();
-                        console::log_1(&format!(
-                            "[FREEDOM] Analysis complete - underconstrained solver variables: {} (note: these are solver variable IDs, not object IDs. Each point has 2 variables: x and y)",
-                            underconstrained_count
-                        ).into());
-                        if underconstrained_count > 0 {
-                            console::log_1(&format!(
-                                "[FREEDOM] Underconstrained solver variable IDs: {:?}",
-                                freedom_analysis.underconstrained
-                            ).into());
-                        }
-                    }
                     (outcome.outcome, Some(freedom_analysis))
                 })
         } else {
             kcl_ezpz::solve(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
         };
+        // Build a combined list of all constraints (regular + optional) for conflict detection
+        let all_constraints: Vec<kcl_ezpz::Constraint> = sketch_block_state
+            .solver_constraints
+            .iter()
+            .cloned()
+            .chain(sketch_block_state.solver_optional_constraints.iter().cloned())
+            .collect();
+        
         let (solve_outcome, solve_analysis) = match solve_result {
-            Ok((solved, freedom)) => (Solved::from(solved), freedom),
+            Ok((solved, freedom)) => (Solved::from_ezpz_outcome(solved, &all_constraints), freedom),
             Err(failure) => {
                 match &failure.error {
                     NonLinearSystemError::FaerMatrix { .. }
@@ -1218,6 +1201,7 @@ impl Node<SketchBlock> {
                                 warnings: failure.warnings,
                                 unsatisfied: Default::default(),
                                 priority_solved: Default::default(),
+                                variables_in_conflicts: Default::default(),
                             },
                             None,
                         )
@@ -1283,30 +1267,6 @@ impl Node<SketchBlock> {
 
         // Create scene objects after unknowns are solved.
         let scene_objects = create_segment_scene_objects(&solved_segments, range, exec_state)?;
-
-        // Log all point IDs and their freedom status when freedom analysis ran
-        #[cfg(target_arch = "wasm32")]
-        if exec_state.mod_local.freedom_analysis {
-            use web_sys::console;
-            let mut point_freedoms = Vec::new();
-            for obj in &scene_objects {
-                if let ObjectKind::Segment {
-                    segment: crate::front::Segment::Point(point),
-                } = &obj.kind
-                {
-                    point_freedoms.push((obj.id, point.freedom));
-                }
-            }
-            if !point_freedoms.is_empty() {
-                console::log_1(
-                    &format!(
-                        "[FREEDOM] Point freedom status (point_id -> freedom): {:?}",
-                        point_freedoms
-                    )
-                    .into(),
-                );
-            }
-        }
 
         #[cfg(not(feature = "artifact-graph"))]
         drop(scene_objects);

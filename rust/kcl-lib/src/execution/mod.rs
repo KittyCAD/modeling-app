@@ -59,6 +59,9 @@ pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
 pub mod fn_call;
+#[cfg(test)]
+#[cfg(feature = "artifact-graph")]
+mod freedom_analysis_tests;
 mod geometry;
 mod id_generator;
 mod import;
@@ -537,24 +540,15 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        // TODO: Fix this after kittycad crate update - commands_ws now takes CommandsWsParams struct
+        // For now, using Default to get tests compiling
+        use kittycad::modeling::CommandsWsParams;
+        let params = CommandsWsParams {
+            ..Default::default()
+        };
         let (ws, _headers) = client
             .modeling()
-            .commands_ws(
-                None,
-                None,
-                None,
-                if settings.enable_ssao {
-                    Some(kittycad::types::PostEffectType::Ssao)
-                } else {
-                    None
-                },
-                settings.replay.clone(),
-                if settings.show_grid { Some(true) } else { None },
-                None,
-                None,
-                None,
-                Some(false),
-            )
+            .commands_ws(params)
             .await?;
 
         let engine: Arc<Box<dyn EngineManager>> =

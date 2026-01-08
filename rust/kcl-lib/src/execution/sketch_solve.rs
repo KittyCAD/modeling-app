@@ -286,7 +286,7 @@ fn substitute_sketch_var_in_unsolved_expr(
                     source_ranges.to_vec(),
                 )));
             };
-            let freedom = if solve_outcome.unsatisfied.contains(&var_id.0) {
+            let freedom = if solve_outcome.variables_in_conflicts.contains(&var_id.0) {
                 Some(Freedom::Conflict)
             } else if let Some(analysis) = analysis {
                 let solver_var_id = var_id.to_constraint_id(source_ranges.first().copied().unwrap_or_default())?;
@@ -318,16 +318,102 @@ pub(crate) struct Solved {
     /// 0 is the highest priority. Larger numbers are lower priority.
     #[expect(dead_code, reason = "ezpz provides this info, but we aren't using it yet")]
     pub(crate) priority_solved: u32,
+    /// Variables involved in unsatisfied constraints (for conflict detection)
+    pub(crate) variables_in_conflicts: AHashSet<usize>,
 }
 
-impl From<kcl_ezpz::SolveOutcome> for Solved {
-    fn from(value: kcl_ezpz::SolveOutcome) -> Self {
+impl Solved {
+    /// Create a Solved from a kcl_ezpz::SolveOutcome, building the set of variables
+    /// involved in unsatisfied constraints by examining the original constraints.
+    pub(crate) fn from_ezpz_outcome(
+        value: kcl_ezpz::SolveOutcome,
+        constraints: &[kcl_ezpz::Constraint],
+    ) -> Self {
+        let unsatisfied = value.unsatisfied().to_owned();
+        
+        // Build a set of variables involved in unsatisfied constraints
+        let mut variables_in_conflicts = AHashSet::new();
+        for &constraint_idx in &unsatisfied {
+            if let Some(constraint) = constraints.get(constraint_idx) {
+                extract_variable_ids_from_constraint(constraint, &mut variables_in_conflicts);
+            }
+        }
+        
         Self {
-            unsatisfied: value.unsatisfied().to_owned(),
+            unsatisfied,
             final_values: value.final_values().to_owned(),
             iterations: value.iterations(),
             warnings: value.warnings().to_owned(),
             priority_solved: value.priority_solved(),
+            variables_in_conflicts,
+        }
+    }
+}
+
+/// Extract variable IDs from a constraint and add them to the set.
+/// This is a helper function to find which variables are involved in a constraint.
+fn extract_variable_ids_from_constraint(
+    constraint: &kcl_ezpz::Constraint,
+    variable_set: &mut AHashSet<usize>,
+) {
+    match constraint {
+        kcl_ezpz::Constraint::Fixed(id, _) => {
+            variable_set.insert(*id as usize);
+        }
+        kcl_ezpz::Constraint::Distance(pt0, pt1, _) => {
+            extract_ids_from_point(pt0, variable_set);
+            extract_ids_from_point(pt1, variable_set);
+        }
+        kcl_ezpz::Constraint::Horizontal(line) | kcl_ezpz::Constraint::Vertical(line) => {
+            extract_ids_from_line(line, variable_set);
+        }
+        kcl_ezpz::Constraint::PointsCoincident(pt0, pt1) => {
+            extract_ids_from_point(pt0, variable_set);
+            extract_ids_from_point(pt1, variable_set);
+        }
+        _ => {
+            // For other constraint types, we'll add support as needed
+            // Using Debug output as a fallback for unknown constraint types
+            let constraint_str = format!("{:?}", constraint);
+            extract_ids_from_debug_string(&constraint_str, variable_set);
+        }
+    }
+}
+
+/// Extract variable IDs from a DatumPoint.
+/// DatumPoint has public fields x_id and y_id that we can access directly.
+fn extract_ids_from_point(
+    pt: &kcl_ezpz::datatypes::inputs::DatumPoint,
+    variable_set: &mut AHashSet<usize>,
+) {
+    variable_set.insert(pt.x_id as usize);
+    variable_set.insert(pt.y_id as usize);
+}
+
+/// Extract variable IDs from a DatumLineSegment.
+/// DatumLineSegment has public fields p0 and p1 (start and end points).
+fn extract_ids_from_line(
+    line: &kcl_ezpz::datatypes::inputs::DatumLineSegment,
+    variable_set: &mut AHashSet<usize>,
+) {
+    extract_ids_from_point(&line.p0, variable_set);
+    extract_ids_from_point(&line.p1, variable_set);
+}
+
+/// Extract numeric IDs from a debug string.
+/// This parses the string looking for numeric values that could be variable IDs.
+fn extract_ids_from_debug_string(s: &str, variable_set: &mut AHashSet<usize>) {
+    // Use a simple regex-like approach to find numeric values
+    // This is a heuristic - it will extract all numbers, which might include
+    // non-ID values, but it's better than missing IDs
+    for word in s.split_whitespace() {
+        // Remove common punctuation
+        let cleaned = word.trim_matches(|c: char| !c.is_ascii_digit());
+        if let Ok(id) = cleaned.parse::<usize>() {
+            // Only add reasonable IDs (assuming variable IDs are < 10000)
+            if id < 10000 {
+                variable_set.insert(id);
+            }
         }
     }
 }
