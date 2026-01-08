@@ -7,23 +7,16 @@ import {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { type Themes } from '@src/lib/theme'
 import { hasNumericValue } from '@src/lib/kclHelpers'
-import {
-  BufferGeometry,
-  ExtrudeGeometry,
-  Group,
-  Line,
-  LineBasicMaterial,
-  LineCurve3,
-  Mesh,
-  MeshBasicMaterial,
-  Vector3,
-} from 'three'
+import type { Mesh } from 'three'
+import { BufferGeometry, Group, Line, LineBasicMaterial, Vector3 } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import { Line2 } from 'three/examples/jsm/lines/Line2.js'
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 import {
-  createLineShape,
-  createArcGeometry,
-} from '@src/clientSideScene/segments'
-import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
+  SEGMENT_WIDTH_PX,
+  STRAIGHT_SEGMENT_BODY,
+} from '@src/clientSideScene/sceneConstants'
 import {
   KCL_DEFAULT_COLOR,
   packRgbToColor,
@@ -269,35 +262,19 @@ class LineSegment implements SketchEntityUtils {
    * Updates the line segment mesh color based on selection and hover state
    */
   updateLineColors(
-    mesh: Mesh,
+    mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
     isDraft?: boolean
   ): void {
-    const material = mesh.material
-    if (!(material instanceof MeshBasicMaterial)) {
-      return
-    }
-
-    if (isHovered) {
-      material.color.set(
-        packRgbToColor(SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7)))
-      )
-    } else if (isSelected) {
-      material.color.set(SKETCH_SELECTION_COLOR)
-    } else if (isDraft) {
-      // Draft segments are grey (0x888888)
-      material.color.set(0x888888)
-    } else {
-      material.color.set(KCL_DEFAULT_COLOR)
-    }
+    updateLineMaterial(mesh.material, { isSelected, isHovered, isDraft })
   }
 
   init = (args: CreateSegmentArgs) => {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, theme, id, scale } = args
+    const { input, id } = args
     if (
       !(
         hasNumericValue(input.start.x) &&
@@ -313,17 +290,13 @@ class LineSegment implements SketchEntityUtils {
     const endX = input.end.x.value
     const endY = input.end.y.value
     const segmentGroup = new Group()
-    const line = new LineCurve3(
-      new Vector3(startX / scale, startY / scale, 0),
-      new Vector3(endX / scale, endY / scale, 0)
-    )
-    const geometry = new ExtrudeGeometry(createLineShape(scale), {
-      steps: 2,
-      bevelEnabled: false,
-      extrudePath: line,
+    const geometry = new LineGeometry()
+    geometry.setPositions([startX, startY, 0, endX, endY, 0])
+    const material = new LineMaterial({
+      color: KCL_DEFAULT_COLOR,
+      linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
     })
-    const body = new MeshBasicMaterial({ color: KCL_DEFAULT_COLOR })
-    const mesh = new Mesh(geometry, body)
+    const mesh = new Line2(geometry, material)
 
     mesh.userData.type = STRAIGHT_SEGMENT_BODY
     mesh.name = STRAIGHT_SEGMENT_BODY
@@ -336,9 +309,9 @@ class LineSegment implements SketchEntityUtils {
 
     this.update({
       input: input,
-      theme: theme,
+      theme: args.theme,
       id: id,
-      scale: scale,
+      scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
       isDraft: args.isDraft,
@@ -350,7 +323,7 @@ class LineSegment implements SketchEntityUtils {
     if (args.input.type !== 'Line') {
       return new Error('Invalid input type for PointSegment')
     }
-    const { input, group, id, scale, selectedIds, isDraft } = args
+    const { input, group, id, selectedIds, isDraft } = args
     if (
       !(
         hasNumericValue(input.start.x) &&
@@ -361,26 +334,24 @@ class LineSegment implements SketchEntityUtils {
     ) {
       return new Error('Invalid position values for LineSegment')
     }
-    const shape = createLineShape(scale)
-
     const straightSegmentBody = group.children.find(
       (child) => child.userData.type === STRAIGHT_SEGMENT_BODY
     )
-    if (!(straightSegmentBody && straightSegmentBody instanceof Mesh)) {
+    if (!(straightSegmentBody instanceof Line2)) {
       console.error('No straight segment body found in group')
       return
     }
 
-    const line = new LineCurve3(
-      new Vector3(input.start.x.value, input.start.y.value, 0),
-      new Vector3(input.end.x.value, input.end.y.value, 0)
-    )
-    straightSegmentBody.geometry.dispose()
-    straightSegmentBody.geometry = new ExtrudeGeometry(shape, {
-      steps: 2,
-      bevelEnabled: false,
-      extrudePath: line,
-    })
+    const geometry = straightSegmentBody.geometry
+    geometry.setPositions([
+      input.start.x.value,
+      input.start.y.value,
+      0,
+      input.end.x.value,
+      input.end.y.value,
+      0,
+    ])
+    geometry.computeBoundingSphere()
 
     // Update mesh color based on selection
     const isSelected = selectedIds.includes(id)
@@ -466,28 +437,12 @@ class ArcSegment implements SketchEntityUtils {
    * Updates the arc segment mesh color based on selection and hover state
    */
   updateArcColors(
-    mesh: Mesh,
+    mesh: Line2,
     isSelected: boolean,
     isHovered: boolean,
     isDraft?: boolean
   ): void {
-    const material = mesh.material
-    if (!(material instanceof MeshBasicMaterial)) {
-      return
-    }
-
-    if (isHovered) {
-      material.color.set(
-        packRgbToColor(SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7)))
-      )
-    } else if (isSelected) {
-      material.color.set(SKETCH_SELECTION_COLOR)
-    } else if (isDraft) {
-      // Draft segments are grey (0x888888)
-      material.color.set(0x888888)
-    } else {
-      material.color.set(KCL_DEFAULT_COLOR)
-    }
+    updateLineMaterial(mesh.material, { isSelected, isHovered, isDraft })
   }
 
   /**
@@ -549,7 +504,7 @@ class ArcSegment implements SketchEntityUtils {
   }
 
   init = (args: CreateSegmentArgs) => {
-    const { input, theme, id, scale } = args
+    const { input, id } = args
     const arcData = this.extractArcData(input)
     if (arcData instanceof Error) {
       return arcData
@@ -557,26 +512,13 @@ class ArcSegment implements SketchEntityUtils {
 
     const { centerX, centerY, radius, startAngle, endAngle } = arcData
 
-    // Always draw arcs CCW from start to end.
-    // The solver also uses a CCW convention from start to end, so we keep
-    // the angles as-is and force ccw = true to match that behaviour.
-    const ccw = true
-
     const segmentGroup = new Group()
-    // Coordinates need to be divided by scale to match LineSegment pattern
-    // The geometry is created in local space, then scaled by the group
-    // Draft arcs should be grey but NOT dashed (different design direction from clientSideScene)
-    const geometry = createArcGeometry({
-      center: [centerX, centerY],
-      radius,
-      startAngle,
-      endAngle,
-      ccw,
-      isDashed: false,
-      scale,
+    const geometry = new LineGeometry()
+    const material = new LineMaterial({
+      color: KCL_DEFAULT_COLOR,
+      linewidth: SEGMENT_WIDTH_PX * window.devicePixelRatio,
     })
-    const body = new MeshBasicMaterial({ color: KCL_DEFAULT_COLOR })
-    const mesh = new Mesh(geometry, body)
+    const mesh = new Line2(geometry, material)
 
     mesh.userData.type = ARC_SEGMENT_BODY
     mesh.name = ARC_SEGMENT_BODY
@@ -589,9 +531,9 @@ class ArcSegment implements SketchEntityUtils {
 
     this.update({
       input: input,
-      theme: theme,
+      theme: args.theme,
       id: id,
-      scale: scale,
+      scale: args.scale,
       group: segmentGroup,
       selectedIds: [],
       isDraft: args.isDraft,
@@ -601,7 +543,7 @@ class ArcSegment implements SketchEntityUtils {
   }
 
   update(args: UpdateSegmentArgs) {
-    const { input, group, id, scale, selectedIds, isDraft } = args
+    const { input, group, id, selectedIds, isDraft } = args
     const arcData = this.extractArcData(input)
     if (arcData instanceof Error) {
       return arcData
@@ -609,33 +551,24 @@ class ArcSegment implements SketchEntityUtils {
 
     const { centerX, centerY, radius, startAngle, endAngle } = arcData
 
-    // Always draw arcs CCW from start to end to match the solver.
-    const ccw = true
-
     const arcSegmentBody = group.children.find(
       (child) => child.userData.type === ARC_SEGMENT_BODY
     )
-    if (!(arcSegmentBody && arcSegmentBody instanceof Mesh)) {
+    if (!(arcSegmentBody instanceof Line2)) {
       console.error('No arc segment body found in group')
       return
     }
 
-    // Match LineSegment.update pattern: use coordinates directly (not divided by scale)
-    // LineSegment.update uses input.start.x.value directly without dividing by scale
-    // The client-side scene also passes coordinates directly to createArcGeometry (not divided by scale)
-    // So we should use coordinates directly here too (not divided by scale)
-    // Draft arcs should be grey but NOT dashed (different design direction from clientSideScene)
-    const newGeometry = createArcGeometry({
-      center: [centerX, centerY],
-      radius: radius,
-      startAngle,
-      endAngle,
-      ccw,
-      isDashed: false,
-      scale,
-    })
-    arcSegmentBody.geometry.dispose()
-    arcSegmentBody.geometry = newGeometry
+    arcSegmentBody.geometry.setPositions(
+      arcPoints({
+        center: [centerX, centerY],
+        radius,
+        startAngle,
+        endAngle,
+        segments: 64,
+      })
+    )
+    arcSegmentBody.geometry.computeBoundingSphere()
 
     // Update mesh color based on selection
     const isSelected = selectedIds.includes(id)
@@ -643,6 +576,60 @@ class ArcSegment implements SketchEntityUtils {
     const isHovered = arcSegmentBody.userData.isHovered === true
     this.updateArcColors(arcSegmentBody, isSelected, isHovered, isDraft)
   }
+}
+
+function arcPoints({
+  center,
+  radius,
+  startAngle,
+  endAngle,
+  segments,
+}: {
+  center: [number, number]
+  radius: number
+  startAngle: number
+  endAngle: number
+  segments: number
+}): number[] {
+  let delta = endAngle - startAngle
+  while (delta > Math.PI) delta -= Math.PI * 2
+  while (delta < -Math.PI) delta += Math.PI * 2
+
+  const pts: number[] = []
+  for (let i = 0; i <= segments; i++) {
+    const t = i / segments
+    const a = startAngle + delta * t
+    pts.push(
+      center[0] + Math.cos(a) * radius,
+      center[1] + Math.sin(a) * radius,
+      0
+    )
+  }
+  return pts
+}
+
+function updateLineMaterial(
+  material: LineMaterial,
+  {
+    isSelected,
+    isHovered,
+    isDraft,
+  }: { isSelected: boolean; isHovered: boolean; isDraft?: boolean }
+) {
+  if (!material) return
+
+  if (isHovered) {
+    material.color.set(
+      packRgbToColor(SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7)))
+    )
+  } else if (isSelected) {
+    material.color.set(SKETCH_SELECTION_COLOR)
+  } else if (isDraft) {
+    material.color.set(0x888888)
+  } else {
+    material.color.set(KCL_DEFAULT_COLOR)
+  }
+  material.needsUpdate = true
 }
 
 /**
@@ -677,19 +664,27 @@ export function updateSegmentHover(
 
   // Dispatch based on segment body type
   if (mesh.userData.type === STRAIGHT_SEGMENT_BODY) {
-    segmentUtilsMap.LineSegment.updateLineColors(
-      mesh,
-      isSelected,
-      isHovered,
-      isDraft
-    )
+    if (mesh instanceof Line2) {
+      segmentUtilsMap.LineSegment.updateLineColors(
+        mesh,
+        isSelected,
+        isHovered,
+        isDraft
+      )
+    } else {
+      console.error('Straight segment body is not a Line2 anymore', mesh)
+    }
   } else if (mesh.userData.type === ARC_SEGMENT_BODY) {
-    segmentUtilsMap.ArcSegment.updateArcColors(
-      mesh,
-      isSelected,
-      isHovered,
-      isDraft
-    )
+    if (mesh instanceof Line2) {
+      segmentUtilsMap.ArcSegment.updateArcColors(
+        mesh,
+        isSelected,
+        isHovered,
+        isDraft
+      )
+    } else {
+      console.error('Straight segment body is not a Line2 anymore', mesh)
+    }
   }
 }
 
