@@ -16,6 +16,7 @@ loft(
   tolerance?: number(Length),
   tagStart?: TagDecl,
   tagEnd?: TagDecl,
+  bodyType?: string,
 ): Solid
 ```
 
@@ -32,6 +33,7 @@ The sketches need to be closed and on different planes that are parallel.
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the loft, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the loft. | No |
+| `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
 
 ### Returns
 
@@ -152,6 +154,48 @@ loft(
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft2.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Sketch a square on the XY plane
+squareSketch = startSketchOn(XY)
+  |> startProfile(at = [-100, 200])
+  |> line(end = [200, 0])
+  |> line(end = [0, -200])
+  |> line(end = [-200, 0])
+  |> close()
+
+// Start a second sketch, 200 units above the XY plane.
+circleSketch = startSketchOn(offsetPlane(XY, offset = 100))
+  |> circle(center = [0, 100], radius = 50)
+
+squareSketch002 = clone(squareSketch)
+  |> translate(z = 200)
+
+// Loft the square up and into the circle.
+loft(
+  [
+    squareSketch,
+    circleSketch,
+    squareSketch002
+  ],
+  bodyType = SURFACE,
+)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the loft function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-loft3_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-loft3.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
