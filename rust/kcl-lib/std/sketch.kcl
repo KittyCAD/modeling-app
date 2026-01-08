@@ -1291,6 +1291,26 @@ export fn sweep(
 ///     vDegree = 2,
 /// )
 /// ```
+///
+/// ```kcl
+/// // Sketch a square on the XY plane
+/// squareSketch = startSketchOn(XY)
+///   |> startProfile(at = [-100, 200])
+///   |> line(end = [200, 0])
+///   |> line(end = [0, -200])
+///   |> line(end = [-200, 0])
+///   |> close()
+/// 
+/// // Start a second sketch, 200 units above the XY plane.
+/// circleSketch = startSketchOn(offsetPlane(XY, offset = 100))
+///   |> circle(center = [0, 100], radius = 50)
+/// 
+/// squareSketch002 = clone(squareSketch)
+/// |> translate(z = 200)
+/// 
+/// // Loft the square up and into the circle.
+/// loft([squareSketch, circleSketch, squareSketch002], bodyType = SURFACE)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn loft(
   /// Which sketches to loft. Must include at least 2 sketches.
