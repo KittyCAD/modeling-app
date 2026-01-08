@@ -596,6 +596,43 @@ export fn ellipse(
 /// extrude(openProfile, length = 2, bodyType = SURFACE)
 /// ```
 /// ```kcl
+/// // Extrude a face from an extruded object
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [-5, 0])
+///   |> xLine(length=1)
+///   |> yLine(length = -1)
+///   |> line(end = [-1, -1], tag = $seg01)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+/// extrude001 = extrude(profile001, length = 5)
+///   |> appearance(color = "#ff0000")
+/// extrude(seg01, length = 2, method = MERGE, hideSeams=false) // if hideSeams=true, the seam still shows because the edges of the coplanar faces are not colinear
+/// 
+/// // Extrude a face from an extruded object to create a new object
+/// sketch002 = startSketchOn(XY)
+/// profile002 = startProfile(sketch002, at = [-1, 0])
+///   |> yLine(length = -1.0)
+///   |> xLine(length = 1.0, tag = $seg02)
+///   |> yLine(length = 1.0)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+/// extrude002 = extrude(profile002, length = 5)
+///   |> appearance(color = "#00ff00")
+/// extrude(seg02, length=2, method = NEW, hideSeams=false) // if hideSeams=true, the seam still shows because the resulting extrusion is a separate object
+/// 
+/// // Extrude a face from an extruded object and merge the result
+/// sketch003 = startSketchOn(XY)
+/// profile003 = startProfile(sketch003, at = [1, 0])
+///   |> yLine(length = -1.0)
+///   |> xLine(length = 1.0, tag = $seg03)
+///   |> yLine(length = 1.0)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+/// extrude003 = extrude(profile003, length = 5)
+///   |> appearance(color = "#0000ff")
+/// extrude(seg03, length=2, method = MERGE, hideSeams=true) 
+/// ```
+/// ```kcl
 /// // Surface extrude of a closed profile
 /// closedProfile = startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
