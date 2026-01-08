@@ -32,6 +32,15 @@ jobs:
       - uses: actions/checkout@v6
         with:
           token: ${{ steps.app-token.outputs.token }}
+      - name: Track setup
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:kcl
+          CI_STEP: setup
       - name: Use correct Rust toolchain
         shell: bash
         run: |
@@ -176,6 +185,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: nextest-archive
+      - name: Track start
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:kcl
+          CI_STEP: start
       - name: Run tests
         shell: bash
         run: |-
@@ -196,6 +214,16 @@ jobs:
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:kcl
+      - name: Track teardown
+        if: always()
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:kcl
+          CI_STEP: teardown
   run-internal-kcl-samples:
     name: cargo test (internal-kcl-samples)
     runs-on: namespace-profile-ubuntu-8-cores
@@ -227,6 +255,15 @@ jobs:
       - uses: taiki-e/install-action@nextest
       - name: Download internal KCL samples
         run: git clone --depth=1 https://x-access-token:${{ secrets.GH_PAT_KCL_SAMPLES_INTERNAL }}@github.com/KittyCAD/kcl-samples-internal public/kcl-samples/internal
+      - name: Track start
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:kcl
+          CI_STEP: start
       - name: Run tests
         shell: bash
         run: |-
@@ -249,6 +286,16 @@ jobs:
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:kcl
+      - name: Track teardown
+        if: always()
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:kcl
+          CI_STEP: teardown
   run-wasm-tests:
     name: Run wasm tests
     strategy:
