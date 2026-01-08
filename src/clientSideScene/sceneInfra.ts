@@ -1,5 +1,5 @@
 import * as TWEEN from '@tweenjs/tween.js'
-import type { Intersection, Object3D, Object3DEventMap } from 'three'
+import type { Intersection, Object3D } from 'three'
 import { Group } from 'three'
 import {
   AmbientLight,
@@ -52,7 +52,7 @@ interface intersectionData {
 }
 
 export interface OnMouseEnterLeaveArgs {
-  selected: Object3D<Object3DEventMap>
+  selected: Object3D
   mouseEvent: MouseEvent
   /** The intersection of the mouse with the THREEjs raycast plane */
   intersectionPoint?: Partial<intersectionData>
@@ -62,29 +62,29 @@ export interface OnMouseEnterLeaveArgs {
 
 interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
   intersectionPoint: intersectionData
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
+  intersects: Intersection[]
 }
 
 export interface OnClickCallbackArgs {
   mouseEvent: MouseEvent
   intersectionPoint?: intersectionData
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
-  selected?: Object3D<Object3DEventMap>
+  intersects: Intersection[]
+  selected?: Object3D
   wasmInstance: ModuleType
 }
 
 export interface OnMoveCallbackArgs {
   mouseEvent: MouseEvent
   intersectionPoint: intersectionData
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
-  selected?: Object3D<Object3DEventMap>
+  intersects: Intersection[]
+  selected?: Object3D
 }
 
 export interface OnAreaSelectCallbackArgs {
   mouseEvent: MouseEvent
   startPoint: intersectionData
   currentPoint: intersectionData
-  intersects: Intersection<Object3D<Object3DEventMap>>[]
+  intersects: Intersection[]
 }
 
 // This singleton class is responsible for all of the under the hood setup for the client side scene.
@@ -296,14 +296,14 @@ export class SceneInfra {
     return null
   }
 
-  hoveredObject: null | Object3D<Object3DEventMap> = null
+  hoveredObject: null | Object3D = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
   // Given in NDC: [-1, 1] range, where (-1, -1) corresponds to the bottom left of the canvas, (0, 0) is the center.
   currentMouseVector = new Vector2()
   selected: {
     mouseDownVector: Vector2
-    object: Object3D<Object3DEventMap>
+    object: Object3D
     hasBeenDragged: boolean
   } | null = null
   areaSelect: {
@@ -450,7 +450,7 @@ export class SceneInfra {
   getPlaneIntersectPoint = (): {
     twoD?: Vector2
     threeD?: Vector3
-    intersection: Intersection<Object3D<Object3DEventMap>>
+    intersection: Intersection
   } | null => {
     // Get the orientations from the camera and mouse position
     this.planeRaycaster.setFromCamera(
@@ -697,19 +697,11 @@ export class SceneInfra {
     }
   }
 
-  raycastRing = (
-    pixelRadius = 8,
-    rayRingCount = 32
-  ): Intersection<Object3D<Object3DEventMap>>[] => {
+  raycastRing = (pixelRadius = 8, rayRingCount = 32): Intersection[] => {
     const mouseDownVector = this.currentMouseVector.clone()
-    const intersectionsMap = new Map<
-      Object3D,
-      Intersection<Object3D<Object3DEventMap>>
-    >()
+    const intersectionsMap = new Map<Object3D, Intersection>()
 
-    const updateIntersectionsMap = (
-      intersections: Intersection<Object3D<Object3DEventMap>>[]
-    ) => {
+    const updateIntersectionsMap = (intersections: Intersection[]) => {
       intersections.forEach((intersection) => {
         const existingIntersection = intersectionsMap.get(intersection.object)
         if (
