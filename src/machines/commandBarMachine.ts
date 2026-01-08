@@ -186,7 +186,7 @@ export const commandBarMachine = setup({
               ? argConfig.required(context)
               : argConfig.required
 
-          if (argIsRequired) {
+          if (argIsRequired || argConfig.prepopulate) {
             lastRequiredArg = {
               ...argConfig,
               name: argName,
@@ -194,7 +194,9 @@ export const commandBarMachine = setup({
           }
 
           const mustNotSkipArg =
-            (argIsRequired || argConfig.skip === false) &&
+            (argIsRequired ||
+              argConfig.prepopulate ||
+              argConfig.skip === false) &&
             (!context.argumentsToSubmit.hasOwnProperty(argName) ||
               context.argumentsToSubmit[argName] === undefined ||
               (rejectedArg &&
@@ -295,7 +297,7 @@ export const commandBarMachine = setup({
             event.data.argDefaultValues &&
             argName in event.data.argDefaultValues
               ? event.data.argDefaultValues[argName]
-              : arg.skip && 'defaultValue' in arg
+              : (arg.skip || arg.prepopulate) && 'defaultValue' in arg
                 ? arg.defaultValue
                 : undefined
         }

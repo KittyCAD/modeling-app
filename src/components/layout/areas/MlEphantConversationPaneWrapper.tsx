@@ -5,9 +5,11 @@ import { ActionIcon } from '@src/components/ActionIcon'
 // TODO: Don't use CSS module for this? More generic module?
 import styles from './KclEditorMenu.module.css'
 import {
+  billingActor,
   kclManager,
   systemIOActor,
   useSettings,
+  useToken,
   useUser,
 } from '@src/lib/singletons'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
@@ -20,17 +22,26 @@ import {
   MlEphantConversationToMarkdown,
   MlEphantManagerReactContext,
 } from '@src/machines/mlEphantManagerMachine'
+import { BillingTransition } from '@src/machines/billingMachine'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   const settings = useSettings()
   const user = useUser()
+  const token = useToken()
   const {
     context: contextModeling,
     send: sendModeling,
     theProject,
   } = useModelingContext()
-  const { file: loaderFile } = useLoaderData() as IndexLoaderData
+  const { file: loaderFile } = useLoaderData<IndexLoaderData>()
   const mlEphantManagerActor = MlEphantManagerReactContext.useActorRef()
+
+  const sendBillingUpdate = () => {
+    billingActor.send({
+      type: BillingTransition.Update,
+      apiToken: token,
+    })
+  }
 
   return (
     <LayoutPanel
@@ -52,6 +63,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
           kclManager,
           contextModeling,
           sendModeling,
+          sendBillingUpdate,
           theProject: theProject.current,
           loaderFile,
           settings,

@@ -855,6 +855,15 @@ export fn extrude(
 ///     |> circle(center = [-10, 10], radius = 4)
 ///     |> revolve(angle = 90deg, axis = revolveAxis, bidirectionalAngle = 50)
 /// ```
+/// ```kcl
+/// halfTorus = startSketchOn(XY)
+///     |> circle(center = [15, 0], radius = 5)
+///     |> revolve(axis = Y, bodyType = SURFACE, angle = 180deg)
+/// closedTorus = startSketchOn(XY)
+///     |> circle(center = [15, 0], radius = 5)
+///     |> revolve(axis = Y, bodyType = SURFACE)
+///     |> translate(z = 30)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn revolve(
   /// The sketch or set of sketches that should be revolved
@@ -1282,6 +1291,26 @@ export fn sweep(
 ///     vDegree = 2,
 /// )
 /// ```
+///
+/// ```kcl
+/// // Sketch a square on the XY plane
+/// squareSketch = startSketchOn(XY)
+///   |> startProfile(at = [-100, 200])
+///   |> line(end = [200, 0])
+///   |> line(end = [0, -200])
+///   |> line(end = [-200, 0])
+///   |> close()
+/// 
+/// // Start a second sketch, 200 units above the XY plane.
+/// circleSketch = startSketchOn(offsetPlane(XY, offset = 100))
+///   |> circle(center = [0, 100], radius = 50)
+/// 
+/// squareSketch002 = clone(squareSketch)
+/// |> translate(z = 200)
+/// 
+/// // Loft the square up and into the circle.
+/// loft([squareSketch, circleSketch, squareSketch002], bodyType = SURFACE)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn loft(
   /// Which sketches to loft. Must include at least 2 sketches.
@@ -1298,6 +1327,9 @@ export fn loft(
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the loft.
   tagEnd?: TagDecl,
+  /// What type of body to produce (solid or surface).
+  /// Defaults to "solid".
+  bodyType?: string = "solid",
 ): Solid {}
 
 /// Repeat a 2-dimensional sketch along some dimension, with a dynamic amount

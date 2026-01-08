@@ -301,6 +301,26 @@ export const sketchSolveMachine = setup({
         }
       },
     },
+    Perpendicular: {
+      actions: async ({ self, context }) => {
+        // TODO this is not how coincident should operate long term, as it should be an equipable tool
+        const result = await context.rustContext.addConstraint(
+          0,
+          context.sketchId,
+          {
+            type: 'Perpendicular',
+            lines: context.selectedIds,
+          },
+          await jsAppSettings(context.rustContext.settingsActor)
+        )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
     LinesEqualLength: {
       actions: async ({ self, context }) => {
         // TODO this is not how LinesEqualLength should operate long term, as it should be an equipable tool
