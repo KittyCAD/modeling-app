@@ -55,7 +55,8 @@ test.describe('Zookeeper tests', { tag: '@desktop' }, () => {
 
       await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      expect(await toolbar.getFeatureTreeOperation('cube', 0)).toBeVisible()
+      const extrude = await toolbar.getFeatureTreeOperation('cube', 0)
+      await expect(extrude).toBeVisible()
     })
   }
 
