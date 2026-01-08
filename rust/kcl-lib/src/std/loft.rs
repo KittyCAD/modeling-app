@@ -65,7 +65,6 @@ async fn inner_loft(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
-    
     let body_type = body_type.unwrap_or_default();
     if matches!(body_type, BodyType::Solid) && sketches.iter().any(|sk| matches!(sk.is_closed, ProfileClosed::No)) {
         return Err(KclError::new_semantic(KclErrorDetails::new(
