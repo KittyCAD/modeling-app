@@ -10,7 +10,7 @@ import * from "parameters.kcl"
 customPlane = {
   origin = {
     x = lugSpacing / 2,
-    y = (-hubSpacing - tBell - 0.85) * 25.4,
+    y = (-tBell - 0.85) * 25.4,
     z = 0
   },
   xAxis = { x = 1, y = 0, z = 0 },
@@ -22,9 +22,9 @@ lugNut = startSketchOn(customPlane)
   |> yLine(length = lugLength)
   |> tangentialArc(angle = 90deg, radius = 3mm)
   |> xLine(endAbsolute = 0, tag = $c1)
-  |> yLine(endAbsolute = lugLength*0.6)
+  |> yLine(endAbsolute = lugLength * 0.6)
   |> xLine(length = segLen(c1))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> revolve(axis = Y)
-|> appearance(color = "#ededed", metalness = 70, roughness = 30)
+  |> appearance(color = "#ededed", metalness = 70, roughness = 30)

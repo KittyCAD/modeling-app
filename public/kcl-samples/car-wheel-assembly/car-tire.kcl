@@ -25,7 +25,7 @@ tireSketch = startSketchOn(XY)
   |> mirror2d(axis = X)
   |> close()
 
-  // Revolve the sketch to create the tire
-  carTire = revolve(tireSketch, axis = Y)
+// Revolve the sketch to create the tire
+carTire = revolve(tireSketch, axis = Y)
   |> appearance(color = "#0a0a0a", roughness = 20)
-|> translate(y = -hubSpacing - tBell + offset)
+  |> translate(y = -tBell + offset)

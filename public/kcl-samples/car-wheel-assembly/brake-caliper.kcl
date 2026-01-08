@@ -8,7 +8,7 @@
 import * from "parameters.kcl"
 
 // Define a start plane though the center of the brake rotor discs
-caliperPlane = offsetPlane(XZ, offset = hubSpacing + tBell - hBellAboveDiscFace - tDiscHalf - (tVent / 2))
+caliperPlane = offsetPlane(XZ, offset = tBell - hBellAboveDiscFace - tDiscHalf - (tVent / 2))
 
 // Create a cutout of the brake rotor shape
 sketch003 = startSketchOn(caliperPlane)

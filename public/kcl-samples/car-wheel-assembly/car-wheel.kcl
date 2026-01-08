@@ -11,7 +11,7 @@ import * from "parameters.kcl"
 lugMounts = startSketchOn(XY)
   |> startProfile(at = [lugSpacing / 2, 0])
   |> xLine(length = lugThreadDiameter / 2)
-  |> yLine(length = -hubSpacing - tBell - 0.85)
+  |> yLine(length = -tBell - 0.85)
   |> xLine(endAbsolute = profileStartX() + lugDiameter / 2)
   |> yLine(length = -lugLength * 2)
   |> xLine(endAbsolute = profileStartX())
@@ -21,7 +21,7 @@ lugMounts = startSketchOn(XY)
 
 // Draw a profile for the center of the wheel, and revolve
 wheelCenter = startSketchOn(XY)
-  |> startProfile(at = [hubBore / 2, -hubSpacing - tBell])
+  |> startProfile(at = [rotorBore / 2, -tBell])
   |> yLine(length = -0.75)
   |> xLine(endAbsolute = 0)
   |> yLine(length = -0.5)
@@ -109,4 +109,9 @@ spokes = intersect([
      ])
   |> patternCircular3d(instances = spokeCount, axis = Y, center = [0, 0, 0])
 
-wheel = appearance([wheelCenter, spokes, rim], color = "#ededed", metalness = 70, roughness = 30)
+wheel = appearance(
+  [wheelCenter, spokes, rim],
+  color = "#ededed",
+  metalness = 70,
+  roughness = 30,
+)

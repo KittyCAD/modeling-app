@@ -9,9 +9,9 @@ import * from "parameters.kcl"
 
 // Sketch a profile for the center bell, then rotate
 sketchDiscBell = startSketchOn(-XY)
-  |> startProfile(at = [rotorBore / 2, -hubSpacing])
+  |> startProfile(at = [rotorBore / 2, 0])
   |> yLine(length = -tBell)
-  |> xLine(endAbsolute = (lugSpacing + hubBore) / 2)
+  |> xLine(endAbsolute = (lugSpacing + rotorBore) / 2)
   |> angledLine(angle = rDraftAngle, lengthY = hBellAboveDiscFace, tag = $seg08)
   |> tangentialArc(angle = -90 - rDraftAngle, diameter = wUndercut, tag = $seg06)
   |> angledLine(angle = tangentToEnd(seg06) + turns::HALF_TURN, length = tDiscHalf, tag = $seg07)

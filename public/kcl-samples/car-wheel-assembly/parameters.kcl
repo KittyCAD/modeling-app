@@ -43,7 +43,3 @@ export aspectRatio = 30
 export overallDiameter = rimDiameter + tireWidth * aspectRatio * 0.02
 export sidewallThickness = 6mm
 export treadDepth = 3mm
-
-// Hub
-export hubSpacing = 3in
-export hubBore = 2.5in
