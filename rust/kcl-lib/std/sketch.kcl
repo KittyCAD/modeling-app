@@ -1298,6 +1298,9 @@ export fn loft(
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the loft.
   tagEnd?: TagDecl,
+  /// What type of body to produce (solid or surface).
+  /// Defaults to "solid".
+  bodyType?: string = "solid",
 ): Solid {}
 
 /// Repeat a 2-dimensional sketch along some dimension, with a dynamic amount
