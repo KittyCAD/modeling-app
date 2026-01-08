@@ -14,7 +14,7 @@ export function MarkdownText({ text, className }: MarkdownTextProps) {
   useEffect(() => {
     if (markdownRef.current === null) return
     attachSafeLinkHandler(markdownRef.current)
-  })
+  }, [])
 
   return (
     <span
