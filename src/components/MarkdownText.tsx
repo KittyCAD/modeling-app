@@ -1,7 +1,10 @@
 import { useEffect, useRef } from 'react'
-import { MARKED_OPTIONS } from '@src/lib/constants'
 import { Marked } from '@ts-stack/markdown'
-import { attachSafeLinkHandler, SafeRenderer } from '@src/lib/markdown'
+import {
+  attachSafeLinkHandler,
+  MARKED_OPTIONS,
+  SafeRenderer,
+} from '@src/lib/markdown'
 
 export type MarkdownTextProps = {
   text: string

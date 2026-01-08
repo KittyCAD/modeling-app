@@ -1,7 +1,15 @@
 import type { MarkedOptions } from '@ts-stack/markdown'
-import { Renderer, unescape } from '@ts-stack/markdown'
+import { Renderer, escape, unescape } from '@ts-stack/markdown'
 
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+
+export const MARKED_OPTIONS: MarkedOptions = {
+  gfm: true,
+  breaks: true,
+  sanitize: true,
+  unescape,
+  escape,
+}
 
 /**
  * Main goal of this custom renderer is to prevent links from changing the current location
