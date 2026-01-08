@@ -18,7 +18,10 @@ if (window.electron) {
 // This is purely for Playwright to use the fs abstraction through
 // page.evaluate.
 if (typeof window !== 'undefined' && isPlaywright()) {
-  moduleFsViaWindow({ type: window.electron ? StorageName.ElectronFS : StorageName.OPFS, options: {} })
+  moduleFsViaWindow({
+    type: window.electron ? StorageName.ElectronFS : StorageName.OPFS,
+    options: {},
+  })
 }
 
 import { AppStreamProvider } from '@src/AppState'
@@ -67,7 +70,6 @@ kclManager.wasmInstancePromise
         ],
       },
     })
-
   })
   .catch(reportRejection)
 

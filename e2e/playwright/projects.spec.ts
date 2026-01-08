@@ -102,7 +102,17 @@ test(
 test(
   'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
   { tag: ['@web', '@desktop'] },
-  async ({ homePage, toolbar, scene, cmdBar, context, page, editor, fs, folderSetupFn }) => {
+  async ({
+    homePage,
+    toolbar,
+    scene,
+    cmdBar,
+    context,
+    page,
+    editor,
+    fs,
+    folderSetupFn,
+  }) => {
     await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fs.mkdir(bracketDir, { recursive: true })

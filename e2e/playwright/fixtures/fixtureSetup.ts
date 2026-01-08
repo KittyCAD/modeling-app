@@ -421,7 +421,11 @@ const fixturesBasedOnProcessEnvPlatform = {
   fs: async ({ page }: { page: Page }, use: FnUse) => {
     await use(FsFixture(page))
   },
-  folderSetupFn: async({ page, fs, tronApp }: { fs: FsFixture }, use: FnUse, testInfo) => {
+  folderSetupFn: async (
+    { page, fs, tronApp }: { fs: FsFixture },
+    use: FnUse,
+    testInfo
+  ) => {
     // Different behavior based on if electron on web.
     // This is necessary because folder setup needs to run at a particular point.
     // This forces the page to reload after fs operations.

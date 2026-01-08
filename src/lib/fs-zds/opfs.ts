@@ -79,7 +79,7 @@ const scan = async (
   let cwd = '/'
 
   console.log('looping entries')
-  while(handles.length > 0) {
+  while (handles.length > 0) {
     const current = handles.pop()
     await onVisit?.(cwd, current)
     visited.push(current)
@@ -91,7 +91,6 @@ const scan = async (
 
   return visited
 }
-
 
 const stat = async (path: string): Promise<IStat> => {
   const handle = await walk(path)
@@ -215,7 +214,7 @@ const rm = async (targetPath: string, options?: { recursive: boolean }) => {
   try {
     await handle.getFileHandle(baseName)
     isFile = true
-  } catch(e: unknown) {
+  } catch (e: unknown) {
     console.log(e)
   }
   return handle.removeEntry(baseName, {
@@ -228,7 +227,7 @@ const writeFile = async (
   data: Uint8Array<ArrayBuffer>,
   options?: any
 ) => {
-  console.log("Writefile")
+  console.log('Writefile')
   const parts = targetPath.split(path.sep)
   const parent = parts.slice(0, -1).join(path.sep)
   const handle = await walk(parent)
@@ -253,7 +252,10 @@ const access = async (_path: string, _bitflags: number): Promise<undefined> => {
 }
 
 // Kind of a misnomer coming from NodeJS. This should be called `move`.
-const rename = async (sourcePath: string, targetPath: string): Promise<undefined> => {
+const rename = async (
+  sourcePath: string,
+  targetPath: string
+): Promise<undefined> => {
   const handle = await walk(sourcePath)
   if (handle === undefined) return Promise.reject('ENOENT')
 
@@ -275,7 +277,10 @@ const rename = async (sourcePath: string, targetPath: string): Promise<undefined
 // OPFS takes a very minimal approach to its API surface via primitives.
 // cp is not a primitive, since you can implement `cp` with `read` and `write`.
 // https://chromestatus.com/feature/5640802622504960
-const cp = async (sourcePath: string, targetPath: string): Promise<undefined> => {
+const cp = async (
+  sourcePath: string,
+  targetPath: string
+): Promise<undefined> => {
   const handleSource = await walk(sourcePath)
   if (handleSource === undefined) return Promise.reject('ENOENT')
 
