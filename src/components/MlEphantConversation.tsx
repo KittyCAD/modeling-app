@@ -288,36 +288,24 @@ const StarterCard = ({ text }: { text: string }) => {
 
 export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
-  const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
   const onProcess = (request: string, mode: MlCopilotMode) => {
-    setAutoScroll(true)
+    // Manual scroll to the bottom here, case 2a
+    console.log('onProcess: Starting setTimeout')
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        if (refScroll.current) {
+          refScroll.current.scrollTo({
+            top: refScroll.current.scrollHeight,
+            behavior: 'smooth',
+          })
+        }
+      })
+    }, 500)
+
+    // Send the process event upwards
     props.onProcess(request, mode)
   }
-
-  // Scroll to bottom when:
-  // 1. A new message is added (exchanges length changes)
-  // 2. A prompt completes (hasPromptCompleted becomes true)
-  useEffect(() => {
-    const exchangesLength = props.conversation?.exchanges.length ?? 0
-
-    if (autoScroll === false) return
-    if (refScroll.current === null) return
-    if (exchangesLength === 0 && !props.hasPromptCompleted) return
-
-    requestAnimationFrame(() => {
-      if (refScroll.current) {
-        refScroll.current.scrollTo({
-          top: refScroll.current.scrollHeight,
-          behavior: 'smooth',
-        })
-      }
-    })
-  }, [
-    props.conversation?.exchanges.length,
-    props.hasPromptCompleted,
-    autoScroll,
-  ])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
     (exchange: Exchange, exchangeIndex: number, list) => {
@@ -333,16 +321,6 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
       )
     }
   )
-
-  const hasCards = exchangeCards !== undefined && exchangeCards.length > 0
-
-  useEffect(() => {
-    if (refScroll.current === null) return
-    refScroll.current.scrollTo({
-      top: refScroll.current.scrollHeight,
-      behavior: 'smooth',
-    })
-  }, [hasCards])
 
   return (
     <div className="relative">

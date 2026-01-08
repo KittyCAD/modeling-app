@@ -587,10 +587,18 @@ export const Thinking = (props: {
     }
 
     setTimeout(() => {
-      c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
+      c[c.length - 1].scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'nearest',
+      })
       setTimeout(() => {
         if (refViewFull.current === null) return
-        refViewFull.current.scrollIntoView({ behavior: 'smooth' })
+        refViewFull.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'nearest',
+        })
       })
     })
   }, [reasoningThoughts.length, props.onlyShowImmediateThought])
