@@ -154,6 +154,7 @@ pub mod pretty {
 }
 
 pub mod front {
+    pub(crate) use crate::frontend::modify::{find_defined_names, next_free_name_using_max};
     pub use crate::frontend::{
         FrontendState,
         api::{

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -12,6 +12,7 @@ import { trap } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 
 export function AstExplorer() {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const { context } = useModelingContext()
   const pathToNode = getNodePathFromSourceRange(
     // TODO maybe need to have callback to make sure it stays in sync
@@ -20,7 +21,7 @@ export function AstExplorer() {
   )
   const [filterKeys, setFilterKeys] = useState<string[]>(['start', 'end'])
 
-  const _node = getNodeFromPath(kclManager.ast, pathToNode)
+  const _node = getNodeFromPath(kclManager.ast, pathToNode, wasmInstance)
   if (trap(_node)) return
   const node = _node
 

@@ -38,7 +38,7 @@ import type {
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferExecution } from '@src/lib/utils'
+import { deferredCallback } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { EngineDebugger } from '@src/lib/debugger'
@@ -99,7 +99,7 @@ import {
   themeCompartment,
   appSettingsThemeEffect,
   settingsUpdateAnnotation,
-} from '@src/lib/codeEditor'
+} from '@src/editor/plugins/theme'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import {
   createEmptyAst,
@@ -276,6 +276,7 @@ export class KclManager extends EventTarget {
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+  public mlEphantManagerMachineBulkManipulatingFileSystem = false
   // The last code written by the app, used to compare against external changes to the current file
   public lastWrite: {
     code: string // last code written by ZDS
@@ -338,7 +339,7 @@ export class KclManager extends EventTarget {
   // so we don't waste time getting it multiple times
   get kclVersion() {
     if (this._kclVersion === undefined) {
-      this._kclVersion = getKclVersion()
+      this._kclVersion = getKclVersion(this.wasmInstance)
       setKclVersion(this.kclVersion)
     }
     return this._kclVersion
@@ -483,7 +484,7 @@ export class KclManager extends EventTarget {
 
     this._wasmInstancePromise
       .then(async (wasmInstance) => {
-        this._kclVersion = getKclVersion()
+        this._kclVersion = getKclVersion(wasmInstance)
         if (typeof wasmInstance === 'string') {
           this.wasmInitFailed = true
         } else {
@@ -583,13 +584,13 @@ export class KclManager extends EventTarget {
       // TODO: we wanna remove this logic from xstate, it is racey
       // This defer is bullshit but playwright wants it
       // It was like this in engineConnection.ts already
-      deferExecution((_a?: null) => {
+      deferredCallback((_a?: null) => {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph populated',
         })
       }, 200)(null)
     } else {
-      deferExecution((_a?: null) => {
+      deferredCallback((_a?: null) => {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph emptied',
         })
@@ -597,7 +598,7 @@ export class KclManager extends EventTarget {
     }
 
     // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
-    deferExecution((_a?: null) => {
+    deferredCallback((_a?: null) => {
       if (this.defaultPlanes) {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph initialized',
@@ -697,6 +698,7 @@ export class KclManager extends EventTarget {
           engineCommandManager: this.engineCommandManager,
           kclManager: this,
           sceneEntitiesManager: this._sceneEntitiesManager,
+          wasmInstance: await this.wasmInstancePromise,
         })
       }
     }
@@ -845,7 +847,7 @@ export class KclManager extends EventTarget {
       this.clearAst()
       return
     }
-    const code = recast(ast)
+    const code = recast(ast, await this.wasmInstancePromise)
     if (err(code)) {
       console.error(code)
       return
@@ -870,13 +872,12 @@ export class KclManager extends EventTarget {
     execute: boolean,
     optionalParams?: {
       focusPath?: Array<PathToNode>
-    },
-    wasmInstance?: ModuleType
+    }
   ): Promise<{
     newAst: Node<Program>
     selections?: Selections
   }> {
-    const newCode = recast(ast, wasmInstance)
+    const newCode = recast(ast, await this._wasmInstancePromise)
     if (err(newCode)) return Promise.reject(newCode)
 
     const astWithUpdatedSource = await this.safeParse(newCode)
@@ -892,7 +893,8 @@ export class KclManager extends EventTarget {
       for (const path of optionalParams.focusPath) {
         const getNodeFromPathResult = getNodeFromPath<any>(
           astWithUpdatedSource,
-          path
+          path,
+          await this.wasmInstancePromise
         )
         if (err(getNodeFromPathResult))
           return Promise.reject(getNodeFromPathResult)
@@ -1002,6 +1004,7 @@ export class KclManager extends EventTarget {
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilterToDefault(
     sceneEntitiesManager: SceneEntities,
+    wasmInstance: ModuleType,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
@@ -1011,12 +1014,14 @@ export class KclManager extends EventTarget {
       sceneEntitiesManager,
       selectionsToRestore,
       handleSelectionBatchFn: handleSelectionBatch,
+      wasmInstance,
     })
   }
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilter(
     filter: EntityType[],
     sceneEntitiesManager: SceneEntities,
+    wasmInstance: ModuleType,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
@@ -1027,6 +1032,7 @@ export class KclManager extends EventTarget {
       sceneEntitiesManager,
       selectionsToRestore,
       handleSelectionBatchFn: handleSelectionBatch,
+      wasmInstance,
     })
   }
 
@@ -1387,7 +1393,8 @@ export class KclManager extends EventTarget {
   handleOnViewUpdate(
     viewUpdate: ViewUpdate,
     processCodeMirrorRanges: typeof processCodeMirrorRangesFn,
-    sceneEntitiesManager: SceneEntities
+    sceneEntitiesManager: SceneEntities,
+    wasmInstance: ModuleType
   ): void {
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
@@ -1421,6 +1428,7 @@ export class KclManager extends EventTarget {
       systemDeps: {
         engineCommandManager: this.engineCommandManager,
         sceneEntitiesManager,
+        wasmInstance,
       },
     })
     if (!eventInfo) {
@@ -1478,16 +1486,49 @@ export class KclManager extends EventTarget {
    * This is invoked when a segment is being dragged on the canvas, among other things.
    */
   updateCodeEditor(code: string, clearHistory?: boolean): void {
+    // If the code hasn't changed, skip the update to preserve cursor position
+    // However, if clearHistory is true, we still need to clear the history
+    const currentCode = this.editorState.doc.toString()
+    if (currentCode === code) {
+      if (clearHistory) {
+        // Code is the same but we need to clear history (e.g., opening a new file with same content)
+        clearCodeMirrorHistory(this)
+      }
+      return
+    }
+
+    // Preserve the current selection/cursor position
+    const currentSelection = this.editorState.selection
+    const newDocLength = code.length
+
+    // Map each selection range through the document change
+    // Since we're replacing the entire document, we need to clamp positions
+    // to the new document length if they exceed it
+    const preservedRanges = currentSelection.ranges.map((range) => {
+      const from = Math.min(range.from, newDocLength)
+      const to = Math.min(range.to, newDocLength)
+      // Ensure from <= to
+      if (from === to) {
+        return EditorSelection.cursor(from)
+      }
+      return EditorSelection.range(from, to)
+    })
+
     this.code = code
     if (clearHistory) {
       clearCodeMirrorHistory(this)
     }
+
     this.dispatch({
       changes: {
         from: 0,
         to: this.editorState?.doc.length || 0,
         insert: code,
       },
+      selection: EditorSelection.create(
+        preservedRanges,
+        currentSelection.mainIndex
+      ),
       annotations: [
         editorCodeUpdateEvent,
         Transaction.addToHistory.of(!clearHistory),
@@ -1511,7 +1552,6 @@ export class KclManager extends EventTarget {
       // and file-system watchers which read, will receive empty data during
       // writes.
       clearTimeout(this.timeoutWriter)
-      this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
           if (!this._currentFilePath)
@@ -1522,6 +1562,7 @@ export class KclManager extends EventTarget {
             code: this.code ?? '',
             time: Date.now(),
           }
+          this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
           electron
             .writeFile(this._currentFilePath, this.code ?? '')
             .then(resolve)

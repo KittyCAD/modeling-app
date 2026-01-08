@@ -184,7 +184,7 @@ function TextToCad() {
         </p>
         <p className="my-4">
           Our free plan includes a limited number of Zookeeper generations each
-          month. Upgrade to a paid plan for additional credits. Pro and Org
+          month. Upgrade to a paid plan for additional compute time. Pro and Org
           plans come with unlimited Zookeeper generations.
         </p>
         <p className="my-4">
@@ -224,9 +224,9 @@ function TextToCadPrompt() {
       <OnboardingCard>
         <h1 className="text-xl font-bold">Zookeeper prompt</h1>
         <p className="my-4">
-          To save you a Zookeeper generation credit, we are going to use a
-          pre-rolled Zookeeper prompt for this example. Click next to see an
-          example of what Zookeeper can generate.
+          To save you compute time, we are going to use a pre-rolled Zookeeper
+          prompt for this example. Click next to see an example of what
+          Zookeeper can generate.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
@@ -308,10 +308,7 @@ function PromptToEdit() {
           Zookeeper not only can <strong>create</strong> a part, but also{' '}
           <strong>modify</strong> an existing part. Still in the right sidebar,
           under the “Zookeeper” pane, you’ll be able to describe the change you
-          want for your part, and our AI will generate the change. Once again,
-          this will cost <strong>one credit per second</strong> it took to
-          generate, but as mentioned before, most calls are typically under one
-          minute.
+          want for your part, and our AI will generate the change.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
@@ -375,10 +372,10 @@ function PromptToEditPrompt() {
           </p>
         )}
         <p className="my-4">
-          To save you a credit, we are using a pre-rolled Zookeeper prompt to
-          edit your existing fan housing. You can see the prompt in the window
-          above. Click next to see an example of what modifying with Zookeeper
-          would look like.
+          To save you compute time, we are using a pre-rolled Zookeeper prompt
+          to edit your existing fan housing. You can see the prompt in the
+          window above. Click next to see an example of what modifying with
+          Zookeeper would look like.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}

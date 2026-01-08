@@ -7,7 +7,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   segmentUtilsMap,
-  updateLineSegmentHover,
+  updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
 import type { Themes } from '@src/lib/theme'
 import { Group, OrthographicCamera, Mesh } from 'three'
@@ -26,8 +26,9 @@ import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/cente
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineToolDiagram'
+import { machine as centerArcTool } from '@src/machines/sketchSolve/tools/centerArcToolDiagram'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
-import { deferExecution } from '@src/lib/utils'
+import { deferredCallback } from '@src/lib/utils'
 import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
@@ -41,7 +42,10 @@ import {
   assertEvent,
 } from 'xstate'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
+import {
+  STRAIGHT_SEGMENT_BODY,
+  ARC_SEGMENT_BODY,
+} from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 export type EquipTool = keyof typeof equipTools
@@ -74,6 +78,7 @@ export type SketchSolveMachineEvent =
         | 'Vertical'
         | 'Horizontal'
         | 'Parallel'
+        | 'Perpendicular'
         | 'Distance'
     }
   | {
@@ -112,6 +117,7 @@ type ToolActorRef =
   | ActorRefFrom<typeof centerRectTool>
   | ActorRefFrom<typeof pointTool>
   | ActorRefFrom<typeof lineTool>
+  | ActorRefFrom<typeof centerArcTool>
 
 export type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
@@ -140,6 +146,7 @@ export const equipTools = Object.freeze({
   dimensionTool,
   pointTool,
   lineTool,
+  centerArcTool,
 })
 
 export type SolveActionArgs = ActionArgs<
@@ -203,6 +210,32 @@ export function buildSegmentCtorFromObject(
       start: startPoint,
       end: endPoint,
     }
+  } else if (
+    obj?.kind?.type === 'Segment' &&
+    obj.kind?.segment?.type === 'Arc'
+  ) {
+    const centerPoint = getLinkedPoint({
+      objects,
+      pointId: obj.kind.segment.center,
+    })
+    const startPoint = getLinkedPoint({
+      objects,
+      pointId: obj.kind.segment.start,
+    })
+    const endPoint = getLinkedPoint({
+      objects,
+      pointId: obj.kind.segment.end,
+    })
+    if (!centerPoint || !startPoint || !endPoint) {
+      console.error('Failed to find linked points for Arc segment', obj)
+      return null
+    }
+    return {
+      type: 'Arc',
+      center: centerPoint,
+      start: startPoint,
+      end: endPoint,
+    }
   }
   return null
 }
@@ -253,6 +286,16 @@ export function updateSegmentGroup({
       selectedIds,
       isDraft,
     })
+  } else if (input.type === 'Arc') {
+    segmentUtilsMap.ArcSegment.update({
+      input,
+      theme,
+      scale,
+      id: idNum,
+      group,
+      selectedIds,
+      isDraft,
+    })
   }
 }
 
@@ -284,6 +327,14 @@ function initSegmentGroup({
     })
   } else if (input.type === 'Line') {
     group = segmentUtilsMap.LineSegment.init({
+      input,
+      theme,
+      scale,
+      id,
+      isDraft,
+    })
+  } else if (input.type === 'Arc') {
+    group = segmentUtilsMap.ArcSegment.init({
       input,
       theme,
       scale,
@@ -482,10 +533,11 @@ export function clearHoverCallbacks({ self, context }: SolveActionArgs) {
     sketchSegments.traverse((child) => {
       if (
         child instanceof Mesh &&
-        child.userData?.type === STRAIGHT_SEGMENT_BODY &&
+        (child.userData?.type === STRAIGHT_SEGMENT_BODY ||
+          child.userData?.type === ARC_SEGMENT_BODY) &&
         child.userData.isHovered === true
       ) {
-        updateLineSegmentHover(child, false, selectedIds, draftEntityIds)
+        updateSegmentHover(child, false, selectedIds, draftEntityIds)
       }
     })
   }
@@ -636,7 +688,7 @@ export function initializeInitialSceneGraph({
 // This allows us to cancel editor updates if a double-click is detected
 // The debounce delay is short (100ms) to minimize perceived lag while still allowing cancellation
 // We store the latest kclManager reference so the debounced function can access it
-const debouncedEditorUpdate = deferExecution(
+const debouncedEditorUpdate = deferredCallback(
   ({ text, kclManager }: { text: string; kclManager: KclManager }) =>
     kclManager.updateCodeEditor(text),
   200

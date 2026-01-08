@@ -11,7 +11,7 @@ function countNewlines(input: string): number {
   return count
 }
 
-test.describe('Debug pane', () => {
+test.describe('Debug pane', { tag: '@desktop' }, () => {
   test('Artifact IDs in the artifact graph are stable across code edits', async ({
     page,
     context,
@@ -42,7 +42,7 @@ test.describe('Debug pane', () => {
       // Expand the artifact graph.
       await tree.getByText('Artifact Graph').click()
       // Just expanded the details, making the element taller, so scroll again.
-      await tree.getByText('Plane').first().scrollIntoViewIfNeeded()
+      await tree.getByText('plane').first().scrollIntoViewIfNeeded()
     })
     // Extract the artifact IDs from the debug artifact graph.
     const initialSegmentIds = await segment.innerText({ timeout: 5_000 })

@@ -8,7 +8,7 @@ use crate::{
     exec::WarningLevel,
     execution::MockConfig,
     fmt::format_number_literal,
-    front::{ArcCtor, Distance, Line, LinesEqualLength, Parallel, Perpendicular, PointCtor},
+    front::{ArcCtor, Distance, LinesEqualLength, Parallel, Perpendicular, PointCtor},
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
@@ -27,7 +27,7 @@ use crate::{
 };
 
 pub(crate) mod api;
-mod modify;
+pub(crate) mod modify;
 pub(crate) mod sketch;
 mod traverse;
 
@@ -49,6 +49,42 @@ const VERTICAL_FN: &str = "vertical";
 
 const LINE_PROPERTY_START: &str = "start";
 const LINE_PROPERTY_END: &str = "end";
+
+const ARC_PROPERTY_START: &str = "start";
+const ARC_PROPERTY_END: &str = "end";
+const ARC_PROPERTY_CENTER: &str = "center";
+
+#[derive(Debug, Clone, Copy)]
+enum EditDeleteKind {
+    Edit,
+    DeleteSketch,
+    DeleteNonSketch,
+}
+
+impl EditDeleteKind {
+    /// Returns true if this edit is any type of deletion.
+    fn is_delete(&self) -> bool {
+        match self {
+            EditDeleteKind::Edit => false,
+            EditDeleteKind::DeleteSketch | EditDeleteKind::DeleteNonSketch => true,
+        }
+    }
+
+    fn to_change_kind(self) -> ChangeKind {
+        match self {
+            EditDeleteKind::Edit => ChangeKind::Edit,
+            EditDeleteKind::DeleteSketch | EditDeleteKind::DeleteNonSketch => ChangeKind::Delete,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+enum ChangeKind {
+    Add,
+    Edit,
+    Delete,
+    None,
+}
 
 #[derive(Debug, Clone)]
 pub struct FrontendState {
@@ -83,17 +119,28 @@ impl SketchApi for FrontendState {
         &mut self,
         ctx: &ExecutorContext,
         _version: Version,
-        _sketch: ObjectId,
-    ) -> api::Result<(SceneGraph, ExecOutcome)> {
+        sketch: ObjectId,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        let mut truncated_program = self.program.clone();
+        self.exit_after_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
+
         // Execute.
         let outcome = ctx
-            .run_mock(&self.program, &MockConfig::default())
+            .run_mock(&truncated_program, &MockConfig::default())
             .await
             .map_err(|err| Error {
                 msg: err.error.message().to_owned(),
             })?;
+        let new_source = source_from_ast(&self.program.ast);
+        let src_delta = SourceDelta { text: new_source };
         let outcome = self.update_state_after_exec(outcome);
-        Ok((self.scene_graph.clone(), outcome))
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            new_objects: Default::default(),
+            invalidates_ids: false,
+            exec_outcome: outcome,
+        };
+        Ok((src_delta, scene_graph_delta))
     }
 
     async fn new_sketch(
@@ -118,6 +165,7 @@ impl SketchApi for FrontendState {
                 arg: plane_ast,
             }],
             body: Default::default(),
+            is_being_edited: false,
             non_code_meta: Default::default(),
             digest: None,
         };
@@ -175,9 +223,12 @@ impl SketchApi for FrontendState {
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
+        // Since we just added the sketch block to the end, we don't need to
+        // truncate it.
+
         // Execute.
         let outcome = ctx
-            .run_mock(&new_program, &MockConfig::default())
+            .run_mock(&new_program, &MockConfig::default().no_freedom_analysis())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
@@ -233,19 +284,22 @@ impl SketchApi for FrontendState {
         // Enter sketch mode by setting the sketch_mode.
         self.scene_graph.sketch_mode = Some(sketch);
 
+        // Truncate after the sketch block for mock execution.
+        let mut truncated_program = self.program.clone();
+        self.exit_after_sketch_block(sketch, ChangeKind::None, &mut truncated_program.ast)?;
+
         // Execute in mock mode to ensure state is up to date. The caller will
         // want freedom analysis to display segments correctly.
-        let mock_config = MockConfig {
-            freedom_analysis: true,
-            ..Default::default()
-        };
-        let outcome = ctx.run_mock(&self.program, &mock_config).await.map_err(|err| {
-            // TODO: sketch-api: Yeah, this needs to change. We need to
-            // return the full error.
-            Error {
-                msg: err.error.message().to_owned(),
-            }
-        })?;
+        let outcome = ctx
+            .run_mock(&truncated_program, &MockConfig::default())
+            .await
+            .map_err(|err| {
+                // TODO: sketch-api: Yeah, this needs to change. We need to
+                // return the full error.
+                Error {
+                    msg: err.error.message().to_owned(),
+                }
+            })?;
 
         let outcome = self.update_state_after_exec(outcome);
         let scene_graph_delta = SceneGraphDelta {
@@ -316,8 +370,14 @@ impl SketchApi for FrontendState {
         // Modify the AST to remove the sketch.
         self.mutate_ast(&mut new_ast, sketch_id, AstMutateCommand::DeleteNode)?;
 
-        self.execute_after_edit(ctx, Default::default(), true, &mut new_ast)
-            .await
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            Default::default(),
+            EditDeleteKind::DeleteSketch,
+            &mut new_ast,
+        )
+        .await
     }
 
     async fn add_segment(
@@ -362,7 +422,7 @@ impl SketchApi for FrontendState {
                 }
             }
         }
-        self.execute_after_edit(ctx, segment_ids_edited, false, &mut new_ast)
+        self.execute_after_edit(ctx, sketch, segment_ids_edited, EditDeleteKind::Edit, &mut new_ast)
             .await
     }
 
@@ -390,8 +450,14 @@ impl SketchApi for FrontendState {
         for segment_id in segment_ids_set {
             self.delete_segment(&mut new_ast, sketch, segment_id)?;
         }
-        self.execute_after_edit(ctx, Default::default(), true, &mut new_ast)
-            .await
+        self.execute_after_edit(
+            ctx,
+            sketch,
+            Default::default(),
+            EditDeleteKind::DeleteNonSketch,
+            &mut new_ast,
+        )
+        .await
     }
 
     async fn add_constraint(
@@ -420,6 +486,94 @@ impl SketchApi for FrontendState {
         };
         self.execute_after_add_constraint(ctx, sketch, sketch_block_range, &mut new_ast)
             .await
+    }
+
+    async fn chain_segment(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        previous_segment_end_point_id: ObjectId,
+        segment: SegmentCtor,
+        _label: Option<String>,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+
+        // First, add the segment (line) to get its start point ID
+        let SegmentCtor::Line(line_ctor) = segment else {
+            return Err(Error {
+                msg: format!("chain_segment currently only supports Line segments, got: {segment:?}"),
+            });
+        };
+
+        // Add the line segment first - this updates self.program and self.scene_graph
+        let (_first_src_delta, first_scene_delta) = self.add_line(ctx, sketch, line_ctor).await?;
+
+        // Find the new line's start point ID from the updated scene graph
+        // add_line updates self.scene_graph, so we can use that
+        let new_line_id = first_scene_delta
+            .new_objects
+            .iter()
+            .find(|&obj_id| {
+                let obj = self.scene_graph.objects.get(obj_id.0);
+                if let Some(obj) = obj {
+                    matches!(
+                        &obj.kind,
+                        ObjectKind::Segment {
+                            segment: Segment::Line(_)
+                        }
+                    )
+                } else {
+                    false
+                }
+            })
+            .ok_or_else(|| Error {
+                msg: "Failed to find new line segment in scene graph".to_string(),
+            })?;
+
+        let new_line_obj = self.scene_graph.objects.get(new_line_id.0).ok_or_else(|| Error {
+            msg: format!("New line object not found: {new_line_id:?}"),
+        })?;
+
+        let ObjectKind::Segment {
+            segment: new_line_segment,
+        } = &new_line_obj.kind
+        else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {new_line_obj:?}"),
+            });
+        };
+
+        let Segment::Line(new_line) = new_line_segment else {
+            return Err(Error {
+                msg: format!("Segment is not a line: {new_line_segment:?}"),
+            });
+        };
+
+        let new_line_start_point_id = new_line.start;
+
+        // Now add the coincident constraint between the previous end point and the new line's start point.
+        let coincident = Coincident {
+            segments: vec![previous_segment_end_point_id, new_line_start_point_id],
+        };
+
+        let (final_src_delta, final_scene_delta) = self
+            .add_constraint(ctx, version, sketch, Constraint::Coincident(coincident))
+            .await?;
+
+        // Combine new objects from the line addition and the constraint addition.
+        // Both add_line and add_constraint now populate new_objects correctly.
+        let mut combined_new_objects = first_scene_delta.new_objects.clone();
+        combined_new_objects.extend(final_scene_delta.new_objects);
+
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            invalidates_ids: false,
+            new_objects: combined_new_objects,
+            exec_outcome: final_scene_delta.exec_outcome,
+        };
+
+        Ok((final_src_delta, scene_graph_delta))
     }
 
     async fn edit_constraint(
@@ -528,9 +682,13 @@ impl FrontendState {
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
+        // Truncate after the sketch block for mock execution.
+        let mut truncated_program = new_program;
+        self.exit_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+
         // Execute.
         let outcome = ctx
-            .run_mock(&new_program, &MockConfig::default())
+            .run_mock(&truncated_program, &MockConfig::default().no_freedom_analysis())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
@@ -644,9 +802,13 @@ impl FrontendState {
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
+        // Truncate after the sketch block for mock execution.
+        let mut truncated_program = new_program;
+        self.exit_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+
         // Execute.
         let outcome = ctx
-            .run_mock(&new_program, &MockConfig::default())
+            .run_mock(&truncated_program, &MockConfig::default().no_freedom_analysis())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
@@ -703,23 +865,24 @@ impl FrontendState {
         let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
         let center_ast = to_ast_point2d(&ctor.center).map_err(|err| Error { msg: err.to_string() })?;
+        let arguments = vec![
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_START_PARAM)),
+                arg: start_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_END_PARAM)),
+                arg: end_ast,
+            },
+            ast::LabeledArg {
+                label: Some(ast::Identifier::new(ARC_CENTER_PARAM)),
+                arg: center_ast,
+            },
+        ];
         let arc_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(ARC_FN)),
             unlabeled: None,
-            arguments: vec![
-                ast::LabeledArg {
-                    label: Some(ast::Identifier::new(ARC_START_PARAM)),
-                    arg: start_ast,
-                },
-                ast::LabeledArg {
-                    label: Some(ast::Identifier::new(ARC_END_PARAM)),
-                    arg: end_ast,
-                },
-                ast::LabeledArg {
-                    label: Some(ast::Identifier::new(ARC_CENTER_PARAM)),
-                    arg: center_ast,
-                },
-            ],
+            arguments,
             digest: None,
             non_code_meta: Default::default(),
         })));
@@ -765,9 +928,13 @@ impl FrontendState {
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
+        // Truncate after the sketch block for mock execution.
+        let mut truncated_program = new_program;
+        self.exit_after_sketch_block(sketch, ChangeKind::Add, &mut truncated_program.ast)?;
+
         // Execute.
         let outcome = ctx
-            .run_mock(&new_program, &MockConfig::default())
+            .run_mock(&truncated_program, &MockConfig::default().no_freedom_analysis())
             .await
             .map_err(|err| {
                 // TODO: sketch-api: Yeah, this needs to change. We need to
@@ -851,38 +1018,67 @@ impl FrontendState {
             });
         };
 
-        // If the point is part of a line, edit the line instead.
-        if let Some(line_id) = point.owner {
-            let line_object = self.scene_graph.objects.get(line_id.0).ok_or_else(|| Error {
-                msg: format!("Internal: Line owner of point not found in scene graph: line={line_id:?}",),
+        // If the point is part of a line or arc, edit the line/arc instead.
+        if let Some(owner_id) = point.owner {
+            let owner_object = self.scene_graph.objects.get(owner_id.0).ok_or_else(|| Error {
+                msg: format!("Internal: Owner of point not found in scene graph: owner={owner_id:?}",),
             })?;
-            let ObjectKind::Segment {
-                segment: Segment::Line(line),
-            } = &line_object.kind
-            else {
+            let ObjectKind::Segment { segment } = &owner_object.kind else {
                 return Err(Error {
-                    msg: format!("Internal: Owner of point is not actually a line segment: {line_object:?}"),
+                    msg: format!("Internal: Owner of point is not a segment: {owner_object:?}"),
                 });
             };
-            let SegmentCtor::Line(line_ctor) = &line.ctor else {
-                return Err(Error {
-                    msg: format!("Internal: Owner of point does not have line ctor: {line_object:?}"),
-                });
-            };
-            let mut line_ctor = line_ctor.clone();
-            // Which end of the line is this point?
-            if line.start == point_id {
-                line_ctor.start = ctor.position;
-            } else if line.end == point_id {
-                line_ctor.end = ctor.position;
-            } else {
-                return Err(Error {
-                    msg: format!(
-                        "Internal: Point is not part of owner's line segment: point={point_id:?}, line={line_id:?}"
-                    ),
-                });
+
+            // Handle Line owner
+            if let Segment::Line(line) = segment {
+                let SegmentCtor::Line(line_ctor) = &line.ctor else {
+                    return Err(Error {
+                        msg: format!("Internal: Owner of point does not have line ctor: {owner_object:?}"),
+                    });
+                };
+                let mut line_ctor = line_ctor.clone();
+                // Which end of the line is this point?
+                if line.start == point_id {
+                    line_ctor.start = ctor.position;
+                } else if line.end == point_id {
+                    line_ctor.end = ctor.position;
+                } else {
+                    return Err(Error {
+                        msg: format!(
+                            "Internal: Point is not part of owner's line segment: point={point_id:?}, line={owner_id:?}"
+                        ),
+                    });
+                }
+                return self.edit_line(new_ast, sketch_id, owner_id, line_ctor);
             }
-            return self.edit_line(new_ast, sketch_id, line_id, line_ctor);
+
+            // Handle Arc owner
+            if let Segment::Arc(arc) = segment {
+                let SegmentCtor::Arc(arc_ctor) = &arc.ctor else {
+                    return Err(Error {
+                        msg: format!("Internal: Owner of point does not have arc ctor: {owner_object:?}"),
+                    });
+                };
+                let mut arc_ctor = arc_ctor.clone();
+                // Which point of the arc is this? (center, start, or end)
+                if arc.center == point_id {
+                    arc_ctor.center = ctor.position;
+                } else if arc.start == point_id {
+                    arc_ctor.start = ctor.position;
+                } else if arc.end == point_id {
+                    arc_ctor.end = ctor.position;
+                } else {
+                    return Err(Error {
+                        msg: format!(
+                            "Internal: Point is not part of owner's arc segment: point={point_id:?}, arc={owner_id:?}"
+                        ),
+                    });
+                }
+                return self.edit_arc(new_ast, sketch_id, owner_id, arc_ctor);
+            }
+
+            // If owner is neither Line nor Arc, allow editing the point directly
+            // (fall through to the point editing logic below)
         }
 
         // Modify the point AST.
@@ -1065,8 +1261,9 @@ impl FrontendState {
     async fn execute_after_edit(
         &mut self,
         ctx: &ExecutorContext,
+        sketch: ObjectId,
         segment_ids_edited: AhashIndexSet<ObjectId>,
-        is_delete: bool,
+        edit_kind: EditDeleteKind,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
@@ -1087,17 +1284,28 @@ impl FrontendState {
         // TODO: sketch-api: make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
+        // Truncate after the sketch block for mock execution.
+        let is_delete = edit_kind.is_delete();
+        let truncated_program = match edit_kind {
+            EditDeleteKind::DeleteSketch => new_program,
+            EditDeleteKind::Edit | EditDeleteKind::DeleteNonSketch => {
+                let mut truncated_program = new_program;
+                self.exit_after_sketch_block(sketch, edit_kind.to_change_kind(), &mut truncated_program.ast)?;
+                truncated_program
+            }
+        };
+
         #[cfg(not(feature = "artifact-graph"))]
         drop(segment_ids_edited);
 
         // Execute.
         let mock_config = MockConfig {
-            use_prev_memory: !is_delete,
             freedom_analysis: is_delete,
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited,
+            ..Default::default()
         };
-        let outcome = ctx.run_mock(&new_program, &mock_config).await.map_err(|err| {
+        let outcome = ctx.run_mock(&truncated_program, &mock_config).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -1111,9 +1319,8 @@ impl FrontendState {
         let new_source = {
             // Feed back sketch var solutions into the source.
             //
-            // TODO: Limit to only the sketch ID parameter. Currently, the
-            // interpreter is returning all var solutions from the last sketch
-            // block.
+            // The interpreter is returning all var solutions from the sketch
+            // block we're editing.
             let mut new_ast = self.program.ast.clone();
             for (var_range, value) in &outcome.var_solutions {
                 let rounded = value.round(3);
@@ -1134,6 +1341,82 @@ impl FrontendState {
             exec_outcome: outcome,
         };
         Ok((src_delta, scene_graph_delta))
+    }
+
+    /// Map a point object id into an AST reference expression for use in
+    /// constraints. If the point is owned by a segment (line or arc), we
+    /// reference the appropriate property on that segment (e.g. `line1.start`,
+    /// `arc1.center`). Otherwise we reference the point directly.
+    fn point_id_to_ast_reference(
+        &self,
+        point_id: ObjectId,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<ast::Expr> {
+        let point_object = self.scene_graph.objects.get(point_id.0).ok_or_else(|| Error {
+            msg: format!("Point not found: {point_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: point_segment } = &point_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {point_object:?}"),
+            });
+        };
+        let Segment::Point(point) = point_segment else {
+            return Err(Error {
+                msg: format!("Only points are currently supported: {point_object:?}"),
+            });
+        };
+
+        if let Some(owner_id) = point.owner {
+            let owner_object = self.scene_graph.objects.get(owner_id.0).ok_or_else(|| Error {
+                msg: format!("Owner of point not found in scene graph: point={point_id:?}, owner={owner_id:?}"),
+            })?;
+            let ObjectKind::Segment { segment: owner_segment } = &owner_object.kind else {
+                return Err(Error {
+                    msg: format!("Owner of point is not a segment: {owner_object:?}"),
+                });
+            };
+
+            match owner_segment {
+                Segment::Line(line) => {
+                    let property = if line.start == point_id {
+                        LINE_PROPERTY_START
+                    } else if line.end == point_id {
+                        LINE_PROPERTY_END
+                    } else {
+                        return Err(Error {
+                            msg: format!(
+                                "Internal: Point is not part of owner's line segment: point={point_id:?}, line={owner_id:?}"
+                            ),
+                        });
+                    };
+                    get_or_insert_ast_reference(new_ast, &owner_object.source, "line", Some(property))
+                }
+                Segment::Arc(arc) => {
+                    let property = if arc.start == point_id {
+                        ARC_PROPERTY_START
+                    } else if arc.end == point_id {
+                        ARC_PROPERTY_END
+                    } else if arc.center == point_id {
+                        ARC_PROPERTY_CENTER
+                    } else {
+                        return Err(Error {
+                            msg: format!(
+                                "Internal: Point is not part of owner's arc segment: point={point_id:?}, arc={owner_id:?}"
+                            ),
+                        });
+                    };
+                    get_or_insert_ast_reference(new_ast, &owner_object.source, "arc", Some(property))
+                }
+                _ => Err(Error {
+                    msg: format!(
+                        "Internal: Owner of point is not a supported segment type for constraints: {owner_segment:?}"
+                    ),
+                }),
+            }
+        } else {
+            // Standalone point.
+            get_or_insert_ast_reference(new_ast, &point_object.source, "point", None)
+        }
     }
 
     async fn add_coincident(
@@ -1162,36 +1445,17 @@ impl FrontendState {
             });
         };
         let seg0_ast = match seg0_segment {
-            Segment::Point(point) => {
-                // If the point is part of a line, refer to the line's start/end property
-                if let Some(line_id) = point.owner {
-                    let line = self.expect_line(line_id)?;
-                    let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-                    let property = if line.start == seg0_id {
-                        LINE_PROPERTY_START
-                    } else if line.end == seg0_id {
-                        LINE_PROPERTY_END
-                    } else {
-                        return Err(Error {
-                            msg: format!(
-                                "Internal: Point is not part of owner's line segment: point={seg0_id:?}, line={line_id:?}"
-                            ),
-                        });
-                    };
-                    get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-                } else {
-                    // Standalone point
-                    get_or_insert_ast_reference(new_ast, &seg0_object.source, "point", None)?
-                }
+            Segment::Point(_) => {
+                // Use the helper function which supports both Line and Arc owners
+                self.point_id_to_ast_reference(seg0_id, new_ast)?
             }
             Segment::Line(_) => {
                 // Reference the segment directly (for point-segment coincident)
                 get_or_insert_ast_reference(new_ast, &seg0_object.source, "line", None)?
             }
             Segment::Arc(_) | Segment::Circle(_) => {
-                return Err(Error {
-                    msg: "Coincident constraint with arcs or circles is not supported. Only points and line segments are.".to_owned(),
-                });
+                // Reference the segment directly (for point-arc coincident)
+                get_or_insert_ast_reference(new_ast, &seg0_object.source, "arc", None)?
             }
         };
 
@@ -1205,36 +1469,17 @@ impl FrontendState {
             });
         };
         let seg1_ast = match seg1_segment {
-            Segment::Point(point) => {
-                // If the point is part of a line, refer to the line's start/end property
-                if let Some(line_id) = point.owner {
-                    let line = self.expect_line(line_id)?;
-                    let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-                    let property = if line.start == seg1_id {
-                        LINE_PROPERTY_START
-                    } else if line.end == seg1_id {
-                        LINE_PROPERTY_END
-                    } else {
-                        return Err(Error {
-                            msg: format!(
-                                "Internal: Point is not part of owner's line segment: point={seg1_id:?}, line={line_id:?}"
-                            ),
-                        });
-                    };
-                    get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-                } else {
-                    // Standalone point
-                    get_or_insert_ast_reference(new_ast, &seg1_object.source, "point", None)?
-                }
+            Segment::Point(_) => {
+                // Use the helper function which supports both Line and Arc owners
+                self.point_id_to_ast_reference(seg1_id, new_ast)?
             }
             Segment::Line(_) => {
                 // Reference the segment directly (for point-segment coincident)
                 get_or_insert_ast_reference(new_ast, &seg1_object.source, "line", None)?
             }
             Segment::Arc(_) | Segment::Circle(_) => {
-                return Err(Error {
-                    msg: "Coincident constraint with arcs or circles is not supported. Only points and line segments are.".to_owned(),
-                });
+                // Reference the segment directly (for point-arc coincident)
+                get_or_insert_ast_reference(new_ast, &seg1_object.source, "arc", None)?
             }
         };
 
@@ -1279,71 +1524,8 @@ impl FrontendState {
         let sketch_id = sketch;
 
         // Map the runtime objects back to variable names.
-        let pt0_object = self.scene_graph.objects.get(pt0_id.0).ok_or_else(|| Error {
-            msg: format!("Point not found: {pt0_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment: pt0_segment } = &pt0_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {pt0_object:?}"),
-            });
-        };
-        let Segment::Point(pt0) = pt0_segment else {
-            return Err(Error {
-                msg: format!("Only points are currently supported: {pt0_object:?}"),
-            });
-        };
-        // If the point is part of a line, refer to the line instead.
-        let pt0_ast = if let Some(line_id) = pt0.owner {
-            let line = self.expect_line(line_id)?;
-            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-            let property = if line.start == pt0_id {
-                LINE_PROPERTY_START
-            } else if line.end == pt0_id {
-                LINE_PROPERTY_END
-            } else {
-                return Err(Error {
-                    msg: format!(
-                        "Internal: Point is not part of owner's line segment: point={pt0_id:?}, line={line_id:?}"
-                    ),
-                });
-            };
-            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-        } else {
-            get_or_insert_ast_reference(new_ast, &pt0_object.source, "point", None)?
-        };
-
-        let pt1_object = self.scene_graph.objects.get(pt1_id.0).ok_or_else(|| Error {
-            msg: format!("Point not found: {pt1_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment: pt1_segment } = &pt1_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {pt1_object:?}"),
-            });
-        };
-        let Segment::Point(pt1) = pt1_segment else {
-            return Err(Error {
-                msg: format!("Only points are currently supported: {pt1_object:?}"),
-            });
-        };
-        // If the point is part of a line, refer to the line instead.
-        let pt1_ast = if let Some(line_id) = pt1.owner {
-            let line = self.expect_line(line_id)?;
-            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
-            let property = if line.start == pt1_id {
-                LINE_PROPERTY_START
-            } else if line.end == pt1_id {
-                LINE_PROPERTY_END
-            } else {
-                return Err(Error {
-                    msg: format!(
-                        "Internal: Point is not part of owner's line segment: point={pt1_id:?}, line={line_id:?}"
-                    ),
-                });
-            };
-            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
-        } else {
-            get_or_insert_ast_reference(new_ast, &pt1_object.source, "point", None)?
-        };
+        let pt0_ast = self.point_id_to_ast_reference(pt0_id, new_ast)?;
+        let pt1_ast = self.point_id_to_ast_reference(pt1_id, new_ast)?;
 
         // Create the distance() call.
         let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -1645,8 +1827,8 @@ impl FrontendState {
     async fn execute_after_add_constraint(
         &mut self,
         ctx: &ExecutorContext,
-        _sketch_id: ObjectId,
-        sketch_block_range: SourceRange,
+        sketch_id: ObjectId,
+        #[cfg_attr(not(feature = "artifact-graph"), allow(unused_variables))] sketch_block_range: SourceRange,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
@@ -1663,7 +1845,8 @@ impl FrontendState {
                 msg: "No AST produced after adding constraint".to_string(),
             });
         };
-        let _constraint_source_range =
+        #[cfg(feature = "artifact-graph")]
+        let constraint_source_range =
             find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
                 msg: format!(
                     "Source range of new constraint not found in sketch block: {sketch_block_range:?}; {err:?}"
@@ -1673,25 +1856,43 @@ impl FrontendState {
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
+        // Truncate after the sketch block for mock execution.
+        let mut truncated_program = new_program;
+        self.exit_after_sketch_block(sketch_id, ChangeKind::Add, &mut truncated_program.ast)?;
+
         // Execute.
-        let mock_config = MockConfig {
-            freedom_analysis: true,
-            ..Default::default()
+        let outcome = ctx
+            .run_mock(&truncated_program, &MockConfig::default())
+            .await
+            .map_err(|err| {
+                // TODO: sketch-api: Yeah, this needs to change. We need to
+                // return the full error.
+                Error {
+                    msg: err.error.message().to_owned(),
+                }
+            })?;
+
+        #[cfg(not(feature = "artifact-graph"))]
+        let new_object_ids = Vec::new();
+        #[cfg(feature = "artifact-graph")]
+        let new_object_ids = {
+            // Extract the constraint ID from the execution outcome using source_range_to_object
+            let constraint_id = outcome
+                .source_range_to_object
+                .get(&constraint_source_range)
+                .copied()
+                .ok_or_else(|| Error {
+                    msg: format!("Source range of constraint not found: {constraint_source_range:?}"),
+                })?;
+            vec![constraint_id]
         };
-        let outcome = ctx.run_mock(&new_program, &mock_config).await.map_err(|err| {
-            // TODO: sketch-api: Yeah, this needs to change. We need to
-            // return the full error.
-            Error {
-                msg: err.error.message().to_owned(),
-            }
-        })?;
 
         let src_delta = SourceDelta { text: new_source };
         let outcome = self.update_state_after_exec(outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
-            new_objects: Vec::new(),
+            new_objects: new_object_ids,
             exec_outcome: outcome,
         };
         Ok((src_delta, scene_graph_delta))
@@ -1770,23 +1971,6 @@ impl FrontendState {
         Ok(())
     }
 
-    fn expect_line(&self, object_id: ObjectId) -> api::Result<&Line> {
-        let object = self.scene_graph.objects.get(object_id.0).ok_or_else(|| Error {
-            msg: format!("Object not found: {object_id:?}"),
-        })?;
-        let ObjectKind::Segment { segment } = &object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {object:?}"),
-            });
-        };
-        let Segment::Line(line) = segment else {
-            return Err(Error {
-                msg: format!("Segment is not a line: {segment:?}"),
-            });
-        };
-        Ok(line)
-    }
-
     fn update_state_after_exec(&mut self, outcome: ExecOutcome) -> ExecOutcome {
         #[cfg(not(feature = "artifact-graph"))]
         return outcome;
@@ -1796,6 +1980,24 @@ impl FrontendState {
             self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
             outcome
         }
+    }
+
+    fn exit_after_sketch_block(
+        &self,
+        sketch_id: ObjectId,
+        edit_kind: ChangeKind,
+        ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<()> {
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch_id:?}"),
+        })?;
+        let ObjectKind::Sketch(_) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        let sketch_block_range = expect_single_source_range(&sketch_object.source)?;
+        exit_after_sketch_block(ast, sketch_block_range, edit_kind)
     }
 
     fn mutate_ast(
@@ -1831,6 +2033,67 @@ fn expect_single_source_range(source_ref: &SourceRef) -> api::Result<SourceRange
             Ok(ranges[0])
         }
     }
+}
+
+fn exit_after_sketch_block(
+    ast: &mut ast::Node<ast::Program>,
+    sketch_block_range: SourceRange,
+    edit_kind: ChangeKind,
+) -> api::Result<()> {
+    let r1 = sketch_block_range;
+    let matches_range = |r2: SourceRange| -> bool {
+        // We may have added items to the sketch block, so the end may not be an
+        // exact match.
+        match edit_kind {
+            ChangeKind::Add => r1.module_id() == r2.module_id() && r1.start() == r2.start() && r1.end() <= r2.end(),
+            // For edit, we don't know whether it grew or shrank.
+            ChangeKind::Edit => r1.module_id() == r2.module_id() && r1.start() == r2.start(),
+            ChangeKind::Delete => r1.module_id() == r2.module_id() && r1.start() == r2.start() && r1.end() >= r2.end(),
+            // No edit should be an exact match.
+            ChangeKind::None => r1.module_id() == r2.module_id() && r1.start() == r2.start() && r1.end() == r2.end(),
+        }
+    };
+    let mut found = false;
+    for item in ast.body.iter_mut() {
+        match item {
+            ast::BodyItem::ImportStatement(_) => {}
+            ast::BodyItem::ExpressionStatement(node) => {
+                if matches_range(SourceRange::from(&*node))
+                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.expression
+                {
+                    sketch_block.is_being_edited = true;
+                    found = true;
+                    break;
+                }
+            }
+            ast::BodyItem::VariableDeclaration(node) => {
+                if matches_range(SourceRange::from(&node.declaration.init))
+                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.declaration.init
+                {
+                    sketch_block.is_being_edited = true;
+                    found = true;
+                    break;
+                }
+            }
+            ast::BodyItem::TypeDeclaration(_) => {}
+            ast::BodyItem::ReturnStatement(node) => {
+                if matches_range(SourceRange::from(&node.argument))
+                    && let ast::Expr::SketchBlock(sketch_block) = &mut node.argument
+                {
+                    sketch_block.is_being_edited = true;
+                    found = true;
+                    break;
+                }
+            }
+        }
+    }
+    if !found {
+        return Err(Error {
+            msg: format!("Sketch block source range not found in AST: {sketch_block_range:?}, edit_kind={edit_kind:?}"),
+        });
+    }
+
+    Ok(())
 }
 
 /// Return the AST expression referencing the variable at the given source ref.
@@ -1949,6 +2212,7 @@ impl Visitor for AstMutateContext {
         }
     }
 }
+
 fn filter_and_process(
     ctx: &mut AstMutateContext,
     node: NodeMut,
@@ -3752,6 +4016,323 @@ sketch(on = XY) {
             8,
             "{:#?}",
             scene_delta.new_graph.objects
+        );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_multiple_sketch_blocks() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+// Cube that requires the engine.
+width = 2
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = width, tag = $seg1)
+  |> xLine(length = width)
+  |> yLine(length = -width)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = width)
+
+// Get a value that requires the engine.
+x = segLen(seg1)
+
+// Triangle with side length 2*x.
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+  line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  sketch2::coincident([line1.end, line2.start])
+  line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  sketch2::coincident([line2.end, line3.start])
+  sketch2::coincident([line3.end, line1.start])
+  sketch2::equalLength([line3, line1])
+  sketch2::equalLength([line1, line2])
+sketch2::distance([line1.start, line1.end]) == 2*x
+}
+
+// Line segment with length x.
+sketch2 = sketch(on = XY) {
+  line1 = sketch2::line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+sketch2::distance([line1.start, line1.end]) == x
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+        let project_id = ProjectId(0);
+        let file_id = FileId(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_objects = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .filter(|obj| matches!(obj.kind, ObjectKind::Sketch(_)))
+            .collect::<Vec<_>>();
+        let sketch1_id = sketch_objects.first().unwrap().id;
+        let sketch2_id = sketch_objects.get(1).unwrap().id;
+        // First point in sketch1.
+        let point1_id = ObjectId(sketch1_id.0 + 1);
+        // First point in sketch2.
+        let point2_id = ObjectId(sketch2_id.0 + 1);
+
+        // Edit the first sketch. Objects from the second sketch should not be
+        // present since the program exits early after the first sketch block.
+        //
+        // - Plane 1
+        // - Sketch block 16
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch1_id)
+            .await
+            .unwrap();
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            17,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        // Edit a point in the first sketch.
+        let point_ctor = PointCtor {
+            position: Point2d {
+                x: Expr::Var(Number {
+                    value: 1.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 2.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+        };
+        let segments = vec![ExistingSegmentCtor {
+            id: point1_id,
+            ctor: SegmentCtor::Point(point_ctor),
+        }];
+        let (src_delta, _) = frontend
+            .edit_segments(&mock_ctx, version, sketch1_id, segments)
+            .await
+            .unwrap();
+        // Only the first sketch block changes.
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+// Cube that requires the engine.
+width = 2
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = width, tag = $seg1)
+  |> xLine(length = width)
+  |> yLine(length = -width)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = width)
+
+// Get a value that requires the engine.
+x = segLen(seg1)
+
+// Triangle with side length 2*x.
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 2.317mm, var -1.777mm])
+  line2 = sketch2::line(start = [var 2.317mm, var -1.777mm], end = [var -1.613mm, var -1.029mm])
+  sketch2::coincident([line1.end, line2.start])
+  line3 = sketch2::line(start = [var -1.613mm, var -1.029mm], end = [var 1mm, var 2mm])
+  sketch2::coincident([line2.end, line3.start])
+  sketch2::coincident([line3.end, line1.start])
+  sketch2::equalLength([line3, line1])
+  sketch2::equalLength([line1, line2])
+sketch2::distance([line1.start, line1.end]) == 2 * x
+}
+
+// Line segment with length x.
+sketch2 = sketch(on = XY) {
+  line1 = sketch2::line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+sketch2::distance([line1.start, line1.end]) == x
+}
+"
+        );
+
+        // Execute mock to simulate drag end.
+        let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch1_id).await.unwrap();
+        // Only the first sketch block changes.
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+// Cube that requires the engine.
+width = 2
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = width, tag = $seg1)
+  |> xLine(length = width)
+  |> yLine(length = -width)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = width)
+
+// Get a value that requires the engine.
+x = segLen(seg1)
+
+// Triangle with side length 2*x.
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.283mm, var -0.781mm])
+  line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  sketch2::coincident([line1.end, line2.start])
+  line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  sketch2::coincident([line2.end, line3.start])
+  sketch2::coincident([line3.end, line1.start])
+  sketch2::equalLength([line3, line1])
+  sketch2::equalLength([line1, line2])
+sketch2::distance([line1.start, line1.end]) == 2 * x
+}
+
+// Line segment with length x.
+sketch2 = sketch(on = XY) {
+  line1 = sketch2::line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
+sketch2::distance([line1.start, line1.end]) == x
+}
+"
+        );
+        // Exit sketch. Objects from the entire program should be present.
+        //
+        // - Plane 1
+        // - Sketch block 16
+        // - Sketch block 5
+        let scene = frontend.exit_sketch(&ctx, version, sketch1_id).await.unwrap();
+        assert_eq!(scene.objects.len(), 22, "{:#?}", scene.objects);
+
+        // Edit the second sketch. Objects from the entire program should be
+        // present.
+        //
+        // - Plane 1
+        // - Sketch block 16
+        // - Sketch block 5
+        let scene_delta = frontend
+            .edit_sketch(&mock_ctx, project_id, file_id, version, sketch2_id)
+            .await
+            .unwrap();
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            22,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+
+        // Edit a point in the second sketch.
+        let point_ctor = PointCtor {
+            position: Point2d {
+                x: Expr::Var(Number {
+                    value: 3.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Var(Number {
+                    value: 4.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+        };
+        let segments = vec![ExistingSegmentCtor {
+            id: point2_id,
+            ctor: SegmentCtor::Point(point_ctor),
+        }];
+        let (src_delta, _) = frontend
+            .edit_segments(&mock_ctx, version, sketch2_id, segments)
+            .await
+            .unwrap();
+        // Only the second sketch block changes.
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+// Cube that requires the engine.
+width = 2
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = width, tag = $seg1)
+  |> xLine(length = width)
+  |> yLine(length = -width)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = width)
+
+// Get a value that requires the engine.
+x = segLen(seg1)
+
+// Triangle with side length 2*x.
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.283mm, var -0.781mm])
+  line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  sketch2::coincident([line1.end, line2.start])
+  line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  sketch2::coincident([line2.end, line3.start])
+  sketch2::coincident([line3.end, line1.start])
+  sketch2::equalLength([line3, line1])
+  sketch2::equalLength([line1, line2])
+sketch2::distance([line1.start, line1.end]) == 2 * x
+}
+
+// Line segment with length x.
+sketch2 = sketch(on = XY) {
+  line1 = sketch2::line(start = [var 3mm, var 4mm], end = [var 2.324mm, var 2.118mm])
+sketch2::distance([line1.start, line1.end]) == x
+}
+"
+        );
+
+        // Execute mock to simulate drag end.
+        let (src_delta, _) = frontend.execute_mock(&mock_ctx, version, sketch2_id).await.unwrap();
+        // Only the second sketch block changes.
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+// Cube that requires the engine.
+width = 2
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = width, tag = $seg1)
+  |> xLine(length = width)
+  |> yLine(length = -width)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = width)
+
+// Get a value that requires the engine.
+x = segLen(seg1)
+
+// Triangle with side length 2*x.
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1mm, var 2mm], end = [var 1.283mm, var -0.781mm])
+  line2 = sketch2::line(start = [var 1.283mm, var -0.781mm], end = [var -0.71mm, var -0.95mm])
+  sketch2::coincident([line1.end, line2.start])
+  line3 = sketch2::line(start = [var -0.71mm, var -0.95mm], end = [var 0.14mm, var 0.86mm])
+  sketch2::coincident([line2.end, line3.start])
+  sketch2::coincident([line3.end, line1.start])
+  sketch2::equalLength([line3, line1])
+  sketch2::equalLength([line1, line2])
+sketch2::distance([line1.start, line1.end]) == 2 * x
+}
+
+// Line segment with length x.
+sketch2 = sketch(on = XY) {
+  line1 = sketch2::line(start = [var 3mm, var 4mm], end = [var 1.283mm, var -0.781mm])
+sketch2::distance([line1.start, line1.end]) == x
+}
+"
         );
 
         ctx.close().await;

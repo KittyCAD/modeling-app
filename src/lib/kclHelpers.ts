@@ -13,6 +13,7 @@ import { forceSuffix } from '@src/lang/util'
 import { roundOff } from '@src/lib/utils'
 import type { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Vector2 } from 'three'
+import { toUtf16 } from '@src/lang/errors'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 
@@ -126,9 +127,6 @@ export async function getCalculatedKclExpressionValue(
       ? String(resultRawValue)
       : 'NAN'
 
-  console.log('resultRawValue', resultRawValue)
-  console.log('valueAsString', valueAsString)
-
   return {
     astNode: variableDeclaratorAstNode,
     valueAsString,
@@ -160,7 +158,10 @@ export async function stringToKclExpression(
 }
 
 export function getStringValue(code: string, range: SourceRange): string {
-  return code.slice(range[0], range[1]).replaceAll(`'`, ``).replaceAll(`"`, ``)
+  return code
+    .slice(...range.map((r) => toUtf16(r, code)))
+    .replaceAll(`'`, ``)
+    .replaceAll(`"`, ``)
 }
 
 /**
@@ -207,4 +208,26 @@ function extractNumericValue(
     }
   }
   return null
+}
+
+/**
+ * Checks if an Expr has a numeric value (is a Number or Var type).
+ * Returns true if the Expr contains a numeric value, false otherwise.
+ * This is a type predicate that narrows the type for TypeScript.
+ */
+export function hasNumericValue(
+  expr: Expr
+): expr is Extract<Expr, { type: 'Number' | 'Var' }> {
+  return expr.type === 'Number' || expr.type === 'Var'
+}
+
+/**
+ * Extracts the numeric value from an Expr (Number or Var type).
+ * Returns the value if the Expr is a Number or Var, otherwise returns the default value (0).
+ */
+export function getNumericValue(expr: Expr, defaultValue = 0): number {
+  if (expr.type === 'Number' || expr.type === 'Var') {
+    return expr.value
+  }
+  return defaultValue
 }

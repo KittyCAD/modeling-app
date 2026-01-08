@@ -164,7 +164,10 @@ export async function selectSketchPlane(
       systemDeps.kclManager.artifactGraph,
       systemDeps.kclManager.ast,
       systemDeps.kclManager.execState,
-      systemDeps
+      {
+        ...systemDeps,
+        wasmInstance: await systemDeps.kclManager.wasmInstancePromise,
+      }
     )
     if (sweepFaceSelected) {
       systemDeps.sceneInfra.modelingSend({

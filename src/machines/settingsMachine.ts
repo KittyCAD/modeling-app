@@ -132,7 +132,11 @@ export const settingsMachine = setup({
         settings: SettingsType
         commandBarActor: ActorRefFrom<typeof commandBarMachine>
       },
-      { settings: SettingsType; actor: AnyActorRef }
+      {
+        settings: SettingsType
+        actor: AnyActorRef
+        commandBarActor: ActorRefFrom<typeof commandBarMachine>
+      }
     >(({ input, receive }) => {
       // If the user wants to hide the settings commands
       //from the command bar don't add them.
@@ -175,8 +179,11 @@ export const settingsMachine = setup({
         addCommands(commandBarActor)
       })
 
-      console.log('commands bs', input)
+      // Initial command registration
+      // Note: Async hideOnPlatform values are already resolved in loadAndValidateSettings,
+      // so we can just register commands synchronously here
       commands = updateCommands(input.settings)
+      addCommands(input.commandBarActor)
     }),
   },
   actions: {

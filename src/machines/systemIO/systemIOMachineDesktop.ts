@@ -21,6 +21,7 @@ import {
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import type { AppMachineContext } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
   RequestedKCLFile,
@@ -31,6 +32,7 @@ import {
   SystemIOMachineActors,
   jsonToMlConversations,
   mlConversationsToJson,
+  collectProjectFiles,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 
@@ -45,10 +47,11 @@ const sharedBulkCreateWorkflow = async ({
     context: SystemIOContext
     files: RequestedKCLFile[]
     rootContext: AppMachineContext
+    wasmInstance: ModuleType
     override?: boolean
   }
 }) => {
-  const configuration = await readAppSettingsFile(electron)
+  const configuration = await readAppSettingsFile(electron, input.wasmInstance)
   for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
     const file = input.files[fileIndex]
     const requestedProjectName = file.requestedProjectName
@@ -86,6 +89,7 @@ const sharedBulkCreateWorkflow = async ({
             electron,
             entryName: requestedFileName,
             baseDir,
+            wasmInstance: input.wasmInstance,
           })
         ).name
 
@@ -93,6 +97,7 @@ const sharedBulkCreateWorkflow = async ({
     await createNewProjectDirectory(
       electron,
       newProjectName,
+      input.wasmInstance,
       requestedCode,
       configuration,
       fileName,
@@ -110,6 +115,46 @@ const sharedBulkCreateWorkflow = async ({
     projectName: '',
     subRoute: 'subRoute' in input ? input.subRoute : '',
   }
+}
+
+const sharedBulkDeleteWorkflow = async ({
+  electron,
+  input,
+}: {
+  electron: IElectronAPI
+  input: {
+    requestedProjectName: string
+    context: SystemIOContext
+    files: RequestedKCLFile[]
+    rootContext: AppMachineContext
+    wasmInstance: ModuleType
+  }
+}) => {
+  const project = input.context.folders.find(
+    (f) => f.name === input.requestedProjectName
+  )
+
+  if (!project) return Promise.reject(new Error("Couldn't find project"))
+
+  const filesInProject = await collectProjectFiles({
+    selectedFileContents: '',
+    fileNames: [],
+    projectContext: project,
+  })
+
+  // requestedFileName is the relative path too.
+  const filesToDelete = filesInProject.filter(
+    (f1) =>
+      input.files.some((f2) => f1.relPath === f2.requestedFileName) === false
+  )
+
+  for (const file of filesToDelete) {
+    if (file.type === 'other') continue
+    await electron.rm(file.absPath)
+  }
+
+  // How many files we deleted successfully
+  return filesToDelete.length
 }
 
 export const systemIOMachineDesktop = systemIOMachine.provide({
@@ -148,7 +193,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           }
           const project: Project = await getProjectInfo(
             window.electron,
-            projectPath
+            projectPath,
+            await context.wasmInstancePromise
           )
           if (
             project.kcl_file_count === 0 &&
@@ -174,7 +220,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         const folders = input.context.folders
         const requestedProjectName = input.requestedProjectName
         const uniqueName = getUniqueProjectName(requestedProjectName, folders)
-        await createNewProjectDirectory(window.electron, uniqueName)
+        await createNewProjectDirectory(
+          window.electron,
+          uniqueName,
+          await input.context.wasmInstancePromise
+        )
         return {
           message: `Successfully created "${uniqueName}"`,
           name: uniqueName,
@@ -265,6 +315,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedCode: string
           rootContext: AppMachineContext
           requestedSubRoute?: string
+          wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
         if (!window.electron) {
@@ -295,6 +346,8 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           )
         }
 
+        const wasmInstance = await input.wasmInstancePromise
+
         const baseDir = window.electron.join(
           input.context.projectDirectoryPath,
           newProjectName
@@ -303,14 +356,19 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           electron: window.electron,
           entryName: requestedFileNameWithExtension,
           baseDir,
+          wasmInstance,
         })
 
-        const configuration = await readAppSettingsFile(window.electron)
+        const configuration = await readAppSettingsFile(
+          window.electron,
+          wasmInstance
+        )
 
         // Create the project around the file if newProject
         await createNewProjectDirectory(
           window.electron,
           newProjectName,
+          await input.wasmInstancePromise,
           requestedCode,
           configuration,
           newFileName,
@@ -381,14 +439,20 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           context: SystemIOContext
           files: RequestedKCLFile[]
           rootContext: AppMachineContext
+          wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
         if (!window.electron) {
           return Promise.reject(new Error('No file system present'))
         }
+        const { wasmInstancePromise, ...otherInput } = input
+        const wasmInstance = await wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
           electron: window.electron,
-          input,
+          input: {
+            ...otherInput,
+            wasmInstance,
+          },
         })
         return {
           ...message,
@@ -407,15 +471,19 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedProjectName: string
           override?: boolean
           requestedSubRoute?: string
+          wasmInstancePromise: Promise<ModuleType>
         }
       }) => {
         if (!window.electron) {
           return Promise.reject(new Error('No file system present'))
         }
+        const { wasmInstancePromise, ...otherInput } = input
+        const wasmInstance = await wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
           electron: window.electron,
           input: {
-            ...input,
+            ...otherInput,
+            wasmInstance,
             override: input.override,
           },
         })
@@ -426,6 +494,51 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         }
       }
     ),
+    [SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile]:
+      fromPromise(
+        async ({
+          input,
+        }: {
+          input: {
+            context: SystemIOContext
+            files: RequestedKCLFile[]
+            rootContext: AppMachineContext
+            requestedProjectName: string
+            override?: boolean
+            requestedFileNameWithExtension: string
+            requestedSubRoute?: string
+          }
+        }) => {
+          if (!window.electron) {
+            return Promise.reject(new Error('No file system present'))
+          }
+          const wasmInstance = await input.context.wasmInstancePromise
+          const message = await sharedBulkCreateWorkflow({
+            electron: window.electron,
+            input: {
+              ...input,
+              wasmInstance,
+              override: input.override,
+            },
+          })
+          // We won't delete until everything's created / updated first.
+          const totalDeleted = await sharedBulkDeleteWorkflow({
+            electron: window.electron,
+            input: {
+              ...input,
+              wasmInstance,
+            },
+          })
+
+          message.message += `, ${totalDeleted} deleted`
+
+          return {
+            ...message,
+            projectName: input.requestedProjectName,
+            subRoute: input.requestedSubRoute || '',
+          }
+        }
+      ),
     [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToFile]: fromPromise(
       async ({
         input,
@@ -443,10 +556,12 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         if (!window.electron) {
           return Promise.reject(new Error('No file system present'))
         }
+        const wasmInstance = await input.context.wasmInstancePromise
         const message = await sharedBulkCreateWorkflow({
           electron: window.electron,
           input: {
             ...input,
+            wasmInstance,
             override: input.override,
           },
         })

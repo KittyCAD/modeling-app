@@ -4,9 +4,11 @@ import {
 } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
 import type { AppMachineContext } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   RequestedKCLFile,
   SystemIOContext,
+  SystemIOInput,
 } from '@src/machines/systemIO/utils'
 import {
   NO_PROJECT_DIRECTORY,
@@ -39,6 +41,7 @@ import { assertEvent, assign, fromPromise, setup } from 'xstate'
 export const systemIOMachine = setup({
   types: {
     context: {} as SystemIOContext,
+    input: {} as SystemIOInput,
     events: {} as
       | {
           type: SystemIOMachineEvents.readFoldersFromProjectDirectory
@@ -103,6 +106,16 @@ export const systemIOMachine = setup({
           data: {
             files: RequestedKCLFile[]
             requestedProjectName: string
+            override?: boolean
+            requestedSubRoute?: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile
+          data: {
+            files: RequestedKCLFile[]
+            requestedProjectName: string
+            requestedFileNameWithExtension: string
             override?: boolean
             requestedSubRoute?: string
           }
@@ -390,6 +403,7 @@ export const systemIOMachine = setup({
           requestedCode: string
           rootContext: AppMachineContext
           requestedSubRoute?: string
+          wasmInstancePromise: Promise<ModuleType>
         }
       }): Promise<{
         message: string
@@ -437,6 +451,7 @@ export const systemIOMachine = setup({
           context: SystemIOContext
           files: RequestedKCLFile[]
           rootContext: AppMachineContext
+          wasmInstancePromise: Promise<ModuleType>
         }
       }): Promise<{
         message: string
@@ -457,6 +472,7 @@ export const systemIOMachine = setup({
           rootContext: AppMachineContext
           requestedProjectName: string
           requestedSubRoute?: string
+          wasmInstancePromise: Promise<ModuleType>
         }
       }): Promise<{
         message: string
@@ -488,6 +504,28 @@ export const systemIOMachine = setup({
         return { message: '', fileName: '', projectName: '', subRoute: '' }
       }
     ),
+    [SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile]:
+      fromPromise(
+        async ({
+          input,
+        }: {
+          input: {
+            context: SystemIOContext
+            files: RequestedKCLFile[]
+            rootContext: AppMachineContext
+            requestedProjectName: string
+            requestedFileNameWithExtension: string
+            requestedSubRoute?: string
+          }
+        }): Promise<{
+          message: string
+          fileName: string
+          projectName: string
+          subRoute: string
+        }> => {
+          return { message: '', fileName: '', projectName: '', subRoute: '' }
+        }
+      ),
     [SystemIOMachineActors.renameFolder]: fromPromise(
       async ({
         input,
@@ -621,7 +659,8 @@ export const systemIOMachine = setup({
   // Remember, this machine and change its projectDirectory at any point
   // '' will be no project directory, aka clear this machine out!
   // To be the absolute root of someones computer we should take the string of path.resolve() in node.js which is different for each OS
-  context: () => ({
+  context: ({ input }) => ({
+    ...input,
     folders: [],
     defaultProjectFolderName: DEFAULT_PROJECT_NAME,
     projectDirectoryPath: NO_PROJECT_DIRECTORY,
@@ -702,6 +741,10 @@ export const systemIOMachine = setup({
         [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject]: {
           target:
             SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
+        },
+        [SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile]: {
+          target:
+            SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile,
         },
         [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile]: {
           target: SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToFile,
@@ -847,6 +890,7 @@ export const systemIOMachine = setup({
               event.data.requestedFileNameWithExtension,
             requestedCode: event.data.requestedCode,
             rootContext: self.system.get('root').getSnapshot().context,
+            wasmInstancePromise: context.wasmInstancePromise,
           }
         },
         onDone: {
@@ -872,6 +916,7 @@ export const systemIOMachine = setup({
             requestedSubRoute: event.data.requestedSubRoute,
             requestedCode: event.data.requestedCode,
             rootContext: self.system.get('root').getSnapshot().context,
+            wasmInstancePromise: context.wasmInstancePromise,
           }
         },
         onDone: {
@@ -960,6 +1005,7 @@ export const systemIOMachine = setup({
             context,
             files: event.data.files,
             rootContext: self.system.get('root').getSnapshot().context,
+            wasmInstancePromise: context.wasmInstancePromise,
           }
         },
         onDone: {
@@ -987,6 +1033,7 @@ export const systemIOMachine = setup({
             requestedProjectName: event.data.requestedProjectName,
             override: event.data.override,
             requestedSubRoute: event.data.requestedSubRoute,
+            wasmInstancePromise: context.wasmInstancePromise,
           }
         },
         onDone: {
@@ -1037,6 +1084,54 @@ export const systemIOMachine = setup({
                 assertEvent(
                   event,
                   SystemIOMachineEvents.done_bulkCreateKCLFilesAndNavigateToFile
+                )
+                // Gotcha: file could have an ending of .kcl...
+                const file = event.output.fileName.endsWith('.kcl')
+                  ? event.output.fileName
+                  : event.output.fileName + '.kcl'
+                return {
+                  project: event.output.projectName,
+                  file,
+                }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile]: {
+      invoke: {
+        id: SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+        src: SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+        input: ({ context, event, self }) => {
+          assertEvent(
+            event,
+            SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile
+          )
+          return {
+            context,
+            files: event.data.files,
+            rootContext: self.system.get('root').getSnapshot().context,
+            requestedProjectName: event.data.requestedProjectName,
+            override: event.data.override,
+            requestedFileNameWithExtension:
+              event.data.requestedFileNameWithExtension,
+            requestedSubRoute: event.data.requestedSubRoute,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              requestedFileName: ({ event }) => {
+                assertEvent(
+                  event,
+                  SystemIOMachineEvents.done_bulkCreateAndDeleteKCLFilesAndNavigateToFile
                 )
                 // Gotcha: file could have an ending of .kcl...
                 const file = event.output.fileName.endsWith('.kcl')

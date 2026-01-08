@@ -16,7 +16,7 @@ import {
   doesAnyPolygonIntersectBox,
   doesSegmentIntersectSelectionBox,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
-import { createLineSegmentMesh } from '@src/machines/sketchSolve/tools/moveTool/moveTool.test'
+import { createLineSegmentMesh } from '@src/machines/sketchSolve/tools/moveTool/moveTool.spec'
 
 describe('project3DToScreen', () => {
   it('should project 3D world coordinates to 2D screen coordinates', () => {

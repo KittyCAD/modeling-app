@@ -855,6 +855,15 @@ export fn extrude(
 ///     |> circle(center = [-10, 10], radius = 4)
 ///     |> revolve(angle = 90deg, axis = revolveAxis, bidirectionalAngle = 50)
 /// ```
+/// ```kcl
+/// halfTorus = startSketchOn(XY)
+///     |> circle(center = [15, 0], radius = 5)
+///     |> revolve(axis = Y, bodyType = SURFACE, angle = 180deg)
+/// closedTorus = startSketchOn(XY)
+///     |> circle(center = [15, 0], radius = 5)
+///     |> revolve(axis = Y, bodyType = SURFACE)
+///     |> translate(z = 30)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn revolve(
   /// The sketch or set of sketches that should be revolved
@@ -1256,6 +1265,7 @@ export fn sweep(
 ///     |> circle( center = [0, 100], radius = 20 )
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1])
+///   |> appearance(color = "#da7333", roughness = 50, metalness = 90)
 /// ```
 ///
 /// ```kcl

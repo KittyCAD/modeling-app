@@ -95,7 +95,8 @@ variableBelowShouldNotBeIncluded = 3
     const { variables, bodyPath, insertIndex } = findAllPreviousVariables(
       ast,
       execState.variables,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     const defaultTy = {
       type: 'Default',
@@ -149,7 +150,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
@@ -166,7 +168,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
@@ -179,7 +182,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
@@ -195,7 +199,7 @@ yo2 = hmm([identifierGuy + 5])`
     const rangeStart = code.indexOf('ghi')
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const range = topLevelRange(rangeStart, rangeStart)
-    const result = isNodeSafeToReplace(ast, range)
+    const result = isNodeSafeToReplace(ast, range, instanceInThisFile)
     if (err(result)) throw result
     expect(result.isSafe).toBe(false)
     expect(result.value?.type).toBe('CallExpressionKw')
@@ -212,7 +216,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(false)
@@ -227,7 +232,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
@@ -244,7 +250,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
@@ -264,7 +271,8 @@ yo2 = hmm([identifierGuy + 5])`
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
-      topLevelRange(rangeStart, rangeStart)
+      topLevelRange(rangeStart, rangeStart),
+      instanceInThisFile
     )
     if (err(result)) throw result
 
@@ -360,7 +368,7 @@ describe('testing getNodePathFromSourceRange', () => {
       ['cond', 'IfExpression'],
       ['left', 'BinaryExpression'],
     ])
-    const _node = getNodeFromPath<Name>(ast, result)
+    const _node = getNodeFromPath<Name>(ast, result, instanceInThisFile)
     if (err(_node)) throw _node
     expect(_node.node.type).toEqual('Name')
     expect(_node.node.name.name).toEqual('x')
@@ -392,7 +400,7 @@ describe('testing getNodePathFromSourceRange', () => {
       ['expression', 'ExpressionStatement'],
       ['left', 'BinaryExpression'],
     ])
-    const _node = getNodeFromPath<Name>(ast, result)
+    const _node = getNodeFromPath<Name>(ast, result, instanceInThisFile)
     if (err(_node)) throw _node
     expect(_node.node.type).toEqual('Name')
     expect(_node.node.name.name).toEqual('x')
@@ -416,7 +424,7 @@ describe('testing getNodePathFromSourceRange', () => {
       [1, 'index'],
       ['name', 'ImportItem'],
     ])
-    const _node = getNodeFromPath<Identifier>(ast, result)
+    const _node = getNodeFromPath<Identifier>(ast, result, instanceInThisFile)
     if (err(_node)) throw _node
     expect(_node.node.type).toEqual('Identifier')
     expect(_node.node.name).toEqual('bar')
@@ -442,7 +450,7 @@ describe('Testing findUsesOfTagInPipe', () => {
       ast,
       topLevelRange(characterIndex, characterIndex)
     )
-    const result = findUsesOfTagInPipe(ast, pathToNode)
+    const result = findUsesOfTagInPipe(ast, pathToNode, instanceInThisFile)
     expect(result).toHaveLength(2)
     result.forEach((range) => {
       expect(exampleCode.slice(range[0], range[1])).toContain('segLen')
@@ -458,7 +466,7 @@ describe('Testing findUsesOfTagInPipe', () => {
       ast,
       topLevelRange(characterIndex, characterIndex)
     )
-    const result = findUsesOfTagInPipe(ast, pathToNode)
+    const result = findUsesOfTagInPipe(ast, pathToNode, instanceInThisFile)
     expect(result).toHaveLength(0)
   })
 })
@@ -508,7 +516,8 @@ sketch003 = startSketchOn(extrude001, face = 'END')
           ast
         ),
       },
-      ast
+      ast,
+      instanceInThisFile
     )
     expect(extruded).toBeTruthy()
   })
@@ -524,7 +533,8 @@ sketch003 = startSketchOn(extrude001, face = 'END')
           ast
         ),
       },
-      ast
+      ast,
+      instanceInThisFile
     )
     expect(extruded).toBeFalsy()
   })
@@ -540,7 +550,8 @@ sketch003 = startSketchOn(extrude001, face = 'END')
           ast
         ),
       },
-      ast
+      ast,
+      instanceInThisFile
     )
     expect(extruded).toBeTruthy()
   })
@@ -729,6 +740,7 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
           ),
         ]),
       ],
+      wasmInstance: instanceInThisFile,
     })
     if (err(modifiedAst)) throw modifiedAst
     const recasted = recast(modifiedAst, instanceInThisFile)
@@ -768,6 +780,7 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
       node: ast,
       variables: {},
       pathToNode: sketchPathToNode,
+      wasmInstance: instanceInThisFile,
     })
 
     if (err(modifiedAst)) throw modifiedAst
@@ -804,7 +817,11 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
         ],
       },
     }
-    const result = isCursorInFunctionDefinition(ast, selectionRange)
+    const result = isCursorInFunctionDefinition(
+      ast,
+      selectionRange,
+      instanceInThisFile
+    )
     expect(result).toEqual(false)
   })
 })
@@ -1014,7 +1031,11 @@ plane001 = offsetPlane(YZ, offset = 10)
       graphSelections: [],
     }
 
-    const result = getSelectedPlaneAsNode(selections, variables)
+    const result = getSelectedPlaneAsNode(
+      selections,
+      variables,
+      instanceInThisFile
+    )
     expect(result).toBeTruthy()
     expect(result?.type).toBe('Literal')
     if (result?.type !== 'Literal') {
@@ -1049,7 +1070,11 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       ],
       otherSelections: [],
     }
-    const vars = getVariableExprsFromSelection(selections, ast)
+    const vars = getVariableExprsFromSelection(
+      selections,
+      ast,
+      instanceInThisFile
+    )
     if (err(vars)) throw vars
 
     expect(vars.exprs).toHaveLength(1)
@@ -1088,7 +1113,11 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       ],
       otherSelections: [],
     }
-    const vars = getVariableExprsFromSelection(selections, ast)
+    const vars = getVariableExprsFromSelection(
+      selections,
+      ast,
+      instanceInThisFile
+    )
     if (err(vars)) throw vars
     expect(vars.exprs).toHaveLength(1)
   })
@@ -1115,7 +1144,11 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
       ],
       otherSelections: [],
     }
-    const vars = getVariableExprsFromSelection(selections, ast)
+    const vars = getVariableExprsFromSelection(
+      selections,
+      ast,
+      instanceInThisFile
+    )
     if (err(vars)) throw vars
 
     expect(vars.exprs).toHaveLength(1)
@@ -1156,7 +1189,11 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
       }),
       otherSelections: [],
     }
-    const vars = getVariableExprsFromSelection(selections, ast)
+    const vars = getVariableExprsFromSelection(
+      selections,
+      ast,
+      instanceInThisFile
+    )
     if (err(vars)) throw vars
 
     expect(vars.exprs).toHaveLength(2)
@@ -1198,7 +1235,11 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
       }),
       otherSelections: [],
     }
-    const vars = getVariableExprsFromSelection(selections, ast)
+    const vars = getVariableExprsFromSelection(
+      selections,
+      ast,
+      instanceInThisFile
+    )
     if (err(vars)) throw vars
 
     expect(vars.exprs).toHaveLength(2)
@@ -1250,6 +1291,7 @@ extrude001 = extrude(profile001, length = 1)
     const vars = getVariableExprsFromSelection(
       selections,
       ast,
+      instanceInThisFile,
       nodeToEdit,
       lastChildLookup,
       artifactGraph

@@ -12,7 +12,7 @@ KCL samples conform to a set of style guidelines to ensure consistency and reada
 
 1. **File Naming:** Name your KCL files descriptively and concisely, using hyphens to separate words (e.g., flange.kcl, ball-bearing.kcl).
 
-2. **File Header:** Include a title comment at the top of each file, followed by a brief description explaining what the model is and its typical use cases.
+2. **File Header:** The first comment line should be the file's title. The second - a brief description explaining what the model is and its typical use cases. Optionally, but preferred, the third comment line should be "Categories:" followed by a category value or comma separated category values. Leaving this off won't break anything, but will list the sample on the website as "Uncategorized".
 
 3. **Inline Comments:** Use inline comments to explain non-obvious parts of the code. Each major section should have a comment describing its purpose.
 
@@ -91,6 +91,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![engine-valve](screenshots/engine-valve.png)](engine-valve/main.kcl)
 #### [exhaust-manifold](exhaust-manifold/main.kcl) ([screenshot](screenshots/exhaust-manifold.png))
 [![exhaust-manifold](screenshots/exhaust-manifold.png)](exhaust-manifold/main.kcl)
+#### [field-monitor-stand](field-monitor-stand/main.kcl) ([screenshot](screenshots/field-monitor-stand.png))
+[![field-monitor-stand](screenshots/field-monitor-stand.png)](field-monitor-stand/main.kcl)
 #### [flange](flange/main.kcl) ([screenshot](screenshots/flange.png))
 [![flange](screenshots/flange.png)](flange/main.kcl)
 #### [flat-bladed-impeller](flat-bladed-impeller/main.kcl) ([screenshot](screenshots/flat-bladed-impeller.png))

@@ -68,6 +68,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 export function startSketchOnDefault(
   node: Node<Program>,
   axis: DefaultPlaneStr,
+  wasmInstance: ModuleType,
   name = ''
 ): { modifiedAst: Node<Program>; id: string; pathToNode: PathToNode } {
   const _node = { ...node }
@@ -76,7 +77,7 @@ export function startSketchOnDefault(
 
   const startSketchOn = createCallExpressionStdLibKw(
     'startSketchOn',
-    createLiteral(axis),
+    createLiteral(axis, wasmInstance),
     []
   )
 
@@ -103,7 +104,8 @@ export function insertNewStartProfileAt(
   sketchNodePaths: PathToNode[],
   planeNodePath: PathToNode,
   at: Coords2d,
-  insertType: 'start' | 'end' = 'end'
+  insertType: 'start' | 'end' = 'end',
+  wasmInstance: ModuleType
 ):
   | {
       modifiedAst: Node<Program>
@@ -114,6 +116,7 @@ export function insertNewStartProfileAt(
   const varDec = getNodeFromPath<VariableDeclarator>(
     node,
     planeNodePath,
+    wasmInstance,
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
@@ -128,8 +131,8 @@ export function insertNewStartProfileAt(
         createLabeledArg(
           ARG_AT,
           createArrayExpression([
-            createLiteral(roundOff(at[0])),
-            createLiteral(roundOff(at[1])),
+            createLiteral(roundOff(at[0]), wasmInstance),
+            createLiteral(roundOff(at[1]), wasmInstance),
           ])
         ),
       ]
@@ -157,6 +160,7 @@ export function insertNewStartProfileAt(
 export function addSketchTo(
   node: Node<Program>,
   axis: 'xy' | 'xz' | 'yz',
+  wasmInstance: ModuleType,
   name = ''
 ): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
   const _node = { ...node }
@@ -165,16 +169,16 @@ export function addSketchTo(
 
   const startSketchOn = createCallExpressionStdLibKw(
     'startSketchOn',
-    createLiteral(axis.toUpperCase()),
+    createLiteral(axis.toUpperCase(), wasmInstance),
     []
   )
   const startProfile = createCallExpressionStdLibKw('startProfile', null, [
-    createLabeledArg(ARG_AT, createLiteral('default')),
+    createLabeledArg(ARG_AT, createLiteral('default', wasmInstance)),
   ])
   const initialLineTo = createCallExpressionStdLibKw(
     'line',
     null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
-    [createLabeledArg('end', createLiteral('default'))]
+    [createLabeledArg('end', createLiteral('default', wasmInstance))]
   )
 
   const pipeBody = [startSketchOn, startProfile, initialLineTo]
@@ -283,6 +287,7 @@ export function sketchOnExtrudedFace(
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
   addTagForSketchOnFace: typeof AddTagForSketchOnFaceFn,
+  wasmInstance: ModuleType,
   info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   let _node = { ...node }
@@ -293,6 +298,7 @@ export function sketchOnExtrudedFace(
   const _node1 = getNodeFromPath<VariableDeclarator>(
     _node,
     sketchPathToNode,
+    wasmInstance,
     'VariableDeclarator',
     true
   )
@@ -300,15 +306,19 @@ export function sketchOnExtrudedFace(
   const { node: oldSketchNode } = _node1
 
   const oldSketchName = oldSketchNode.id.name
-  const _node2 = getNodeFromPath<CallExpressionKw>(_node, sketchPathToNode, [
-    'CallExpressionKw',
-  ])
+  const _node2 = getNodeFromPath<CallExpressionKw>(
+    _node,
+    sketchPathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
   if (err(_node2)) return _node2
   const { node: expression } = _node2
 
   const _node3 = getNodeFromPath<VariableDeclarator>(
     _node,
     extrudePathToNode,
+    wasmInstance,
     'VariableDeclarator'
   )
   if (err(_node3)) return _node3
@@ -321,16 +331,18 @@ export function sketchOnExtrudedFace(
       {
         pathToNode: sketchPathToNode,
         node: _node,
+        wasmInstance,
       },
       expression.callee.name.name,
-      info.type === 'edgeCut' ? info : null
+      info.type === 'edgeCut' ? info : null,
+      wasmInstance
     )
     if (err(__tag)) return __tag
     const { modifiedAst, tag } = __tag
     _tag = createLocalName(tag)
     _node = modifiedAst
   } else {
-    _tag = createLiteral(info.subType.toUpperCase())
+    _tag = createLiteral(info.subType.toUpperCase(), wasmInstance)
   }
   const newSketch = createVariableDeclaration(
     newSketchName,
@@ -428,7 +440,8 @@ export function insertNamedConstant({
 export function sketchOnOffsetPlane(
   node: Node<Program>,
   offsetPathToNode: PathToNode,
-  negated: boolean = false
+  negated: boolean = false,
+  wasmInstance: ModuleType
 ) {
   let _node = { ...node }
 
@@ -436,6 +449,7 @@ export function sketchOnOffsetPlane(
   const offsetPlaneDeclarator = getNodeFromPath<VariableDeclarator>(
     _node,
     offsetPathToNode,
+    wasmInstance,
     'VariableDeclarator',
     true
   )
@@ -530,12 +544,18 @@ export function replaceValueAtNodePath({
   ast,
   pathToNode,
   newExpressionString,
+  wasmInstance,
 }: {
   ast: Node<Program>
   pathToNode: PathToNode
   newExpressionString: string
+  wasmInstance: ModuleType
 }) {
-  const replaceCheckResult = isNodeSafeToReplacePath(ast, pathToNode)
+  const replaceCheckResult = isNodeSafeToReplacePath(
+    ast,
+    pathToNode,
+    wasmInstance
+  )
   if (err(replaceCheckResult)) {
     return replaceCheckResult
   }
@@ -552,17 +572,23 @@ export function moveValueIntoNewVariable(
   ast: Node<Program>,
   memVars: VariableMap,
   sourceRange: SourceRange,
-  variableName: string
+  variableName: string,
+  wasmInstance: ModuleType
 ): {
   modifiedAst: Node<Program>
   pathToReplacedNode?: PathToNode
 } {
-  const meta = isNodeSafeToReplace(ast, sourceRange)
+  const meta = isNodeSafeToReplace(ast, sourceRange, wasmInstance)
   if (trap(meta)) return { modifiedAst: ast }
   const { isSafe, value, replacer } = meta
   if (!isSafe || value.type === 'Name') return { modifiedAst: ast }
 
-  const { insertIndex } = findAllPreviousVariables(ast, memVars, sourceRange)
+  const { insertIndex } = findAllPreviousVariables(
+    ast,
+    memVars,
+    sourceRange,
+    wasmInstance
+  )
   let _node = structuredClone(ast)
   const replaced = replacer(_node, variableName)
   if (trap(replaced)) return { modifiedAst: ast }
@@ -590,7 +616,7 @@ export function deleteSegmentOrProfileFromPipeExpression(
   getConstraintInfoKw: typeof GetConstraintInfoKwFn,
   removeSingleConstraint: typeof RemoveSingleConstraintFn,
   transformAstSketchLines: typeof TransformAstSketchLinesFn,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): Node<Program> | Error {
   let _modifiedAst = structuredClone(modifiedAst)
 
@@ -600,11 +626,9 @@ export function deleteSegmentOrProfileFromPipeExpression(
     const callExp = getNodeFromPath<Node<CallExpressionKw>>(
       _modifiedAst,
       path,
+      wasmInstance,
       ['CallExpressionKw'],
-      true,
-      undefined,
-      undefined,
-      wasmInstance
+      true
     )
     if (err(callExp)) return callExp
 
@@ -631,6 +655,7 @@ export function deleteSegmentOrProfileFromPipeExpression(
     const expr = getNodeFromPath<PipeExpression | CallExpressionKw>(
       _modifiedAst,
       pathToNode,
+      wasmInstance,
       'PipeExpression'
     )
     if (err(expr)) {
@@ -739,7 +764,7 @@ export function removeSingleConstraintInfo(
   memVars: VariableMap,
   removeSingleConstraint: typeof RemoveSingleConstraintFn,
   transformAstSketchLines: typeof TransformAstSketchLinesFn,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ):
   | {
       modifiedAst: Node<Program>
@@ -750,6 +775,7 @@ export function removeSingleConstraintInfo(
     pathToCallExp,
     inputDetails: argDetails,
     ast,
+    wasmInstance,
   })
   if (!transform) return false
   const retval = transformAstSketchLines({
@@ -846,7 +872,8 @@ making it safe for later code that uses part001 (the extrude in this example)
  */
 export function splitPipedProfile(
   ast: Node<Program>,
-  pathToPipe: PathToNode
+  pathToPipe: PathToNode,
+  wasmInstance: ModuleType
 ):
   | {
       modifiedAst: Node<Program>
@@ -858,6 +885,7 @@ export function splitPipedProfile(
   const varDec = getNodeFromPath<Node<VariableDeclaration>>(
     _ast,
     pathToPipe,
+    wasmInstance,
     'VariableDeclaration'
   )
   if (err(varDec)) return varDec
@@ -1016,18 +1044,21 @@ export function setCallInAst({
   pathToEdit,
   pathIfNewPipe,
   variableIfNewDecl,
+  wasmInstance,
 }: {
   ast: Node<Program>
   call: Node<CallExpressionKw>
   pathToEdit?: PathToNode
   pathIfNewPipe?: PathToNode
   variableIfNewDecl?: string
+  wasmInstance: ModuleType
 }): Error | PathToNode {
   let pathToNode: PathToNode | undefined
   if (pathToEdit) {
     const result = getNodeFromPath<CallExpressionKw>(
       ast,
       pathToEdit,
+      wasmInstance,
       'CallExpressionKw'
     )
     if (err(result)) {
@@ -1040,6 +1071,7 @@ export function setCallInAst({
     const pipe = getNodeFromPath<PipeExpression>(
       ast,
       pathIfNewPipe,
+      wasmInstance,
       'PipeExpression'
     )
     if (err(pipe)) {
@@ -1051,6 +1083,7 @@ export function setCallInAst({
       const expression = getNodeFromPath<ExpressionStatement>(
         ast,
         pathIfNewPipe,
+        wasmInstance,
         'ExpressionStatement'
       )
       if (err(expression) || expression.node.type !== 'ExpressionStatement') {
@@ -1086,7 +1119,8 @@ export function setCallInAst({
 }
 
 export function createPoint2dExpression(
-  value: KclExpression
+  value: KclExpression,
+  wasmInstance: ModuleType
 ): Node<Expr> | Error {
   let expr: Node<Expr> | undefined
   if ('value' in value && isArray(value.value)) {
@@ -1098,7 +1132,7 @@ export function createPoint2dExpression(
         typeof val === 'string' ||
         typeof val === 'boolean'
       ) {
-        arrayElements.push(createLiteral(val))
+        arrayElements.push(createLiteral(val, wasmInstance))
       } else {
         return new Error('Invalid value type for point2d')
       }

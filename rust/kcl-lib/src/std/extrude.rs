@@ -103,6 +103,13 @@ async fn inner_extrude(
 ) -> Result<Vec<Solid>, KclError> {
     let body_type = body_type.unwrap_or_default();
 
+    if matches!(body_type, BodyType::Solid) && sketches.iter().any(|sk| matches!(sk.is_closed, ProfileClosed::No)) {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot solid extrude an open profile. Either close the profile, or use a surface extrude.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
     // Extrude the element(s).
     let mut solids = Vec::new();
     let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
@@ -175,6 +182,7 @@ async fn inner_extrude(
                 opposite: opposite.clone(),
                 extrude_method,
                 body_type,
+                merge_coplanar_faces: Default::default(), // TODO serena
             }),
             (None, None, None, None, Some(to)) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(mcmd::ExtrudeToReference {

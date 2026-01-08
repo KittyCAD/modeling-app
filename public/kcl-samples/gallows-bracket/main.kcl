@@ -1,5 +1,6 @@
 // Gallows Bracket
 // A gallows bracket is a metal bracket that is used to support a chimney breast after it has been removed. The bracket is typically made of steel or cast iron, and it is attached to the remaining chimney stack. The bracket provides support for the chimney breast, preventing it from collapsing.
+// Categories: Construction
 
 import gallowsBracket, angleIron from "lib.kcl"
 

@@ -138,7 +138,7 @@ function ProjectMenuPopover({
             const targetPath = location.pathname.includes(PATHS.FILE)
               ? filePath + PATHS.SETTINGS_PROJECT
               : PATHS.HOME + PATHS.SETTINGS_PROJECT
-            navigate(targetPath)
+            void navigate(targetPath)
           },
         },
         'break',
@@ -233,6 +233,7 @@ function ProjectMenuPopover({
     [
       platform,
       findCommand,
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       commandBarActor.send,
       engineCommandManager,
       onProjectClose,

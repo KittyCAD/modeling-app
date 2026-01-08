@@ -71,9 +71,92 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
+/// Convenience macro for handling control flow in execution by returning early
+/// if it is some kind of early return or stripping off the control flow
+/// otherwise.
+macro_rules! control_continue {
+    ($control_flow:expr) => {{
+        let cf = $control_flow;
+        if cf.is_some_return() {
+            return Ok(cf);
+        } else {
+            cf.into_value()
+        }
+    }};
+}
+// Expose the macro to other modules.
+pub(crate) use control_continue;
+
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
+pub enum ControlFlowKind {
+    #[default]
+    Continue,
+    Exit,
+}
+
+impl ControlFlowKind {
+    /// Returns true if this is any kind of early return.
+    pub fn is_some_return(&self) -> bool {
+        match self {
+            ControlFlowKind::Continue => false,
+            ControlFlowKind::Exit => true,
+        }
+    }
+}
+
+#[must_use = "You should always handle the control flow value when it is returned"]
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct KclValueControlFlow {
+    /// Use [control_continue] or [Self::into_value] to get the value.
+    value: KclValue,
+    pub control: ControlFlowKind,
+}
+
+impl KclValue {
+    pub(crate) fn continue_(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: self,
+            control: ControlFlowKind::Continue,
+        }
+    }
+
+    pub(crate) fn exit(self) -> KclValueControlFlow {
+        KclValueControlFlow {
+            value: self,
+            control: ControlFlowKind::Exit,
+        }
+    }
+}
+
+impl KclValueControlFlow {
+    /// Returns true if this is any kind of early return.
+    pub fn is_some_return(&self) -> bool {
+        self.control.is_some_return()
+    }
+
+    pub(crate) fn into_value(self) -> KclValue {
+        self.value
+    }
+}
+
 pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum PreserveMem {
+    Normal,
+    Always,
+}
+
+impl PreserveMem {
+    fn normal(self) -> bool {
+        match self {
+            PreserveMem::Normal => true,
+            PreserveMem::Always => false,
+        }
+    }
 }
 
 /// Outcome of executing a program.  This is used in TS.
@@ -127,10 +210,18 @@ impl Default for MockConfig {
         Self {
             // By default, use previous memory. This is usually what you want.
             use_prev_memory: true,
-            freedom_analysis: false,
+            freedom_analysis: true,
             #[cfg(feature = "artifact-graph")]
             segment_ids_edited: AhashIndexSet::default(),
         }
+    }
+}
+
+impl MockConfig {
+    #[must_use]
+    pub(crate) fn no_freedom_analysis(mut self) -> Self {
+        self.freedom_analysis = false;
+        self
     }
 }
 
@@ -642,7 +733,7 @@ impl ExecutorContext {
         // part of the scene).
         exec_state.mut_stack().push_new_env_for_scope();
 
-        let result = self.inner_run(program, &mut exec_state, true).await?;
+        let result = self.inner_run(program, &mut exec_state, PreserveMem::Always).await?;
 
         // Restore any temporary variables, then save any newly created variables back to
         // memory in case another run wants to use them. Note this is just saved to the preserved
@@ -811,7 +902,7 @@ impl ExecutorContext {
                                 &program,
                                 &mut new_exec_state,
                                 Some((new_universe, new_universe_map)),
-                                false,
+                                PreserveMem::Normal,
                             )
                             .await;
 
@@ -826,7 +917,9 @@ impl ExecutorContext {
                             .await
                             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                        let result = self.run_concurrent(&program, &mut exec_state, None, false).await;
+                        let result = self
+                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                            .await;
 
                         (exec_state, result)
                     }
@@ -834,7 +927,9 @@ impl ExecutorContext {
                         let mut exec_state = cached_state.reconstitute_exec_state();
                         exec_state.mut_stack().restore_env(cached_state.main.result_env);
 
-                        let result = self.run_concurrent(&program, &mut exec_state, None, true).await;
+                        let result = self
+                            .run_concurrent(&program, &mut exec_state, None, PreserveMem::Always)
+                            .await;
 
                         (exec_state, result)
                     }
@@ -848,7 +943,9 @@ impl ExecutorContext {
                     .await
                     .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                let result = self.run_concurrent(&program, &mut exec_state, None, false).await;
+                let result = self
+                    .run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)
+                    .await;
 
                 (program, exec_state, result)
             }
@@ -884,7 +981,8 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        self.run_concurrent(program, exec_state, None, false).await
+        self.run_concurrent(program, exec_state, None, PreserveMem::Normal)
+            .await
     }
 
     /// Perform the execution of a program using a concurrent
@@ -896,7 +994,7 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
         universe_info: Option<(Universe, UniverseMap)>,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Reuse our cached universe if we have one.
 
@@ -961,7 +1059,14 @@ impl ExecutorContext {
                     match repr {
                         ModuleRepr::Kcl(program, _) => {
                             let result = exec_ctxt
-                                .exec_module_from_ast(program, module_id, module_path, exec_state, source_range, false)
+                                .exec_module_from_ast(
+                                    program,
+                                    module_id,
+                                    module_path,
+                                    exec_state,
+                                    source_range,
+                                    PreserveMem::Normal,
+                                )
                                 .await;
 
                             result.map(|val| ModuleRepr::Kcl(program.clone(), Some(val)))
@@ -1173,7 +1278,7 @@ impl ExecutorContext {
         &self,
         program: &crate::Program,
         exec_state: &mut ExecState,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
@@ -1222,7 +1327,7 @@ impl ExecutorContext {
         &self,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
     ) -> Result<EnvironmentRef, (KclError, Option<EnvironmentRef>)> {
         // Don't early return!  We need to build other outputs regardless of
         // whether execution failed.
@@ -2373,6 +2478,20 @@ test([0, 0])
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_max_stack_size_exceeded_error() {
+        let ast = r#"
+fn forever(@n) {
+  return 1 + forever(n)
+}
+
+forever(1)
+"#;
+        let result = parse_execute(ast).await;
+        let err = result.unwrap_err();
+        assert!(err.to_string().contains("stack size exceeded"), "actual: {:?}", err);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_doubly_nested_parens() {
         let ast = r#"sigmaAllow = 35000 // psi
 width = 4 // inch
@@ -2627,7 +2746,7 @@ sketch = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, 10])
   |> line(end = [10, 0], tag = $tag0)
-  |> line(end = [0, 0])
+  |> line(endAbsolute = [0, 0])
 
 fn foo() {
   // tag0 tags an edge

@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     shapes::{get_radius, get_radius_labelled},
-    utils::{untype_array, untype_point},
+    utils::untype_array,
 };
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
@@ -363,13 +363,7 @@ async fn straight_line(
     };
 
     // Does it loop back on itself?
-    let end_x = end[0];
-    let end_y = end[1];
-    let start_x = sketch.start.from[0];
-    let start_y = sketch.start.from[1];
-    let same_x = (end_x - start_x).abs() < EQUAL_POINTS_DIST_EPSILON;
-    let same_y = (end_y - start_y).abs() < EQUAL_POINTS_DIST_EPSILON;
-    let loops_back_to_start = same_x && same_y;
+    let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
 
     let current_path = Path::ToPoint {
         base: BasePath {
@@ -395,6 +389,12 @@ async fn straight_line(
     new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
+}
+
+fn does_segment_close_sketch(end: [f64; 2], from: [f64; 2]) -> bool {
+    let same_x = (end[0] - from[0]).abs() < EQUAL_POINTS_DIST_EPSILON;
+    let same_y = (end[1] - from[1]).abs() < EQUAL_POINTS_DIST_EPSILON;
+    same_x && same_y
 }
 
 /// Draw a line on the x-axis.
@@ -574,6 +574,7 @@ async fn inner_angled_line_length(
     let relative = true;
 
     let to: [f64; 2] = [from.x + delta[0], from.y + delta[1]];
+    let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
 
     let id = exec_state.next_uuid();
 
@@ -609,6 +610,9 @@ async fn inner_angled_line_length(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -1438,6 +1442,7 @@ pub async fn absolute_arc(
 
     let start = [from.x, from.y];
     let end = point_to_len_unit(end_absolute, from.units);
+    let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
 
     let current_path = Path::ArcThreePoint {
         base: BasePath {
@@ -1458,6 +1463,9 @@ pub async fn absolute_arc(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -1508,6 +1516,7 @@ pub async fn relative_arc(
         )
         .await?;
 
+    let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
     let current_path = Path::Arc {
         base: BasePath {
             from: from.ignore_units(),
@@ -1527,6 +1536,9 @@ pub async fn relative_arc(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -1678,6 +1690,7 @@ async fn inner_tangential_arc_radius_angle(
             (center, to, ccw)
         }
     };
+    let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
 
     let current_path = Path::TangentialArc {
         ccw,
@@ -1697,6 +1710,9 @@ async fn inner_tangential_arc_radius_angle(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -1737,6 +1753,7 @@ async fn inner_tangential_arc_to_point(
     } else {
         [from.x + point[0], from.y + point[1]]
     };
+    let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
     let [to_x, to_y] = to;
     let result = get_tangential_arc_to_info(TangentialArcInfoInput {
         arc_start_point: [from.x, from.y],
@@ -1790,6 +1807,9 @@ async fn inner_tangential_arc_to_point(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -2099,7 +2119,7 @@ pub(crate) async fn inner_elliptic(
     let from: Point2d = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
 
-    let (center_u, _) = untype_point(center);
+    let center_u = point_to_len_unit(center, from.units);
 
     let major_axis = match (major_axis, major_radius) {
         (Some(_), Some(_)) | (None, None) => {
@@ -2126,6 +2146,7 @@ pub(crate) async fn inner_elliptic(
         major_axis_magnitude * libm::cos(end_angle.to_radians()),
         minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
     ];
+    let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
     let major_axis_angle = libm::atan2(major_axis[1].n, major_axis[0].n);
 
     let point = [
@@ -2170,6 +2191,9 @@ pub(crate) async fn inner_elliptic(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -2287,13 +2311,14 @@ pub(crate) async fn inner_hyperbolic(
         }),
     };
 
-    let (interior, _) = untype_point(interior);
-    let (end, _) = untype_point(end);
+    let interior = point_to_len_unit(interior, from.units);
+    let end = point_to_len_unit(end, from.units);
     let end_point = Point2d {
         x: end[0],
         y: end[1],
         units: from.units,
     };
+    let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
 
     let semi_major_u = semi_major.to_length_units(from.units);
     let semi_minor_u = semi_minor.to_length_units(from.units);
@@ -2334,6 +2359,9 @@ pub(crate) async fn inner_hyperbolic(
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
+    }
+    if loops_back_to_start {
+        new_sketch.is_closed = ProfileClosed::Implicitly;
     }
 
     new_sketch.paths.push(current_path);
@@ -2444,17 +2472,17 @@ pub(crate) async fn inner_parabolic(
 
     let (interior, end, relative) = match (coefficients.clone(), interior, end, interior_absolute, end_absolute) {
         (None, Some(interior), Some(end), None, None) => {
-            let (interior, _) = untype_point(interior);
-            let (end, _) = untype_point(end);
+            let interior = point_to_len_unit(interior, from.units);
+            let end = point_to_len_unit(end, from.units);
             (interior,end, true)
         },
         (None, None, None, Some(interior_absolute), Some(end_absolute)) => {
-            let (interior_absolute, _) = untype_point(interior_absolute);
-            let (end_absolute, _) = untype_point(end_absolute);
+            let interior_absolute = point_to_len_unit(interior_absolute, from.units);
+            let end_absolute = point_to_len_unit(end_absolute, from.units);
             (interior_absolute, end_absolute, false)
         }
         (Some(coefficients), _, Some(end), _, _) => {
-            let (end, _) = untype_point(end);
+            let end = point_to_len_unit(end, from.units);
             let interior =
             inner_parabolic_point(
                 Some(TyF64::count(0.5 * (from.x + end[0]))),
@@ -2466,7 +2494,7 @@ pub(crate) async fn inner_parabolic(
             (interior, end, true)
         }
         (Some(coefficients), _, _, _, Some(end)) => {
-            let (end, _) = untype_point(end);
+            let end = point_to_len_unit(end, from.units);
             let interior =
             inner_parabolic_point(
                 Some(TyF64::count(0.5 * (from.x + end[0]))),
@@ -2642,16 +2670,15 @@ pub(crate) async fn inner_conic(
         }),
     };
 
-    let (end, _) = untype_array(end);
-    let (interior, _) = untype_point(interior);
+    let end = point_to_len_unit(end, from.units);
+    let interior = point_to_len_unit(interior, from.units);
 
     let (start_tangent, end_tangent) = if let Some(coeffs) = coefficients {
         let (coeffs, _) = untype_array(coeffs);
         (conic_tangent(coeffs, [from.x, from.y]), conic_tangent(coeffs, end))
     } else {
         let start = if let Some(start_tangent) = start_tangent {
-            let (start, _) = untype_point(start_tangent);
-            start
+            point_to_len_unit(start_tangent, from.units)
         } else {
             let previous_point = sketch
                 .get_tangential_info_from_paths()
@@ -2666,7 +2693,7 @@ pub(crate) async fn inner_conic(
                 vec![args.source_range],
             )));
         };
-        let (end_tan, _) = untype_point(end_tangent);
+        let end_tan = point_to_len_unit(end_tangent, from.units);
         (start, end_tan)
     };
 

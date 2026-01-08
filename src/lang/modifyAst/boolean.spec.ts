@@ -80,6 +80,7 @@ describe('boolean', () => {
         artifactGraph,
         solids,
         tools,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
 

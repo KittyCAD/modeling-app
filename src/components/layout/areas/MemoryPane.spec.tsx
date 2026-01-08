@@ -53,6 +53,7 @@ describe('processMemory', () => {
     |> startProfile(at = [0, 0])
     |> line(endAbsolute = [-2.4, myVar])
     |> line(endAbsolute = [-0.76, otherVar])
+    |> line(endAbsolute = profileStart())
     |> extrude(length = 4)
 
   theSketch = startSketchOn(XY)
@@ -77,6 +78,13 @@ describe('processMemory', () => {
     expect(output.otherVar).toEqual('3 (no units, defaulting to mm or deg)')
     expect(output.myFn).toEqual('__function__')
     expect(output.theExtrude).toEqual([
+      {
+        type: 'extrudePlane',
+        tag: null,
+        id: expect.any(String),
+        faceId: expect.any(String),
+        sourceRange: [expect.any(Number), expect.any(Number), 0],
+      },
       {
         type: 'extrudePlane',
         tag: null,

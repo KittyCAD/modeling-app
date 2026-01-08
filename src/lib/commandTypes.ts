@@ -1,6 +1,12 @@
 import type { EntityType } from '@kittycad/lib'
 import type { ReactNode } from 'react'
-import type { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
+import type {
+  Actor,
+  ActorRefFrom,
+  AnyStateMachine,
+  ContextFrom,
+  EventFrom,
+} from 'xstate'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
@@ -12,6 +18,7 @@ import type {
   CommandBarContext,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type Icon = CustomIconName
 const _TARGETS = ['both', 'web', 'desktop'] as const
@@ -78,9 +85,12 @@ export type Command<
   reviewMessage?:
     | ReactNode
     | ((commandBarContext: CommandBarContext) => ReactNode)
-  reviewValidation?: (context: CommandBarContext) => Promise<undefined | Error>
+  reviewValidation?: (
+    context: CommandBarContext,
+    machineActor?: ActorRefFrom<T>
+  ) => Promise<undefined | Error>
   machineActor?: Actor<T>
-  onSubmit: (data?: CommandSchema) => void
+  onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => void
   onCancel?: () => void
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgument<CommandSchema[ArgName], T>
@@ -134,6 +144,8 @@ export type CommandArgumentConfig<
         machineContext?: C
       ) => boolean)
   skip?: boolean
+  /** If `true`, this argument will be automatically prepopulated with default value, but may still be cleared */
+  prepopulate?: boolean
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */
@@ -155,7 +167,8 @@ export type CommandArgumentConfig<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
     }
@@ -165,12 +178,10 @@ export type CommandArgumentConfig<
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
-      validation?: ({
-        data,
-        context,
-      }: {
+      validation?: (props: {
         data: any
         context: CommandBarContext
+        machineContext?: C
       }) => Promise<boolean | string>
     }
   | {
@@ -180,12 +191,10 @@ export type CommandArgumentConfig<
       multiple: boolean
       clearSelectionFirst?: boolean
       allowNoSelection?: boolean
-      validation?: ({
-        data,
-        context,
-      }: {
+      validation?: (props: {
         data: any
         context: CommandBarContext
+        machineContext?: C
       }) => Promise<boolean | string>
       selectionSource?: {
         allowSceneSelection?: boolean
@@ -206,7 +215,8 @@ export type CommandArgumentConfig<
         | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => string)
     }
   | {
@@ -215,15 +225,14 @@ export type CommandArgumentConfig<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
-      validation?: ({
-        data,
-        context,
-      }: {
+      validation?: (props: {
         data: any
         context: CommandBarContext
+        machineContext?: C
       }) => Promise<boolean | string>
     }
   | {
@@ -232,7 +241,8 @@ export type CommandArgumentConfig<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
     }
@@ -242,7 +252,8 @@ export type CommandArgumentConfig<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
     }
@@ -254,15 +265,14 @@ export type CommandArgumentConfig<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
-      validation?: ({
-        data,
-        context,
-      }: {
+      validation?: (props: {
         data: any
         context: CommandBarContext
+        machineContext?: C
       }) => Promise<boolean | string>
     }
   | {
@@ -271,15 +281,14 @@ export type CommandArgumentConfig<
         | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => string)
       defaultValueFromContext?: (context: C) => OutputType
-      validation?: ({
-        data,
-        context,
-      }: {
+      validation?: (props: {
         data: any
         context: CommandBarContext
+        machineContext?: C
       }) => Promise<boolean | string>
     }
   | {
@@ -288,15 +297,14 @@ export type CommandArgumentConfig<
         | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: C
+            machineContext?: C,
+            wasmInstance?: ModuleType
           ) => string)
       defaultValueFromContext?: (context: C) => OutputType
-      validation?: ({
-        data,
-        context,
-      }: {
+      validation?: (props: {
         data: any
         context: CommandBarContext
+        machineContext?: C
       }) => Promise<boolean | string>
     }
 )
@@ -320,12 +328,14 @@ export type CommandArgument<
         commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
         machineContext?: ContextFrom<T>
       ) => boolean)
+  /** If `true`, this argument will be automatically prepopulated with default value, but may still be cleared */
+  prepopulate?: boolean
   skip?: boolean
   machineActor?: Actor<T>
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */
-  valueSummary?: (value: OutputType) => string
+  valueSummary?: (value: OutputType, wasmInstance?: ModuleType) => string
 } & (
   | {
       inputType: Extract<CommandInputType, 'options'>
@@ -341,14 +351,13 @@ export type CommandArgument<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => OutputType)
-      validation?: ({
-        data,
-        context,
-      }: {
+      validation?: (props: {
         data: any
         context: CommandBarContext
+        machineContext?: ContextFrom<T>
       }) => Promise<boolean | string>
     }
   | {
@@ -357,12 +366,10 @@ export type CommandArgument<
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
-      validation?: ({
-        data,
-        context,
-      }: {
+      validation?: (props: {
         data: any
         context: CommandBarContext
+        machineContext?: ContextFrom<T>
       }) => Promise<boolean | string>
     }
   | {
@@ -372,12 +379,10 @@ export type CommandArgument<
       multiple: boolean
       clearSelectionFirst?: boolean
       allowNoSelection?: boolean
-      validation?: ({
-        data,
-        context,
-      }: {
+      validation?: (props: {
         data: any
         context: CommandBarContext
+        machineContext?: ContextFrom<T>
       }) => Promise<boolean | string>
       selectionSource?: {
         allowSceneSelection?: boolean
@@ -398,7 +403,8 @@ export type CommandArgument<
         | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => string)
     }
   | {
@@ -407,14 +413,13 @@ export type CommandArgument<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => OutputType)
-      validation?: ({
-        data,
-        context,
-      }: {
+      validation?: (props: {
         data: any
         context: CommandBarContext
+        machineContext?: ContextFrom<T>
       }) => Promise<boolean | string>
     }
   | {
@@ -423,7 +428,8 @@ export type CommandArgument<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => OutputType)
       filters: FiltersConfig
     }
@@ -433,7 +439,8 @@ export type CommandArgument<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => OutputType)
     }
   | {
@@ -442,7 +449,8 @@ export type CommandArgument<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => OutputType)
     }
   | {
@@ -451,14 +459,13 @@ export type CommandArgument<
         | OutputType
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => OutputType)
-      validation?: ({
-        data,
-        context,
-      }: {
+      validation?: (props: {
         data: any
         context: CommandBarContext
+        machineContext?: ContextFrom<T>
       }) => Promise<boolean | string>
     }
   | {
@@ -467,14 +474,13 @@ export type CommandArgument<
         | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => string)
-      validation?: ({
-        data,
-        context,
-      }: {
+      validation?: (props: {
         data: any
         context: CommandBarContext
+        machineContext?: ContextFrom<T>
       }) => Promise<boolean | string>
     }
   | {
@@ -483,14 +489,13 @@ export type CommandArgument<
         | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
-            machineContext?: ContextFrom<T>
+            machineContext?: ContextFrom<T>,
+            wasmInstance?: ModuleType
           ) => string)
-      validation?: ({
-        data,
-        context,
-      }: {
+      validation?: (props: {
         data: any
         context: CommandBarContext
+        machineContext?: ContextFrom<T>
       }) => Promise<boolean | string>
     }
 )

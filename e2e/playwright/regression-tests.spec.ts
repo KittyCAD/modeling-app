@@ -15,7 +15,7 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.describe('Regression tests', () => {
+test.describe('Regression tests', { tag: '@desktop' }, () => {
   // bugs we found that don't fit neatly into other categories
   test('bad model has inline error #3251', async ({
     context,
@@ -538,43 +538,42 @@ extrude002 = extrude(profile002, length = 150)`
     })
   })
 
-  test(
-    `Network health indicator only appears in modeling view`,
-    { tag: '@desktop' },
-    async ({ context, page }) => {
-      await context.folderSetupFn(async (dir) => {
-        const bracketDir = path.join(dir, 'bracket')
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('cylinder-inches.kcl'),
-          path.join(bracketDir, 'main.kcl')
-        )
-      })
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+  test(`Network health indicator only appears in modeling view`, async ({
+    context,
+    page,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'bracket')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('cylinder-inches.kcl'),
+        path.join(bracketDir, 'main.kcl')
+      )
+    })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-      // Locators
-      const projectsHeading = page.getByRole('heading', {
-        name: 'Projects',
-      })
-      const projectLink = page.getByRole('link', { name: 'bracket' })
-      const networkHealthIndicator = page.getByTestId(/network-toggle/)
+    // Locators
+    const projectsHeading = page.getByRole('heading', {
+      name: 'Projects',
+    })
+    const projectLink = page.getByRole('link', { name: 'bracket' })
+    const networkHealthIndicator = page.getByTestId(/network-toggle/)
 
-      await test.step('Check the home page', async () => {
-        await expect(projectsHeading).toBeVisible()
-        await expect(projectLink).toBeVisible()
-        await expect(networkHealthIndicator).not.toBeVisible()
-      })
+    await test.step('Check the home page', async () => {
+      await expect(projectsHeading).toBeVisible()
+      await expect(projectLink).toBeVisible()
+      await expect(networkHealthIndicator).not.toBeVisible()
+    })
 
-      await test.step('Open the project', async () => {
-        await projectLink.click()
-      })
+    await test.step('Open the project', async () => {
+      await projectLink.click()
+    })
 
-      await test.step('Check the modeling view', async () => {
-        await expect(projectsHeading).not.toBeVisible()
-        await expect(networkHealthIndicator).toBeVisible()
-      })
-    }
-  )
+    await test.step('Check the modeling view', async () => {
+      await expect(projectsHeading).not.toBeVisible()
+      await expect(networkHealthIndicator).toBeVisible()
+    })
+  })
 
   test(`View gizmo stays visible even when zoomed out all the way`, async ({
     page,
@@ -860,6 +859,66 @@ s2 = startSketchOn(XY)
     await toolbar.exitSketch()
 
     await editor.expectEditor.toContain('s2 = startSketchOn(XY)')
+  })
+
+  test('Interrupting a long-executing file with navigation executes the new file', async ({
+    page,
+    homePage,
+    scene,
+    context,
+    toolbar,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const testDir = path.join(dir, 'test')
+      await fsp.mkdir(testDir, { recursive: true })
+      await fsp.writeFile(
+        path.join(testDir, 'sphere.kcl'),
+        `export fn sphere(sphereRadius) {
+  // build sphere by revolving a semicircular profile (XZ)
+  sketch = startSketchOn(XZ)
+  profile = sketch
+    |> startProfile(at = [sphereRadius, 0])
+    |> arc(angleStart = 0, angleEnd = 180, radius = sphereRadius)
+    |> close()
+
+  return profile |> revolve(axis = X)
+}`,
+        'utf-8'
+      )
+      await fsp.writeFile(
+        path.join(testDir, 'main.kcl'),
+        `import sphere from "sphere.kcl"
+
+export cloud = patternCircular3d(sphere(sphereRadius=2), instances = 10, axis = [1, 1, 0], center = [20, 2, 20])
+  |> patternCircular3d(instances = 10, axis = [1, 1, 0], center = [0, 20, 0])
+  |> patternCircular3d(instances = 10, axis = [0, 0, 1], center = [100, 10, 10])`,
+        'utf-8'
+      )
+      await fsp.writeFile(
+        path.join(testDir, 'target.kcl'),
+        `sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> angledLine(angle = 0deg, length = 16.1, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 10.72)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5)
+`,
+        'utf-8'
+      )
+    })
+
+    const u = await getUtils(page)
+    await homePage.openProject('test')
+    await toolbar.openPane(DefaultLayoutPaneID.Debug)
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
+
+    await scene.connectionEstablished()
+    await toolbar.openFile('target.kcl')
+    // Extrude is only present in the target file, not main.kcl, so we know the new file has executed
+    // just by navigating
+    await u.waitForCmdReceive('extrude')
   })
 })
 

@@ -44,6 +44,7 @@ const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
       end: 0,
       moduleId: 'test-module',
     },
+    wasmInstancePromise: vi.importActual('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'),
   } as any,
   toast: {
     error: vi.fn(),
@@ -143,6 +144,7 @@ describe('DXF Export', () => {
         },
       }
       vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).mockResolvedValue(mockResponse)
 
@@ -162,6 +164,7 @@ describe('DXF Export', () => {
 
       expect(result).toBe(true)
       expect(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).toHaveBeenCalledWith(
         {
@@ -228,6 +231,7 @@ describe('DXF Export', () => {
         },
       }
       vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).mockResolvedValue(mockResponse)
 
@@ -370,6 +374,7 @@ describe('DXF Export', () => {
         errors: [{ message: 'Engine error', error_code: 'bad_request' }],
       }
       vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).mockResolvedValue(mockFailedResponse)
 
@@ -387,6 +392,7 @@ describe('DXF Export', () => {
       // Test case 2: Network/exception error
       vi.clearAllMocks()
       vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).mockRejectedValue(new Error('Network error'))
 
@@ -445,6 +451,7 @@ describe('DXF Export', () => {
         },
       }
       vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).mockResolvedValue(mockResponse)
 
@@ -525,6 +532,7 @@ describe('DXF Export', () => {
         },
       }
       vi.mocked(
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         mockDeps.engineCommandManager.sendSceneCommand
       ).mockResolvedValue(mockResponse)
 
@@ -546,7 +554,8 @@ describe('DXF Export', () => {
       // Our logic correctly selects the first DXF file's content (sketch1.dxf)
       // but the filename comes from the sketch name, not the selected file name
       expect(mockDeps.base64Decode).toHaveBeenCalledWith(
-        'Zmlyc3QtZHhmLWNvbnRlbnQ='
+        'Zmlyc3QtZHhmLWNvbnRlbnQ=',
+        await mockDeps.kclManager.wasmInstancePromise
       )
       expect(mockDeps.browserSaveFile).toHaveBeenCalledWith(
         expect.any(Blob),

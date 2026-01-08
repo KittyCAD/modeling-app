@@ -179,7 +179,7 @@ export async function lintAst({
 }: {
   ast: Program
   sourceCode: string
-  instance?: ModuleType
+  instance: ModuleType
 }): Promise<Array<Diagnostic>> {
   try {
     const discovered_findings = await kclLint(ast, instance)

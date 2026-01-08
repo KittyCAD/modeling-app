@@ -188,7 +188,8 @@ function CommandBarHeaderFooter({
                             kclManager.astSignal.value,
                             argValue as Selections
                           )
-                        ) : arg.inputType === 'kcl' ? (
+                        ) : arg.inputType === 'kcl' &&
+                          (argValue as KclCommandValue).valueCalculated ? (
                           roundOffWithUnits(
                             (argValue as KclCommandValue).valueCalculated,
                             4
@@ -334,7 +335,7 @@ function GatheringArgsButton({ bgClassName, iconClassName }: ButtonProps) {
       tabIndex={0}
       data-testid="command-bar-continue"
       iconEnd={{
-        icon: 'arrowRight',
+        icon: 'arrowShortRight',
         bgClassName: `p-1 rounded-sm ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}
@@ -358,7 +359,7 @@ function StepBackButton({
       tabIndex={0}
       data-testid="command-bar-step-back"
       iconStart={{
-        icon: 'arrowLeft',
+        icon: 'arrowShortLeft',
         bgClassName: `p-1 rounded-sm bg-chalkboard-20/50 dark:bg-chalkboard-80/50 ${bgClassName}`,
         iconClassName: `${iconClassName}`,
       }}

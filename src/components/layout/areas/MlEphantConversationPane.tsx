@@ -28,6 +28,7 @@ export const MlEphantConversationPane = (props: {
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
   sendModeling: ReturnType<typeof useModelingContext>['send']
+  sendBillingUpdate: () => void
   loaderFile: FileEntry | undefined
   settings: SettingsType
   user?: User
@@ -110,11 +111,7 @@ export const MlEphantConversationPane = (props: {
       mode,
     })
 
-    // Clear selections since new model
-    props.sendModeling({
-      type: 'Set selection',
-      data: { selection: undefined, selectionType: 'singleCodeCursor' },
-    })
+    props.sendBillingUpdate()
   }
 
   const lastExchange = conversation?.exchanges.slice(-1) ?? []
@@ -138,6 +135,7 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onInterrupt = () => {
+    props.sendBillingUpdate()
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.Interrupt,
     })
@@ -242,6 +240,9 @@ export const MlEphantConversationPane = (props: {
         if (isProcessing) {
           return
         }
+
+        // End of processing, trigger a billing update
+        props.sendBillingUpdate()
 
         if (context.conversation !== undefined) {
           return

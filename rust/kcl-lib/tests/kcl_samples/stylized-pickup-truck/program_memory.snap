@@ -340,10 +340,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4960,
-            "end": 4966,
+            "commentStart": 4993,
+            "end": 4999,
             "moduleId": 0,
-            "start": 4960,
+            "start": 4993,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -395,10 +395,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               1.15
             ],
             "tag": {
-              "commentStart": 4960,
-              "end": 4966,
+              "commentStart": 4993,
+              "end": 4999,
               "moduleId": 0,
-              "start": 4960,
+              "start": 4993,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -598,10 +598,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             1.15
           ],
           "tag": {
-            "commentStart": 4960,
-            "end": 4966,
+            "commentStart": 4993,
+            "end": 4999,
             "moduleId": 0,
-            "start": 4960,
+            "start": 4993,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -3720,10 +3720,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 4960,
-                  "end": 4966,
+                  "commentStart": 4993,
+                  "end": 4999,
                   "moduleId": 0,
-                  "start": 4960,
+                  "start": 4993,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -3775,10 +3775,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     1.15
                   ],
                   "tag": {
-                    "commentStart": 4960,
-                    "end": 4966,
+                    "commentStart": 4993,
+                    "end": 4999,
                     "moduleId": 0,
-                    "start": 4960,
+                    "start": 4993,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -4040,10 +4040,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4960,
-                "end": 4966,
+                "commentStart": 4993,
+                "end": 4999,
                 "moduleId": 0,
-                "start": 4960,
+                "start": 4993,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -4095,10 +4095,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   1.15
                 ],
                 "tag": {
-                  "commentStart": 4960,
-                  "end": 4966,
+                  "commentStart": 4993,
+                  "end": 4999,
                   "moduleId": 0,
-                  "start": 4960,
+                  "start": 4993,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -4263,10 +4263,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 4960,
-              "end": 4966,
+              "commentStart": 4993,
+              "end": 4999,
               "moduleId": 0,
-              "start": 4960,
+              "start": 4993,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -4318,10 +4318,10 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 1.15
               ],
               "tag": {
-                "commentStart": 4960,
-                "end": 4966,
+                "commentStart": 4993,
+                "end": 4999,
                 "moduleId": 0,
-                "start": 4960,
+                "start": 4993,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
