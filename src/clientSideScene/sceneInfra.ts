@@ -94,7 +94,6 @@ export interface OnAreaSelectCallbackArgs {
 type Voidish = void | Promise<void>
 
 export class SceneInfra {
-  static instance: SceneInfra
   readonly scene: Scene
   readonly renderer: WebGLRenderer
   readonly labelRenderer: CSS2DRenderer
@@ -376,8 +375,6 @@ export class SceneInfra {
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
-
-    SceneInfra.instance = this
   }
 
   // Called after canvas is attached to the DOM and on each resize.
