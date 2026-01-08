@@ -8,7 +8,6 @@ import {
 import ms from 'ms'
 import {
   useEffect,
-  useRef,
   useState,
   type ReactNode,
   type ComponentProps,
@@ -255,16 +254,9 @@ export const RequestCard = (props: RequestCardProps) => {
 }
 
 export const Delta = (props: { children: ReactNode }) => {
-  const ref = useRef<HTMLSpanElement>(null)
-  useEffect(() => {
-    if (ref.current === null) return
-    ref.current.scrollIntoView()
-  }, [])
-
   return (
     <span className="animate-delta-in" style={{ opacity: 0 }}>
       {props.children}
-      <span ref={ref}></span>
     </span>
   )
 }
