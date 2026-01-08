@@ -608,30 +608,33 @@ impl FrontendState {
     ) -> api::Result<(SceneGraph, ExecOutcome)> {
         self.program = program.clone();
 
-        // Clear the freedom cache since IDs might have changed after direct editing
-        self.point_freedom_cache.clear();
-
         // Execute so that the objects are updated and available for the next
         // API call.
         // Use mock execution with freedom_analysis enabled since we don't know
         // how the AST has changed and should run the analysis.
-        let outcome = if ctx.is_mock() {
+        let (outcome, freedom_analysis_ran) = if ctx.is_mock() {
+            // Clear the freedom cache since IDs might have changed after direct editing
+            // and we're about to run freedom analysis which will repopulate it.
+            self.point_freedom_cache.clear();
             let mock_config = MockConfig {
                 freedom_analysis: true,
                 ..Default::default()
             };
-            ctx.run_mock(&program, &mock_config).await.map_err(|err| Error {
+            let outcome = ctx.run_mock(&program, &mock_config).await.map_err(|err| Error {
                 msg: err.error.message().to_owned(),
-            })?
+            })?;
+            (outcome, true)
         } else {
-            // For live execution, we can't easily add freedom_analysis, but that's okay
-            // since we'll use stored values from the cache.
-            ctx.run_with_caching(program).await.map_err(|err| Error {
+            // For live execution, we can't easily add freedom_analysis.
+            // Don't clear the cache - preserve existing freedom values since
+            // update_state_after_exec will merge them with new objects.
+            let outcome = ctx.run_with_caching(program).await.map_err(|err| Error {
                 msg: err.error.message().to_owned(),
-            })?
+            })?;
+            (outcome, false)
         };
 
-        let outcome = self.update_state_after_exec(outcome, true);
+        let outcome = self.update_state_after_exec(outcome, freedom_analysis_ran);
 
         Ok((self.scene_graph.clone(), outcome))
     }

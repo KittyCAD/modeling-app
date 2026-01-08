@@ -1,14 +1,9 @@
-import { describe, it, expect, vi } from 'vitest'
-
-// Mock WASM module to avoid loading it in CI
-vi.mock('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib', () => ({
-  default: {},
-}))
+import { describe, it, expect } from 'vitest'
 
 import {
   deriveSegmentFreedom,
   getSegmentColor,
-} from '@src/machines/sketchSolve/segments'
+} from '@src/machines/sketchSolve/segmentsUtils'
 import type { ApiObject, Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
 import { SKETCH_SELECTION_COLOR } from '@src/lib/constants'
 

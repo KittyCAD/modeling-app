@@ -7,7 +7,6 @@ import type {
   Freedom,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
-  deriveSegmentFreedom,
   segmentUtilsMap,
   updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
@@ -49,6 +48,7 @@ import {
   ARC_SEGMENT_BODY,
 } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 
 export type EquipTool = keyof typeof equipTools
 
