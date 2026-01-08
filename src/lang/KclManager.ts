@@ -1431,7 +1431,6 @@ export class KclManager extends EventTarget {
         wasmInstance,
       },
     })
-    console.log('eventInfo', eventInfo)
     if (!eventInfo) {
       return
     }
@@ -1454,7 +1453,6 @@ export class KclManager extends EventTarget {
     this._modelingSend(eventInfo.modelingEvent)
     eventInfo.engineEvents.forEach((event) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      console.log('event!', event)
       this.engineCommandManager.sendSceneCommand(event)
     })
   }

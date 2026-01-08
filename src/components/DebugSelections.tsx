@@ -15,8 +15,12 @@ import {
   groupOperationTypeStreaks,
   filterOperations,
 } from '@src/lib/operations'
+import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import { reportRejection } from '@src/lib/trap'
 
-async function clearSelection() {
+async function clearSceneSelection() {
   await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
@@ -26,7 +30,8 @@ async function clearSelection() {
   })
 }
 
-async function makeSelections(ids) {
+// Pass in a list of scene ids to select in the 3d scene
+async function sceneSelection(ids: string[]) {
   await engineCommandManager.sendSceneCommand({
     cmd_id: uuidv4(),
     type: 'modeling_cmd_req',
@@ -37,71 +42,63 @@ async function makeSelections(ids) {
   })
 }
 
-async function makeHighlights(ids) {
-  await engineCommandManager.sendSceneCommand({
-    cmd_id: uuidv4(),
-    type: 'modeling_cmd_req',
-    cmd: {
-      type: 'highlight_set_entities',
-      entities: ids,
-    },
-  })
-}
-
-function compute(artifactGraph, wasmInstance) {
-  const operationList = generateOperationList()
-
-  // name
-  // source range
-  const idsWithTypes = Array.from(artifactGraph).map((a) => {
-    const key = a[0]
-    const obj = a[1]
-
-    const type = obj.type
-    const id = obj.id
-    const codeRef = obj.codeRef
-    const codeRefToIds = codeRangeToEventInfo(codeRef, wasmInstance)
-    const artifactIdtoCodeRefs = artifactToCodeRange(id) || []
-    let featureTreeFromSourceRange = []
-    // huh?
-
-    const result = computeOperationList(generateOperationList(), wasmInstance)
-    const featureTrees = result.filter((feature) => {
-      return (
-        codeRef?.range[0] === feature.sourceRange[0] &&
-        codeRef?.range[1] === feature.sourceRange[1] &&
-        codeRef?.range[2] === feature.sourceRange[2]
-      )
-    })
-    featureTreeFromSourceRange = featureTrees
+function formatArtifactGraph(
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+) {
+  const idsWithTypes = Array.from(artifactGraph).map(([key, artifact]) => {
+    const type = artifact.type
+    const id = artifact.id
+    let codeRefToIds: string[] = []
+    let sourceRanges: SourceRange[] = []
+    let range: SourceRange | null = null
+    let featureTreeFromSourceRange: ReturnType<typeof computeOperationList> = []
+    if ('codeRef' in artifact) {
+      const codeRef = artifact.codeRef
+      range = codeRef.range
+      codeRefToIds = codeRangeToIds(codeRef.range, wasmInstance)
+      sourceRanges = idToCodeRange(id) || []
+      const result = computeOperationList(generateOperationList(), wasmInstance)
+      const featureTrees = result.filter((feature) => {
+        if ('sourceRange' in feature) {
+          return (
+            codeRef?.range[0] === feature.sourceRange[0] &&
+            codeRef?.range[1] === feature.sourceRange[1] &&
+            codeRef?.range[2] === feature.sourceRange[2]
+          )
+        } else {
+          return false
+        }
+      })
+      featureTreeFromSourceRange = featureTrees
+    }
     return {
       id,
       type,
-      codeRef,
+      range,
       codeRefToIds,
-      artifactIdtoCodeRefs,
+      sourceRanges,
       featureTreeFromSourceRange,
     }
   })
   return idsWithTypes
 }
 
-async function selectionFromId(id) {
-  await clearSelection()
-  await makeSelections([id])
+async function selectionFromId(id: string) {
+  await clearSceneSelection()
+  await sceneSelection([id])
 }
 
-async function selectionFromRange(codeRef) {
-  if (!codeRef) {
-    console.log('missing code ref')
-    return
-  }
-  await clearSelection()
-  const selections = {
+async function selectCodeMirrorRange(range: SourceRange) {
+  if (!range) return
+  await clearSceneSelection()
+  const selections: Selections = {
     graphSelections: [
       {
-        artifact: {},
-        codeRef,
+        // @ts-ignore This is a debugging tool, I do not have the pathToNode
+        codeRef: {
+          range,
+        },
       },
     ],
     otherSelections: [],
@@ -109,29 +106,29 @@ async function selectionFromRange(codeRef) {
   kclManager.selectRange(selections)
 }
 
-function codeRangeToEventInfo(codeRef, wasmInstance) {
-  if (!codeRef) {
-    // no code refs
-    return []
-  }
+function codeRangeToIds(
+  range: SourceRange,
+  wasmInstance: ModuleType
+): string[] {
+  if (!range) return []
 
   const selections = {
     graphSelections: [
       {
         artifact: {},
-        codeRef,
+        codeRef: {
+          range: range,
+        },
       },
     ],
     otherSelections: [],
   }
 
   const editorView = kclManager.getEditorView()
+  if (!editorView) return []
 
-  if (!editorView) {
-    console.log('missing getEditorView()')
-    return []
-  }
-
+  // We have to mock as if the user was selecting these instead of reading from the
+  // actual code mirror isntance
   const asIfItWasSelected = EditorSelection.create([
     EditorSelection.range(
       selections.graphSelections[0].codeRef.range[0],
@@ -139,7 +136,6 @@ function codeRangeToEventInfo(codeRef, wasmInstance) {
     ),
   ])
   const eventInfo = processCodeMirrorRanges({
-    // codeMirrorRanges: editorView.state.selection.ranges,
     codeMirrorRanges: asIfItWasSelected.ranges,
     selectionRanges: {
       graphSelections: [],
@@ -155,27 +151,36 @@ function codeRangeToEventInfo(codeRef, wasmInstance) {
       wasmInstance: wasmInstance,
     },
   })
-  const arrayOfEntityIds = parseOutAllSelectAddEntities(eventInfo)
+  const arrayOfEntityIds = getEntityIdsFromCmds(eventInfo)
   return arrayOfEntityIds
 }
 
-function parseOutAllSelectAddEntities(eventInfo) {
+function getEntityIdsFromCmds(
+  eventInfo: ReturnType<typeof processCodeMirrorRanges>
+): string[] {
   if (!eventInfo || !eventInfo.engineEvents) {
     return []
   }
   const engineEvents = eventInfo.engineEvents
+  // A list of engine command is produced, filter out the select_add ones
+  // which contain the entity ids
   const selectAdds = engineEvents.filter((event) => {
-    return event.cmd.type === 'select_add'
+    if ('cmd' in event && 'type' in event.cmd) {
+      return event.cmd.type === 'select_add'
+    }
+    return false
   })
-  let ids = []
+  let ids: string[] = []
   selectAdds.forEach((event) => {
-    const entities = event.cmd.entities
-    ids = ids.concat(entities)
+    if ('cmd' in event && 'type' in event.cmd && 'entities' in event.cmd) {
+      const entities = event.cmd.entities
+      ids = ids.concat(entities)
+    }
   })
   return ids
 }
 
-function artifactToCodeRange(id) {
+function idToCodeRange(id: string) {
   if (id) {
     const codeRefs = getCodeRefsByArtifactId(id, kclManager.artifactGraph)
     if (codeRefs) {
@@ -191,6 +196,7 @@ function artifactToCodeRange(id) {
   }
 }
 
+// Ported from the feature tree codebase
 function generateOperationList() {
   // If there are parse errors we show the last successful operations
   // and overlay a message on top of the pane
@@ -209,11 +215,6 @@ function generateOperationList() {
       ? kclManager.execState.operations
       : longestErrorOperationList
     : kclManager.lastSuccessfulOperations
-  // We use the code that corresponds to the operations. In case this is an
-  // error on the first run, fall back to whatever is currently in the code
-  // editor.
-  const operationsCode =
-    kclManager.lastSuccessfulCode || kclManager.codeSignal.value
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList =
@@ -224,15 +225,18 @@ function generateOperationList() {
   return operationList.flat()
 }
 
-function computeOperationList(operationList, wasmInstance) {
+// A helper function that will append more data from reading the operation list
+// This will be used for rendering in the DOM
+function computeOperationList(
+  operationList: Operation[],
+  wasmInstance: ModuleType
+) {
   const idsWithTypes = operationList.map((operation) => {
-    const codeRefToIds = codeRangeToEventInfo(
-      {
-        range: operation.sourceRange,
-        nodeToPath: operation.nodeToPath,
-      },
-      wasmInstance
-    )
+    let codeRefToIds: string[] = []
+    if ('sourceRange' in operation) {
+      const sourceRange: SourceRange = operation.sourceRange
+      codeRefToIds = codeRangeToIds(sourceRange, wasmInstance)
+    }
     return { codeRefToIds, ...operation }
   })
   return idsWithTypes
@@ -253,60 +257,63 @@ export function DebugSelections() {
   const highlightMinor = 'bg-red-950'
   const highlightMajor = 'bg-red-800'
   const artifactGraphTree = useMemo(() => {
-    const result = compute(kclManager.artifactGraph, wasmInstance)
-    return result
-
+    return formatArtifactGraph(kclManager.artifactGraph, wasmInstance)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.artifactGraph])
 
   const operationList = useMemo(() => {
-    const result = computeOperationList(generateOperationList(), wasmInstance)
-    return result
+    return computeOperationList(generateOperationList(), wasmInstance)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.artifactGraph])
   return (
     <div>
-      {artifactGraphTree.map((a) => {
-        const hightlightMyId = a.id === selectedId
-        const highlightMyRange = a?.codeRef?.range?.join(',') === selectedRange
+      {artifactGraphTree.map((artifact) => {
+        const hightlightMyId = artifact.id === selectedId
+        const highlightMyRange = artifact?.range?.join(',') === selectedRange
         return (
           <div className="text-xs flex flex-col justify-between">
             <div className="text-xs hover:bg-cyan-600 flex flex-row justify-between bg-chalkboard-80">
               <div
                 className={`cursor-pointer ${hightlightMyId ? highlightMajor : ''}`}
+                role="button"
+                tabIndex={0}
                 onClick={() => {
-                  selectionFromId(a.id)
-                  setSelectedId(a.id)
+                  selectionFromId(artifact.id).catch(reportRejection)
+                  setSelectedId(artifact.id)
                 }}
               >
-                {a.id}
+                {artifact.id}
               </div>
-              <div>{a.type}</div>
+              <div>{artifact.type}</div>
               <div
                 className={`cursor-pointer ${highlightMyRange ? highlightMajor : ''}`}
+                role="button"
+                tabIndex={0}
                 onClick={() => {
-                  selectionFromRange(a.codeRef)
-                  const rangeString = a.codeRef.range.join(',')
-                  setSelectedRange(rangeString)
+                  if (artifact.range) {
+                    selectCodeMirrorRange(artifact.range).catch(reportRejection)
+                    const rangeString = artifact.range.join(',')
+                    setSelectedRange(rangeString)
+                  }
                 }}
               >
-                {`[${a.codeRef?.range}]` || ''}
+                {`[${artifact.range}]` || ''}
               </div>
             </div>
             <div className="text-xs flex flex-col justify-between">
               <div className="ml-2">Ranges</div>
-              {a.artifactIdtoCodeRefs.map((range) => {
+              {artifact.sourceRanges.map((range) => {
                 const highlightMyRange = range.join(',') === selectedRange
                 return (
                   <div
                     className={`ml-4 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => {
-                      const highlightMyRange =
-                        range?.join(',') === selectedRange
                       const codeRef = {
                         range: range,
                       }
-                      selectionFromRange(codeRef)
+                      selectCodeMirrorRange(range).catch(reportRejection)
                       const rangeString = codeRef.range.join(',')
                       setSelectedRange(rangeString)
                     }}
@@ -319,21 +326,27 @@ export function DebugSelections() {
             <div className="text-xs flex flex-col justify-between">
               <div
                 className={`ml-2 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
+                role="button"
+                tabIndex={0}
                 onClick={() => {
-                  selectionFromRange(a.codeRef)
-                  const rangeString = a.codeRef.range.join(',')
-                  setSelectedRange(rangeString)
+                  if (artifact.range) {
+                    selectCodeMirrorRange(artifact.range).catch(reportRejection)
+                    const rangeString = artifact.range.join(',')
+                    setSelectedRange(rangeString)
+                  }
                 }}
               >
-                {`[${a.codeRef?.range}]` || ''}
+                {`[${artifact.range}]` || ''}
               </div>
-              {a.codeRefToIds.map((id) => {
+              {artifact.codeRefToIds.map((id) => {
                 const highlightMyId = id === selectedId
                 return (
                   <div
                     className={`ml-4 cursor-pointer ${highlightMyId ? highlightMinor : ''}`}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => {
-                      selectionFromId(id)
+                      selectionFromId(id).catch(reportRejection)
                       setSelectedId(id)
                     }}
                   >
@@ -343,27 +356,34 @@ export function DebugSelections() {
               })}
             </div>
             <div className="ml-2 text-xs flex flex-col justify-between">
-              {a.featureTreeFromSourceRange.map((operation) => {
-                const highlightMyRange =
-                  operation?.sourceRange?.join(',') === selectedRange
-                const codeRef = {
-                  range: operation.sourceRange,
-                  nodeToPath: operation.nodeToPath,
+              {artifact.featureTreeFromSourceRange.map((operation) => {
+                let highlightMyRange = false
+                let range: SourceRange = defaultSourceRange()
+                let name: string = '[name not found]'
+                if ('sourceRange' in operation) {
+                  highlightMyRange =
+                    operation.sourceRange.join(',') === selectedRange
+                  range = operation.sourceRange
+                }
+                if ('name' in operation) {
+                  name = operation.name
                 }
                 return (
                   <div className="text-xs flex flex-col justify-between odd:bg-chalkboard-90">
                     <div className="flex flex-row justify-between">
-                      <div>{operation.name || '<< NAME IS UNDEFINED >>'}</div>
+                      <div>{name}</div>
                       <div>{operation.type}</div>
                       <div
                         className={`ml-2 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => {
-                          selectionFromRange(codeRef)
-                          const rangeString = codeRef.range.join(',')
+                          selectCodeMirrorRange(range).catch(reportRejection)
+                          const rangeString = range.join(',')
                           setSelectedRange(rangeString)
                         }}
                       >
-                        {`[${codeRef?.range}]` || ''}
+                        {`[${range}]` || ''}
                       </div>
                     </div>
                     {operation?.codeRefToIds?.map((id) => {
@@ -371,8 +391,10 @@ export function DebugSelections() {
                       return (
                         <div
                           className={`ml-4 cursor-pointer ${highlightMyId ? highlightMinor : ''}`}
+                          role="button"
+                          tabIndex={0}
                           onClick={() => {
-                            selectionFromId(id)
+                            selectionFromId(id).catch(reportRejection)
                             setSelectedId(id)
                           }}
                         >
@@ -389,26 +411,32 @@ export function DebugSelections() {
       })}
       <div>Feature Tree</div>
       {operationList.map((operation) => {
-        const highlightMyRange =
-          operation?.sourceRange?.join(',') === selectedRange
-        const codeRef = {
-          range: operation.sourceRange,
-          nodeToPath: operation.nodeToPath,
+        let highlightMyRange = false
+        let range: SourceRange = defaultSourceRange()
+        let name: string = '[name not found]'
+        if ('sourceRange' in operation) {
+          highlightMyRange = operation?.sourceRange?.join(',') === selectedRange
+          range = operation.sourceRange
+        }
+        if ('name' in operation) {
+          name = operation.name
         }
         return (
           <div className="text-xs flex flex-col justify-between odd:bg-chalkboard-90">
             <div className="flex flex-row justify-between">
-              <div>{operation.name || '<< NAME IS UNDEFINED >>'}</div>
+              <div>{name}</div>
               <div>{operation.type}</div>
               <div
                 className={`ml-2 cursor-pointer ${highlightMyRange ? highlightMinor : ''}`}
+                role="button"
+                tabIndex={0}
                 onClick={() => {
-                  selectionFromRange(codeRef)
-                  const rangeString = codeRef.range.join(',')
+                  selectCodeMirrorRange(range).catch(reportRejection)
+                  const rangeString = range.join(',')
                   setSelectedRange(rangeString)
                 }}
               >
-                {`[${codeRef?.range}]` || ''}
+                {`[${range}]` || ''}
               </div>
             </div>
             {operation.codeRefToIds.map((id) => {
@@ -416,8 +444,10 @@ export function DebugSelections() {
               return (
                 <div
                   className={`ml-4 cursor-pointer ${highlightMyId ? highlightMinor : ''}`}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => {
-                    selectionFromId(id)
+                    selectionFromId(id).catch(reportRejection)
                     setSelectedId(id)
                   }}
                 >
