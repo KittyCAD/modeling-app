@@ -178,6 +178,7 @@ export type ModelingCommandSchema = {
     // TODO: figure out if we should expose `tolerance` or not
     tagStart?: string
     tagEnd?: string
+    bodyType?: KclPreludeBodyType
   }
   Revolve: {
     // Enables editing workflow
@@ -774,6 +775,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       tagEnd: {
         inputType: 'tagDeclarator',
         required: false,
+      },
+      bodyType: {
+        inputType: 'options',
+        required: false,
+        options: kclBodyTypeOptions,
       },
     },
   },
