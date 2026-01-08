@@ -157,7 +157,6 @@ description: Artifact commands basic_fillet_cube_previous_adjacent.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

@@ -174,7 +174,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -305,7 +304,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -465,7 +463,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -625,7 +622,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -785,7 +781,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -945,7 +940,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1105,7 +1099,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1265,7 +1258,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1425,7 +1417,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1585,7 +1576,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1745,7 +1735,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -1905,7 +1894,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -2065,7 +2053,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -2225,7 +2212,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -2385,7 +2371,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -2545,7 +2530,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -2705,7 +2689,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -2865,7 +2848,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -3025,7 +3007,6 @@ description: Artifact commands tooling-nest-block.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

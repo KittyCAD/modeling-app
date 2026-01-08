@@ -184,7 +184,6 @@ description: Artifact commands user_reported_union_2_bug.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -357,7 +356,6 @@ description: Artifact commands user_reported_union_2_bug.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

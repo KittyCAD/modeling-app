@@ -174,7 +174,6 @@ description: Artifact commands subtract_with_pattern_cut_thru.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -338,7 +337,6 @@ description: Artifact commands subtract_with_pattern_cut_thru.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

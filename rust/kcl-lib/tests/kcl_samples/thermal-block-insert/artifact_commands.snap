@@ -674,7 +674,6 @@ description: Artifact commands thermal-block-insert.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -737,7 +736,6 @@ description: Artifact commands thermal-block-insert.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

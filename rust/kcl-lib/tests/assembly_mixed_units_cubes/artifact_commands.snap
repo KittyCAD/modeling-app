@@ -174,7 +174,6 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
@@ -383,7 +382,6 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },

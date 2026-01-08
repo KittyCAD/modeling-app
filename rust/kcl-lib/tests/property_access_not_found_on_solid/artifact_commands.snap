@@ -157,7 +157,6 @@ description: Artifact commands property_access_not_found_on_solid.kcl
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge",
-        "merge_coplanar_faces": null,
         "body_type": "solid"
       }
     },
