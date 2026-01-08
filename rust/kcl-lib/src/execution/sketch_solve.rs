@@ -369,6 +369,25 @@ fn extract_variable_ids_from_constraint(constraint: &kcl_ezpz::Constraint, varia
             extract_ids_from_point(pt0, variable_set);
             extract_ids_from_point(pt1, variable_set);
         }
+        kcl_ezpz::Constraint::Arc(arc) => {
+            extract_ids_from_arc(arc, variable_set);
+        }
+        kcl_ezpz::Constraint::PointLineDistance(point, line, _) => {
+            extract_ids_from_point(point, variable_set);
+            extract_ids_from_line(line, variable_set);
+        }
+        kcl_ezpz::Constraint::PointArcCoincident(arc, point) => {
+            extract_ids_from_arc(arc, variable_set);
+            extract_ids_from_point(point, variable_set);
+        }
+        kcl_ezpz::Constraint::LinesEqualLength(line0, line1) => {
+            extract_ids_from_line(line0, variable_set);
+            extract_ids_from_line(line1, variable_set);
+        }
+        kcl_ezpz::Constraint::LinesAtAngle(line0, line1, _) => {
+            extract_ids_from_line(line0, variable_set);
+            extract_ids_from_line(line1, variable_set);
+        }
         _ => {
             // For other constraint types, we'll add support as needed
             // Using Debug output as a fallback for unknown constraint types
@@ -392,6 +411,14 @@ fn extract_ids_from_line(line: &kcl_ezpz::datatypes::inputs::DatumLineSegment, v
     extract_ids_from_point(&line.p1, variable_set);
 }
 
+/// Extract variable IDs from a DatumCircularArc.
+/// DatumCircularArc has public fields center, start, and end (all DatumPoint).
+fn extract_ids_from_arc(arc: &kcl_ezpz::datatypes::inputs::DatumCircularArc, variable_set: &mut AHashSet<usize>) {
+    extract_ids_from_point(&arc.center, variable_set);
+    extract_ids_from_point(&arc.start, variable_set);
+    extract_ids_from_point(&arc.end, variable_set);
+}
+
 /// Extract numeric IDs from a debug string.
 /// This parses the string looking for numeric values that could be variable IDs.
 fn extract_ids_from_debug_string(s: &str, variable_set: &mut AHashSet<usize>) {
@@ -402,10 +429,7 @@ fn extract_ids_from_debug_string(s: &str, variable_set: &mut AHashSet<usize>) {
         // Remove common punctuation
         let cleaned = word.trim_matches(|c: char| !c.is_ascii_digit());
         if let Ok(id) = cleaned.parse::<usize>() {
-            // Only add reasonable IDs (assuming variable IDs are < 10000)
-            if id < 10000 {
-                variable_set.insert(id);
-            }
+            variable_set.insert(id);
         }
     }
 }

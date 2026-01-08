@@ -75,17 +75,13 @@ sketch2::distance([line3.start, line3.end]) == 6mm
 
         println!("Point freedoms: {:?}", point_freedoms);
 
-        // Expected after bug fix:
-        // - line1.start (ObjectId(1)) and line1.end (ObjectId(2)): both Fixed
-        // - line2.start (ObjectId(4)): Fixed, line2.end (ObjectId(5)): Free
-        // - line3.start (ObjectId(7)) and line3.end (ObjectId(8)): both Conflict
         let expected = vec![
-            (ObjectId(1), Freedom::Fixed),    // line1.start
-            (ObjectId(2), Freedom::Fixed),    // line1.end
-            (ObjectId(4), Freedom::Fixed),    // line2.start
-            (ObjectId(5), Freedom::Free),     // line2.end (currently bug shows Conflict)
-            (ObjectId(7), Freedom::Conflict), // line3.start (currently bug shows Free)
-            (ObjectId(8), Freedom::Conflict), // line3.end (currently bug shows Free)
+            (ObjectId(1), Freedom::Fixed),
+            (ObjectId(2), Freedom::Fixed),
+            (ObjectId(4), Freedom::Fixed),
+            (ObjectId(5), Freedom::Free),
+            (ObjectId(7), Freedom::Conflict),
+            (ObjectId(8), Freedom::Conflict),
         ];
 
         // This assertion will fail until the bug is fixed
@@ -126,7 +122,6 @@ sketch2::distance([line3.start, line3.end]) == 4mm
         println!("Point freedoms: {:?}", point_freedoms);
 
         // Expected: Fixed, Fixed, Fixed, Free, Free, Free
-        // This case works correctly according to user
         let expected = vec![
             (ObjectId(1), Freedom::Fixed),
             (ObjectId(2), Freedom::Fixed),
@@ -170,18 +165,13 @@ line2.start.at[1] == 1
 
         println!("Point freedoms: {:?}", point_freedoms);
 
-        // Expected after bug fix:
-        // - line1.start (ObjectId(1)) and line1.end (ObjectId(2)): both Fixed
-        // - line3.start (ObjectId(4)) and line3.end (ObjectId(5)): both Conflict (currently bug shows one Conflict, one Free)
-        // - line2.start (ObjectId(9)): Fixed, line2.end (ObjectId(10)): Free
-        // Note: IDs are different when lines are reordered because constraints get different IDs
         let expected = vec![
-            (ObjectId(1), Freedom::Fixed),    // line1.start
-            (ObjectId(2), Freedom::Fixed),    // line1.end
-            (ObjectId(4), Freedom::Conflict), // line3.start (currently bug shows Conflict)
-            (ObjectId(5), Freedom::Conflict), // line3.end (currently bug shows Free)
-            (ObjectId(9), Freedom::Fixed),    // line2.start
-            (ObjectId(10), Freedom::Free),    // line2.end
+            (ObjectId(1), Freedom::Fixed),
+            (ObjectId(2), Freedom::Fixed),
+            (ObjectId(4), Freedom::Conflict),
+            (ObjectId(5), Freedom::Conflict),
+            (ObjectId(9), Freedom::Fixed),
+            (ObjectId(10), Freedom::Free),
         ];
 
         // This assertion will fail until the bug is fixed
