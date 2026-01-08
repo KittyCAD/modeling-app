@@ -14,7 +14,9 @@ cube = startSketchOn(XY)
   |> close()
   |> extrude(length = len)
 
-sketch(on = side) {
+face = faceOf(cube, face = side)
+
+s = sketch(on = face) {
   // Square
   line1 = sketch2::line(start = [var 0, var 0], end = [var 1mm, var 0])
   line2 = sketch2::line(start = [var 1mm, var 0], end = [var 1mm, var 1mm])

@@ -39,6 +39,8 @@ flowchart LR
   21["SweepEdge Adjacent"]
   22["SweepEdge Opposite"]
   23["SweepEdge Adjacent"]
+  24["SketchBlock<br>[305, 1016, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlock]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -80,6 +82,7 @@ flowchart LR
   10 --- 16
   10 --- 17
   23 <--x 10
+  10 <--x 24
   17 <--x 11
   11 --- 18
   11 --- 19
