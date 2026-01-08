@@ -21,7 +21,7 @@ use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSk
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
+        BasePath, ExecState, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
         ProfileClosed, Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
@@ -30,6 +30,7 @@ use crate::{
         EQUAL_POINTS_DIST_EPSILON,
         args::{Args, TyF64},
         axis_or_reference::Axis2dOrEdgeReference,
+        faces::make_face,
         planes::inner_plane_of,
         utils::{
             TangentialArcInfoInput, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
@@ -1007,7 +1008,7 @@ async fn inner_start_sketch_on(
 
                 Ok(SketchSurface::Plane(plane))
             } else {
-                let face = start_sketch_on_face(solid, tag, exec_state, args).await?;
+                let face = make_face(solid, tag, exec_state, args).await?;
 
                 #[cfg(feature = "artifact-graph")]
                 {
@@ -1024,27 +1025,6 @@ async fn inner_start_sketch_on(
             }
         }
     }
-}
-
-async fn start_sketch_on_face(
-    solid: Box<Solid>,
-    tag: FaceTag,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<Box<Face>, KclError> {
-    let extrude_plane_id = tag.get_face_id(&solid, exec_state, args, true).await?;
-
-    Ok(Box::new(Face {
-        id: extrude_plane_id,
-        artifact_id: extrude_plane_id.into(),
-        value: tag.to_string(),
-        // TODO: get this from the extrude plane data.
-        x_axis: solid.sketch.on.x_axis(),
-        y_axis: solid.sketch.on.y_axis(),
-        units: solid.units,
-        solid,
-        meta: vec![args.source_range.into()],
-    }))
 }
 
 pub async fn make_sketch_plane_from_orientation(
