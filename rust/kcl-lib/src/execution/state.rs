@@ -361,7 +361,12 @@ impl ExecState {
     #[cfg(feature = "artifact-graph")]
     pub fn add_scene_object(&mut self, obj: Object, source_range: SourceRange) -> ObjectId {
         let id = obj.id;
-        debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
+        debug_assert!(
+            id.0 == self.mod_local.artifacts.scene_objects.len(),
+            "Adding scene object with ID {} but next ID is {}",
+            id.0,
+            self.mod_local.artifacts.scene_objects.len()
+        );
         self.mod_local.artifacts.scene_objects.push(obj);
         self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
         id
@@ -711,7 +716,10 @@ impl ModuleArtifactState {
         self.unprocessed_commands.extend(other.unprocessed_commands);
         self.commands.extend(other.commands);
         self.operations.extend(other.operations);
-        self.scene_objects.extend(other.scene_objects);
+        if other.scene_objects.len() > self.scene_objects.len() {
+            self.scene_objects
+                .extend(other.scene_objects[self.scene_objects.len()..].iter().cloned());
+        }
         self.source_range_to_object.extend(other.source_range_to_object);
         self.var_solutions.extend(other.var_solutions);
     }

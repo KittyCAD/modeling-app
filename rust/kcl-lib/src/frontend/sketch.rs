@@ -22,7 +22,6 @@ pub trait SketchApi {
     async fn new_sketch(
         &mut self,
         ctx: &ExecutorContext,
-        mock_ctx: &ExecutorContext,
         project: ProjectId,
         file: FileId,
         version: Version,

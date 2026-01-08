@@ -154,7 +154,6 @@ impl SketchApi for FrontendState {
     async fn new_sketch(
         &mut self,
         ctx: &ExecutorContext,
-        mock_ctx: &ExecutorContext,
         _project: ProjectId,
         _file: FileId,
         _version: Version,
@@ -214,62 +213,27 @@ impl SketchApi for FrontendState {
             });
         };
 
-        let sketch_source_range = new_program
-            .ast
-            .body
-            .last()
-            .map(SourceRange::from)
-            .ok_or_else(|| Error {
-                msg: "No AST body items after adding sketch".to_owned(),
-            })?;
-
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
         // We need to do an engine execute so that the plane object gets created
         // and is cached.
-        {
-            ctx.run_with_caching(new_program.clone()).await.map_err(|err| Error {
-                msg: err.error.message().to_owned(),
-            })?;
-        }
+        let outcome = ctx.run_with_caching(new_program.clone()).await.map_err(|err| Error {
+            msg: err.error.message().to_owned(),
+        })?;
+        let freedom_analysis_ran = true;
 
-        let mut truncated_program = new_program;
-        only_sketch_block(&mut truncated_program.ast, sketch_source_range, ChangeKind::None)?;
+        let outcome = self.update_state_after_exec(outcome, freedom_analysis_ran);
 
-        // Add one to reserve an ID for the plane.
-        let sketch_id = ObjectId(self.scene_graph.objects.len() + 1);
-
-        // Execute.
-        let outcome = mock_ctx
-            .run_mock(
-                &truncated_program,
-                &MockConfig::new_sketch_mode(sketch_id).no_freedom_analysis(),
-            )
-            .await
-            .map_err(|err| {
-                // TODO: sketch-api: Yeah, this needs to change. We need to
-                // return the full error.
-                Error {
-                    msg: err.error.message().to_owned(),
-                }
-            })?;
-
-        #[cfg(not(feature = "artifact-graph"))]
-        let sketch_id = ObjectId(0);
-        #[cfg(feature = "artifact-graph")]
-        let sketch_id = outcome
-            .source_range_to_object
-            .get(&sketch_source_range)
-            .copied()
-            .ok_or_else(|| Error {
-                msg: format!("Source range of sketch not found: {sketch_source_range:?}"),
-            })?;
-        let src_delta = SourceDelta { text: new_source };
+        let Some(sketch_id) = self.scene_graph.objects.last().map(|object| object.id) else {
+            return Err(Error {
+                msg: "No objects in scene graph after adding sketch".to_owned(),
+            });
+        };
         // Store the object in the scene.
         self.scene_graph.sketch_mode = Some(sketch_id);
-        // Uses .no_freedom_analysis() so freedom_analysis: false
-        let outcome = self.update_state_after_exec(outcome, false);
+
+        let src_delta = SourceDelta { text: new_source };
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -2733,6 +2697,15 @@ mod tests {
         None
     }
 
+    fn find_first_face_object(scene_graph: &SceneGraph) -> Option<&Object> {
+        for object in &scene_graph.objects {
+            if let ObjectKind::Face(_) = &object.kind {
+                return Some(object);
+            }
+        }
+        None
+    }
+
     #[track_caller]
     fn expect_sketch(object: &Object) -> &Sketch {
         if let ObjectKind::Sketch(sketch) = &object.kind {
@@ -2757,7 +2730,7 @@ mod tests {
             on: PlaneName::Xy.to_string(),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
-            .new_sketch(&ctx, &mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
         assert_eq!(sketch_id, ObjectId(1));
@@ -2862,7 +2835,7 @@ sketch(on = XY) {
             on: PlaneName::Xy.to_string(),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
-            .new_sketch(&ctx, &mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
         assert_eq!(sketch_id, ObjectId(1));
@@ -2988,7 +2961,7 @@ sketch(on = XY) {
             on: PlaneName::Xy.to_string(),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
-            .new_sketch(&ctx, &mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
         assert_eq!(sketch_id, ObjectId(1));
@@ -3199,7 +3172,7 @@ s = sketch(on = XY) {
             on: PlaneName::Xy.to_string(),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
-            .new_sketch(&ctx, &mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
         assert_eq!(sketch_id, ObjectId(1));
@@ -4241,6 +4214,60 @@ sketch(on = XY) {
             "{:#?}",
             scene_delta.new_graph.objects
         );
+
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sketch_on_face_simple() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+len = 2mm
+cube = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [len, 0], tag = $side)
+  |> line(end = [0, len])
+  |> line(end = [-len, 0])
+  |> line(end = [0, -len])
+  |> close()
+  |> extrude(length = len)
+
+face = faceOf(cube, face = side)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let face_object = find_first_face_object(&frontend.scene_graph).unwrap();
+        let face_id = face_object.id;
+
+        let sketch_args = SketchCtor { on: "face".to_owned() };
+        let (_src_delta, scene_delta, sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+        assert_eq!(sketch_id, ObjectId(2));
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(2)]);
+        let sketch_object = &scene_delta.new_graph.objects[2];
+        assert_eq!(sketch_object.id, ObjectId(2));
+        assert_eq!(
+            sketch_object.kind,
+            ObjectKind::Sketch(Sketch {
+                args: SketchCtor { on: "face".to_owned() },
+                plane: face_id,
+                segments: vec![],
+                constraints: vec![],
+            })
+        );
+        assert_eq!(scene_delta.new_graph.objects.len(), 3);
 
         ctx.close().await;
         mock_ctx.close().await;

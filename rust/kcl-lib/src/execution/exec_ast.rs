@@ -158,15 +158,32 @@ impl ExecutorContext {
             exec_state.mod_local.sketch_mode,
             exec_state.mod_local.freedom_analysis,
         );
-        #[cfg(feature = "artifact-graph")]
-        {
-            local_state
-                .artifacts
-                .scene_objects
-                .clone_from(&exec_state.mod_local.artifacts.scene_objects);
-        }
-        if preserve_mem.normal() {
-            std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        match preserve_mem {
+            PreserveMem::Always => {
+                #[cfg(feature = "artifact-graph")]
+                {
+                    if !self.is_mock() {
+                        use crate::id::IncIdGenerator;
+                        exec_state
+                            .mod_local
+                            .artifacts
+                            .scene_objects
+                            .clone_from(&exec_state.global.root_module_artifacts.scene_objects);
+                        exec_state.mod_local.artifacts.object_id_generator =
+                            IncIdGenerator::new(exec_state.global.root_module_artifacts.scene_objects.len());
+                    }
+                }
+            }
+            PreserveMem::Normal => {
+                #[cfg(feature = "artifact-graph")]
+                {
+                    local_state
+                        .artifacts
+                        .scene_objects
+                        .clone_from(&exec_state.mod_local.artifacts.scene_objects);
+                }
+                std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+            }
         }
 
         let no_prelude = self
