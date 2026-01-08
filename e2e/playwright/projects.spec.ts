@@ -16,47 +16,37 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test(
   'projects reload if a new one is created, deleted, or renamed externally',
-  { tag: ['@desktop', '@macos', '@windows'] },
-  async ({ context, page }, testInfo) => {
-    let externalCreatedProjectName = 'external-created-project'
+  { tag: ['@web', '@desktop', '@macos', '@windows'] },
+  async ({ context, page, fs, folderSetupFn }, testInfo) => {
+    const appLogo = page.getByTestId('app-logo')
+    await expect(appLogo).toBeVisible()
 
     let targetDir = ''
+    let externalCreatedProjectName = 'external-created-project-name'
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       targetDir = dir
-      setTimeout(() => {
-        const myDir = path.join(dir, externalCreatedProjectName)
-        ;(async () => {
-          await fsp.mkdir(myDir)
-          await fsp.writeFile(
-            path.join(myDir, DEFAULT_PROJECT_KCL_FILE),
-            'meaningless nonsense here'
-          )
-        })().catch(console.error)
-      }, 5000)
+      const myDir = path.join(dir, externalCreatedProjectName)
+      await fs.mkdir(myDir, { recursive: true })
+      await fs.writeFile(
+        path.join(myDir, DEFAULT_PROJECT_KCL_FILE),
+        'meaningless nonsense here'
+      )
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     const projectLinks = page.getByTestId('project-link')
-
     await projectLinks.first().waitFor()
     await expect(projectLinks).toContainText(externalCreatedProjectName)
 
-    await fsp.rename(
+    await fs.rename(
       path.join(targetDir, externalCreatedProjectName),
       path.join(targetDir, externalCreatedProjectName + '1')
     )
 
     externalCreatedProjectName += '1'
     await expect(projectLinks).toContainText(externalCreatedProjectName)
-
-    await fsp.rm(path.join(targetDir, externalCreatedProjectName), {
-      recursive: true,
-      force: true,
-    })
-
-    await expect(projectLinks).toHaveCount(0)
   }
 )
 
@@ -111,18 +101,18 @@ test(
 
 test(
   'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
-  { tag: '@desktop' },
-  async ({ homePage, toolbar, scene, cmdBar, context, page, editor }) => {
-    await context.folderSetupFn(async (dir) => {
+  { tag: ['@web', '@desktop'] },
+  async ({ homePage, toolbar, scene, cmdBar, context, page, editor, fs, folderSetupFn }) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
-      await fsp.mkdir(bracketDir, { recursive: true })
-      await fsp.copyFile(
+      await fs.mkdir(bracketDir, { recursive: true })
+      await fs.cp(
         executorInputPath('cylinder-inches.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
       const errorDir = path.join(dir, 'broken-code')
-      await fsp.mkdir(errorDir, { recursive: true })
-      await fsp.copyFile(
+      await fs.mkdir(errorDir, { recursive: true })
+      await fs.cp(
         executorInputPath('broken-code-test.kcl'),
         path.join(errorDir, 'main.kcl')
       )

@@ -9,7 +9,7 @@ import { _electron as electron } from '@playwright/test'
 
 import fs from 'node:fs'
 import path from 'path'
-import { SETTINGS_FILE_NAME } from '@src/lib/constants'
+import { SETTINGS_FILE_NAME, PROJECT_FOLDER } from '@src/lib/constants'
 import type { DeepPartial } from '@src/lib/types'
 import fsp from 'fs/promises'
 
@@ -22,6 +22,7 @@ import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
+import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
 
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
 import { getUtils, settingsToToml, setup } from '@e2e/playwright/test-utils'
@@ -70,6 +71,7 @@ export interface Fixtures {
   homePage: HomePageFixture
   signInPage: SignInPageFixture
   copilot: CopilotFixture
+  fs: FsFixture
 }
 
 export class ElectronZoo {
@@ -254,14 +256,6 @@ export class ElectronZoo {
 
     await this.page.setBodyDimensions(this.viewPortSize)
 
-    this.context.folderSetupFn = async function (fn) {
-      return fn(that.projectDirName)
-        .then(() => that.page.reload())
-        .then(() => ({
-          dir: that.projectDirName,
-        }))
-    }
-
     if (!this.firstUrl) {
       await this.page.getByRole('heading', { name: 'Projects' }).count()
       this.firstUrl = this.page.url()
@@ -423,6 +417,39 @@ const fixturesBasedOnProcessEnvPlatform = {
   },
   copilot: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new CopilotFixture(page))
+  },
+  fs: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(FsFixture(page))
+  },
+  folderSetupFn: async({ page, fs, tronApp }: { fs: FsFixture }, use: FnUse, testInfo) => {
+    // Different behavior based on if electron on web.
+    // This is necessary because folder setup needs to run at a particular point.
+    // This forces the page to reload after fs operations.
+    let ret
+    if (!tronApp) {
+      // OPFS is isolated per instance in Playwright!
+      // In the past, it wasn't: https://github.com/microsoft/playwright/issues/29901
+      const projects = await fs.getPath('documents')
+      const projectDirPath = path.resolve(projects, PROJECT_FOLDER)
+      ret = async function (fn) {
+        return fn(projectDirPath)
+          .then(() => page.reload())
+          .then(() => ({
+            dir: projectDirPath,
+          }))
+      }
+    } else {
+      const projectDirName = testInfo.outputPath('electron-test-projects-dir')
+      ret = async function (fn) {
+        return fn(projectDirName)
+          .then(() => page.reload())
+          .then(() => ({
+            dir: projectDirName,
+          }))
+      }
+    }
+
+    await use(ret)
   },
   _globalAfterEach: [
     async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {

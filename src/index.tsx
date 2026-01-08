@@ -1,4 +1,9 @@
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { isPlaywright } from '@src/lib/isPlaywright'
+import {
+  moduleFsViaModuleImport,
+  moduleFsViaWindow,
+  StorageName,
+} from '@src/lib/fs-zds'
 // Earliest as possible, configure the fs layer.
 // In the future we can have the user switch between them at run-time, but
 // for now, there is no intention.
@@ -6,6 +11,14 @@ if (window.electron) {
   void moduleFsViaModuleImport({ type: StorageName.ElectronFS, options: {} })
 } else {
   void moduleFsViaModuleImport({ type: StorageName.OPFS, options: {} })
+}
+
+// This was placed here since it's the highest async-awaited code block.
+// ONLY ATTACH WINDOW.FSZDS DURING TESTS! Do not use window.fsZds in app code.
+// This is purely for Playwright to use the fs abstraction through
+// page.evaluate.
+if (typeof window !== 'undefined' && isPlaywright()) {
+  moduleFsViaWindow({ type: window.electron ? StorageName.ElectronFS : StorageName.OPFS, options: {} })
 }
 
 import { AppStreamProvider } from '@src/AppState'
@@ -20,6 +33,7 @@ import '@src/index.css'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
+import env from '@src/env'
 import { markOnce } from '@src/lib/performance'
 import {
   appActor,
@@ -38,7 +52,7 @@ initializeWindowExceptionHandler(kclManager, rustContext)
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.
 kclManager.wasmInstancePromise
-  .then((wasmInstance) => {
+  .then(async (wasmInstance) => {
     appActor.start()
     // Application commands must be created after the initPromise because
     // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency
@@ -53,6 +67,7 @@ kclManager.wasmInstancePromise
         ],
       },
     })
+
   })
   .catch(reportRejection)
 

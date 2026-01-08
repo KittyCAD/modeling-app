@@ -749,6 +749,8 @@ export const readAppSettingsFile = async (
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_e: unknown) {
+    console.log('creating default app settings')
+
     // The file doesn't exist, create a new one.
     const defaultAppConfig = defaultAppSettings(wasmInstance)
     if (err(defaultAppConfig)) {
@@ -893,6 +895,7 @@ export const readEnvironmentConfigurationMlephantWebSocketUrl = async (
 
 export const readEnvironmentFile = async (electron: IElectronAPI) => {
   let environmentFilePath = await getEnvironmentFilePath()
+  console.log(readEnvironmentFile)
 
   try {
     await fsZds.stat(environmentFilePath)
@@ -915,7 +918,9 @@ export const writeEnvironmentFile = async (environment: string) => {
   environment = environment.trim()
   const environmentFilePath = await getEnvironmentFilePath()
   if (err(environment)) return Promise.reject(environment)
-  const result = fsZds.writeFile(
+  console.log('writing env file path')
+  console.log(environmentFilePath)
+  const result = await fsZds.writeFile(
     environmentFilePath,
     new TextEncoder().encode(environment)
   )

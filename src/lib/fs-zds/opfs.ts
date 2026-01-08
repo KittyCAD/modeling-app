@@ -20,6 +20,11 @@ const walk = async (
   let looped = true
   let currentChanged = true
 
+  // '/'.split('/').length === 2 always.
+  if (targetPath.split(path.sep).length === 2) {
+    return current
+  }
+
   while (looped && currentChanged) {
     let entries = await current.entries()
     looped = false
@@ -53,6 +58,40 @@ const walk = async (
   // We never found it. The result should be found in the loop.
   return undefined
 }
+
+// Similar to walk, but more powerful, scan will visit every single edge
+// (file/dir) at every node (dir).
+// onVisit: eagerly evaluate a function at every node.
+// return value: a list of Handles.
+const scan = async (
+  targetPath: string,
+  onVisit?: (
+    cwd: string,
+    handle: FileSystemDirectoryHandle | FileSystemFileHandle
+  ) => Promise<void>
+): Promise<(FileSystemDirectoryHandle | FileSystemFileHandle)[]> => {
+  console.log('scan', targetPath)
+  const startingPoint = await walk(targetPath)
+  if (startingPoint === undefined) return Promise.reject('ENOENT')
+
+  let visited = []
+  let handles = await startingPoint.entries()
+  let cwd = '/'
+
+  console.log('looping entries')
+  while(handles.length > 0) {
+    const current = handles.pop()
+    await onVisit?.(cwd, current)
+    visited.push(current)
+    if (current instanceof FileSystemDirectoryHandle) {
+      cwd = path.resolve(cwd, current.name)
+      handles.push(await current.entries())
+    }
+  }
+
+  return visited
+}
+
 
 const stat = async (path: string): Promise<IStat> => {
   const handle = await walk(path)
@@ -172,8 +211,15 @@ const rm = async (targetPath: string, options?: { recursive: boolean }) => {
   if (handle === undefined) return Promise.reject('ENOENT')
   if (!(handle instanceof FileSystemDirectoryHandle))
     return Promise.reject('EISNOTDIR')
-  return await handle.removeEntry(baseName, {
-    recursive: options?.recursive ?? false,
+  let isFile = false
+  try {
+    await handle.getFileHandle(baseName)
+    isFile = true
+  } catch(e: unknown) {
+    console.log(e)
+  }
+  return handle.removeEntry(baseName, {
+    recursive: (options?.recursive ?? false) && !isFile,
   })
 }
 
@@ -182,6 +228,7 @@ const writeFile = async (
   data: Uint8Array<ArrayBuffer>,
   options?: any
 ) => {
+  console.log("Writefile")
   const parts = targetPath.split(path.sep)
   const parent = parts.slice(0, -1).join(path.sep)
   const handle = await walk(parent)
@@ -205,12 +252,64 @@ const access = async (_path: string, _bitflags: number): Promise<undefined> => {
   return undefined
 }
 
+// Kind of a misnomer coming from NodeJS. This should be called `move`.
+const rename = async (sourcePath: string, targetPath: string): Promise<undefined> => {
+  const handle = await walk(sourcePath)
+  if (handle === undefined) return Promise.reject('ENOENT')
+
+  if (handle instanceof FileSystemFileHandle) {
+    await cp(sourcePath, targetPath)
+    await rm(sourcePath)
+    console.log('rename file')
+  } else {
+    console.log('about to rename directory')
+    await mkdir(targetPath)
+    await cp(sourcePath, targetPath, { recursive: true })
+    await rm(sourcePath, { recursive: true })
+    console.log('rename dir')
+  }
+  console.log('done')
+  return undefined
+}
+
+// OPFS takes a very minimal approach to its API surface via primitives.
+// cp is not a primitive, since you can implement `cp` with `read` and `write`.
+// https://chromestatus.com/feature/5640802622504960
+const cp = async (sourcePath: string, targetPath: string): Promise<undefined> => {
+  const handleSource = await walk(sourcePath)
+  if (handleSource === undefined) return Promise.reject('ENOENT')
+
+  let handleTarget = await walk(targetPath)
+  if (handleTarget === undefined) return Promise.reject('ENOENT')
+
+  console.log('about to copy')
+  if (handleSource instanceof FileSystemFileHandle) {
+    console.log('copying file')
+    const data = await readFile(sourcePath)
+    await writeFile(targetPath, data)
+  } else {
+    console.log('copying dir recurse')
+    await scan(sourcePath, async (cwd, handle) => {
+      console.log('hi')
+      const relativePath = path.relative(sourcePath, cwd)
+      if (handle instanceof FileSystemDirectoryHandle) {
+        await mkdir(relativePath)
+      } else {
+        const sourceFile = await handle.getFile()
+        const data = await sourceFile.arrayBuffer()
+        await writeFile(path.resolve(relativePath, handle.name), data)
+      }
+    })
+  }
+  return undefined
+}
+
 const impl: IZooDesignStudioFS = {
   getPath,
   access,
-  cp: noopAsync,
+  cp,
   readFile,
-  rename: noopAsync,
+  rename,
   writeFile,
   readdir,
   stat,
