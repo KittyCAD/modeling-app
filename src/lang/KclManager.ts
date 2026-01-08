@@ -206,9 +206,6 @@ export class KclManager extends EventTarget {
    */
   private _code = signal(bracket)
   lastSuccessfulCode: string = ''
-  set code(code: string) {
-    this._code.value = code
-  }
   get code(): string {
     return this.editorView.state.doc.toString()
   }
@@ -483,7 +480,7 @@ export class KclManager extends EventTarget {
    * then fires (and forgets) an execution with a debounce.
    */
   private executeKclEffect = EditorView.updateListener.of((update) => {
-    this.code = update.view.state.doc.toString()
+    this._code.value = update.view.state.doc.toString()
 
     const shouldExecute =
       this.engineCommandManager.started &&
@@ -612,7 +609,7 @@ export class KclManager extends EventTarget {
     this._editorView = this.createEditorView()
 
     if (isDesktop()) {
-      this.code = ''
+      this._code.value = ''
       return
     }
 
@@ -622,8 +619,8 @@ export class KclManager extends EventTarget {
     // anyway since that's filesystem based.
     const zustandStore = JSON.parse(safeLSGetItem('store') || '{}')
     if (storedCode === null && zustandStore?.state?.code) {
-      this.code = zustandStore.state.code
-      zustandStore.state.code = ''
+      this._code.value = zustandStore.state.code
+      zustandStore.state._code.value = ''
       safeLSSetItem('store', JSON.stringify(zustandStore))
     } else if (storedCode === null) {
       this.updateCodeStateEditor(bracket)
@@ -1468,7 +1465,7 @@ export class KclManager extends EventTarget {
         // Update the code, this is similar to kcl/index.ts / update, updateDoc,
         // needed to update the code, so sketch segments can update themselves.
         // In the editorView case this happens within the kcl plugin's update method being called during updates.
-        this.code = newState.doc.toString()
+        this._code.value = newState.doc.toString()
         void this.executeCode()
       }
     }
@@ -1480,7 +1477,7 @@ export class KclManager extends EventTarget {
       const redoPerformed = redo(this)
       if (redoPerformed) {
         const newState = this.editorState
-        this.code = newState.doc.toString()
+        this._code.value = newState.doc.toString()
         void this.executeCode()
       }
     }
@@ -1679,7 +1676,7 @@ export class KclManager extends EventTarget {
       return EditorSelection.range(from, to)
     })
 
-    this.code = code
+    this._code.value = code
     if (clearHistory) {
       clearCodeMirrorHistory(this)
     }
@@ -1709,7 +1706,7 @@ export class KclManager extends EventTarget {
     annotations = [editorCodeUpdateEvent]
   ): void {
     if (this._code.value !== code) {
-      this.code = code
+      this._code.value = code
       this.updateCodeEditor(code, clearHistory, annotations)
     }
   }
