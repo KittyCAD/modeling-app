@@ -4,8 +4,10 @@ import type {
   SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
+  Freedom,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
+  deriveSegmentFreedom,
   segmentUtilsMap,
   updateSegmentHover,
 } from '@src/machines/sketchSolve/segments'
@@ -251,6 +253,7 @@ export function updateSegmentGroup({
   scale,
   theme,
   draftEntityIds,
+  objects,
 }: {
   group: Group
   input: SegmentCtor
@@ -258,6 +261,7 @@ export function updateSegmentGroup({
   scale: number
   theme: Themes
   draftEntityIds?: Array<number>
+  objects?: Array<ApiObject>
 }): void {
   const idNum = Number(group.name)
   if (Number.isNaN(idNum)) {
@@ -265,6 +269,37 @@ export function updateSegmentGroup({
   }
 
   const isDraft = draftEntityIds?.includes(idNum) ?? false
+
+  // Derive freedom from segment freedom
+  let freedomResult: Freedom | null = null
+  if (objects) {
+    const segmentObj = objects[idNum]
+    if (segmentObj) {
+      freedomResult = deriveSegmentFreedom(segmentObj, objects)
+      console.log('[updateSegmentGroup] Segment freedom derived', {
+        segmentId: idNum,
+        freedom: freedomResult,
+        objectsLength: objects.length,
+        segmentObjKind: segmentObj.kind.type,
+      })
+    } else {
+      console.log('[updateSegmentGroup] segmentObj not found in objects', {
+        segmentId: idNum,
+        objectsLength: objects.length,
+        objectIds: objects.map((o) => o?.id),
+      })
+    }
+  } else {
+    console.log(
+      '[updateSegmentGroup] no objects provided for constraint derivation',
+      {
+        segmentId: idNum,
+      }
+    )
+  }
+
+  // Store freedom in userData for immediate use (not as a cache - Rust handles that)
+  group.userData.freedom = freedomResult
 
   if (input.type === 'Point') {
     segmentUtilsMap.PointSegment.update({
@@ -275,6 +310,7 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
     segmentUtilsMap.LineSegment.update({
@@ -285,6 +321,7 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
     segmentUtilsMap.ArcSegment.update({
@@ -295,6 +332,7 @@ export function updateSegmentGroup({
       group,
       selectedIds,
       isDraft,
+      freedom: freedomResult,
     })
   }
 }
@@ -309,13 +347,28 @@ function initSegmentGroup({
   scale,
   id,
   isDraft,
+  objects,
 }: {
   input: SegmentCtor
   theme: Themes
   scale: number
   id: number
   isDraft?: boolean
+  objects?: Array<ApiObject>
 }): Group | Error {
+  // Derive freedom from segment freedom
+  let freedomResult: Freedom | null = null
+  if (objects) {
+    const segmentObj = objects[id]
+    if (segmentObj) {
+      freedomResult = deriveSegmentFreedom(segmentObj, objects)
+      console.log('[initSegmentGroup] Segment freedom derived', {
+        segmentId: id,
+        freedom: freedomResult,
+      })
+    }
+  }
+
   let group
   if (input.type === 'Point') {
     group = segmentUtilsMap.PointSegment.init({
@@ -324,6 +377,7 @@ function initSegmentGroup({
       scale,
       id,
       isDraft,
+      freedom: freedomResult,
     })
   } else if (input.type === 'Line') {
     group = segmentUtilsMap.LineSegment.init({
@@ -332,6 +386,7 @@ function initSegmentGroup({
       scale,
       id,
       isDraft,
+      freedom: freedomResult,
     })
   } else if (input.type === 'Arc') {
     group = segmentUtilsMap.ArcSegment.init({
@@ -340,9 +395,14 @@ function initSegmentGroup({
       scale,
       id,
       isDraft,
+      freedom: freedomResult,
     })
   }
-  if (group instanceof Group) return group
+  if (group instanceof Group) {
+    // Store freedom in userData for immediate use (not as a cache - Rust handles that)
+    group.userData.freedom = freedomResult
+    return group
+  }
   return new Error(`Unknown input type: ${(input as any).type}`)
 }
 
@@ -432,6 +492,7 @@ export function updateSceneGraphFromDelta({
         scale: factor,
         id: obj.id,
         isDraft,
+        objects,
       })
       if (newGroup instanceof Error) {
         console.error('Failed to init segment group for object', obj.id)
@@ -469,6 +530,7 @@ export function updateSceneGraphFromDelta({
       scale: factor,
       theme: context.sceneInfra.theme,
       draftEntityIds,
+      objects,
     })
   })
 }
@@ -650,6 +712,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
       scale: factor,
       theme: context.sceneInfra.theme,
       draftEntityIds,
+      objects,
     })
   })
 }
@@ -696,6 +759,22 @@ const debouncedEditorUpdate = deferredCallback(
 
 export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
   assertEvent(event, 'update sketch outcome')
+  const freedomDebug = event.data.sceneGraphDelta.new_graph.objects
+    .filter((obj) => {
+      if (obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point') {
+        return true
+      }
+    })
+    .map((obj) => {
+      return {
+        id: obj.id,
+        position:
+          obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point'
+            ? obj.kind.segment.freedom
+            : null,
+      }
+    })
+  console.log('[FREEDOM]', freedomDebug)
 
   // Update scene immediately - no delay, no flicker
   updateSceneGraphFromDelta({

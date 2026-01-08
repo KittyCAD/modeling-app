@@ -1,4 +1,8 @@
-use std::{cell::Cell, collections::HashSet, ops::ControlFlow};
+use std::{
+    cell::Cell,
+    collections::{HashMap, HashSet},
+    ops::ControlFlow,
+};
 
 use kcl_error::SourceRange;
 
@@ -8,7 +12,7 @@ use crate::{
     exec::WarningLevel,
     execution::MockConfig,
     fmt::format_number_literal,
-    front::{ArcCtor, Distance, LinesEqualLength, Parallel, Perpendicular, PointCtor},
+    front::{ArcCtor, Distance, Freedom, LinesEqualLength, Parallel, Perpendicular, PointCtor},
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
@@ -90,6 +94,9 @@ enum ChangeKind {
 pub struct FrontendState {
     program: Program,
     scene_graph: SceneGraph,
+    /// Stores the last known freedom value for each point object.
+    /// This allows us to preserve freedom values when freedom analysis isn't run.
+    point_freedom_cache: HashMap<ObjectId, Freedom>,
 }
 
 impl Default for FrontendState {
@@ -110,6 +117,7 @@ impl FrontendState {
                 settings: Default::default(),
                 sketch_mode: Default::default(),
             },
+            point_freedom_cache: HashMap::new(),
         }
     }
 }
@@ -133,7 +141,8 @@ impl SketchApi for FrontendState {
             })?;
         let new_source = source_from_ast(&self.program.ast);
         let src_delta = SourceDelta { text: new_source };
-        let outcome = self.update_state_after_exec(outcome);
+        // MockConfig::default() has freedom_analysis: true
+        let outcome = self.update_state_after_exec(outcome, true);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             new_objects: Default::default(),
@@ -251,7 +260,8 @@ impl SketchApi for FrontendState {
         let src_delta = SourceDelta { text: new_source };
         // Store the object in the scene.
         self.scene_graph.sketch_mode = Some(sketch_id);
-        let outcome = self.update_state_after_exec(outcome);
+        // Uses .no_freedom_analysis() so freedom_analysis: false
+        let outcome = self.update_state_after_exec(outcome, false);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -301,7 +311,8 @@ impl SketchApi for FrontendState {
                 }
             })?;
 
-        let outcome = self.update_state_after_exec(outcome);
+        // MockConfig::default() has freedom_analysis: true
+        let outcome = self.update_state_after_exec(outcome, true);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -341,7 +352,8 @@ impl SketchApi for FrontendState {
             }
         })?;
 
-        self.update_state_after_exec(outcome);
+        // exit_sketch doesn't run freedom analysis, just clears sketch_mode
+        self.update_state_after_exec(outcome, false);
 
         Ok(self.scene_graph.clone())
     }
@@ -596,17 +608,30 @@ impl FrontendState {
     ) -> api::Result<(SceneGraph, ExecOutcome)> {
         self.program = program.clone();
 
+        // Clear the freedom cache since IDs might have changed after direct editing
+        self.point_freedom_cache.clear();
+
         // Execute so that the objects are updated and available for the next
         // API call.
-        let outcome = ctx.run_with_caching(program).await.map_err(|err| {
-            // TODO: sketch-api: Yeah, this needs to change. We need to
-            // return the full error.
-            Error {
+        // Use mock execution with freedom_analysis enabled since we don't know
+        // how the AST has changed and should run the analysis.
+        let outcome = if ctx.is_mock() {
+            let mock_config = MockConfig {
+                freedom_analysis: true,
+                ..Default::default()
+            };
+            ctx.run_mock(&program, &mock_config).await.map_err(|err| Error {
                 msg: err.error.message().to_owned(),
-            }
-        })?;
+            })?
+        } else {
+            // For live execution, we can't easily add freedom_analysis, but that's okay
+            // since we'll use stored values from the cache.
+            ctx.run_with_caching(program).await.map_err(|err| Error {
+                msg: err.error.message().to_owned(),
+            })?
+        };
 
-        let outcome = self.update_state_after_exec(outcome);
+        let outcome = self.update_state_after_exec(outcome, true);
 
         Ok((self.scene_graph.clone(), outcome))
     }
@@ -725,7 +750,8 @@ impl FrontendState {
             vec![segment_id]
         };
         let src_delta = SourceDelta { text: new_source };
-        let outcome = self.update_state_after_exec(outcome);
+        // Uses .no_freedom_analysis() so freedom_analysis: false
+        let outcome = self.update_state_after_exec(outcome, false);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -845,7 +871,8 @@ impl FrontendState {
             vec![line.start, line.end, segment_id]
         };
         let src_delta = SourceDelta { text: new_source };
-        let outcome = self.update_state_after_exec(outcome);
+        // Uses .no_freedom_analysis() so freedom_analysis: false
+        let outcome = self.update_state_after_exec(outcome, false);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -971,7 +998,8 @@ impl FrontendState {
             vec![arc.start, arc.end, arc.center, segment_id]
         };
         let src_delta = SourceDelta { text: new_source };
-        let outcome = self.update_state_after_exec(outcome);
+        // Uses .no_freedom_analysis() so freedom_analysis: false
+        let outcome = self.update_state_after_exec(outcome, false);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -1302,7 +1330,7 @@ impl FrontendState {
         let mock_config = MockConfig {
             freedom_analysis: is_delete,
             #[cfg(feature = "artifact-graph")]
-            segment_ids_edited,
+            segment_ids_edited: segment_ids_edited.clone(),
             ..Default::default()
         };
         let outcome = ctx.run_mock(&truncated_program, &mock_config).await.map_err(|err| {
@@ -1313,7 +1341,56 @@ impl FrontendState {
             }
         })?;
 
-        let outcome = self.update_state_after_exec(outcome);
+        // Uses freedom_analysis: is_delete
+        let outcome = self.update_state_after_exec(outcome, is_delete);
+
+        // Check if we need to force freedom analysis: if all points in the sketch are Free
+        // and we have no stored values (or all stored values are also Free), it likely means
+        // analysis hasn't run yet.
+        #[cfg(feature = "artifact-graph")]
+        if !is_delete && self.should_force_freedom_analysis(sketch) {
+            // Re-run with freedom analysis enabled
+            let retry_mock_config = MockConfig {
+                freedom_analysis: true,
+                #[cfg(feature = "artifact-graph")]
+                segment_ids_edited: segment_ids_edited.clone(),
+                ..Default::default()
+            };
+            let retry_outcome = ctx
+                .run_mock(&truncated_program, &retry_mock_config)
+                .await
+                .map_err(|err| Error {
+                    msg: err.error.message().to_owned(),
+                })?;
+            let retry_outcome = self.update_state_after_exec(retry_outcome, true);
+
+            #[cfg(feature = "artifact-graph")]
+            let new_source = {
+                // Feed back sketch var solutions into the source.
+                let mut new_ast_for_source = self.program.ast.clone();
+                for (var_range, value) in &retry_outcome.var_solutions {
+                    let rounded = value.round(3);
+                    mutate_ast_node_by_source_range(
+                        &mut new_ast_for_source,
+                        *var_range,
+                        AstMutateCommand::EditVarInitialValue { value: rounded },
+                    )?;
+                }
+                source_from_ast(&new_ast_for_source)
+            };
+            #[cfg(not(feature = "artifact-graph"))]
+            let new_source = source_from_ast(new_ast);
+
+            return Ok((
+                SourceDelta { text: new_source },
+                SceneGraphDelta {
+                    new_graph: self.scene_graph.clone(),
+                    invalidates_ids: is_delete,
+                    new_objects: Vec::new(),
+                    exec_outcome: retry_outcome,
+                },
+            ));
+        }
 
         #[cfg(feature = "artifact-graph")]
         let new_source = {
@@ -1888,7 +1965,8 @@ impl FrontendState {
         };
 
         let src_delta = SourceDelta { text: new_source };
-        let outcome = self.update_state_after_exec(outcome);
+        // Uses MockConfig::default() which has freedom_analysis: true
+        let outcome = self.update_state_after_exec(outcome, true);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -1971,15 +2049,138 @@ impl FrontendState {
         Ok(())
     }
 
-    fn update_state_after_exec(&mut self, outcome: ExecOutcome) -> ExecOutcome {
+    fn update_state_after_exec(&mut self, outcome: ExecOutcome, freedom_analysis_ran: bool) -> ExecOutcome {
         #[cfg(not(feature = "artifact-graph"))]
         return outcome;
         #[cfg(feature = "artifact-graph")]
         {
             let mut outcome = outcome;
-            self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
+            let new_objects = std::mem::take(&mut outcome.scene_objects);
+
+            if freedom_analysis_ran {
+                // When freedom analysis ran, replace the cache entirely with new values
+                // Don't merge with old values since IDs might have changed
+                self.point_freedom_cache.clear();
+                for new_obj in &new_objects {
+                    if let ObjectKind::Segment {
+                        segment: crate::front::Segment::Point(point),
+                    } = &new_obj.kind
+                    {
+                        self.point_freedom_cache.insert(new_obj.id, point.freedom);
+                    }
+                }
+                // Objects are already correct from the analysis, just use them as-is
+                self.scene_graph.objects = new_objects;
+            } else {
+                // When freedom analysis didn't run, preserve old values and merge
+                // Before replacing objects, extract and store freedom values from old objects
+                for old_obj in &self.scene_graph.objects {
+                    if let ObjectKind::Segment {
+                        segment: crate::front::Segment::Point(point),
+                    } = &old_obj.kind
+                    {
+                        self.point_freedom_cache.insert(old_obj.id, point.freedom);
+                    }
+                }
+
+                // Update objects, preserving stored freedom values when new is Free (might be default)
+                let mut updated_objects = Vec::with_capacity(new_objects.len());
+                for new_obj in new_objects {
+                    let mut obj = new_obj;
+                    if let ObjectKind::Segment {
+                        segment: crate::front::Segment::Point(point),
+                    } = &mut obj.kind
+                    {
+                        // If new freedom is Free (might be a default), check if we have a stored value
+                        if point.freedom == Freedom::Free {
+                            if let Some(&stored_freedom) = self.point_freedom_cache.get(&obj.id) {
+                                // Use stored value if it's more specific than Free
+                                if stored_freedom != Freedom::Free {
+                                    point.freedom = stored_freedom;
+                                }
+                            }
+                        }
+                        // Store the new freedom value (even if it's Free, so we know it was set)
+                        self.point_freedom_cache.insert(obj.id, point.freedom);
+                    }
+                    updated_objects.push(obj);
+                }
+
+                self.scene_graph.objects = updated_objects;
+            }
             outcome
         }
+    }
+
+    /// Check if we should force freedom analysis. Returns true if all points in the sketch
+    /// are Free and we have no stored values (or all stored values are also Free), which
+    /// likely indicates that freedom analysis hasn't run yet.
+    #[cfg(feature = "artifact-graph")]
+    fn should_force_freedom_analysis(&self, sketch: ObjectId) -> bool {
+        let Some(sketch_object) = self.scene_graph.objects.get(sketch.0) else {
+            return false;
+        };
+        let ObjectKind::Sketch(sketch_data) = &sketch_object.kind else {
+            return false;
+        };
+
+        // Get all point IDs in the sketch
+        let mut point_ids = Vec::new();
+        for &segment_id in &sketch_data.segments {
+            if let Some(segment_obj) = self.scene_graph.objects.get(segment_id.0) {
+                if let ObjectKind::Segment {
+                    segment: crate::front::Segment::Point(_),
+                } = &segment_obj.kind
+                {
+                    point_ids.push(segment_id);
+                } else if let ObjectKind::Segment {
+                    segment: crate::front::Segment::Line(line),
+                } = &segment_obj.kind
+                {
+                    point_ids.push(line.start);
+                    point_ids.push(line.end);
+                } else if let ObjectKind::Segment {
+                    segment: crate::front::Segment::Arc(arc),
+                } = &segment_obj.kind
+                {
+                    point_ids.push(arc.start);
+                    point_ids.push(arc.end);
+                    point_ids.push(arc.center);
+                }
+            }
+        }
+
+        if point_ids.is_empty() {
+            return false;
+        }
+
+        // Check if all points are Free and we have no stored values (or all stored values are Free)
+        let mut all_free = true;
+        let mut has_stored_non_free = false;
+
+        for &point_id in &point_ids {
+            if let Some(point_obj) = self.scene_graph.objects.get(point_id.0) {
+                if let ObjectKind::Segment {
+                    segment: crate::front::Segment::Point(point),
+                } = &point_obj.kind
+                {
+                    if point.freedom != Freedom::Free {
+                        all_free = false;
+                        break;
+                    }
+                    // Check if we have a stored value that's not Free
+                    if let Some(&stored_freedom) = self.point_freedom_cache.get(&point_id) {
+                        if stored_freedom != Freedom::Free {
+                            has_stored_non_free = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Force analysis if all points are Free and we don't have any stored non-Free values
+        all_free && !has_stored_non_free
     }
 
     fn exit_after_sketch_block(

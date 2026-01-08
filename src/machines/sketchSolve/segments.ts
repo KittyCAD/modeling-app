@@ -1,4 +1,8 @@
-import type { SegmentCtor } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  SegmentCtor,
+  Freedom,
+  ApiObject,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   SKETCH_LAYER,
   SKETCH_POINT_HANDLE,
@@ -38,12 +42,262 @@ export const SEGMENT_TYPE_ARC = 'ARC'
 export const ARC_SEGMENT_BODY = 'ARC_SEGMENT_BODY'
 export const ARC_PREVIEW_CIRCLE = 'arc-preview-circle'
 
+// Text color (foreground color) - white for now as user suggested
+const TEXT_COLOR = 0xffffff
+
+// Brand blue for unconstrained segments - convert KCL_DEFAULT_COLOR from hex string to number
+// KCL_DEFAULT_COLOR is "#3c73ff" which is 0x3c73ff
+const UNCONSTRAINED_COLOR = parseInt(KCL_DEFAULT_COLOR.replace('#', ''), 16)
+
+/**
+ * Derives segment freedom from point freedom.
+ * A segment is considered fully constrained (Fixed) only if all its points are Fixed.
+ * If any point is Conflict, the segment is Conflict.
+ * If any point is Free, the segment is Free.
+ */
+export function deriveSegmentFreedom(
+  segment: ApiObject,
+  objects: Array<ApiObject>
+): Freedom | null {
+  console.log('[deriveSegmentFreedom] start', {
+    segmentId: segment.id,
+    segmentKind: segment.kind.type,
+    objectsLength: objects.length,
+  })
+  if (segment.kind.type !== 'Segment') {
+    return null
+  }
+
+  const getObjById = (id?: number) =>
+    typeof id === 'number' ? (objects.find((o) => o?.id === id) ?? null) : null
+
+  const segmentData = segment.kind.segment
+
+  if (segmentData.type === 'Point') {
+    // Points have freedom directly
+    console.log('[deriveSegmentFreedom] point freedom', {
+      segmentId: segment.id,
+      freedom: segmentData.freedom ?? null,
+    })
+    return segmentData.freedom ?? null
+  }
+
+  // For segments, we need to check all their points
+  const pointFreedoms: Array<Freedom | null> = []
+
+  if (segmentData.type === 'Line') {
+    const startPoint = getObjById(segmentData.start)
+    const endPoint = getObjById(segmentData.end)
+    console.log('[deriveSegmentFreedom] line endpoints', {
+      segmentId: segment.id,
+      startId: segmentData.start,
+      endId: segmentData.end,
+      startFound: !!startPoint,
+      endFound: !!endPoint,
+    })
+    if (
+      startPoint?.kind?.type === 'Segment' &&
+      startPoint.kind.segment.type === 'Point'
+    ) {
+      pointFreedoms.push(startPoint.kind.segment.freedom ?? null)
+    }
+    if (
+      endPoint?.kind?.type === 'Segment' &&
+      endPoint.kind.segment.type === 'Point'
+    ) {
+      pointFreedoms.push(endPoint.kind.segment.freedom ?? null)
+    }
+  } else if (segmentData.type === 'Arc') {
+    const startPoint = getObjById(segmentData.start)
+    const endPoint = getObjById(segmentData.end)
+    const centerPoint = getObjById(segmentData.center)
+    console.log('[deriveSegmentFreedom] arc endpoints', {
+      segmentId: segment.id,
+      startId: segmentData.start,
+      endId: segmentData.end,
+      centerId: segmentData.center,
+      startFound: !!startPoint,
+      endFound: !!endPoint,
+      centerFound: !!centerPoint,
+    })
+    if (
+      startPoint?.kind?.type === 'Segment' &&
+      startPoint.kind.segment.type === 'Point'
+    ) {
+      pointFreedoms.push(startPoint.kind.segment.freedom ?? null)
+    }
+    if (
+      endPoint?.kind?.type === 'Segment' &&
+      endPoint.kind.segment.type === 'Point'
+    ) {
+      pointFreedoms.push(endPoint.kind.segment.freedom ?? null)
+    }
+    if (
+      centerPoint?.kind?.type === 'Segment' &&
+      centerPoint.kind.segment.type === 'Point'
+    ) {
+      pointFreedoms.push(centerPoint.kind.segment.freedom ?? null)
+    }
+  } else if (segmentData.type === 'Circle') {
+    // Circle has a start point (center) - need to check if there are other points
+    // For now, just check the start point
+    const startPoint = getObjById(segmentData.start)
+    console.log('[deriveSegmentFreedom] circle start', {
+      segmentId: segment.id,
+      startId: segmentData.start,
+      startFound: !!startPoint,
+    })
+    if (
+      startPoint?.kind?.type === 'Segment' &&
+      startPoint.kind.segment.type === 'Point'
+    ) {
+      pointFreedoms.push(startPoint.kind.segment.freedom ?? null)
+    }
+  }
+
+  // Filter out nulls
+  const validFreedoms = pointFreedoms.filter((f): f is Freedom => f !== null)
+
+  if (validFreedoms.length === 0) {
+    console.log('[deriveSegmentFreedom] no point freedoms', {
+      segmentId: segment.id,
+      pointFreedoms,
+    })
+    return null
+  }
+
+  // Merge freedoms: Conflict > Free > Fixed
+  // A segment is Fixed only if ALL points are Fixed
+  let hasConflict = false
+  let hasFree = false
+  let allFixed = true
+
+  for (const freedom of validFreedoms) {
+    if (freedom === 'Conflict') {
+      hasConflict = true
+      allFixed = false
+    } else if (freedom === 'Free') {
+      hasFree = true
+      allFixed = false
+    }
+  }
+
+  if (hasConflict) {
+    console.log('[deriveSegmentFreedom] result Conflict', {
+      segmentId: segment.id,
+      pointFreedoms,
+    })
+    return 'Conflict'
+  }
+  if (hasFree) {
+    console.log('[deriveSegmentFreedom] result Free', {
+      segmentId: segment.id,
+      pointFreedoms,
+    })
+    return 'Free'
+  }
+  if (allFixed) {
+    console.log('[deriveSegmentFreedom] result Fixed', {
+      segmentId: segment.id,
+      pointFreedoms,
+    })
+    return 'Fixed'
+  }
+
+  console.log('[deriveSegmentFreedom] result null', {
+    segmentId: segment.id,
+    pointFreedoms,
+  })
+  return null
+}
+
+// Conflict color - red
+// A softer, more pinkish-red with a hint of orange. For example: "#ff5e5b" (~coral red)
+const CONFLICT_COLOR = 0xff5e5b
+
+/**
+ * Color precedence system:
+ * 1. Draft color (priority 1) - grey
+ * 2. Hover color (priority 2) - lighter version of selection color
+ * 3. Select color (priority 3) - SKETCH_SELECTION_COLOR
+ * 4. Conflict color (priority 4) - CONFLICT_COLOR (red)
+ * 5. Constrained color (priority 5) - TEXT_COLOR (white)
+ * 6. Unconstrained color (priority 6) - UNCONSTRAINED_COLOR (brand blue)
+ * 7. Default color (lowest priority) - KCL_DEFAULT_COLOR
+ */
+export function getSegmentColor({
+  isDraft,
+  isHovered,
+  isSelected,
+  freedom,
+}: {
+  isDraft?: boolean
+  isHovered?: boolean
+  isSelected?: boolean
+  freedom?: Freedom | null
+}): number {
+  // Log color calculation for debugging
+  console.log('[getSegmentColor]', {
+    isDraft,
+    isHovered,
+    isSelected,
+    freedom,
+  })
+
+  // Priority 1: Draft color
+  if (isDraft) {
+    console.log('[getSegmentColor] Returning draft color (grey)')
+    return 0x888888 // Grey for draft
+  }
+
+  // Priority 2: Hover color
+  if (isHovered) {
+    // Lighter version of selection color (70% brightness)
+    const hoverColor = packRgbToColor(
+      SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7))
+    )
+    console.log('[getSegmentColor] Returning hover color')
+    return hoverColor
+  }
+
+  // Priority 3: Select color
+  if (isSelected) {
+    console.log('[getSegmentColor] Returning select color')
+    return SKETCH_SELECTION_COLOR
+  }
+
+  // Priority 4: Conflict color (red)
+  if (freedom === 'Conflict') {
+    console.log('[getSegmentColor] Returning conflict color (red)')
+    return CONFLICT_COLOR
+  }
+
+  // Priority 5: Unconstrained color (blue)
+  if (freedom === 'Free') {
+    console.log('[getSegmentColor] Returning unconstrained color (blue)')
+    return UNCONSTRAINED_COLOR
+  }
+
+  // Priority 6: Constrained color (white) - Fixed or null (default to constrained)
+  if (freedom === 'Fixed') {
+    console.log('[getSegmentColor] Returning constrained color (white)')
+    return TEXT_COLOR
+  }
+
+  // Default: unconstrained color (blue) for null/unknown
+  console.log(
+    '[getSegmentColor] Returning unconstrained color (blue) - default'
+  )
+  return UNCONSTRAINED_COLOR
+}
+
 interface CreateSegmentArgs {
   input: SegmentCtor
   theme: Themes
   id: number
   scale: number
   isDraft?: boolean
+  freedom?: Freedom | null
 }
 
 interface UpdateSegmentArgs {
@@ -54,6 +308,7 @@ interface UpdateSegmentArgs {
   group: Group
   selectedIds: Array<number>
   isDraft?: boolean
+  freedom?: Freedom | null
 }
 
 /**
@@ -111,8 +366,23 @@ class PointSegment implements SketchEntityUtils {
       isSelected: boolean
       isHovered: boolean
       isDraft?: boolean
+      freedom?: Freedom | null
     }
   ): void {
+    // Use color precedence system
+    const color = getSegmentColor({
+      isDraft: status.isDraft,
+      isHovered: status.isHovered,
+      isSelected: status.isSelected,
+      freedom: status.freedom,
+    })
+
+    // Convert hex color to RGB string for CSS
+    const r = (color >> 16) & 0xff
+    const g = (color >> 8) & 0xff
+    const b = color & 0xff
+    const rgbStr = `${r}, ${g}, ${b}`
+
     // Draft segments are grey
     if (status.isDraft) {
       innerCircle.style.backgroundColor = '#888888'
@@ -120,20 +390,15 @@ class PointSegment implements SketchEntityUtils {
       return // draft styles take precedence
     }
     if (status.isHovered) {
-      // Calculate darker version of SKETCH_SELECTION_COLOR (70% brightness)
-      const darkerSelectionRgb = SKETCH_SELECTION_RGB.map((val) =>
-        Math.round(val * 0.7)
-      )
-      const darkerSelectionRgbStr = darkerSelectionRgb.join(', ')
-      innerCircle.style.backgroundColor = `rgb(${darkerSelectionRgbStr})`
-      innerCircle.style.border = `1px solid rgba(${darkerSelectionRgbStr}, 0.5)`
-      return // Hover styles take precedence over isSelection status
+      // Calculate darker version (70% brightness)
+      const darkerRgb = `${Math.round(r * 0.7)}, ${Math.round(g * 0.7)}, ${Math.round(b * 0.7)}`
+      innerCircle.style.backgroundColor = `rgb(${darkerRgb})`
+      innerCircle.style.border = `1px solid rgba(${darkerRgb}, 0.5)`
+      return // Hover styles take precedence
     }
-    innerCircle.style.backgroundColor = status.isSelected
-      ? `rgb(${SKETCH_SELECTION_RGB_STR})`
-      : KCL_DEFAULT_COLOR
+    innerCircle.style.backgroundColor = `rgb(${rgbStr})`
     innerCircle.style.border = status.isSelected
-      ? `2px solid rgba(${SKETCH_SELECTION_RGB_STR}, 0.5)`
+      ? `2px solid rgba(${rgbStr}, 0.5)`
       : '0px solid #CCCCCC'
   }
 
@@ -189,10 +454,12 @@ class PointSegment implements SketchEntityUtils {
       this.updatePointSize(innerCircle, true)
       const isSelected = handleDiv.dataset.isSelected === 'true'
       const isDraft = handleDiv.dataset.isDraft === 'true'
+      const freedom = (handleDiv.dataset.freedom as Freedom | undefined) || null
       this.updatePointColors(innerCircle, {
         isSelected,
         isHovered: true,
         isDraft,
+        freedom,
       })
     })
 
@@ -202,7 +469,13 @@ class PointSegment implements SketchEntityUtils {
       // Restore colors based on selection state stored in data attribute
       const isSelected = handleDiv.dataset.isSelected === 'true'
       const isDraft = handleDiv.dataset.isDraft === 'true'
-      this.updatePointColors(innerCircle, { isSelected, isHovered, isDraft })
+      const freedom = (handleDiv.dataset.freedom as Freedom | undefined) || null
+      this.updatePointColors(innerCircle, {
+        isSelected,
+        isHovered,
+        isDraft,
+        freedom,
+      })
     })
 
     const cssObject = new CSS2DObject(handleDiv)
@@ -215,6 +488,9 @@ class PointSegment implements SketchEntityUtils {
     }
     segmentGroup.add(cssObject)
 
+    // Store freedom in userData for later access
+    segmentGroup.userData.freedom = args.freedom ?? null
+
     this.update({
       input: args.input,
       theme: args.theme,
@@ -223,6 +499,7 @@ class PointSegment implements SketchEntityUtils {
       group: segmentGroup,
       selectedIds: [],
       isDraft: args.isDraft,
+      freedom: args.freedom,
     })
     return segmentGroup
   }
@@ -247,10 +524,17 @@ class PointSegment implements SketchEntityUtils {
       if (!innerCircle) return
 
       const isSelected = selectedIds.includes(id)
+      // Get freedom from args or group userData
+      const freedom = args.freedom ?? group.userData.freedom ?? null
+      // Update userData for consistency
+      group.userData.freedom = freedom
+
       // Store selection state in data attribute for hover handlers
       el.dataset.isSelected = String(isSelected)
       // Store draft state in data attribute for hover handlers
       el.dataset.isDraft = String(isDraft ?? false)
+      // Store freedom state in data attribute for hover handlers
+      el.dataset.freedom = freedom ?? ''
 
       // Only update colors if not hovering (hover styles take precedence)
       if (!el.matches(':hover')) {
@@ -258,6 +542,7 @@ class PointSegment implements SketchEntityUtils {
           isSelected,
           isHovered: false,
           isDraft,
+          freedom,
         })
       }
     }
@@ -272,25 +557,21 @@ class LineSegment implements SketchEntityUtils {
     mesh: Mesh,
     isSelected: boolean,
     isHovered: boolean,
-    isDraft?: boolean
+    isDraft?: boolean,
+    freedom?: Freedom | null
   ): void {
     const material = mesh.material
     if (!(material instanceof MeshBasicMaterial)) {
       return
     }
 
-    if (isHovered) {
-      material.color.set(
-        packRgbToColor(SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7)))
-      )
-    } else if (isSelected) {
-      material.color.set(SKETCH_SELECTION_COLOR)
-    } else if (isDraft) {
-      // Draft segments are grey (0x888888)
-      material.color.set(0x888888)
-    } else {
-      material.color.set(KCL_DEFAULT_COLOR)
-    }
+    const color = getSegmentColor({
+      isDraft,
+      isHovered,
+      isSelected,
+      freedom,
+    })
+    material.color.set(color)
   }
 
   init = (args: CreateSegmentArgs) => {
@@ -334,6 +615,9 @@ class LineSegment implements SketchEntityUtils {
 
     segmentGroup.add(mesh)
 
+    // Store freedom in userData
+    segmentGroup.userData.freedom = args.freedom ?? null
+
     this.update({
       input: input,
       theme: theme,
@@ -342,6 +626,7 @@ class LineSegment implements SketchEntityUtils {
       group: segmentGroup,
       selectedIds: [],
       isDraft: args.isDraft,
+      freedom: args.freedom,
     })
 
     return segmentGroup
@@ -386,7 +671,26 @@ class LineSegment implements SketchEntityUtils {
     const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
     const isHovered = straightSegmentBody.userData.isHovered === true
-    this.updateLineColors(straightSegmentBody, isSelected, isHovered, isDraft)
+    // Get freedom from args or group userData
+    const freedom = args.freedom ?? group.userData.freedom ?? null
+    // Update userData for consistency
+    group.userData.freedom = freedom
+
+    console.log('[LineSegment.update]', {
+      id,
+      isDraft,
+      isHovered,
+      isSelected,
+      freedom,
+    })
+
+    this.updateLineColors(
+      straightSegmentBody,
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom
+    )
   }
 }
 
@@ -469,25 +773,21 @@ class ArcSegment implements SketchEntityUtils {
     mesh: Mesh,
     isSelected: boolean,
     isHovered: boolean,
-    isDraft?: boolean
+    isDraft?: boolean,
+    isConstrained?: boolean
   ): void {
     const material = mesh.material
     if (!(material instanceof MeshBasicMaterial)) {
       return
     }
 
-    if (isHovered) {
-      material.color.set(
-        packRgbToColor(SKETCH_SELECTION_RGB.map((val) => Math.round(val * 0.7)))
-      )
-    } else if (isSelected) {
-      material.color.set(SKETCH_SELECTION_COLOR)
-    } else if (isDraft) {
-      // Draft segments are grey (0x888888)
-      material.color.set(0x888888)
-    } else {
-      material.color.set(KCL_DEFAULT_COLOR)
-    }
+    const color = getSegmentColor({
+      isDraft,
+      isHovered,
+      isSelected,
+      isConstrained,
+    })
+    material.color.set(color)
   }
 
   /**
@@ -587,6 +887,9 @@ class ArcSegment implements SketchEntityUtils {
 
     segmentGroup.add(mesh)
 
+    // Store freedom in userData
+    segmentGroup.userData.freedom = args.freedom ?? null
+
     this.update({
       input: input,
       theme: theme,
@@ -595,6 +898,7 @@ class ArcSegment implements SketchEntityUtils {
       group: segmentGroup,
       selectedIds: [],
       isDraft: args.isDraft,
+      freedom: args.freedom,
     })
 
     return segmentGroup
@@ -641,7 +945,26 @@ class ArcSegment implements SketchEntityUtils {
     const isSelected = selectedIds.includes(id)
     // Check if this segment is currently hovered (stored in userData)
     const isHovered = arcSegmentBody.userData.isHovered === true
-    this.updateArcColors(arcSegmentBody, isSelected, isHovered, isDraft)
+    // Get freedom from args or group userData
+    const freedom = args.freedom ?? group.userData.freedom ?? null
+    // Update userData for consistency
+    group.userData.freedom = freedom
+
+    console.log('[ArcSegment.update]', {
+      id,
+      isDraft,
+      isHovered,
+      isSelected,
+      freedom,
+    })
+
+    this.updateArcColors(
+      arcSegmentBody,
+      isSelected,
+      isHovered,
+      isDraft,
+      freedom
+    )
   }
 }
 
@@ -674,6 +997,7 @@ export function updateSegmentHover(
 
   const isSelected = selectedIds.includes(segmentId)
   const isDraft = draftEntityIds?.includes(segmentId) ?? false
+  const freedom = group.userData.freedom ?? null
 
   // Dispatch based on segment body type
   if (mesh.userData.type === STRAIGHT_SEGMENT_BODY) {
@@ -681,14 +1005,16 @@ export function updateSegmentHover(
       mesh,
       isSelected,
       isHovered,
-      isDraft
+      isDraft,
+      freedom
     )
   } else if (mesh.userData.type === ARC_SEGMENT_BODY) {
     segmentUtilsMap.ArcSegment.updateArcColors(
       mesh,
       isSelected,
       isHovered,
-      isDraft
+      isDraft,
+      freedom
     )
   }
 }
