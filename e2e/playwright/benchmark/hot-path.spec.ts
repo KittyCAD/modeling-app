@@ -7,7 +7,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
  * mechanical engineers. See .github/CODEOWNERS for more details.
  */
 
-test.describe('Hot path', () => {
+test.describe('Hot path', { tag: '@desktop' }, () => {
   test(`Draw a circle and extrude it`, async ({
     page,
     homePage,
@@ -26,7 +26,9 @@ test.describe('Hot path', () => {
     await toolbar.openPane(DefaultLayoutPaneID.Code)
 
     // Mouse helpers
-    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, { format: 'ratio' })
+    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, {
+      format: 'ratio',
+    })
     const [clickABitOffCenter] = scene.makeMouseHelpers(0.55, 0.45, {
       format: 'ratio',
     })

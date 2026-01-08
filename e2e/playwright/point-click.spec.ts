@@ -11,7 +11,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
-test.describe('Point-and-click tests', () => {
+test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
   test('Verify in-pipe extrudes in bracket can be edited', async ({
     tronApp,
     context,
