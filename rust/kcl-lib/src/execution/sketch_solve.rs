@@ -306,6 +306,10 @@ fn substitute_sketch_var_in_unsolved_expr(
 
 pub(crate) struct Solved {
     /// Which constraints couldn't be satisfied
+    #[expect(
+        dead_code,
+        reason = "Used internally to build variables_in_conflicts, but not read externally"
+    )]
     pub(crate) unsatisfied: Vec<usize>,
     /// Each variable's final value.
     pub(crate) final_values: Vec<f64>,

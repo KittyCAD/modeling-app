@@ -2092,13 +2092,11 @@ impl FrontendState {
                     } = &mut obj.kind
                     {
                         // If new freedom is Free (might be a default), check if we have a stored value
-                        if point.freedom == Freedom::Free {
-                            if let Some(&stored_freedom) = self.point_freedom_cache.get(&obj.id) {
-                                // Use stored value if it's more specific than Free
-                                if stored_freedom != Freedom::Free {
-                                    point.freedom = stored_freedom;
-                                }
-                            }
+                        if point.freedom == Freedom::Free
+                            && let Some(&stored_freedom) = self.point_freedom_cache.get(&obj.id)
+                            && stored_freedom != Freedom::Free
+                        {
+                            point.freedom = stored_freedom;
                         }
                         // Store the new freedom value (even if it's Free, so we know it was set)
                         self.point_freedom_cache.insert(obj.id, point.freedom);
@@ -2159,22 +2157,21 @@ impl FrontendState {
         let mut has_stored_non_free = false;
 
         for &point_id in &point_ids {
-            if let Some(point_obj) = self.scene_graph.objects.get(point_id.0) {
-                if let ObjectKind::Segment {
+            if let Some(point_obj) = self.scene_graph.objects.get(point_id.0)
+                && let ObjectKind::Segment {
                     segment: crate::front::Segment::Point(point),
                 } = &point_obj.kind
+            {
+                if point.freedom != Freedom::Free {
+                    all_free = false;
+                    break;
+                }
+                // Check if we have a stored value that's not Free
+                if let Some(&stored_freedom) = self.point_freedom_cache.get(&point_id)
+                    && stored_freedom != Freedom::Free
                 {
-                    if point.freedom != Freedom::Free {
-                        all_free = false;
-                        break;
-                    }
-                    // Check if we have a stored value that's not Free
-                    if let Some(&stored_freedom) = self.point_freedom_cache.get(&point_id) {
-                        if stored_freedom != Freedom::Free {
-                            has_stored_non_free = true;
-                            break;
-                        }
-                    }
+                    has_stored_non_free = true;
+                    break;
                 }
             }
         }
