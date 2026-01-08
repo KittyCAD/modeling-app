@@ -1,6 +1,6 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Onboarding tests', () => {
+test.describe('Onboarding tests', { tag: '@desktop' }, () => {
   test('Desktop onboarding flow works', async ({
     page,
     homePage,

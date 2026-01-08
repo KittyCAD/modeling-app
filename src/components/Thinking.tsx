@@ -560,19 +560,16 @@ export const Thinking = (props: {
     if (props.onlyShowImmediateThought === true) {
       return
     }
-    if (refViewFull.current === null) {
-      return
-    }
-    const c = refViewFull.current.children
-    if (c.length === 0) {
-      return
-    }
 
-    setTimeout(() => {
-      c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
-      setTimeout(() => {
-        if (refViewFull.current === null) return
-        refViewFull.current.scrollIntoView({ behavior: 'smooth' })
+    // Always autoscroll to the bottom of the reasoning view
+    requestAnimationFrame(() => {
+      if (refViewFull.current === null) {
+        return
+      }
+
+      refViewFull.current.scrollTo({
+        top: refViewFull.current.scrollHeight,
+        behavior: 'smooth',
       })
     })
   }, [reasoningThoughts.length, props.onlyShowImmediateThought])

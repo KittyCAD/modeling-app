@@ -354,6 +354,7 @@ export type ModelingMachineEvent =
         | 'Vertical'
         | 'Horizontal'
         | 'Parallel'
+        | 'Perpendicular'
         | 'Distance'
     }
   | { type: 'unequip tool' }
@@ -5471,6 +5472,9 @@ export const modelingMachine = setup({
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         Parallel: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        Perpendicular: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         LinesEqualLength: {

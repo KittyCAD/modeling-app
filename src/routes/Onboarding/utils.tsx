@@ -420,7 +420,6 @@ export function TutorialRequestToast(
         >
           <strong>Zookeeper</strong> is in the right sidebar, where you can
           create or modify parts with prompts.{' '}
-          <strong>1 credit = 1 second of compute time.</strong>
         </TutorialToastCard>
         <TutorialToastCard
           src={quickTipSrc(2)}
