@@ -60,12 +60,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import {
-  history,
-  historyField,
-  redoDepth,
-  undoDepth,
-} from '@codemirror/commands'
+import { history, redoDepth, undoDepth } from '@codemirror/commands'
 import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
