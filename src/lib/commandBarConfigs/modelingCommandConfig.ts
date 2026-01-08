@@ -755,6 +755,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        description: `
+          Note: Only closed paths are allowed for now.
+          Selection of open paths via segments will be allowed in the future for surface modeling, see [#9592](https://github.com/KittyCAD/modeling-app/issues/9592).
+        `.trim(),
       },
       vDegree: {
         inputType: 'kcl',
