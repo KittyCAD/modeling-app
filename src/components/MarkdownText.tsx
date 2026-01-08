@@ -22,7 +22,7 @@ export function MarkdownText({ text, className }: MarkdownTextProps) {
   return (
     <span
       ref={markdownRef}
-      className={`parsed-markdown ${className ?? ''}`}
+      className={`parsed-markdown inline-block ${className ?? ''}`}
       dangerouslySetInnerHTML={{
         __html: Marked.parse(text, {
           renderer: new SafeRenderer(MARKED_OPTIONS),
