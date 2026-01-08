@@ -317,6 +317,76 @@ extrude(openProfile, length = 2, bodyType = SURFACE)
 </model-viewer>
 
 ```kcl
+// Extrude a face from an extruded object
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-5, 0])
+  |> xLine(length = 1)
+  |> yLine(length = -1)
+  |> line(end = [-1, -1], tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5)
+  |> appearance(color = "#ff0000")
+extrude(
+  seg01,
+  length = 2,
+  method = MERGE,
+  hideSeams = false,
+) // if hideSeams=true, the seam still shows because the edges of the coplanar faces are not colinear
+
+
+// Extrude a face from an extruded object to create a new object
+sketch002 = startSketchOn(XY)
+profile002 = startProfile(sketch002, at = [-1, 0])
+  |> yLine(length = -1.0)
+  |> xLine(length = 1.0, tag = $seg02)
+  |> yLine(length = 1.0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(profile002, length = 5)
+  |> appearance(color = "#00ff00")
+extrude(
+  seg02,
+  length = 2,
+  method = NEW,
+  hideSeams = false,
+) // if hideSeams=true, the seam still shows because the resulting extrusion is a separate object
+
+
+// Extrude a face from an extruded object and merge the result
+sketch003 = startSketchOn(XY)
+profile003 = startProfile(sketch003, at = [1, 0])
+  |> yLine(length = -1.0)
+  |> xLine(length = 1.0, tag = $seg03)
+  |> yLine(length = 1.0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude003 = extrude(profile003, length = 5)
+  |> appearance(color = "#0000ff")
+extrude(
+  seg03,
+  length = 2,
+  method = MERGE,
+  hideSeams = true,
+)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the extrude function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude8_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude8.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
 // Surface extrude of a closed profile
 closedProfile = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -330,10 +400,10 @@ extrude(closedProfile, length = 5, bodyType = SURFACE)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the extrude function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude8_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-extrude9_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude8.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-extrude9.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
