@@ -45,12 +45,17 @@ test.describe('Zookeeper tests', { tag: '@desktop' }, () => {
       await expect(copilot.thinkingView).not.toBeVisible({
         timeout: 60_000,
       })
+
+      await toolbar.closePane(DefaultLayoutPaneID.TTC)
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain('startSketchOn')
       await editor.expectEditor.toContain('extrude')
       await editor.expectEditor.toContain('10')
       await scene.settled(cmdBar)
-      // TODO: maybe check for a sweep artifact in the debug pane?
+
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      expect(await toolbar.getFeatureTreeOperation('cube', 0)).toBeVisible()
     })
   }
 
