@@ -289,22 +289,20 @@ const StarterCard = ({ text }: { text: string }) => {
 export const MlEphantConversation = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
 
-  const onProcess = (request: string, mode: MlCopilotMode) => {
-    // Only case of autoscroll for the conversation, right after sending a prompt
-    const rightAfter = 500
-    setTimeout(() => {
-      requestAnimationFrame(() => {
-        if (refScroll.current) {
-          refScroll.current.scrollTo({
-            top: refScroll.current.scrollHeight,
-            behavior: 'smooth',
-          })
-        }
-      })
-    }, rightAfter)
+  // Only case of autoscroll for the conversation, right after sending a prompt when the new exchange is added
+  useEffect(() => {
+    const exchangesLength = props.conversation?.exchanges.length ?? 0
+    if (exchangesLength === 0) return
 
-    props.onProcess(request, mode)
-  }
+    requestAnimationFrame(() => {
+      if (refScroll.current) {
+        refScroll.current.scrollTo({
+          top: refScroll.current.scrollHeight,
+          behavior: 'smooth',
+        })
+      }
+    })
+  }, [props.conversation?.exchanges.length])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
     (exchange: Exchange, exchangeIndex: number, list) => {
@@ -352,7 +350,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               }
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}
-              onProcess={onProcess}
+              onProcess={props.onProcess}
               onReconnect={props.onReconnect}
               onInterrupt={props.onInterrupt}
               defaultPrompt={props.defaultPrompt}
