@@ -272,18 +272,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "id": "[uuid]",
           "artifactId": "[uuid]",
           "value": "seg01",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -852,18 +840,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "id": "[uuid]",
         "artifactId": "[uuid]",
         "value": "seg01",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
         "solid": {
           "type": "Solid",
           "id": "[uuid]",
@@ -1151,18 +1127,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "id": "[uuid]",
         "artifactId": "[uuid]",
         "value": "seg01",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
         "solid": {
           "type": "Solid",
           "id": "[uuid]",
@@ -1431,18 +1395,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "id": "[uuid]",
         "artifactId": "[uuid]",
         "value": "seg01",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
         "solid": {
           "type": "Solid",
           "id": "[uuid]",
@@ -1677,18 +1629,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "id": "[uuid]",
         "artifactId": "[uuid]",
         "value": "seg01",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
         "solid": {
           "type": "Solid",
           "id": "[uuid]",
@@ -1951,18 +1891,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "id": "[uuid]",
         "artifactId": "[uuid]",
         "value": "seg01",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": null
-        },
         "solid": {
           "type": "Solid",
           "id": "[uuid]",
@@ -2793,18 +2721,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "id": "[uuid]",
           "artifactId": "[uuid]",
           "value": "seg01",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": null
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -3198,18 +3114,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "id": "[uuid]",
       "artifactId": "[uuid]",
       "value": "seg01",
-      "xAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": null
-      },
-      "yAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": null
-      },
       "solid": {
         "type": "Solid",
         "id": "[uuid]",

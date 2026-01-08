@@ -3729,18 +3729,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -4045,18 +4033,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -4361,18 +4337,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -4677,18 +4641,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -4993,18 +4945,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -5309,18 +5249,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -5625,18 +5553,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -5941,18 +5857,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -6257,18 +6161,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -6573,18 +6465,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -6889,18 +6769,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -7205,18 +7073,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -7521,18 +7377,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -7837,18 +7681,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -8153,18 +7985,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -8469,18 +8289,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -8785,18 +8593,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "id": "[uuid]",
               "artifactId": "[uuid]",
               "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -9078,18 +8874,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
         "id": "[uuid]",
         "artifactId": "[uuid]",
         "value": "end",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
         "solid": {
           "type": "Solid",
           "id": "[uuid]",

@@ -312,18 +312,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "id": "[uuid]",
           "artifactId": "[uuid]",
           "value": "seg02",
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": null
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": null
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -791,18 +779,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         "id": "[uuid]",
         "artifactId": "[uuid]",
         "value": "seg02",
-        "xAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": null
-        },
-        "yAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": null
-        },
         "solid": {
           "type": "Solid",
           "id": "[uuid]",
