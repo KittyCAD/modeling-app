@@ -1,14 +1,11 @@
 import ms from 'ms'
 
-import { SafeRenderer } from '@src/lib/markdown'
-import { Marked } from '@ts-stack/markdown'
-
 import type { MlCopilotServerMessage } from '@kittycad/lib'
 import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { MARKED_OPTIONS } from '@src/lib/constants'
+import { MarkdownText } from '@src/components/MarkdownText'
 
 interface IRowCollapse {
   fn: () => void
@@ -121,15 +118,7 @@ export const KclDocs = (props: {
         keyIndex={props.keyIndex}
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
-        <div
-          className="parsed-markdown"
-          dangerouslySetInnerHTML={{
-            __html: Marked.parse(props.content, {
-              renderer: new SafeRenderer(MARKED_OPTIONS),
-              ...MARKED_OPTIONS,
-            }),
-          }}
-        ></div>
+        <MarkdownText text={props.content} />
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -154,15 +143,7 @@ export const FeatureTreeOutline = (props: {
         keyIndex={props.keyIndex}
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
-        <div
-          className="parsed-markdown"
-          dangerouslySetInnerHTML={{
-            __html: Marked.parse(props.content, {
-              renderer: new SafeRenderer(MARKED_OPTIONS),
-              ...MARKED_OPTIONS,
-            }),
-          }}
-        ></div>
+        <MarkdownText text={props.content} />
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -354,15 +335,7 @@ export const NothingInParticular = (props: {
         keyIndex={props.keyIndex}
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
-        <div
-          className="parsed-markdown"
-          dangerouslySetInnerHTML={{
-            __html: Marked.parse(props.content, {
-              renderer: new SafeRenderer(MARKED_OPTIONS),
-              ...MARKED_OPTIONS,
-            }),
-          }}
-        ></div>
+        <MarkdownText text={props.content} />
       </ThoughtContent>
     </ThoughtContainer>
   )

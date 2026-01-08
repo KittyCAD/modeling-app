@@ -16,9 +16,7 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { attachSafeLinkHandler, SafeRenderer } from '@src/lib/markdown'
-import { Marked } from '@ts-stack/markdown'
-import { MARKED_OPTIONS } from '@src/lib/constants'
+import { MarkdownText } from '@src/components/MarkdownText'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -274,15 +272,7 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
         name="triangleExclamation"
         className="w-4 h-4 inline valign"
       />
-      <span
-        className="parsed-markdown"
-        dangerouslySetInnerHTML={{
-          __html: Marked.parse(props.maybeError?.error.detail, {
-            renderer: new SafeRenderer(MARKED_OPTIONS),
-            ...MARKED_OPTIONS,
-          }),
-        }}
-      ></span>
+      <MarkdownText text={props.maybeError?.error.detail} />
     </div>
   ) : null
 
@@ -309,27 +299,14 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 
   const itemsFilteredNulls = items.filter((x: ReactNode | null) => x !== null)
 
-  const markdownRef = useRef<HTMLSpanElement>(null)
   const deltasAggregatedMarkdown = useMemo(() => {
     return props.deltasAggregated !== '' ? (
-      <span
-        ref={markdownRef}
-        className="parsed-markdown whitespace-normal"
-        dangerouslySetInnerHTML={{
-          __html: Marked.parse(props.deltasAggregated, {
-            renderer: new SafeRenderer(MARKED_OPTIONS),
-            ...MARKED_OPTIONS,
-          }),
-        }}
-      ></span>
+      <MarkdownText
+        text={props.deltasAggregated}
+        className="whitespace-normal"
+      />
     ) : null
   }, [props.deltasAggregated])
-
-  useEffect(() => {
-    if (markdownRef.current === null) return
-    console.log('attaching safe link handler')
-    attachSafeLinkHandler(markdownRef.current)
-  }, [markdownRef.current])
 
   return (
     <ChatBubble

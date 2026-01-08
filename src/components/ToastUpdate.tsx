@@ -1,11 +1,9 @@
-import { Marked } from '@ts-stack/markdown'
 import toast from 'react-hot-toast'
 
 import { ActionButton } from '@src/components/ActionButton'
-import { SafeRenderer } from '@src/lib/markdown'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { IS_STAGING_OR_DEBUG, getReleaseUrl } from '@src/routes/utils'
-import { MARKED_OPTIONS } from '@src/lib/constants'
+import { MarkdownText } from '@src/components/MarkdownText'
 
 export function ToastUpdate({
   version,
@@ -62,15 +60,10 @@ export function ToastUpdate({
                 <strong className="text-destroy-50"> (Breaking changes)</strong>
               )}
             </summary>
-            <div
-              className="parsed-markdown py-2 px-4 mt-2 border-t border-chalkboard-30 dark:border-chalkboard-60 max-h-60 overflow-y-auto"
-              dangerouslySetInnerHTML={{
-                __html: Marked.parse(releaseNotes, {
-                  renderer: new SafeRenderer(MARKED_OPTIONS),
-                  ...MARKED_OPTIONS,
-                }),
-              }}
-            ></div>
+            <MarkdownText
+              text={releaseNotes}
+              className="py-2 px-4 mt-2 border-t border-chalkboard-30 dark:border-chalkboard-60 max-h-60 overflow-y-auto"
+            />
           </details>
         )}
         <div className="flex justify-between items-center gap-8">
