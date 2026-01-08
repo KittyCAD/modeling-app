@@ -19,6 +19,7 @@ import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { Marked } from '@ts-stack/markdown'
 
 const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>
   snapshot?.context.selectionRanges
@@ -206,6 +207,17 @@ function CommandBarSelectionInput({
           value={JSON.stringify(selection || {})}
         />
       </label>
+      {arg.description && (
+        <div
+          className="mx-4 mb-4 mt-2 text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
+          dangerouslySetInnerHTML={{
+            __html: Marked.parse(arg.description, {
+              gfm: true,
+              breaks: true,
+            }),
+          }}
+        />
+      )}
     </form>
   )
 }
