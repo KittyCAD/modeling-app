@@ -505,12 +505,12 @@ class ArcSegment implements SketchEntityUtils {
 
   init = (args: CreateSegmentArgs) => {
     const { input, id } = args
+    // arcData is not actually used anymore in init because geometry is only constructed in update,
+    // but we still check if it's an Error.
     const arcData = this.extractArcData(input)
     if (arcData instanceof Error) {
       return arcData
     }
-
-    const { centerX, centerY, radius, startAngle, endAngle } = arcData
 
     const segmentGroup = new Group()
     const geometry = new LineGeometry()
