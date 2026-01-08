@@ -136,6 +136,7 @@ pub enum ObjectKind {
     /// A placeholder for an object that will be solved and replaced later.
     Nil,
     Plane(Plane),
+    Face(Face),
     Sketch(crate::frontend::sketch::Sketch),
     // These need to be named since the nested types are also enums. ts-rs needs
     // a place to put the type tag.
@@ -153,6 +154,13 @@ pub enum ObjectKind {
 pub enum Plane {
     Object(ObjectId),
     Default(PlaneName),
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiFace")]
+#[serde(rename_all = "camelCase")]
+pub struct Face {
+    pub id: ObjectId,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

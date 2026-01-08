@@ -118,8 +118,9 @@ pub struct Sketch {
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SketchCtor {
     /// Identifier representing the plane or face to sketch on. This could be a
-    /// built-in plane like `XY`, a variable referencing a plane, or a face tag.
-    /// But currently, it may not be an arbitrary expression.
+    /// built-in plane like `XY`, a variable referencing a plane, or a variable
+    /// referencing a face. But currently, it may not be an arbitrary
+    /// expression. Notably, negative planes are not supported.
     pub on: String,
 }
 

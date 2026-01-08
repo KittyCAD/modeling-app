@@ -627,6 +627,8 @@ pub struct Face {
     pub id: uuid::Uuid,
     /// The artifact ID.
     pub artifact_id: ArtifactId,
+    /// The scene object ID.
+    pub object_id: ObjectId,
     /// The tag of the face.
     pub value: String,
     /// What should the face's X axis be?
@@ -795,6 +797,20 @@ impl SketchSurface {
         match self {
             SketchSurface::Plane(plane) => plane.info.y_axis,
             SketchSurface::Face(face) => face.y_axis,
+        }
+    }
+
+    pub(crate) fn object_id(&self) -> Option<ObjectId> {
+        match self {
+            SketchSurface::Plane(plane) => plane.object_id,
+            SketchSurface::Face(face) => Some(face.object_id),
+        }
+    }
+
+    pub(crate) fn set_object_id(&mut self, object_id: ObjectId) {
+        match self {
+            SketchSurface::Plane(plane) => plane.object_id = Some(object_id),
+            SketchSurface::Face(face) => face.object_id = object_id,
         }
     }
 }

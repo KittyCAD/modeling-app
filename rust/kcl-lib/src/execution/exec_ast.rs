@@ -12,7 +12,7 @@ use crate::{
     execution::{
         AbstractSegment, BodyType, ControlFlowKind, EnvironmentRef, ExecState, ExecutorContext, KclValue,
         KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PreserveMem, Segment,
-        SegmentKind, SegmentRepr, SketchConstraintKind, StatementKind, TagIdentifier, UnsolvedSegment,
+        SegmentKind, SegmentRepr, SketchConstraintKind, SketchSurface, StatementKind, TagIdentifier, UnsolvedSegment,
         UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
         control_continue,
@@ -34,7 +34,7 @@ use crate::{
         MemberExpression, Name, Node, ObjectExpression, PipeExpression, Program, SketchBlock, SketchVar, TagDeclarator,
         Type, UnaryExpression, UnaryOperator,
     },
-    std::{args::TyF64, sketch::ensure_sketch_plane_in_engine},
+    std::{args::TyF64, shapes::SketchOrSurface, sketch::ensure_sketch_plane_in_engine},
 };
 
 impl<'a> StatementKind<'a> {
@@ -1069,16 +1069,17 @@ impl Node<SketchBlock> {
         // scene objects created inside the sketch block so that its ID is
         // stable across sketch block edits. In order to create the sketch block
         // scene object, we need to make sure the plane scene object is created.
-        let mut arg_on: crate::execution::Plane = args.get_kw_arg("on", &RuntimeType::plane(), exec_state)?;
+        let arg_on: SketchOrSurface = args.get_kw_arg("on", &RuntimeType::sketch_or_surface(), exec_state)?;
+        let mut sketch_surface = arg_on.into_sketch_surface();
         // Ensure that the plane has an ObjectId. Always create an Object so
         // that we're consistent with IDs.
         if exec_state.sketch_mode() {
-            if arg_on.object_id.is_none() {
+            if sketch_surface.object_id().is_none() {
                 #[cfg(not(feature = "artifact-graph"))]
                 {
                     // Without artifact graph, we just create a new object ID.
                     // It will never be used for anything meaningful.
-                    arg_on.object_id = Some(exec_state.next_object_id());
+                    sketch_surface.set_object_id(exec_state.next_object_id());
                 }
                 #[cfg(feature = "artifact-graph")]
                 {
@@ -1091,14 +1092,21 @@ impl Node<SketchBlock> {
                             vec![range],
                         )));
                     };
-                    arg_on.object_id = Some(last_object.id);
+                    sketch_surface.set_object_id(last_object.id);
                 }
             }
         } else {
-            // Ensure that it's been created in the engine.
-            ensure_sketch_plane_in_engine(&mut arg_on, exec_state, &args).await?;
+            match &mut sketch_surface {
+                SketchSurface::Plane(plane) => {
+                    // Ensure that it's been created in the engine.
+                    ensure_sketch_plane_in_engine(plane, exec_state, &args).await?;
+                }
+                SketchSurface::Face(_) => {
+                    // All faces should already be created in the engine.
+                }
+            }
         }
-        let on_object_id = if let Some(object_id) = arg_on.object_id {
+        let on_object_id = if let Some(object_id) = sketch_surface.object_id() {
             object_id
         } else {
             let message = "The `on` argument should have an object after ensure_sketch_plane_in_engine".to_owned();
