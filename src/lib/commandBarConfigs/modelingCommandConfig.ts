@@ -603,6 +603,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         clearSelectionFirst: true,
         required: false,
         multiple: false,
+        description: 'Note: Only parallel faces are supported for now.',
       },
       symmetric: {
         inputType: 'boolean',

@@ -1,13 +1,11 @@
 import ms from 'ms'
 
-import { SafeRenderer } from '@src/lib/markdown'
-import { Marked, escape, unescape } from '@ts-stack/markdown'
-
 import type { MlCopilotServerMessage } from '@kittycad/lib'
 import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
+import { MarkdownText } from '@src/components/MarkdownText'
 
 interface IRowCollapse {
   fn: () => void
@@ -106,12 +104,6 @@ export const KclDocs = (props: {
   setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
   keyIndex: number
 }) => {
-  const options = {
-    gfm: true,
-    breaks: true,
-    sanitize: true,
-    escape,
-  }
   return (
     <ThoughtContainer
       heading={
@@ -126,15 +118,7 @@ export const KclDocs = (props: {
         keyIndex={props.keyIndex}
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
-        <div
-          className="parsed-markdown"
-          dangerouslySetInnerHTML={{
-            __html: Marked.parse(props.content, {
-              renderer: new SafeRenderer(options),
-              ...options,
-            }),
-          }}
-        ></div>
+        <MarkdownText text={props.content} />
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -145,12 +129,6 @@ export const FeatureTreeOutline = (props: {
   setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
   keyIndex: number
 }) => {
-  const options = {
-    gfm: true,
-    breaks: true,
-    sanitize: true,
-    escape,
-  }
   return (
     <ThoughtContainer
       heading={
@@ -165,15 +143,7 @@ export const FeatureTreeOutline = (props: {
         keyIndex={props.keyIndex}
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
-        <div
-          className="parsed-markdown"
-          dangerouslySetInnerHTML={{
-            __html: Marked.parse(props.content, {
-              renderer: new SafeRenderer(options),
-              ...options,
-            }),
-          }}
-        ></div>
+        <MarkdownText text={props.content} />
       </ThoughtContent>
     </ThoughtContainer>
   )
@@ -353,13 +323,6 @@ export const NothingInParticular = (props: {
   setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
   keyIndex: number
 }) => {
-  const options = {
-    gfm: true,
-    breaks: true,
-    sanitize: true,
-    escape,
-    unescape,
-  }
   return (
     <ThoughtContainer
       heading={
@@ -372,15 +335,7 @@ export const NothingInParticular = (props: {
         keyIndex={props.keyIndex}
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
-        <div
-          className="parsed-markdown"
-          dangerouslySetInnerHTML={{
-            __html: Marked.parse(props.content, {
-              renderer: new SafeRenderer(options),
-              ...options,
-            }),
-          }}
-        ></div>
+        <MarkdownText text={props.content} />
       </ThoughtContent>
     </ThoughtContainer>
   )

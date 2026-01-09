@@ -16,8 +16,7 @@ import {
 import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { SafeRenderer } from '@src/lib/markdown'
-import { Marked, escape } from '@ts-stack/markdown'
+import { MarkdownText } from '@src/components/MarkdownText'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -266,13 +265,6 @@ type ResponsesCardProp = {
   deltasAggregated: Exchange['deltasAggregated']
 }
 
-const MarkedOptions = {
-  gfm: true,
-  breaks: true,
-  sanitize: true,
-  escape,
-}
-
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
   props.maybeError ? (
     <div className="text-rose-400 flex flex-row gap-1 items-start">
@@ -280,15 +272,7 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
         name="triangleExclamation"
         className="w-4 h-4 inline valign"
       />
-      <span
-        className="parsed-markdown"
-        dangerouslySetInnerHTML={{
-          __html: Marked.parse(props.maybeError?.error.detail, {
-            renderer: new SafeRenderer(MarkedOptions),
-            ...MarkedOptions,
-          }),
-        }}
-      ></span>
+      <MarkdownText text={props.maybeError?.error.detail} />
     </div>
   ) : null
 
@@ -317,15 +301,10 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 
   const deltasAggregatedMarkdown = useMemo(() => {
     return props.deltasAggregated !== '' ? (
-      <span
-        className="parsed-markdown whitespace-normal"
-        dangerouslySetInnerHTML={{
-          __html: Marked.parse(props.deltasAggregated, {
-            renderer: new SafeRenderer(MarkedOptions),
-            ...MarkedOptions,
-          }),
-        }}
-      ></span>
+      <MarkdownText
+        text={props.deltasAggregated}
+        className="whitespace-normal"
+      />
     ) : null
   }, [props.deltasAggregated])
 
