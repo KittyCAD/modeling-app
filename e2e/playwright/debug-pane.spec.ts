@@ -62,7 +62,7 @@ test.describe('Debug pane', { tag: '@desktop' }, () => {
     await test.step('Enter a comment', async () => {
       await page.keyboard.type('|> line(end = [2, 2])', { delay: 0 })
       // Wait for keyboard input debounce and updated artifact graph.
-      await page.waitForTimeout(1000)
+      await page.waitForTimeout(300)
     })
     const newSegmentIds = await segment.innerText()
     // Strip off the closing bracket.
