@@ -1485,31 +1485,10 @@ export class KclManager extends EventTarget {
     })
   }
   undo() {
-    if (this._editorView) {
-      undo(this._editorView)
-    } else if (this.editorState) {
-      const undoPerformed = undo(this) // invokes dispatch which updates this._editorState
-      if (undoPerformed) {
-        const newState = this.editorState
-        // Update the code, this is similar to kcl/index.ts / update, updateDoc,
-        // needed to update the code, so sketch segments can update themselves.
-        // In the editorView case this happens within the kcl plugin's update method being called during updates.
-        this._code.value = newState.doc.toString()
-        void this.executeCode()
-      }
-    }
+    undo(this._editorView)
   }
   redo() {
-    if (this._editorView) {
-      redo(this._editorView)
-    } else if (this.editorState) {
-      const redoPerformed = redo(this)
-      if (redoPerformed) {
-        const newState = this.editorState
-        this._code.value = newState.doc.toString()
-        void this.executeCode()
-      }
-    }
+    redo(this._editorView)
   }
   clearLocalHistory() {
     // Clear history
