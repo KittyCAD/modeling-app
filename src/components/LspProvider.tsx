@@ -7,7 +7,13 @@ import {
   LanguageServerClient,
   LspWorkerEventType,
 } from '@kittycad/codemirror-lsp-client'
-import React, { createContext, useContext, useMemo, useState } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useNavigate } from 'react-router-dom'
 import type * as LSP from 'vscode-languageserver-protocol'
 
@@ -165,15 +171,24 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
         },
       })
 
-      // New code to just update the CodeMirror extensions directly.
-      kclManager.editorView.dispatch({
-        effects: kclLspCompartment.reconfigure(Prec.highest(lsp)),
-      })
-
       plugin = lsp
     }
     return plugin
   }, [kclLspClient, isKclLspReady])
+
+  useEffect(() => {
+    // New code to just update the CodeMirror extensions directly.
+    if (kclLSP === null) {
+      return
+    }
+    kclManager.editorView.dispatch({
+      effects: kclLspCompartment.reconfigure(Prec.highest(kclLSP)),
+    })
+    return () =>
+      kclManager.editorView.dispatch({
+        effects: kclLspCompartment.reconfigure(Prec.highest([])),
+      })
+  }, [kclLSP])
 
   const { lspClient: copilotLspClient } = useMemo(() => {
     if (!token || token === '') {
