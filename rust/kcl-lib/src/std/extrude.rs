@@ -199,6 +199,7 @@ async fn inner_extrude(
                     .opposite(opposite.clone())
                     .extrude_method(extrude_method)
                     .body_type(body_type)
+                    .maybe_merge_coplanar_faces(hide_seams)
                     .build(),
             ),
             (None, None, None, None, Some(to)) => match to {
@@ -218,7 +219,7 @@ async fn inner_extrude(
                 ),
                 Point3dAxis3dOrGeometryReference::Axis { direction, origin } => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(sketch.id.into())
+                        .target(sketch_or_face_id.into())
                         .reference(ExtrudeReference::Axis {
                             axis: KPoint3d {
                                 x: direction[0].to_mm(),
@@ -296,7 +297,7 @@ async fn inner_extrude(
                 ),
                 Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(sketch.id.into())
+                        .target(sketch_or_face_id.into())
                         .reference(ExtrudeReference::EntityReference { entity_id: solid.id })
                         .extrude_method(extrude_method)
                         .body_type(body_type)
