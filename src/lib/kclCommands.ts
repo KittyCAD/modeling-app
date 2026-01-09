@@ -98,15 +98,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
           } else {
-            commandProps.kclManager.updateCodeEditor(newCode)
-            Promise.all([
-              commandProps.kclManager.writeToFile(),
-              commandProps.kclManager.executeCode(),
-            ])
-              .then(() => {
-                toast.success(`Updated per-file units to ${data.unit}`)
-              })
-              .catch(reportRejection)
+            commandProps.kclManager.updateCodeEditor(newCode, {
+              shouldExecute: true,
+              shouldResetCamera: true,
+            })
+            toast.success(`Updated per-file units to ${data.unit}`)
           }
         } else {
           toast.error(

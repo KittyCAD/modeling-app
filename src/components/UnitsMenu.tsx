@@ -7,7 +7,7 @@ import { changeDefaultUnits } from '@src/lang/wasm'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { kclManager, sceneInfra } from '@src/lib/singletons'
-import { err, reportRejection } from '@src/lib/trap'
+import { err } from '@src/lib/trap'
 import { OrthographicCamera } from 'three'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
@@ -109,15 +109,11 @@ export function UnitsMenu() {
                           `Failed to set per-file units: ${newCode.message}`
                         )
                       } else {
-                        kclManager.updateCodeEditor(newCode)
-                        Promise.all([
-                          kclManager.writeToFile(),
-                          kclManager.executeCode(),
-                        ])
-                          .then(() => {
-                            toast.success(`Updated per-file units to ${unit}`)
-                          })
-                          .catch(reportRejection)
+                        kclManager.updateCodeEditor(newCode, {
+                          shouldExecute: true,
+                          shouldResetCamera: true,
+                        })
+                        toast.success(`Updated per-file units to ${unit}`)
                       }
                       popover.close()
                     }}

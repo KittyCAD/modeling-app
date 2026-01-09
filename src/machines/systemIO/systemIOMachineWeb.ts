@@ -50,9 +50,9 @@ export const systemIOMachineWeb = systemIOMachine.provide({
           wasmInstance
         )
         if (err(codeToWrite)) return Promise.reject(codeToWrite)
-        input.rootContext.kclManager.updateCodeEditor(codeToWrite)
-        await input.rootContext.kclManager.writeToFile()
-        await input.rootContext.kclManager.executeCode()
+        input.rootContext.kclManager.updateCodeEditor(codeToWrite, {
+          shouldExecute: true,
+        })
 
         // Needed for zoom_to_fit to work until #6545 is fixed:
         // https://github.com/KittyCAD/modeling-app/issues/6545

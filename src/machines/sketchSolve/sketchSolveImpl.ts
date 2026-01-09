@@ -720,13 +720,10 @@ export function updateSketchOutcome({ event, context }: SolveAssignArgs) {
     })
   } else {
     // Update editor immediately - no debounce for frequent updates like onMove
-    context.kclManager.updateCodeEditor(event.data.kclSource.text)
-  }
-
-  // Persist changes to disk unless explicitly disabled
-  if (event.data.writeToDisk !== false) {
-    void context.kclManager.writeToFile().catch((err) => {
-      console.error('Failed to write file', err)
+    context.kclManager.updateCodeEditor(event.data.kclSource.text, {
+      shouldExecute: false,
+      // Persist changes to disk unless explicitly disabled
+      shouldWriteToDisk: event.data.writeToDisk || false,
     })
   }
 

@@ -325,9 +325,7 @@ export async function resetCodeAndAdvanceOnboarding({
     ? onboardingStartPath
     : onboardingStatus
   // We do want to update both the state and editor here.
-  kclManager.updateCodeEditor(browserAxialFan)
-  kclManager.writeToFile().catch(reportRejection)
-  kclManager.executeCode().catch(reportRejection)
+  kclManager.updateCodeEditor(browserAxialFan, { shouldExecute: true })
   void navigate(
     makeUrlPathRelative(
       joinRouterPaths(String(PATHS.ONBOARDING), resolvedOnboardingStatus)

@@ -2852,7 +2852,6 @@ export class SceneEntities {
             updateExtraSegments,
           })
         }
-        await this.kclManager.writeToFile()
       },
       onDrag: async ({
         selected,
