@@ -622,7 +622,6 @@ export const ModelingMachineProvider = ({
                 )
                 kclManager.updateCodeEditor(newSketchResult.kclSource.text, {
                   shouldAddToHistory: false,
-                  shouldWriteToDisk: false,
                 })
                 sketchId = newSketchResult.sketchId
               }
@@ -768,7 +767,6 @@ export const ModelingMachineProvider = ({
               // there was a problem, restore the original code
               kclManager.updateCodeEditor(originalCode, {
                 shouldAddToHistory: false,
-                shouldWriteToDisk: false,
               })
               return reject(didReParse)
             }
