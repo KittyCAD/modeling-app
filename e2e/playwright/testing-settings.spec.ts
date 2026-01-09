@@ -424,8 +424,6 @@ test.describe(
         await changeUnitOfMeasureInProjectTab('yd')
         await changeUnitOfMeasureInProjectTab('cm')
         await changeUnitOfMeasureInProjectTab('m')
-        // Must come after 'm' because 'm' will partially match on 'mm'
-        await changeUnitOfMeasureInProjectTab('mm')
       })
 
       // Go to the user tab
@@ -510,9 +508,10 @@ test.describe(
         await changeUnitOfMeasureInGizmo('ft', 'Feet')
         await changeUnitOfMeasureInGizmo('in', 'Inches')
         await changeUnitOfMeasureInGizmo('yd', 'Yards')
-        await changeUnitOfMeasureInGizmo('mm', 'Millimeters')
         await changeUnitOfMeasureInGizmo('cm', 'Centimeters')
         await changeUnitOfMeasureInGizmo('m', 'Meters')
+        // Must come after 'm' because 'm' will partially match on 'mm'
+        await changeUnitOfMeasureInGizmo('mm', 'Millimeters')
       })
     })
 
