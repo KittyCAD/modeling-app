@@ -28,9 +28,10 @@ kittycad = { version = "0.4.2", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.155", features = [
+kittycad-modeling-cmds = { version = "0.2.159", features = [
   "ts-rs",
   "websocket",
+  # "unstable_exhaustive",
 ] }
 lazy_static = "1.5.0"
 miette = "7.6.0"
@@ -86,4 +87,4 @@ debug = "line-tables-only"
 #Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
 # [patch.crates-io]
 # kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "ben/surface_loft" }
-# #kittycad-modeling-session = { path = "../../modeling-api/modeling-session" }
+# kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
