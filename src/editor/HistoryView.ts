@@ -13,7 +13,7 @@ import {
   type Extension,
   type TransactionSpec,
 } from '@codemirror/state'
-import { isArray } from '@src/lib/utils'
+
 import { EditorView } from 'codemirror'
 
 /** Any EditorView that wants to be a local history target must use this extension compartment */
@@ -34,6 +34,10 @@ type HistoryRequest = {
   request: 'new' | 'undo' | 'redo'
 }
 const globalHistoryRequest = StateEffect.define<HistoryRequest>()
+
+type GlobalHistoryDispatchOptions = {
+  shouldForwardToLocalHistory: boolean
+}
 
 /**
  * A locked-down CodeMirror EditorView that is meant for
@@ -80,23 +84,30 @@ export class HistoryView {
   get state() {
     return this.editorView.state
   }
-  // Used by `undo()` function
-  dispatch = (tr: Transaction | TransactionSpec) => this.editorView.dispatch(tr)
 
-  /**
-   * Type errors will occur if a developer tries to include `changes` or `selection`.
-   * The HistoryView should really only contain effectful, reversible transactions
-   */
-  limitedDispatch = (spec: TransactionSpecNoChanges) => {
-    this.editorView.dispatch(spec)
+  get defaultDispactOptions(): GlobalHistoryDispatchOptions {
+    return {
+      shouldForwardToLocalHistory: true,
+    }
   }
 
   /**
-   * Dispatch to global history without forwarding to any registered local history.
-   * Useful when reconfiguring Compartments for extensions attached to global history.
+   * Type errors will occur if a developer tries to include `changes` or `selection`.
+   * The HistoryView should really only contain effectful, reversible transactions.
+   *
+   * if `shouldForwardToLocalHistory` option is `false`, the local history target will not receive an update
    */
-  globalOnlyDispatch(spec: TransactionSpec) {
-    const skip = HistoryView.doNotForward.of(true)
+  dispatch = (
+    spec: TransactionSpecNoChanges,
+    options: Partial<GlobalHistoryDispatchOptions> = this.defaultDispactOptions
+  ) => {
+    const resolvedOptions: GlobalHistoryDispatchOptions = Object.assign(
+      this.defaultDispactOptions,
+      options
+    )
+    const skip = HistoryView.doNotForward.of(
+      !resolvedOptions.shouldForwardToLocalHistory
+    )
     const annotations: readonly Annotation<any>[] = spec.annotations
       ? 'length' in spec.annotations
         ? [...spec.annotations, skip]

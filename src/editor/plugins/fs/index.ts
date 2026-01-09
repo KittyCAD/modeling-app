@@ -47,14 +47,20 @@ export function buildFSEffectExtension(
     }
   })
 
-  kclManager.globalHistoryView.globalOnlyDispatch({
-    effects: [fsEffectCompartment.reconfigure(fsWiredListener)],
-  })
+  kclManager.globalHistoryView.dispatch(
+    {
+      effects: [fsEffectCompartment.reconfigure(fsWiredListener)],
+    },
+    { shouldForwardToLocalHistory: false }
+  )
   // Teardown
   return () => {
-    kclManager.globalHistoryView.globalOnlyDispatch({
-      effects: [fsEffectCompartment.reconfigure([])],
-    })
+    kclManager.globalHistoryView.dispatch(
+      {
+        effects: [fsEffectCompartment.reconfigure([])],
+      },
+      { shouldForwardToLocalHistory: false }
+    )
   }
 }
 

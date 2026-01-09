@@ -1500,7 +1500,7 @@ export class KclManager extends EventTarget {
     })
   }
   addGlobalHistoryEvent(spec: TransactionSpecNoChanges) {
-    this._globalHistoryView.limitedDispatch(spec)
+    this._globalHistoryView.dispatch(spec)
   }
   undo() {
     this._globalHistoryView.undo(this._editorView)
