@@ -2153,6 +2153,11 @@ impl FrontendState {
                     point_ids.push(arc.start);
                     point_ids.push(arc.end);
                     point_ids.push(arc.center);
+                } else if let ObjectKind::Segment {
+                    segment: crate::front::Segment::Circle(circle),
+                } = &segment_obj.kind
+                {
+                    point_ids.push(circle.start);
                 }
             }
         }
@@ -2178,7 +2183,8 @@ impl FrontendState {
                 && let ObjectKind::Segment {
                     segment: crate::front::Segment::Point(point),
                 } = &point_obj.kind
-                && point.freedom != Freedom::Free {
+                && point.freedom != Freedom::Free
+            {
                 all_free = false;
                 break;
             }

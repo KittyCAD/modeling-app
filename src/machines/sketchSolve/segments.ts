@@ -133,10 +133,9 @@ class PointSegment implements SketchEntityUtils {
       return // draft styles take precedence
     }
     if (status.isHovered) {
-      // Calculate darker version (70% brightness)
-      const darkerRgb = `${Math.round(r * 0.7)}, ${Math.round(g * 0.7)}, ${Math.round(b * 0.7)}`
-      innerCircle.style.backgroundColor = `rgb(${darkerRgb})`
-      innerCircle.style.border = `1px solid rgba(${darkerRgb}, 0.5)`
+      // getSegmentColor already returns the hover color at 70% brightness
+      innerCircle.style.backgroundColor = `rgb(${rgbStr})`
+      innerCircle.style.border = `1px solid rgba(${rgbStr}, 0.5)`
       return // Hover styles take precedence
     }
     innerCircle.style.backgroundColor = `rgb(${rgbStr})`
