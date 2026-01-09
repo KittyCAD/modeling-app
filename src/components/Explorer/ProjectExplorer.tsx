@@ -327,6 +327,7 @@ export const ProjectExplorer = ({
       // DataTransferItemList becomes invalid after async operations
       const entries: FileSystemEntry[] = []
       const fallbackFiles: File[] = []
+      const failedEntryNames: string[] = []
 
       const items = Array.from(dataTransfer.items)
       for (const item of items) {
@@ -347,9 +348,24 @@ export const ProjectExplorer = ({
 
       // Now process entries asynchronously
       for (const entry of entries) {
-        const result = await collectDroppedFiles(entry, '', wasmInstance)
-        supportedFiles.push(...result.supported)
-        unsupportedFiles.push(...result.unsupported)
+        try {
+          const result = await collectDroppedFiles(entry, '', wasmInstance)
+          supportedFiles.push(...result.supported)
+          unsupportedFiles.push(...result.unsupported)
+        } catch (e) {
+          console.error('Failed to collect dropped files:', entry?.name, e)
+          failedEntryNames.push(entry?.name || 'dropped item')
+        }
+      }
+      if (failedEntryNames.length > 0) {
+        const maxToShow = 3
+        const shown = failedEntryNames.slice(0, maxToShow).join(', ')
+        const remaining = failedEntryNames.length - maxToShow
+        const message =
+          remaining > 0
+            ? `Failed to import ${failedEntryNames.length} items (${shown}, and ${remaining} more).`
+            : `Failed to import ${failedEntryNames.length} items (${shown}).`
+        toast.error(message)
       }
 
       // Process fallback files (browsers without webkitGetAsEntry support)
