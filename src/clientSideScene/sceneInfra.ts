@@ -46,7 +46,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
-interface intersectionData {
+interface IntersectionData {
   twoD: Vector2
   threeD: Vector3
 }
@@ -55,13 +55,13 @@ export interface OnMouseEnterLeaveArgs {
   selected: Object3D
   mouseEvent: MouseEvent
   /** The intersection of the mouse with the THREEjs raycast plane */
-  intersectionPoint?: Partial<intersectionData>
+  intersectionPoint?: Partial<IntersectionData>
   /** Whether area select is currently active */
   isAreaSelectActive?: boolean
 }
 
 interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
-  intersectionPoint: intersectionData
+  intersectionPoint: IntersectionData
   intersects: Intersection[]
 }
 
@@ -71,7 +71,7 @@ interface OnDragEndCallbackArgs extends OnMouseEnterLeaveArgs {
 
 export interface OnClickCallbackArgs {
   mouseEvent: MouseEvent
-  intersectionPoint?: intersectionData
+  intersectionPoint?: IntersectionData
   intersects: Intersection[]
   selected?: Object3D
   wasmInstance: ModuleType
@@ -79,15 +79,15 @@ export interface OnClickCallbackArgs {
 
 export interface OnMoveCallbackArgs {
   mouseEvent: MouseEvent
-  intersectionPoint: intersectionData
+  intersectionPoint: IntersectionData
   intersects: Intersection[]
   selected?: Object3D
 }
 
 export interface OnAreaSelectCallbackArgs {
   mouseEvent: MouseEvent
-  startPoint: intersectionData
-  currentPoint: intersectionData
+  startPoint: IntersectionData
+  currentPoint: IntersectionData
   intersects: Intersection[]
 }
 
