@@ -157,7 +157,7 @@
     "@electron-forge/cli": "^7.10.2",
     "@electron-forge/plugin-fuses": "^7.8.0",
     "@electron-forge/plugin-vite": "^7.8.0",
-    "@electron/fuses": "^1.8.0",
+    "@electron/fuses": "^2.0.0",
     "@electron/notarize": "^2.5.0",
     "@iarna/toml": "^2.2.5",
     "@lezer/generator": "^1.7.3",

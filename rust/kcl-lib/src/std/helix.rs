@@ -124,16 +124,26 @@ async fn inner_helix(
     }
 
     if let Some(cylinder) = cylinder {
+        let cmd = if let Some(length) = length {
+            mcmd::EntityMakeHelix::builder()
+                .cylinder_id(cylinder.id)
+                .is_clockwise(!helix_result.ccw)
+                .revolutions(revolutions)
+                .start_angle(Angle::from_degrees(angle_start))
+                .length(LengthUnit(length.to_mm()))
+                .build()
+        } else {
+            mcmd::EntityMakeHelix::builder()
+                .cylinder_id(cylinder.id)
+                .is_clockwise(!helix_result.ccw)
+                .revolutions(revolutions)
+                .start_angle(Angle::from_degrees(angle_start))
+                .build()
+        };
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                ModelingCmd::from(mcmd::EntityMakeHelix {
-                    cylinder_id: cylinder.id,
-                    is_clockwise: !helix_result.ccw,
-                    length: length.map(|t| LengthUnit(t.to_mm())),
-                    revolutions,
-                    start_angle: Angle::from_degrees(angle_start),
-                }),
+                ModelingCmd::from(cmd),
             )
             .await?;
     } else if let (Some(axis), Some(radius)) = (axis, radius) {
@@ -150,40 +160,53 @@ async fn inner_helix(
                 exec_state
                     .batch_modeling_cmd(
                         ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                        ModelingCmd::from(mcmd::EntityMakeHelixFromParams {
-                            radius: LengthUnit(radius.to_mm()),
-                            is_clockwise: !helix_result.ccw,
-                            length: LengthUnit(length.to_mm()),
-                            revolutions,
-                            start_angle: Angle::from_degrees(angle_start),
-                            axis: Point3d {
-                                x: direction[0].to_mm(),
-                                y: direction[1].to_mm(),
-                                z: direction[2].to_mm(),
-                            },
-                            center: Point3d {
-                                x: LengthUnit(origin[0].to_mm()),
-                                y: LengthUnit(origin[1].to_mm()),
-                                z: LengthUnit(origin[2].to_mm()),
-                            },
-                        }),
+                        ModelingCmd::from(
+                            mcmd::EntityMakeHelixFromParams::builder()
+                                .radius(LengthUnit(radius.to_mm()))
+                                .is_clockwise(!helix_result.ccw)
+                                .length(LengthUnit(length.to_mm()))
+                                .revolutions(revolutions)
+                                .start_angle(Angle::from_degrees(angle_start))
+                                .axis(Point3d {
+                                    x: direction[0].to_mm(),
+                                    y: direction[1].to_mm(),
+                                    z: direction[2].to_mm(),
+                                })
+                                .center(Point3d {
+                                    x: LengthUnit(origin[0].to_mm()),
+                                    y: LengthUnit(origin[1].to_mm()),
+                                    z: LengthUnit(origin[2].to_mm()),
+                                })
+                                .build(),
+                        ),
                     )
                     .await?;
             }
             Axis3dOrEdgeReference::Edge(edge) => {
                 let edge_id = edge.get_engine_id(exec_state, &args)?;
 
+                let cmd = if let Some(length) = length {
+                    mcmd::EntityMakeHelixFromEdge::builder()
+                        .radius(LengthUnit(radius.to_mm()))
+                        .is_clockwise(!helix_result.ccw)
+                        .revolutions(revolutions)
+                        .start_angle(Angle::from_degrees(angle_start))
+                        .edge_id(edge_id)
+                        .length(LengthUnit(length.to_mm()))
+                        .build()
+                } else {
+                    mcmd::EntityMakeHelixFromEdge::builder()
+                        .radius(LengthUnit(radius.to_mm()))
+                        .is_clockwise(!helix_result.ccw)
+                        .revolutions(revolutions)
+                        .start_angle(Angle::from_degrees(angle_start))
+                        .edge_id(edge_id)
+                        .build()
+                };
                 exec_state
                     .batch_modeling_cmd(
                         ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                        ModelingCmd::from(mcmd::EntityMakeHelixFromEdge {
-                            radius: LengthUnit(radius.to_mm()),
-                            is_clockwise: !helix_result.ccw,
-                            length: length.map(|t| LengthUnit(t.to_mm())),
-                            revolutions,
-                            start_angle: Angle::from_degrees(angle_start),
-                            edge_id,
-                        }),
+                        ModelingCmd::from(cmd),
                     )
                     .await?;
             }
