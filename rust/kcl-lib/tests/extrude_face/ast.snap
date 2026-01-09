@@ -69,6 +69,9 @@ description: Result of parsing extrude_face.kcl
         "end": 0,
         "kind": "const",
         "moduleId": 0,
+        "preComments": [
+          "// Sketch grey trianglular prism."
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -400,7 +403,7 @@ description: Result of parsing extrude_face.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "cube",
+            "name": "triangle",
             "start": 0,
             "type": "Identifier"
           },
@@ -666,6 +669,11 @@ description: Result of parsing extrude_face.kcl
           "type": "PipeExpression"
         },
         "moduleId": 0,
+        "preComments": [
+          "",
+          "",
+          "// Add a red box to the side."
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -674,23 +682,6 @@ description: Result of parsing extrude_face.kcl
     "commentStart": 0,
     "end": 0,
     "moduleId": 0,
-    "nonCodeMeta": {
-      "nonCodeNodes": {
-        "2": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ]
-      },
-      "startNodes": []
-    },
     "start": 0
   }
 }
