@@ -1217,6 +1217,8 @@ export function retrieveSelectionsFromOpArg(
     artifactIds = opArg.value.value
       .filter((v) => v.type === 'Solid' || v.type === 'Sketch')
       .map((v) => v.value.artifactId)
+  } else if (opArg.value.type === 'TagIdentifier' && opArg.value.artifact_id) {
+    artifactIds = [opArg.value.artifact_id]
   } else {
     return error
   }
