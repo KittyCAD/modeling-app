@@ -768,6 +768,28 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
       // Don't think we can find the artifact here for loft?
     })
 
+    it('should add a basic loft call with surface bodyType', async () => {
+      const { ast, sketches } = await getAstAndSketchSelections(
+        twoCirclesCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(sketches.graphSelections).toHaveLength(2)
+      const result = addLoft({
+        ast,
+        sketches,
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(twoCirclesCode)
+      expect(newCode).toContain(
+        `loft001 = loft([profile001, profile002], bodyType = SURFACE)`
+      )
+      // Don't think we can find the artifact here for loft?
+    })
+
     it('should edit a loft call with vDegree', async () => {
       const twoCirclesCodeWithLoft = `${twoCirclesCode}
 loft001 = loft([profile001, profile002])`

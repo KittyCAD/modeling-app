@@ -532,6 +532,14 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
     tagEnd = retrieveTagDeclaratorFromOpArg(operation.labeledArgs.tagEnd, code)
   }
 
+  // bodyType argument from a string
+  let bodyType: KclPreludeBodyType | undefined
+  if ('bodyType' in operation.labeledArgs && operation.labeledArgs.bodyType) {
+    const res = retrieveBodyTypeFromOpArg(operation.labeledArgs.bodyType, code)
+    if (err(res)) return { reason: res.message }
+    bodyType = res
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -542,6 +550,7 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
     baseCurveIndex,
     tagStart,
     tagEnd,
+    bodyType,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
