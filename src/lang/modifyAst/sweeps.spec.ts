@@ -27,6 +27,7 @@ import {
   addSweep,
   getAxisExpressionAndIndex,
   retrieveAxisOrEdgeSelectionsFromOpArg,
+  retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -767,6 +768,28 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
       // Don't think we can find the artifact here for loft?
     })
 
+    it('should add a basic loft call with surface bodyType', async () => {
+      const { ast, sketches } = await getAstAndSketchSelections(
+        twoCirclesCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(sketches.graphSelections).toHaveLength(2)
+      const result = addLoft({
+        ast,
+        sketches,
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(twoCirclesCode)
+      expect(newCode).toContain(
+        `loft001 = loft([profile001, profile002], bodyType = SURFACE)`
+      )
+      // Don't think we can find the artifact here for loft?
+    })
+
     it('should edit a loft call with vDegree', async () => {
       const twoCirclesCodeWithLoft = `${twoCirclesCode}
 loft001 = loft([profile001, profile002])`
@@ -829,6 +852,41 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
       expect(newCode).toContain(circleCode)
       expect(newCode).toContain(
         `revolve001 = revolve(profile001, angle = 10, axis = X)`
+      )
+    })
+
+    it('should add basic revolve call with surface bodyType', async () => {
+      const { ast, sketches } = await getAstAndSketchSelections(
+        circleCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(sketches.graphSelections).toHaveLength(1)
+      const angle = await getKclCommandValue(
+        '10',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const axis = 'X'
+      const result = addRevolve({
+        ast,
+        sketches,
+        angle,
+        axis,
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(circleCode)
+      expect(newCode).toContain(
+        `revolve001 = revolve(
+  profile001,
+  angle = 10,
+  axis = X,
+  bodyType = SURFACE,
+)`
       )
     })
 
@@ -1155,6 +1213,42 @@ helix001 = helix(
       expect(result.edge).toBeDefined()
       expect(result.edge!.graphSelections[0].codeRef).toEqual(segId!.codeRef)
       expect(result.axis).toBeUndefined()
+    })
+  })
+
+  describe('Testing retrieveBodyTypeFromOpArg', () => {
+    async function findBodyTypeArg(code: string) {
+      const ast = assertParse(code, instanceInThisFile)
+      const { operations } = await enginelessExecutor(
+        ast,
+        rustContextInThisFile
+      )
+      const op = operations.find(
+        (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+      )
+      if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.bodyType) {
+        throw new Error('Extrude operation not found')
+      }
+
+      return op.labeledArgs.bodyType
+    }
+
+    it('should return SOLID bodyType from op argument', async () => {
+      const code = `${circleProfileCode}
+extrude001 = extrude(profile001, length = 1, bodyType = SOLID)`
+      const opArg = await findBodyTypeArg(code)
+      const result = retrieveBodyTypeFromOpArg(opArg, code)
+      if (err(result)) throw result
+      expect(result).toEqual('SOLID')
+    })
+
+    it('should return SURFACE bodyType from op argument', async () => {
+      const code = `${circleProfileCode}
+extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
+      const opArg = await findBodyTypeArg(code)
+      const result = retrieveBodyTypeFromOpArg(opArg, code)
+      if (err(result)) throw result
+      expect(result).toEqual('SURFACE')
     })
   })
 })
