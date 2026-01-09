@@ -65,6 +65,10 @@ interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
   intersects: Intersection[]
 }
 
+interface OnDragEndCallbackArgs extends OnMouseEnterLeaveArgs {
+  intersects: Intersection[]
+}
+
 export interface OnClickCallbackArgs {
   mouseEvent: MouseEvent
   intersectionPoint?: intersectionData
@@ -105,7 +109,7 @@ export class SceneInfra {
   lastMouseState: MouseState = { type: 'idle' }
   public readonly baseUnitChange = new Signal()
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
-  onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
+  onDragEndCallback: (arg: OnDragEndCallbackArgs) => Voidish = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onMoveCallback: (arg: OnMoveCallbackArgs) => Voidish = () => {}
   onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => {}
@@ -117,7 +121,7 @@ export class SceneInfra {
   onAreaSelectEndCallback: (arg: OnAreaSelectCallbackArgs) => Voidish = () => {}
   setCallbacks = (callbacks: {
     onDragStart?: (arg: OnDragCallbackArgs) => Voidish
-    onDragEnd?: (arg: OnDragCallbackArgs) => Voidish
+    onDragEnd?: (arg: OnDragEndCallbackArgs) => Voidish
     onDrag?: (arg: OnDragCallbackArgs) => Voidish
     onMove?: (arg: OnMoveCallbackArgs) => Voidish
     onClick?: (arg: OnClickCallbackArgs) => Voidish
@@ -885,15 +889,16 @@ export class SceneInfra {
 
     if (this.selected) {
       if (this.selected.hasBeenDragged) {
-        // TODO do the types properly here
         await this.onDragEndCallback({
-          intersectionPoint: {
-            twoD: planeIntersectPoint?.twoD as any,
-            threeD: planeIntersectPoint?.threeD as any,
-          },
+          intersectionPoint: planeIntersectPoint
+            ? {
+                twoD: planeIntersectPoint?.twoD,
+                threeD: planeIntersectPoint?.threeD,
+              }
+            : undefined,
           intersects,
           mouseEvent,
-          selected: this.selected as any,
+          selected: this.selected.object,
         })
         if (intersects.length) {
           this.updateMouseState({
