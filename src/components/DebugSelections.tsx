@@ -254,8 +254,8 @@ export function DebugSelections() {
     _setSelectedRange(range)
   }
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const highlightMinor = 'bg-red-950'
-  const highlightMajor = 'bg-red-800'
+  const highlightMinor = 'bg-red-200 dark:bg-red-950'
+  const highlightMajor = 'bg-red-100 dark:bg-red-800'
   const artifactGraphTree = useMemo(() => {
     return formatArtifactGraph(kclManager.artifactGraph, wasmInstance)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -273,7 +273,7 @@ export function DebugSelections() {
         const highlightMyRange = artifact?.range?.join(',') === selectedRange
         return (
           <div className="text-xs flex flex-col justify-between">
-            <div className="text-xs hover:bg-cyan-600 flex flex-row justify-between bg-chalkboard-80">
+            <div className="text-xs hover:bg-cyan-600 hover:text-white flex flex-row justify-between bg-chalkboard-40 dark:bg-chalkboard-80">
               <div
                 className={`cursor-pointer ${highlightMyId ? highlightMajor : ''}`}
                 role="button"
@@ -371,7 +371,7 @@ export function DebugSelections() {
                   name = operation.name
                 }
                 return (
-                  <div className="text-xs flex flex-col justify-between odd:bg-chalkboard-90">
+                  <div className="text-xs flex flex-col justify-between">
                     <div className="flex flex-row justify-between">
                       <div>{name}</div>
                       <div>{operation.type}</div>
@@ -424,7 +424,7 @@ export function DebugSelections() {
           name = operation.name
         }
         return (
-          <div className="text-xs flex flex-col justify-between odd:bg-chalkboard-90">
+          <div className="text-xs flex flex-col justify-between">
             <div className="flex flex-row justify-between">
               <div>{name}</div>
               <div>{operation.type}</div>
