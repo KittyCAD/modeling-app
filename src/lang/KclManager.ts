@@ -50,6 +50,7 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import {
+  processCodeMirrorRanges,
   type handleSelectionBatch as handleSelectionBatchFn,
   type processCodeMirrorRanges as processCodeMirrorRangesFn,
 } from '@src/lib/selections'
@@ -107,6 +108,11 @@ import {
   updateAstAnnotation,
 } from '@src/editor/plugins/ast'
 import { setKclVersion } from '@src/lib/kclVersion'
+import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
+import type {
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -441,6 +447,126 @@ export class KclManager extends EventTarget {
   set wasmInitFailed(wasmInitFailed) {
     this._wasmInitFailed.value = wasmInitFailed
   }
+
+  /**
+   * This is a CodeMirror extension that listens for selection events
+   * and fires off engine commands to highlight the corresponding engine entities.
+   * It is not debounced.
+   */
+  highlightEngineEntitiesEffect = EditorView.updateListener.of(
+    (update: ViewUpdate) => {
+      if (update.transactions.some((tr) => tr.isUserEvent('select'))) {
+        this.wasmInstancePromise
+          .then((wasmInstance) =>
+            this.handleOnViewUpdate(
+              update,
+              processCodeMirrorRanges,
+              wasmInstance
+            )
+          )
+          .catch(reportRejection)
+      }
+    }
+  )
+
+  syncCodeSignalToDoc = EditorView.updateListener.of((update) => {
+    if (update.docChanged) {
+      this._code.value = update.view.state.doc.toString()
+    }
+  })
+
+  /**
+   * This is a CodeMirror extension that watches for updates to the document,
+   * discerns if the change is a kind that we want to re-execute on,
+   * then fires (and forgets) an execution with a debounce.
+   */
+  executeKclEffect = EditorView.updateListener.of((update) => {
+    const shouldExecute =
+      this.engineCommandManager.started &&
+      update.docChanged &&
+      update.transactions.some((tr) => {
+        // The old KCL ViewPlugin had checks that seemed to check for
+        // certain events, but really they just set the already-true to true.
+        // Leaving here in case we need to switch to an opt-in listener.
+        // const relevantEvents = [
+        //   tr.isUserEvent('input'),
+        //   tr.isUserEvent('delete'),
+        //   tr.isUserEvent('undo'),
+        //   tr.isUserEvent('redo'),
+        //   tr.isUserEvent('move'),
+        //   tr.annotation(lspRenameEvent.type),
+        //   tr.annotation(lspCodeActionEvent.type),
+        // ]
+        const ignoredEvents = [
+          tr.annotation(editorCodeUpdateEvent.type),
+          tr.annotation(copilotPluginEvent.type),
+          tr.annotation(updateOutsideEditorEvent.type),
+        ]
+
+        return !ignoredEvents.some((v) => Boolean(v))
+      })
+
+    const shouldWriteToFile = !this.isBufferMode && shouldExecute
+
+    if (shouldExecute) {
+      this.code = update.state.doc.toString()
+
+      // We don't want to block on writing to file
+      if (shouldWriteToFile) {
+        void this.deferredWriteToFile(this.code)
+      }
+
+      this.deferredExecution(true)
+    }
+  })
+
+  private deferredExecution = deferredCallback(async () => {
+    // If we're in sketchSolveMode, update Rust state with the latest AST
+    // This handles the case where the user directly edits in the CodeMirror editor
+    // these are short term hacks while in rapid development for sketch revamp
+    // should be clean up.
+    try {
+      if (this.modelingState?.matches('sketchSolveMode')) {
+        await this.executeCode()
+        const { sceneGraph, execOutcome } =
+          await this.singletons.rustContext.hackSetProgram(
+            this.ast,
+            await jsAppSettings(this.singletons.rustContext.settingsActor)
+          )
+
+        // Convert SceneGraph to SceneGraphDelta and send to sketch solve machine
+        // Always invalidate IDs for direct edits since we don't know what the user changed
+        const sceneGraphDelta: SceneGraphDelta = {
+          new_graph: sceneGraph,
+          new_objects: [],
+          invalidates_ids: true,
+          exec_outcome: execOutcome,
+        }
+
+        const kclSource: SourceDelta = {
+          text: this.code,
+        }
+
+        // Send event to sketch solve machine via modeling machine
+        this.sendModelingEvent({
+          type: 'update sketch outcome',
+          data: {
+            kclSource,
+            sceneGraphDelta,
+          },
+        })
+      } else {
+        await this.executeCode()
+      }
+    } catch (error) {
+      console.error('Error when updating Rust state after user edit:', error)
+    }
+  }, 300)
+
+  private deferredWriteToFile = deferredCallback(
+    (_: string) => this.writeToFile(),
+    1_000
+  )
 
   constructor(
     engineCommandManager: ConnectionManager,
@@ -1393,7 +1519,6 @@ export class KclManager extends EventTarget {
   handleOnViewUpdate(
     viewUpdate: ViewUpdate,
     processCodeMirrorRanges: typeof processCodeMirrorRangesFn,
-    sceneEntitiesManager: SceneEntities,
     wasmInstance: ModuleType
   ): void {
     if (!this._editorView) {
@@ -1427,7 +1552,7 @@ export class KclManager extends EventTarget {
       artifactIndex: this.artifactIndex,
       systemDeps: {
         engineCommandManager: this.engineCommandManager,
-        sceneEntitiesManager,
+        sceneEntitiesManager: this.sceneEntitiesManager,
         wasmInstance,
       },
     })
