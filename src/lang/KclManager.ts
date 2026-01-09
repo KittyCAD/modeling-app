@@ -1747,15 +1747,15 @@ export class KclManager extends EventTarget {
       // writes.
       clearTimeout(this.timeoutWriter)
       return new Promise((resolve, reject) => {
+        this.lastWrite = {
+          code: newCode ?? '',
+          time: Date.now(),
+        }
         this.timeoutWriter = setTimeout(() => {
           if (!this._currentFilePath)
             return reject(new Error('currentFilePath not set'))
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
-          this.lastWrite = {
-            code: newCode ?? '',
-            time: Date.now(),
-          }
           this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
           electron
             .writeFile(this._currentFilePath, newCode)
