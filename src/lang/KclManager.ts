@@ -268,9 +268,6 @@ export class KclManager extends EventTarget {
   undoDepth = signal(0)
   redoDepth = signal(0)
   undoListenerEffect = EditorView.updateListener.of((vu) => {
-    if (undoDepth(vu.state) === 1 && this.undoDepth.value === 0) {
-      debugger
-    }
     this.undoDepth.value =
       undoDepth(vu.state) || undoDepth(this._globalHistoryView.state)
     this.redoDepth.value =
