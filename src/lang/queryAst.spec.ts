@@ -45,6 +45,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import type { KclManager } from '@src/lang/KclManager'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
