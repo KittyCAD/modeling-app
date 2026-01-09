@@ -115,16 +115,19 @@ async fn inner_fillet(
     exec_state
         .batch_end_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::Solid3dFilletEdge {
-                edge_id: None,
-                edge_ids: edge_ids.clone(),
-                extra_face_ids,
-                strategy: Default::default(),
-                object_id: solid.id,
-                radius: LengthUnit(radius.to_mm()),
-                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
-                cut_type: CutType::Fillet,
-            }),
+            ModelingCmd::from(
+                mcmd::Solid3dFilletEdge::builder()
+                    .edge_ids(edge_ids.clone())
+                    .extra_face_ids(extra_face_ids)
+                    .strategy(Default::default())
+                    .object_id(solid.id)
+                    .radius(LengthUnit(radius.to_mm()))
+                    .tolerance(LengthUnit(
+                        tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                    ))
+                    .cut_type(CutType::Fillet)
+                    .build(),
+            ),
         )
         .await?;
 
