@@ -130,6 +130,39 @@ profile002 = rectangle(
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a basic extrude call on a face', async () => {
+      const code = `${circleProfileCode}
+  extrude001 = extrude(profile001, length = 1)`
+      const { ast, artifactGraph } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const endCap = [...artifactGraph.values()].findLast(
+        (a) => a.type === 'cap'
+      )
+      expect(endCap).toBeDefined()
+      const sketches = createSelectionFromArtifacts([endCap!], artifactGraph)
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${circleProfileCode}
+extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
+extrude002 = extrude(capEnd001, length = 2)`)
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a basic multi-profile extrude call', async () => {
       const { ast, sketches, artifactGraph } =
         await getAstAndSketchSelectionsEngineless(
