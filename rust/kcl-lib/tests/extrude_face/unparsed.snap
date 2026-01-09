@@ -1,0 +1,20 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing extrude_face.kcl
+---
+// Sketch grey trianglular prism.
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = 1, tag = $a)
+  |> xLine(length = 1, tag = $b)
+  |> close(tag = $c)
+triangle = extrude(profile001, length = 1)
+
+// Add a red box to the side.
+extrude(
+       c,
+       length = 4,
+       hideSeams = false,
+       method = NEW,
+     )
+  |> appearance(color = "#ff0000")
