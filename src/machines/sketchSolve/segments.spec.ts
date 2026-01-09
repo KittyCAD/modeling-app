@@ -370,7 +370,8 @@ describe('deriveSegmentFreedom', () => {
       const arc = createArcSegmentObject(4, 1, 2, 3)
       const objects = [startPoint, arc] // Missing end and center
 
-      expect(deriveSegmentFreedom(arc, objects)).toBeNull()
+      // When only one point is available, it uses that point's freedom
+      expect(deriveSegmentFreedom(arc, objects)).toBe('Fixed')
     })
   })
 
