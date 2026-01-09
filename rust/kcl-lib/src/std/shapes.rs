@@ -103,23 +103,25 @@ async fn inner_rectangle(
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                ModelingCmd::from(mcmd::ExtendPath {
-                    label: Default::default(),
-                    path: sketch.id.into(),
-                    segment: PathSegment::Line {
-                        end: KPoint2d::from(untyped_point_to_mm(delta, units))
-                            .with_z(0.0)
-                            .map(LengthUnit),
-                        relative: true,
-                    },
-                }),
+                ModelingCmd::from(
+                    mcmd::ExtendPath::builder()
+                        .label(Default::default())
+                        .path(sketch.id.into())
+                        .segment(PathSegment::Line {
+                            end: KPoint2d::from(untyped_point_to_mm(delta, units))
+                                .with_z(0.0)
+                                .map(LengthUnit),
+                            relative: true,
+                        })
+                        .build(),
+                ),
             )
             .await?;
     }
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, sketch_id),
-            ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
+            ModelingCmd::from(mcmd::ClosePath::builder().path_id(sketch.id).build()),
         )
         .await?;
 
@@ -203,17 +205,19 @@ async fn inner_circle(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::Arc {
-                    start: angle_start,
-                    end: angle_end,
-                    center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
-                    radius: LengthUnit(radius.to_mm()),
-                    relative: false,
-                },
-            }),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .label(Default::default())
+                    .path(sketch.id.into())
+                    .segment(PathSegment::Arc {
+                        start: angle_start,
+                        end: angle_end,
+                        center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
+                        radius: LengthUnit(radius.to_mm()),
+                        relative: false,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -244,7 +248,7 @@ async fn inner_circle(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
+            ModelingCmd::from(mcmd::ClosePath::builder().path_id(new_sketch.id).build()),
         )
         .await?;
 
@@ -305,17 +309,19 @@ async fn inner_circle_three_point(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::Arc {
-                    start: angle_start,
-                    end: angle_end,
-                    center: KPoint2d::from(untyped_point_to_mm(center, units)).map(LengthUnit),
-                    radius: adjust_length(units, radius, UnitLength::Millimeters).0.into(),
-                    relative: false,
-                },
-            }),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .label(Default::default())
+                    .path(sketch.id.into())
+                    .segment(PathSegment::Arc {
+                        start: angle_start,
+                        end: angle_end,
+                        center: KPoint2d::from(untyped_point_to_mm(center, units)).map(LengthUnit),
+                        radius: adjust_length(units, radius, UnitLength::Millimeters).0.into(),
+                        relative: false,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -347,7 +353,7 @@ async fn inner_circle_three_point(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
+            ModelingCmd::from(mcmd::ClosePath::builder().path_id(new_sketch.id).build()),
         )
         .await?;
 
@@ -458,16 +464,18 @@ async fn inner_polygon(
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args_id(exec_state, &args, id),
-                ModelingCmd::from(mcmd::ExtendPath {
-                    label: Default::default(),
-                    path: sketch.id.into(),
-                    segment: PathSegment::Line {
-                        end: KPoint2d::from(untyped_point_to_mm(*vertex, units))
-                            .with_z(0.0)
-                            .map(LengthUnit),
-                        relative: false,
-                    },
-                }),
+                ModelingCmd::from(
+                    mcmd::ExtendPath::builder()
+                        .label(Default::default())
+                        .path(sketch.id.into())
+                        .segment(PathSegment::Line {
+                            end: KPoint2d::from(untyped_point_to_mm(*vertex, units))
+                                .with_z(0.0)
+                                .map(LengthUnit),
+                            relative: false,
+                        })
+                        .build(),
+                ),
             )
             .await?;
 
@@ -494,16 +502,18 @@ async fn inner_polygon(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, close_id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::Line {
-                    end: KPoint2d::from(untyped_point_to_mm(vertices[0], units))
-                        .with_z(0.0)
-                        .map(LengthUnit),
-                    relative: false,
-                },
-            }),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .label(Default::default())
+                    .path(sketch.id.into())
+                    .segment(PathSegment::Line {
+                        end: KPoint2d::from(untyped_point_to_mm(vertices[0], units))
+                            .with_z(0.0)
+                            .map(LengthUnit),
+                        relative: false,
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -526,7 +536,7 @@ async fn inner_polygon(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
+            ModelingCmd::from(mcmd::ClosePath::builder().path_id(sketch.id).build()),
         )
         .await?;
 
@@ -612,17 +622,19 @@ async fn inner_ellipse(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ExtendPath {
-                label: Default::default(),
-                path: sketch.id.into(),
-                segment: PathSegment::Ellipse {
-                    center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
-                    major_axis: axis,
-                    minor_radius: LengthUnit(minor_radius.to_mm()),
-                    start_angle: Angle::from_degrees(angle_start.to_degrees()),
-                    end_angle: Angle::from_degrees(angle_end.to_degrees()),
-                },
-            }),
+            ModelingCmd::from(
+                mcmd::ExtendPath::builder()
+                    .label(Default::default())
+                    .path(sketch.id.into())
+                    .segment(PathSegment::Ellipse {
+                        center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
+                        major_axis: axis,
+                        minor_radius: LengthUnit(minor_radius.to_mm()),
+                        start_angle: Angle::from_degrees(angle_start.to_degrees()),
+                        end_angle: Angle::from_degrees(angle_end.to_degrees()),
+                    })
+                    .build(),
+            ),
         )
         .await?;
 
@@ -654,7 +666,7 @@ async fn inner_ellipse(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
+            ModelingCmd::from(mcmd::ClosePath::builder().path_id(new_sketch.id).build()),
         )
         .await?;
 

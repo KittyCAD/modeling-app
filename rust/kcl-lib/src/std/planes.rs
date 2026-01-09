@@ -112,7 +112,7 @@ pub(crate) async fn inner_plane_of(
     // Query the engine to learn what plane, if any, this face is on.
     let face_id = face.get_face_id(&solid, exec_state, args, true).await?;
     let meta = ModelingCmdMeta::from_args_id(exec_state, args, plane_id);
-    let cmd = ModelingCmd::FaceIsPlanar(mcmd::FaceIsPlanar { object_id: face_id });
+    let cmd = ModelingCmd::FaceIsPlanar(mcmd::FaceIsPlanar::builder().object_id(face_id).build());
     let plane_resp = exec_state.send_modeling_cmd(meta, cmd).await?;
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::FaceIsPlanar(planar),
@@ -228,14 +228,16 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
     exec_state
         .batch_modeling_cmd(
             meta,
-            ModelingCmd::from(mcmd::MakePlane {
-                clobber: false,
-                origin: plane.info.origin.into(),
-                size: LengthUnit(default_size),
-                x_axis: plane.info.x_axis.into(),
-                y_axis: plane.info.y_axis.into(),
-                hide: Some(false),
-            }),
+            ModelingCmd::from(
+                mcmd::MakePlane::builder()
+                    .clobber(false)
+                    .origin(plane.info.origin.into())
+                    .size(LengthUnit(default_size))
+                    .x_axis(plane.info.x_axis.into())
+                    .y_axis(plane.info.y_axis.into())
+                    .hide(false)
+                    .build(),
+            ),
         )
         .await?;
 
@@ -243,10 +245,12 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::PlaneSetColor {
-                color,
-                plane_id: plane.id,
-            }),
+            ModelingCmd::from(
+                mcmd::PlaneSetColor::builder()
+                    .color(color)
+                    .plane_id(plane.id)
+                    .build(),
+            ),
         )
         .await?;
 

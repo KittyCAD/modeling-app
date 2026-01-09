@@ -88,13 +88,23 @@ async fn inner_loft(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::Loft {
-                section_ids: sketches.iter().map(|group| group.id).collect(),
-                base_curve_index,
-                bez_approximate_rational,
-                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)),
-                v_degree,
-                body_type,
+            ModelingCmd::from(if let Some(base_curve_index) = base_curve_index {
+                mcmd::Loft::builder()
+                    .section_ids(sketches.iter().map(|group| group.id).collect())
+                    .bez_approximate_rational(bez_approximate_rational)
+                    .tolerance(LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .v_degree(v_degree)
+                    .body_type(body_type)
+                    .base_curve_index(base_curve_index)
+                    .build()
+            } else {
+                mcmd::Loft::builder()
+                    .section_ids(sketches.iter().map(|group| group.id).collect())
+                    .bez_approximate_rational(bez_approximate_rational)
+                    .tolerance(LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .v_degree(v_degree)
+                    .body_type(body_type)
+                    .build()
             }),
         )
         .await?;
