@@ -126,11 +126,11 @@ export class HistoryView {
       undo(this.editorView)
     }
   }
-  /** Redo local history target if possible, fallback to global history */
+  /** Redo local global history if possible, fallback to local history target */
   redo(localHistoryTarget: EditorView) {
-    const result = redo(localHistoryTarget)
+    const result = redo(this.editorView)
     if (!result) {
-      redo(this.editorView)
+      redo(localHistoryTarget)
     }
   }
 
