@@ -1170,6 +1170,7 @@ impl Node<SketchBlock> {
             kcl_ezpz::solve(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
         };
         // Build a combined list of all constraints (regular + optional) for conflict detection
+        let num_required_constraints = sketch_block_state.solver_constraints.len();
         let all_constraints: Vec<kcl_ezpz::Constraint> = sketch_block_state
             .solver_constraints
             .iter()
@@ -1178,7 +1179,10 @@ impl Node<SketchBlock> {
             .collect();
 
         let (solve_outcome, solve_analysis) = match solve_result {
-            Ok((solved, freedom)) => (Solved::from_ezpz_outcome(solved, &all_constraints), freedom),
+            Ok((solved, freedom)) => (
+                Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints),
+                freedom,
+            ),
             Err(failure) => {
                 match &failure.error {
                     NonLinearSystemError::FaerMatrix { .. }

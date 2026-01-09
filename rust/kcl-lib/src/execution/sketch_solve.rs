@@ -329,14 +329,23 @@ pub(crate) struct Solved {
 impl Solved {
     /// Create a Solved from a kcl_ezpz::SolveOutcome, building the set of variables
     /// involved in unsatisfied constraints by examining the original constraints.
-    pub(crate) fn from_ezpz_outcome(value: kcl_ezpz::SolveOutcome, constraints: &[kcl_ezpz::Constraint]) -> Self {
+    /// Only marks variables from required constraints (not optional) as conflicted.
+    pub(crate) fn from_ezpz_outcome(
+        value: kcl_ezpz::SolveOutcome,
+        constraints: &[kcl_ezpz::Constraint],
+        num_required_constraints: usize,
+    ) -> Self {
         let unsatisfied = value.unsatisfied().to_owned();
 
         // Build a set of variables involved in unsatisfied constraints
+        // Only include required constraints (not optional ones like from dragging)
         let mut variables_in_conflicts = AHashSet::new();
-        for &constraint_idx in &unsatisfied {
-            if let Some(constraint) = constraints.get(constraint_idx) {
-                extract_variable_ids_from_constraint(constraint, &mut variables_in_conflicts);
+        for &constraint_idx in value.unsatisfied() {
+            // Only mark as conflicted if it's a required constraint, not an optional one
+            if constraint_idx < num_required_constraints {
+                if let Some(constraint) = constraints.get(constraint_idx) {
+                    extract_variable_ids_from_constraint(constraint, &mut variables_in_conflicts);
+                }
             }
         }
 
@@ -389,8 +398,15 @@ fn extract_variable_ids_from_constraint(constraint: &kcl_ezpz::Constraint, varia
             extract_ids_from_line(line1, variable_set);
         }
         _ => {
-            // For other constraint types, we'll add support as needed
-            // Using Debug output as a fallback for unknown constraint types
+            // This catch-all exists to allow ezpz to add new constraint variants
+            // If we hit this in a debug build, we should add explicit handling for the new variant.
+            debug_assert!(
+                false,
+                "Unhandled constraint variant: {:?}. Please add explicit handling for this variant in extract_variable_ids_from_constraint.",
+                constraint
+            );
+            // Fallback: use Debug output to extract IDs heuristically
+            // This allows release builds to continue working even with new variants
             let constraint_str = format!("{:?}", constraint);
             extract_ids_from_debug_string(&constraint_str, variable_set);
         }
