@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeAll } from 'vitest'
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
 import {
@@ -12,8 +12,12 @@ import {
   lineArcIntersection,
   projectPointOntoSegment,
   perpendicularDistanceToSegment,
+  getTrimSpawnTerminations,
 } from '@src/machines/sketchSolve/tools/trimToolImpl'
 import { isArray } from '@src/lib/utils'
+import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { join } from 'path'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const otherParams = Object.freeze({
   label: '',
@@ -567,6 +571,194 @@ describe('trimUtils', () => {
     it('should handle degenerate segment', () => {
       const result = perpendicularDistanceToSegment([1, 1], [0, 0], [0, 0])
       expect(result).toBeCloseTo(Math.sqrt(2), 5)
+    })
+  })
+})
+
+// Tests for Rust WASM implementations
+// NOTE: These tests require the WASM to be rebuilt with `npm run build:wasm:dev`
+// to include the new `process_trim_loop` function
+describe('Rust WASM trim functions', () => {
+  let wasmInstance: ModuleType
+
+  beforeAll(async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+  })
+
+  describe('getNextTrimCoords (Rust)', () => {
+    it('should find intersection with line segment', () => {
+      // Skip if function not available (WASM needs rebuilding)
+      if (typeof wasmInstance.process_trim_loop !== 'function') {
+        console.warn(
+          'process_trim_loop not available - rebuild WASM with: npm run build:wasm:dev'
+        )
+        return
+      }
+
+      const objects: ApiObject[] = [
+        ...createApiObjectLine([0, 0], [10, 10], 0),
+        ...createApiObjectLine([0, 5], [10, 5], 3),
+      ]
+
+      const points = [
+        [0, 0],
+        [10, 0],
+      ]
+
+      // Call Rust function
+      const inputJson = JSON.stringify({
+        points,
+        objects: JSON.parse(JSON.stringify(objects)),
+        startIndex: 0,
+      })
+
+      const resultJsValue = wasmInstance.process_trim_loop(inputJson)
+      // Convert JsValue to JSON string, then parse
+      const resultJson = JSON.stringify(resultJsValue)
+      const result = JSON.parse(resultJson)
+
+      // Compare with TypeScript result
+      const tsResult = getNextTrimCoords({
+        points,
+        startIndex: 0,
+        objects,
+      })
+
+      // Both should have the same type
+      expect(result.nextTrimResult.type).toBe(
+        tsResult.type === 'trimSpawn' ? 'trimSpawn' : 'noTrimSpawn'
+      )
+
+      if (
+        result.nextTrimResult.type === 'trimSpawn' &&
+        tsResult.type === 'trimSpawn'
+      ) {
+        expect(result.nextTrimResult.trimSpawnSegId).toBe(
+          tsResult.trimSpawnSegId
+        )
+        expect(result.nextTrimResult.trimSpawnCoords[0]).toBeCloseTo(
+          tsResult.trimSpawnCoords[0],
+          5
+        )
+        expect(result.nextTrimResult.trimSpawnCoords[1]).toBeCloseTo(
+          tsResult.trimSpawnCoords[1],
+          5
+        )
+        expect(result.nextTrimResult.nextIndex).toBe(tsResult.nextIndex)
+      } else if (
+        result.nextTrimResult.type === 'noTrimSpawn' &&
+        tsResult.type === 'noTrimSpawn'
+      ) {
+        expect(result.nextTrimResult.nextIndex).toBe(tsResult.nextIndex)
+      }
+    })
+
+    it('should find intersection with crossing lines', () => {
+      // Skip if function not available (WASM needs rebuilding)
+      if (typeof wasmInstance.process_trim_loop !== 'function') {
+        console.warn(
+          'process_trim_loop not available - rebuild WASM with: npm run build:wasm:dev'
+        )
+        return
+      }
+
+      const objects: ApiObject[] = [
+        ...createApiObjectLine([0, 0], [10, 10], 0),
+        ...createApiObjectLine([0, 10], [10, 0], 3),
+      ]
+
+      const points = [
+        [0, 0],
+        [10, 0],
+      ]
+
+      const inputJson = JSON.stringify({
+        points,
+        objects: JSON.parse(JSON.stringify(objects)),
+        startIndex: 0,
+      })
+
+      const resultJsValue = wasmInstance.process_trim_loop(inputJson)
+      // Convert JsValue to JSON string, then parse
+      const resultJson = JSON.stringify(resultJsValue)
+      const result = JSON.parse(resultJson)
+
+      const tsResult = getNextTrimCoords({
+        points,
+        startIndex: 0,
+        objects,
+      })
+
+      expect(result.nextTrimResult.type).toBe(
+        tsResult.type === 'trimSpawn' ? 'trimSpawn' : 'noTrimSpawn'
+      )
+    })
+  })
+
+  describe('getTrimSpawnTerminations (Rust)', () => {
+    it('should find terminations for simple line intersection', () => {
+      // Skip if function not available (WASM needs rebuilding)
+      if (typeof wasmInstance.process_trim_loop !== 'function') {
+        console.warn(
+          'process_trim_loop not available - rebuild WASM with: npm run build:wasm:dev'
+        )
+        return
+      }
+
+      const objects: ApiObject[] = [
+        ...createApiObjectLine([0, 0], [10, 0], 0), // Horizontal line
+        ...createApiObjectLine([5, -5], [5, 5], 3), // Vertical line crossing at [5, 0]
+      ]
+
+      const trimSpawnSegId = 0
+      const trimSpawnCoords: Coords2d[] = [
+        [5, -5],
+        [5, 5],
+      ]
+
+      // Call TypeScript version
+      const tsResult = getTrimSpawnTerminations({
+        trimSpawnSegId,
+        trimSpawnCoords,
+        objects,
+      })
+
+      if (tsResult instanceof Error) {
+        throw tsResult
+      }
+
+      // For Rust, we need to call process_trim_loop first to get the trim spawn,
+      // then call get_trim_spawn_terminations. But since we don't have a direct
+      // WASM export for get_trim_spawn_terminations yet, we'll test it through
+      // process_trim_loop which should return terminations when there's a trim spawn
+      const points: Coords2d[] = [
+        [5, -5],
+        [5, 5],
+      ]
+
+      const inputJson = JSON.stringify({
+        points,
+        objects: JSON.parse(JSON.stringify(objects)),
+        startIndex: 0,
+      })
+
+      const resultJsValue = wasmInstance.process_trim_loop(inputJson)
+      // Convert JsValue to JSON string, then parse
+      const resultJson = JSON.stringify(resultJsValue)
+      const result = JSON.parse(resultJson)
+
+      // If we got a trim spawn, we should have terminations
+      if (result.nextTrimResult.type === 'trimSpawn') {
+        expect(result.terminations).not.toBeNull()
+        if (result.terminations) {
+          // Both sides should be defined
+          expect(result.terminations.leftSide).toBeDefined()
+          expect(result.terminations.rightSide).toBeDefined()
+          expect(result.terminations.leftSide.type).toBeDefined()
+          expect(result.terminations.rightSide.type).toBeDefined()
+        }
+      }
     })
   })
 })

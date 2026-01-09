@@ -617,6 +617,36 @@ export default class RustContext {
     }
   }
 
+  /** Execute trim operations on a sketch. Runs the full trim loop in Rust. */
+  async executeTrim(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    points: Array<[number, number]>,
+    settings: DeepPartial<Configuration>
+  ): Promise<{ kclSource: SourceDelta; sceneGraphDelta: SceneGraphDelta }> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      const result: {
+        kcl_source: SourceDelta
+        scene_graph_delta: SceneGraphDelta
+      } = await instance.execute_trim(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(points),
+        JSON.stringify(settings)
+      )
+      return {
+        kclSource: result.kcl_source,
+        sceneGraphDelta: result.scene_graph_delta,
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
   /** Helper to check if context instance exists */
   private async _checkContextInstance(): Promise<Context> {
     if (!this.ctxInstance) {

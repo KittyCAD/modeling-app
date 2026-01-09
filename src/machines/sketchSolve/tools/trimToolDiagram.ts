@@ -6,11 +6,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import { BufferGeometry, Line, LineBasicMaterial, Vector3 } from 'three'
-import {
-  createOnAreaSelectEndCallback,
-  executeTrimStrategy,
-} from '@src/machines/sketchSolve/tools/trimToolImpl'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { createOnAreaSelectEndCallback } from '@src/machines/sketchSolve/tools/trimToolImpl'
 
 // Trim tool draws an ephemeral polyline during an area-select drag.
 // At drag end the preview is removed – no sketch entities are created (yet).
@@ -122,30 +118,11 @@ export const machine = setup({
                 rustContext: context.rustContext,
               }
             },
-            executeTrimStrategy: async ({
-              strategy,
-              rustContext,
-              sketchId,
-              objects,
-            }) => {
-              if (strategy instanceof Error) {
-                return strategy
-              }
-              return executeTrimStrategy({
-                strategy,
-                rustContext,
-                sketchId,
-                objects,
-              })
-            },
             onNewSketchOutcome: (outcome) => {
               self._parent?.send({
                 type: 'update sketch outcome',
                 data: outcome,
               })
-            },
-            getJsAppSettings: async () => {
-              return await jsAppSettings(context.rustContext.settingsActor)
             },
           })
 

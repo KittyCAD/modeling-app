@@ -1,4 +1,5 @@
 use std::{cell::Cell, collections::HashSet, ops::ControlFlow};
+use web_time::Instant;
 
 use kcl_error::SourceRange;
 
@@ -444,20 +445,32 @@ impl SketchApi for FrontendState {
         self.add_dependent_constraints_to_delete(sketch, &segment_ids_set, &mut constraint_ids_set)?;
 
         let mut new_ast = self.program.ast.clone();
+
+        let _constraint_count = constraint_ids_set.len();
+        let _segment_count = segment_ids_set.len();
+
+        let delete_loop_start = Instant::now();
         for constraint_id in constraint_ids_set {
             self.delete_constraint(&mut new_ast, sketch, constraint_id)?;
         }
         for segment_id in segment_ids_set {
             self.delete_segment(&mut new_ast, sketch, segment_id)?;
         }
-        self.execute_after_edit(
-            ctx,
-            sketch,
-            Default::default(),
-            EditDeleteKind::DeleteNonSketch,
-            &mut new_ast,
-        )
-        .await
+        let _delete_loop_duration = delete_loop_start.elapsed();
+
+        let execute_start = Instant::now();
+        let result = self
+            .execute_after_edit(
+                ctx,
+                sketch,
+                Default::default(),
+                EditDeleteKind::DeleteNonSketch,
+                &mut new_ast,
+            )
+            .await;
+        let _execute_duration = execute_start.elapsed();
+
+        result
     }
 
     async fn add_constraint(
@@ -585,6 +598,136 @@ impl SketchApi for FrontendState {
         _constraint: Constraint,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         todo!()
+    }
+
+    async fn batch_split_segment_operations(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        edit_segments: Vec<ExistingSegmentCtor>,
+        add_constraints: Vec<Constraint>,
+        delete_constraint_ids: Vec<ObjectId>,
+        _new_segment_id: ObjectId,
+        _new_segment_start_point_id: ObjectId,
+        _new_segment_end_point_id: ObjectId,
+        _new_segment_center_point_id: Option<ObjectId>,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        let mut new_ast = self.program.ast.clone();
+        let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(edit_segments.len(), Default::default());
+
+        // Step 1: Edit segments
+        for segment in edit_segments {
+            segment_ids_edited.insert(segment.id);
+            match segment.ctor {
+                SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment.id, ctor)?,
+                SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment.id, ctor)?,
+                SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment.id, ctor)?,
+                _ => {
+                    return Err(Error {
+                        msg: format!("segment ctor not implemented yet: {segment:?}"),
+                    });
+                }
+            }
+        }
+
+        // Step 2: Add all constraints
+        for constraint in add_constraints {
+            match constraint {
+                Constraint::Coincident(coincident) => {
+                    self.add_coincident(sketch, coincident, &mut new_ast).await?;
+                }
+                Constraint::Distance(distance) => {
+                    self.add_distance(sketch, distance, &mut new_ast).await?;
+                }
+                Constraint::Horizontal(horizontal) => {
+                    self.add_horizontal(sketch, horizontal, &mut new_ast).await?;
+                }
+                Constraint::LinesEqualLength(lines_equal_length) => {
+                    self.add_lines_equal_length(sketch, lines_equal_length, &mut new_ast)
+                        .await?;
+                }
+                Constraint::Parallel(parallel) => {
+                    self.add_parallel(sketch, parallel, &mut new_ast).await?;
+                }
+                Constraint::Perpendicular(perpendicular) => {
+                    self.add_perpendicular(sketch, perpendicular, &mut new_ast).await?;
+                }
+                Constraint::Vertical(vertical) => {
+                    self.add_vertical(sketch, vertical, &mut new_ast).await?;
+                }
+            }
+        }
+
+        // Step 3: Delete constraints (must be last since deletes can invalidate IDs)
+        let mut constraint_ids_set = delete_constraint_ids.into_iter().collect::<AhashIndexSet<_>>();
+        let segment_ids_set = AhashIndexSet::default();
+        // Find constraints that reference segments to be deleted, and add those to the set to be deleted.
+        self.add_dependent_constraints_to_delete(sketch, &segment_ids_set, &mut constraint_ids_set)?;
+
+        for constraint_id in constraint_ids_set {
+            self.delete_constraint(&mut new_ast, sketch, constraint_id)?;
+        }
+
+        // Step 4: Execute once at the end
+        self.execute_after_edit(ctx, sketch, segment_ids_edited, EditDeleteKind::Edit, &mut new_ast)
+            .await
+    }
+
+    async fn batch_tail_cut_operations(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        edit_segments: Vec<ExistingSegmentCtor>,
+        add_constraints: Vec<Constraint>,
+        delete_constraint_ids: Vec<ObjectId>,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        let mut new_ast = self.program.ast.clone();
+        let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(edit_segments.len(), Default::default());
+
+        // Step 1: Edit segments (usually a single segment for tail cut)
+        for segment in edit_segments {
+            segment_ids_edited.insert(segment.id);
+            match segment.ctor {
+                SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment.id, ctor)?,
+                SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment.id, ctor)?,
+                SegmentCtor::Arc(ctor) => self.edit_arc(&mut new_ast, sketch, segment.id, ctor)?,
+                _ => {
+                    return Err(Error {
+                        msg: format!("segment ctor not implemented yet: {segment:?}"),
+                    });
+                }
+            }
+        }
+
+        // Step 2: Add coincident constraints
+        for constraint in add_constraints {
+            match constraint {
+                Constraint::Coincident(coincident) => {
+                    self.add_coincident(sketch, coincident, &mut new_ast).await?;
+                }
+                other => {
+                    return Err(Error {
+                        msg: format!("unsupported constraint in tail cut batch: {other:?}"),
+                    });
+                }
+            }
+        }
+
+        // Step 3: Delete constraints (if any)
+        let mut constraint_ids_set = delete_constraint_ids.into_iter().collect::<AhashIndexSet<_>>();
+        let segment_ids_set = AhashIndexSet::default();
+        self.add_dependent_constraints_to_delete(sketch, &segment_ids_set, &mut constraint_ids_set)?;
+
+        for constraint_id in constraint_ids_set {
+            self.delete_constraint(&mut new_ast, sketch, constraint_id)?;
+        }
+
+        // Step 4: Single execute_after_edit
+        self.execute_after_edit(ctx, sketch, segment_ids_edited, EditDeleteKind::Edit, &mut new_ast)
+            .await
     }
 }
 

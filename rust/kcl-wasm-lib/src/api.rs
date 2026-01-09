@@ -395,6 +395,1328 @@ impl Context {
             .map_err(|e| format!("Could not serialize add constraint result. {TRUE_BUG} Details: {e}"))?)
     }
 
+    /// Batch operations for split segment: edit segments, add constraints, delete objects.
+    /// All operations are applied to a single AST and execute_after_edit is called once at the end.
+    #[wasm_bindgen]
+    pub async fn batch_split_segment_operations(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        edit_segments_json: &str,
+        add_constraints_json: &str,
+        delete_constraint_ids_json: &str,
+        new_segment_id_json: &str,
+        new_segment_start_point_id_json: &str,
+        new_segment_end_point_id_json: &str,
+        new_segment_center_point_id_json: &str,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+        let edit_segments: Vec<kcl_lib::front::ExistingSegmentCtor> = serde_json::from_str(edit_segments_json)
+            .map_err(|e| format!("Could not deserialize edit_segments: {e}"))?;
+        let add_constraints: Vec<kcl_lib::front::Constraint> = serde_json::from_str(add_constraints_json)
+            .map_err(|e| format!("Could not deserialize add_constraints: {e}"))?;
+        let delete_constraint_ids: Vec<kcl_lib::front::ObjectId> = serde_json::from_str(delete_constraint_ids_json)
+            .map_err(|e| format!("Could not deserialize delete_constraint_ids: {e}"))?;
+        let new_segment_id: kcl_lib::front::ObjectId = serde_json::from_str(new_segment_id_json)
+            .map_err(|e| format!("Could not deserialize new_segment_id: {e}"))?;
+        let new_segment_start_point_id: kcl_lib::front::ObjectId =
+            serde_json::from_str(new_segment_start_point_id_json)
+                .map_err(|e| format!("Could not deserialize new_segment_start_point_id: {e}"))?;
+        let new_segment_end_point_id: kcl_lib::front::ObjectId = serde_json::from_str(new_segment_end_point_id_json)
+            .map_err(|e| format!("Could not deserialize new_segment_end_point_id: {e}"))?;
+        let new_segment_center_point_id: Option<kcl_lib::front::ObjectId> =
+            if new_segment_center_point_id_json.is_empty() {
+                None
+            } else {
+                Some(
+                    serde_json::from_str(new_segment_center_point_id_json)
+                        .map_err(|e| format!("Could not deserialize new_segment_center_point_id: {e}"))?,
+                )
+            };
+
+        let ctx = self.create_executor_ctx(settings, None, true).map_err(|e| {
+            format!("Could not create KCL executor context for batch split segment operations. {TRUE_BUG} Details: {e}")
+        })?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let result = guard
+            .batch_split_segment_operations(
+                &ctx,
+                version,
+                sketch,
+                edit_segments,
+                add_constraints,
+                delete_constraint_ids,
+                new_segment_id,
+                new_segment_start_point_id,
+                new_segment_end_point_id,
+                new_segment_center_point_id,
+            )
+            .await
+            .map_err(|e| format!("Failed to batch split segment operations: {:?}", e))?;
+
+        Ok(JsValue::from_serde(&result).map_err(|e| {
+            format!("Could not serialize batch split segment operations result. {TRUE_BUG} Details: {e}")
+        })?)
+    }
+
+    /// Execute trim operations on a sketch.
+    /// This runs the full trim loop internally, executing all trim operations.
+    #[wasm_bindgen]
+    pub async fn execute_trim(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        points_json: &str,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+        let points: Vec<crate::trim::Coords2d> =
+            serde_json::from_str(points_json).map_err(|e| format!("Could not deserialize points: {e}"))?;
+
+        let ctx = self
+            .create_executor_ctx(settings, None, true)
+            .map_err(|e| format!("Could not create KCL executor context for trim. {TRUE_BUG} Details: {e}"))?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+
+        // Import trim functions
+        use crate::trim::{get_next_trim_coords, get_trim_spawn_terminations, trim_strategy, NextTrimResult};
+
+        // Get current scene graph by executing mock first
+        let (_, initial_scene_graph_delta) = guard
+            .execute_mock(&ctx, version, sketch)
+            .await
+            .map_err(|e| format!("Failed to get initial scene graph: {:?}", e))?;
+
+        // Use native Rust types directly - no serialization needed!
+        // Track the current scene graph delta so we can access its objects
+        let mut current_scene_graph_delta = initial_scene_graph_delta.clone();
+
+        // Run the trim loop
+        let mut start_index = 0;
+        let max_iterations = 1000;
+        let mut iteration_count = 0;
+        // Use the types from the return value of execute_mock
+        let mut last_result: Option<(kcl_lib::front::SourceDelta, kcl_lib::front::SceneGraphDelta)> = Some((
+            kcl_lib::front::SourceDelta { text: String::new() },
+            initial_scene_graph_delta,
+        ));
+        let mut invalidates_ids = false;
+
+        while start_index < points.len().saturating_sub(1) && iteration_count < max_iterations {
+            iteration_count += 1;
+
+            // Get next trim result - use objects from current scene graph
+            let next_trim_result =
+                get_next_trim_coords(&points, start_index, &current_scene_graph_delta.new_graph.objects);
+
+            match &next_trim_result {
+                NextTrimResult::NoTrimSpawn { next_index } => {
+                    let old_start_index = start_index;
+                    start_index = *next_index;
+
+                    // Fail-safe: if nextIndex didn't advance, force it to advance
+                    if start_index <= old_start_index {
+                        start_index = old_start_index + 1;
+                    }
+
+                    // Early exit if we've reached the end
+                    if start_index >= points.len().saturating_sub(1) {
+                        break;
+                    }
+                    continue;
+                }
+                NextTrimResult::TrimSpawn {
+                    trim_spawn_seg_id,
+                    next_index,
+                    ..
+                } => {
+                    // Get terminations - use objects from current scene graph
+                    let terminations = match get_trim_spawn_terminations(
+                        *trim_spawn_seg_id,
+                        &points,
+                        &current_scene_graph_delta.new_graph.objects,
+                    ) {
+                        Ok(terms) => terms,
+                        Err(e) => {
+                            eprintln!("Error getting trim spawn terminations: {}", e);
+                            let old_start_index = start_index;
+                            start_index = *next_index;
+                            if start_index <= old_start_index {
+                                start_index = old_start_index + 1;
+                            }
+                            continue;
+                        }
+                    };
+
+                    // Get trim strategy - use objects from current scene graph
+                    let trim_spawn_segment = current_scene_graph_delta
+                        .new_graph
+                        .objects
+                        .iter()
+                        .find(|obj| obj.id.0 == *trim_spawn_seg_id)
+                        .ok_or_else(|| format!("Trim spawn segment {} not found", trim_spawn_seg_id))?;
+
+                    let strategy = match trim_strategy(
+                        *trim_spawn_seg_id,
+                        trim_spawn_segment,
+                        &terminations.left_side,
+                        &terminations.right_side,
+                        &current_scene_graph_delta.new_graph.objects,
+                    ) {
+                        Ok(ops) => ops,
+                        Err(e) => {
+                            eprintln!("Error determining trim strategy: {}", e);
+                            let old_start_index = start_index;
+                            start_index = *next_index;
+                            if start_index <= old_start_index {
+                                start_index = old_start_index + 1;
+                            }
+                            continue;
+                        }
+                    };
+
+                    // Execute operations
+                    // Check if we deleted a segment (for fail-safe logic later)
+                    let was_deleted = strategy
+                        .iter()
+                        .any(|op| matches!(op, crate::trim::TrimOperation::SimpleTrim { .. }));
+
+                    // Track the last successful operation result to update objects once at the end
+                    let mut last_operation_result: Option<(
+                        kcl_lib::front::SourceDelta,
+                        kcl_lib::front::SceneGraphDelta,
+                    )> = None;
+
+                    let mut op_index = 0;
+                    while op_index < strategy.len() {
+                        let mut consumed_ops = 1;
+                        let operation_result = match &strategy[op_index] {
+                            crate::trim::TrimOperation::SimpleTrim { segment_to_trim_id } => {
+                                // Delete the segment
+                                let result = guard
+                                    .delete_objects(
+                                        &ctx,
+                                        version,
+                                        sketch,
+                                        Vec::new(),                                          // constraint_ids
+                                        vec![kcl_lib::front::ObjectId(*segment_to_trim_id)], // segment_ids
+                                    )
+                                    .await;
+                                result
+                            }
+                            crate::trim::TrimOperation::EditSegment {
+                                segment_id,
+                                ctor,
+                                endpoint_changed,
+                            } => {
+                                // Try to batch tail-cut sequence: EditSegment + AddCoincidentConstraint (+ DeleteConstraints)
+                                if op_index + 1 < strategy.len() {
+                                    if let crate::trim::TrimOperation::AddCoincidentConstraint {
+                                        segment_id: coincident_seg_id,
+                                        endpoint_changed: coincident_endpoint_changed,
+                                        segment_or_point_to_make_coincident_to,
+                                        intersecting_endpoint_point_id,
+                                    } = &strategy[op_index + 1]
+                                    {
+                                        if segment_id == coincident_seg_id
+                                            && endpoint_changed == coincident_endpoint_changed
+                                        {
+                                            let mut delete_constraint_ids: Vec<kcl_lib::front::ObjectId> = Vec::new();
+                                            if op_index + 2 < strategy.len() {
+                                                if let crate::trim::TrimOperation::DeleteConstraints {
+                                                    constraint_ids,
+                                                } = &strategy[op_index + 2]
+                                                {
+                                                    delete_constraint_ids = constraint_ids
+                                                        .iter()
+                                                        .map(|id| kcl_lib::front::ObjectId(*id))
+                                                        .collect();
+                                                    consumed_ops = 3;
+                                                } else {
+                                                    consumed_ops = 2;
+                                                }
+                                            } else {
+                                                consumed_ops = 2;
+                                            }
+
+                                            // Parse ctor
+                                            let segment_ctor: kcl_lib::front::SegmentCtor =
+                                                match serde_json::from_value(ctor.clone()) {
+                                                    Ok(ctor) => ctor,
+                                                    Err(e) => {
+                                                        eprintln!("Failed to parse segment ctor: {}", e);
+                                                        op_index += consumed_ops;
+                                                        continue;
+                                                    }
+                                                };
+
+                                            // Get endpoint point id from current scene graph (IDs stay the same after edit)
+                                            let edited_segment = match current_scene_graph_delta
+                                                .new_graph
+                                                .objects
+                                                .iter()
+                                                .find(|obj| obj.id.0 == *segment_id)
+                                            {
+                                                Some(seg) => seg,
+                                                None => {
+                                                    eprintln!(
+                                                        "Failed to find segment {} for tail-cut batch",
+                                                        segment_id
+                                                    );
+                                                    op_index += consumed_ops;
+                                                    continue;
+                                                }
+                                            };
+
+                                            let endpoint_point_id = match &edited_segment.kind {
+                                                kcl_lib::front::ObjectKind::Segment { segment } => match segment {
+                                                    kcl_lib::front::Segment::Line(line) => {
+                                                        if endpoint_changed == "start" {
+                                                            line.start.0
+                                                        } else {
+                                                            line.end.0
+                                                        }
+                                                    }
+                                                    kcl_lib::front::Segment::Arc(arc) => {
+                                                        if endpoint_changed == "start" {
+                                                            arc.start.0
+                                                        } else {
+                                                            arc.end.0
+                                                        }
+                                                    }
+                                                    _ => {
+                                                        eprintln!("Unsupported segment type for tail-cut batch");
+                                                        op_index += consumed_ops;
+                                                        continue;
+                                                    }
+                                                },
+                                                _ => {
+                                                    eprintln!("Edited object is not a segment (tail-cut batch)");
+                                                    op_index += consumed_ops;
+                                                    continue;
+                                                }
+                                            };
+
+                                            let coincident_segments = if let Some(point_id) =
+                                                intersecting_endpoint_point_id
+                                            {
+                                                vec![
+                                                    kcl_lib::front::ObjectId(endpoint_point_id),
+                                                    kcl_lib::front::ObjectId(*point_id),
+                                                ]
+                                            } else {
+                                                vec![
+                                                    kcl_lib::front::ObjectId(endpoint_point_id),
+                                                    kcl_lib::front::ObjectId(*segment_or_point_to_make_coincident_to),
+                                                ]
+                                            };
+
+                                            let constraint =
+                                                kcl_lib::front::Constraint::Coincident(kcl_lib::front::Coincident {
+                                                    segments: coincident_segments,
+                                                });
+
+                                            let segment_to_edit = kcl_lib::front::ExistingSegmentCtor {
+                                                id: kcl_lib::front::ObjectId(*segment_id),
+                                                ctor: segment_ctor,
+                                            };
+
+                                            let result = guard
+                                                .batch_tail_cut_operations(
+                                                    &ctx,
+                                                    version,
+                                                    sketch,
+                                                    vec![segment_to_edit],
+                                                    vec![constraint],
+                                                    delete_constraint_ids,
+                                                )
+                                                .await;
+                                            op_index += consumed_ops;
+                                            // Handle result below
+                                            result
+                                        } else {
+                                            // not same segment/endpoint
+                                            let segment_ctor: kcl_lib::front::SegmentCtor =
+                                                match serde_json::from_value(ctor.clone()) {
+                                                    Ok(ctor) => ctor,
+                                                    Err(e) => {
+                                                        eprintln!("Failed to parse segment ctor: {}", e);
+                                                        op_index += consumed_ops;
+                                                        continue;
+                                                    }
+                                                };
+
+                                            let segment_to_edit = kcl_lib::front::ExistingSegmentCtor {
+                                                id: kcl_lib::front::ObjectId(*segment_id),
+                                                ctor: segment_ctor,
+                                            };
+
+                                            let result =
+                                                guard.edit_segments(&ctx, version, sketch, vec![segment_to_edit]).await;
+                                            result
+                                        }
+                                    } else {
+                                        // Not followed by AddCoincidentConstraint
+                                        let segment_ctor: kcl_lib::front::SegmentCtor =
+                                            match serde_json::from_value(ctor.clone()) {
+                                                Ok(ctor) => ctor,
+                                                Err(e) => {
+                                                    eprintln!("Failed to parse segment ctor: {}", e);
+                                                    op_index += consumed_ops;
+                                                    continue;
+                                                }
+                                            };
+
+                                        let segment_to_edit = kcl_lib::front::ExistingSegmentCtor {
+                                            id: kcl_lib::front::ObjectId(*segment_id),
+                                            ctor: segment_ctor,
+                                        };
+
+                                        let result =
+                                            guard.edit_segments(&ctx, version, sketch, vec![segment_to_edit]).await;
+                                        result
+                                    }
+                                } else {
+                                    // No following op to batch with
+                                    let segment_ctor: kcl_lib::front::SegmentCtor =
+                                        match serde_json::from_value(ctor.clone()) {
+                                            Ok(ctor) => ctor,
+                                            Err(e) => {
+                                                eprintln!("Failed to parse segment ctor: {}", e);
+                                                op_index += consumed_ops;
+                                                continue;
+                                            }
+                                        };
+
+                                    let segment_to_edit = kcl_lib::front::ExistingSegmentCtor {
+                                        id: kcl_lib::front::ObjectId(*segment_id),
+                                        ctor: segment_ctor,
+                                    };
+
+                                    let result =
+                                        guard.edit_segments(&ctx, version, sketch, vec![segment_to_edit]).await;
+                                    result
+                                }
+                            }
+                            crate::trim::TrimOperation::AddCoincidentConstraint {
+                                segment_id,
+                                endpoint_changed,
+                                segment_or_point_to_make_coincident_to,
+                                intersecting_endpoint_point_id,
+                            } => {
+                                // Find the edited segment to get the endpoint point ID using native types
+                                let edited_segment = match current_scene_graph_delta
+                                    .new_graph
+                                    .objects
+                                    .iter()
+                                    .find(|obj| obj.id.0 == *segment_id)
+                                {
+                                    Some(seg) => seg,
+                                    None => {
+                                        eprintln!("Failed to find edited segment {}", segment_id);
+                                        continue;
+                                    }
+                                };
+
+                                // Get the endpoint ID after editing using native types
+                                let new_segment_endpoint_point_id = match &edited_segment.kind {
+                                    kcl_lib::front::ObjectKind::Segment { segment } => match segment {
+                                        kcl_lib::front::Segment::Line(line) => {
+                                            if endpoint_changed == "start" {
+                                                line.start.0
+                                            } else {
+                                                line.end.0
+                                            }
+                                        }
+                                        kcl_lib::front::Segment::Arc(arc) => {
+                                            if endpoint_changed == "start" {
+                                                arc.start.0
+                                            } else {
+                                                arc.end.0
+                                            }
+                                        }
+                                        _ => {
+                                            eprintln!("Unsupported segment type for addCoincidentConstraint");
+                                            continue;
+                                        }
+                                    },
+                                    _ => {
+                                        eprintln!("Edited object is not a segment");
+                                        continue;
+                                    }
+                                };
+
+                                // Determine coincident segments
+                                let coincident_segments = if let Some(point_id) = intersecting_endpoint_point_id {
+                                    vec![
+                                        kcl_lib::front::ObjectId(new_segment_endpoint_point_id),
+                                        kcl_lib::front::ObjectId(*point_id),
+                                    ]
+                                } else {
+                                    vec![
+                                        kcl_lib::front::ObjectId(new_segment_endpoint_point_id),
+                                        kcl_lib::front::ObjectId(*segment_or_point_to_make_coincident_to),
+                                    ]
+                                };
+
+                                let constraint = kcl_lib::front::Constraint::Coincident(kcl_lib::front::Coincident {
+                                    segments: coincident_segments,
+                                });
+
+                                guard.add_constraint(&ctx, version, sketch, constraint).await
+                            }
+                            crate::trim::TrimOperation::DeleteConstraints { constraint_ids } => {
+                                // Delete constraints
+                                let constraint_object_ids: Vec<kcl_lib::front::ObjectId> =
+                                    constraint_ids.iter().map(|id| kcl_lib::front::ObjectId(*id)).collect();
+
+                                guard
+                                    .delete_objects(
+                                        &ctx,
+                                        version,
+                                        sketch,
+                                        constraint_object_ids,
+                                        Vec::new(), // segment_ids
+                                    )
+                                    .await
+                            }
+                            crate::trim::TrimOperation::SplitSegment {
+                                segment_id,
+                                left_trim_coords,
+                                right_trim_coords,
+                                original_end_coords,
+                                left_side,
+                                right_side,
+                                left_side_coincident_data,
+                                right_side_coincident_data,
+                                constraints_to_migrate,
+                                constraints_to_delete,
+                            } => {
+                                // Split segment operation: edit original segment, create new segment, migrate constraints
+                                // This is a complex multi-step operation
+
+                                // Step 1: Find and validate original segment using native types
+                                let original_segment = match current_scene_graph_delta
+                                    .new_graph
+                                    .objects
+                                    .iter()
+                                    .find(|obj| obj.id.0 == *segment_id)
+                                {
+                                    Some(seg) => seg,
+                                    None => {
+                                        eprintln!("Failed to find original segment {}", segment_id);
+                                        continue;
+                                    }
+                                };
+
+                                // Extract point IDs from original segment early to avoid borrow issues
+                                let (
+                                    original_segment_start_point_id,
+                                    original_segment_end_point_id,
+                                    original_segment_center_point_id,
+                                ) = match &original_segment.kind {
+                                    kcl_lib::front::ObjectKind::Segment { segment } => match segment {
+                                        kcl_lib::front::Segment::Line(line) => {
+                                            (Some(line.start.0), Some(line.end.0), None)
+                                        }
+                                        kcl_lib::front::Segment::Arc(arc) => {
+                                            (Some(arc.start.0), Some(arc.end.0), Some(arc.center.0))
+                                        }
+                                        _ => (None, None, None),
+                                    },
+                                    _ => (None, None, None),
+                                };
+
+                                // Store center point constraints to migrate BEFORE edit_segments modifies the scene graph
+                                let mut center_point_constraints_to_migrate: Vec<(kcl_lib::front::Constraint, usize)> =
+                                    Vec::new();
+                                if let Some(original_center_id) = original_segment_center_point_id {
+                                    for obj in &current_scene_graph_delta.new_graph.objects {
+                                        let kcl_lib::front::ObjectKind::Constraint { constraint } = &obj.kind else {
+                                            continue;
+                                        };
+
+                                        // Find coincident constraints that reference the original center point
+                                        if let kcl_lib::front::Constraint::Coincident(coincident) = constraint {
+                                            if coincident.segments.iter().any(|seg_id| seg_id.0 == original_center_id) {
+                                                center_point_constraints_to_migrate
+                                                    .push((constraint.clone(), original_center_id));
+                                            }
+                                        }
+
+                                        // Find distance constraints that reference the original center point
+                                        if let kcl_lib::front::Constraint::Distance(distance) = constraint {
+                                            if distance.points.iter().any(|pt| pt.0 == original_center_id) {
+                                                center_point_constraints_to_migrate
+                                                    .push((constraint.clone(), original_center_id));
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // Extract segment and ctor using native types
+                                let (segment_type, original_ctor) = match &original_segment.kind {
+                                    kcl_lib::front::ObjectKind::Segment { segment } => match segment {
+                                        kcl_lib::front::Segment::Line(line) => ("Line", line.ctor.clone()),
+                                        kcl_lib::front::Segment::Arc(arc) => ("Arc", arc.ctor.clone()),
+                                        _ => {
+                                            eprintln!("Original segment is not a Line or Arc");
+                                            continue;
+                                        }
+                                    },
+                                    _ => {
+                                        eprintln!("Original object is not a segment");
+                                        continue;
+                                    }
+                                };
+
+                                // Extract units from the existing ctor
+                                let units = match &original_ctor {
+                                    kcl_lib::front::SegmentCtor::Line(line_ctor) => match &line_ctor.start.x {
+                                        kcl_lib::front::Expr::Var(v) | kcl_lib::front::Expr::Number(v) => v.units,
+                                        _ => kcl_lib::pretty::NumericSuffix::Mm,
+                                    },
+                                    kcl_lib::front::SegmentCtor::Arc(arc_ctor) => match &arc_ctor.start.x {
+                                        kcl_lib::front::Expr::Var(v) | kcl_lib::front::Expr::Number(v) => v.units,
+                                        _ => kcl_lib::pretty::NumericSuffix::Mm,
+                                    },
+                                    _ => kcl_lib::pretty::NumericSuffix::Mm,
+                                };
+
+                                // Helper to convert Coords2d to Point2d with units
+                                let coords_to_point =
+                                    |coords: crate::trim::Coords2d| -> kcl_lib::front::Point2d<kcl_lib::front::Number> {
+                                        // Round to 2 decimal places (matching TypeScript roundOff function)
+                                        let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
+                                        kcl_lib::front::Point2d {
+                                            x: kcl_lib::front::Number {
+                                                value: round_off(coords.x),
+                                                units,
+                                            },
+                                            y: kcl_lib::front::Number {
+                                                value: round_off(coords.y),
+                                                units,
+                                            },
+                                        }
+                                    };
+
+                                // Convert Point2d<Number> to Point2d<Expr> for SegmentCtor
+                                let point_to_expr = |point: kcl_lib::front::Point2d<kcl_lib::front::Number>| -> kcl_lib::front::Point2d<kcl_lib::front::Expr> {
+                                    kcl_lib::front::Point2d {
+                                        x: kcl_lib::front::Expr::Var(point.x),
+                                        y: kcl_lib::front::Expr::Var(point.y),
+                                    }
+                                };
+
+                                // Step 1: Create new segment (right side) first to get its IDs
+                                // Note: We'll update objects once at the end of all operations
+                                // For arcs, we need to create a new center point so the new arc has its own center point ID
+                                let new_segment_ctor = match &original_ctor {
+                                    kcl_lib::front::SegmentCtor::Line(_) => {
+                                        kcl_lib::front::SegmentCtor::Line(kcl_lib::front::LineCtor {
+                                            start: point_to_expr(coords_to_point(*right_trim_coords)),
+                                            end: point_to_expr(coords_to_point(*original_end_coords)),
+                                        })
+                                    }
+                                    kcl_lib::front::SegmentCtor::Arc(arc_ctor) => {
+                                        kcl_lib::front::SegmentCtor::Arc(kcl_lib::front::ArcCtor {
+                                            start: point_to_expr(coords_to_point(*right_trim_coords)),
+                                            end: point_to_expr(coords_to_point(*original_end_coords)),
+                                            center: arc_ctor.center.clone(),
+                                        })
+                                    }
+                                    _ => {
+                                        eprintln!("Unsupported segment type for new segment");
+                                        continue;
+                                    }
+                                };
+
+                                let add_result = guard.add_segment(&ctx, version, sketch, new_segment_ctor, None).await;
+
+                                let (_, mut add_scene_graph_delta) = match add_result {
+                                    Ok(result) => {
+                                        last_result = Some(result.clone());
+                                        invalidates_ids = invalidates_ids || result.1.invalidates_ids;
+                                        result
+                                    }
+                                    Err(e) => {
+                                        eprintln!("Failed to add new segment: {:?}", e);
+                                        continue;
+                                    }
+                                };
+
+                                // Update current scene graph delta - no serialization needed!
+                                current_scene_graph_delta = add_scene_graph_delta.clone();
+
+                                // Step 4: Find the newly created segment using native types
+                                let new_segment_id = match add_scene_graph_delta.new_objects.iter().find(|&id| {
+                                    let id_usize = id.0;
+                                    if let Some(obj) = current_scene_graph_delta.new_graph.objects.get(id_usize) {
+                                        matches!(&obj.kind, kcl_lib::front::ObjectKind::Segment { segment } if matches!(segment, kcl_lib::front::Segment::Line(_) | kcl_lib::front::Segment::Arc(_)))
+                                    } else {
+                                        false
+                                    }
+                                }) {
+                                    Some(id) => id.0,
+                                    None => {
+                                        eprintln!("Failed to find newly created segment");
+                                        continue;
+                                    }
+                                };
+
+                                let new_segment = match current_scene_graph_delta.new_graph.objects.get(new_segment_id)
+                                {
+                                    Some(seg) => seg,
+                                    None => {
+                                        eprintln!("New segment not found at index {}", new_segment_id);
+                                        continue;
+                                    }
+                                };
+
+                                // Extract endpoint IDs using native types
+                                let (new_segment_start_point_id, new_segment_end_point_id, new_segment_center_point_id) =
+                                    match &new_segment.kind {
+                                        kcl_lib::front::ObjectKind::Segment { segment } => match segment {
+                                            kcl_lib::front::Segment::Line(line) => (line.start.0, line.end.0, None),
+                                            kcl_lib::front::Segment::Arc(arc) => {
+                                                (arc.start.0, arc.end.0, Some(arc.center.0))
+                                            }
+                                            _ => {
+                                                eprintln!("New segment is not a Line or Arc");
+                                                continue;
+                                            }
+                                        },
+                                        _ => {
+                                            eprintln!("New segment is not a segment");
+                                            continue;
+                                        }
+                                    };
+
+                                // Step 2: Prepare data for batched operations
+                                // Prepare edit_segments
+                                let edited_ctor = match &original_ctor {
+                                    kcl_lib::front::SegmentCtor::Line(line_ctor) => {
+                                        kcl_lib::front::SegmentCtor::Line(kcl_lib::front::LineCtor {
+                                            start: line_ctor.start.clone(),
+                                            end: point_to_expr(coords_to_point(*left_trim_coords)),
+                                        })
+                                    }
+                                    kcl_lib::front::SegmentCtor::Arc(arc_ctor) => {
+                                        kcl_lib::front::SegmentCtor::Arc(kcl_lib::front::ArcCtor {
+                                            start: arc_ctor.start.clone(),
+                                            end: point_to_expr(coords_to_point(*left_trim_coords)),
+                                            center: arc_ctor.center.clone(),
+                                        })
+                                    }
+                                    _ => {
+                                        eprintln!("Unsupported segment type for split");
+                                        continue;
+                                    }
+                                };
+
+                                // We need the left endpoint ID, but it will be created during edit_segments in the batch
+                                // We can't know it beforehand, so we'll need to do edit_segments first to get it
+                                // Then batch the rest
+                                let edit_result = guard
+                                    .edit_segments(
+                                        &ctx,
+                                        version,
+                                        sketch,
+                                        vec![kcl_lib::front::ExistingSegmentCtor {
+                                            id: kcl_lib::front::ObjectId(*segment_id),
+                                            ctor: edited_ctor,
+                                        }],
+                                    )
+                                    .await;
+
+                                let (_, edit_scene_graph_delta) = match edit_result {
+                                    Ok(result) => {
+                                        last_operation_result = Some(result.clone());
+                                        invalidates_ids = invalidates_ids || result.1.invalidates_ids;
+                                        result
+                                    }
+                                    Err(e) => {
+                                        eprintln!("Failed to edit segment: {:?}", e);
+                                        continue;
+                                    }
+                                };
+
+                                // Update current scene graph delta
+                                current_scene_graph_delta = edit_scene_graph_delta.clone();
+
+                                // Get left endpoint ID from edited segment
+                                let edited_segment = match current_scene_graph_delta
+                                    .new_graph
+                                    .objects
+                                    .iter()
+                                    .find(|obj| obj.id.0 == *segment_id)
+                                {
+                                    Some(seg) => seg,
+                                    None => {
+                                        eprintln!("Failed to find edited segment {}", segment_id);
+                                        continue;
+                                    }
+                                };
+
+                                let left_side_endpoint_point_id = match &edited_segment.kind {
+                                    kcl_lib::front::ObjectKind::Segment { segment } => match segment {
+                                        kcl_lib::front::Segment::Line(line) => line.end.0,
+                                        kcl_lib::front::Segment::Arc(arc) => arc.end.0,
+                                        _ => {
+                                            eprintln!("Edited segment is not a Line or Arc");
+                                            continue;
+                                        }
+                                    },
+                                    _ => {
+                                        eprintln!("Edited segment is not a segment");
+                                        continue;
+                                    }
+                                };
+
+                                // Prepare constraints for batch
+                                let mut batch_constraints = Vec::new();
+
+                                // Left constraint
+                                let left_intersecting_seg_id = match &left_side {
+                                    crate::trim::TrimTermination::Intersection { intersecting_seg_id, .. }
+                                    | crate::trim::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { intersecting_seg_id, .. } => *intersecting_seg_id,
+                                    _ => {
+                                        eprintln!("Left side is not an intersection or coincident");
+                                        continue;
+                                    }
+                                };
+                                let left_coincident_segments = match &left_side {
+                                    crate::trim::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                                        trim_spawn_segment_coincident_with_another_segment_point_id,
+                                        ..
+                                    } => {
+                                        vec![
+                                            kcl_lib::front::ObjectId(left_side_endpoint_point_id),
+                                            kcl_lib::front::ObjectId(*trim_spawn_segment_coincident_with_another_segment_point_id),
+                                        ]
+                                    }
+                                    _ => {
+                                        vec![
+                                            kcl_lib::front::ObjectId(left_side_endpoint_point_id),
+                                            kcl_lib::front::ObjectId(left_intersecting_seg_id),
+                                        ]
+                                    }
+                                };
+                                batch_constraints.push(kcl_lib::front::Constraint::Coincident(
+                                    kcl_lib::front::Coincident {
+                                        segments: left_coincident_segments,
+                                    },
+                                ));
+
+                                // Right constraint
+                                let right_intersecting_seg_id = match &right_side {
+                                    crate::trim::TrimTermination::Intersection { intersecting_seg_id, .. }
+                                    | crate::trim::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { intersecting_seg_id, .. } => *intersecting_seg_id,
+                                    _ => {
+                                        eprintln!("Right side is not an intersection or coincident");
+                                        continue;
+                                    }
+                                };
+
+                                // Check if right side is an intersection and if it's at an endpoint
+                                let mut intersection_point_id: Option<usize> = None;
+                                if matches!(right_side, crate::trim::TrimTermination::Intersection { .. }) {
+                                    let intersecting_seg = current_scene_graph_delta
+                                        .new_graph
+                                        .objects
+                                        .iter()
+                                        .find(|obj| obj.id.0 == right_intersecting_seg_id);
+
+                                    if let Some(seg) = intersecting_seg {
+                                        let endpoint_epsilon = 1e-3; // 0.001mm
+                                        let right_trim_coords_value = right_trim_coords;
+
+                                        if let kcl_lib::front::ObjectKind::Segment { segment } = &seg.kind {
+                                            match segment {
+                                                kcl_lib::front::Segment::Line(_) => {
+                                                    // Check start and end
+                                                    if let (Some(start_coords), Some(end_coords)) = (
+                                                        crate::trim::get_position_coords_for_line(
+                                                            seg,
+                                                            "start",
+                                                            &current_scene_graph_delta.new_graph.objects,
+                                                        ),
+                                                        crate::trim::get_position_coords_for_line(
+                                                            seg,
+                                                            "end",
+                                                            &current_scene_graph_delta.new_graph.objects,
+                                                        ),
+                                                    ) {
+                                                        let dist_to_start = ((right_trim_coords_value.x
+                                                            - start_coords.x)
+                                                            * (right_trim_coords_value.x - start_coords.x)
+                                                            + (right_trim_coords_value.y - start_coords.y)
+                                                                * (right_trim_coords_value.y - start_coords.y))
+                                                            .sqrt();
+                                                        if dist_to_start < endpoint_epsilon {
+                                                            if let kcl_lib::front::Segment::Line(line) = segment {
+                                                                intersection_point_id = Some(line.start.0);
+                                                            }
+                                                        } else {
+                                                            let dist_to_end = ((right_trim_coords_value.x
+                                                                - end_coords.x)
+                                                                * (right_trim_coords_value.x - end_coords.x)
+                                                                + (right_trim_coords_value.y - end_coords.y)
+                                                                    * (right_trim_coords_value.y - end_coords.y))
+                                                                .sqrt();
+                                                            if dist_to_end < endpoint_epsilon {
+                                                                if let kcl_lib::front::Segment::Line(line) = segment {
+                                                                    intersection_point_id = Some(line.end.0);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                kcl_lib::front::Segment::Arc(_) => {
+                                                    // Check start and end for arc
+                                                    if let (Some(start_coords), Some(end_coords)) = (
+                                                        crate::trim::get_position_coords_from_arc(
+                                                            seg,
+                                                            "start",
+                                                            &current_scene_graph_delta.new_graph.objects,
+                                                        ),
+                                                        crate::trim::get_position_coords_from_arc(
+                                                            seg,
+                                                            "end",
+                                                            &current_scene_graph_delta.new_graph.objects,
+                                                        ),
+                                                    ) {
+                                                        let dist_to_start = ((right_trim_coords_value.x
+                                                            - start_coords.x)
+                                                            * (right_trim_coords_value.x - start_coords.x)
+                                                            + (right_trim_coords_value.y - start_coords.y)
+                                                                * (right_trim_coords_value.y - start_coords.y))
+                                                            .sqrt();
+                                                        if dist_to_start < endpoint_epsilon {
+                                                            if let kcl_lib::front::Segment::Arc(arc) = segment {
+                                                                intersection_point_id = Some(arc.start.0);
+                                                            }
+                                                        } else {
+                                                            let dist_to_end = ((right_trim_coords_value.x
+                                                                - end_coords.x)
+                                                                * (right_trim_coords_value.x - end_coords.x)
+                                                                + (right_trim_coords_value.y - end_coords.y)
+                                                                    * (right_trim_coords_value.y - end_coords.y))
+                                                                .sqrt();
+                                                            if dist_to_end < endpoint_epsilon {
+                                                                if let kcl_lib::front::Segment::Arc(arc) = segment {
+                                                                    intersection_point_id = Some(arc.end.0);
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                _ => {}
+                                            }
+                                        }
+                                    }
+                                }
+
+                                let right_coincident_segments = if let Some(point_id) = intersection_point_id {
+                                    vec![
+                                        kcl_lib::front::ObjectId(new_segment_start_point_id),
+                                        kcl_lib::front::ObjectId(point_id),
+                                    ]
+                                } else if let crate::trim::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                                    trim_spawn_segment_coincident_with_another_segment_point_id,
+                                    ..
+                                } = &right_side {
+                                    vec![
+                                        kcl_lib::front::ObjectId(new_segment_start_point_id),
+                                        kcl_lib::front::ObjectId(*trim_spawn_segment_coincident_with_another_segment_point_id),
+                                    ]
+                                } else {
+                                    vec![
+                                        kcl_lib::front::ObjectId(new_segment_start_point_id),
+                                        kcl_lib::front::ObjectId(right_intersecting_seg_id),
+                                    ]
+                                };
+                                batch_constraints.push(kcl_lib::front::Constraint::Coincident(
+                                    kcl_lib::front::Coincident {
+                                        segments: right_coincident_segments,
+                                    },
+                                ));
+
+                                // Migrate constraints
+                                let mut points_constrained_to_new_segment_start = std::collections::HashSet::new();
+                                let mut points_constrained_to_new_segment_end = std::collections::HashSet::new();
+
+                                if let crate::trim::TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                                    trim_spawn_segment_coincident_with_another_segment_point_id,
+                                    ..
+                                } = &right_side {
+                                    points_constrained_to_new_segment_start.insert(*trim_spawn_segment_coincident_with_another_segment_point_id);
+                                }
+
+                                for constraint_to_migrate in constraints_to_migrate.iter() {
+                                    if constraint_to_migrate.attach_to_endpoint == "end"
+                                        && constraint_to_migrate.is_point_point
+                                    {
+                                        points_constrained_to_new_segment_end
+                                            .insert(constraint_to_migrate.other_entity_id);
+                                    }
+                                }
+
+                                for constraint_to_migrate in constraints_to_migrate.iter() {
+                                    // Skip migrating point-segment constraints if the point is already constrained
+                                    if constraint_to_migrate.attach_to_endpoint == "segment" {
+                                        if points_constrained_to_new_segment_start
+                                            .contains(&constraint_to_migrate.other_entity_id)
+                                            || points_constrained_to_new_segment_end
+                                                .contains(&constraint_to_migrate.other_entity_id)
+                                        {
+                                            continue; // Skip redundant constraint
+                                        }
+                                    }
+
+                                    let constraint_segments = if constraint_to_migrate.attach_to_endpoint == "segment" {
+                                        vec![
+                                            kcl_lib::front::ObjectId(constraint_to_migrate.other_entity_id),
+                                            kcl_lib::front::ObjectId(new_segment_id),
+                                        ]
+                                    } else {
+                                        let target_endpoint_id = if constraint_to_migrate.attach_to_endpoint == "start"
+                                        {
+                                            new_segment_start_point_id
+                                        } else {
+                                            new_segment_end_point_id
+                                        };
+                                        vec![
+                                            kcl_lib::front::ObjectId(target_endpoint_id),
+                                            kcl_lib::front::ObjectId(constraint_to_migrate.other_entity_id),
+                                        ]
+                                    };
+                                    batch_constraints.push(kcl_lib::front::Constraint::Coincident(
+                                        kcl_lib::front::Coincident {
+                                            segments: constraint_segments,
+                                        },
+                                    ));
+                                }
+
+                                // Find distance constraints that reference both endpoints of the original segment
+                                // These should be re-added with: original start, new segment end
+                                // We need to do this before other operations that might modify current_scene_graph_delta
+                                let mut distance_constraints_to_re_add: Vec<kcl_lib::front::Number> = Vec::new();
+                                if let (Some(original_start_id), Some(original_end_id)) =
+                                    (original_segment_start_point_id, original_segment_end_point_id)
+                                {
+                                    for obj in &current_scene_graph_delta.new_graph.objects {
+                                        let kcl_lib::front::ObjectKind::Constraint { constraint } = &obj.kind else {
+                                            continue;
+                                        };
+
+                                        let kcl_lib::front::Constraint::Distance(distance) = constraint else {
+                                            continue;
+                                        };
+
+                                        // Check if this distance constraint references both endpoints of the original segment
+                                        let references_start =
+                                            distance.points.iter().any(|pt| pt.0 == original_start_id);
+                                        let references_end = distance.points.iter().any(|pt| pt.0 == original_end_id);
+
+                                        if references_start && references_end {
+                                            // Store the distance value to re-add later
+                                            distance_constraints_to_re_add.push(distance.distance.clone());
+                                        }
+                                    }
+                                }
+
+                                // Re-add distance constraints that were on the original segment's endpoints
+                                // These should reference: original start, new segment end
+                                if let Some(original_start_id) = original_segment_start_point_id {
+                                    for distance_value in distance_constraints_to_re_add {
+                                        batch_constraints.push(kcl_lib::front::Constraint::Distance(
+                                            kcl_lib::front::Distance {
+                                                points: vec![
+                                                    kcl_lib::front::ObjectId(original_start_id),
+                                                    kcl_lib::front::ObjectId(new_segment_end_point_id),
+                                                ],
+                                                distance: distance_value,
+                                            },
+                                        ));
+                                    }
+                                }
+
+                                // Migrate center point constraints for arcs
+                                // When an arc is split, constraints on the center point should be applied to the new arc's center as well
+                                // Use the constraints we captured BEFORE edit_segments
+                                // IMPORTANT: We add these constraints AFTER the new segment is created, so the new center point ID is valid
+                                if let Some(new_center_id) = new_segment_center_point_id {
+                                    for (constraint, original_center_id) in center_point_constraints_to_migrate {
+                                        match constraint {
+                                            kcl_lib::front::Constraint::Coincident(coincident) => {
+                                                // Create a new coincident constraint with the new center point replacing the old one
+                                                let new_segments: Vec<kcl_lib::front::ObjectId> = coincident
+                                                    .segments
+                                                    .iter()
+                                                    .map(|seg_id| {
+                                                        if seg_id.0 == original_center_id {
+                                                            kcl_lib::front::ObjectId(new_center_id)
+                                                        } else {
+                                                            *seg_id
+                                                        }
+                                                    })
+                                                    .collect();
+
+                                                batch_constraints.push(kcl_lib::front::Constraint::Coincident(
+                                                    kcl_lib::front::Coincident { segments: new_segments },
+                                                ));
+                                            }
+                                            kcl_lib::front::Constraint::Distance(distance) => {
+                                                // Create a new distance constraint with the new center point
+                                                // NOTE: Distance constraints on center points should NOT be deleted by the solver
+                                                // because they reference a point that's owned by a segment, not the segment itself
+                                                let new_points: Vec<kcl_lib::front::ObjectId> = distance
+                                                    .points
+                                                    .iter()
+                                                    .map(|pt| {
+                                                        if pt.0 == original_center_id {
+                                                            kcl_lib::front::ObjectId(new_center_id)
+                                                        } else {
+                                                            *pt
+                                                        }
+                                                    })
+                                                    .collect();
+
+                                                batch_constraints.push(kcl_lib::front::Constraint::Distance(
+                                                    kcl_lib::front::Distance {
+                                                        points: new_points,
+                                                        distance: distance.distance.clone(),
+                                                    },
+                                                ));
+                                            }
+                                            _ => {}
+                                        }
+                                    }
+                                }
+
+                                // Re-add angle constraints (Parallel, Perpendicular, Horizontal, Vertical)
+                                // that referenced the original segment, adding them for the new segment
+                                // Note: We don't delete the original constraint - it still applies to the trimmed segment
+                                for obj in &current_scene_graph_delta.new_graph.objects {
+                                    let kcl_lib::front::ObjectKind::Constraint { constraint } = &obj.kind else {
+                                        continue;
+                                    };
+
+                                    let should_migrate = match constraint {
+                                        kcl_lib::front::Constraint::Parallel(parallel) => {
+                                            parallel.lines.iter().any(|line_id| line_id.0 == *segment_id)
+                                        }
+                                        kcl_lib::front::Constraint::Perpendicular(perpendicular) => {
+                                            perpendicular.lines.iter().any(|line_id| line_id.0 == *segment_id)
+                                        }
+                                        kcl_lib::front::Constraint::Horizontal(horizontal) => {
+                                            horizontal.line.0 == *segment_id
+                                        }
+                                        kcl_lib::front::Constraint::Vertical(vertical) => {
+                                            vertical.line.0 == *segment_id
+                                        }
+                                        _ => false,
+                                    };
+
+                                    if should_migrate {
+                                        // Create a new constraint with the new segment ID replacing the old one
+                                        // The original constraint remains on the original (trimmed) segment
+                                        let migrated_constraint = match constraint {
+                                            kcl_lib::front::Constraint::Parallel(parallel) => {
+                                                let new_lines: Vec<kcl_lib::front::ObjectId> = parallel
+                                                    .lines
+                                                    .iter()
+                                                    .map(|line_id| {
+                                                        if line_id.0 == *segment_id {
+                                                            kcl_lib::front::ObjectId(new_segment_id)
+                                                        } else {
+                                                            *line_id
+                                                        }
+                                                    })
+                                                    .collect();
+                                                kcl_lib::front::Constraint::Parallel(kcl_lib::front::Parallel {
+                                                    lines: new_lines,
+                                                })
+                                            }
+                                            kcl_lib::front::Constraint::Perpendicular(perpendicular) => {
+                                                let new_lines: Vec<kcl_lib::front::ObjectId> = perpendicular
+                                                    .lines
+                                                    .iter()
+                                                    .map(|line_id| {
+                                                        if line_id.0 == *segment_id {
+                                                            kcl_lib::front::ObjectId(new_segment_id)
+                                                        } else {
+                                                            *line_id
+                                                        }
+                                                    })
+                                                    .collect();
+                                                kcl_lib::front::Constraint::Perpendicular(
+                                                    kcl_lib::front::Perpendicular { lines: new_lines },
+                                                )
+                                            }
+                                            kcl_lib::front::Constraint::Horizontal(horizontal) => {
+                                                // For single-line constraints, create a new constraint for the new segment
+                                                if horizontal.line.0 == *segment_id {
+                                                    kcl_lib::front::Constraint::Horizontal(kcl_lib::front::Horizontal {
+                                                        line: kcl_lib::front::ObjectId(new_segment_id),
+                                                    })
+                                                } else {
+                                                    continue; // Shouldn't happen, but skip if it does
+                                                }
+                                            }
+                                            kcl_lib::front::Constraint::Vertical(vertical) => {
+                                                // For single-line constraints, create a new constraint for the new segment
+                                                if vertical.line.0 == *segment_id {
+                                                    kcl_lib::front::Constraint::Vertical(kcl_lib::front::Vertical {
+                                                        line: kcl_lib::front::ObjectId(new_segment_id),
+                                                    })
+                                                } else {
+                                                    continue; // Shouldn't happen, but skip if it does
+                                                }
+                                            }
+                                            _ => continue,
+                                        };
+                                        batch_constraints.push(migrated_constraint);
+                                    }
+                                }
+
+                                // Step 3: Batch all remaining operations (constraints and delete)
+                                // edit_segments and add_segment are already done, so we just batch constraints and delete
+                                let constraint_object_ids: Vec<kcl_lib::front::ObjectId> = constraints_to_delete
+                                    .iter()
+                                    .map(|id| kcl_lib::front::ObjectId(*id))
+                                    .collect();
+
+                                let batch_result = guard
+                                    .batch_split_segment_operations(
+                                        &ctx,
+                                        version,
+                                        sketch,
+                                        Vec::new(), // edit_segments already done
+                                        batch_constraints,
+                                        constraint_object_ids,
+                                        kcl_lib::front::ObjectId(new_segment_id),
+                                        kcl_lib::front::ObjectId(new_segment_start_point_id),
+                                        kcl_lib::front::ObjectId(new_segment_end_point_id),
+                                        new_segment_center_point_id.map(|id| kcl_lib::front::ObjectId(id)),
+                                    )
+                                    .await;
+
+                                match batch_result {
+                                    Ok((source_delta, delta)) => {
+                                        let delta_clone = delta.clone();
+                                        last_result = Some((source_delta, delta_clone.clone()));
+                                        invalidates_ids = invalidates_ids || delta_clone.invalidates_ids;
+                                        current_scene_graph_delta = delta_clone.clone();
+                                    }
+                                    Err(e) => {
+                                        eprintln!("Failed to batch split segment operations: {:?}", e);
+                                        // Continue anyway - some failures are non-fatal
+                                    }
+                                }
+
+                                // Return success for split operation
+
+                                match &last_result {
+                                    Some((source_delta, delta)) => Ok((source_delta.clone(), delta.clone())),
+                                    None => {
+                                        // This shouldn't happen, but return the scene_graph_delta we have
+                                        Ok((
+                                            kcl_lib::front::SourceDelta { text: String::new() },
+                                            current_scene_graph_delta.clone(),
+                                        ))
+                                    }
+                                }
+                            }
+                        };
+
+                        match operation_result {
+                            Ok((source_delta, scene_graph_delta)) => {
+                                last_result = Some((source_delta, scene_graph_delta.clone()));
+                                invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
+
+                                // Update current scene graph delta - no serialization needed!
+                                current_scene_graph_delta = scene_graph_delta;
+                            }
+                            Err(e) => {
+                                eprintln!("Error executing trim operation: {:?}", e);
+                                // Continue to next operation instead of failing completely
+                                // Some operations (like addCoincidentConstraint) can fail without breaking the trim
+                            }
+                        }
+
+                        // Advance to the next unprocessed operation
+                        op_index += consumed_ops;
+                    }
+
+                    // Move to next segment (or re-check same segment if deletion occurred)
+                    let old_start_index = start_index;
+                    start_index = match &next_trim_result {
+                        NextTrimResult::TrimSpawn { next_index, .. } => *next_index,
+                        NextTrimResult::NoTrimSpawn { .. } => {
+                            // Should not happen here
+                            break;
+                        }
+                    };
+
+                    // Fail-safe: if nextIndex didn't advance and we didn't delete, force it to advance
+                    if start_index <= old_start_index {
+                        if !was_deleted {
+                            start_index = old_start_index + 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        if iteration_count >= max_iterations {
+            eprintln!("ERROR: Reached max iterations ({}). Breaking loop.", max_iterations);
+        }
+
+        // Return the last result or execute mock to get current state
+        let (source_delta, mut scene_graph_delta) = if let Some((sd, sgd)) = last_result {
+            (sd, sgd)
+        } else {
+            guard
+                .execute_mock(&ctx, version, sketch)
+                .await
+                .map_err(|e| format!("Failed to execute mock: {:?}", e))?
+        };
+
+        // Set invalidates_ids if any operation invalidated IDs
+        scene_graph_delta.invalidates_ids = invalidates_ids;
+
+        // Return both kclSource and sceneGraphDelta
+        #[derive(serde::Serialize)]
+        struct TrimResult {
+            kcl_source: kcl_lib::front::SourceDelta,
+            scene_graph_delta: kcl_lib::front::SceneGraphDelta,
+        }
+
+        let result = TrimResult {
+            kcl_source: source_delta,
+            scene_graph_delta,
+        };
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize trim result. {TRUE_BUG} Details: {e}"))?)
+    }
+
     /// Chain a segment to a previous segment by adding it and creating a coincident constraint.
     #[wasm_bindgen]
     pub async fn chain_segment(
