@@ -344,7 +344,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "getOppositeEdge") => (
             |e, a| Box::pin(crate::std::edge::get_opposite_edge(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::sketch::revolve"),
+            StdFnProps::default("std::sketch::getOppositeEdge"),
         ),
         ("sketch", "getPreviousAdjacentEdge") => (
             |e, a| Box::pin(crate::std::edge::get_previous_adjacent_edge(e, a).map(|r| r.map(KclValue::continue_))),

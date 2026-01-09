@@ -20,113 +20,69 @@ function zooSetApplicationMenu(menu: Electron.Menu) {
   Menu.setApplicationMenu(menu)
 }
 
-// Default electron menu.
-export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
-  const templateMac: ZooMenuItemConstructorOptions[] = [
-    {
-      // @ts-ignore cannot determine this since it is dynamic. It is still a string, not a problem.
-      label: app.name,
-      submenu: [
-        { role: 'about' },
-        { type: 'separator' },
-        { role: 'services' },
-        { type: 'separator' },
-        { role: 'hide' },
-        { role: 'hideOthers' },
-        { role: 'unhide' },
-        { type: 'separator' },
-        { role: 'quit' },
-      ],
-    },
-    {
-      label: 'File',
-      submenu: [{ role: 'close' }],
-    },
-    {
-      label: 'Edit',
-      submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
-        { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
-        { role: 'pasteAndMatchStyle' },
-        { role: 'delete' },
-        { role: 'selectAll' },
-        { type: 'separator' },
-        {
-          label: 'Speech',
-          submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }],
-        },
-      ],
-    },
-    {
-      label: 'View',
-      submenu: [
-        { role: 'resetZoom' },
-        { role: 'zoomIn' },
-        { role: 'zoomOut' },
-        { type: 'separator' },
-        { role: 'togglefullscreen' },
-      ],
-    },
-    {
-      label: 'Window',
-      submenu: [
-        { role: 'minimize' },
-        { role: 'zoom' },
-        { type: 'separator' },
-        { role: 'front' },
-        { type: 'separator' },
-        { role: 'window' },
-      ],
-    },
-  ]
+// Menu for unauthenticated users
+function fallbackFileRole(
+  mainWindow: BrowserWindow
+): ZooMenuItemConstructorOptions {
+  return {
+    label: 'File',
+    submenu: [
+      // No project or settings items
+      isMac ? { role: 'close' } : { role: 'quit' },
+    ],
+  }
+}
 
-  const templateNotMac: ZooMenuItemConstructorOptions[] = [
-    {
-      label: 'File',
-      submenu: [{ role: 'quit' }],
-    },
-    {
-      label: 'Edit',
-      submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
-        { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
-        { role: 'delete' },
-        { type: 'separator' },
-        { role: 'selectAll' },
-      ],
-    },
-    {
-      label: 'View',
-      submenu: [
-        { role: 'resetZoom' },
-        { role: 'zoomIn' },
-        { role: 'zoomOut' },
-        { type: 'separator' },
-        { role: 'togglefullscreen' },
-      ],
-    },
-    {
-      label: 'Window',
-      submenu: [{ role: 'minimize' }, { role: 'zoom' }, { role: 'close' }],
-    },
+function fallbackEditRole(
+  mainWindow: BrowserWindow
+): ZooMenuItemConstructorOptions {
+  let extraBits: ZooMenuItemConstructorOptions[] = [
+    { role: 'delete' },
+    { type: 'separator' },
+    { role: 'selectAll' },
+  ]
+  if (isMac) {
+    extraBits = [
+      { role: 'pasteAndMatchStyle' },
+      { role: 'delete' },
+      { role: 'selectAll' },
+      { type: 'separator' },
+      {
+        label: 'Speech',
+        submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }],
+      },
+    ]
+  }
+  return {
+    label: 'Edit',
+    submenu: [
+      // No project items
+      { role: 'undo' },
+      { role: 'redo' },
+      { type: 'separator' },
+      { role: 'cut' },
+      { role: 'copy' },
+      { role: 'paste' },
+      ...extraBits,
+    ],
+  }
+}
+
+// Menu for authenticated users
+export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
+  // Use the same structure as the project page menu for consistency
+  // but remove items that require authentication
+  const template = [
+    // Expand empty elements for environments that are not Mac
+    ...appMenuMacOnly(),
+    fallbackFileRole(mainWindow),
+    fallbackEditRole(mainWindow),
+    projectViewRole(mainWindow),
+    // Help role is the same for all pages
     helpRole(mainWindow),
   ]
-
-  if (isMac) {
-    const menu = Menu.buildFromTemplate(templateMac)
-    zooSetApplicationMenu(menu)
-  } else {
-    const menu = Menu.buildFromTemplate(templateNotMac)
-    zooSetApplicationMenu(menu)
-  }
+  const menu = Menu.buildFromTemplate(template)
+  zooSetApplicationMenu(menu)
 }
 
 function appMenuMacOnly() {

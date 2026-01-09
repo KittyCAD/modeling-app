@@ -154,7 +154,6 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { EditorView } from 'codemirror'
 
 export type ModelingMachineEvent =
   | {
@@ -355,6 +354,7 @@ export type ModelingMachineEvent =
         | 'Vertical'
         | 'Horizontal'
         | 'Parallel'
+        | 'Perpendicular'
         | 'Distance'
     }
   | { type: 'unequip tool' }
@@ -1472,16 +1472,6 @@ export const modelingMachine = setup({
               },
             })
           if (codeMirrorSelection) {
-            kclManager.editorView.dispatch({
-              selection: codeMirrorSelection,
-              effects: setSelections.scrollIntoView
-                ? [
-                    EditorView.scrollIntoView(codeMirrorSelection.ranges[0], {
-                      y: 'center',
-                    }),
-                  ]
-                : [],
-            })
             theKclEditorMachine.send({
               type: 'setLastSelectionEvent',
               data: {
@@ -1537,10 +1527,6 @@ export const modelingMachine = setup({
           const codeMirrorSelection = kclManager.createEditorSelection(
             setSelections.selection
           )
-
-          kclManager.editorView.dispatch({
-            selection: codeMirrorSelection,
-          })
 
           // This turns the selection into blue, needed when selecting with ctrl+A
           const { updateSceneObjectColors } = handleSelectionBatch({
@@ -2443,6 +2429,7 @@ export const modelingMachine = setup({
 
         for (const variable of Object.values(kclManager.execState.variables)) {
           // find programMemory that matches path artifact
+          // Note: this is similar to sketchFromKclValueOptional(), could be combined?
           if (
             variable?.type === 'Sketch' &&
             variable.value.artifactId === mainPath
@@ -2453,7 +2440,6 @@ export const modelingMachine = setup({
           if (
             // if the variable is an sweep, check if the underlying sketch matches the artifact
             variable?.type === 'Solid' &&
-            variable.value.sketch.on.type === 'plane' &&
             variable.value.sketch.artifactId === mainPath
           ) {
             sketch = {
@@ -2461,6 +2447,15 @@ export const modelingMachine = setup({
               value: variable.value.sketch,
             }
             break
+          }
+          if (variable?.type === 'HomArray') {
+            const sketchInHomArray = variable.value.find(
+              (sk) => sk.type === 'Sketch' && sk.value.artifactId === mainPath
+            )
+            if (sketchInHomArray) {
+              sketch = sketchInHomArray
+              break
+            }
           }
           if (variable?.type === 'Plane' && plane.id === variable.value.id) {
             planeVar = variable.value
@@ -5477,6 +5472,9 @@ export const modelingMachine = setup({
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         Parallel: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        Perpendicular: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         LinesEqualLength: {

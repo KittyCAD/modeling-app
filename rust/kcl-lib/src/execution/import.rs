@@ -121,10 +121,10 @@ pub async fn import_foreign(
     Ok(PreImportedGeometry {
         id: exec_state.next_uuid(),
         source_range,
-        command: mcmd::ImportFiles {
-            files: import_files.clone(),
-            format,
-        },
+        command: mcmd::ImportFiles::builder()
+            .files(import_files.clone())
+            .format(format)
+            .build(),
     })
 }
 
@@ -310,6 +310,7 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
     // * Handedness: Right
     match format {
         FileImportFormat::Step => Ok(InputFormat3d::Step(kcmc::format::step::import::Options {
+            coords: ZOO_COORD_SYSTEM,
             split_closed_faces: false,
         })),
         FileImportFormat::Stl => Ok(InputFormat3d::Stl(kcmc::format::stl::import::Options {

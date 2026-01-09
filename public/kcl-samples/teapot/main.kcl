@@ -1,5 +1,6 @@
 // Teapot
 // A vessel with a spout and a handle used for serving tea and boiling water on a stovetop
+// Categories: Maker
 
 // Set units
 @settings(defaultLengthUnit = mm)

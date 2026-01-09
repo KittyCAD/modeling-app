@@ -50,6 +50,7 @@ import { featureTreeMachine } from '@src/machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
+  selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
 import toast from 'react-hot-toast'
 import { base64Decode } from '@src/lang/wasm'
@@ -97,6 +98,7 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
 
 export const FeatureTreePaneContents = memo(() => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
+  const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const layout = useLayout()
   const { send: modelingSend, state: modelingState } = useModelingContext()
 
@@ -109,7 +111,7 @@ export const FeatureTreePaneContents = memo(() => {
         codePaneIsOpen: () =>
           getOpenPanes({ rootLayout: getLayout() }).includes(
             DefaultLayoutPaneID.Code
-          ) && kclManager.editorView !== null,
+          ) && kclManager.getEditorView() !== null,
       },
       actions: {
         openCodePane: () => {
@@ -248,6 +250,12 @@ export const FeatureTreePaneContents = memo(() => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [layout, isEditorMounted, featureTreeSend])
+
+  // Watch for changes in the selection and send an event to the feature tree machine
+  useEffect(() => {
+    featureTreeSend({ type: 'selected' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [lastSelectionEvent])
 
   function goToError() {
     featureTreeSend({ type: 'goToError' })

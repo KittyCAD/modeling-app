@@ -164,43 +164,46 @@ async fn inner_extrude(
                         .map(|a| a.to_degrees(exec_state, args.source_range))
                         .unwrap_or(15.0),
                 );
-                ModelingCmd::from(mcmd::TwistExtrude {
-                    target: sketch.id.into(),
-                    distance: LengthUnit(length.to_mm()),
-                    faces: Default::default(),
-                    center_2d: center,
-                    total_rotation_angle,
-                    angle_step_size,
-                    tolerance,
-                    body_type,
-                })
+                ModelingCmd::from(
+                    mcmd::TwistExtrude::builder()
+                        .target(sketch.id.into())
+                        .distance(LengthUnit(length.to_mm()))
+                        .center_2d(center)
+                        .total_rotation_angle(total_rotation_angle)
+                        .angle_step_size(angle_step_size)
+                        .tolerance(tolerance)
+                        .body_type(body_type)
+                        .build(),
+                )
             }
-            (None, None, None, Some(length), None) => ModelingCmd::from(mcmd::Extrude {
-                target: sketch.id.into(),
-                distance: LengthUnit(length.to_mm()),
-                faces: Default::default(),
-                opposite: opposite.clone(),
-                extrude_method,
-                body_type,
-            }),
+            (None, None, None, Some(length), None) => ModelingCmd::from(
+                mcmd::Extrude::builder()
+                    .target(sketch.id.into())
+                    .distance(LengthUnit(length.to_mm()))
+                    .opposite(opposite.clone())
+                    .extrude_method(extrude_method)
+                    .body_type(body_type)
+                    .build(),
+            ),
             (None, None, None, None, Some(to)) => match to {
-                Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(mcmd::ExtrudeToReference {
-                    target: sketch.id.into(),
-                    reference: ExtrudeReference::Point {
-                        point: KPoint3d {
-                            x: LengthUnit(point[0].to_mm()),
-                            y: LengthUnit(point[1].to_mm()),
-                            z: LengthUnit(point[2].to_mm()),
-                        },
-                    },
-                    faces: Default::default(),
-                    extrude_method,
-                    body_type,
-                }),
-                Point3dAxis3dOrGeometryReference::Axis { direction, origin } => {
-                    ModelingCmd::from(mcmd::ExtrudeToReference {
-                        target: sketch.id.into(),
-                        reference: ExtrudeReference::Axis {
+                Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(
+                    mcmd::ExtrudeToReference::builder()
+                        .target(sketch.id.into())
+                        .reference(ExtrudeReference::Point {
+                            point: KPoint3d {
+                                x: LengthUnit(point[0].to_mm()),
+                                y: LengthUnit(point[1].to_mm()),
+                                z: LengthUnit(point[2].to_mm()),
+                            },
+                        })
+                        .extrude_method(extrude_method)
+                        .body_type(body_type)
+                        .build(),
+                ),
+                Point3dAxis3dOrGeometryReference::Axis { direction, origin } => ModelingCmd::from(
+                    mcmd::ExtrudeToReference::builder()
+                        .target(sketch.id.into())
+                        .reference(ExtrudeReference::Axis {
                             axis: KPoint3d {
                                 x: direction[0].to_mm(),
                                 y: direction[1].to_mm(),
@@ -211,12 +214,11 @@ async fn inner_extrude(
                                 y: LengthUnit(origin[1].to_mm()),
                                 z: LengthUnit(origin[2].to_mm()),
                             },
-                        },
-                        faces: Default::default(),
-                        extrude_method,
-                        body_type,
-                    })
-                }
+                        })
+                        .extrude_method(extrude_method)
+                        .body_type(body_type)
+                        .build(),
+                ),
                 Point3dAxis3dOrGeometryReference::Plane(plane) => {
                     let plane_id = if plane.value == crate::exec::PlaneType::Uninit {
                         if plane.info.origin.units.is_none() {
@@ -235,62 +237,68 @@ async fn inner_extrude(
                     } else {
                         plane.id
                     };
-                    ModelingCmd::from(mcmd::ExtrudeToReference {
-                        target: sketch.id.into(),
-                        reference: ExtrudeReference::EntityReference { entity_id: plane_id },
-                        faces: Default::default(),
-                        extrude_method,
-                        body_type,
-                    })
+                    ModelingCmd::from(
+                        mcmd::ExtrudeToReference::builder()
+                            .target(sketch.id.into())
+                            .reference(ExtrudeReference::EntityReference { entity_id: plane_id })
+                            .extrude_method(extrude_method)
+                            .body_type(body_type)
+                            .build(),
+                    )
                 }
                 Point3dAxis3dOrGeometryReference::Edge(edge_ref) => {
                     let edge_id = edge_ref.get_engine_id(exec_state, &args)?;
-                    ModelingCmd::from(mcmd::ExtrudeToReference {
-                        target: sketch.id.into(),
-                        reference: ExtrudeReference::EntityReference { entity_id: edge_id },
-                        faces: Default::default(),
-                        extrude_method,
-                        body_type,
-                    })
+                    ModelingCmd::from(
+                        mcmd::ExtrudeToReference::builder()
+                            .target(sketch.id.into())
+                            .reference(ExtrudeReference::EntityReference { entity_id: edge_id })
+                            .extrude_method(extrude_method)
+                            .body_type(body_type)
+                            .build(),
+                    )
                 }
                 Point3dAxis3dOrGeometryReference::Face(face_tag) => {
                     let face_id = face_tag.get_face_id_from_tag(exec_state, &args, false).await?;
-                    ModelingCmd::from(mcmd::ExtrudeToReference {
-                        target: sketch.id.into(),
-                        reference: ExtrudeReference::EntityReference { entity_id: face_id },
-                        faces: Default::default(),
-                        extrude_method,
-                        body_type,
-                    })
+                    ModelingCmd::from(
+                        mcmd::ExtrudeToReference::builder()
+                            .target(sketch.id.into())
+                            .reference(ExtrudeReference::EntityReference { entity_id: face_id })
+                            .extrude_method(extrude_method)
+                            .body_type(body_type)
+                            .build(),
+                    )
                 }
-                Point3dAxis3dOrGeometryReference::Sketch(sketch_ref) => ModelingCmd::from(mcmd::ExtrudeToReference {
-                    target: sketch.id.into(),
-                    reference: ExtrudeReference::EntityReference {
-                        entity_id: sketch_ref.id,
-                    },
-                    faces: Default::default(),
-                    extrude_method,
-                    body_type,
-                }),
-                Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(mcmd::ExtrudeToReference {
-                    target: sketch.id.into(),
-                    reference: ExtrudeReference::EntityReference { entity_id: solid.id },
-                    faces: Default::default(),
-                    extrude_method,
-                    body_type,
-                }),
+                Point3dAxis3dOrGeometryReference::Sketch(sketch_ref) => ModelingCmd::from(
+                    mcmd::ExtrudeToReference::builder()
+                        .target(sketch.id.into())
+                        .reference(ExtrudeReference::EntityReference {
+                            entity_id: sketch_ref.id,
+                        })
+                        .extrude_method(extrude_method)
+                        .body_type(body_type)
+                        .build(),
+                ),
+                Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(
+                    mcmd::ExtrudeToReference::builder()
+                        .target(sketch.id.into())
+                        .reference(ExtrudeReference::EntityReference { entity_id: solid.id })
+                        .extrude_method(extrude_method)
+                        .body_type(body_type)
+                        .build(),
+                ),
                 Point3dAxis3dOrGeometryReference::TaggedEdgeOrFace(tag) => {
                     let tagged_edge_or_face = args.get_tag_engine_info(exec_state, tag)?;
                     let tagged_edge_or_face_id = tagged_edge_or_face.id;
-                    ModelingCmd::from(mcmd::ExtrudeToReference {
-                        target: sketch.id.into(),
-                        reference: ExtrudeReference::EntityReference {
-                            entity_id: tagged_edge_or_face_id,
-                        },
-                        faces: Default::default(),
-                        extrude_method,
-                        body_type,
-                    })
+                    ModelingCmd::from(
+                        mcmd::ExtrudeToReference::builder()
+                            .target(sketch.id.into())
+                            .reference(ExtrudeReference::EntityReference {
+                                entity_id: tagged_edge_or_face_id,
+                            })
+                            .extrude_method(extrude_method)
+                            .body_type(body_type)
+                            .build(),
+                    )
                 }
             },
             (Some(_), _, _, None, None) => {
@@ -370,7 +378,7 @@ pub(crate) async fn do_post_extrude<'a>(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
+            ModelingCmd::from(mcmd::ObjectBringToFront::builder().object_id(sketch.id).build()),
         )
         .await?;
 
@@ -432,10 +440,12 @@ pub(crate) async fn do_post_extrude<'a>(
     let solid3d_info = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
-                edge_id: extrusion_info_edge_id,
-                object_id: sketch_id,
-            }),
+            ModelingCmd::from(
+                mcmd::Solid3dGetExtrusionFaceInfo::builder()
+                    .edge_id(extrusion_info_edge_id)
+                    .object_id(sketch_id)
+                    .build(),
+            ),
         )
         .await?;
 
@@ -457,10 +467,12 @@ pub(crate) async fn do_post_extrude<'a>(
             exec_state
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args(exec_state, args),
-                    ModelingCmd::from(mcmd::Solid3dGetAdjacencyInfo {
-                        object_id: sketch.id,
-                        edge_id: any_edge_id,
-                    }),
+                    ModelingCmd::from(
+                        mcmd::Solid3dGetAdjacencyInfo::builder()
+                            .object_id(sketch.id)
+                            .edge_id(any_edge_id)
+                            .build(),
+                    ),
                 )
                 .await?;
         }

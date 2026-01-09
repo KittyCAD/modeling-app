@@ -13,7 +13,7 @@ import {
 } from '@src/lib/desktop'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
-import { buildTheWorldNode } from '@src/unitTestUtils'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 // Mock the electron window global
 const mockElectron = {
@@ -133,13 +133,13 @@ describe('desktop utilities', () => {
 
   describe('listProjects', () => {
     it('does not list .git directories', async () => {
-      const { instance } = await buildTheWorldNode()
+      const { instance } = await buildTheWorldAndNoEngineConnection()
       if (!window.electron) throw new Error('Electron not found')
       const projects = await listProjects(window.electron, instance, mockConfig)
       expect(projects.map((p) => p.name)).not.toContain('.git')
     })
     it('lists projects excluding hidden and without .kcl files', async () => {
-      const { instance } = await buildTheWorldNode()
+      const { instance } = await buildTheWorldAndNoEngineConnection()
       if (!window.electron) throw new Error('Electron not found')
       const projects = await listProjects(window.electron, instance, mockConfig)
 
@@ -164,7 +164,7 @@ describe('desktop utilities', () => {
     })
 
     it('correctly counts directories and files', async () => {
-      const { instance } = await buildTheWorldNode()
+      const { instance } = await buildTheWorldAndNoEngineConnection()
       if (!window.electron) throw new Error('Electron not found')
       const projects = await listProjects(window.electron, instance, mockConfig)
       // Verify that directories and files are counted correctly
@@ -175,7 +175,7 @@ describe('desktop utilities', () => {
     })
 
     it('handles empty project directory', async () => {
-      const { instance } = await buildTheWorldNode()
+      const { instance } = await buildTheWorldAndNoEngineConnection()
       if (!window.electron) throw new Error('Electron not found')
       // Adjust mockFileSystem to simulate empty directory
       mockFileSystem['/test/projects'] = TEST_PROJECTS_CLEARED
