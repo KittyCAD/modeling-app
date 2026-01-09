@@ -122,7 +122,9 @@ async fn inner_fillet(
                     .strategy(Default::default())
                     .object_id(solid.id)
                     .radius(LengthUnit(radius.to_mm()))
-                    .tolerance(LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .tolerance(LengthUnit(
+                        tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                    ))
                     .cut_type(CutType::Fillet)
                     .build(),
             ),

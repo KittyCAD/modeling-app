@@ -245,12 +245,7 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(
-                mcmd::PlaneSetColor::builder()
-                    .color(color)
-                    .plane_id(plane.id)
-                    .build(),
-            ),
+            ModelingCmd::from(mcmd::PlaneSetColor::builder().color(color).plane_id(plane.id).build()),
         )
         .await?;
 

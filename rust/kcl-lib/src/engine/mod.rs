@@ -950,9 +950,7 @@ impl GridScaleBehavior {
     fn into_modeling_cmd(self) -> ModelingCmd {
         const NUMBER_OF_GRID_COLUMNS: f32 = 10.0;
         match self {
-            GridScaleBehavior::ScaleWithZoom => {
-                ModelingCmd::from(mcmd::SetGridAutoScale::builder().build())
-            }
+            GridScaleBehavior::ScaleWithZoom => ModelingCmd::from(mcmd::SetGridAutoScale::builder().build()),
             GridScaleBehavior::Fixed(unit_length) => ModelingCmd::from(
                 mcmd::SetGridScale::builder()
                     .value(NUMBER_OF_GRID_COLUMNS)

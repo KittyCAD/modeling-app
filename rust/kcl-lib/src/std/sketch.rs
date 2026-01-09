@@ -1136,15 +1136,10 @@ pub(crate) async fn inner_start_profile(
         SketchSurface::Plane(plane) if !plane.is_standard() => {
             // Hide whatever plane we are sketching on.
             // This is especially helpful for offset planes, which would be visible otherwise.
-                exec_state
+            exec_state
                 .batch_end_cmd(
                     ModelingCmdMeta::from_args(exec_state, &args),
-                    ModelingCmd::from(
-                        mcmd::ObjectVisible::builder()
-                            .object_id(plane.id)
-                            .hidden(true)
-                            .build(),
-                    ),
+                    ModelingCmd::from(mcmd::ObjectVisible::builder().object_id(plane.id).hidden(true).build()),
                 )
                 .await?;
         }

@@ -257,7 +257,11 @@ async fn inner_flatness(
                                 },
                                 precision,
                                 font_scale: style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
-                                font_point_size: style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36),
+                                font_point_size: style
+                                    .font_point_size
+                                    .as_ref()
+                                    .map(|n| n.n.round() as u32)
+                                    .unwrap_or(36),
                             }),
                             feature_tag: None,
                         })
