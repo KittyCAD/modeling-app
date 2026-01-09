@@ -429,12 +429,13 @@ export class SceneInfra {
     }
   }
 
-  dispose = () => {
-    // Dispose of scene resources, renderer, and controls
-    this.renderer.forceContextLoss()
-    this.renderer.dispose()
-    // Dispose of any other resources like geometries, materials, textures
-  }
+  // Note this was never getting called, SceneInfra is created once and never disposed.
+  // dispose = () => {
+  //   // Dispose of scene resources, renderer, and controls
+  //   this.renderer.forceContextLoss()
+  //   this.renderer.dispose()
+  //   // Dispose of any other resources like geometries, materials, textures
+  // }
 
   getClientSceneScaleFactor(meshOrGroup: Mesh | Group) {
     const orthoFactor = orthoScale(this.camControls.camera)
