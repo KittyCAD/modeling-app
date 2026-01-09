@@ -38,6 +38,7 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { showWarningToast } from '@src/components/ToastWarning'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const isFileExplorerEntryOpened = (
   rows: { [key: string]: boolean },
@@ -88,16 +89,20 @@ const readAllDirectoryEntriesRecursively = async (
   return entries
 }
 
-const isFileSupportedForImport = (fileName: string): boolean => {
+const isFileSupportedForImport = (
+  fileName: string,
+  wasmInstance: ModuleType
+): boolean => {
   const extension = getEXTNoPeriod(fileName)
   if (!extension) return false
-  const supportedExtensions = relevantFileExtensions()
+  const supportedExtensions = relevantFileExtensions(wasmInstance)
   return isExtensionARelevantExtension(extension, supportedExtensions)
 }
 
 const collectDroppedFiles = async (
   entry: FileSystemEntry,
-  basePath: string
+  basePath: string,
+  wasmInstance: ModuleType
 ): Promise<{
   supported: { file: File; relativePath: string }[]
   unsupported: string[]
@@ -110,7 +115,7 @@ const collectDroppedFiles = async (
     const file = await new Promise<File>((resolve, reject) =>
       fileEntry.file(resolve, reject)
     )
-    if (isFileSupportedForImport(file.name)) {
+    if (isFileSupportedForImport(file.name, wasmInstance)) {
       supported.push({ file, relativePath: basePath })
     } else {
       unsupported.push(joinOSPaths(basePath, file.name))
@@ -124,7 +129,11 @@ const collectDroppedFiles = async (
       : entry.name
 
     for (const childEntry of entries) {
-      const result = await collectDroppedFiles(childEntry, newBasePath)
+      const result = await collectDroppedFiles(
+        childEntry,
+        newBasePath,
+        wasmInstance
+      )
       supported.push(...result.supported)
       unsupported.push(...result.unsupported)
     }
@@ -144,6 +153,7 @@ const collectDroppedFiles = async (
  *
  */
 export const ProjectExplorer = ({
+  wasmInstance,
   project,
   file,
   createFilePressed,
@@ -156,6 +166,7 @@ export const ProjectExplorer = ({
   canNavigate,
   overrideApplicationProjectDirectory,
 }: {
+  wasmInstance: ModuleType
   project: Project
   file: FileEntry | undefined
   createFilePressed: number
@@ -336,14 +347,14 @@ export const ProjectExplorer = ({
 
       // Now process entries asynchronously
       for (const entry of entries) {
-        const result = await collectDroppedFiles(entry, '')
+        const result = await collectDroppedFiles(entry, '', wasmInstance)
         supportedFiles.push(...result.supported)
         unsupportedFiles.push(...result.unsupported)
       }
 
       // Process fallback files (browsers without webkitGetAsEntry support)
       for (const file of fallbackFiles) {
-        if (isFileSupportedForImport(file.name)) {
+        if (isFileSupportedForImport(file.name, wasmInstance)) {
           supportedFiles.push({ file, relativePath: '' })
         } else {
           unsupportedFiles.push(file.name)
@@ -408,7 +419,7 @@ export const ProjectExplorer = ({
         )
       }
     },
-    [readOnly, project.path]
+    [readOnly, project.path, wasmInstance]
   )
 
   const handleDragOverTarget = useCallback(
