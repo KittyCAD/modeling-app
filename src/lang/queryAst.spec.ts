@@ -34,7 +34,10 @@ import { topLevelRange } from '@src/lang/util'
 import type { Identifier, PathToNode } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { enginelessExecutor } from '@src/lib/testHelpers'
+import {
+  enginelessExecutor,
+  getAstAndArtifactGraph,
+} from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -44,6 +47,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
+let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
@@ -58,9 +62,10 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, engineCommandManager, rustContext } =
+  const { instance, kclManager, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
+  kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
@@ -1337,6 +1342,37 @@ extrude001 = extrude(profile001, length = 1)
       throw new Error('Artifact not found in the selection')
     }
     expect(selection.artifact.type).toEqual('path')
+  })
+
+  it('should find the cap selection from simple extrude on face', async () => {
+    const circleProfileInVar = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
+extrude002 = extrude(capEnd001, length = 5)
+`
+    const { artifactGraph, operations } = await getAstAndArtifactGraph(
+      circleProfileInVar,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    const op = operations.findLast(
+      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+    expect(selections.graphSelections).toHaveLength(1)
+    const selection = selections.graphSelections[0]
+    if (!selection.artifact) {
+      throw new Error('Artifact not found in the selection')
+    }
+    expect(selection.artifact.type).toEqual('cap')
   })
 
   it('should find two profile selections from multi-profile revolve op', async () => {
