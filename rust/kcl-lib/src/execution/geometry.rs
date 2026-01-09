@@ -3,8 +3,9 @@ use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds::{self as kcmc, ModelingCmd, each_cmd as mcmd};
-use kittycad_modeling_cmds::{length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq};
+use kittycad_modeling_cmds::{
+    self as kcmc, ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
+};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 
