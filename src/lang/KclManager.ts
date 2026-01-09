@@ -540,7 +540,7 @@ export class KclManager extends EventTarget {
 
       // We don't want to block on writing to file
       if (shouldWriteToFile) {
-        void this.writeToFile(newCode)
+        void this.deferredWriteToFile(newCode)
       }
 
       this.deferredExecution({ newCode, shouldResetCamera })
@@ -607,15 +607,6 @@ export class KclManager extends EventTarget {
     (newCode: string) => this.writeToFile(newCode),
     1_000
   )
-  private writeToFileEffect = EditorView.updateListener.of((update) => {
-    const hasSkipWriteToFileEffect = update.transactions.some((tr) =>
-      tr.annotation(KclManager.requestSkipWriteToFile)
-    )
-
-    if (!this.isBufferMode && update.docChanged && !hasSkipWriteToFileEffect) {
-      this.deferredWriteToFile(update.state.doc.toString())
-    }
-  })
 
   private createEditorExtensions() {
     return [
@@ -625,7 +616,6 @@ export class KclManager extends EventTarget {
       this.undoListenerEffect,
       this.syncCodeSignalToDoc,
       this.executeKclEffect,
-      this.writeToFileEffect,
     ]
   }
   private createEditorView() {
