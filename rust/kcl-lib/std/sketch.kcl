@@ -2501,7 +2501,7 @@ export fn planeOf(
 /// sideFace = faceOf(triangle, face = side)
 /// 
 /// // Create a new sketch, on the triangle's side face.
-/// sketch(on = sideFace) {}
+/// //sketch(on = sideFace) {}
 /// ```
 @(impl = std_rust, experimental = true, feature_tree = false)
 export fn faceOf(

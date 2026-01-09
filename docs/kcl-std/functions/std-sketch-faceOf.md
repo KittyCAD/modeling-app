@@ -47,8 +47,7 @@ triangle = startSketchOn(XY)
 sideFace = faceOf(triangle, face = side)
 
 // Create a new sketch, on the triangle's side face.
-sketch(on = sideFace) {
-}
+// sketch(on = sideFace) {}
 
 ```
 
