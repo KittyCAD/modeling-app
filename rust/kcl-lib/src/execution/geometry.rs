@@ -3,8 +3,8 @@ use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::{length_unit::LengthUnit, units::UnitLength};
+use kittycad_modeling_cmds::{self as kcmc, ModelingCmd, each_cmd as mcmd};
+use kittycad_modeling_cmds::{length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 
@@ -707,6 +707,44 @@ pub enum ProfileClosed {
     Implicitly,
     /// Yes, by calling `close()` or by making a closed shape (e.g. circle).
     Explicitly,
+}
+
+impl Sketch {
+    // Tell the engine to enter sketch mode on the sketch.
+    // Run a specific command, then exit sketch mode.
+    pub(crate) fn build_sketch_mode_cmds(
+        &self,
+        exec_state: &mut ExecState,
+        inner_cmd: ModelingCmdReq,
+    ) -> Vec<ModelingCmdReq> {
+        vec![
+            // Before we extrude, we need to enable the sketch mode.
+            // We do this here in case extrude is called out of order.
+            ModelingCmdReq {
+                cmd: ModelingCmd::from(
+                    mcmd::EnableSketchMode::builder()
+                        .animated(false)
+                        .ortho(false)
+                        .entity_id(self.on.id())
+                        .adjust_camera(false)
+                        .maybe_planar_normal(if let SketchSurface::Plane(plane) = &self.on {
+                            // We pass in the normal for the plane here.
+                            let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                            Some(normal.into())
+                        } else {
+                            None
+                        })
+                        .build(),
+                ),
+                cmd_id: exec_state.next_uuid().into(),
+            },
+            inner_cmd,
+            ModelingCmdReq {
+                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::builder().build()),
+                cmd_id: exec_state.next_uuid().into(),
+            },
+        ]
+    }
 }
 
 /// A sketch type.
