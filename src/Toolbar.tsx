@@ -676,7 +676,7 @@ const ToolbarItemTooltipRichContent = memo(
 // Making this toplevel Toolbar memo'd is no-op, because we use context
 // inside that causes a render anyway. Instead we memo the inner.
 export function Toolbar() {
-  const { state, send, context } = useModelingContext()
+  const { state, send, context, actor } = useModelingContext()
   const { overallState, immediateState } = useNetworkContext()
   const { isStreamReady, isStreamAcceptingInput } = useAppState()
   return (
@@ -687,6 +687,7 @@ export function Toolbar() {
       overallState={overallState}
       immediateState={immediateState}
       isStreamReady={isStreamReady}
+      actor={actor}
       isStreamAcceptingInput={isStreamAcceptingInput}
     />
   )
