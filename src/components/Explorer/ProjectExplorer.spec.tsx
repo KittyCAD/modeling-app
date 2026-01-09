@@ -15,7 +15,7 @@ const applicationDirectory = 'applicationDirectory'
 
 // Actual wasmInstance not used by these tests, only when drag and dropping external files,
 // so no real wasmInstance used here as it would make these tests unnecessarily heavier -
-const wasmInstance = {} as ModuleType 
+const wasmInstance = {} as ModuleType
 const createFile = (name: string, parent?: string): FileEntry => {
   return {
     name: name,
