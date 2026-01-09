@@ -24,6 +24,7 @@ import toast from 'react-hot-toast'
 import { useRouteLoaderData } from 'react-router-dom'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const wasmInstance = use(kclManager.wasmInstancePromise)
@@ -33,6 +34,8 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const projectRef = useRef(loaderData.project)
   const [theProject, setTheProject] = useState<Project | null>(null)
   const { project, file } = loaderData
+  const { state: modelingMachineState, send: modelingSend } =
+    useModelingContext()
   useEffect(() => {
     projectRef.current = loaderData?.project
 
@@ -84,6 +87,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       entry.children == null &&
       entry.path.endsWith(FILE_EXT)
     ) {
+      modelingSend({ type: 'Cancel' })
       systemIOActor.send({
         type: SystemIOMachineEvents.navigateToFile,
         data: {
