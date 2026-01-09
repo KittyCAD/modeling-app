@@ -123,7 +123,7 @@ const stat = (path: string) => {
  * creating any folders necessary to do so,
  * and falling back to copy-and-delete if rename fails.
  */
-async function move(source: string | URL, destination: string | URL) {
+export async function move(source: string | URL, destination: string | URL) {
   const isDir = (await fs.lstat(source)).isDirectory()
   return fs
     .rename(source, destination)
