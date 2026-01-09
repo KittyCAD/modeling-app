@@ -266,8 +266,9 @@ export function DebugSelections() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.artifactGraph])
   return (
+    <details data-testid="debug-selections" className="relative">
+      <summary>Selections Debugger</summary>
     <div>
-      <h2>Selection Debugger</h2>
       {artifactGraphTree.map((artifact) => {
         const highlightMyId = artifact.id === selectedId
         const highlightMyRange = artifact?.range?.join(',') === selectedRange
@@ -461,5 +462,9 @@ export function DebugSelections() {
         )
       })}
     </div>
+
+    </details>
+
   )
+
 }
