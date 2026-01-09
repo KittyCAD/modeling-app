@@ -87,7 +87,7 @@ async fn inner_clone(
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, new_id),
-            ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }),
+            ModelingCmd::from(mcmd::EntityClone::builder().entity_id(old_id).build()),
         )
         .await?;
 
@@ -190,9 +190,11 @@ async fn get_old_new_child_map(
     let response = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::EntityGetAllChildUuids {
-                entity_id: old_geometry_id,
-            }),
+            ModelingCmd::from(
+                mcmd::EntityGetAllChildUuids::builder()
+                    .entity_id(old_geometry_id)
+                    .build(),
+            ),
         )
         .await?;
     let OkWebSocketResponseData::Modeling {
@@ -212,9 +214,11 @@ async fn get_old_new_child_map(
     let response = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::EntityGetAllChildUuids {
-                entity_id: new_geometry_id,
-            }),
+            ModelingCmd::from(
+                mcmd::EntityGetAllChildUuids::builder()
+                    .entity_id(new_geometry_id)
+                    .build(),
+            ),
         )
         .await?;
     let OkWebSocketResponseData::Modeling {

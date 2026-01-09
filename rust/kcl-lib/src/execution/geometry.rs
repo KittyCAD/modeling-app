@@ -709,6 +709,44 @@ pub enum ProfileClosed {
     Explicitly,
 }
 
+impl Sketch {
+    // Tell the engine to enter sketch mode on the sketch.
+    // Run a specific command, then exit sketch mode.
+    pub(crate) fn build_sketch_mode_cmds(
+        &self,
+        exec_state: &mut ExecState,
+        inner_cmd: ModelingCmdReq,
+    ) -> Vec<ModelingCmdReq> {
+        vec![
+            // Before we extrude, we need to enable the sketch mode.
+            // We do this here in case extrude is called out of order.
+            ModelingCmdReq {
+                cmd: ModelingCmd::from(
+                    mcmd::EnableSketchMode::builder()
+                        .animated(false)
+                        .ortho(false)
+                        .entity_id(self.on.id())
+                        .adjust_camera(false)
+                        .planar_normal(if let SketchSurface::Plane(plane) = &self.on {
+                            // We pass in the normal for the plane here.
+                            let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                            Some(normal.into())
+                        } else {
+                            None
+                        })
+                        .build(),
+                ),
+                cmd_id: exec_state.next_uuid().into(),
+            },
+            inner_cmd,
+            ModelingCmdReq {
+                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::builder().build()),
+                cmd_id: exec_state.next_uuid().into(),
+            },
+        ]
+    }
+}
+
 /// A sketch type.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]

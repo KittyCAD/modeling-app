@@ -43,11 +43,13 @@ async fn inner_get_opposite_edge(
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
-                edge_id: tagged_path_id,
-                object_id: sketch_id,
-                face_id,
-            }),
+            ModelingCmd::from(
+                mcmd::Solid3dGetOppositeEdge::builder()
+                    .edge_id(tagged_path_id)
+                    .object_id(sketch_id)
+                    .face_id(face_id)
+                    .build(),
+            ),
         )
         .await?;
     let OkWebSocketResponseData::Modeling {
@@ -91,11 +93,13 @@ async fn inner_get_next_adjacent_edge(
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
-                edge_id: tagged_path_id,
-                object_id: sketch_id,
-                face_id,
-            }),
+            ModelingCmd::from(
+                mcmd::Solid3dGetNextAdjacentEdge::builder()
+                    .edge_id(tagged_path_id)
+                    .object_id(sketch_id)
+                    .face_id(face_id)
+                    .build(),
+            ),
         )
         .await?;
 
@@ -145,11 +149,13 @@ async fn inner_get_previous_adjacent_edge(
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, &args),
-            ModelingCmd::from(mcmd::Solid3dGetPrevAdjacentEdge {
-                edge_id: tagged_path_id,
-                object_id: sketch_id,
-                face_id,
-            }),
+            ModelingCmd::from(
+                mcmd::Solid3dGetPrevAdjacentEdge::builder()
+                    .edge_id(tagged_path_id)
+                    .object_id(sketch_id)
+                    .face_id(face_id)
+                    .build(),
+            ),
         )
         .await?;
     let OkWebSocketResponseData::Modeling {
@@ -246,10 +252,12 @@ async fn inner_get_common_edge(
     let resp = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::Solid3dGetCommonEdge {
-                object_id: first_tagged_path.geometry.id(),
-                face_ids: [first_face_id, second_face_id],
-            }),
+            ModelingCmd::from(
+                mcmd::Solid3dGetCommonEdge::builder()
+                    .object_id(first_tagged_path.geometry.id())
+                    .face_ids([first_face_id, second_face_id])
+                    .build(),
+            ),
         )
         .await?;
     let OkWebSocketResponseData::Modeling {
