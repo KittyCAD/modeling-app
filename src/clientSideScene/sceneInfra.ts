@@ -35,7 +35,7 @@ import type { Axis, NonCodeSelection } from '@src/machines/modelingSharedTypes'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Signal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
-import { getAngle, getLength, throttle } from '@src/lib/utils'
+import { getAngle, getLength } from '@src/lib/utils'
 import type {
   MouseState,
   SegmentOverlayPayload,
@@ -203,11 +203,9 @@ export class SceneInfra {
   }
 
   modelingSend: SendType = (() => {}) as any
-  throttledModelingSend: any = (() => {}) as any
 
   setSend(send: SendType) {
     this.modelingSend = send
-    this.throttledModelingSend = throttle(send, 100)
   }
 
   overlayTimeout = 0
