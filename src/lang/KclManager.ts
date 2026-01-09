@@ -1033,7 +1033,7 @@ export class KclManager extends EventTarget {
     if (originalCode === code) return
 
     // Update the code state and the editor.
-    this.updateCodeEditor(code, { shouldExecute: false })
+    this.updateCodeEditor(code, { shouldExecute: true })
   }
 
   // There's overlapping responsibility between updateAst and executeAst.
@@ -1795,7 +1795,7 @@ export class KclManager extends EventTarget {
   }
   async updateEditorWithAstAndWriteToFile(
     ast: Program,
-    options?: Partial<{ isDeleting: boolean }>
+    options?: Partial<{ isDeleting: boolean } & UpdateCodeEditorOptions>
   ) {
     const wasmInstance = await this.wasmInstancePromise
 
@@ -1814,8 +1814,7 @@ export class KclManager extends EventTarget {
       console.log('Recast code could not be parsed:', result, ast)
       return
     }
-    // Update code, execute, and write to disk
-    this.updateCodeEditor(newCode, { shouldAddToHistory: false })
+    this.updateCodeEditor(newCode, options)
   }
   goIntoTemporaryWorkspaceModeWithCode(code: string) {
     this.isBufferMode = true
@@ -1825,7 +1824,6 @@ export class KclManager extends EventTarget {
     this.isBufferMode = false
     this.writeToFile().catch(reportRejection)
   }
-  /** End merged in code from EditorManager and CodeManager classes */
 }
 
 function safeLSGetItem(key: string) {

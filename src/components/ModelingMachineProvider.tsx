@@ -522,7 +522,9 @@ export const ModelingMachineProvider = ({
               newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
               const didReParse = await kclManager.executeAstMock(newAst)
               if (err(didReParse)) return reject(didReParse)
-              await kclManager.updateEditorWithAstAndWriteToFile(newAst)
+              await kclManager.updateEditorWithAstAndWriteToFile(newAst, {
+                shouldAddToHistory: false,
+              })
             }
             sceneInfra.setCallbacks({
               onClick: () => {},
@@ -1292,7 +1294,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+              shouldAddToHistory: false,
+            })
 
             return result
           }
@@ -1313,7 +1317,9 @@ export const ModelingMachineProvider = ({
                 data.p2
               )
             if (err(result)) return reject(result)
-            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+              shouldAddToHistory: false,
+            })
 
             return result
           }
@@ -1332,7 +1338,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+              shouldAddToHistory: false,
+            })
 
             return result
           }
@@ -1350,7 +1358,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+              shouldAddToHistory: false,
+            })
 
             return result
           }
@@ -1368,7 +1378,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+              shouldAddToHistory: false,
+            })
 
             return result
           }
@@ -1386,7 +1398,9 @@ export const ModelingMachineProvider = ({
               data
             )
             if (err(result)) return reject(result)
-            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+            await kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+              shouldAddToHistory: false,
+            })
 
             return result
           }

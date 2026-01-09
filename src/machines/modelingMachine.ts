@@ -763,7 +763,7 @@ export const modelingMachine = setup({
           .then(() => {
             return kclManager.updateEditorWithAstAndWriteToFile(
               kclManager.ast,
-              undefined
+              { shouldAddToHistory: false }
             )
           })
         return {
@@ -797,7 +797,7 @@ export const modelingMachine = setup({
           .then(() => {
             return kclManager.updateEditorWithAstAndWriteToFile(
               kclManager.ast,
-              undefined
+              { shouldAddToHistory: false }
             )
           })
         return {
@@ -1188,7 +1188,9 @@ export const modelingMachine = setup({
       )
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, undefined)
+      kclManager.updateEditorWithAstAndWriteToFile(kclManager.ast, {
+        shouldAddToHistory: false,
+      })
     },
     'reset client scene mouse handlers': ({ context }) => {
       // when not in sketch mode we don't need any mouse listeners
