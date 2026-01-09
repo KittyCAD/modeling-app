@@ -2116,9 +2116,12 @@ impl FrontendState {
         }
     }
 
-    /// Check if we should force freedom analysis. Returns true if all points in the sketch
-    /// are Free and we have no stored values (or all stored values are also Free), which
-    /// likely indicates that freedom analysis hasn't run yet.
+    /// Check if we should force freedom analysis. Returns true only if:
+    /// 1. The freedom cache is empty (indicating analysis hasn't run yet), AND
+    /// 2. All points in the sketch are Free (their default state).
+    /// 
+    /// If the cache has any values (even if all Free), it means analysis has already run,
+    /// so we don't force another analysis run.
     #[cfg(feature = "artifact-graph")]
     fn should_force_freedom_analysis(&self, sketch: ObjectId) -> bool {
         let Some(sketch_object) = self.scene_graph.objects.get(sketch.0) else {
