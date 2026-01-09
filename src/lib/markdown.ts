@@ -1,7 +1,15 @@
 import type { MarkedOptions } from '@ts-stack/markdown'
-import { Renderer, unescape } from '@ts-stack/markdown'
+import { Renderer, escape, unescape } from '@ts-stack/markdown'
 
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+
+export const MARKED_OPTIONS: MarkedOptions = {
+  gfm: true,
+  breaks: true,
+  sanitize: true,
+  unescape,
+  escape,
+}
 
 /**
  * Main goal of this custom renderer is to prevent links from changing the current location
@@ -10,14 +18,8 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 export class SafeRenderer extends Renderer {
   constructor(options: MarkedOptions) {
     super(options)
-
-    // Attach a global function for non-react anchor elements that need safe navigation
-    window.openExternalLink = (e: React.MouseEvent<HTMLAnchorElement>) => {
-      openExternalBrowserIfDesktop()(e)
-    }
   }
 
-  // Extended from https://github.com/ts-stack/markdown/blob/c5c1925c1153ca2fe9051c356ef0ddc60b3e1d6a/packages/markdown/src/renderer.ts#L116
   link(href: string, title: string, text: string): string {
     if (this.options.sanitize) {
       let prot: string
@@ -26,23 +28,23 @@ export class SafeRenderer extends Renderer {
         prot = decodeURIComponent(unescape(href))
           .replace(/[^\w:]/g, '')
           .toLowerCase()
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (e) {
+      } catch {
         return text
       }
 
       if (
-        // eslint-disable-next-line no-script-url
-        prot.indexOf('javascript:') === 0 ||
-        prot.indexOf('vbscript:') === 0 ||
-        prot.indexOf('data:') === 0
+        prot.startsWith('javascript:') ||
+        prot.startsWith('vbscript:') ||
+        prot.startsWith('data:')
       ) {
         return text
       }
     }
 
     let out =
-      '<a onclick="openExternalLink(event)" target="_blank" href="' + href + '"'
+      '<a data-safe-link target="_blank" rel="noopener noreferrer" href="' +
+      href +
+      '"'
 
     if (title) {
       out += ' title="' + title + '"'
@@ -52,4 +54,27 @@ export class SafeRenderer extends Renderer {
 
     return out
   }
+}
+
+/*
+ * From https://github.com/KittyCAD/modeling-app/issues/9403#issuecomment-3718304883:
+ * Intercept clicks, find the nearby data-safe-link anchor, retrieve the href link,
+ * and properly fire openExternalBrowserIfDesktop
+ */
+export function attachSafeLinkHandler(root: HTMLElement) {
+  root.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement | null
+    if (!target) {
+      return
+    }
+
+    const anchor = target.closest<HTMLAnchorElement>('a[data-safe-link]')
+    if (!anchor) {
+      return
+    }
+
+    openExternalBrowserIfDesktop(anchor.href)(
+      e as unknown as React.MouseEvent<HTMLAnchorElement>
+    )
+  })
 }

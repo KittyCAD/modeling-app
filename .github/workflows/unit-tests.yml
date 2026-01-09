@@ -109,6 +109,7 @@ jobs:
           CI_SUITE: integration
 
       - name: Track teardown
+        if: always()
         run: .github/ci-cd-scripts/track-step.sh
         env:
           TAB_API_URL: ${{ vars.TAB_API_URL }}

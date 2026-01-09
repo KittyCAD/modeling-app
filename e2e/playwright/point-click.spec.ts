@@ -1059,7 +1059,7 @@ sketch002 = startSketchOn(plane001)
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 

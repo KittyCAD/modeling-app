@@ -112,6 +112,12 @@ const objectsTypesAndFilters: {
   selectionFilter: ['object'],
 }
 
+// For all surface modeling commands
+const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
+  name: capitaliseFC(value.toLowerCase()),
+  value,
+}))
+
 const hasEngineConnection = (
   engineCommandManager: ConnectionManager
 ): true | Error => {
@@ -172,6 +178,7 @@ export type ModelingCommandSchema = {
     // TODO: figure out if we should expose `tolerance` or not
     tagStart?: string
     tagEnd?: string
+    bodyType?: KclPreludeBodyType
   }
   Revolve: {
     // Enables editing workflow
@@ -188,6 +195,7 @@ export type ModelingCommandSchema = {
     tagEnd?: string
     symmetric?: boolean
     bidirectionalAngle?: KclCommandValue
+    bodyType?: KclPreludeBodyType
   }
   Shell: {
     // Enables editing workflow
@@ -637,10 +645,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       bodyType: {
         inputType: 'options',
         required: false,
-        options: KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
-          name: capitaliseFC(value.toLowerCase()),
-          value,
-        })),
+        options: kclBodyTypeOptions,
       },
     },
   },
@@ -750,6 +755,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+        description: `
+          Note: Only closed paths are allowed for now. Selection of open paths via segments for surface modeling is coming soon.
+        `.trim(),
       },
       vDegree: {
         inputType: 'kcl',
@@ -770,6 +778,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       tagEnd: {
         inputType: 'tagDeclarator',
         required: false,
+      },
+      bodyType: {
+        inputType: 'options',
+        required: false,
+        options: kclBodyTypeOptions,
       },
     },
   },
@@ -806,7 +819,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sketches: {
         inputType: 'selection',
         displayName: 'Profiles',
-        selectionTypes: ['solid2d'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -864,6 +877,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       tagEnd: {
         inputType: 'tagDeclarator',
         required: false,
+      },
+      bodyType: {
+        inputType: 'options',
+        required: false,
+        options: kclBodyTypeOptions,
       },
     },
   },
