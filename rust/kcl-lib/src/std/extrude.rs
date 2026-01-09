@@ -183,7 +183,6 @@ async fn inner_extrude(
                     .opposite(opposite.clone())
                     .extrude_method(extrude_method)
                     .body_type(body_type)
-                    .merge_coplanar_faces(Default::default()) // TODO serena
                     .build(),
             ),
             (None, None, None, None, Some(to)) => match to {

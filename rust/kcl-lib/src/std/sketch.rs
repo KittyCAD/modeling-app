@@ -192,7 +192,6 @@ async fn inner_involute_circular(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::ExtendPath::builder()
-                    .label(Default::default())
                     .path(sketch.id.into())
                     .segment(PathSegment::CircularInvolute {
                         start_radius: LengthUnit(start_radius.to_mm()),
@@ -347,7 +346,6 @@ async fn straight_line(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::ExtendPath::builder()
-                    .label(Default::default())
                     .path(sketch.id.into())
                     .segment(PathSegment::Line {
                         end: KPoint2d::from(point_to_mm(point.clone())).with_z(0.0).map(LengthUnit),
@@ -587,7 +585,6 @@ async fn inner_angled_line_length(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::ExtendPath::builder()
-                    .label(Default::default())
                     .path(sketch.id.into())
                     .segment(PathSegment::Line {
                         end: KPoint2d::from(untyped_point_to_mm(delta, from.units))
@@ -1443,7 +1440,6 @@ pub async fn absolute_arc(
             ModelingCmdMeta::from_args_id(exec_state, args, id),
             ModelingCmd::from(
                 mcmd::ExtendPath::builder()
-                    .label(Default::default())
                     .path(sketch.id.into())
                     .segment(PathSegment::ArcTo {
                         end: kcmc::shared::Point3d {
@@ -1525,7 +1521,6 @@ pub async fn relative_arc(
             ModelingCmdMeta::from_args_id(exec_state, args, id),
             ModelingCmd::from(
                 mcmd::ExtendPath::builder()
-                    .label(Default::default())
                     .path(sketch.id.into())
                     .segment(PathSegment::Arc {
                         start: a_start,
@@ -1704,7 +1699,6 @@ async fn inner_tangential_arc_radius_angle(
                     ModelingCmdMeta::from_args_id(exec_state, &args, id),
                     ModelingCmd::from(
                         mcmd::ExtendPath::builder()
-                            .label(Default::default())
                             .path(sketch.id.into())
                             .segment(PathSegment::TangentialArc {
                                 radius: LengthUnit(radius.to_mm()),
@@ -1751,7 +1745,6 @@ async fn inner_tangential_arc_radius_angle(
 fn tan_arc_to(sketch: &Sketch, to: [f64; 2]) -> ModelingCmd {
     ModelingCmd::from(
         mcmd::ExtendPath::builder()
-            .label(Default::default())
             .path(sketch.id.into())
             .segment(PathSegment::TangentialArcTo {
                 angle_snap_increment: None,
@@ -1912,7 +1905,6 @@ async fn inner_bezier_curve(
                     ModelingCmdMeta::from_args_id(exec_state, &args, id),
                     ModelingCmd::from(
                         mcmd::ExtendPath::builder()
-                            .label(Default::default())
                             .path(sketch.id.into())
                             .segment(PathSegment::Bezier {
                                 control1: KPoint2d::from(point_to_mm(control1)).with_z(0.0).map(LengthUnit),
@@ -1934,7 +1926,6 @@ async fn inner_bezier_curve(
                     ModelingCmdMeta::from_args_id(exec_state, &args, id),
                     ModelingCmd::from(
                         mcmd::ExtendPath::builder()
-                            .label(Default::default())
                             .path(sketch.id.into())
                             .segment(PathSegment::Bezier {
                                 control1: KPoint2d::from(point_to_mm(control1)).with_z(0.0).map(LengthUnit),
@@ -2197,7 +2188,6 @@ pub(crate) async fn inner_elliptic(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::ExtendPath::builder()
-                    .label(Default::default())
                     .path(sketch.id.into())
                     .segment(PathSegment::Ellipse {
                         center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
@@ -2370,7 +2360,6 @@ pub(crate) async fn inner_hyperbolic(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::ExtendPath::builder()
-                    .label(Default::default())
                     .path(sketch.id.into())
                     .segment(PathSegment::ConicTo {
                         start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
@@ -2589,7 +2578,6 @@ pub(crate) async fn inner_parabolic(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::ExtendPath::builder()
-                    .label(Default::default())
                     .path(sketch.id.into())
                     .segment(PathSegment::ConicTo {
                         start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
@@ -2745,7 +2733,6 @@ pub(crate) async fn inner_conic(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
                 mcmd::ExtendPath::builder()
-                    .label(Default::default())
                     .path(sketch.id.into())
                     .segment(PathSegment::ConicTo {
                         start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
