@@ -93,7 +93,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "mm",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "profile001extended": {
@@ -312,7 +312,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": "mm",
-      "isClosed": false
+      "isClosed": "no"
     }
   },
   "profile002extended": {

@@ -51,7 +51,7 @@ impl EngineConnection {
         let mut this_response = OkModelingCmdResponse::Empty {};
 
         let new_code = match cmd {
-            kcmc::ModelingCmd::ObjectVisible(kcmc::ObjectVisible { hidden, object_id }) => {
+            kcmc::ModelingCmd::ObjectVisible(kcmc::ObjectVisible { hidden, object_id, .. }) => {
                 format!(r#"scene->getSceneObject(Utils::UUID("{object_id}"))->setHidden({hidden});"#)
             }
             kcmc::ModelingCmd::EnableSketchMode(kcmc::EnableSketchMode {
@@ -60,6 +60,7 @@ impl EngineConnection {
                 ortho: _,
                 adjust_camera: _,
                 planar_normal,
+                ..
             }) => {
                 if let Some(normal) = planar_normal {
                     format!(
@@ -120,7 +121,7 @@ impl EngineConnection {
                 "#
                 )
             }
-            kcmc::ModelingCmd::MovePathPen(kcmc::MovePathPen { path, to }) => {
+            kcmc::ModelingCmd::MovePathPen(kcmc::MovePathPen { path, to, .. }) => {
                 format!(
                     r#"
                     path_{}->moveTo(glm::dvec3 {{ {}, {}, 0.0 }} * scaleFactor);
@@ -181,7 +182,7 @@ impl EngineConnection {
                     format!("//{cmd:?}")
                 }
             },
-            kcmc::ModelingCmd::ClosePath(kcmc::ClosePath { path_id }) => {
+            kcmc::ModelingCmd::ClosePath(kcmc::ClosePath { path_id, .. }) => {
                 format!(
                     r#"
                     path_{}->close();
@@ -198,6 +199,8 @@ impl EngineConnection {
                 opposite: _,
                 extrude_method: _,
                 body_type: _, // Engine team please weigh in here
+                merge_coplanar_faces: _,
+                ..
             }) => {
                 format!(
                     r#"
@@ -215,6 +218,7 @@ impl EngineConnection {
                 tolerance,
                 opposite: _,
                 body_type: _, // Engine team please weigh in here
+                ..
             }) => {
                 let ox = origin.x.0;
                 let oy = origin.y.0;
@@ -230,7 +234,7 @@ impl EngineConnection {
                 "#
                 )
             }
-            kcmc::ModelingCmd::Solid2dAddHole(kcmc::Solid2dAddHole { hole_id, object_id }) => {
+            kcmc::ModelingCmd::Solid2dAddHole(kcmc::Solid2dAddHole { hole_id, object_id, .. }) => {
                 format!(
                     r#"scene->getSceneObject(Utils::UUID("{object_id}"))->get<Model::Brep::Solid2D>()->addHole(
                     make_shared<Model::Brep::Path>(*scene->getSceneObject(Utils::UUID("{hole_id}"))->get<Model::Brep::Solid2D>()->getPath())
@@ -240,6 +244,7 @@ impl EngineConnection {
             kcmc::ModelingCmd::Solid3dGetExtrusionFaceInfo(kcmc::Solid3dGetExtrusionFaceInfo {
                 object_id,
                 edge_id,
+                ..
             }) => {
                 format!(
                     r#"
@@ -254,6 +259,7 @@ impl EngineConnection {
                 num_repetitions,
                 arc_degrees,
                 rotate_duplicates,
+                ..
             }) => {
                 let entity_ids = generate_repl_uuids(*num_repetitions as usize);
 
@@ -278,6 +284,7 @@ impl EngineConnection {
                 axis: _,
                 num_repetitions: _,
                 spacing: _,
+                ..
             }) => {
                 // let num_transforms = transforms.len();
                 // let num_repetitions = transform.iter().map(|t| if t.replicate { 1 } else { 0 } ).sum();

@@ -41,11 +41,11 @@ async function insertPartIntoAssembly(
 }
 
 // test file is for testing point an click code gen functionality that's assemblies related
-test.describe('Point-and-click assemblies tests', () => {
-  test(
-    `Insert kcl parts into assembly as whole module import`,
-    { tag: ['@desktop', '@macos', '@windows'] },
-    async ({
+test.describe(
+  'Point-and-click assemblies tests',
+  { tag: ['@desktop', '@macos', '@windows'] },
+  () => {
+    test(`Insert kcl parts into assembly as whole module import`, async ({
       context,
       page,
       homePage,
@@ -171,13 +171,9 @@ test.describe('Point-and-click assemblies tests', () => {
           { shouldNormalise: true }
         )
       })
-    }
-  )
+    })
 
-  test(
-    `Insert the bracket part into an assembly and transform it`,
-    { tag: ['@desktop', '@macos', '@windows'] },
-    async ({
+    test(`Insert the bracket part into an assembly and transform it`, async ({
       context,
       page,
       homePage,
@@ -249,6 +245,8 @@ test.describe('Point-and-click assemblies tests', () => {
             Objects: '1 other',
           },
           commandName: 'Translate',
+          reviewValidationError:
+            'semantic: Expected `x`, `y`, or `z` to be provided.',
         })
         await cmdBar.clickOptionalArgument('x')
         await cmdBar.expectState({
@@ -303,6 +301,8 @@ test.describe('Point-and-click assemblies tests', () => {
             Objects: '1 other',
           },
           commandName: 'Scale',
+          reviewValidationError:
+            'semantic: Expected `x`, `y`, `z` or `factor` to be provided.',
         })
         await cmdBar.clickOptionalArgument('x')
         await cmdBar.expectState({
@@ -360,6 +360,8 @@ test.describe('Point-and-click assemblies tests', () => {
             Objects: '1 other',
           },
           commandName: 'Rotate',
+          reviewValidationError:
+            'semantic: Expected `roll`, `pitch`, and `yaw` or `axis` and `angle` to be provided.',
         })
         await cmdBar.clickOptionalArgument('roll')
         await cmdBar.expectState({
@@ -423,13 +425,9 @@ test.describe('Point-and-click assemblies tests', () => {
         await editor.expectEditor.not.toContain('scale')
         await editor.expectEditor.not.toContain('rotate')
       })
-    }
-  )
+    })
 
-  test(
-    `Insert foreign parts into assembly and delete them`,
-    { tag: ['@desktop', '@macos', '@windows'] },
-    async ({
+    test(`Insert foreign parts into assembly and delete them`, async ({
       context,
       page,
       homePage,
@@ -557,13 +555,17 @@ test.describe('Point-and-click assemblies tests', () => {
         )
         await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
-    }
-  )
+    })
 
-  test(
-    'Assembly gets reexecuted when imported models are updated externally',
-    { tag: ['@desktop', '@macos', '@windows'] },
-    async ({ context, page, homePage, scene, toolbar, cmdBar, tronApp }) => {
+    test('Assembly gets reexecuted when imported models are updated externally', async ({
+      context,
+      page,
+      homePage,
+      scene,
+      toolbar,
+      cmdBar,
+      tronApp,
+    }) => {
       if (!tronApp) throw new Error('tronApp is missing.')
 
       const projectName = 'assembly'
@@ -642,13 +644,9 @@ foreign
           await toolbar.closePane(DefaultLayoutPaneID.Code)
         })
       })
-    }
-  )
+    })
 
-  test(
-    `Point-and-click clone`,
-    { tag: ['@desktop', '@macos', '@windows'] },
-    async ({
+    test(`Point-and-click clone`, async ({
       context,
       page,
       homePage,
@@ -747,6 +745,6 @@ foreign
           shouldNormalise: true,
         })
       })
-    }
-  )
-})
+    })
+  }
+)

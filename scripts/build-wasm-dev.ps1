@@ -12,9 +12,7 @@ if (Test-Path rust/kcl-lib/bindings) {
 }
 
 cd rust
-$env:RUSTFLAGS='--cfg getrandom_backend="wasm_js"'
 wasm-pack build kcl-wasm-lib --dev --target web --out-dir pkg
-$env:RUSTFLAGS=''
 cargo test -p kcl-lib --features artifact-graph export_bindings
 cd ..
 

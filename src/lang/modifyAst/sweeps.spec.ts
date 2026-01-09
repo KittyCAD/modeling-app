@@ -27,6 +27,7 @@ import {
   addSweep,
   getAxisExpressionAndIndex,
   retrieveAxisOrEdgeSelectionsFromOpArg,
+  retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -69,12 +70,7 @@ async function getAstAndArtifactGraphEngineless(
   const ast = assertParse(code, instance)
   if (err(ast)) throw ast
 
-  const { artifactGraph } = await enginelessExecutor(
-    ast,
-    undefined,
-    undefined,
-    rustContext
-  )
+  const { artifactGraph } = await enginelessExecutor(ast, rustContext)
   return { ast, artifactGraph }
 }
 
@@ -120,7 +116,13 @@ profile002 = rectangle(
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addExtrude({ ast, sketches, length, artifactGraph })
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleProfileCode)
@@ -140,7 +142,13 @@ profile002 = rectangle(
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addExtrude({ ast, sketches, length, artifactGraph })
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleProfileCode)
@@ -167,6 +175,7 @@ profile002 = rectangle(
         length,
         symmetric: true,
         artifactGraph,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -205,6 +214,7 @@ profile002 = rectangle(
         bidirectionalLength,
         twistAngle,
         artifactGraph,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -241,6 +251,7 @@ extrude001 = extrude(profile001, length = 1, symmetric = true)`
         symmetric,
         nodeToEdit,
         artifactGraph,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -266,6 +277,7 @@ extrude001 = extrude(profile001, length = 2)`)
         length,
         method: 'NEW',
         artifactGraph,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -293,6 +305,7 @@ extrude001 = extrude(profile001, length = 2)`)
         length,
         bodyType: 'SURFACE',
         artifactGraph,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -320,6 +333,7 @@ extrude001 = extrude(profile001, length = 2)`)
         length,
         bodyType: 'SOLID',
         artifactGraph,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -354,6 +368,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
         artifactGraph,
         sketches,
         to,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -390,6 +405,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
         artifactGraph,
         sketches,
         to,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -430,6 +446,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
         artifactGraph,
         sketches,
         to,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -481,6 +498,7 @@ extrude002 = extrude(profile002, to = capEnd001)`)
         twistAngleStep,
         twistCenter,
         artifactGraph,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -530,6 +548,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
         artifactGraph,
         sketches,
         to,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -598,7 +617,12 @@ profile002 = startProfile(sketch002, at = [0, 0])
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const result = addSweep({ ast, sketches, path })
+      const result = addSweep({
+        ast,
+        sketches,
+        path,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -616,7 +640,14 @@ profile002 = startProfile(sketch002, at = [0, 0])
       )
       const sectional = true
       const relativeTo = 'SKETCH_PLANE'
-      const result = addSweep({ ast, sketches, path, sectional, relativeTo })
+      const result = addSweep({
+        ast,
+        sketches,
+        path,
+        sectional,
+        relativeTo,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -652,6 +683,7 @@ sweep001 = sweep(
         sectional,
         relativeTo,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -692,7 +724,12 @@ profile003 = startProfile(sketch002, at = [0, 0])
         artifacts[1],
       ])
       const path = createSelectionFromPathArtifact([artifacts[2]])
-      const result = addSweep({ ast, sketches, path })
+      const result = addSweep({
+        ast,
+        sketches,
+        path,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -722,11 +759,34 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
       const result = addLoft({
         ast,
         sketches,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(twoCirclesCode)
       expect(newCode).toContain(`loft001 = loft([profile001, profile002]`)
+      // Don't think we can find the artifact here for loft?
+    })
+
+    it('should add a basic loft call with surface bodyType', async () => {
+      const { ast, sketches } = await getAstAndSketchSelections(
+        twoCirclesCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(sketches.graphSelections).toHaveLength(2)
+      const result = addLoft({
+        ast,
+        sketches,
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(twoCirclesCode)
+      expect(newCode).toContain(
+        `loft001 = loft([profile001, profile002], bodyType = SURFACE)`
+      )
       // Don't think we can find the artifact here for loft?
     })
 
@@ -750,6 +810,7 @@ loft001 = loft([profile001, profile002])`
         sketches,
         vDegree,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -778,13 +839,54 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
         rustContextInThisFile
       )
       const axis = 'X'
-      const result = addRevolve({ ast, sketches, angle, axis })
+      const result = addRevolve({
+        ast,
+        sketches,
+        angle,
+        axis,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleCode)
       expect(newCode).toContain(
         `revolve001 = revolve(profile001, angle = 10, axis = X)`
+      )
+    })
+
+    it('should add basic revolve call with surface bodyType', async () => {
+      const { ast, sketches } = await getAstAndSketchSelections(
+        circleCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(sketches.graphSelections).toHaveLength(1)
+      const angle = await getKclCommandValue(
+        '10',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const axis = 'X'
+      const result = addRevolve({
+        ast,
+        sketches,
+        angle,
+        axis,
+        bodyType: 'SURFACE',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(circleCode)
+      expect(newCode).toContain(
+        `revolve001 = revolve(
+  profile001,
+  angle = 10,
+  axis = X,
+  bodyType = SURFACE,
+)`
       )
     })
 
@@ -808,6 +910,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
         angle,
         axis,
         symmetric,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -838,6 +941,7 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
         sketches,
         angle,
         axis,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -876,7 +980,13 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addRevolve({ ast, sketches, angle, edge })
+      const result = addRevolve({
+        ast,
+        sketches,
+        angle,
+        edge,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -917,7 +1027,13 @@ sketch002 = startSketchOn(XY)
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addRevolve({ ast, sketches, angle, edge })
+      const result = addRevolve({
+        ast,
+        sketches,
+        angle,
+        edge,
+        wasmInstance: instanceInThisFile,
+      })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -959,6 +1075,7 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
         bidirectionalAngle,
         axis,
         nodeToEdit,
+        wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -979,7 +1096,12 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
       async (axis) => {
         const { instance } = await buildTheWorldAndNoEngineConnection()
         const ast = assertParse('', instance)
-        const result = getAxisExpressionAndIndex(axis, undefined, ast)
+        const result = getAxisExpressionAndIndex(
+          axis,
+          undefined,
+          ast,
+          instanceInThisFile
+        )
         if (err(result)) throw result
         expect(result.generatedAxis.type).toEqual('Name')
         expect((result.generatedAxis as Node<Name>).name.name).toEqual(axis)
@@ -998,7 +1120,12 @@ profile001 = startProfile(sketch001, at = [0, 0])
         (a) => a.type === 'segment'
       )
       const edge: Selections = createSelectionFromPathArtifact([edgeArtifact!])
-      const result = getAxisExpressionAndIndex(undefined, edge, ast)
+      const result = getAxisExpressionAndIndex(
+        undefined,
+        edge,
+        ast,
+        instanceInThisFile
+      )
       if (err(result)) throw result
       expect(result.generatedAxis.type).toEqual('Name')
       expect((result.generatedAxis as Node<Name>).name.name).toEqual('seg01')
@@ -1012,7 +1139,8 @@ profile001 = startProfile(sketch001, at = [0, 0])
       const result = getAxisExpressionAndIndex(
         undefined,
         undefined,
-        assertParse('', instance)
+        assertParse('', instance),
+        instanceInThisFile
       )
       expect(result).toBeInstanceOf(Error)
     })
@@ -1032,8 +1160,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
         const ast = assertParse(helixCode, instanceInThisFile)
         const { artifactGraph, operations } = await enginelessExecutor(
           ast,
-          undefined,
-          undefined,
           rustContextInThisFile
         )
         const op = operations.find(
@@ -1067,8 +1193,6 @@ helix001 = helix(
       const ast = assertParse(helixCode, instanceInThisFile)
       const { artifactGraph, operations } = await enginelessExecutor(
         ast,
-        undefined,
-        undefined,
         rustContextInThisFile
       )
       const op = operations.find(
@@ -1089,6 +1213,42 @@ helix001 = helix(
       expect(result.edge).toBeDefined()
       expect(result.edge!.graphSelections[0].codeRef).toEqual(segId!.codeRef)
       expect(result.axis).toBeUndefined()
+    })
+  })
+
+  describe('Testing retrieveBodyTypeFromOpArg', () => {
+    async function findBodyTypeArg(code: string) {
+      const ast = assertParse(code, instanceInThisFile)
+      const { operations } = await enginelessExecutor(
+        ast,
+        rustContextInThisFile
+      )
+      const op = operations.find(
+        (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+      )
+      if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.bodyType) {
+        throw new Error('Extrude operation not found')
+      }
+
+      return op.labeledArgs.bodyType
+    }
+
+    it('should return SOLID bodyType from op argument', async () => {
+      const code = `${circleProfileCode}
+extrude001 = extrude(profile001, length = 1, bodyType = SOLID)`
+      const opArg = await findBodyTypeArg(code)
+      const result = retrieveBodyTypeFromOpArg(opArg, code)
+      if (err(result)) throw result
+      expect(result).toEqual('SOLID')
+    })
+
+    it('should return SURFACE bodyType from op argument', async () => {
+      const code = `${circleProfileCode}
+extrude001 = extrude(profile001, length = 1, bodyType = SURFACE)`
+      const opArg = await findBodyTypeArg(code)
+      const result = retrieveBodyTypeFromOpArg(opArg, code)
+      if (err(result)) throw result
+      expect(result).toEqual('SURFACE')
     })
   })
 })

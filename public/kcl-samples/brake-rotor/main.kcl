@@ -1,5 +1,6 @@
 // Brake Rotor
 // A 320mm vented brake disc (rotor), with straight vanes, 30mm thick. The disc bell should accommodate 5 M12 wheel studs on a 114.3mm pitch circle diameter.
+// Categories: Automotive
 
 @settings(defaultLengthUnit = mm)
 

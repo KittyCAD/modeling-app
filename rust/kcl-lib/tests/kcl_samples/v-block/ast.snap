@@ -3305,6 +3305,7 @@ description: Result of parsing v-block.kcl
         "preComments": [
           "// V-Block",
           "// Hold and support round workpieces.",
+          "// Categories: Manufacturing, Construction",
           "",
           "",
           "// Set units in inches (in)"

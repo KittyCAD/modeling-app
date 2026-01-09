@@ -10,6 +10,7 @@ import type { handleSelectionBatch } from '@src/lib/selections'
 import { uuidv4 } from '@src/lib/utils'
 import type { KclManager } from '@src/lang/KclManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export const defaultSelectionFilter: EntityType[] = [
   'face',
@@ -26,12 +27,14 @@ export function setSelectionFilterToDefault({
   sceneEntitiesManager,
   selectionsToRestore,
   handleSelectionBatchFn,
+  wasmInstance,
 }: {
   engineCommandManager: ConnectionManager
   kclManager: KclManager
   sceneEntitiesManager: SceneEntities
   selectionsToRestore?: Selections
   handleSelectionBatchFn?: typeof handleSelectionBatch
+  wasmInstance: ModuleType
 }) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   setSelectionFilter({
@@ -41,6 +44,7 @@ export function setSelectionFilterToDefault({
     sceneEntitiesManager,
     selectionsToRestore,
     handleSelectionBatchFn,
+    wasmInstance,
   })
 }
 
@@ -52,6 +56,7 @@ export function setSelectionFilter({
   sceneEntitiesManager,
   selectionsToRestore,
   handleSelectionBatchFn,
+  wasmInstance,
 }: {
   filter: EntityType[]
   engineCommandManager: ConnectionManager
@@ -59,6 +64,7 @@ export function setSelectionFilter({
   sceneEntitiesManager: SceneEntities
   selectionsToRestore?: Selections
   handleSelectionBatchFn?: typeof handleSelectionBatch
+  wasmInstance: ModuleType
 }) {
   const { engineEvents } =
     selectionsToRestore && handleSelectionBatchFn
@@ -70,6 +76,7 @@ export function setSelectionFilter({
           systemDeps: {
             sceneEntitiesManager,
             engineCommandManager,
+            wasmInstance,
           },
         })
       : { engineEvents: undefined }

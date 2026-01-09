@@ -42,6 +42,7 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -69,6 +70,7 @@ export interface OnClickCallbackArgs {
   intersectionPoint?: intersectionData
   intersects: Intersection<Object3D<Object3DEventMap>>[]
   selected?: Object3D<Object3DEventMap>
+  wasmInstance: ModuleType
 }
 
 export interface OnMoveCallbackArgs {
@@ -97,6 +99,7 @@ export class SceneInfra {
   readonly renderer: WebGLRenderer
   readonly labelRenderer: CSS2DRenderer
   readonly camControls: CameraControls
+  private readonly wasmInstancePromise: Promise<ModuleType>
   isFovAnimationInProgress = false
   private _baseUnitMultiplier = 1
   private _theme: Themes = Themes.System
@@ -319,7 +322,11 @@ export class SceneInfra {
   private lastFrameTime = 0
   private animationFrameId = -1
 
-  constructor(engineCommandManager: ConnectionManager) {
+  constructor(
+    engineCommandManager: ConnectionManager,
+    wasmInitPromise: Promise<ModuleType>
+  ) {
+    this.wasmInstancePromise = wasmInitPromise
     // SCENE
     this.scene = new Scene()
     this.scene.background = new Color(0x000000)
@@ -456,14 +463,19 @@ export class SceneInfra {
       this.scene.children,
       true
     )
-    if (!planeIntersects.length) return null
+    if (!planeIntersects.length) {
+      return null
+    }
 
     // Find the intersection with the raycastable (or sketch) plane
     const raycastablePlaneIntersection = planeIntersects.find(
       (intersect) => intersect.object.name === RAYCASTABLE_PLANE
     )
-    if (!raycastablePlaneIntersection)
-      return { intersection: planeIntersects[0] }
+    if (!raycastablePlaneIntersection) {
+      return {
+        intersection: planeIntersects[0],
+      }
+    }
     const planePosition = raycastablePlaneIntersection.object.position
     const inversePlaneQuaternion =
       raycastablePlaneIntersection.object.quaternion.clone().invert()
@@ -738,10 +750,12 @@ export class SceneInfra {
 
     // Convert the map values to an array and sort by distance
     return Array.from(intersectionsMap.values()).sort((a, b) => {
+      // Deprioritize axis selection to allow selecting segments that lie on axes
       const aIsAxis = isAxisObject(a.object)
       const bIsAxis = isAxisObject(b.object)
       if (aIsAxis && !bIsAxis) return 1
       if (!aIsAxis && bIsAxis) return -1
+      // Otherwise sort by distance
       return a.distance - b.distance
     })
   }
@@ -875,6 +889,7 @@ export class SceneInfra {
   }
 
   onMouseUp = async (mouseEvent: MouseEvent) => {
+    const wasmInstance = await this.wasmInstancePromise
     this.updateCurrentMouseVector(mouseEvent)
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
@@ -911,14 +926,16 @@ export class SceneInfra {
           },
           intersects,
           selected: this.selected.object,
+          wasmInstance,
         })
       } else if (planeIntersectPoint) {
         await this.onClickCallback({
           mouseEvent,
           intersects,
+          wasmInstance,
         })
       } else {
-        await this.onClickCallback({ mouseEvent, intersects })
+        await this.onClickCallback({ mouseEvent, intersects, wasmInstance })
       }
       // Clear the selected state whether it was dragged or not
       this.selected = null
@@ -951,9 +968,10 @@ export class SceneInfra {
               threeD: planeIntersectPoint.threeD,
             },
             intersects,
+            wasmInstance,
           })
         } else {
-          await this.onClickCallback({ mouseEvent, intersects })
+          await this.onClickCallback({ mouseEvent, intersects, wasmInstance })
         }
       }
       // Clear the area select state
@@ -966,9 +984,10 @@ export class SceneInfra {
           threeD: planeIntersectPoint.threeD,
         },
         intersects,
+        wasmInstance,
       })
     } else {
-      await this.onClickCallback({ mouseEvent, intersects })
+      await this.onClickCallback({ mouseEvent, intersects, wasmInstance })
     }
   }
   updateOtherSelectionColors = (otherSelections: NonCodeSelection[]) => {

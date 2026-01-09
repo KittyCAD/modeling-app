@@ -1,7 +1,7 @@
 use anyhow::Result;
 use kcl_ezpz::{
     Constraint as SolverConstraint,
-    datatypes::{DatumPoint, LineSegment},
+    datatypes::inputs::{DatumCircularArc, DatumLineSegment, DatumPoint},
 };
 
 use crate::{
@@ -507,13 +507,19 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 
     // Build the implicit arc constraint.
     let range = args.source_range;
-    let constraint = kcl_ezpz::Constraint::Arc(kcl_ezpz::datatypes::CircularArc {
-        center: kcl_ezpz::datatypes::DatumPoint::new_xy(
+    let constraint = kcl_ezpz::Constraint::Arc(kcl_ezpz::datatypes::inputs::DatumCircularArc {
+        center: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
             center_x.to_constraint_id(range)?,
             center_y.to_constraint_id(range)?,
         ),
-        a: kcl_ezpz::datatypes::DatumPoint::new_xy(start_x.to_constraint_id(range)?, start_y.to_constraint_id(range)?),
-        b: kcl_ezpz::datatypes::DatumPoint::new_xy(end_x.to_constraint_id(range)?, end_y.to_constraint_id(range)?),
+        start: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+            start_x.to_constraint_id(range)?,
+            start_y.to_constraint_id(range)?,
+        ),
+        end: kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+            end_x.to_constraint_id(range)?,
+            end_y.to_constraint_id(range)?,
+        ),
     });
 
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
@@ -584,11 +590,11 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                             match (p1_x, p1_y) {
                                 (UnsolvedExpr::Unknown(p1_x), UnsolvedExpr::Unknown(p1_y)) => {
                                     let constraint = SolverConstraint::PointsCoincident(
-                                        kcl_ezpz::datatypes::DatumPoint::new_xy(
+                                        kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
                                             p0_x.to_constraint_id(range)?,
                                             p0_y.to_constraint_id(range)?,
                                         ),
-                                        kcl_ezpz::datatypes::DatumPoint::new_xy(
+                                        kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
                                             p1_x.to_constraint_id(range)?,
                                             p1_y.to_constraint_id(range)?,
                                         ),
@@ -765,7 +771,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                         point_x.to_constraint_id(range)?,
                                         point_y.to_constraint_id(range)?,
                                     );
-                                    let line_segment = LineSegment::new(
+                                    let line_segment = DatumLineSegment::new(
                                         DatumPoint::new_xy(sx.to_constraint_id(range)?, sy.to_constraint_id(range)?),
                                         DatumPoint::new_xy(ex.to_constraint_id(range)?, ey.to_constraint_id(range)?),
                                     );
@@ -800,6 +806,96 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                         _ => Err(KclError::new_semantic(KclErrorDetails::new(
                             "Point coordinates must be sketch variables for point-segment coincident constraint"
                                 .to_owned(),
+                            vec![args.source_range],
+                        ))),
+                    }
+                }
+                // Point-Arc or Arc-Point case: create PointArcCoincident constraint
+                (
+                    UnsolvedSegmentKind::Point {
+                        position: point_pos, ..
+                    },
+                    UnsolvedSegmentKind::Arc {
+                        start: arc_start,
+                        end: arc_end,
+                        center: arc_center,
+                        ..
+                    },
+                )
+                | (
+                    UnsolvedSegmentKind::Arc {
+                        start: arc_start,
+                        end: arc_end,
+                        center: arc_center,
+                        ..
+                    },
+                    UnsolvedSegmentKind::Point {
+                        position: point_pos, ..
+                    },
+                ) => {
+                    let point_x = &point_pos[0];
+                    let point_y = &point_pos[1];
+                    match (point_x, point_y) {
+                        (UnsolvedExpr::Unknown(point_x), UnsolvedExpr::Unknown(point_y)) => {
+                            // Extract arc center, start, and end coordinates
+                            let (center_x, center_y) = (&arc_center[0], &arc_center[1]);
+                            let (start_x, start_y) = (&arc_start[0], &arc_start[1]);
+                            let (end_x, end_y) = (&arc_end[0], &arc_end[1]);
+
+                            match (center_x, center_y, start_x, start_y, end_x, end_y) {
+                                (
+                                    UnsolvedExpr::Unknown(cx), UnsolvedExpr::Unknown(cy),
+                                    UnsolvedExpr::Unknown(sx), UnsolvedExpr::Unknown(sy),
+                                    UnsolvedExpr::Unknown(ex), UnsolvedExpr::Unknown(ey),
+                                ) => {
+                                    let point = DatumPoint::new_xy(
+                                        point_x.to_constraint_id(range)?,
+                                        point_y.to_constraint_id(range)?,
+                                    );
+                                    let circular_arc = DatumCircularArc {
+                                        center: DatumPoint::new_xy(
+                                            cx.to_constraint_id(range)?,
+                                            cy.to_constraint_id(range)?,
+                                        ),
+                                        start: DatumPoint::new_xy(
+                                            sx.to_constraint_id(range)?,
+                                            sy.to_constraint_id(range)?,
+                                        ),
+                                        end: DatumPoint::new_xy(
+                                            ex.to_constraint_id(range)?,
+                                            ey.to_constraint_id(range)?,
+                                        ),
+                                    };
+                                    let constraint = SolverConstraint::PointArcCoincident(circular_arc, point);
+
+                                    #[cfg(feature = "artifact-graph")]
+                                    let constraint_id = exec_state.next_object_id();
+
+                                    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                                            "coincident() can only be used inside a sketch block".to_owned(),
+                                            vec![args.source_range],
+                                        )));
+                                    };
+                                    sketch_state.solver_constraints.push(constraint);
+                                    #[cfg(feature = "artifact-graph")]
+                                    {
+                                        let constraint = crate::front::Constraint::Coincident(Coincident {
+                                            segments: vec![unsolved0.object_id, unsolved1.object_id],
+                                        });
+                                        sketch_state.sketch_constraints.push(constraint_id);
+                                        track_constraint(constraint_id, constraint, exec_state, &args);
+                                    }
+                                    Ok(KclValue::none())
+                                }
+                                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                                    "Arc center, start, and end points must be sketch variables for point-arc coincident constraint".to_owned(),
+                                    vec![args.source_range],
+                                ))),
+                            }
+                        }
+                        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Point coordinates must be sketch variables for point-arc coincident constraint".to_owned(),
                             vec![args.source_range],
                         ))),
                     }
@@ -1063,24 +1159,24 @@ pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclV
     };
 
     let range = args.source_range;
-    let solver_line0_p0 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+    let solver_line0_p0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
         line0_p0_x.to_constraint_id(range)?,
         line0_p0_y.to_constraint_id(range)?,
     );
-    let solver_line0_p1 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+    let solver_line0_p1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
         line0_p1_x.to_constraint_id(range)?,
         line0_p1_y.to_constraint_id(range)?,
     );
-    let solver_line0 = kcl_ezpz::datatypes::LineSegment::new(solver_line0_p0, solver_line0_p1);
-    let solver_line1_p0 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+    let solver_line0 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(solver_line0_p0, solver_line0_p1);
+    let solver_line1_p0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
         line1_p0_x.to_constraint_id(range)?,
         line1_p0_y.to_constraint_id(range)?,
     );
-    let solver_line1_p1 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+    let solver_line1_p1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
         line1_p1_x.to_constraint_id(range)?,
         line1_p1_y.to_constraint_id(range)?,
     );
-    let solver_line1 = kcl_ezpz::datatypes::LineSegment::new(solver_line1_p0, solver_line1_p1);
+    let solver_line1 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(solver_line1_p0, solver_line1_p1);
     let constraint = SolverConstraint::LinesEqualLength(solver_line0, solver_line1);
     #[cfg(feature = "artifact-graph")]
     let constraint_id = exec_state.next_object_id();
@@ -1253,24 +1349,24 @@ async fn lines_at_angle(
     };
 
     let range = args.source_range;
-    let solver_line0_p0 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+    let solver_line0_p0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
         line0_p0_x.to_constraint_id(range)?,
         line0_p0_y.to_constraint_id(range)?,
     );
-    let solver_line0_p1 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+    let solver_line0_p1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
         line0_p1_x.to_constraint_id(range)?,
         line0_p1_y.to_constraint_id(range)?,
     );
-    let solver_line0 = kcl_ezpz::datatypes::LineSegment::new(solver_line0_p0, solver_line0_p1);
-    let solver_line1_p0 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+    let solver_line0 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(solver_line0_p0, solver_line0_p1);
+    let solver_line1_p0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
         line1_p0_x.to_constraint_id(range)?,
         line1_p0_y.to_constraint_id(range)?,
     );
-    let solver_line1_p1 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+    let solver_line1_p1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
         line1_p1_x.to_constraint_id(range)?,
         line1_p1_y.to_constraint_id(range)?,
     );
-    let solver_line1 = kcl_ezpz::datatypes::LineSegment::new(solver_line1_p0, solver_line1_p1);
+    let solver_line1 = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(solver_line1_p0, solver_line1_p1);
     let constraint = SolverConstraint::LinesAtAngle(solver_line0, solver_line1, angle_kind.to_solver_angle());
     #[cfg(feature = "artifact-graph")]
     let constraint_id = exec_state.next_object_id();
@@ -1326,11 +1422,15 @@ pub async fn horizontal(exec_state: &mut ExecState, args: Args) -> Result<KclVal
             UnsolvedExpr::Unknown(p1_y),
         ) => {
             let range = args.source_range;
-            let solver_p0 =
-                kcl_ezpz::datatypes::DatumPoint::new_xy(p0_x.to_constraint_id(range)?, p0_y.to_constraint_id(range)?);
-            let solver_p1 =
-                kcl_ezpz::datatypes::DatumPoint::new_xy(p1_x.to_constraint_id(range)?, p1_y.to_constraint_id(range)?);
-            let solver_line = kcl_ezpz::datatypes::LineSegment::new(solver_p0, solver_p1);
+            let solver_p0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                p0_x.to_constraint_id(range)?,
+                p0_y.to_constraint_id(range)?,
+            );
+            let solver_p1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                p1_x.to_constraint_id(range)?,
+                p1_y.to_constraint_id(range)?,
+            );
+            let solver_line = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(solver_p0, solver_p1);
             let constraint = kcl_ezpz::Constraint::Horizontal(solver_line);
             #[cfg(feature = "artifact-graph")]
             let constraint_id = exec_state.next_object_id();
@@ -1391,11 +1491,15 @@ pub async fn vertical(exec_state: &mut ExecState, args: Args) -> Result<KclValue
             UnsolvedExpr::Unknown(p1_y),
         ) => {
             let range = args.source_range;
-            let solver_p0 =
-                kcl_ezpz::datatypes::DatumPoint::new_xy(p0_x.to_constraint_id(range)?, p0_y.to_constraint_id(range)?);
-            let solver_p1 =
-                kcl_ezpz::datatypes::DatumPoint::new_xy(p1_x.to_constraint_id(range)?, p1_y.to_constraint_id(range)?);
-            let solver_line = kcl_ezpz::datatypes::LineSegment::new(solver_p0, solver_p1);
+            let solver_p0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                p0_x.to_constraint_id(range)?,
+                p0_y.to_constraint_id(range)?,
+            );
+            let solver_p1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
+                p1_x.to_constraint_id(range)?,
+                p1_y.to_constraint_id(range)?,
+            );
+            let solver_line = kcl_ezpz::datatypes::inputs::DatumLineSegment::new(solver_p0, solver_p1);
             let constraint = kcl_ezpz::Constraint::Vertical(solver_line);
             #[cfg(feature = "artifact-graph")]
             let constraint_id = exec_state.next_object_id();

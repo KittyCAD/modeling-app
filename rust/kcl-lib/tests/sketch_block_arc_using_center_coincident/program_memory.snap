@@ -110,9 +110,9 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "start_object_id": 1,
                     "end_object_id": 2,
                     "center_object_id": 3,
-                    "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "center_freedom": "Free"
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed",
+                    "center_freedom": "Fixed"
                   }
                 }
               }
@@ -193,8 +193,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     },
                     "start_object_id": 7,
                     "end_object_id": 8,
-                    "start_freedom": "Free",
-                    "end_freedom": "Free"
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed"
                   }
                 }
               }
@@ -275,8 +275,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     },
                     "start_object_id": 11,
                     "end_object_id": 12,
-                    "start_freedom": "Free",
-                    "end_freedom": "Free"
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed"
                   }
                 }
               }
@@ -325,7 +325,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                         }
                       }
                     },
-                    "freedom": "Free"
+                    "freedom": "Fixed"
                   }
                 }
               }
@@ -374,7 +374,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                         }
                       }
                     },
-                    "freedom": "Free"
+                    "freedom": "Fixed"
                   }
                 }
               }

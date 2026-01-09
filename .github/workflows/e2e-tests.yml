@@ -27,6 +27,36 @@ jobs:
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
+      - name: Track setup (snapshots)
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:snapshots
+          CI_STEP: setup
+
+      - name: Track setup (web)
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:web
+          CI_STEP: setup
+
+      - name: Track setup (desktop)
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:desktop
+          CI_STEP: setup
+
       - id: filter
         name: Check for Rust changes
         uses: dorny/paths-filter@v3
@@ -47,7 +77,7 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ github.event_name != 'schedule' && (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v11
+        uses: dawidd6/action-download-artifact@v12
         continue-on-error: true
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -79,6 +109,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
+          rustflags: '' # Use .cargo/config.toml
 
       - uses: taiki-e/install-action@493d7f216ecab2af0602481ce809ab2c72836fa1
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
@@ -97,7 +128,7 @@ jobs:
         run: npm run build:wasm
 
       - name: Upload compiled wasm artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: prepared-wasm
           path: |
@@ -143,7 +174,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/ms-playwright/
@@ -181,7 +212,7 @@ jobs:
           TARGET: web
 
       - name: Upload playwright report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: ${{ !cancelled() }}
         with:
           name: playwright-report-snapshot-${{ github.sha }}
@@ -215,6 +246,17 @@ jobs:
           git commit --message "Update snapshots" || true
           git push
           git push origin ${{ github.head_ref }}
+
+      - name: Track teardown (snapshots)
+        if: always()
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:snapshots
+          CI_STEP: teardown
 
   web:
     needs: [prepare-wasm]
@@ -265,7 +307,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/ms-playwright/
@@ -298,7 +340,7 @@ jobs:
           TARGET: web
 
       - name: Upload playwright report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: ${{ !cancelled() && (success() || failure()) }}
         with:
           name: playwright-report-web-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
@@ -306,6 +348,17 @@ jobs:
           include-hidden-files: true
           retention-days: 30
           overwrite: true
+
+      - name: Track teardown (web)
+        if: always()
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:web
+          CI_STEP: teardown
 
   desktop:
     needs: [prepare-wasm]
@@ -382,7 +435,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/ms-playwright/
@@ -428,7 +481,7 @@ jobs:
           TARGET: desktop
 
       - name: Upload test report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: test-results-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
@@ -438,7 +491,7 @@ jobs:
           overwrite: true
 
       - name: Upload playwright report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report-desktop-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
@@ -446,3 +499,14 @@ jobs:
           include-hidden-files: true
           retention-days: 30
           overwrite: true
+
+      - name: Track teardown (desktop)
+        if: always()
+        run: .github/ci-cd-scripts/track-step.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: e2e:desktop
+          CI_STEP: teardown

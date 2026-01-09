@@ -1,5 +1,5 @@
 import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
 import type { StateFrom } from 'xstate'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
@@ -19,6 +19,7 @@ import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { Marked } from '@ts-stack/markdown'
 
 const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>
   snapshot?.context.selectionRanges
@@ -32,6 +33,7 @@ function CommandBarSelectionInput({
   stepBack: () => void
   onSubmit: (data: unknown) => void
 }) {
+  const wasmInstance = use(kclManager.wasmInstancePromise)
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = useCommandBarState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -67,6 +69,7 @@ function CommandBarSelectionInput({
           new Promise(() =>
             kclManager.setSelectionFilterToDefault(
               sceneEntitiesManager,
+              wasmInstance,
               selection
             )
           ),
@@ -154,11 +157,19 @@ function CommandBarSelectionInput({
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter &&
-      kclManager.setSelectionFilter(arg.selectionFilter, sceneEntitiesManager)
+      kclManager.setSelectionFilter(
+        arg.selectionFilter,
+        sceneEntitiesManager,
+        wasmInstance
+      )
     return () =>
-      kclManager.setSelectionFilterToDefault(sceneEntitiesManager, selection)
+      kclManager.setSelectionFilterToDefault(
+        sceneEntitiesManager,
+        wasmInstance,
+        selection
+      )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [arg.selectionFilter])
+  }, [arg.selectionFilter, wasmInstance])
 
   return (
     <form id="arg-form" onSubmit={handleSubmit}>
@@ -196,6 +207,17 @@ function CommandBarSelectionInput({
           value={JSON.stringify(selection || {})}
         />
       </label>
+      {arg.description && (
+        <div
+          className="mx-4 mb-4 mt-2 text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
+          dangerouslySetInnerHTML={{
+            __html: Marked.parse(arg.description, {
+              gfm: true,
+              breaks: true,
+            }),
+          }}
+        />
+      )}
     </form>
   )
 }

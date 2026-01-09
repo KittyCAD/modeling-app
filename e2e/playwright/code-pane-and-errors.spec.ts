@@ -6,7 +6,7 @@ import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.describe('Code pane and errors', () => {
+test.describe('Code pane and errors', { tag: '@desktop' }, () => {
   test('Typing KCL errors induces a badge on the code pane button', async ({
     page,
     homePage,
@@ -37,8 +37,8 @@ extrude001 = extrude(sketch001, length = 5)`
     await scene.settled(cmdBar)
 
     // Ensure no badge is present
-    const codePaneButtonHolder = page.locator('#code-button-holder')
-    await expect(codePaneButtonHolder).not.toContainText('notification')
+    const codeBadge = page.locator('#code-badge')
+    await expect(codeBadge).not.toBeVisible()
 
     // Delete a character to break the KCL
     await u.openKclCodePanel()
@@ -46,7 +46,7 @@ extrude001 = extrude(sketch001, length = 5)`
     await page.keyboard.press('Backspace')
 
     // Ensure that a badge appears on the button
-    await expect(codePaneButtonHolder).toContainText('notification')
+    await expect(codeBadge).toBeVisible()
   })
 
   test('When error is not in view you can click the badge to scroll to it', async ({
@@ -140,106 +140,104 @@ middle()`)
   })
 })
 
-test(
-  'Opening multiple panes persists when switching projects',
-  { tag: '@desktop' },
-  async ({ context, page }, testInfo) => {
-    // Setup multiple projects.
-    await context.folderSetupFn(async (dir) => {
-      const routerTemplateDir = join(dir, 'router-template-slate')
-      const bracketDir = join(dir, 'bracket')
-      await Promise.all([
-        fsp.mkdir(routerTemplateDir, { recursive: true }),
-        fsp.mkdir(bracketDir, { recursive: true }),
-      ])
-      await Promise.all([
-        fsp.copyFile(
-          executorInputPath('cylinder-inches.kcl'),
-          join(routerTemplateDir, 'main.kcl')
-        ),
-        fsp.copyFile(
-          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
-          join(bracketDir, 'main.kcl')
-        ),
-      ])
-    })
+test('Opening multiple panes persists when switching projects', async ({
+  context,
+  page,
+}, testInfo) => {
+  // Setup multiple projects.
+  await context.folderSetupFn(async (dir) => {
+    const routerTemplateDir = join(dir, 'router-template-slate')
+    const bracketDir = join(dir, 'bracket')
+    await Promise.all([
+      fsp.mkdir(routerTemplateDir, { recursive: true }),
+      fsp.mkdir(bracketDir, { recursive: true }),
+    ])
+    await Promise.all([
+      fsp.copyFile(
+        executorInputPath('cylinder-inches.kcl'),
+        join(routerTemplateDir, 'main.kcl')
+      ),
+      fsp.copyFile(
+        executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
+        join(bracketDir, 'main.kcl')
+      ),
+    ])
+  })
 
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
+  const u = await getUtils(page)
+  await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await test.step('Opening the bracket project should load', async () => {
-      await expect(page.getByText('bracket')).toBeVisible()
+  await test.step('Opening the bracket project should load', async () => {
+    await expect(page.getByText('bracket')).toBeVisible()
 
-      await page.getByText('bracket').click()
+    await page.getByText('bracket').click()
 
-      await u.waitForPageLoad()
-    })
+    await u.waitForPageLoad()
+  })
 
-    // If they're open by default, we're not actually testing anything.
-    await test.step('Pre-condition: panes are not already visible', async () => {
-      await expect(page.locator('#variables-pane')).not.toBeVisible()
-      await expect(page.locator('#logs-pane')).not.toBeVisible()
-    })
+  // If they're open by default, we're not actually testing anything.
+  await test.step('Pre-condition: panes are not already visible', async () => {
+    await expect(page.locator('#variables-pane')).not.toBeVisible()
+    await expect(page.locator('#logs-pane')).not.toBeVisible()
+  })
 
-    await test.step('Open multiple panes', async () => {
-      await u.openKclCodePanel()
-      await u.openVariablesPane()
-      await u.openLogsPane()
-    })
-
-    await test.step('Clicking the logo takes us back to the projects page / home', async () => {
-      await page.getByTestId('app-logo').click()
-
-      await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
-      await expect(page.getByText('router-template-slate')).toBeVisible()
-      await expect(page.getByText('Create project')).toBeVisible()
-    })
-
-    await test.step('Opening the router-template project should load', async () => {
-      await expect(page.getByText('router-template-slate')).toBeVisible()
-
-      await page.getByText('router-template-slate').click()
-
-      await u.waitForPageLoad()
-    })
-
-    await test.step('All panes opened before should be visible', async () => {
-      await expect(page.locator('#code-pane')).toBeVisible()
-      await expect(page.locator('#variables-pane')).toBeVisible()
-      await expect(page.locator('#logs-pane')).toBeVisible()
-    })
-  }
-)
-
-test(
-  'external change of file contents are reflected in editor',
-  { tag: '@desktop' },
-  async ({ context, page }, testInfo) => {
-    const PROJECT_DIR_NAME = 'lee-was-here'
-    const { dir: projectsDir } = await context.folderSetupFn(async (dir) => {
-      const aProjectDir = join(dir, PROJECT_DIR_NAME)
-      await fsp.mkdir(aProjectDir, { recursive: true })
-    })
-
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    await test.step('Open the project', async () => {
-      await expect(page.getByText(PROJECT_DIR_NAME)).toBeVisible()
-      await page.getByText(PROJECT_DIR_NAME).click()
-      await u.waitForPageLoad()
-    })
-
-    await u.openFilePanel()
+  await test.step('Open multiple panes', async () => {
     await u.openKclCodePanel()
+    await u.openVariablesPane()
+    await u.openLogsPane()
+  })
 
-    await test.step('Write to file externally and check for changed content', async () => {
-      const content = 'ha he ho ho ha blap scap be dap'
-      await fsp.writeFile(
-        join(projectsDir, PROJECT_DIR_NAME, 'main.kcl'),
-        content
-      )
-      await u.editorTextMatches(content)
-    })
-  }
-)
+  await test.step('Clicking the logo takes us back to the projects page / home', async () => {
+    await page.getByTestId('app-logo').click()
+
+    await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
+    await expect(page.getByText('router-template-slate')).toBeVisible()
+    await expect(page.getByText('Create project')).toBeVisible()
+  })
+
+  await test.step('Opening the router-template project should load', async () => {
+    await expect(page.getByText('router-template-slate')).toBeVisible()
+
+    await page.getByText('router-template-slate').click()
+
+    await u.waitForPageLoad()
+  })
+
+  await test.step('All panes opened before should be visible', async () => {
+    await expect(page.locator('#code-pane')).toBeVisible()
+    await expect(page.locator('#variables-pane')).toBeVisible()
+    await expect(page.locator('#logs-pane')).toBeVisible()
+  })
+})
+
+test('external change of file contents are reflected in editor', async ({
+  context,
+  page,
+}, testInfo) => {
+  const PROJECT_DIR_NAME = 'lee-was-here'
+  const { dir: projectsDir } = await context.folderSetupFn(async (dir) => {
+    const aProjectDir = join(dir, PROJECT_DIR_NAME)
+    await fsp.mkdir(aProjectDir, { recursive: true })
+  })
+
+  const u = await getUtils(page)
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+
+  await test.step('Open the project', async () => {
+    await expect(page.getByText(PROJECT_DIR_NAME)).toBeVisible()
+    await page.getByText(PROJECT_DIR_NAME).click()
+    await u.waitForPageLoad()
+  })
+
+  await u.openFilePanel()
+  await u.openKclCodePanel()
+
+  await test.step('Write to file externally and check for changed content', async () => {
+    const content = 'ha he ho ho ha blap scap be dap'
+    await fsp.writeFile(
+      join(projectsDir, PROJECT_DIR_NAME, 'main.kcl'),
+      content
+    )
+    await u.editorTextMatches(content)
+  })
+})

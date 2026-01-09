@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { Suspense, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import {
   Outlet,
@@ -31,6 +31,8 @@ import {
   kclManager,
   engineCommandManager,
   rustContext,
+  systemIOActor,
+  settingsActor,
 } from '@src/lib/singletons'
 import { useToken } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -41,6 +43,7 @@ import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import Loading from '@src/components/Loading'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -71,18 +74,31 @@ const router = createRouter([
         },
       },
       {
-        loader: fileLoader(kclManager),
+        loader: fileLoader({
+          kclManager,
+          rustContext,
+          systemIOActor,
+          settingsActor,
+        }),
         id: PATHS.FILE,
         path: PATHS.FILE + '/:id',
         errorElement: <ErrorPage />,
         element: (
           <ModelingPageProvider>
-            <ModelingMachineProvider>
-              <CoreDump />
-              <Outlet />
-              <App />
-              <CommandBar />
-            </ModelingMachineProvider>
+            <Suspense
+              fallback={
+                <div className="absolute inset-0 grid place-content-center">
+                  <Loading>Loading Design Studio...</Loading>
+                </div>
+              }
+            >
+              <ModelingMachineProvider>
+                <CoreDump />
+                <Outlet />
+                <App />
+                <CommandBar />
+              </ModelingMachineProvider>
+            </Suspense>
           </ModelingPageProvider>
         ),
         children: [
@@ -122,7 +138,7 @@ const router = createRouter([
           </>
         ),
         id: PATHS.HOME,
-        loader: homeLoader,
+        loader: homeLoader({ settingsActor }),
         children: [
           {
             index: true,
@@ -184,7 +200,7 @@ function CoreDump() {
     () => {
       toast
         .promise(
-          coreDump(coreDumpManager, true),
+          coreDump(coreDumpManager, kclManager.wasmInstancePromise, true),
           {
             loading: 'Starting core dump...',
             success: 'Core dump completed successfully',

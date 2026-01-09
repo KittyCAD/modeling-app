@@ -96,7 +96,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
                         }
                       }
                     },
-                    "freedom": "Free"
+                    "freedom": "Fixed"
                   }
                 }
               }
@@ -145,7 +145,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
                         }
                       }
                     },
-                    "freedom": "Free"
+                    "freedom": "Fixed"
                   }
                 }
               }

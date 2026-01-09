@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, memo } from 'react'
 
 import type { ContextMenuProps } from '@src/components/ContextMenu'
 import {
@@ -13,6 +13,7 @@ import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import {
+  engineCommandManager,
   getLayout,
   kclManager,
   rustContext,
@@ -29,6 +30,8 @@ import {
   getOpenPanes,
   setOpenPanes,
 } from '@src/lib/layout'
+
+const systemDeps = { sceneInfra, engineCommandManager, settingsActor }
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
@@ -76,7 +79,7 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
-          resetCameraPosition({ sceneInfra }).catch(reportRejection)
+          resetCameraPosition(systemDeps).catch(reportRejection)
         }}
         disabled={shouldLockView}
         hotkey="mod+alt+x"
@@ -199,7 +202,7 @@ export function useViewControlMenuItems() {
   return menuItems
 }
 
-export function ViewControlContextMenu({
+export const ViewControlContextMenu = memo(function ViewControlContextMenu({
   menuTargetElement: wrapperRef,
   ...props
 }: ContextMenuProps) {
@@ -212,4 +215,4 @@ export function ViewControlContextMenu({
       {...props}
     />
   )
-}
+})

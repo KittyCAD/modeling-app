@@ -673,13 +673,38 @@ pub struct Sketch {
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,
-    /// If not given, defaults to true.
-    #[serde(default = "very_true", skip_serializing_if = "is_true")]
-    pub is_closed: bool,
+    /// Has the profile been closed?
+    /// If not given, defaults to yes, closed explicitly.
+    #[serde(
+        default = "ProfileClosed::explicitly",
+        skip_serializing_if = "ProfileClosed::is_explicitly"
+    )]
+    pub is_closed: ProfileClosed,
 }
 
-fn is_true(b: &bool) -> bool {
-    *b
+impl ProfileClosed {
+    #[expect(dead_code, reason = "it's not actually dead, it's called by serde")]
+    fn explicitly() -> Self {
+        Self::Explicitly
+    }
+
+    fn is_explicitly(&self) -> bool {
+        matches!(self, ProfileClosed::Explicitly)
+    }
+}
+
+/// Has the profile been closed?
+#[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Clone, Copy, Hash, Ord, PartialOrd, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+pub enum ProfileClosed {
+    /// It's definitely open.
+    No,
+    /// Unknown.
+    Maybe,
+    /// Yes, by adding a segment which loops back to the start.
+    Implicitly,
+    /// Yes, by calling `close()` or by making a closed shape (e.g. circle).
+    Explicitly,
 }
 
 impl Sketch {
@@ -694,18 +719,23 @@ impl Sketch {
             // Before we extrude, we need to enable the sketch mode.
             // We do this here in case extrude is called out of order.
             ModelingCmdReq {
-                cmd: ModelingCmd::from(mcmd::EnableSketchMode {
-                    animated: false,
-                    ortho: false,
-                    entity_id: self.on.id(),
-                    adjust_camera: false,
-                    planar_normal: if let SketchSurface::Plane(plane) = &self.on {
-                        // We pass in the normal for the plane here.
-                        let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
-                        Some(normal.into())
-                    } else {
-                        None
-                    },
+                cmd: ModelingCmd::from(if let SketchSurface::Plane(plane) = &self.on {
+                    // We pass in the normal for the plane here.
+                    let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                    mcmd::EnableSketchMode::builder()
+                        .animated(false)
+                        .ortho(false)
+                        .entity_id(self.on.id())
+                        .adjust_camera(false)
+                        .planar_normal(normal.into())
+                        .build()
+                } else {
+                    mcmd::EnableSketchMode::builder()
+                        .animated(false)
+                        .ortho(false)
+                        .entity_id(self.on.id())
+                        .adjust_camera(false)
+                        .build()
                 }),
                 cmd_id: exec_state.next_uuid().into(),
             },
@@ -1794,7 +1824,8 @@ pub enum SegmentKind {
     Point {
         position: [TyF64; 2],
         ctor: Box<PointCtor>,
-        freedom: Freedom,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        freedom: Option<Freedom>,
     },
     Line {
         start: [TyF64; 2],
@@ -1802,8 +1833,10 @@ pub enum SegmentKind {
         ctor: Box<LineCtor>,
         start_object_id: ObjectId,
         end_object_id: ObjectId,
-        start_freedom: Freedom,
-        end_freedom: Freedom,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start_freedom: Option<Freedom>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        end_freedom: Option<Freedom>,
     },
     Arc {
         start: [TyF64; 2],
@@ -1813,9 +1846,12 @@ pub enum SegmentKind {
         start_object_id: ObjectId,
         end_object_id: ObjectId,
         center_object_id: ObjectId,
-        start_freedom: Freedom,
-        end_freedom: Freedom,
-        center_freedom: Freedom,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        start_freedom: Option<Freedom>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        end_freedom: Option<Freedom>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        center_freedom: Option<Freedom>,
     },
 }
 

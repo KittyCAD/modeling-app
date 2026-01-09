@@ -2383,6 +2383,27 @@ mod function_expr_with_name {
         super::execute(TEST_NAME, false).await
     }
 }
+mod recursive_function_factorial {
+    const TEST_NAME: &str = "recursive_function_factorial";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
 mod boolean_logical_and {
     const TEST_NAME: &str = "boolean_logical_and";
 
@@ -4163,6 +4184,27 @@ mod sketch_block_arc_using_center_coincident {
         super::execute(TEST_NAME, true).await
     }
 }
+mod sketch_block_modeling_command_is_error {
+    const TEST_NAME: &str = "sketch_block_modeling_command_is_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
 mod holes_cube {
     const TEST_NAME: &str = "holes_cube";
 
@@ -4331,8 +4373,50 @@ mod pos_literals {
         super::execute(TEST_NAME, true).await
     }
 }
+mod runtime_exit {
+    const TEST_NAME: &str = "runtime_exit";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
 mod extrude_closes {
     const TEST_NAME: &str = "extrude_closes";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod implicit_close {
+    const TEST_NAME: &str = "implicit_close";
 
     /// Test parsing KCL.
     #[test]

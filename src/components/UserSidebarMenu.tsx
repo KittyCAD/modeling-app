@@ -14,7 +14,6 @@ import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { authActor } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
@@ -81,7 +80,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             const targetPath = location.pathname.includes(PATHS.FILE)
               ? filePath + PATHS.SETTINGS_USER
               : PATHS.HOME + PATHS.SETTINGS_USER
-            navigate(targetPath)
+            void navigate(targetPath)
           },
         },
         {
@@ -92,7 +91,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             const targetPath = location.pathname.includes(PATHS.FILE)
               ? filePath + PATHS.SETTINGS_KEYBINDINGS
               : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
-            navigate(targetPath)
+            void navigate(targetPath)
           },
         },
         'break',
@@ -162,27 +161,6 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           children: <span className="flex-1">Check for updates</span>,
         },
         'break',
-        {
-          id: 'change-environment',
-          Element: 'button',
-          children: <span>Change environment</span>,
-          onClick: () => {
-            const environment = env().VITE_ZOO_BASE_DOMAIN
-            if (environment) {
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: {
-                  groupId: 'application',
-                  name: 'switch-environments',
-                  argDefaultValues: {
-                    environment,
-                  },
-                },
-              })
-            }
-          },
-          className: hideEnvironmentItems ? 'hidden' : '',
-        },
         {
           id: 'sign-out',
           Element: 'button',

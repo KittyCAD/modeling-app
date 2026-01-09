@@ -1,5 +1,6 @@
 // Curtain Wall Anchor Plate
 // A structural steel L-plate used to anchor curtain wall systems to concrete slabs, with elongated holes for adjustability and bolts with nuts and base plates for secure fastening
+// Categories: Construction
 
 // Set units in millimeters (mm)
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

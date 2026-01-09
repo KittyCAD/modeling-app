@@ -10,15 +10,17 @@ use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        AbstractSegment, BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta,
-        ModuleArtifactState, Operation, PlaneType, Segment, SegmentKind, SegmentRepr, SketchConstraintKind,
-        StatementKind, TagIdentifier, UnsolvedSegment, UnsolvedSegmentKind, annotations,
+        AbstractSegment, BodyType, ControlFlowKind, EnvironmentRef, ExecState, ExecutorContext, KclValue,
+        KclValueControlFlow, Metadata, ModelingCmdMeta, ModuleArtifactState, Operation, PlaneType, PreserveMem,
+        Segment, SegmentKind, SegmentRepr, SketchConstraintKind, StatementKind, TagIdentifier, UnsolvedSegment,
+        UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
+        control_continue,
         fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
         memory,
         sketch_solve::{
-            FreedomAnalysis, create_segment_scene_objects, normalize_to_solver_unit, solver_numeric_type,
+            FreedomAnalysis, Solved, create_segment_scene_objects, normalize_to_solver_unit, solver_numeric_type,
             substitute_sketch_var_in_segment, substitute_sketch_vars,
         },
         state::{ModuleState, SketchBlockState},
@@ -139,7 +141,7 @@ impl ExecutorContext {
         &self,
         program: &Node<Program>,
         exec_state: &mut ExecState,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
         module_id: ModuleId,
         path: &ModulePath,
     ) -> Result<ModuleExecutionOutcome, (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>)> {
@@ -155,7 +157,7 @@ impl ExecutorContext {
             next_object_id,
             exec_state.mod_local.freedom_analysis,
         );
-        if !preserve_mem {
+        if preserve_mem.normal() {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         }
 
@@ -164,7 +166,7 @@ impl ExecutorContext {
             .await
             .map_err(|err| (err, None, None))?;
 
-        if !preserve_mem {
+        if preserve_mem.normal() {
             exec_state.mut_stack().push_new_root_env(!no_prelude);
         }
 
@@ -172,16 +174,16 @@ impl ExecutorContext {
             .exec_block(program, exec_state, crate::execution::BodyType::Root)
             .await;
 
-        let env_ref = if preserve_mem {
-            exec_state.mut_stack().pop_and_preserve_env()
-        } else {
-            exec_state.mut_stack().pop_env()
+        let env_ref = match preserve_mem {
+            PreserveMem::Always => exec_state.mut_stack().pop_and_preserve_env(),
+            PreserveMem::Normal => exec_state.mut_stack().pop_env(),
         };
-        let module_artifacts = if !preserve_mem {
-            std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-            local_state.artifacts
-        } else {
-            std::mem::take(&mut exec_state.mod_local.artifacts)
+        let module_artifacts = match preserve_mem {
+            PreserveMem::Always => std::mem::take(&mut exec_state.mod_local.artifacts),
+            PreserveMem::Normal => {
+                std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+                local_state.artifacts
+            }
         };
 
         crate::log::log(format!("leave {path}"));
@@ -189,7 +191,7 @@ impl ExecutorContext {
         result
             .map_err(|err| (err, Some(env_ref), Some(module_artifacts.clone())))
             .map(|last_expr| ModuleExecutionOutcome {
-                last_expr,
+                last_expr: last_expr.map(|value_cf| value_cf.into_value()),
                 environment: env_ref,
                 exports: local_state.module_exports,
                 artifacts: module_artifacts,
@@ -203,7 +205,7 @@ impl ExecutorContext {
         block: &'a B,
         exec_state: &mut ExecState,
         body_type: BodyType,
-    ) -> Result<Option<KclValue>, KclError>
+    ) -> Result<Option<KclValueControlFlow>, KclError>
     where
         B: CodeBlock + Sync,
     {
@@ -287,7 +289,7 @@ impl ExecutorContext {
                                 }
 
                                 if value.is_err() && ty.is_err() && mod_value.is_err() {
-                                    return value.map(Option::Some);
+                                    return value.map(|v| Some(v.continue_()));
                                 }
 
                                 // Add the item to the current module.
@@ -372,16 +374,22 @@ impl ExecutorContext {
                 }
                 BodyItem::ExpressionStatement(expression_statement) => {
                     let metadata = Metadata::from(expression_statement);
-                    last_expr = Some(
-                        self.execute_expr(
+                    let value = self
+                        .execute_expr(
                             &expression_statement.expression,
                             exec_state,
                             &metadata,
                             &[],
                             StatementKind::Expression,
                         )
-                        .await?,
-                    );
+                        .await?;
+
+                    let is_return = value.is_some_return();
+                    last_expr = Some(value);
+
+                    if is_return {
+                        break;
+                    }
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     let var_name = variable_declaration.declaration.id.name.to_string();
@@ -407,6 +415,12 @@ impl ExecutorContext {
                     // Declaration over, so unset this context.
                     exec_state.mod_local.being_declared = prev_being_declared;
                     let rhs = rhs_result?;
+
+                    if rhs.is_some_return() {
+                        last_expr = Some(rhs);
+                        break;
+                    }
+                    let rhs = rhs.into_value();
 
                     let should_bind_name =
                         if let Some(fn_name) = variable_declaration.declaration.init.fn_declaring_name() {
@@ -452,7 +466,7 @@ impl ExecutorContext {
                         }
                     }
                     // Variable declaration can be the return value of a module.
-                    last_expr = matches!(body_type, BodyType::Root).then_some(rhs);
+                    last_expr = matches!(body_type, BodyType::Root).then_some(rhs.continue_());
                 }
                 BodyItem::TypeDeclaration(ty) => {
                     let metadata = Metadata::from(&**ty);
@@ -544,7 +558,7 @@ impl ExecutorContext {
                         )));
                     }
 
-                    let value = self
+                    let value_cf = self
                         .execute_expr(
                             &return_statement.argument,
                             exec_state,
@@ -553,6 +567,11 @@ impl ExecutorContext {
                             StatementKind::Expression,
                         )
                         .await?;
+                    if value_cf.is_some_return() {
+                        last_expr = Some(value_cf);
+                        break;
+                    }
+                    let value = value_cf.into_value();
                     exec_state
                         .mut_stack()
                         .add(memory::RETURN_NAME.to_owned(), value, metadata.source_range)
@@ -656,7 +675,7 @@ impl ExecutorContext {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
             ModuleRepr::Kcl(_, Some(outcome)) => Ok((outcome.environment, outcome.exports.clone())),
             ModuleRepr::Kcl(program, cache) => self
-                .exec_module_from_ast(program, module_id, &path, exec_state, source_range, false)
+                .exec_module_from_ast(program, module_id, &path, exec_state, source_range, PreserveMem::Normal)
                 .await
                 .map(|outcome| {
                     *cache = Some(outcome.clone());
@@ -688,7 +707,7 @@ impl ExecutorContext {
             ModuleRepr::Kcl(_, Some(outcome)) => Ok(outcome.last_expr.clone()),
             ModuleRepr::Kcl(program, cached_items) => {
                 let result = self
-                    .exec_module_from_ast(program, module_id, &path, exec_state, source_range, false)
+                    .exec_module_from_ast(program, module_id, &path, exec_state, source_range, PreserveMem::Normal)
                     .await;
                 match result {
                     Ok(outcome) => {
@@ -728,7 +747,7 @@ impl ExecutorContext {
         path: &ModulePath,
         exec_state: &mut ExecState,
         source_range: SourceRange,
-        preserve_mem: bool,
+        preserve_mem: PreserveMem,
     ) -> Result<ModuleExecutionOutcome, KclError> {
         exec_state.global.mod_loader.enter_module(path);
         let result = self
@@ -763,11 +782,11 @@ impl ExecutorContext {
         metadata: &Metadata,
         annotations: &[Node<Annotation>],
         statement_kind: StatementKind<'a>,
-    ) -> Result<KclValue, KclError> {
+    ) -> Result<KclValueControlFlow, KclError> {
         let item = match init {
-            Expr::None(none) => KclValue::from(none),
-            Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state),
-            Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
+            Expr::None(none) => KclValue::from(none).continue_(),
+            Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state).continue_(),
+            Expr::TagDeclarator(tag) => tag.execute(exec_state).await?.continue_(),
             Expr::Name(name) => {
                 let being_declared = exec_state.mod_local.being_declared.clone();
                 let value = name
@@ -780,7 +799,7 @@ impl ExecutorContext {
                         module_id,
                         exec_state,
                         metadata.source_range
-                        ).await?
+                        ).await?.map(|v| v.continue_())
                         .unwrap_or_else(|| {
                             exec_state.warn(CompilationError::err(
                                 metadata.source_range,
@@ -793,10 +812,10 @@ impl ExecutorContext {
                             KclValue::KclNone {
                                 value: Default::default(),
                                 meta: new_meta,
-                            }
+                            }.continue_()
                         })
                 } else {
-                    value
+                    value.continue_()
                 }
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
@@ -807,17 +826,20 @@ impl ExecutorContext {
 
                 // Check the KCL @(feature_tree = ) annotation.
                 let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
-                let closure = if let Some(attrs) = attrs
+                let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust
                         || attrs.impl_ == annotations::Impl::RustConstrainable
                         || attrs.impl_ == annotations::Impl::RustConstraint)
                 {
                     if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
-                        KclValue::Function {
-                            value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
-                            meta: vec![metadata.to_owned()],
-                        }
+                        (
+                            KclValue::Function {
+                                value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
+                                meta: vec![metadata.to_owned()],
+                            },
+                            None,
+                        )
                     } else {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             "Rust implementation of functions is restricted to the standard library".to_owned(),
@@ -828,29 +850,53 @@ impl ExecutorContext {
                     // Snapshotting memory here is crucial for semantics so that we close
                     // over variables. Variables defined lexically later shouldn't
                     // be available to the function body.
-                    KclValue::Function {
-                        value: Box::new(FunctionSource::kcl(
-                            function_expression.clone(),
-                            exec_state.mut_stack().snapshot(),
-                            KclFunctionSourceParams {
-                                is_std,
-                                experimental,
-                                include_in_feature_tree,
-                            },
-                        )),
-                        meta: vec![metadata.to_owned()],
-                    }
+                    let (env_ref, placeholder_env_ref) = if function_expression.name.is_some() {
+                        // Recursive function needs a snapshot that includes
+                        // itself.
+                        let dummy = EnvironmentRef::dummy();
+                        (dummy, Some(dummy))
+                    } else {
+                        (exec_state.mut_stack().snapshot(), None)
+                    };
+                    (
+                        KclValue::Function {
+                            value: Box::new(FunctionSource::kcl(
+                                function_expression.clone(),
+                                env_ref,
+                                KclFunctionSourceParams {
+                                    is_std,
+                                    experimental,
+                                    include_in_feature_tree,
+                                },
+                            )),
+                            meta: vec![metadata.to_owned()],
+                        },
+                        placeholder_env_ref,
+                    )
                 };
 
                 // If the function expression has a name, i.e. `fn name() {}`,
                 // bind it in the current scope.
                 if let Some(fn_name) = &function_expression.name {
-                    exec_state
-                        .mut_stack()
-                        .add(fn_name.name.clone(), closure.clone(), metadata.source_range)?;
+                    // If we used a placeholder env ref for recursion, fix it up
+                    // with the name recursively bound so that it's available in
+                    // the function body.
+                    if let Some(placeholder_env_ref) = placeholder_env_ref {
+                        closure = exec_state.mut_stack().add_recursive_closure(
+                            fn_name.name.to_owned(),
+                            closure,
+                            placeholder_env_ref,
+                            metadata.source_range,
+                        )?;
+                    } else {
+                        // Regular non-recursive binding.
+                        exec_state
+                            .mut_stack()
+                            .add(fn_name.name.clone(), closure.clone(), metadata.source_range)?;
+                    }
                 }
 
-                closure
+                closure.continue_()
             }
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
@@ -866,7 +912,7 @@ impl ExecutorContext {
                     )));
                 }
                 StatementKind::Expression => match exec_state.mod_local.pipe_value.clone() {
-                    Some(x) => x,
+                    Some(x) => x.continue_(),
                     None => {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             "cannot use % outside a pipe expression".to_owned(),
@@ -882,18 +928,19 @@ impl ExecutorContext {
             Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
             Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
             Expr::LabelledExpression(expr) => {
-                let result = self
+                let value_cf = self
                     .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
                     .await?;
+                let value = control_continue!(value_cf);
                 exec_state
                     .mut_stack()
-                    .add(expr.label.name.clone(), result.clone(), init.into())?;
+                    .add(expr.label.name.clone(), value.clone(), init.into())?;
                 // TODO this lets us use the label as a variable name, but not as a tag in most cases
-                result
+                value.continue_()
             }
             Expr::AscribedExpression(expr) => expr.get_result(exec_state, self).await?,
             Expr::SketchBlock(expr) => expr.get_result(exec_state, self).await?,
-            Expr::SketchVar(expr) => expr.get_result(exec_state, self).await?,
+            Expr::SketchVar(expr) => expr.get_result(exec_state, self).await?.continue_(),
         };
         Ok(item)
     }
@@ -920,19 +967,28 @@ fn var_in_own_ref_err(e: KclError, being_declared: &Option<String>) -> KclError 
 
 impl Node<AscribedExpression> {
     #[async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         let metadata = Metadata {
             source_range: SourceRange::from(self),
         };
         let result = ctx
             .execute_expr(&self.expr, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
-        apply_ascription(&result, &self.ty, exec_state, self.into())
+        let result = control_continue!(result);
+        apply_ascription(&result, &self.ty, exec_state, self.into()).map(KclValue::continue_)
     }
 }
 
 impl Node<SketchBlock> {
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         if exec_state.mod_local.sketch_block.is_some() {
             // Disallow nested sketch blocks for now.
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -948,9 +1004,10 @@ impl Node<SketchBlock> {
         for labeled_arg in &self.arguments {
             let source_range = SourceRange::from(labeled_arg.arg.clone());
             let metadata = Metadata { source_range };
-            let value = ctx
+            let value_cf = ctx
                 .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
+            let value = control_continue!(value_cf);
             let arg = Arg::new(value, source_range);
             match &labeled_arg.label {
                 Some(label) => {
@@ -1103,18 +1160,15 @@ impl Node<SketchBlock> {
             })
             .collect::<Result<Vec<_>, KclError>>()?;
         // Solve constraints.
-        let config = kcl_ezpz::Config {
-            max_iterations: 50,
-            ..Default::default()
-        };
+        let config = kcl_ezpz::Config::default().with_max_iterations(50);
         let solve_result = if exec_state.mod_local.freedom_analysis {
-            kcl_ezpz::solve_with_priority_analysis(&constraints, initial_guesses.clone(), config)
+            kcl_ezpz::solve_analysis(&constraints, initial_guesses.clone(), config)
                 .map(|outcome| (outcome.outcome, Some(FreedomAnalysis::from(outcome.analysis))))
         } else {
-            kcl_ezpz::solve_with_priority(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
+            kcl_ezpz::solve(&constraints, initial_guesses.clone(), config).map(|outcome| (outcome, None))
         };
         let (solve_outcome, solve_analysis) = match solve_result {
-            Ok(o) => o,
+            Ok((solved, freedom)) => (Solved::from(solved), freedom),
             Err(failure) => {
                 match &failure.error {
                     NonLinearSystemError::FaerMatrix { .. }
@@ -1130,7 +1184,7 @@ impl Node<SketchBlock> {
                         );
                         let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
                         (
-                            kcl_ezpz::SolveOutcome {
+                            Solved {
                                 final_values,
                                 iterations: Default::default(),
                                 warnings: failure.warnings,
@@ -1191,14 +1245,12 @@ impl Node<SketchBlock> {
         #[cfg(feature = "artifact-graph")]
         {
             // Store variable solutions so that the sketch refactoring API can
-            // write them back to the source. Because of how the frontend works
-            // and how we don't really support more than one sketch block yet,
-            // we only update it if it's empty so that empty blocks at the end
-            // are ignored.
-            if exec_state.mod_local.artifacts.var_solutions.is_empty() {
-                exec_state.mod_local.artifacts.var_solutions =
-                    sketch_block_state.var_solutions(solve_outcome, solution_ty, SourceRange::from(self))?;
-            }
+            // write them back to the source. When editing a sketch block, we
+            // exit early so that the sketch block that we're editing is always
+            // the last one. Therefore, we should overwrite any previous
+            // solutions.
+            exec_state.mod_local.artifacts.var_solutions =
+                sketch_block_state.var_solutions(solve_outcome, solution_ty, SourceRange::from(self))?;
         }
 
         // Create scene objects after unknowns are solved.
@@ -1248,10 +1300,17 @@ impl Node<SketchBlock> {
         let metadata = Metadata {
             source_range: SourceRange::from(self),
         };
-        Ok(KclValue::Object {
+        let return_value = KclValue::Object {
             value: variables,
             constrainable: Default::default(),
             meta: vec![metadata],
+        };
+        Ok(if self.is_being_edited {
+            // When the sketch block is being edited, we exit the program
+            // immediately.
+            return_value.exit()
+        } else {
+            return_value.continue_()
         })
     }
 }
@@ -1338,10 +1397,14 @@ fn apply_ascription(
 
 impl BinaryPart {
     #[async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         match self {
-            BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state)),
-            BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.cloned(),
+            BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state).continue_()),
+            BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.cloned().map(KclValue::continue_),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
@@ -1351,7 +1414,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.execute(exec_state, ctx).await,
             BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
             BinaryPart::AscribedExpression(e) => e.get_result(exec_state, ctx).await,
-            BinaryPart::SketchVar(e) => e.get_result(exec_state, ctx).await,
+            BinaryPart::SketchVar(e) => e.get_result(exec_state, ctx).await.map(KclValue::continue_),
         }
     }
 }
@@ -1466,10 +1529,16 @@ impl Node<Name> {
 }
 
 impl Node<MemberExpression> {
-    async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         let meta = Metadata {
             source_range: SourceRange::from(self),
         };
+        // TODO: The order of execution is wrong. We should execute the object
+        // *before* the property.
         let property = Property::try_from(
             self.computed,
             self.property.clone(),
@@ -1481,9 +1550,10 @@ impl Node<MemberExpression> {
             StatementKind::Expression,
         )
         .await?;
-        let object = ctx
+        let object_cf = ctx
             .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
             .await?;
+        let object = control_continue!(object_cf);
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
@@ -1499,7 +1569,8 @@ impl Node<MemberExpression> {
                                         KclValue::from_unsolved_expr(position[1].clone(), segment.meta.clone()),
                                     ],
                                     ty: RuntimeType::any(),
-                                })
+                                }
+                                .continue_())
                             }
                             _ => Err(KclError::new_undefined_value(
                                 KclErrorDetails::new(
@@ -1518,7 +1589,8 @@ impl Node<MemberExpression> {
                                     [position[0].n, position[1].n],
                                     position[0].ty,
                                     segment.meta.clone(),
-                                ))
+                                )
+                                .continue_())
                             }
                             _ => Err(KclError::new_undefined_value(
                                 KclErrorDetails::new(
@@ -1560,7 +1632,8 @@ impl Node<MemberExpression> {
                                 },
                                 meta: segment.meta.clone(),
                             }),
-                        }),
+                        }
+                        .continue_()),
                         UnsolvedSegmentKind::Arc {
                             start,
                             ctor,
@@ -1582,7 +1655,8 @@ impl Node<MemberExpression> {
                                 },
                                 meta: segment.meta.clone(),
                             }),
-                        }),
+                        }
+                        .continue_()),
                     },
                     SegmentRepr::Solved { segment } => match &segment.kind {
                         SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
@@ -1615,7 +1689,8 @@ impl Node<MemberExpression> {
                                 },
                                 meta: segment.meta.clone(),
                             }),
-                        }),
+                        }
+                        .continue_()),
                         SegmentKind::Arc {
                             start,
                             ctor,
@@ -1639,7 +1714,8 @@ impl Node<MemberExpression> {
                                 },
                                 meta: segment.meta.clone(),
                             }),
-                        }),
+                        }
+                        .continue_()),
                     },
                 },
                 "end" => match &segment.repr {
@@ -1672,7 +1748,8 @@ impl Node<MemberExpression> {
                                 },
                                 meta: segment.meta.clone(),
                             }),
-                        }),
+                        }
+                        .continue_()),
                         UnsolvedSegmentKind::Arc {
                             end,
                             ctor,
@@ -1694,7 +1771,8 @@ impl Node<MemberExpression> {
                                 },
                                 meta: segment.meta.clone(),
                             }),
-                        }),
+                        }
+                        .continue_()),
                     },
                     SegmentRepr::Solved { segment } => match &segment.kind {
                         SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
@@ -1727,7 +1805,8 @@ impl Node<MemberExpression> {
                                 },
                                 meta: segment.meta.clone(),
                             }),
-                        }),
+                        }
+                        .continue_()),
                         SegmentKind::Arc {
                             end,
                             ctor,
@@ -1751,7 +1830,8 @@ impl Node<MemberExpression> {
                                 },
                                 meta: segment.meta.clone(),
                             }),
-                        }),
+                        }
+                        .continue_()),
                     },
                 },
                 "center" => match &segment.repr {
@@ -1777,7 +1857,8 @@ impl Node<MemberExpression> {
                                 },
                                 meta: segment.meta.clone(),
                             }),
-                        }),
+                        }
+                        .continue_()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -1810,7 +1891,8 @@ impl Node<MemberExpression> {
                                 },
                                 meta: segment.meta.clone(),
                             }),
-                        }),
+                        }
+                        .continue_()),
                         _ => Err(KclError::new_undefined_value(
                             KclErrorDetails::new(
                                 format!("Property '{property}' not found in segment"),
@@ -1831,19 +1913,19 @@ impl Node<MemberExpression> {
             (KclValue::Plane { value: plane }, Property::String(property), false) => match property.as_str() {
                 "zAxis" => {
                     let (p, u) = plane.info.z_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
                 }
                 "yAxis" => {
                     let (p, u) = plane.info.y_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
                 }
                 "xAxis" => {
                     let (p, u) = plane.info.x_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
                 }
                 "origin" => {
                     let (p, u) = plane.info.origin.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
                 }
                 other => Err(KclError::new_undefined_value(
                     KclErrorDetails::new(
@@ -1855,7 +1937,7 @@ impl Node<MemberExpression> {
             },
             (KclValue::Object { value: map, .. }, Property::String(property), false) => {
                 if let Some(value) = map.get(&property) {
-                    Ok(value.to_owned())
+                    Ok(value.to_owned().continue_())
                 } else {
                     Err(KclError::new_undefined_value(
                         KclErrorDetails::new(
@@ -1876,17 +1958,17 @@ impl Node<MemberExpression> {
                 if i == 0
                     && let Some(value) = map.get("x")
                 {
-                    return Ok(value.to_owned());
+                    return Ok(value.to_owned().continue_());
                 }
                 if i == 1
                     && let Some(value) = map.get("y")
                 {
-                    return Ok(value.to_owned());
+                    return Ok(value.to_owned().continue_());
                 }
                 if i == 2
                     && let Some(value) = map.get("z")
                 {
-                    return Ok(value.to_owned());
+                    return Ok(value.to_owned().continue_());
                 }
                 let t = p.type_name();
                 let article = article_for(t);
@@ -1898,7 +1980,7 @@ impl Node<MemberExpression> {
             (KclValue::HomArray { value: arr, .. }, Property::UInt(index), _) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
-                    Ok(value.to_owned())
+                    Ok(value.to_owned().continue_())
                 } else {
                     Err(KclError::new_undefined_value(
                         KclErrorDetails::new(
@@ -1911,7 +1993,7 @@ impl Node<MemberExpression> {
             }
             // Singletons and single-element arrays should be interchangeable, but only indexing by 0 should work.
             // This is kind of a silly property, but it's possible it occurs in generic code or something.
-            (obj, Property::UInt(0), _) => Ok(obj),
+            (obj, Property::UInt(0), _) => Ok(obj.continue_()),
             (KclValue::HomArray { .. }, p, _) => {
                 let t = p.type_name();
                 let article = article_for(t);
@@ -1922,7 +2004,8 @@ impl Node<MemberExpression> {
             }
             (KclValue::Solid { value }, Property::String(prop), false) if prop == "sketch" => Ok(KclValue::Sketch {
                 value: Box::new(value.sketch),
-            }),
+            }
+            .continue_()),
             (geometry @ KclValue::Solid { .. }, Property::String(prop), false) if prop == "tags" => {
                 // This is a common mistake.
                 Err(KclError::new_semantic(KclErrorDetails::new(
@@ -1943,7 +2026,8 @@ impl Node<MemberExpression> {
                     .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                     .collect(),
                 constrainable: false,
-            }),
+            }
+            .continue_()),
             (geometry @ (KclValue::Sketch { .. } | KclValue::Solid { .. }), Property::String(property), false) => {
                 Err(KclError::new_semantic(KclErrorDetails::new(
                     format!("Property `{property}` not found on {}", geometry.human_friendly_type()),
@@ -1969,7 +2053,11 @@ impl Node<MemberExpression> {
 }
 
 impl Node<BinaryExpression> {
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         enum State {
             EvaluateLeft(Node<BinaryExpression>),
             FromLeft {
@@ -1999,6 +2087,7 @@ impl Node<BinaryExpression> {
                         }
                         part => {
                             let left_value = part.get_result(exec_state, ctx).await?;
+                            let left_value = control_continue!(left_value);
                             stack.push(State::EvaluateRight { node, left: left_value });
                         }
                     }
@@ -2018,6 +2107,7 @@ impl Node<BinaryExpression> {
                         }
                         part => {
                             let right_value = part.get_result(exec_state, ctx).await?;
+                            let right_value = control_continue!(right_value);
                             let result = node.apply_operator(exec_state, ctx, left, right_value).await?;
                             last_result = Some(result);
                         }
@@ -2033,7 +2123,9 @@ impl Node<BinaryExpression> {
             }
         }
 
-        last_result.ok_or_else(|| Self::missing_result_error(self))
+        last_result
+            .map(KclValue::continue_)
+            .ok_or_else(|| Self::missing_result_error(self))
     }
 
     async fn apply_operator(
@@ -2196,11 +2288,11 @@ impl Node<BinaryExpression> {
                             let range = self.as_source_range();
                             let p0 = &points[0];
                             let p1 = &points[1];
-                            let solver_pt0 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+                            let solver_pt0 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p0.vars.x.to_constraint_id(range)?,
                                 p0.vars.y.to_constraint_id(range)?,
                             );
-                            let solver_pt1 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+                            let solver_pt1 = kcl_ezpz::datatypes::inputs::DatumPoint::new_xy(
                                 p1.vars.x.to_constraint_id(range)?,
                                 p1.vars.y.to_constraint_id(range)?,
                             );
@@ -2355,10 +2447,15 @@ impl Node<BinaryExpression> {
 }
 
 impl Node<UnaryExpression> {
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         match self.operator {
             UnaryOperator::Not => {
                 let value = self.argument.get_result(exec_state, ctx).await?;
+                let value = control_continue!(value);
                 let KclValue::Bool {
                     value: bool_value,
                     meta: _,
@@ -2380,10 +2477,11 @@ impl Node<UnaryExpression> {
                     meta,
                 };
 
-                Ok(negated)
+                Ok(negated.continue_())
             }
             UnaryOperator::Neg => {
-                let value = &self.argument.get_result(exec_state, ctx).await?;
+                let value = self.argument.get_result(exec_state, ctx).await?;
+                let value = control_continue!(value);
                 let err = || {
                     KclError::new_semantic(KclErrorDetails::new(
                         format!(
@@ -2393,7 +2491,7 @@ impl Node<UnaryExpression> {
                         vec![self.into()],
                     ))
                 };
-                match value {
+                match &value {
                     KclValue::Number { value, ty, .. } => {
                         let meta = vec![Metadata {
                             source_range: self.into(),
@@ -2402,7 +2500,8 @@ impl Node<UnaryExpression> {
                             value: -value,
                             meta,
                             ty: *ty,
-                        })
+                        }
+                        .continue_())
                     }
                     KclValue::Plane { value } => {
                         let mut plane = value.clone();
@@ -2418,7 +2517,7 @@ impl Node<UnaryExpression> {
 
                         plane.value = PlaneType::Uninit;
                         plane.id = exec_state.next_uuid();
-                        Ok(KclValue::Plane { value: plane })
+                        Ok(KclValue::Plane { value: plane }.continue_())
                     }
                     KclValue::Object {
                         value: values, meta, ..
@@ -2477,15 +2576,17 @@ impl Node<UnaryExpression> {
                             value,
                             meta: meta.clone(),
                             constrainable: false,
-                        })
+                        }
+                        .continue_())
                     }
                     _ => Err(err()),
                 }
             }
             UnaryOperator::Plus => {
-                let operand = &self.argument.get_result(exec_state, ctx).await?;
+                let operand = self.argument.get_result(exec_state, ctx).await?;
+                let operand = control_continue!(operand);
                 match operand {
-                    KclValue::Number { .. } | KclValue::Plane { .. } => Ok(operand.clone()),
+                    KclValue::Number { .. } | KclValue::Plane { .. } => Ok(operand.continue_()),
                     _ => Err(KclError::new_semantic(KclErrorDetails::new(
                         format!(
                             "You can only apply unary + to numbers or planes, but this is a {}",
@@ -2504,7 +2605,7 @@ pub(crate) async fn execute_pipe_body(
     body: &[Expr],
     source_range: SourceRange,
     ctx: &ExecutorContext,
-) -> Result<KclValue, KclError> {
+) -> Result<KclValueControlFlow, KclError> {
     let Some((first, body)) = body.split_first() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "Pipe expressions cannot be empty".to_owned(),
@@ -2521,6 +2622,7 @@ pub(crate) async fn execute_pipe_body(
     let output = ctx
         .execute_expr(first, exec_state, &meta, &[], StatementKind::Expression)
         .await?;
+    let output = control_continue!(output);
 
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
@@ -2541,7 +2643,7 @@ async fn inner_execute_pipe_body(
     exec_state: &mut ExecState,
     body: &[Expr],
     ctx: &ExecutorContext,
-) -> Result<KclValue, KclError> {
+) -> Result<KclValueControlFlow, KclError> {
     for expression in body {
         if let Expr::TagDeclarator(_) = expression {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -2555,11 +2657,12 @@ async fn inner_execute_pipe_body(
         let output = ctx
             .execute_expr(expression, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
+        let output = control_continue!(output);
         exec_state.mod_local.pipe_value = Some(output);
     }
     // Safe to unwrap here, because pipe_value always has something pushed in when the `match first` executes.
     let final_output = exec_state.mod_local.pipe_value.take().unwrap();
-    Ok(final_output)
+    Ok(final_output.continue_())
 }
 
 impl Node<TagDeclarator> {
@@ -2582,7 +2685,11 @@ impl Node<TagDeclarator> {
 
 impl Node<ArrayExpression> {
     #[async_recursion]
-    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn execute(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
 
         for element in &self.elements {
@@ -2592,6 +2699,7 @@ impl Node<ArrayExpression> {
             let value = ctx
                 .execute_expr(element, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
+            let value = control_continue!(value);
 
             results.push(value);
         }
@@ -2599,13 +2707,18 @@ impl Node<ArrayExpression> {
         Ok(KclValue::HomArray {
             value: results,
             ty: RuntimeType::Primitive(PrimitiveType::Any),
-        })
+        }
+        .continue_())
     }
 }
 
 impl Node<ArrayRangeExpression> {
     #[async_recursion]
-    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn execute(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         let metadata = Metadata::from(&self.start_element);
         let start_val = ctx
             .execute_expr(
@@ -2616,6 +2729,7 @@ impl Node<ArrayRangeExpression> {
                 StatementKind::Expression,
             )
             .await?;
+        let start_val = control_continue!(start_val);
         let start = start_val
             .as_ty_f64()
             .ok_or(KclError::new_semantic(KclErrorDetails::new(
@@ -2629,6 +2743,7 @@ impl Node<ArrayRangeExpression> {
         let end_val = ctx
             .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
+        let end_val = control_continue!(end_val);
         let end = end_val.as_ty_f64().ok_or(KclError::new_semantic(KclErrorDetails::new(
             format!(
                 "Expected number for range end but found {}",
@@ -2678,20 +2793,25 @@ impl Node<ArrayRangeExpression> {
                 })
                 .collect(),
             ty: RuntimeType::Primitive(PrimitiveType::Number(ty)),
-        })
+        }
+        .continue_())
     }
 }
 
 impl Node<ObjectExpression> {
     #[async_recursion]
-    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn execute(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         let mut object = HashMap::with_capacity(self.properties.len());
         for property in &self.properties {
             let metadata = Metadata::from(&property.value);
             let result = ctx
                 .execute_expr(&property.value, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
-
+            let result = control_continue!(result);
             object.insert(property.key.name.clone(), result);
         }
 
@@ -2701,7 +2821,8 @@ impl Node<ObjectExpression> {
                 source_range: self.into(),
             }],
             constrainable: false,
-        })
+        }
+        .continue_())
     }
 }
 
@@ -2726,9 +2847,13 @@ fn number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<TyF64, KclEr
 
 impl Node<IfExpression> {
     #[async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         // Check the `if` branch.
-        let cond = ctx
+        let cond_value = ctx
             .execute_expr(
                 &self.cond,
                 exec_state,
@@ -2736,9 +2861,9 @@ impl Node<IfExpression> {
                 &[],
                 StatementKind::Expression,
             )
-            .await?
-            .get_bool()?;
-        if cond {
+            .await?;
+        let cond_value = control_continue!(cond_value);
+        if cond_value.get_bool()? {
             let block_result = ctx.exec_block(&*self.then_val, exec_state, BodyType::Block).await?;
             // Block must end in an expression, so this has to be Some.
             // Enforced by the parser.
@@ -2748,7 +2873,7 @@ impl Node<IfExpression> {
 
         // Check any `else if` branches.
         for else_if in &self.else_ifs {
-            let cond = ctx
+            let cond_value = ctx
                 .execute_expr(
                     &else_if.cond,
                     exec_state,
@@ -2756,9 +2881,9 @@ impl Node<IfExpression> {
                     &[],
                     StatementKind::Expression,
                 )
-                .await?
-                .get_bool()?;
-            if cond {
+                .await?;
+            let cond_value = control_continue!(cond_value);
+            if cond_value.get_bool()? {
                 let block_result = ctx.exec_block(&*else_if.then_val, exec_state, BodyType::Block).await?;
                 // Block must end in an expression, so this has to be Some.
                 // Enforced by the parser.
@@ -2808,6 +2933,14 @@ impl Property {
         let prop_value = ctx
             .execute_expr(&value, exec_state, metadata, annotations, statement_kind)
             .await?;
+        let prop_value = match prop_value.control {
+            ControlFlowKind::Continue => prop_value.into_value(),
+            ControlFlowKind::Exit => {
+                let message = "Early return inside array brackets is currently not supported".to_owned();
+                debug_assert!(false, "{}", &message);
+                return Err(KclError::new_internal(KclErrorDetails::new(message, property_sr)));
+            }
+        };
         match prop_value {
             KclValue::Number { value, ty, meta: _ } => {
                 if !matches!(
@@ -2851,7 +2984,11 @@ impl Property {
 
 impl Node<PipeExpression> {
     #[async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub(super) async fn get_result(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
         execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
     }
 }
@@ -3427,5 +3564,19 @@ a = PI * 2
         let result = parse_execute(deny).await.unwrap();
         assert_eq!(result.exec_state.errors().len(), 1);
         assert_eq!(result.exec_state.errors()[0].severity, Severity::Error);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cannot_solid_extrude_an_open_profile() {
+        // This should fail during mock execution, because KCL should catch
+        // that the profile is not closed.
+        let code = std::fs::read_to_string("tests/inputs/cannot_solid_extrude_an_open_profile.kcl").unwrap();
+        let program = crate::Program::parse_no_errs(&code).expect("should parse");
+        let exec_ctxt = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&exec_ctxt);
+
+        let err = exec_ctxt.run(&program, &mut exec_state).await.unwrap_err().error;
+        assert!(matches!(err, KclError::Semantic { .. }));
+        exec_ctxt.close().await;
     }
 }

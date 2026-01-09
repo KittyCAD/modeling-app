@@ -52,20 +52,23 @@ function angledLine(
  *  |> angledLine(angle = segAng(a), length = -segLen(a), tag = $c)
  *  |> close()
  */
-export const getRectangleCallExpressions = (tag: string) => {
+export const getRectangleCallExpressions = (
+  tag: string,
+  wasmInstance: ModuleType
+) => {
   return [
     angledLine(
-      createLiteral(0, 'Deg'), // 0 deg
-      createLiteral(0), // This will be the width of the rectangle
+      createLiteral(0, wasmInstance, 'Deg'), // 0 deg
+      createLiteral(0, wasmInstance), // This will be the width of the rectangle
       tag
     ),
     angledLine(
       createBinaryExpression([
         createCallExpressionStdLibKw('segAng', createLocalName(tag), []),
         '+',
-        createLiteral(90, 'Deg'),
+        createLiteral(90, wasmInstance, 'Deg'),
       ]), // 90 offset from the previous line
-      createLiteral(0) // This will be the height of the rectangle
+      createLiteral(0, wasmInstance) // This will be the height of the rectangle
     ),
     angledLine(
       createCallExpressionStdLibKw('segAng', createLocalName(tag), []), // same angle as the first line
@@ -106,11 +109,16 @@ export function updateRectangleSketch(
   pipeExpression: PipeExpression,
   x: number,
   y: number,
-  tag: string
+  tag: string,
+  wasmInstance: ModuleType
 ) {
   const firstEdge = pipeExpression.body[1] as CallExpressionKw
-  mutateKwArgOnly('angle', firstEdge, createLiteral(x >= 0 ? 0 : 180, 'Deg'))
-  mutateKwArgOnly('length', firstEdge, createLiteral(Math.abs(x)))
+  mutateKwArgOnly(
+    'angle',
+    firstEdge,
+    createLiteral(x >= 0 ? 0 : 180, wasmInstance, 'Deg')
+  )
+  mutateKwArgOnly('length', firstEdge, createLiteral(Math.abs(x), wasmInstance))
   const secondEdge = pipeExpression.body[2] as CallExpressionKw
   // 90 offset from the previous line
   mutateKwArgOnly(
@@ -119,11 +127,15 @@ export function updateRectangleSketch(
     createBinaryExpression([
       createCallExpressionStdLibKw('segAng', createLocalName(tag), []),
       Math.sign(y) === Math.sign(x) ? '+' : '-',
-      createLiteral(90, 'Deg'),
+      createLiteral(90, wasmInstance, 'Deg'),
     ])
   )
   // This will be the height of the rectangle
-  mutateKwArgOnly('length', secondEdge, createLiteral(Math.abs(y)))
+  mutateKwArgOnly(
+    'length',
+    secondEdge,
+    createLiteral(Math.abs(y), wasmInstance)
+  )
 }
 
 /**
@@ -140,7 +152,7 @@ export function updateCenterRectangleSketch(
   tag: string,
   originX: number,
   originY: number,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): undefined | Error {
   let startX = originX - Math.abs(deltaX)
   let startY = originY - Math.abs(deltaY)
@@ -157,8 +169,8 @@ export function updateCenterRectangleSketch(
       )
     }
     const at = createArrayExpression([
-      createLiteral(roundOff(startX), undefined, wasmInstance),
-      createLiteral(roundOff(startY), undefined, wasmInstance),
+      createLiteral(roundOff(startX), wasmInstance),
+      createLiteral(roundOff(startY), wasmInstance),
     ])
     mutateKwArgOnly(ARG_AT, callExpression, at)
   }
@@ -174,7 +186,11 @@ export function updateCenterRectangleSketch(
         `Expected rectangle edge 0 to be CallExpressionKw, but it was a ${edge0.type}`
       )
     }
-    mutateKwArgOnly(ARG_LENGTH, edge0, createLiteral(Math.abs(twoX)))
+    mutateKwArgOnly(
+      ARG_LENGTH,
+      edge0,
+      createLiteral(Math.abs(twoX), wasmInstance)
+    )
   }
 
   {
@@ -198,11 +214,11 @@ export function updateCenterRectangleSketch(
     const newAngle = createBinaryExpression([
       createCallExpressionStdLibKw('segAng', createLocalName(tag), []),
       oldAngleOperator,
-      createLiteral(90, 'Deg', wasmInstance),
+      createLiteral(90, wasmInstance, 'Deg'),
     ])
 
     // Calculate new height.
-    const newLength = createLiteral(Math.abs(twoY), undefined, wasmInstance)
+    const newLength = createLiteral(Math.abs(twoY), wasmInstance)
 
     // Update old rectangle.
     mutateKwArgOnly(ARG_ANGLE, edge1, newAngle)

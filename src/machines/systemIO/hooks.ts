@@ -1,9 +1,9 @@
 import type { FileEntry } from '@src/lib/project'
 import { type MlToolResult } from '@kittycad/lib'
-import { type settings } from '@src/lib/settings/initialSettings'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { SystemIOActor } from '@src/lib/singletons'
 import { systemIOActor } from '@src/lib/singletons'
-import { type MlEphantManagerActor2 } from '@src/machines/mlEphantManagerMachine2'
+import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -11,6 +11,11 @@ import {
 import { useSelector } from '@xstate/react'
 import { useEffect } from 'react'
 import { NIL as uuidNIL } from 'uuid'
+import {
+  type BillingActor,
+  BillingTransition,
+} from '@src/machines/billingMachine'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const useRequestedProjectName = () =>
   useSelector(systemIOActor, (state) => state.context.requestedProjectName)
@@ -33,14 +38,14 @@ export const useClearURLParams = () =>
   useSelector(systemIOActor, (state) => state.context.clearURLParams)
 
 export const useProjectIdToConversationId = (
-  mlEphantManagerActor2: MlEphantManagerActor2,
+  mlEphantManagerActor: MlEphantManagerActor,
   systemIOActor: SystemIOActor,
-  settings2: typeof settings
+  settings2: SettingsType
 ) => {
   useEffect(() => {
     let lastConversationId =
-      mlEphantManagerActor2.getSnapshot().context.conversationId
-    const subscription2 = mlEphantManagerActor2.subscribe((next) => {
+      mlEphantManagerActor.getSnapshot().context.conversationId
+    const subscription = mlEphantManagerActor.subscribe((next) => {
       if (settings2.meta.id.current === undefined) {
         return
       }
@@ -73,7 +78,7 @@ export const useProjectIdToConversationId = (
     })
 
     return () => {
-      subscription2.unsubscribe()
+      subscription.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settings2.meta.id.current])
@@ -81,8 +86,11 @@ export const useProjectIdToConversationId = (
 
 // Watch MlEphant for any responses that require files to be created.
 export const useWatchForNewFileRequestsFromMlEphant = (
-  mlEphantManagerActor2: MlEphantManagerActor2,
-  fn2: (
+  mlEphantManagerActor: MlEphantManagerActor,
+  billingActor: BillingActor,
+  token: string,
+  engineCommandManager: ConnectionManager,
+  fn: (
     toolOutputTextToCad: MlToolResult,
     projectNameCurrentlyOpened: string,
     fileFocusedOnInEditor?: FileEntry
@@ -90,7 +98,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
 ) => {
   useEffect(() => {
     let lastId: number | undefined = undefined
-    const subscription2 = mlEphantManagerActor2.subscribe((next) => {
+    const subscription = mlEphantManagerActor.subscribe((next) => {
       if (next.context.lastMessageId === lastId) return
       lastId = next.context.lastMessageId
 
@@ -105,15 +113,27 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       // We don't know what project to write to, so do nothing.
       if (!next.context.projectNameCurrentlyOpened) return
 
-      fn2(
+      fn(
         lastResponse.tool_output.result,
         next.context.projectNameCurrentlyOpened,
         next.context.fileFocusedOnInEditor
       )
+
+      // TODO: Move elsewhere eventually, decouple from SystemIOActor
+      billingActor.send({
+        type: BillingTransition.Update,
+        apiToken: token,
+      })
+
+      // Clear selections since new model
+      engineCommandManager.modelingSend({
+        type: 'Set selection',
+        data: { selection: undefined, selectionType: 'singleCodeCursor' },
+      })
     })
 
     return () => {
-      subscription2.unsubscribe()
+      subscription.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])

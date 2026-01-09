@@ -13,7 +13,7 @@ import {
   parseAppSettings,
   parseProjectSettings,
 } from '@src/lang/wasm'
-import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -32,9 +32,27 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import { processEnv } from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
+import type { Stats } from 'fs'
+
+const convertStatsToFileMetadata = (
+  stats: Stats | null
+): FileMetadata | null => {
+  if (!stats) {
+    return null
+  }
+  return {
+    modified: stats.mtimeMs,
+    accessed: stats.atimeMs,
+    created: stats.ctimeMs,
+    // this is not used anywhere and we use statIsDirectory in other places
+    // that need to know if it's a file or directory.
+    type: null,
+    size: stats.size,
+    permission: null,
+  }
+}
 
 export async function renameProjectDirectory(
   electron: IElectronAPI,
@@ -115,13 +133,14 @@ export async function mkdirOrNOOP(
 export async function createNewProjectDirectory(
   electron: IElectronAPI,
   projectName: string,
+  wasmInstance: ModuleType,
   initialCode?: string,
   configuration?: DeepPartial<Configuration> | Error,
   initialFileName?: string,
   overrideApplicationProjectDirectory?: string
 ): Promise<Project> {
   if (!configuration) {
-    configuration = await readAppSettingsFile(electron)
+    configuration = await readAppSettingsFile(electron, wasmInstance)
   }
 
   if (err(configuration)) return Promise.reject(configuration)
@@ -153,13 +172,14 @@ export async function createNewProjectDirectory(
   // user's settings.
   const codeToWrite = newKclFile(
     initialCode,
-    configuration?.settings?.modeling?.base_unit ?? DEFAULT_DEFAULT_LENGTH_UNIT
+    configuration?.settings?.modeling?.base_unit ?? DEFAULT_DEFAULT_LENGTH_UNIT,
+    wasmInstance
   )
   if (err(codeToWrite)) return Promise.reject(codeToWrite)
   await electron.writeFile(projectFile, codeToWrite)
   let metadata: FileMetadata | null = null
   try {
-    metadata = await electron.stat(projectFile)
+    metadata = convertStatsToFileMetadata(await electron.stat(projectFile))
   } catch (e) {
     if (e === 'ENOENT') {
       console.error('File does not exist')
@@ -184,34 +204,19 @@ export async function createNewProjectDirectory(
 
 export async function listProjects(
   electron: IElectronAPI,
-  configuration?: DeepPartial<Configuration> | Error,
-  wasmInstance?: ModuleType
+  initPromise: Promise<ModuleType> | ModuleType,
+  configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
   // Make sure we have wasm initialized.
-  const initializedResult = await initPromise
-
-  // Bypass if vitest!
-  if (!processEnv()?.VITEST) {
-    // Hack: This is required because of the initialise module load and vitest unit tests spamming this
-    // since it is a global dependency that is spam loaded. This function should never return a string.
-    // If it does during application code something is wrong.
-    if (typeof initializedResult === 'string') {
-      console.error(
-        'TODO: Stop globally importing and spamming lang/wasmUtils/initialise. You should not see this message in the application.'
-      )
-      return Promise.reject(new Error(initializedResult))
-    }
-
-    if (err(initializedResult)) {
-      return Promise.reject(initializedResult)
-    }
-  }
+  const wasmInstance = await initPromise
 
   if (configuration === undefined) {
-    configuration = await readAppSettingsFile(electron).catch((e) => {
-      console.error(e)
-      return e
-    })
+    configuration = await readAppSettingsFile(electron, wasmInstance).catch(
+      (e) => {
+        console.error(e)
+        return e
+      }
+    )
   }
 
   if (err(configuration) || !configuration) return Promise.reject(configuration)
@@ -240,7 +245,7 @@ export async function listProjects(
       continue
     }
 
-    const project = await getProjectInfo(electron, projectPath)
+    const project = await getProjectInfo(electron, projectPath, wasmInstance)
 
     if (
       project.kcl_file_count === 0 &&
@@ -429,12 +434,12 @@ const directoryCount = (file: FileEntry) => {
 export async function getProjectInfo(
   electron: IElectronAPI,
   projectPath: string,
-  wasmInstance?: ModuleType
+  wasmInstance: ModuleType
 ): Promise<Project> {
   // Check the directory.
-  let metadata
+  let stats: Stats | undefined
   try {
-    metadata = await electron.stat(projectPath)
+    stats = await electron.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(
@@ -474,17 +479,7 @@ export async function getProjectInfo(
 
   let project = {
     ...walked,
-    // We need to map from node fs.Stats to FileMetadata
-    metadata: {
-      modified: metadata.mtimeMs,
-      accessed: metadata.atimeMs,
-      created: metadata.ctimeMs,
-      // this is not used anywhere and we use statIsDirectory in other places
-      // that need to know if it's a file or directory.
-      type: null,
-      size: metadata.size,
-      permission: metadata.mode,
-    },
+    metadata: convertStatsToFileMetadata(stats ?? null),
     kcl_file_count: 0,
     directory_count: 0,
     default_file,
@@ -683,7 +678,8 @@ export const getInitialDefaultDir = async (electron: IElectronAPI) => {
 
 export const readProjectSettingsFile = async (
   electron: IElectronAPI,
-  projectPath: string
+  projectPath: string,
+  wasmInstance: ModuleType
 ): Promise<DeepPartial<ProjectConfiguration>> => {
   let settingsPath = await getProjectSettingsFilePath(electron, projectPath)
 
@@ -699,7 +695,7 @@ export const readProjectSettingsFile = async (
   const configToml = await fsManager.readFile(settingsPath, {
     encoding: 'utf-8',
   })
-  const configObj = parseProjectSettings(configToml)
+  const configObj = parseProjectSettings(configToml, wasmInstance)
   if (err(configObj)) {
     return Promise.reject(configObj)
   }
@@ -709,7 +705,10 @@ export const readProjectSettingsFile = async (
 /**
  * Read the app settings file, or creates an initial one if it doesn't exist.
  */
-export const readAppSettingsFile = async (electron: IElectronAPI) => {
+export const readAppSettingsFile = async (
+  electron: IElectronAPI,
+  wasmInstance: ModuleType
+) => {
   let settingsPath = await getAppSettingsFilePath(electron)
   const initialProjectDirConfig: DeepPartial<
     NonNullable<Required<Configuration>['settings']['project']>
@@ -720,7 +719,7 @@ export const readAppSettingsFile = async (electron: IElectronAPI) => {
     const configToml = await fsManager.readFile(settingsPath, {
       encoding: 'utf-8',
     })
-    const parsedAppConfig = parseAppSettings(configToml)
+    const parsedAppConfig = parseAppSettings(configToml, wasmInstance)
     if (err(parsedAppConfig)) {
       return Promise.reject(parsedAppConfig)
     }
@@ -748,7 +747,7 @@ export const readAppSettingsFile = async (electron: IElectronAPI) => {
   }
 
   // The file doesn't exist, create a new one.
-  const defaultAppConfig = defaultAppSettings()
+  const defaultAppConfig = defaultAppSettings(wasmInstance)
   if (err(defaultAppConfig)) {
     return Promise.reject(defaultAppConfig)
   }
@@ -810,18 +809,18 @@ export const writeEnvironmentConfigurationToken = async (
   return result
 }
 
-export const writeEnvironmentConfigurationPool = async (
+export const writeEnvironmentConfigurationKittycadWebSocketUrl = async (
   electron: IElectronAPI,
   environmentName: string,
-  pool: string
+  kittycadWebSocketUrl: string
 ) => {
-  pool = pool.trim()
+  kittycadWebSocketUrl = kittycadWebSocketUrl.trim()
   const path = await getEnvironmentConfigurationPath(electron, environmentName)
   const environmentConfiguration = await getEnvironmentConfigurationObject(
     electron,
     environmentName
   )
-  environmentConfiguration.pool = pool
+  environmentConfiguration.kittycadWebSocketUrl = kittycadWebSocketUrl
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
   const result = await electron.writeFile(path, requestedConfiguration)
   console.log(`wrote ${environmentName}.json to disk`)
@@ -839,24 +838,11 @@ export const getEnvironmentConfigurationObject = async (
   if (environmentConfiguration === null) {
     const initialConfiguration: EnvironmentConfiguration = {
       token: '',
-      pool: '',
       domain: environmentName,
     }
     environmentConfiguration = initialConfiguration
   }
   return environmentConfiguration
-}
-
-export const readEnvironmentConfigurationPool = async (
-  electron: IElectronAPI,
-  environmentName: string
-) => {
-  const environmentConfiguration = await readEnvironmentConfigurationFile(
-    electron,
-    environmentName
-  )
-  if (!environmentConfiguration?.pool) return ''
-  return environmentConfiguration.pool.trim()
 }
 
 export const readEnvironmentConfigurationToken = async (
@@ -869,6 +855,48 @@ export const readEnvironmentConfigurationToken = async (
   )
   if (!environmentConfiguration?.token) return ''
   return environmentConfiguration.token.trim()
+}
+
+export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
+  electron: IElectronAPI,
+  environmentName: string
+) => {
+  const environmentConfiguration = await readEnvironmentConfigurationFile(
+    electron,
+    environmentName
+  )
+  if (!environmentConfiguration?.kittycadWebSocketUrl) return ''
+  return environmentConfiguration.kittycadWebSocketUrl.trim()
+}
+
+export const writeEnvironmentConfigurationMlephantWebSocketUrl = async (
+  electron: IElectronAPI,
+  environmentName: string,
+  mlephantWebSocketUrl: string
+) => {
+  mlephantWebSocketUrl = mlephantWebSocketUrl.trim()
+  const path = await getEnvironmentConfigurationPath(electron, environmentName)
+  const environmentConfiguration = await getEnvironmentConfigurationObject(
+    electron,
+    environmentName
+  )
+  environmentConfiguration.mlephantWebSocketUrl = mlephantWebSocketUrl
+  const requestedConfiguration = JSON.stringify(environmentConfiguration)
+  const result = await electron.writeFile(path, requestedConfiguration)
+  console.log(`wrote ${environmentName}.json to disk`)
+  return result
+}
+
+export const readEnvironmentConfigurationMlephantWebSocketUrl = async (
+  electron: IElectronAPI,
+  environmentName: string
+) => {
+  const environmentConfiguration = await readEnvironmentConfigurationFile(
+    electron,
+    environmentName
+  )
+  if (!environmentConfiguration?.mlephantWebSocketUrl) return ''
+  return environmentConfiguration.mlephantWebSocketUrl.trim()
 }
 
 export const readEnvironmentFile = async (electron: IElectronAPI) => {

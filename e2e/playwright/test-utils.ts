@@ -539,7 +539,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       return toNormalizedCode(text)
     },
 
-    async editorTextMatches(code: string) {
+    async editorTextMatches(this: void, code: string) {
       const editor = page.locator(editorSelector)
       return expect
         .poll(async () => {

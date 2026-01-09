@@ -1,5 +1,6 @@
 // A mounting bracket for the Focusrite Scarlett Solo audio interface
 // This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material
+// Categories: Maker
 
 // Set units
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)

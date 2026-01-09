@@ -38,7 +38,7 @@ import type {
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferExecution } from '@src/lib/utils'
+import { deferredCallback } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { EngineDebugger } from '@src/lib/debugger'
@@ -99,13 +99,14 @@ import {
   themeCompartment,
   appSettingsThemeEffect,
   settingsUpdateAnnotation,
-} from '@src/lib/codeEditor'
+} from '@src/editor/plugins/theme'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import {
   createEmptyAst,
   setAstEffect,
   updateAstAnnotation,
 } from '@src/editor/plugins/ast'
+import { setKclVersion } from '@src/lib/kclVersion'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -152,13 +153,34 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 export class KclManager extends EventTarget {
   // SYSTEM DEPENDENCIES
 
-  private _wasmInstance: Promise<ModuleType | string>
+  private _wasmInstancePromise: Promise<ModuleType>
+  private _wasmInstance: ModuleType | null = null
   /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
-  set wasmInstancePromise(newInstancePromise: Promise<ModuleType | string>) {
-    this._wasmInstance = newInstancePromise
+  get wasmInstancePromise() {
+    return this._wasmInstancePromise
+  }
+  set wasmInstancePromise(newInstancePromise: Promise<ModuleType>) {
+    this._wasmInstancePromise = newInstancePromise
+    void this._wasmInstancePromise.then((instance) => {
+      this._wasmInstance = instance
+    })
+  }
+  /**
+   * You probably should use `wasmInstancePromise` instead.
+   *
+   * This is for when you need the wasm instance in synchronous time,
+   * you can't make it asynchronous,
+   * and for some reason you can absolutely guarantee WASM will be done initializing.
+   */
+  get wasmInstance(): ModuleType {
+    if (this._wasmInstance === null) {
+      // eslint-disable-next-line  suggest-no-throw/suggest-no-throw
+      throw new Error('Attempted to get wasmInstance before initialization')
+    }
+    return this._wasmInstance
   }
   private _sceneEntitiesManager?: SceneEntities
-  private singletons: Singletons
+  readonly singletons: Singletons
   engineCommandManager: ConnectionManager
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
   private _modelingState: StateFrom<typeof modelingMachine> | null = null
@@ -249,11 +271,17 @@ export class KclManager extends EventTarget {
   private _copilotEnabled: boolean = true
   private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
-  private _kclVersion: string | undefined = undefined
+  private _kclVersion: string = ''
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+  public mlEphantManagerMachineBulkManipulatingFileSystem = false
+  // The last code written by the app, used to compare against external changes to the current file
+  public lastWrite: {
+    code: string // last code written by ZDS
+    time: number // Unix epoch time in milliseconds
+  } | null = null
   public isBufferMode = false
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
   /** Values merged in from former EditorManager and CodeManager classes */
@@ -311,7 +339,8 @@ export class KclManager extends EventTarget {
   // so we don't waste time getting it multiple times
   get kclVersion() {
     if (this._kclVersion === undefined) {
-      this._kclVersion = getKclVersion()
+      this._kclVersion = getKclVersion(this.wasmInstance)
+      setKclVersion(this.kclVersion)
     }
     return this._kclVersion
   }
@@ -367,6 +396,20 @@ export class KclManager extends EventTarget {
   set sceneEntitiesManager(s: SceneEntities) {
     this._sceneEntitiesManager = s
   }
+  /**
+   * You probably should provide the `sceneEntitiesManager` singleton instead.
+   *
+   * This is for when you need the sceneEntitiesManager guaranteed to be there,
+   * and you have KclManager available but not other singletons for some reason,
+   * and you can somehow absolutely guarantee that sceneEntities has been set.
+   */
+  get sceneEntitiesManager() {
+    if (!this._sceneEntitiesManager) {
+      // eslint-disable-next-line  suggest-no-throw/suggest-no-throw
+      throw new Error('Requested SceneEntities too soon from within KclManager')
+    }
+    return this._sceneEntitiesManager
+  }
 
   set isExecuting(isExecuting) {
     this._isExecuting.value = isExecuting
@@ -401,12 +444,12 @@ export class KclManager extends EventTarget {
 
   constructor(
     engineCommandManager: ConnectionManager,
-    wasmInstance: Promise<ModuleType | string>,
+    wasmInstance: Promise<ModuleType>,
     singletons: Singletons
   ) {
     super()
     this.engineCommandManager = engineCommandManager
-    this._wasmInstance = wasmInstance
+    this._wasmInstancePromise = wasmInstance
     this.singletons = singletons
 
     /** Merged code from EditorManager and CodeManager classes */
@@ -439,8 +482,9 @@ export class KclManager extends EventTarget {
     }
     /** End merged code from EditorManager and CodeManager */
 
-    this._wasmInstance
+    this._wasmInstancePromise
       .then(async (wasmInstance) => {
+        this._kclVersion = getKclVersion(wasmInstance)
         if (typeof wasmInstance === 'string') {
           this.wasmInitFailed = true
         } else {
@@ -489,7 +533,7 @@ export class KclManager extends EventTarget {
     // the cache and clear the scene.
     if (this._astParseFailed && this._switchedFiles) {
       await this.singletons.rustContext.clearSceneAndBustCache(
-        await jsAppSettings(),
+        await jsAppSettings(this.singletons.rustContext.settingsActor),
         this.currentFilePath || undefined
       )
     } else if (this._switchedFiles) {
@@ -540,13 +584,13 @@ export class KclManager extends EventTarget {
       // TODO: we wanna remove this logic from xstate, it is racey
       // This defer is bullshit but playwright wants it
       // It was like this in engineConnection.ts already
-      deferExecution((_a?: null) => {
+      deferredCallback((_a?: null) => {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph populated',
         })
       }, 200)(null)
     } else {
-      deferExecution((_a?: null) => {
+      deferredCallback((_a?: null) => {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph emptied',
         })
@@ -554,7 +598,7 @@ export class KclManager extends EventTarget {
     }
 
     // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
-    deferExecution((_a?: null) => {
+    deferredCallback((_a?: null) => {
       if (this.defaultPlanes) {
         this.engineCommandManager.modelingSend({
           type: 'Artifact graph initialized',
@@ -565,13 +609,9 @@ export class KclManager extends EventTarget {
 
   async safeParse(
     code: string,
-    providedWasmInstance?: ModuleType
+    wasmInstance: Promise<ModuleType> | ModuleType = this.wasmInstancePromise
   ): Promise<Node<Program> | null> {
-    const wasmInstance = providedWasmInstance || (await this._wasmInstance)
-    const result = parse(
-      code,
-      typeof wasmInstance !== 'string' ? wasmInstance : undefined
-    )
+    const result = parse(code, await wasmInstance)
     this.diagnostics = []
     this._astParseFailed = false
 
@@ -626,8 +666,6 @@ export class KclManager extends EventTarget {
     this._cancelTokens.set(currentExecutionId, false)
 
     this.isExecuting = true
-    // Ensure WASM is initialized
-    await this._wasmInstance
 
     const codeThatExecuted = this.code
     const { logs, errors, execState, isInterrupted } = await executeAst({
@@ -652,7 +690,7 @@ export class KclManager extends EventTarget {
         await lintAst({
           ast,
           sourceCode: this.code,
-          instance: this.singletons.rustContext.getRustInstance(),
+          instance: await this._wasmInstancePromise,
         })
       )
       if (this._sceneEntitiesManager) {
@@ -660,6 +698,7 @@ export class KclManager extends EventTarget {
           engineCommandManager: this.engineCommandManager,
           kclManager: this,
           sceneEntitiesManager: this._sceneEntitiesManager,
+          wasmInstance: await this.wasmInstancePromise,
         })
       }
     }
@@ -674,7 +713,7 @@ export class KclManager extends EventTarget {
 
     let fileSettings = getSettingsAnnotation(
       ast,
-      this.singletons.rustContext.getRustInstance()
+      await this.wasmInstancePromise
     )
     if (err(fileSettings)) {
       fileSettings = {}
@@ -739,21 +778,13 @@ export class KclManager extends EventTarget {
   }
 
   // DO NOT CALL THIS from codemirror ever.
-  async executeAstMock(
-    ast: Program,
-    providedWasmInstance?: ModuleType
-  ): Promise<null | Error> {
-    const awaitedWasmInstance =
-      providedWasmInstance || (await this._wasmInstance)
-    const optionalWasmInstance =
-      typeof awaitedWasmInstance !== 'string' ? awaitedWasmInstance : undefined
-
-    const newCode = recast(ast, optionalWasmInstance)
+  async executeAstMock(ast: Program): Promise<null | Error> {
+    const newCode = recast(ast, await this.wasmInstancePromise)
     if (err(newCode)) {
       console.error(newCode)
       return newCode
     }
-    const newAst = await this.safeParse(newCode, optionalWasmInstance)
+    const newAst = await this.safeParse(newCode)
 
     if (!newAst) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
@@ -786,7 +817,7 @@ export class KclManager extends EventTarget {
     })
   }
   async executeCode(): Promise<void> {
-    const ast = await this.safeParse(this.code)
+    const ast = await this.safeParse(this.code, await this.wasmInstancePromise)
 
     if (!ast) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
@@ -816,7 +847,7 @@ export class KclManager extends EventTarget {
       this.clearAst()
       return
     }
-    const code = recast(ast)
+    const code = recast(ast, await this.wasmInstancePromise)
     if (err(code)) {
       console.error(code)
       return
@@ -841,16 +872,15 @@ export class KclManager extends EventTarget {
     execute: boolean,
     optionalParams?: {
       focusPath?: Array<PathToNode>
-    },
-    wasmInstance?: ModuleType
+    }
   ): Promise<{
     newAst: Node<Program>
     selections?: Selections
   }> {
-    const newCode = recast(ast, wasmInstance)
+    const newCode = recast(ast, await this._wasmInstancePromise)
     if (err(newCode)) return Promise.reject(newCode)
 
-    const astWithUpdatedSource = await this.safeParse(newCode, wasmInstance)
+    const astWithUpdatedSource = await this.safeParse(newCode)
     if (!astWithUpdatedSource) return Promise.reject(new Error('bad ast'))
     let returnVal: Selections | undefined = undefined
 
@@ -863,7 +893,8 @@ export class KclManager extends EventTarget {
       for (const path of optionalParams.focusPath) {
         const getNodeFromPathResult = getNodeFromPath<any>(
           astWithUpdatedSource,
-          path
+          path,
+          await this.wasmInstancePromise
         )
         if (err(getNodeFromPathResult))
           return Promise.reject(getNodeFromPathResult)
@@ -896,10 +927,7 @@ export class KclManager extends EventTarget {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead..
-      const didReParse = await this.executeAstMock(
-        astWithUpdatedSource,
-        wasmInstance
-      )
+      const didReParse = await this.executeAstMock(astWithUpdatedSource)
       if (err(didReParse)) return Promise.reject(didReParse)
     }
 
@@ -976,6 +1004,7 @@ export class KclManager extends EventTarget {
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilterToDefault(
     sceneEntitiesManager: SceneEntities,
+    wasmInstance: ModuleType,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
@@ -985,12 +1014,14 @@ export class KclManager extends EventTarget {
       sceneEntitiesManager,
       selectionsToRestore,
       handleSelectionBatchFn: handleSelectionBatch,
+      wasmInstance,
     })
   }
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilter(
     filter: EntityType[],
     sceneEntitiesManager: SceneEntities,
+    wasmInstance: ModuleType,
     selectionsToRestore?: Selections,
     handleSelectionBatch?: typeof handleSelectionBatchFn
   ) {
@@ -1001,6 +1032,7 @@ export class KclManager extends EventTarget {
       sceneEntitiesManager,
       selectionsToRestore,
       handleSelectionBatchFn: handleSelectionBatch,
+      wasmInstance,
     })
   }
 
@@ -1361,7 +1393,8 @@ export class KclManager extends EventTarget {
   handleOnViewUpdate(
     viewUpdate: ViewUpdate,
     processCodeMirrorRanges: typeof processCodeMirrorRangesFn,
-    sceneEntitiesManager: SceneEntities
+    sceneEntitiesManager: SceneEntities,
+    wasmInstance: ModuleType
   ): void {
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
@@ -1395,6 +1428,7 @@ export class KclManager extends EventTarget {
       systemDeps: {
         engineCommandManager: this.engineCommandManager,
         sceneEntitiesManager,
+        wasmInstance,
       },
     })
     if (!eventInfo) {
@@ -1442,23 +1476,59 @@ export class KclManager extends EventTarget {
     return this._currentFilePath
   }
   updateCurrentFilePath(path: string) {
-    this._currentFilePath = path
+    if (this._currentFilePath !== path) {
+      this._currentFilePath = path
+      this.lastWrite = null
+    }
   }
   /**
    * Update the code in the editor.
    * This is invoked when a segment is being dragged on the canvas, among other things.
    */
   updateCodeEditor(code: string, clearHistory?: boolean): void {
+    // If the code hasn't changed, skip the update to preserve cursor position
+    // However, if clearHistory is true, we still need to clear the history
+    const currentCode = this.editorState.doc.toString()
+    if (currentCode === code) {
+      if (clearHistory) {
+        // Code is the same but we need to clear history (e.g., opening a new file with same content)
+        clearCodeMirrorHistory(this)
+      }
+      return
+    }
+
+    // Preserve the current selection/cursor position
+    const currentSelection = this.editorState.selection
+    const newDocLength = code.length
+
+    // Map each selection range through the document change
+    // Since we're replacing the entire document, we need to clamp positions
+    // to the new document length if they exceed it
+    const preservedRanges = currentSelection.ranges.map((range) => {
+      const from = Math.min(range.from, newDocLength)
+      const to = Math.min(range.to, newDocLength)
+      // Ensure from <= to
+      if (from === to) {
+        return EditorSelection.cursor(from)
+      }
+      return EditorSelection.range(from, to)
+    })
+
     this.code = code
     if (clearHistory) {
       clearCodeMirrorHistory(this)
     }
+
     this.dispatch({
       changes: {
         from: 0,
         to: this.editorState?.doc.length || 0,
         insert: code,
       },
+      selection: EditorSelection.create(
+        preservedRanges,
+        currentSelection.mainIndex
+      ),
       annotations: [
         editorCodeUpdateEvent,
         Transaction.addToHistory.of(!clearHistory),
@@ -1482,13 +1552,17 @@ export class KclManager extends EventTarget {
       // and file-system watchers which read, will receive empty data during
       // writes.
       clearTimeout(this.timeoutWriter)
-      this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
           if (!this._currentFilePath)
             return reject(new Error('currentFilePath not set'))
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
+          this.lastWrite = {
+            code: this.code ?? '',
+            time: Date.now(),
+          }
+          this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
           electron
             .writeFile(this._currentFilePath, this.code ?? '')
             .then(resolve)
@@ -1506,9 +1580,10 @@ export class KclManager extends EventTarget {
   }
   async updateEditorWithAstAndWriteToFile(
     ast: Program,
-    options?: Partial<{ isDeleting: boolean }>,
-    wasmInstance?: ModuleType
+    options?: Partial<{ isDeleting: boolean }>
   ) {
+    const wasmInstance = await this.wasmInstancePromise
+
     // We clear the AST when it cannot be parsed. If we are trying to write an
     // empty AST, it's probably because of an earlier error. That's a bad state
     // to be in, and it's not going to be pretty, but at the least, let's not

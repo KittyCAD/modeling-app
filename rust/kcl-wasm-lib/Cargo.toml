@@ -2,7 +2,7 @@
 name = "kcl-wasm-lib"
 description = "KittyCAD Language wasm bindings"
 license = "MIT"
-version = "0.1.116"
+version = "0.1.119"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 publish = false
@@ -24,7 +24,8 @@ data-encoding = "2.9.0"
 futures = "0.3.31"
 # Enable the feature in a transitive dependency.
 getrandom_2 = { package = "getrandom", version = "0.2", features = ["js"] }
-getrandom_3 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
+# Enable wasm_js feature for all transitive dependencies using getrandom 0.3
+getrandom = { version = "0.3", features = ["wasm_js"] }
 gloo-utils = "0.2.0"
 js-sys = "0.3.72"
 kcl-lib = { path = "../kcl-lib", features = ["artifact-graph"] }
@@ -32,7 +33,7 @@ kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true, features = ["sync", "rt"] }
-toml = "0.9.8"
+toml = "0.9.10"
 tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
 uuid = { workspace = true, features = ["v4", "js", "serde"] }
 wasm-bindgen = "0.2.99"

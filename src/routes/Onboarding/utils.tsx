@@ -46,6 +46,7 @@ import {
 } from '@src/lib/layout'
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -83,7 +84,7 @@ export function useNextClick(newStatus: OnboardingStatus) {
       data: { level: 'user', value: newStatus },
     })
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
-    navigate(targetRoute)
+    void navigate(targetRoute)
   }, [filePath, newStatus, navigate])
 }
 
@@ -104,7 +105,7 @@ export function useDismiss() {
       })
       waitFor(settingsActor, (state) => state.matches('idle'))
         .then(() => {
-          navigate(filePath)
+          void navigate(filePath)
           toast.success(
             'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
             {
@@ -212,7 +213,7 @@ export function OnboardingButtons({
           iconStart={{
             icon:
               previousStep && previousStep !== 'dismissed'
-                ? 'arrowLeft'
+                ? 'arrowShortLeft'
                 : 'close',
             className: 'text-chalkboard-10',
             bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
@@ -245,7 +246,9 @@ export function OnboardingButtons({
           }}
           iconStart={{
             icon:
-              nextStep && nextStep !== 'completed' ? 'arrowRight' : 'checkmark',
+              nextStep && nextStep !== 'completed'
+                ? 'arrowShortRight'
+                : 'checkmark',
             bgClassName: 'dark:bg-chalkboard-80',
           }}
           className="dark:hover:bg-chalkboard-80/50"
@@ -297,7 +300,10 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     return Promise.resolve()
   }
 
-  const isCodeResettable = hasResetReadyCode(deps.kclManager)
+  const isCodeResettable = hasResetReadyCode(
+    deps.kclManager,
+    await deps.kclManager.wasmInstancePromise
+  )
   if (isCodeResettable) {
     return resetCodeAndAdvanceOnboarding(deps)
   }
@@ -322,16 +328,16 @@ export async function resetCodeAndAdvanceOnboarding({
   kclManager.updateCodeStateEditor(browserAxialFan)
   kclManager.writeToFile().catch(reportRejection)
   kclManager.executeCode().catch(reportRejection)
-  navigate(
+  void navigate(
     makeUrlPathRelative(
       joinRouterPaths(String(PATHS.ONBOARDING), resolvedOnboardingStatus)
     )
   )
 }
 
-function hasResetReadyCode(kclManager: KclManager) {
+function hasResetReadyCode(kclManager: KclManager, wasmInstance: ModuleType) {
   return (
-    isKclEmptyOrOnlySettings(kclManager.codeSignal.value) ||
+    isKclEmptyOrOnlySettings(kclManager.codeSignal.value, wasmInstance) ||
     kclManager.codeSignal.value === browserAxialFan
   )
 }
@@ -414,7 +420,6 @@ export function TutorialRequestToast(
         >
           <strong>Zookeeper</strong> is in the right sidebar, where you can
           create or modify parts with prompts.{' '}
-          <strong>1 credit = 1 second of compute time.</strong>
         </TutorialToastCard>
         <TutorialToastCard
           src={quickTipSrc(2)}
@@ -466,7 +471,7 @@ export function TutorialRequestToast(
         <ActionButton
           Element="button"
           iconStart={{
-            icon: 'arrowRight',
+            icon: 'arrowShortRight',
           }}
           name="accept"
           onClick={onAccept}

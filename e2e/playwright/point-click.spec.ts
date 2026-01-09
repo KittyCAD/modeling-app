@@ -11,7 +11,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
-test.describe('Point-and-click tests', () => {
+test.describe('Point-and-click tests', { tag: '@desktop' }, () => {
   test('Verify in-pipe extrudes in bracket can be edited', async ({
     tronApp,
     context,
@@ -144,14 +144,13 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
         await cmdBar.progressCmdBar()
       })
       await test.step('Set length', async () => {
-        await cmdBar.clickOptionalArgument('length')
         await cmdBar.expectState({
           stage: 'arguments',
           currentArgKey: 'length',
           currentArgValue: '5',
           headerArguments: {
             Profiles: '1 profile',
-            Length: '',
+            Length: '5',
           },
           highlightedHeaderArg: 'length',
           commandName: 'Extrude',
@@ -1060,7 +1059,7 @@ sketch002 = startSketchOn(plane001)
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1500, height: 800 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
@@ -2520,6 +2519,8 @@ box = extrude(profile, length = 30)`
             Objects: '1 path',
           },
           commandName: 'Translate',
+          reviewValidationError:
+            'semantic: Expected `x`, `y`, or `z` to be provided.',
         })
       })
 

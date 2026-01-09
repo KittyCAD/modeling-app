@@ -10493,7 +10493,7 @@ description: Operations executed clock.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 20
+            "index": 21
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10517,7 +10517,7 @@ description: Operations executed clock.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 21
+            "index": 22
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10541,7 +10541,7 @@ description: Operations executed clock.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 22
+            "index": 23
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10565,7 +10565,7 @@ description: Operations executed clock.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10589,7 +10589,7 @@ description: Operations executed clock.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -10613,7 +10613,7 @@ description: Operations executed clock.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
