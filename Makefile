@@ -38,6 +38,7 @@ node_modules/.package-lock.json: package.json package-lock.json
 $(CARGO): rust/rust-toolchain.toml
 ifdef WINDOWS
 	npm run install:rust:windows
+	@ powershell -Command "if (Test-Path '$(CARGO)') { (Get-Item '$(CARGO)').LastWriteTime = Get-Date }"
 else
 	npm run install:rust
 endif
