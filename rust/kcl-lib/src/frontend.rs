@@ -2158,10 +2158,18 @@ impl FrontendState {
             return false;
         }
 
-        // Check if all points are Free and we have no stored values (or all stored values are Free)
-        let mut all_free = true;
-        let mut has_stored_non_free = false;
+        // Only force analysis if the cache is empty (meaning analysis hasn't run yet).
+        // If the cache has values (even if all Free), it means analysis has already run
+        // and we should trust those results rather than forcing another analysis.
+        let cache_is_empty = self.point_freedom_cache.is_empty();
 
+        if !cache_is_empty {
+            // Cache has values, analysis has run - don't force another run
+            return false;
+        }
+
+        // Cache is empty, check if all points are Free (which would indicate analysis hasn't run)
+        let mut all_free = true;
         for &point_id in &point_ids {
             if let Some(point_obj) = self.scene_graph.objects.get(point_id.0)
                 && let ObjectKind::Segment {
@@ -2172,18 +2180,11 @@ impl FrontendState {
                     all_free = false;
                     break;
                 }
-                // Check if we have a stored value that's not Free
-                if let Some(&stored_freedom) = self.point_freedom_cache.get(&point_id)
-                    && stored_freedom != Freedom::Free
-                {
-                    has_stored_non_free = true;
-                    break;
-                }
             }
         }
 
-        // Force analysis if all points are Free and we don't have any stored non-Free values
-        all_free && !has_stored_non_free
+        // Only force if cache is empty AND all points are Free (likely default, analysis hasn't run)
+        all_free
     }
 
     fn exit_after_sketch_block(
