@@ -47,7 +47,7 @@ async-recursion = "1.1.1"
 async-trait = { workspace = true }
 base64 = "0.22.1"
 chrono = "0.4.42"
-clap = { version = "4.5.53", default-features = false, optional = true, features = [
+clap = { version = "4.5.54", default-features = false, optional = true, features = [
   "std",
   "derive",
 ] }
@@ -144,7 +144,7 @@ criterion = { version = "0.8.1", features = ["async_tokio"] }
 expectorate = "1.2.0"
 handlebars = "6.4.0"
 image = { version = "0.25.9", default-features = false, features = ["png"] }
-insta = { version = "1.45.0", features = ["json", "filters", "redactions"] }
+insta = { version = "1.45.1", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
