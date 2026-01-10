@@ -11,7 +11,6 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import { waitFor } from '@testing-library/react'
 
 type MainAxisTestFixtures = Pick<Fixtures, 'homePage' | 'toolbar' | 'scene'> & {
   page: Page
