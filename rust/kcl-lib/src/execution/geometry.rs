@@ -807,7 +807,7 @@ impl Extrudable {
             Extrudable::Face(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => Some(sketch),
                 Some(Geometry::Solid(solid)) => Some(solid.sketch),
-                _ => None,
+                None => None,
             },
         }
     }
