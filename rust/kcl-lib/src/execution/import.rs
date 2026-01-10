@@ -121,10 +121,10 @@ pub async fn import_foreign(
     Ok(PreImportedGeometry {
         id: exec_state.next_uuid(),
         source_range,
-        command: mcmd::ImportFiles {
-            files: import_files.clone(),
-            format,
-        },
+        command: mcmd::ImportFiles::builder()
+            .files(import_files.clone())
+            .format(format)
+            .build(),
     })
 }
 

@@ -142,13 +142,13 @@ approx = "0.5"
 base64 = "0.22.1"
 criterion = { version = "0.8.1", features = ["async_tokio"] }
 expectorate = "1.2.0"
-handlebars = "6.3.2"
+handlebars = "6.4.0"
 image = { version = "0.25.9", default-features = false, features = ["png"] }
 insta = { version = "1.45.0", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
-tokio = { version = "1.48.0", features = ["rt-multi-thread", "macros", "time"] }
+tokio = { version = "1.49.0", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8.3"
 
 [lints]
