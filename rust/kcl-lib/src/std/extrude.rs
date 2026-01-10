@@ -19,6 +19,7 @@ use kittycad_modeling_cmds::{
 use uuid::Uuid;
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
+use crate::execution::Metadata;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -647,6 +648,70 @@ pub(crate) async fn do_post_extrude<'a>(
         edge_cuts: vec![],
     })
 }
+
+#[allow(clippy::too_many_arguments)]
+pub(crate) async fn do_post_extrude_face<'a>(
+    extrude_cmd_id: Uuid,
+    solid_id: ArtifactId,
+    sectional: bool,
+    named_cap_tags: &'a NamedCapTags<'a>,
+    extrude_method: ExtrudeMethod,
+    exec_state: &mut ExecState,
+    args: &Args,
+    edge_id: Option<Uuid>,
+    clone_id_map: Option<&HashMap<Uuid, Uuid>>, // old sketch id -> new sketch id
+    body_type: BodyType,
+    units: kittycad_modeling_cmds::units::UnitLength,
+) -> Result<Solid, KclError> {
+    // Bring the object to the front of the scene.
+    // See: https://github.com/KittyCAD/modeling-app/issues/806
+
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, args),
+            ModelingCmd::from(mcmd::ObjectBringToFront::builder().object_id(extrude_cmd_id).build()),
+        )
+        .await?;
+
+    // Add the tags for the start or end caps.
+    if let Some(tag_start) = named_cap_tags.start {
+        return Err(KclError::new_type(KclErrorDetails::new(
+            format!("Tags are not yet supported for extruded faces"),
+            vec![args.source_range],
+        )));
+    }
+    if let Some(tag_end) = named_cap_tags.end {
+        return Err(KclError::new_type(KclErrorDetails::new(
+            format!("Tags are not yet supported for extruded faces"),
+            vec![args.source_range],
+        )));
+    }
+
+    // TODO: We don't yet know the IDs of the created faces.
+    let extruded_surfaces = Vec::new();
+
+    Ok(Solid {
+        id: match extrude_method {
+            ExtrudeMethod::New => {
+                // When you extrude a sketch, its ID is "absorbed" and becomes the ID of the solid.
+                // Here, there's no sketch to absorb, and the face being extruded must keep its ID, because
+                // it's not going anywhere.
+                extrude_cmd_id
+            }
+            ExtrudeMethod::Merge => todo!(),
+        },
+        artifact_id: solid_id,
+        value: extruded_surfaces,
+        meta: vec![Metadata::from(args.source_range)],
+        units,
+        sectional: false,
+        sketch: todo!(),
+        start_cap_id: None,
+        end_cap_id: None,
+        edge_cuts: Vec::new(),
+    })
+}
+
 #[derive(Default)]
 struct Faces {
     /// Maps curve ID to face ID for each side.
