@@ -35,7 +35,6 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import styles from './CommandBarKclInput.module.css'
 import { editorTheme, themeCompartment } from '@src/editor/plugins/theme'
 import { Compartment, EditorState } from '@codemirror/state'
-import { kclLspCompartment, kclAutocompleteCompartment } from '@src/editor'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -44,6 +43,8 @@ const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
 const varMentionsCompartment = new Compartment()
 const setValueCompartment = new Compartment()
 const keymapCompartment = new Compartment()
+const kclLspCompartment = new Compartment()
+const kclAutocompleteCompartment = new Compartment()
 const miniEditor = new EditorView({
   state: EditorState.create({
     extensions: [
