@@ -334,10 +334,10 @@ impl Solved {
         let mut variables_in_conflicts = AHashSet::new();
         for &constraint_idx in value.unsatisfied() {
             // Only mark as conflicted if it's a required constraint, not an optional one
-            if constraint_idx < num_required_constraints {
-                if let Some(constraint) = constraints.get(constraint_idx) {
-                    extract_variable_ids_from_constraint(constraint, &mut variables_in_conflicts);
-                }
+            if constraint_idx < num_required_constraints
+                && let Some(constraint) = constraints.get(constraint_idx)
+            {
+                extract_variable_ids_from_constraint(constraint, &mut variables_in_conflicts);
             }
         }
 
