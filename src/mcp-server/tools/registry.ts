@@ -10,7 +10,6 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js'
 
-import { handleHelloWorldTool, helloWorldTool } from './helloWorld.js'
 import {
   getArtifactGraphTool,
   handleGetArtifactGraphTool,
@@ -28,7 +27,6 @@ import {
  * All available tools
  */
 const tools = [
-  helloWorldTool,
   getArtifactGraphTool,
   getFeatureTreeTool,
   getCurrentSelectionTool,
@@ -54,11 +52,6 @@ export async function registerTools(server: Server): Promise<void> {
     const toolName = request.params.name
 
     switch (toolName) {
-      case 'hello_world': {
-        const args = request.params.arguments as { name?: string } | undefined
-        return handleHelloWorldTool(args)
-      }
-
       case 'get_artifact_graph': {
         return handleGetArtifactGraphTool()
       }

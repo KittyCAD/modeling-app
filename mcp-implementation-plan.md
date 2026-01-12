@@ -28,11 +28,12 @@ The implementation follows a Blender-style architecture:
 - [x] Create entry point script (`src/mcp-server/index.ts`)
 - [x] Add executable script in package.json (`mcp-server` command)
 
-### 1.4 Hello World Tool (Testing)
+### 1.4 Hello World Tool (Testing) - REMOVED
 - [x] Create `src/mcp-server/tools/helloWorld.ts` with a simple test tool
 - [x] Register hello world tool in the tool registry
 - [x] Verify tool can be listed and called without bridge communication
-- [ ] Test MCP server with Cursor/VS Code to verify connectivity
+- [x] Test MCP server with Cursor/VS Code to verify connectivity
+- [x] Removed after Phase 4 completion (no longer needed with real tools)
 
 ## Phase 2: Bridge Communication
 
@@ -65,15 +66,15 @@ The implementation follows a Blender-style architecture:
 ## Phase 3: Core MCP Server Implementation
 
 ### 3.1 Server Setup
-- [ ] Create `src/mcp-server/server.ts` with MCP server initialization
-- [ ] Implement stdio transport using `@modelcontextprotocol/sdk`
-- [ ] Set up server lifecycle (initialize, start, shutdown)
-- [ ] Add error handling and logging
+- [x] Create `src/mcp-server/server.ts` with MCP server initialization
+- [x] Implement stdio transport using `@modelcontextprotocol/sdk`
+- [x] Set up server lifecycle (initialize, start, shutdown)
+- [x] Add error handling and logging
 
 ### 3.2 Tool Registry
-- [ ] Create `src/mcp-server/tools/registry.ts` for tool registration
-- [ ] Implement tool discovery and registration system
-- [ ] Add tool metadata (name, description, parameters)
+- [x] Create `src/mcp-server/tools/registry.ts` for tool registration
+- [x] Implement tool discovery and registration system
+- [x] Add tool metadata (name, description, parameters)
 
 ## Phase 4: Query Tools (Phase 1 Features)
 
