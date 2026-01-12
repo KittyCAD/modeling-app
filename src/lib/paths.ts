@@ -324,13 +324,18 @@ export function getFilePathRelativeToProject(
   return absoluteFilePath.slice(projectIndexInPath + sliceOffset) ?? ''
 }
 
-/**  */
+/** TODO: This is not used by the web yet. */
 async function getArchiveBasePath() {
   return window.electron
     ? window.electron.join(await window.electron.getPathUserData(), ARCHIVE_DIR)
     : `/${ARCHIVE_DIR}`
 }
 
+/** Convert any given path to an archived one.
+ * The archive works by keeping the same structure as the original paths were on disk,
+ * just nested within the return value of `getArchiveBasePath`,
+ * so that if they are restored they can be returned to the original location.
+ */
 export async function toArchivePath(absolutePath: string) {
   const basePath = await getArchiveBasePath()
   return window.electron
