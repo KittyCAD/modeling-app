@@ -59,6 +59,9 @@ pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
 pub mod fn_call;
+#[cfg(test)]
+#[cfg(feature = "artifact-graph")]
+mod freedom_analysis_tests;
 mod geometry;
 mod id_generator;
 mod import;
