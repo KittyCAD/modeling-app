@@ -47,7 +47,7 @@ async-recursion = "1.1.1"
 async-trait = { workspace = true }
 base64 = "0.22.1"
 chrono = "0.4.42"
-clap = { version = "4.5.53", default-features = false, optional = true, features = [
+clap = { version = "4.5.54", default-features = false, optional = true, features = [
   "std",
   "derive",
 ] }
