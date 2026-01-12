@@ -327,8 +327,11 @@ export function getFilePathRelativeToProject(
 /** TODO: This is not used by the web yet. */
 async function getArchiveBasePath() {
   return window.electron
-    ? window.electron.join(await window.electron.getPathUserData(), ARCHIVE_DIR)
-    : `/${ARCHIVE_DIR}`
+    ? desktopSafePathJoin([
+        await window.electron.getPathUserData(),
+        ARCHIVE_DIR,
+      ])
+    : webSafeJoin(['/', ARCHIVE_DIR])
 }
 
 /** Convert any given path to an archived one.
