@@ -305,12 +305,6 @@ fn substitute_sketch_var_in_unsolved_expr(
 }
 
 pub(crate) struct Solved {
-    /// Which constraints couldn't be satisfied
-    #[expect(
-        dead_code,
-        reason = "Used internally to build variables_in_conflicts, but not read externally"
-    )]
-    pub(crate) unsatisfied: Vec<usize>,
     /// Each variable's final value.
     pub(crate) final_values: Vec<f64>,
     /// How many iterations of Newton's method were required?
@@ -335,8 +329,6 @@ impl Solved {
         constraints: &[kcl_ezpz::Constraint],
         num_required_constraints: usize,
     ) -> Self {
-        let unsatisfied = value.unsatisfied().to_owned();
-
         // Build a set of variables involved in unsatisfied constraints
         // Only include required constraints (not optional ones like from dragging)
         let mut variables_in_conflicts = AHashSet::new();
@@ -350,7 +342,6 @@ impl Solved {
         }
 
         Self {
-            unsatisfied,
             final_values: value.final_values().to_owned(),
             iterations: value.iterations(),
             warnings: value.warnings().to_owned(),

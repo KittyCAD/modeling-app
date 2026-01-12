@@ -1202,7 +1202,6 @@ impl Node<SketchBlock> {
                                 final_values,
                                 iterations: Default::default(),
                                 warnings: failure.warnings,
-                                unsatisfied: Default::default(),
                                 priority_solved: Default::default(),
                                 variables_in_conflicts: Default::default(),
                             },

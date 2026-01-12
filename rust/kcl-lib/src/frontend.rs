@@ -2041,19 +2041,31 @@ impl FrontendState {
                         // If new is NOT Free, use the new value (it came from somewhere else, maybe conflict detection).
                         // Never preserve Conflict from cache - conflicts are transient and should only be set
                         // when there are actually unsatisfied constraints.
-                        if new_freedom == Freedom::Free {
-                            // New value is Free (default when analysis didn't run)
-                            if let Some(stored_freedom) = self.point_freedom_cache.get(&obj.id).copied() {
-                                if stored_freedom == Freedom::Conflict {
-                                    // Don't preserve Conflict - conflicts are transient
-                                    // Keep it as Free
-                                } else if stored_freedom != Freedom::Free {
-                                    // Preserve non-Free, non-Conflict cached value (e.g., Fixed)
-                                    point.freedom = stored_freedom;
+                        match new_freedom {
+                            Freedom::Free => {
+                                match self.point_freedom_cache.get(&obj.id).copied() {
+                                    Some(Freedom::Conflict) => {
+                                        // Don't preserve Conflict - conflicts are transient
+                                        // Keep it as Free
+                                    }
+                                    Some(Freedom::Fixed) => {
+                                        // Preserve Fixed cached value
+                                        point.freedom = Freedom::Fixed;
+                                    }
+                                    Some(Freedom::Free) => {
+                                        // If stored is also Free, keep Free (no change needed)
+                                    }
+                                    None => {
+                                        // If no cached value, keep Free (default)
+                                    }
                                 }
-                                // If stored is also Free, keep Free (no change needed)
                             }
-                            // If no cached value, keep Free (default)
+                            Freedom::Fixed => {
+                                // Use new value (already set)
+                            }
+                            Freedom::Conflict => {
+                                // Use new value (already set)
+                            }
                         }
                         // Store the new freedom value (even if it's Free, so we know it was set)
                         self.point_freedom_cache.insert(obj.id, point.freedom);

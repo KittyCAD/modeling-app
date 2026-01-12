@@ -39,6 +39,7 @@ mod test {
         }
         // Sort by object ID for consistent ordering
         point_freedoms.sort_by_key(|(id, _)| id.0);
+        exec_ctxt.close().await;
         point_freedoms
     }
 
@@ -72,8 +73,6 @@ sketch2::distance([line3.start, line3.end]) == 6mm
         //           line3 has conflicting distance constraints -> Conflict, Conflict (but currently shows Free, Free - bug)
         // Note: IDs skip every third because segments don't get freedom values
         // Format: (ObjectId, Freedom)
-
-        println!("Point freedoms: {:?}", point_freedoms);
 
         let expected = vec![
             (ObjectId(1), Freedom::Fixed),
@@ -119,8 +118,6 @@ sketch2::distance([line3.start, line3.end]) == 4mm
         //           line2 has one end constrained -> Fixed, Free
         //           line3 has one distance constraint -> Free, Free (both points can move)
 
-        println!("Point freedoms: {:?}", point_freedoms);
-
         // Expected: Fixed, Fixed, Fixed, Free, Free, Free
         let expected = vec![
             (ObjectId(1), Freedom::Fixed),
@@ -162,8 +159,6 @@ line2.start.at[1] == 1
         // Expected: line1 has both ends constrained -> Fixed, Fixed
         //           line3 has conflicting distance constraints -> Conflict, Conflict (but bug shows one Conflict, one Free)
         //           line2 has one end constrained -> Fixed, Free
-
-        println!("Point freedoms: {:?}", point_freedoms);
 
         let expected = vec![
             (ObjectId(1), Freedom::Fixed),
