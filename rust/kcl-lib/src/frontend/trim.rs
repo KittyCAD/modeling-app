@@ -1064,7 +1064,7 @@ pub async fn execute_trim_flow(
     let mut frontend = FrontendState::new();
 
     // Set the program and get initial scene graph (uses real context)
-    let (initial_scene_graph, exec_outcome) = frontend
+    let (mut initial_scene_graph, exec_outcome) = frontend
         .hack_set_program(&real_ctx, program)
         .await
         .map_err(|e| format!("Failed to set program: {}", e.msg))?;

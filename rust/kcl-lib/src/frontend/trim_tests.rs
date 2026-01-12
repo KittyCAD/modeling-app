@@ -637,261 +637,384 @@ sketch(on = YZ) {
             }
         }
     }
+
+    #[tokio::test]
+    async fn test_trim_line2_right_side() {
+        // Case 2: trim line2 from [2, -2] to [2, 2] - should trim right side (end)
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
+  line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
 }
+"#;
 
-/*/
+        let trim_points = vec![Coords2d { x: 2.0, y: -2.0 }, Coords2d { x: 2.0, y: 2.0 }];
 
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
+        let sketch_id = ObjectId(0);
 
-  it('Case 2: trim line2 from [2, -2] to [2, 2] - should trim right side (end)', async () => {
-    const trimPoints: Coords2d[] = [
-      [2, -2],
-      [2, 2],
-    ]
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
-
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
-    }
-
-    const expectedCode = `@settings(experimentalFeatures = allow)
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
   line2 = sketch2::line(start = [var 0mm, var 0mm], end = [var -5mm, var 0mm])
   sketch2::coincident([line2.start, line1])
 }
-`
+"#;
 
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
 
-  it('Case 3: trim line1 from [-2, 2] to [2, 2] - should trim bottom (end)', async () => {
-    const trimPoints: Coords2d[] = [
-      [-2, 2],
-      [2, 2],
-    ]
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
 
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
-
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
     }
 
-    const expectedCode = `@settings(experimentalFeatures = allow)
+    #[tokio::test]
+    async fn test_trim_line1_bottom() {
+        // Case 3: trim line1 from [-2, 2] to [2, 2] - should trim bottom (end)
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
+  line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
+}
+"#;
+
+        let trim_points = vec![Coords2d { x: -2.0, y: 2.0 }, Coords2d { x: 2.0, y: 2.0 }];
+
+        let sketch_id = ObjectId(0);
+
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
+
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var 0mm, var 0mm], end = [var 0mm, var -5mm])
   line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
   sketch2::coincident([line1.start, line2])
 }
-`
+"#;
 
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
 
-  it('Case 4: trim line1 from [-2, -2] to [2, -2] - should trim top (start)', async () => {
-    const trimPoints: Coords2d[] = [
-      [-2, -2],
-      [2, -2],
-    ]
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
 
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
-
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
     }
 
-    const expectedCode = `@settings(experimentalFeatures = allow)
+    #[tokio::test]
+    async fn test_trim_line1_top() {
+        // Case 4: trim line1 from [-2, -2] to [2, -2] - should trim top (start)
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm])
+  line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
+}
+"#;
+
+        let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: 2.0, y: -2.0 }];
+
+        let sketch_id = ObjectId(0);
+
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
+
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
   line2 = sketch2::line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
   sketch2::coincident([line1.end, line2])
 }
-`
+"#;
 
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
-})
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
 
-describe('All 4 trims on a basic arc arc intersection', () => {
-  const baseKclCode = `@settings(experimentalFeatures = allow)
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
+
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn test_trim_arc2_left_side() {
+        // Case 1: trim arc2 from [-2, -2] to [-2, 2] - should trim left side (start)
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
   arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
 }
-`
+"#;
 
-  it('Case 1: trim arc2 from [-2, -2] to [-2, 2] - should trim left side (start)', async () => {
-    const trimPoints: Coords2d[] = [
-      [-2, -2],
-      [-2, 2],
-    ]
+        let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: -2.0, y: 2.0 }];
 
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
+        let sketch_id = ObjectId(0);
 
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
-    }
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
-    const expectedCode = `@settings(experimentalFeatures = allow)
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var -0mm, var -5mm], center = [var 30mm, var -0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var -0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
+  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -0.41mm, var 0.41mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc2.end, arc1])
 }
-`
+"#;
 
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
 
-  it('Case 2: trim arc2 from [2, -2] to [2, 2] - should trim right side (end)', async () => {
-    const trimPoints: Coords2d[] = [
-      [2, -2],
-      [2, 2],
-    ]
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
 
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
-
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
     }
 
-    const expectedCode = `@settings(experimentalFeatures = allow)
+    #[tokio::test]
+    async fn test_trim_arc2_right_side() {
+        // Case 2: trim arc2 from [2, -2] to [2, 2] - should trim right side (end)
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var -0mm, var -5mm], center = [var 30mm, var -0mm])
-  arc2 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var -0mm], center = [var -0mm, var -30mm])
+  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+}
+"#;
+
+        let trim_points = vec![Coords2d { x: 2.0, y: -2.0 }, Coords2d { x: 2.0, y: 2.0 }];
+
+        let sketch_id = ObjectId(0);
+
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
+
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc2.start, arc1])
 }
-`
+"#;
 
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
 
-  it('Case 3: trim arc1 from [-2, 2] to [2, 2] - should trim bottom (end)', async () => {
-    const trimPoints: Coords2d[] = [
-      [-2, 2],
-      [2, 2],
-    ]
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
 
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
-
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
     }
 
-    const expectedCode = `@settings(experimentalFeatures = allow)
+    #[tokio::test]
+    async fn test_trim_arc1_bottom() {
+        // Case 3: trim arc1 from [-2, 2] to [2, 2] - should trim bottom (end)
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var 0mm, var -5mm], center = [var 30mm, var -0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
+  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+}
+"#;
+
+        let trim_points = vec![Coords2d { x: -2.0, y: 2.0 }, Coords2d { x: 2.0, y: 2.0 }];
+
+        let sketch_id = ObjectId(0);
+
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
+
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  arc1 = sketch2::arc(start = [var -0.41mm, var 0.41mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc1.start, arc2])
 }
-`
+"#;
 
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
 
-  it('Case 4: trim arc1 from [-2, -2] to [2, -2] - should trim top (start)', async () => {
-    const trimPoints: Coords2d[] = [
-      [-2, -2],
-      [2, -2],
-    ]
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
 
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
-
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
     }
 
-    const expectedCode = `@settings(experimentalFeatures = allow)
+    #[tokio::test]
+    async fn test_trim_arc1_top() {
+        // Case 4: trim arc1 from [-2, -2] to [2, -2] - should trim top (start)
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
+}
+"#;
+
+        let trim_points = vec![Coords2d { x: -2.0, y: -2.0 }, Coords2d { x: 2.0, y: -2.0 }];
+
+        let sketch_id = ObjectId(0);
+
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
+
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var -0.41mm, var 0.41mm], center = [var 30mm, var 0mm])
-  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var -0mm], center = [var 0mm, var -30mm])
+  arc2 = sketch2::arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var -30mm])
   sketch2::coincident([arc1.end, arc2])
 }
-`
+"#;
 
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
-})
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
 
-describe('Multi-segment trim - trim line through multiple segments', () => {
-  it('should delete both segments when a single section of the trim line intersects two segments (rare but important edge case) ', async () => {
-    const baseKclCode = `@settings(experimentalFeatures = allow)
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
+
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn test_trim_delete_both_segments() {
+        // should delete both segments when a single section of the trim line intersects two segments
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   line2 = sketch2::line(start = [var 4mm, var 3mm], end = [var 4mm, var -3mm])
   line1 = sketch2::line(start = [var -4mm, var 3mm], end = [var -4mm, var -3mm])
 }
-`
+"#;
 
-    const trimPoints: Coords2d[] = [
-      [-5, 1],
-      [5, 1],
-    ]
+        let trim_points = vec![Coords2d { x: -5.0, y: 1.0 }, Coords2d { x: 5.0, y: 1.0 }];
 
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
+        let sketch_id = ObjectId(0);
 
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
-    }
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
-    const expectedCode = `@settings(experimentalFeatures = allow)
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
 }
-`
+"#;
 
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
+
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
+
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
+    }
+}
+
+/*/
+
+describe('Multi-segment trim - trim line through multiple segments', () => {
 
   it("Should remove coincident point from the end of a segment's end that is being trimmed", async () => {
     const baseKclCode = `@settings(experimentalFeatures = allow)
