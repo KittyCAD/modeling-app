@@ -11,6 +11,7 @@ import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicatio
 import { AUTO_UPDATER_TOAST_ID } from '@src/lib/constants'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
 import { markOnce } from '@src/lib/performance'
+import { initMcpBridgeHandlers } from '@src/lib/mcpBridgeRenderer'
 import {
   appActor,
   commandBarActor,
@@ -24,6 +25,20 @@ import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTransla
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler(kclManager, rustContext)
+
+// Initialize MCP bridge handlers if in Electron
+// Delay initialization to ensure renderer is fully ready
+if (window.electron) {
+  // Use setTimeout to ensure this runs after initial render
+  setTimeout(() => {
+    try {
+      initMcpBridgeHandlers()
+    } catch (error) {
+      console.error('[MCP Bridge] Failed to initialize:', error)
+      // Don't block app startup if MCP bridge fails
+    }
+  }, 100)
+}
 
 // Don't start the app machine until all these singletons
 // are initialized, and the wasm module is loaded.

@@ -43,6 +43,7 @@ import {
 } from '@src/menu'
 import { getAutoUpdater } from '@src/updater'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { startMcpBridge, stopMcpBridge } from '@src/main/mcpBridge'
 
 // If we're on Windows, pull the local system TLS CAs in
 require('win-ca')
@@ -306,7 +307,12 @@ const isBoundsVisible = (bounds: Electron.Rectangle): boolean => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q, but it is a really weird behavior with our app.
 app.on('window-all-closed', () => {
+  stopMcpBridge()
   app.quit()
+})
+
+app.on('before-quit', () => {
+  stopMcpBridge()
 })
 
 // This method will be called when Electron has finished
@@ -320,6 +326,9 @@ app.on('ready', (event, data) => {
   mainWindow = createWindow()
   // Set menu application to null to avoid default electron menu
   Menu.setApplicationMenu(null)
+
+  // Start MCP bridge server
+  startMcpBridge(mainWindow)
 })
 
 // For now there is no good reason to separate these out to another file(s)

@@ -316,4 +316,33 @@ contextBridge.exposeInMainWorld('electron', {
   menuOn,
   canReadWriteDirectory,
   copy,
+  // MCP Bridge IPC handlers
+  mcpBridge: {
+    onGetArtifactGraph: (callback: (data: { requestId: string }) => void) => {
+      ipcRenderer.on('mcp:getArtifactGraph', (_, data) => callback(data))
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:getArtifactGraph')
+      }
+    },
+    onGetFeatureTree: (callback: (data: { requestId: string }) => void) => {
+      ipcRenderer.on('mcp:getFeatureTree', (_, data) => callback(data))
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:getFeatureTree')
+      }
+    },
+    onGetCurrentSelection: (
+      callback: (data: { requestId: string }) => void
+    ) => {
+      ipcRenderer.on('mcp:getCurrentSelection', (_, data) => callback(data))
+      return () => {
+        ipcRenderer.removeAllListeners('mcp:getCurrentSelection')
+      }
+    },
+    sendResponse: (
+      requestId: string,
+      response: { error?: string; data?: unknown }
+    ) => {
+      ipcRenderer.send('mcp:response:' + requestId, response)
+    },
+  },
 })

@@ -93,6 +93,7 @@
     "build": "npm run install:rust && . $HOME/.cargo/env && npm run install:wasm-pack:cargo && npm run build:wasm && vite build",
     "build:mcp-server": "tsc --project tsconfig.mcp.json",
     "mcp-server": "tsx src/mcp-server/index.ts",
+    "test:mcp-bridge": "tsx src/mcp-server/bridge/test-client.ts",
     "build:wasm": "./scripts/build-wasm.sh",
     "build:wasm:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/build-wasm.ps1",
     "build:wasm-dev": "npm run build:wasm:dev",

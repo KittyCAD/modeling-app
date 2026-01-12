@@ -5,11 +5,7 @@
  * (To be implemented in Phase 2)
  */
 
-import type {
-  BridgeMessage,
-  BridgeRequest,
-  BridgeResponse,
-} from '@src/mcp-server/types.js'
+import type { BridgeMessage, BridgeRequest, BridgeResponse } from '../types.js'
 
 // Re-export types for convenience
 export type { BridgeMessage, BridgeRequest, BridgeResponse }

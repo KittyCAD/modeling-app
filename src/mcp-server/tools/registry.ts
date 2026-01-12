@@ -10,10 +10,7 @@ import {
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js'
 
-import {
-  handleHelloWorldTool,
-  helloWorldTool,
-} from '@src/mcp-server/tools/helloWorld.js'
+import { handleHelloWorldTool, helloWorldTool } from './helloWorld.js'
 
 /**
  * All available tools

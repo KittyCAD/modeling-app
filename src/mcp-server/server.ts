@@ -6,7 +6,7 @@
 
 import type { Server } from '@modelcontextprotocol/sdk/server/index.js'
 
-import { registerTools } from '@src/mcp-server/tools/registry.js'
+import { registerTools } from './tools/registry.js'
 
 /**
  * Creates and configures the MCP server

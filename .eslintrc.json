@@ -165,6 +165,14 @@
       "rules": {
         "no-restricted-imports": "off"
       }
+    },
+    {
+      "files": [
+        "src/mcp-server/**/*.ts"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
     }
   ]
 }

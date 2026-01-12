@@ -107,6 +107,21 @@ export interface IElectronAPI {
   enableMenu(menuId: string): Promise<any>
   disableMenu(menuId: string): Promise<any>
   menuOn: (callback: (payload: WebContentSendPayload) => void) => any
+  mcpBridge?: {
+    onGetArtifactGraph: (
+      callback: (data: { requestId: string }) => void
+    ) => () => void
+    onGetFeatureTree: (
+      callback: (data: { requestId: string }) => void
+    ) => () => void
+    onGetCurrentSelection: (
+      callback: (data: { requestId: string }) => void
+    ) => () => void
+    sendResponse: (
+      requestId: string,
+      response: { error?: string; data?: unknown }
+    ) => void
+  }
 }
 
 declare global {

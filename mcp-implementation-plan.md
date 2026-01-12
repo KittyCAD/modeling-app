@@ -37,25 +37,30 @@ The implementation follows a Blender-style architecture:
 ## Phase 2: Bridge Communication
 
 ### 2.1 Communication Protocol Design
-- [ ] Design IPC message protocol between Electron app and MCP server
-- [ ] Define message types for:
+- [x] Design IPC message protocol between Electron app and MCP server
+- [x] Define message types for:
   - Requesting current ArtifactGraph
   - Requesting current featureTree (operations)
   - Requesting current selection
   - Executing commands (future: fillet edge)
-- [ ] Define error handling and timeout strategies
+- [x] Define error handling and timeout strategies
 
 ### 2.2 Electron Main Process Integration
-- [ ] Create `src/main/mcpBridge.ts` for Electron main process bridge
-- [ ] Implement IPC handler in main process to expose app state
-- [ ] Create singleton or service to manage MCP bridge connection
-- [ ] Add lifecycle management (start/stop bridge on app ready/quit)
+- [x] Create `src/main/mcpBridge.ts` for Electron main process bridge
+- [x] Implement IPC handler in main process to expose app state
+- [x] Create singleton or service to manage MCP bridge connection
+- [x] Add lifecycle management (start/stop bridge on app ready/quit)
 
 ### 2.3 MCP Server Bridge Client
-- [ ] Create `src/mcp-server/bridge/client.ts` for communicating with Electron
-- [ ] Implement connection mechanism (IPC pipe, named pipe, or TCP socket)
-- [ ] Implement request/response pattern with error handling
-- [ ] Add connection retry logic and health checks
+- [x] Create `src/mcp-server/bridge/client.ts` for communicating with Electron
+- [x] Implement connection mechanism (TCP socket on localhost:9877)
+- [x] Implement request/response pattern with error handling
+- [x] Add connection retry logic and health checks
+
+### 2.4 Renderer IPC Handlers
+- [x] Create `src/lib/mcpBridgeRenderer.ts` for renderer-side IPC handlers
+- [x] Implement handlers for getArtifactGraph, getFeatureTree, getCurrentSelection
+- [x] Initialize handlers in renderer process (src/index.tsx)
 
 ## Phase 3: Core MCP Server Implementation
 

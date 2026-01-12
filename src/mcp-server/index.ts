@@ -10,7 +10,7 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 
-import { createMcpServer } from '@src/mcp-server/server.js'
+import { createMcpServer } from './server.js'
 
 async function main() {
   const transport = new StdioServerTransport()
