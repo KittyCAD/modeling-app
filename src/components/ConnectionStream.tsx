@@ -4,7 +4,6 @@ import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import {
   engineCommandManager,
   kclManager,
-  settingsActor,
   useSettings,
 } from '@src/lib/singletons'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -26,7 +25,6 @@ import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
-import { useOnFileRoute } from '@src/hooks/network/useOnFileRoute'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { useRouteLoaderData } from 'react-router-dom'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
@@ -34,20 +32,11 @@ import { PATHS } from '@src/lib/paths'
 import type { IndexLoaderData } from '@src/lib/types'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { EngineDebugger } from '@src/lib/debugger'
 import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { DEFAULT_BACKFACE_COLOR } from '@src/lib/constants'
 
 const TIME_TO_CONNECT = 30_000
-
-// Object defined outside of React to prevent rerenders
-const systemDeps = {
-  engineCommandManager,
-  kclManager,
-  sceneInfra,
-  settingsActor,
-}
 
 export const ConnectionStream = (props: {
   authToken: string | undefined
@@ -56,11 +45,11 @@ export const ConnectionStream = (props: {
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
   const settings = useSettings()
-  const { isStreamAcceptingInput, setAppState } = useAppState()
+  const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
     useModelingContext()
-  const { file, project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const id = 'engine-stream'
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -405,17 +394,6 @@ export const ConnectionStream = (props: {
     [isConnecting, numberOfConnectionAttempts, props.authToken]
   )
   useOnWindowOnlineOffline(onWindowOnlineOfflineParams)
-
-  const onFileRouteParams = useMemo(
-    () => ({
-      file,
-      isStreamAcceptingInput,
-      resetCameraPosition,
-      systemDeps,
-    }),
-    [file, isStreamAcceptingInput]
-  )
-  useOnFileRoute(onFileRouteParams)
 
   const onOfflineToExitSketchModeParams = useMemo(
     () => ({

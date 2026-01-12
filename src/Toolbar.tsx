@@ -26,8 +26,12 @@ import type {
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
 import { EngineConnectionStateType } from '@src/network/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { useSignals } from '@preact/signals-react/runtime'
 
-type ToolbarProps = Omit<ReturnType<typeof useModelingContext>, 'theProject'> &
+type ToolbarProps = { isExecuting: boolean } & Omit<
+  ReturnType<typeof useModelingContext>,
+  'theProject'
+> &
   Pick<
     ReturnType<typeof useNetworkContext>,
     'overallState' | 'immediateState'
@@ -75,7 +79,7 @@ const Toolbar_ = memo(
     const disableAllButtons =
       (props.overallState !== NetworkHealthState.Ok &&
         props.overallState !== NetworkHealthState.Weak) ||
-      kclManager.isExecutingSignal.value ||
+      props.isExecuting ||
       props.immediateState.type !==
         EngineConnectionStateType.ConnectionEstablished ||
       !props.isStreamReady ||
@@ -96,7 +100,7 @@ const Toolbar_ = memo(
         modelingState: props.state,
         modelingSend: props.send,
         sketchPathId,
-        editorHasFocus: kclManager.getEditorView()?.hasFocus,
+        editorHasFocus: kclManager.editorView.hasFocus,
         isActive: false, // Default value - individual items will override this
       }),
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -107,7 +111,7 @@ const Toolbar_ = memo(
         commandBarActor.send,
         sketchPathId,
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        kclManager.getEditorView()?.hasFocus,
+        kclManager.editorView.hasFocus,
       ]
     )
 
@@ -461,6 +465,7 @@ const Toolbar_ = memo(
     )
   },
   (oldP, newP) =>
+    oldP.isExecuting === newP.isExecuting &&
     oldP.state.value === newP.state.value &&
     oldP.overallState === newP.overallState &&
     oldP.immediateState?.type === newP.immediateState?.type &&
@@ -679,6 +684,8 @@ export function Toolbar() {
   const { state, send, context } = useModelingContext()
   const { overallState, immediateState } = useNetworkContext()
   const { isStreamReady, isStreamAcceptingInput } = useAppState()
+  useSignals()
+
   return (
     <Toolbar_
       state={state}
@@ -688,6 +695,7 @@ export function Toolbar() {
       immediateState={immediateState}
       isStreamReady={isStreamReady}
       isStreamAcceptingInput={isStreamAcceptingInput}
+      isExecuting={kclManager.isExecutingSignal.value}
     />
   )
 }
