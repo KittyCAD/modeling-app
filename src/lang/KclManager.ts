@@ -269,9 +269,9 @@ export class KclManager extends EventTarget {
   redoDepth = signal(0)
   undoListenerEffect = EditorView.updateListener.of((vu) => {
     this.undoDepth.value =
-      undoDepth(vu.state) || undoDepth(this._globalHistoryView.state)
+      undoDepth(vu.state) + undoDepth(this._globalHistoryView.state)
     this.redoDepth.value =
-      redoDepth(vu.state) || redoDepth(this._globalHistoryView.state)
+      redoDepth(vu.state) + redoDepth(this._globalHistoryView.state)
   })
   /**
    * A client-side representation of the commands that have been sent,
