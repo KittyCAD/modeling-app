@@ -59,6 +59,9 @@ pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
 pub mod fn_call;
+#[cfg(test)]
+#[cfg(feature = "artifact-graph")]
+mod freedom_analysis_tests;
 mod geometry;
 mod id_generator;
 mod import;
@@ -1449,11 +1452,13 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
-                &ModelingCmd::from(mcmd::ZoomToFit {
-                    object_ids: Default::default(),
-                    animated: false,
-                    padding: 0.1,
-                }),
+                &ModelingCmd::from(
+                    mcmd::ZoomToFit::builder()
+                        .object_ids(Default::default())
+                        .animated(false)
+                        .padding(0.1)
+                        .build(),
+                ),
             )
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
@@ -1464,9 +1469,7 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
-                &ModelingCmd::from(mcmd::TakeSnapshot {
-                    format: ImageFormat::Png,
-                }),
+                &ModelingCmd::from(mcmd::TakeSnapshot::builder().format(ImageFormat::Png).build()),
             )
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
@@ -1492,10 +1495,12 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::SourceRange::default(),
-                &kittycad_modeling_cmds::ModelingCmd::Export(kittycad_modeling_cmds::Export {
-                    entity_ids: vec![],
-                    format,
-                }),
+                &kittycad_modeling_cmds::ModelingCmd::Export(
+                    kittycad_modeling_cmds::Export::builder()
+                        .entity_ids(vec![])
+                        .format(format)
+                        .build(),
+                ),
             )
             .await?;
 
