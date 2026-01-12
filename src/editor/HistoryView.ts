@@ -85,7 +85,7 @@ export class HistoryView {
     return this.editorView.state
   }
 
-  get defaultDispactOptions(): GlobalHistoryDispatchOptions {
+  get defaultDispatchOptions(): GlobalHistoryDispatchOptions {
     return {
       shouldForwardToLocalHistory: true,
     }
@@ -99,10 +99,10 @@ export class HistoryView {
    */
   dispatch = (
     spec: TransactionSpecNoChanges,
-    options: Partial<GlobalHistoryDispatchOptions> = this.defaultDispactOptions
+    options: Partial<GlobalHistoryDispatchOptions> = this.defaultDispatchOptions
   ) => {
     const resolvedOptions: GlobalHistoryDispatchOptions = Object.assign(
-      this.defaultDispactOptions,
+      this.defaultDispatchOptions,
       options
     )
     const skip = HistoryView.doNotForward.of(
