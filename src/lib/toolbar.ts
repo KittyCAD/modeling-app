@@ -1472,13 +1472,23 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
 export function getSketchSolveToolIconMap(): Record<string, CustomIconName> {
   const map: Record<string, CustomIconName> = {}
   const items = toolbarConfig.sketchSolve.items
+  collectItems(items, map)
+  return map
+}
 
+function collectItems(
+  items: ToolbarMode['items'],
+  map: Record<string, CustomIconName>
+) {
   for (const item of items) {
     // Skip 'break' strings
     if (typeof item === 'string') continue
 
-    // Skip dropdowns (which don't have direct icons)
-    if ('array' in item) continue
+    // dropdowns, eg. rectangles
+    if ('array' in item) {
+      collectItems(item.array, map)
+      continue
+    }
 
     // Now TypeScript knows item is ToolbarItem
     // Only process items that have an icon and an isActive function (which indicates it's a tool)
@@ -1494,6 +1504,4 @@ export function getSketchSolveToolIconMap(): Record<string, CustomIconName> {
       }
     }
   }
-
-  return map
 }
