@@ -17,18 +17,33 @@ import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { useSignals } from '@preact/signals-react/runtime'
-import { Draggable } from '@src/components/Draggable'
+import Draggable from '@src/components/Draggable'
+import { CustomIcon } from '@src/components/CustomIcon'
+
+const Handle = () => (
+  <div className="flex justify-center hover:bg-2">
+    <CustomIcon name="three-dots" className="w-6 h-6 text-3" />
+  </div>
+)
 
 function ModelingArea() {
   const { auth } = useApp()
   const authToken = auth.useToken()
+  const boundingRef = useRef<HTMLDivElement>(null)
   return (
-    <div  className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
+    <div
+      ref={boundingRef}
+      className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden"
+    >
       <Toolbar />
-      <Draggable elementProps={{className: 'bg-2 p-2 rounded shadow-md'}}>
-          HI!
-      </Draggable>
       <ConnectionStream authToken={authToken} />
+      <Draggable
+        containerRef={boundingRef}
+        Handle={<Handle />}
+        className="self-end relative z-50 pointer-events-auto w-full max-w-sm m-4 border b-5 rounded shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
+      >
+        <p className="m-2">This is a draggable box</p>
+      </Draggable>
       <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
         <Gizmo />
       </div>
