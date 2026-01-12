@@ -118,7 +118,7 @@ import {
   HistoryView,
   type TransactionSpecNoChanges,
 } from '@src/editor/HistoryView'
-import { fsEffectExtension } from '@src/editor/plugins/fs'
+import { fsHistoryExtension } from '@src/editor/plugins/fs'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -645,7 +645,7 @@ export class KclManager extends EventTarget {
     this._wasmInstancePromise = wasmInstance
     this.singletons = singletons
 
-    this._globalHistoryView = new HistoryView([fsEffectExtension()])
+    this._globalHistoryView = new HistoryView([fsHistoryExtension()])
     this._editorView = this.createEditorView()
     this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
 

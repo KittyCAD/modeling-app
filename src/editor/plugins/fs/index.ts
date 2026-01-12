@@ -14,15 +14,24 @@ export const fsIgnoreAnnotationType = Annotation.define<true>()
 type FSEffectProps = { src: string; target: string }
 const restoreFile = StateEffect.define<FSEffectProps>()
 const archiveFile = StateEffect.define<FSEffectProps>()
+/** helper function that builds a transaction with a default annotation */
 const h = <T>(e: StateEffect<T>): TransactionSpecNoChanges => ({
   effects: e,
-  // Hopefully, makes initial transactions ignored and undo/redo not ignored.
+  // makes initial transactions ignored and undo/redo not ignored.
   annotations: [fsIgnoreAnnotationType.of(true)],
 })
+
+/** CodeMirror transaction to mark a "restore" file action */
 export const fsRestoreFile = (props: FSEffectProps) => h(restoreFile.of(props))
+/** CodeMirror transaction to mark an "archive" file action */
 export const fsArchiveFile = (props: FSEffectProps) => h(archiveFile.of(props))
 
-export function buildFSEffectExtension(
+/**
+ * Builder function to provide necessary system dependencies for the
+ * FS history extension. This is where FS un/redo editor events
+ * actually call systemIO APIs.
+ */
+export function buildFSHistoryExtension(
   systemIOActor: ActorRefFrom<typeof systemIOMachine>,
   kclManager: KclManager
 ) {
@@ -47,10 +56,13 @@ export function buildFSEffectExtension(
     }
   })
 
+  // Note that the FS history extension is not on the EditorView for the code editor itself,
+  // but rather the globalHistoryView.
   kclManager.globalHistoryView.dispatch(
     {
       effects: [fsEffectCompartment.reconfigure(fsWiredListener)],
     },
+    // Prevent this configuration step from adding to our history!
     { shouldForwardToLocalHistory: false }
   )
   // Teardown
@@ -64,7 +76,12 @@ export function buildFSEffectExtension(
   }
 }
 
-export function fsEffectExtension(): Extension {
+/**
+ * An extension that provides a mechanism for dispatching file system operations
+ * to CodeMirror in a way that works with CM's normal history flow,
+ * making things like archiving files and folders un/redoable.
+ */
+export function fsHistoryExtension(): Extension {
   const undoableFs = invertedEffects.of((tr) => {
     const found: StateEffect<unknown>[] = []
     for (const e of tr.effects) {
