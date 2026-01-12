@@ -173,7 +173,7 @@ pub(crate) mod trim;
 
 ### Phase 3: Create Test Infrastructure in kcl-lib
 
-**Status**: [ ] Not Started
+**Status**: [x] In Progress
 
 **File**: `rust/kcl-lib/src/frontend/trim/tests.rs` (new file)
 
@@ -202,20 +202,21 @@ pub(crate) mod trim;
    }
    ```
 
-- [ ] Implement `execute_trim_flow` helper function:
-  - [ ] Parse KCL code
-  - [ ] Create ExecutorContext
-  - [ ] Create FrontendState
-  - [ ] Execute initial code to get scene graph
-  - [ ] Run trim operations using kcl_lib::front::trim functions
-  - [ ] Return resulting KCL code
-- [ ] Use existing test infrastructure:
-  - [ ] `ExecutorContext` from `kcl_lib::execution`
-  - [ ] `FrontendState` from `kcl_lib::frontend`
-  - [ ] `execute_mock` to get initial scene graph
-  - [ ] `delete_objects`, `edit_segments`, `add_constraint` for executing trim operations
-- [ ] Create KCL code normalization helper for test comparisons
-- [ ] Write a simple test to verify infrastructure works
+- [x] Implement `execute_trim_flow` helper function:
+  - [x] Parse KCL code
+  - [x] Create ExecutorContext
+  - [x] Create FrontendState
+  - [x] Execute initial code to get scene graph
+  - [x] Run trim operations using kcl_lib::front::trim functions
+  - [x] Return resulting KCL code
+- [x] Use existing test infrastructure:
+  - [x] `ExecutorContext` from `kcl_lib::execution`
+  - [x] `FrontendState` from `kcl_lib::frontend`
+  - [x] `hack_set_program` to get initial scene graph
+  - [x] `delete_objects`, `edit_segments` for executing trim operations
+  - [ ] `add_constraint` for executing trim operations (AddCoincidentConstraint not yet implemented)
+- [x] Create KCL code normalization helper for test comparisons
+- [x] Write a simple test to verify infrastructure works
 
 **Test Structure**:
 ```rust

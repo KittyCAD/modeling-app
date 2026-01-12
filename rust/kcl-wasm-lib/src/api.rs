@@ -493,12 +493,12 @@ impl Context {
         let mut guard = frontend.write().await;
 
         // Import trim functions from kcl-lib
+        use crate::trim::NextTrimResult;
         use kcl_lib::front::{
-            Coords2d as Coords2dCore, get_next_trim_coords, get_trim_spawn_terminations, trim_strategy,
+            get_next_trim_coords, get_trim_spawn_terminations, trim_strategy, Coords2d as Coords2dCore,
             NextTrimResult as NextTrimResultCore, TrimTermination as TrimTerminationCore,
             TrimTerminations as TrimTerminationsCore,
         };
-        use crate::trim::NextTrimResult;
 
         // Get current scene graph by executing mock first
         let (_, initial_scene_graph_delta) = guard
@@ -511,7 +511,10 @@ impl Context {
         let mut current_scene_graph_delta = initial_scene_graph_delta.clone();
 
         // Convert WASM Coords2d to core Coords2d for kcl-lib functions
-        let points_core: Vec<Coords2dCore> = points.iter().map(|c| kcl_lib::front::Coords2d { x: c.x, y: c.y }).collect();
+        let points_core: Vec<Coords2dCore> = points
+            .iter()
+            .map(|c| kcl_lib::front::Coords2d { x: c.x, y: c.y })
+            .collect();
 
         // Run the trim loop
         let mut start_index = 0;
@@ -601,7 +604,8 @@ impl Context {
                     };
 
                     // Convert to WASM types for matching
-                    let strategy: Vec<crate::trim::TrimOperation> = strategy_core.iter().map(|op| op.clone().into()).collect();
+                    let strategy: Vec<crate::trim::TrimOperation> =
+                        strategy_core.iter().map(|op| op.clone().into()).collect();
 
                     // Execute operations
                     // Check if we deleted a segment (for fail-safe logic later)
@@ -725,7 +729,9 @@ impl Context {
                                                 }
                                             };
 
-                                            let coincident_segments = if let Some(point_id) = intersecting_endpoint_point_id {
+                                            let coincident_segments = if let Some(point_id) =
+                                                intersecting_endpoint_point_id
+                                            {
                                                 vec![
                                                     kcl_lib::front::ObjectId(endpoint_point_id),
                                                     kcl_lib::front::ObjectId(*point_id),

@@ -33,6 +33,9 @@ pub(crate) mod sketch;
 mod traverse;
 pub(crate) mod trim;
 
+#[cfg(test)]
+mod trim_tests;
+
 const POINT_FN: &str = "point";
 const POINT_AT_PARAM: &str = "at";
 const LINE_FN: &str = "line";

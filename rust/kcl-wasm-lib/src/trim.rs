@@ -11,11 +11,10 @@ use wasm_bindgen::{prelude::*, JsValue};
 
 // Import core types and functions from kcl-lib
 use kcl_lib::front::{
-    Coords2d as Coords2dCore, ConstraintToMigrate as ConstraintToMigrateCore,
+    get_next_trim_coords, get_position_coords_for_line, get_position_coords_from_arc, get_trim_spawn_terminations,
+    trim_strategy, ConstraintToMigrate as ConstraintToMigrateCore, Coords2d as Coords2dCore,
     NextTrimResult as NextTrimResultCore, Object, TrimOperation as TrimOperationCore,
     TrimTermination as TrimTerminationCore, TrimTerminations as TrimTerminationsCore,
-    get_next_trim_coords, get_trim_spawn_terminations, get_position_coords_for_line,
-    get_position_coords_from_arc, trim_strategy,
 };
 
 /// 2D coordinates with WASM serialization support
@@ -205,8 +204,8 @@ impl<'de> Deserialize<'de> for NextTrimResult {
                     "trimSpawn" => {
                         let trim_spawn_seg_id =
                             trim_spawn_seg_id.ok_or_else(|| de::Error::missing_field("trimSpawnSegId"))?;
-                        let trim_spawn_coords = trim_spawn_coords
-                            .ok_or_else(|| de::Error::missing_field("trimSpawnCoords"))?;
+                        let trim_spawn_coords =
+                            trim_spawn_coords.ok_or_else(|| de::Error::missing_field("trimSpawnCoords"))?;
                         Ok(NextTrimResult::TrimSpawn {
                             trim_spawn_seg_id,
                             trim_spawn_coords,
@@ -364,15 +363,15 @@ impl<'de> Deserialize<'de> for TrimTermination {
 
                 match type_str {
                     "segEndPoint" => {
-                        let trim_termination_coords = trim_termination_coords
-                            .ok_or_else(|| de::Error::missing_field("trimTerminationCoords"))?;
+                        let trim_termination_coords =
+                            trim_termination_coords.ok_or_else(|| de::Error::missing_field("trimTerminationCoords"))?;
                         Ok(TrimTermination::SegEndPoint {
                             trim_termination_coords,
                         })
                     }
                     "intersection" => {
-                        let trim_termination_coords = trim_termination_coords
-                            .ok_or_else(|| de::Error::missing_field("trimTerminationCoords"))?;
+                        let trim_termination_coords =
+                            trim_termination_coords.ok_or_else(|| de::Error::missing_field("trimTerminationCoords"))?;
                         let intersecting_seg_id =
                             intersecting_seg_id.ok_or_else(|| de::Error::missing_field("intersectingSegId"))?;
                         Ok(TrimTermination::Intersection {
@@ -381,13 +380,14 @@ impl<'de> Deserialize<'de> for TrimTermination {
                         })
                     }
                     "trimSpawnSegmentCoincidentWithAnotherSegmentPoint" => {
-                        let trim_termination_coords = trim_termination_coords
-                            .ok_or_else(|| de::Error::missing_field("trimTerminationCoords"))?;
+                        let trim_termination_coords =
+                            trim_termination_coords.ok_or_else(|| de::Error::missing_field("trimTerminationCoords"))?;
                         let intersecting_seg_id =
                             intersecting_seg_id.ok_or_else(|| de::Error::missing_field("intersectingSegId"))?;
                         let trim_spawn_segment_coincident_with_another_segment_point_id =
-                            trim_spawn_segment_coincident_with_another_segment_point_id
-                                .ok_or_else(|| de::Error::missing_field("trimSpawnSegmentCoincidentWithAnotherSegmentPointId"))?;
+                            trim_spawn_segment_coincident_with_another_segment_point_id.ok_or_else(|| {
+                                de::Error::missing_field("trimSpawnSegmentCoincidentWithAnotherSegmentPointId")
+                            })?;
                         Ok(TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                             trim_termination_coords,
                             intersecting_seg_id,
@@ -396,7 +396,11 @@ impl<'de> Deserialize<'de> for TrimTermination {
                     }
                     _ => Err(de::Error::unknown_variant(
                         type_str,
-                        &["segEndPoint", "intersection", "trimSpawnSegmentCoincidentWithAnotherSegmentPoint"],
+                        &[
+                            "segEndPoint",
+                            "intersection",
+                            "trimSpawnSegmentCoincidentWithAnotherSegmentPoint",
+                        ],
                     )),
                 }
             }
@@ -494,7 +498,7 @@ pub enum TrimOperation {
     },
     EditSegment {
         segment_id: usize,
-        ctor: serde_json::Value, // SegmentCtor as JSON
+        ctor: serde_json::Value,  // SegmentCtor as JSON
         endpoint_changed: String, // "start" or "end"
     },
     AddCoincidentConstraint {
@@ -523,9 +527,7 @@ pub enum TrimOperation {
 impl From<TrimOperationCore> for TrimOperation {
     fn from(op: TrimOperationCore) -> Self {
         match op {
-            TrimOperationCore::SimpleTrim { segment_to_trim_id } => TrimOperation::SimpleTrim {
-                segment_to_trim_id,
-            },
+            TrimOperationCore::SimpleTrim { segment_to_trim_id } => TrimOperation::SimpleTrim { segment_to_trim_id },
             TrimOperationCore::EditSegment {
                 segment_id,
                 ctor,
@@ -569,9 +571,9 @@ impl From<TrimOperationCore> for TrimOperation {
                 constraints_to_migrate: constraints_to_migrate.into_iter().map(|c| c.into()).collect(),
                 constraints_to_delete,
             },
-            TrimOperationCore::DeleteConstraints { constraint_ids } => TrimOperation::DeleteConstraints {
-                constraint_ids,
-            },
+            TrimOperationCore::DeleteConstraints { constraint_ids } => {
+                TrimOperation::DeleteConstraints { constraint_ids }
+            }
         }
     }
 }
@@ -612,7 +614,10 @@ impl Serialize for TrimOperation {
                 state.serialize_field("type", "addCoincidentConstraint")?;
                 state.serialize_field("segmentId", segment_id)?;
                 state.serialize_field("endpointChanged", endpoint_changed)?;
-                state.serialize_field("segmentOrPointToMakeCoincidentTo", segment_or_point_to_make_coincident_to)?;
+                state.serialize_field(
+                    "segmentOrPointToMakeCoincidentTo",
+                    segment_or_point_to_make_coincident_to,
+                )?;
                 state.end()
             }
             TrimOperation::SplitSegment {
@@ -788,10 +793,10 @@ impl<'de> Deserialize<'de> for TrimOperation {
                             original_end_coords.ok_or_else(|| de::Error::missing_field("originalEndCoords"))?;
                         let left_side = left_side.ok_or_else(|| de::Error::missing_field("leftSide"))?;
                         let right_side = right_side.ok_or_else(|| de::Error::missing_field("rightSide"))?;
-                        let left_side_coincident_data =
-                            left_side_coincident_data.ok_or_else(|| de::Error::missing_field("leftSideCoincidentData"))?;
-                        let right_side_coincident_data =
-                            right_side_coincident_data.ok_or_else(|| de::Error::missing_field("rightSideCoincidentData"))?;
+                        let left_side_coincident_data = left_side_coincident_data
+                            .ok_or_else(|| de::Error::missing_field("leftSideCoincidentData"))?;
+                        let right_side_coincident_data = right_side_coincident_data
+                            .ok_or_else(|| de::Error::missing_field("rightSideCoincidentData"))?;
                         let constraints_to_migrate =
                             constraints_to_migrate.ok_or_else(|| de::Error::missing_field("constraintsToMigrate"))?;
                         let constraints_to_delete =
@@ -810,8 +815,7 @@ impl<'de> Deserialize<'de> for TrimOperation {
                         })
                     }
                     "deleteConstraints" => {
-                        let constraint_ids =
-                            constraint_ids.ok_or_else(|| de::Error::missing_field("constraintIds"))?;
+                        let constraint_ids = constraint_ids.ok_or_else(|| de::Error::missing_field("constraintIds"))?;
                         Ok(TrimOperation::DeleteConstraints { constraint_ids })
                     }
                     _ => Err(de::Error::unknown_variant(
