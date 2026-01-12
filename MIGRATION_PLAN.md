@@ -559,9 +559,10 @@ KCL code formatting may differ slightly. Options:
 
 ## Progress Summary
 
-**Overall Progress**: ~15% (Phase 1 complete, ready for Phase 2)
+**Overall Progress**: ~30% (Phases 1 & 2 complete, ready for Phase 3)
 
 - Phase 1: [x] **COMPLETE** (File moved, WASM code removed, compiles successfully)
+- Phase 2: [x] **COMPLETE** (kcl-wasm-lib updated to use kcl-lib, compiles successfully)
 - Phase 2: [ ] 0% (0/7 tasks)
 - Phase 3: [ ] 0% (0/6 tasks)
 - Phase 4: [ ] 0% (0/~30 tests)

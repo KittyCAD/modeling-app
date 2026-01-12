@@ -492,8 +492,13 @@ impl Context {
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
 
-        // Import trim functions
-        use crate::trim::{get_next_trim_coords, get_trim_spawn_terminations, trim_strategy, NextTrimResult};
+        // Import trim functions from kcl-lib
+        use kcl_lib::front::{
+            Coords2d as Coords2dCore, get_next_trim_coords, get_trim_spawn_terminations, trim_strategy,
+            NextTrimResult as NextTrimResultCore, TrimTermination as TrimTerminationCore,
+            TrimTerminations as TrimTerminationsCore,
+        };
+        use crate::trim::NextTrimResult;
 
         // Get current scene graph by executing mock first
         let (_, initial_scene_graph_delta) = guard
@@ -504,6 +509,9 @@ impl Context {
         // Use native Rust types directly - no serialization needed!
         // Track the current scene graph delta so we can access its objects
         let mut current_scene_graph_delta = initial_scene_graph_delta.clone();
+
+        // Convert WASM Coords2d to core Coords2d for kcl-lib functions
+        let points_core: Vec<Coords2dCore> = points.iter().map(|c| kcl_lib::front::Coords2d { x: c.x, y: c.y }).collect();
 
         // Run the trim loop
         let mut start_index = 0;
@@ -516,15 +524,18 @@ impl Context {
         ));
         let mut invalidates_ids = false;
 
-        while start_index < points.len().saturating_sub(1) && iteration_count < max_iterations {
+        while start_index < points_core.len().saturating_sub(1) && iteration_count < max_iterations {
             iteration_count += 1;
 
             // Get next trim result - use objects from current scene graph
-            let next_trim_result =
-                get_next_trim_coords(&points, start_index, &current_scene_graph_delta.new_graph.objects);
+            let next_trim_result_core =
+                get_next_trim_coords(&points_core, start_index, &current_scene_graph_delta.new_graph.objects);
 
-            match &next_trim_result {
-                NextTrimResult::NoTrimSpawn { next_index } => {
+            // Convert to WASM type for matching
+            let next_trim_result: NextTrimResult = next_trim_result_core.clone().into();
+
+            match &next_trim_result_core {
+                NextTrimResultCore::NoTrimSpawn { next_index } => {
                     let old_start_index = start_index;
                     start_index = *next_index;
 
@@ -534,20 +545,20 @@ impl Context {
                     }
 
                     // Early exit if we've reached the end
-                    if start_index >= points.len().saturating_sub(1) {
+                    if start_index >= points_core.len().saturating_sub(1) {
                         break;
                     }
                     continue;
                 }
-                NextTrimResult::TrimSpawn {
+                NextTrimResultCore::TrimSpawn {
                     trim_spawn_seg_id,
                     next_index,
                     ..
                 } => {
                     // Get terminations - use objects from current scene graph
-                    let terminations = match get_trim_spawn_terminations(
+                    let terminations_core = match get_trim_spawn_terminations(
                         *trim_spawn_seg_id,
-                        &points,
+                        &points_core,
                         &current_scene_graph_delta.new_graph.objects,
                     ) {
                         Ok(terms) => terms,
@@ -570,11 +581,11 @@ impl Context {
                         .find(|obj| obj.id.0 == *trim_spawn_seg_id)
                         .ok_or_else(|| format!("Trim spawn segment {} not found", trim_spawn_seg_id))?;
 
-                    let strategy = match trim_strategy(
+                    let strategy_core = match trim_strategy(
                         *trim_spawn_seg_id,
                         trim_spawn_segment,
-                        &terminations.left_side,
-                        &terminations.right_side,
+                        &terminations_core.left_side,
+                        &terminations_core.right_side,
                         &current_scene_graph_delta.new_graph.objects,
                     ) {
                         Ok(ops) => ops,
@@ -588,6 +599,9 @@ impl Context {
                             continue;
                         }
                     };
+
+                    // Convert to WASM types for matching
+                    let strategy: Vec<crate::trim::TrimOperation> = strategy_core.iter().map(|op| op.clone().into()).collect();
 
                     // Execute operations
                     // Check if we deleted a segment (for fail-safe logic later)
@@ -711,9 +725,7 @@ impl Context {
                                                 }
                                             };
 
-                                            let coincident_segments = if let Some(point_id) =
-                                                intersecting_endpoint_point_id
-                                            {
+                                            let coincident_segments = if let Some(point_id) = intersecting_endpoint_point_id {
                                                 vec![
                                                     kcl_lib::front::ObjectId(endpoint_point_id),
                                                     kcl_lib::front::ObjectId(*point_id),
@@ -1250,12 +1262,12 @@ impl Context {
                                                 kcl_lib::front::Segment::Line(_) => {
                                                     // Check start and end
                                                     if let (Some(start_coords), Some(end_coords)) = (
-                                                        crate::trim::get_position_coords_for_line(
+                                                        kcl_lib::front::get_position_coords_for_line(
                                                             seg,
                                                             "start",
                                                             &current_scene_graph_delta.new_graph.objects,
                                                         ),
-                                                        crate::trim::get_position_coords_for_line(
+                                                        kcl_lib::front::get_position_coords_for_line(
                                                             seg,
                                                             "end",
                                                             &current_scene_graph_delta.new_graph.objects,
@@ -1289,12 +1301,12 @@ impl Context {
                                                 kcl_lib::front::Segment::Arc(_) => {
                                                     // Check start and end for arc
                                                     if let (Some(start_coords), Some(end_coords)) = (
-                                                        crate::trim::get_position_coords_from_arc(
+                                                        kcl_lib::front::get_position_coords_from_arc(
                                                             seg,
                                                             "start",
                                                             &current_scene_graph_delta.new_graph.objects,
                                                         ),
-                                                        crate::trim::get_position_coords_from_arc(
+                                                        kcl_lib::front::get_position_coords_from_arc(
                                                             seg,
                                                             "end",
                                                             &current_scene_graph_delta.new_graph.objects,

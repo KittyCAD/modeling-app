@@ -167,6 +167,15 @@ pub mod front {
             SegmentCtor, Sketch, SketchApi, SketchArgs, StartOrEnd, TangentArcCtor, Vertical,
         },
     };
+    
+    // Re-export trim module items
+    pub use crate::frontend::trim::{
+        Coords2d, ConstraintToMigrate, NextTrimResult, TrimOperation, TrimTermination, TrimTerminations,
+        arc_arc_intersection, get_next_trim_coords, get_position_coords_for_line, get_position_coords_from_arc,
+        get_trim_spawn_terminations, is_point_on_arc, is_point_on_line_segment, line_arc_intersection,
+        line_segment_intersection, perpendicular_distance_to_segment, project_point_onto_arc,
+        project_point_onto_segment, trim_strategy,
+    };
 }
 
 #[cfg(feature = "cli")]

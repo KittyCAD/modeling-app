@@ -1,29 +1,42 @@
-//! Trim tool logic - migrated from TypeScript for performance
+//! Trim tool logic - WASM bindings
 //!
-//! This module contains the core trim loop logic that was previously in TypeScript.
-//! The main function `process_trim_loop` takes trim points and objects, and returns
-//! the trim operations that need to be executed.
+//! This module provides WASM-specific serialization and re-exports core trim logic from kcl-lib.
 
 #[cfg(target_arch = "wasm32")]
 use gloo_utils::format::JsValueSerdeExt;
 #[cfg(target_arch = "wasm32")]
 use serde::{Deserialize, Serialize};
 #[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
+use wasm_bindgen::{prelude::*, JsValue};
 
-// Use native Rust types from kcl_lib::front for better performance
-use kcl_lib::front::{Arc, Constraint, Line, Object, ObjectId, ObjectKind, Point, Segment, SegmentCtor};
-use kcl_lib::pretty::NumericSuffix;
+// Import core types and functions from kcl-lib
+use kcl_lib::front::{
+    Coords2d as Coords2dCore, ConstraintToMigrate as ConstraintToMigrateCore,
+    NextTrimResult as NextTrimResultCore, Object, TrimOperation as TrimOperationCore,
+    TrimTermination as TrimTerminationCore, TrimTerminations as TrimTerminationsCore,
+    get_next_trim_coords, get_trim_spawn_terminations, get_position_coords_for_line,
+    get_position_coords_from_arc, trim_strategy,
+};
 
-// Epsilon constants for geometric calculations
-const EPSILON_PARALLEL: f64 = 1e-10;
-const EPSILON_POINT_ON_SEGMENT: f64 = 1e-6;
-
-/// 2D coordinates
+/// 2D coordinates with WASM serialization support
+/// This is a wrapper around the core Coords2d that adds serde support for WASM
 #[derive(Debug, Clone, Copy)]
 pub struct Coords2d {
     pub x: f64,
     pub y: f64,
+}
+
+// Conversion functions between WASM Coords2d and core Coords2d
+impl From<Coords2dCore> for Coords2d {
+    fn from(c: Coords2dCore) -> Self {
+        Coords2d { x: c.x, y: c.y }
+    }
+}
+
+impl From<Coords2d> for Coords2dCore {
+    fn from(c: Coords2d) -> Self {
+        Coords2dCore { x: c.x, y: c.y }
+    }
 }
 
 // Manual serde implementation for Coords2d to serialize as [x, y] array
@@ -75,8 +88,10 @@ impl<'de> Deserialize<'de> for Coords2d {
     }
 }
 
-/// Result of finding the next trim spawn (intersection)
-#[cfg(any(target_arch = "wasm32", test))]
+// Wrapper types for WASM serialization
+// These wrap the kcl-lib types and implement Serialize/Deserialize
+
+/// Result of finding the next trim spawn (intersection) - WASM version
 #[derive(Debug, Clone)]
 pub enum NextTrimResult {
     TrimSpawn {
@@ -87,6 +102,23 @@ pub enum NextTrimResult {
     NoTrimSpawn {
         next_index: usize,
     },
+}
+
+impl From<NextTrimResultCore> for NextTrimResult {
+    fn from(r: NextTrimResultCore) -> Self {
+        match r {
+            NextTrimResultCore::TrimSpawn {
+                trim_spawn_seg_id,
+                trim_spawn_coords,
+                next_index,
+            } => NextTrimResult::TrimSpawn {
+                trim_spawn_seg_id,
+                trim_spawn_coords: trim_spawn_coords.into(),
+                next_index,
+            },
+            NextTrimResultCore::NoTrimSpawn { next_index } => NextTrimResult::NoTrimSpawn { next_index },
+        }
+    }
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -155,7 +187,7 @@ impl<'de> Deserialize<'de> for NextTrimResult {
                             trim_spawn_seg_id = Some(map.next_value()?);
                         }
                         "trimSpawnCoords" => {
-                            trim_spawn_coords = Some(map.next_value()?);
+                            trim_spawn_coords = Some(map.next_value::<Coords2d>()?);
                         }
                         "nextIndex" => {
                             next_index = Some(map.next_value()?);
@@ -173,8 +205,8 @@ impl<'de> Deserialize<'de> for NextTrimResult {
                     "trimSpawn" => {
                         let trim_spawn_seg_id =
                             trim_spawn_seg_id.ok_or_else(|| de::Error::missing_field("trimSpawnSegId"))?;
-                        let trim_spawn_coords =
-                            trim_spawn_coords.ok_or_else(|| de::Error::missing_field("trimSpawnCoords"))?;
+                        let trim_spawn_coords = trim_spawn_coords
+                            .ok_or_else(|| de::Error::missing_field("trimSpawnCoords"))?;
                         Ok(NextTrimResult::TrimSpawn {
                             trim_spawn_seg_id,
                             trim_spawn_coords,
@@ -191,8 +223,7 @@ impl<'de> Deserialize<'de> for NextTrimResult {
     }
 }
 
-/// Trim termination types
-#[cfg(any(target_arch = "wasm32", test))]
+/// Trim termination types - WASM version
 #[derive(Debug, Clone)]
 pub enum TrimTermination {
     SegEndPoint {
@@ -207,6 +238,34 @@ pub enum TrimTermination {
         intersecting_seg_id: usize,
         trim_spawn_segment_coincident_with_another_segment_point_id: usize,
     },
+}
+
+impl From<TrimTerminationCore> for TrimTermination {
+    fn from(t: TrimTerminationCore) -> Self {
+        match t {
+            TrimTerminationCore::SegEndPoint {
+                trim_termination_coords,
+            } => TrimTermination::SegEndPoint {
+                trim_termination_coords: trim_termination_coords.into(),
+            },
+            TrimTerminationCore::Intersection {
+                trim_termination_coords,
+                intersecting_seg_id,
+            } => TrimTermination::Intersection {
+                trim_termination_coords: trim_termination_coords.into(),
+                intersecting_seg_id,
+            },
+            TrimTerminationCore::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                trim_termination_coords,
+                intersecting_seg_id,
+                trim_spawn_segment_coincident_with_another_segment_point_id,
+            } => TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                trim_termination_coords: trim_termination_coords.into(),
+                intersecting_seg_id,
+                trim_spawn_segment_coincident_with_another_segment_point_id,
+            },
+        }
+    }
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -287,7 +346,7 @@ impl<'de> Deserialize<'de> for TrimTermination {
                             type_str = Some(map.next_value()?);
                         }
                         "trimTerminationCoords" => {
-                            trim_termination_coords = Some(map.next_value()?);
+                            trim_termination_coords = Some(map.next_value::<Coords2d>()?);
                         }
                         "intersectingSegId" => {
                             intersecting_seg_id = Some(map.next_value()?);
@@ -302,14 +361,18 @@ impl<'de> Deserialize<'de> for TrimTermination {
                 }
 
                 let type_str = type_str.ok_or_else(|| de::Error::missing_field("type"))?;
-                let trim_termination_coords =
-                    trim_termination_coords.ok_or_else(|| de::Error::missing_field("trimTerminationCoords"))?;
 
                 match type_str {
-                    "segEndPoint" => Ok(TrimTermination::SegEndPoint {
-                        trim_termination_coords,
-                    }),
+                    "segEndPoint" => {
+                        let trim_termination_coords = trim_termination_coords
+                            .ok_or_else(|| de::Error::missing_field("trimTerminationCoords"))?;
+                        Ok(TrimTermination::SegEndPoint {
+                            trim_termination_coords,
+                        })
+                    }
                     "intersection" => {
+                        let trim_termination_coords = trim_termination_coords
+                            .ok_or_else(|| de::Error::missing_field("trimTerminationCoords"))?;
                         let intersecting_seg_id =
                             intersecting_seg_id.ok_or_else(|| de::Error::missing_field("intersectingSegId"))?;
                         Ok(TrimTermination::Intersection {
@@ -318,12 +381,13 @@ impl<'de> Deserialize<'de> for TrimTermination {
                         })
                     }
                     "trimSpawnSegmentCoincidentWithAnotherSegmentPoint" => {
+                        let trim_termination_coords = trim_termination_coords
+                            .ok_or_else(|| de::Error::missing_field("trimTerminationCoords"))?;
                         let intersecting_seg_id =
                             intersecting_seg_id.ok_or_else(|| de::Error::missing_field("intersectingSegId"))?;
                         let trim_spawn_segment_coincident_with_another_segment_point_id =
-                            trim_spawn_segment_coincident_with_another_segment_point_id.ok_or_else(|| {
-                                de::Error::missing_field("trimSpawnSegmentCoincidentWithAnotherSegmentPointId")
-                            })?;
+                            trim_spawn_segment_coincident_with_another_segment_point_id
+                                .ok_or_else(|| de::Error::missing_field("trimSpawnSegmentCoincidentWithAnotherSegmentPointId"))?;
                         Ok(TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
                             trim_termination_coords,
                             intersecting_seg_id,
@@ -332,11 +396,7 @@ impl<'de> Deserialize<'de> for TrimTermination {
                     }
                     _ => Err(de::Error::unknown_variant(
                         type_str,
-                        &[
-                            "segEndPoint",
-                            "intersection",
-                            "trimSpawnSegmentCoincidentWithAnotherSegmentPoint",
-                        ],
+                        &["segEndPoint", "intersection", "trimSpawnSegmentCoincidentWithAnotherSegmentPoint"],
                     )),
                 }
             }
@@ -346,12 +406,20 @@ impl<'de> Deserialize<'de> for TrimTermination {
     }
 }
 
-/// Trim terminations for both sides
-#[cfg(any(target_arch = "wasm32", test))]
+/// Trim terminations for both sides - WASM version
 #[derive(Debug, Clone)]
 pub struct TrimTerminations {
     pub left_side: TrimTermination,
     pub right_side: TrimTermination,
+}
+
+impl From<TrimTerminationsCore> for TrimTerminations {
+    fn from(t: TrimTerminationsCore) -> Self {
+        TrimTerminations {
+            left_side: t.left_side.into(),
+            right_side: t.right_side.into(),
+        }
+    }
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -418,25 +486,364 @@ impl<'de> Deserialize<'de> for TrimTerminations {
     }
 }
 
-/// Input to the trim loop processing function
-#[cfg(target_arch = "wasm32")]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct TrimLoopInput {
-    pub points: Vec<Coords2d>,
-    pub objects: Vec<serde_json::Value>, // Object[] as JSON
-    #[serde(rename = "startIndex")]
-    pub start_index: usize,
+/// Trim operation types - WASM version
+#[derive(Debug, Clone)]
+pub enum TrimOperation {
+    SimpleTrim {
+        segment_to_trim_id: usize,
+    },
+    EditSegment {
+        segment_id: usize,
+        ctor: serde_json::Value, // SegmentCtor as JSON
+        endpoint_changed: String, // "start" or "end"
+    },
+    AddCoincidentConstraint {
+        segment_id: usize,
+        endpoint_changed: String,
+        segment_or_point_to_make_coincident_to: usize,
+        intersecting_endpoint_point_id: Option<usize>,
+    },
+    SplitSegment {
+        segment_id: usize,
+        left_trim_coords: Coords2d,
+        right_trim_coords: Coords2d,
+        original_end_coords: Coords2d,
+        left_side: TrimTermination,
+        right_side: TrimTermination,
+        left_side_coincident_data: serde_json::Value, // Complex nested structure
+        right_side_coincident_data: serde_json::Value,
+        constraints_to_migrate: Vec<ConstraintToMigrate>,
+        constraints_to_delete: Vec<usize>,
+    },
+    DeleteConstraints {
+        constraint_ids: Vec<usize>,
+    },
 }
 
-/// Constraint to migrate during split operations
-#[cfg(any(target_arch = "wasm32", test))]
+impl From<TrimOperationCore> for TrimOperation {
+    fn from(op: TrimOperationCore) -> Self {
+        match op {
+            TrimOperationCore::SimpleTrim { segment_to_trim_id } => TrimOperation::SimpleTrim {
+                segment_to_trim_id,
+            },
+            TrimOperationCore::EditSegment {
+                segment_id,
+                ctor,
+                endpoint_changed,
+            } => TrimOperation::EditSegment {
+                segment_id,
+                ctor,
+                endpoint_changed,
+            },
+            TrimOperationCore::AddCoincidentConstraint {
+                segment_id,
+                endpoint_changed,
+                segment_or_point_to_make_coincident_to,
+                intersecting_endpoint_point_id,
+            } => TrimOperation::AddCoincidentConstraint {
+                segment_id,
+                endpoint_changed,
+                segment_or_point_to_make_coincident_to,
+                intersecting_endpoint_point_id,
+            },
+            TrimOperationCore::SplitSegment {
+                segment_id,
+                left_trim_coords,
+                right_trim_coords,
+                original_end_coords,
+                left_side,
+                right_side,
+                left_side_coincident_data,
+                right_side_coincident_data,
+                constraints_to_migrate,
+                constraints_to_delete,
+            } => TrimOperation::SplitSegment {
+                segment_id,
+                left_trim_coords: left_trim_coords.into(),
+                right_trim_coords: right_trim_coords.into(),
+                original_end_coords: original_end_coords.into(),
+                left_side: left_side.into(),
+                right_side: right_side.into(),
+                left_side_coincident_data,
+                right_side_coincident_data,
+                constraints_to_migrate: constraints_to_migrate.into_iter().map(|c| c.into()).collect(),
+                constraints_to_delete,
+            },
+            TrimOperationCore::DeleteConstraints { constraint_ids } => TrimOperation::DeleteConstraints {
+                constraint_ids,
+            },
+        }
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+impl Serialize for TrimOperation {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        match self {
+            TrimOperation::SimpleTrim { segment_to_trim_id } => {
+                let mut state = serializer.serialize_struct("SimpleTrim", 2)?;
+                state.serialize_field("type", "simpleTrim")?;
+                state.serialize_field("segmentToTrimId", segment_to_trim_id)?;
+                state.end()
+            }
+            TrimOperation::EditSegment {
+                segment_id,
+                ctor,
+                endpoint_changed,
+            } => {
+                let mut state = serializer.serialize_struct("EditSegment", 4)?;
+                state.serialize_field("type", "editSegment")?;
+                state.serialize_field("segmentId", segment_id)?;
+                state.serialize_field("ctor", ctor)?;
+                state.serialize_field("endpointChanged", endpoint_changed)?;
+                state.end()
+            }
+            TrimOperation::AddCoincidentConstraint {
+                segment_id,
+                endpoint_changed,
+                segment_or_point_to_make_coincident_to,
+                intersecting_endpoint_point_id: _,
+            } => {
+                let mut state = serializer.serialize_struct("AddCoincidentConstraint", 4)?;
+                state.serialize_field("type", "addCoincidentConstraint")?;
+                state.serialize_field("segmentId", segment_id)?;
+                state.serialize_field("endpointChanged", endpoint_changed)?;
+                state.serialize_field("segmentOrPointToMakeCoincidentTo", segment_or_point_to_make_coincident_to)?;
+                state.end()
+            }
+            TrimOperation::SplitSegment {
+                segment_id,
+                left_trim_coords,
+                right_trim_coords,
+                original_end_coords,
+                left_side,
+                right_side,
+                left_side_coincident_data,
+                right_side_coincident_data,
+                constraints_to_migrate,
+                constraints_to_delete,
+            } => {
+                let mut state = serializer.serialize_struct("SplitSegment", 11)?;
+                state.serialize_field("type", "splitSegment")?;
+                state.serialize_field("segmentId", segment_id)?;
+                state.serialize_field("leftTrimCoords", left_trim_coords)?;
+                state.serialize_field("rightTrimCoords", right_trim_coords)?;
+                state.serialize_field("originalEndCoords", original_end_coords)?;
+                state.serialize_field("leftSide", left_side)?;
+                state.serialize_field("rightSide", right_side)?;
+                state.serialize_field("leftSideCoincidentData", left_side_coincident_data)?;
+                state.serialize_field("rightSideCoincidentData", right_side_coincident_data)?;
+                state.serialize_field("constraintsToMigrate", constraints_to_migrate)?;
+                state.serialize_field("constraintsToDelete", constraints_to_delete)?;
+                state.end()
+            }
+            TrimOperation::DeleteConstraints { constraint_ids } => {
+                let mut state = serializer.serialize_struct("DeleteConstraints", 2)?;
+                state.serialize_field("type", "deleteConstraints")?;
+                state.serialize_field("constraintIds", constraint_ids)?;
+                state.end()
+            }
+        }
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+impl<'de> Deserialize<'de> for TrimOperation {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        use serde::de::{self, MapAccess, Visitor};
+        use std::fmt;
+
+        struct TrimOperationVisitor;
+
+        impl<'de> Visitor<'de> for TrimOperationVisitor {
+            type Value = TrimOperation;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("TrimOperation")
+            }
+
+            fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
+            where
+                A: MapAccess<'de>,
+            {
+                let mut type_str = None;
+                let mut segment_to_trim_id = None;
+                let mut segment_id = None;
+                let mut ctor = None;
+                let mut endpoint_changed = None;
+                let mut segment_or_point_to_make_coincident_to = None;
+                let mut left_trim_coords = None;
+                let mut right_trim_coords = None;
+                let mut original_end_coords = None;
+                let mut left_side = None;
+                let mut right_side = None;
+                let mut left_side_coincident_data = None;
+                let mut right_side_coincident_data = None;
+                let mut constraints_to_migrate = None;
+                let mut constraints_to_delete = None;
+                let mut constraint_ids = None;
+
+                while let Some(key) = map.next_key::<String>()? {
+                    match key.as_str() {
+                        "type" => {
+                            type_str = Some(map.next_value()?);
+                        }
+                        "segmentToTrimId" => {
+                            segment_to_trim_id = Some(map.next_value()?);
+                        }
+                        "segmentId" => {
+                            segment_id = Some(map.next_value()?);
+                        }
+                        "ctor" => {
+                            ctor = Some(map.next_value()?);
+                        }
+                        "endpointChanged" => {
+                            endpoint_changed = Some(map.next_value()?);
+                        }
+                        "segmentOrPointToMakeCoincidentTo" => {
+                            segment_or_point_to_make_coincident_to = Some(map.next_value()?);
+                        }
+                        "leftTrimCoords" => {
+                            left_trim_coords = Some(map.next_value::<Coords2d>()?);
+                        }
+                        "rightTrimCoords" => {
+                            right_trim_coords = Some(map.next_value::<Coords2d>()?);
+                        }
+                        "originalEndCoords" => {
+                            original_end_coords = Some(map.next_value::<Coords2d>()?);
+                        }
+                        "leftSide" => {
+                            left_side = Some(map.next_value()?);
+                        }
+                        "rightSide" => {
+                            right_side = Some(map.next_value()?);
+                        }
+                        "leftSideCoincidentData" => {
+                            left_side_coincident_data = Some(map.next_value()?);
+                        }
+                        "rightSideCoincidentData" => {
+                            right_side_coincident_data = Some(map.next_value()?);
+                        }
+                        "constraintsToMigrate" => {
+                            constraints_to_migrate = Some(map.next_value()?);
+                        }
+                        "constraintsToDelete" => {
+                            constraints_to_delete = Some(map.next_value()?);
+                        }
+                        "constraintIds" => {
+                            constraint_ids = Some(map.next_value()?);
+                        }
+                        _ => {
+                            let _ = map.next_value::<de::IgnoredAny>()?;
+                        }
+                    }
+                }
+
+                let type_str = type_str.ok_or_else(|| de::Error::missing_field("type"))?;
+
+                match type_str {
+                    "simpleTrim" => {
+                        let segment_to_trim_id =
+                            segment_to_trim_id.ok_or_else(|| de::Error::missing_field("segmentToTrimId"))?;
+                        Ok(TrimOperation::SimpleTrim { segment_to_trim_id })
+                    }
+                    "editSegment" => {
+                        let segment_id = segment_id.ok_or_else(|| de::Error::missing_field("segmentId"))?;
+                        let ctor = ctor.ok_or_else(|| de::Error::missing_field("ctor"))?;
+                        let endpoint_changed =
+                            endpoint_changed.ok_or_else(|| de::Error::missing_field("endpointChanged"))?;
+                        Ok(TrimOperation::EditSegment {
+                            segment_id,
+                            ctor,
+                            endpoint_changed,
+                        })
+                    }
+                    "addCoincidentConstraint" => {
+                        let segment_id = segment_id.ok_or_else(|| de::Error::missing_field("segmentId"))?;
+                        let endpoint_changed =
+                            endpoint_changed.ok_or_else(|| de::Error::missing_field("endpointChanged"))?;
+                        let segment_or_point_to_make_coincident_to = segment_or_point_to_make_coincident_to
+                            .ok_or_else(|| de::Error::missing_field("segmentOrPointToMakeCoincidentTo"))?;
+                        Ok(TrimOperation::AddCoincidentConstraint {
+                            segment_id,
+                            endpoint_changed,
+                            segment_or_point_to_make_coincident_to,
+                            intersecting_endpoint_point_id: None, // Optional field, default to None
+                        })
+                    }
+                    "splitSegment" => {
+                        let segment_id = segment_id.ok_or_else(|| de::Error::missing_field("segmentId"))?;
+                        let left_trim_coords =
+                            left_trim_coords.ok_or_else(|| de::Error::missing_field("leftTrimCoords"))?;
+                        let right_trim_coords =
+                            right_trim_coords.ok_or_else(|| de::Error::missing_field("rightTrimCoords"))?;
+                        let original_end_coords =
+                            original_end_coords.ok_or_else(|| de::Error::missing_field("originalEndCoords"))?;
+                        let left_side = left_side.ok_or_else(|| de::Error::missing_field("leftSide"))?;
+                        let right_side = right_side.ok_or_else(|| de::Error::missing_field("rightSide"))?;
+                        let left_side_coincident_data =
+                            left_side_coincident_data.ok_or_else(|| de::Error::missing_field("leftSideCoincidentData"))?;
+                        let right_side_coincident_data =
+                            right_side_coincident_data.ok_or_else(|| de::Error::missing_field("rightSideCoincidentData"))?;
+                        let constraints_to_migrate =
+                            constraints_to_migrate.ok_or_else(|| de::Error::missing_field("constraintsToMigrate"))?;
+                        let constraints_to_delete =
+                            constraints_to_delete.ok_or_else(|| de::Error::missing_field("constraintsToDelete"))?;
+                        Ok(TrimOperation::SplitSegment {
+                            segment_id,
+                            left_trim_coords,
+                            right_trim_coords,
+                            original_end_coords,
+                            left_side,
+                            right_side,
+                            left_side_coincident_data,
+                            right_side_coincident_data,
+                            constraints_to_migrate,
+                            constraints_to_delete,
+                        })
+                    }
+                    "deleteConstraints" => {
+                        let constraint_ids =
+                            constraint_ids.ok_or_else(|| de::Error::missing_field("constraintIds"))?;
+                        Ok(TrimOperation::DeleteConstraints { constraint_ids })
+                    }
+                    _ => Err(de::Error::unknown_variant(
+                        type_str,
+                        &["simpleTrim", "editSegment", "addCoincidentConstraint", "splitSegment"],
+                    )),
+                }
+            }
+        }
+
+        deserializer.deserialize_map(TrimOperationVisitor)
+    }
+}
+
+/// Constraint to migrate during split operations - WASM version
 #[derive(Debug, Clone)]
 pub struct ConstraintToMigrate {
     pub constraint_id: usize,
     pub other_entity_id: usize,
     pub is_point_point: bool,
     pub attach_to_endpoint: String, // "start", "end", or "segment"
+}
+
+impl From<ConstraintToMigrateCore> for ConstraintToMigrate {
+    fn from(c: ConstraintToMigrateCore) -> Self {
+        ConstraintToMigrate {
+            constraint_id: c.constraint_id,
+            other_entity_id: c.other_entity_id,
+            is_point_point: c.is_point_point,
+            attach_to_endpoint: c.attach_to_endpoint,
+        }
+    }
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -502,12 +909,17 @@ impl<'de> Deserialize<'de> for ConstraintToMigrate {
                     }
                 }
 
+                let constraint_id = constraint_id.ok_or_else(|| de::Error::missing_field("constraintId"))?;
+                let other_entity_id = other_entity_id.ok_or_else(|| de::Error::missing_field("otherEntityId"))?;
+                let is_point_point = is_point_point.ok_or_else(|| de::Error::missing_field("isPointPoint"))?;
+                let attach_to_endpoint =
+                    attach_to_endpoint.ok_or_else(|| de::Error::missing_field("attachToEndpoint"))?;
+
                 Ok(ConstraintToMigrate {
-                    constraint_id: constraint_id.ok_or_else(|| de::Error::missing_field("constraintId"))?,
-                    other_entity_id: other_entity_id.ok_or_else(|| de::Error::missing_field("otherEntityId"))?,
-                    is_point_point: is_point_point.ok_or_else(|| de::Error::missing_field("isPointPoint"))?,
-                    attach_to_endpoint: attach_to_endpoint
-                        .ok_or_else(|| de::Error::missing_field("attachToEndpoint"))?,
+                    constraint_id,
+                    other_entity_id,
+                    is_point_point,
+                    attach_to_endpoint,
                 })
             }
         }
@@ -516,120 +928,15 @@ impl<'de> Deserialize<'de> for ConstraintToMigrate {
     }
 }
 
-/// Trim operation types - these match the TypeScript TrimOperation union
-#[cfg(any(target_arch = "wasm32", test))]
-#[derive(Debug, Clone)]
-pub enum TrimOperation {
-    SimpleTrim {
-        segment_to_trim_id: usize,
-    },
-    EditSegment {
-        segment_id: usize,
-        ctor: serde_json::Value,  // SegmentCtor as JSON
-        endpoint_changed: String, // "start" or "end"
-    },
-    AddCoincidentConstraint {
-        segment_id: usize,
-        endpoint_changed: String,
-        segment_or_point_to_make_coincident_to: usize,
-        intersecting_endpoint_point_id: Option<usize>,
-    },
-    SplitSegment {
-        segment_id: usize,
-        left_trim_coords: Coords2d,
-        right_trim_coords: Coords2d,
-        original_end_coords: Coords2d,
-        left_side: TrimTermination,
-        right_side: TrimTermination,
-        left_side_coincident_data: serde_json::Value, // Complex nested structure
-        right_side_coincident_data: serde_json::Value,
-        constraints_to_migrate: Vec<ConstraintToMigrate>,
-        constraints_to_delete: Vec<usize>,
-    },
-    DeleteConstraints {
-        constraint_ids: Vec<usize>,
-    },
-}
-
+/// Input to the trim loop processing function
 #[cfg(target_arch = "wasm32")]
-impl Serialize for TrimOperation {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        use serde::ser::SerializeStruct;
-        match self {
-            TrimOperation::SimpleTrim { segment_to_trim_id } => {
-                let mut state = serializer.serialize_struct("SimpleTrim", 2)?;
-                state.serialize_field("type", "simpleTrim")?;
-                state.serialize_field("segmentToTrimId", segment_to_trim_id)?;
-                state.end()
-            }
-            TrimOperation::EditSegment {
-                segment_id,
-                ctor,
-                endpoint_changed,
-            } => {
-                let mut state = serializer.serialize_struct("EditSegment", 4)?;
-                state.serialize_field("type", "editSegment")?;
-                state.serialize_field("segmentId", segment_id)?;
-                state.serialize_field("ctor", ctor)?;
-                state.serialize_field("endpointChanged", endpoint_changed)?;
-                state.end()
-            }
-            TrimOperation::AddCoincidentConstraint {
-                segment_id,
-                endpoint_changed,
-                segment_or_point_to_make_coincident_to,
-                intersecting_endpoint_point_id,
-            } => {
-                let mut state = serializer.serialize_struct("AddCoincidentConstraint", 5)?;
-                state.serialize_field("type", "addCoincidentConstraint")?;
-                state.serialize_field("segmentId", segment_id)?;
-                state.serialize_field("endpointChanged", endpoint_changed)?;
-                state.serialize_field(
-                    "segmentOrPointToMakeCoincidentTo",
-                    segment_or_point_to_make_coincident_to,
-                )?;
-                if let Some(point_id) = intersecting_endpoint_point_id {
-                    state.serialize_field("intersectingEndpointPointId", point_id)?;
-                }
-                state.end()
-            }
-            TrimOperation::SplitSegment {
-                segment_id,
-                left_trim_coords,
-                right_trim_coords,
-                original_end_coords,
-                left_side,
-                right_side,
-                left_side_coincident_data,
-                right_side_coincident_data,
-                constraints_to_migrate,
-                constraints_to_delete,
-            } => {
-                let mut state = serializer.serialize_struct("SplitSegment", 11)?;
-                state.serialize_field("type", "splitSegment")?;
-                state.serialize_field("segmentId", segment_id)?;
-                state.serialize_field("leftTrimCoords", left_trim_coords)?;
-                state.serialize_field("rightTrimCoords", right_trim_coords)?;
-                state.serialize_field("originalEndCoords", original_end_coords)?;
-                state.serialize_field("leftSide", left_side)?;
-                state.serialize_field("rightSide", right_side)?;
-                state.serialize_field("leftSideCoincidentData", left_side_coincident_data)?;
-                state.serialize_field("rightSideCoincidentData", right_side_coincident_data)?;
-                state.serialize_field("constraintsToMigrate", constraints_to_migrate)?;
-                state.serialize_field("constraintsToDelete", constraints_to_delete)?;
-                state.end()
-            }
-            TrimOperation::DeleteConstraints { constraint_ids } => {
-                let mut state = serializer.serialize_struct("DeleteConstraints", 2)?;
-                state.serialize_field("type", "deleteConstraints")?;
-                state.serialize_field("constraintIds", constraint_ids)?;
-                state.end()
-            }
-        }
-    }
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TrimLoopInput {
+    pub points: Vec<Coords2d>,
+    pub objects: Vec<serde_json::Value>, // Object[] as JSON
+    #[serde(rename = "startIndex")]
+    pub start_index: usize,
 }
 
 /// Output from the trim loop processing function
@@ -645,2753 +952,9 @@ pub struct TrimLoopOutput {
     pub error: Option<String>,
 }
 
-/// Helper to check if a point is on a line segment (within epsilon distance)
+/// WASM wrapper function that processes trim loop and returns JSON
 ///
-/// Returns the point if it's on the segment, None otherwise.
-pub fn is_point_on_line_segment(
-    point: Coords2d,
-    segment_start: Coords2d,
-    segment_end: Coords2d,
-    epsilon: f64,
-) -> Option<Coords2d> {
-    let dx = segment_end.x - segment_start.x;
-    let dy = segment_end.y - segment_start.y;
-    let segment_length_sq = dx * dx + dy * dy;
-
-    if segment_length_sq < EPSILON_PARALLEL {
-        // Segment is degenerate, i.e it's practically a point
-        let dist_sq = (point.x - segment_start.x) * (point.x - segment_start.x)
-            + (point.y - segment_start.y) * (point.y - segment_start.y);
-        if dist_sq <= epsilon * epsilon {
-            return Some(point);
-        }
-        return None;
-    }
-
-    let point_dx = point.x - segment_start.x;
-    let point_dy = point.y - segment_start.y;
-    let projection_param = (point_dx * dx + point_dy * dy) / segment_length_sq;
-
-    // Check if point projects onto the segment
-    if projection_param < 0.0 || projection_param > 1.0 {
-        return None;
-    }
-
-    // Calculate the projected point on the segment
-    let projected_point = Coords2d {
-        x: segment_start.x + projection_param * dx,
-        y: segment_start.y + projection_param * dy,
-    };
-
-    // Check if the distance from point to projected point is within epsilon
-    let dist_dx = point.x - projected_point.x;
-    let dist_dy = point.y - projected_point.y;
-    let distance_sq = dist_dx * dist_dx + dist_dy * dist_dy;
-
-    if distance_sq <= epsilon * epsilon {
-        Some(point)
-    } else {
-        None
-    }
-}
-
-/// Helper to calculate intersection point of two line segments
-///
-/// Returns the intersection point if segments intersect, None otherwise.
-pub fn line_segment_intersection(
-    line1_start: Coords2d,
-    line1_end: Coords2d,
-    line2_start: Coords2d,
-    line2_end: Coords2d,
-    epsilon: f64,
-) -> Option<Coords2d> {
-    // First check if any endpoints are on the other segment
-    if let Some(point) = is_point_on_line_segment(line1_start, line2_start, line2_end, epsilon) {
-        return Some(point);
-    }
-
-    if let Some(point) = is_point_on_line_segment(line1_end, line2_start, line2_end, epsilon) {
-        return Some(point);
-    }
-
-    if let Some(point) = is_point_on_line_segment(line2_start, line1_start, line1_end, epsilon) {
-        return Some(point);
-    }
-
-    if let Some(point) = is_point_on_line_segment(line2_end, line1_start, line1_end, epsilon) {
-        return Some(point);
-    }
-
-    // Then check for actual line segment intersection
-    let x1 = line1_start.x;
-    let y1 = line1_start.y;
-    let x2 = line1_end.x;
-    let y2 = line1_end.y;
-    let x3 = line2_start.x;
-    let y3 = line2_start.y;
-    let x4 = line2_end.x;
-    let y4 = line2_end.y;
-
-    let denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-    if denominator.abs() < EPSILON_PARALLEL {
-        // Lines are parallel
-        return None;
-    }
-
-    let t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denominator;
-    let u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denominator;
-
-    // Check if intersection is within both segments
-    if t >= 0.0 && t <= 1.0 && u >= 0.0 && u <= 1.0 {
-        let x = x1 + t * (x2 - x1);
-        let y = y1 + t * (y2 - y1);
-        return Some(Coords2d { x, y });
-    }
-
-    None
-}
-
-/// Helper to calculate the parametric position of a point on a line segment
-///
-/// Returns t where t=0 at segmentStart, t=1 at segmentEnd.
-/// t can be < 0 or > 1 if the point projects outside the segment.
-pub fn project_point_onto_segment(point: Coords2d, segment_start: Coords2d, segment_end: Coords2d) -> f64 {
-    let dx = segment_end.x - segment_start.x;
-    let dy = segment_end.y - segment_start.y;
-    let segment_length_sq = dx * dx + dy * dy;
-
-    if segment_length_sq < EPSILON_PARALLEL {
-        // Segment is degenerate
-        return 0.0;
-    }
-
-    let point_dx = point.x - segment_start.x;
-    let point_dy = point.y - segment_start.y;
-    let t = (point_dx * dx + point_dy * dy) / segment_length_sq;
-
-    t
-}
-
-/// Helper to calculate the perpendicular distance from a point to a line segment
-///
-/// Returns the distance from the point to the closest point on the segment.
-pub fn perpendicular_distance_to_segment(point: Coords2d, segment_start: Coords2d, segment_end: Coords2d) -> f64 {
-    let dx = segment_end.x - segment_start.x;
-    let dy = segment_end.y - segment_start.y;
-    let segment_length_sq = dx * dx + dy * dy;
-
-    if segment_length_sq < EPSILON_PARALLEL {
-        // Segment is degenerate, return distance to point
-        let dist_dx = point.x - segment_start.x;
-        let dist_dy = point.y - segment_start.y;
-        return (dist_dx * dist_dx + dist_dy * dist_dy).sqrt();
-    }
-
-    // Vector from segment start to point
-    let point_dx = point.x - segment_start.x;
-    let point_dy = point.y - segment_start.y;
-
-    // Project point onto segment
-    let t = (point_dx * dx + point_dy * dy) / segment_length_sq;
-
-    // Clamp t to [0, 1] to get closest point on segment
-    let clamped_t = t.max(0.0).min(1.0);
-    let closest_point = Coords2d {
-        x: segment_start.x + clamped_t * dx,
-        y: segment_start.y + clamped_t * dy,
-    };
-
-    // Calculate distance
-    let dist_dx = point.x - closest_point.x;
-    let dist_dy = point.y - closest_point.y;
-    (dist_dx * dist_dx + dist_dy * dist_dy).sqrt()
-}
-
-/// Helper to check if a point is on an arc segment (CCW from start to end)
-///
-/// Returns true if the point is on the arc, false otherwise.
-pub fn is_point_on_arc(point: Coords2d, center: Coords2d, start: Coords2d, end: Coords2d, epsilon: f64) -> bool {
-    // Calculate radius
-    let radius = ((start.x - center.x) * (start.x - center.x) + (start.y - center.y) * (start.y - center.y)).sqrt();
-
-    // Check if point is on the circle (within epsilon)
-    let dist_from_center =
-        ((point.x - center.x) * (point.x - center.x) + (point.y - center.y) * (point.y - center.y)).sqrt();
-    if (dist_from_center - radius).abs() > epsilon {
-        return false;
-    }
-
-    // Calculate angles
-    let start_angle = (start.y - center.y).atan2(start.x - center.x);
-    let end_angle = (end.y - center.y).atan2(end.x - center.x);
-    let point_angle = (point.y - center.y).atan2(point.x - center.x);
-
-    // Normalize angles to [0, 2π]
-    let normalize_angle = |angle: f64| -> f64 {
-        let mut normalized = angle;
-        while normalized < 0.0 {
-            normalized += 2.0 * std::f64::consts::PI;
-        }
-        while normalized >= 2.0 * std::f64::consts::PI {
-            normalized -= 2.0 * std::f64::consts::PI;
-        }
-        normalized
-    };
-
-    let normalized_start = normalize_angle(start_angle);
-    let normalized_end = normalize_angle(end_angle);
-    let normalized_point = normalize_angle(point_angle);
-
-    // Check if point is on the arc going CCW from start to end
-    // Since arcs always travel CCW, we need to check if the point angle
-    // is between start and end when going CCW
-    if normalized_start < normalized_end {
-        // No wrap around
-        normalized_point >= normalized_start && normalized_point <= normalized_end
-    } else {
-        // Wrap around (e.g., start at 350°, end at 10°)
-        normalized_point >= normalized_start || normalized_point <= normalized_end
-    }
-}
-
-/// Helper to calculate intersection between a line segment and an arc
-///
-/// Returns the intersection point if found, None otherwise.
-pub fn line_arc_intersection(
-    line_start: Coords2d,
-    line_end: Coords2d,
-    arc_center: Coords2d,
-    arc_start: Coords2d,
-    arc_end: Coords2d,
-    epsilon: f64,
-) -> Option<Coords2d> {
-    // Calculate radius
-    let radius = ((arc_start.x - arc_center.x) * (arc_start.x - arc_center.x)
-        + (arc_start.y - arc_center.y) * (arc_start.y - arc_center.y))
-        .sqrt();
-
-    // Translate line to origin (center at 0,0)
-    let translated_line_start = Coords2d {
-        x: line_start.x - arc_center.x,
-        y: line_start.y - arc_center.y,
-    };
-    let translated_line_end = Coords2d {
-        x: line_end.x - arc_center.x,
-        y: line_end.y - arc_center.y,
-    };
-
-    // Line equation: p = lineStart + t * (lineEnd - lineStart)
-    let dx = translated_line_end.x - translated_line_start.x;
-    let dy = translated_line_end.y - translated_line_start.y;
-
-    // Circle equation: x² + y² = r²
-    // Substitute line equation into circle equation
-    // (x0 + t*dx)² + (y0 + t*dy)² = r²
-    // Expand: x0² + 2*x0*t*dx + t²*dx² + y0² + 2*y0*t*dy + t²*dy² = r²
-    // Rearrange: t²*(dx² + dy²) + 2*t*(x0*dx + y0*dy) + (x0² + y0² - r²) = 0
-
-    let a = dx * dx + dy * dy;
-    let b = 2.0 * (translated_line_start.x * dx + translated_line_start.y * dy);
-    let c = translated_line_start.x * translated_line_start.x + translated_line_start.y * translated_line_start.y
-        - radius * radius;
-
-    let discriminant = b * b - 4.0 * a * c;
-
-    if discriminant < 0.0 {
-        // No intersection
-        return None;
-    }
-
-    if a.abs() < EPSILON_PARALLEL {
-        // Line segment is degenerate
-        let dist_from_center = (translated_line_start.x * translated_line_start.x
-            + translated_line_start.y * translated_line_start.y)
-            .sqrt();
-        if (dist_from_center - radius).abs() <= epsilon {
-            // Point is on circle, check if it's on the arc
-            let point = line_start;
-            if is_point_on_arc(point, arc_center, arc_start, arc_end, epsilon) {
-                return Some(point);
-            }
-        }
-        return None;
-    }
-
-    let sqrt_discriminant = discriminant.sqrt();
-    let t1 = (-b - sqrt_discriminant) / (2.0 * a);
-    let t2 = (-b + sqrt_discriminant) / (2.0 * a);
-
-    // Check both intersection points
-    let mut candidates: Vec<(f64, Coords2d)> = Vec::new();
-    if t1 >= 0.0 && t1 <= 1.0 {
-        let point = Coords2d {
-            x: line_start.x + t1 * (line_end.x - line_start.x),
-            y: line_start.y + t1 * (line_end.y - line_start.y),
-        };
-        candidates.push((t1, point));
-    }
-    if t2 >= 0.0 && t2 <= 1.0 && (t2 - t1).abs() > epsilon {
-        let point = Coords2d {
-            x: line_start.x + t2 * (line_end.x - line_start.x),
-            y: line_start.y + t2 * (line_end.y - line_start.y),
-        };
-        candidates.push((t2, point));
-    }
-
-    // Check which candidates are on the arc
-    for (_t, point) in candidates {
-        if is_point_on_arc(point, arc_center, arc_start, arc_end, epsilon) {
-            return Some(point);
-        }
-    }
-
-    None
-}
-
-/// Helper to calculate the parametric position of a point on an arc
-/// Returns t where t=0 at start, t=1 at end, based on CCW angle
-pub fn project_point_onto_arc(point: Coords2d, arc_center: Coords2d, arc_start: Coords2d, arc_end: Coords2d) -> f64 {
-    // Calculate angles
-    let start_angle = (arc_start.y - arc_center.y).atan2(arc_start.x - arc_center.x);
-    let end_angle = (arc_end.y - arc_center.y).atan2(arc_end.x - arc_center.x);
-    let point_angle = (point.y - arc_center.y).atan2(point.x - arc_center.x);
-
-    // Normalize angles to [0, 2π]
-    let normalize_angle = |angle: f64| -> f64 {
-        let mut normalized = angle;
-        while normalized < 0.0 {
-            normalized += 2.0 * std::f64::consts::PI;
-        }
-        while normalized >= 2.0 * std::f64::consts::PI {
-            normalized -= 2.0 * std::f64::consts::PI;
-        }
-        normalized
-    };
-
-    let normalized_start = normalize_angle(start_angle);
-    let normalized_end = normalize_angle(end_angle);
-    let normalized_point = normalize_angle(point_angle);
-
-    // Calculate arc length (CCW)
-    let arc_length = if normalized_start < normalized_end {
-        normalized_end - normalized_start
-    } else {
-        // Wrap around
-        2.0 * std::f64::consts::PI - normalized_start + normalized_end
-    };
-
-    if arc_length < EPSILON_PARALLEL {
-        // Arc is degenerate (full circle or very small)
-        return 0.0;
-    }
-
-    // Calculate point's position along arc (CCW from start)
-    let point_arc_length = if normalized_start < normalized_end {
-        if normalized_point >= normalized_start && normalized_point <= normalized_end {
-            normalized_point - normalized_start
-        } else {
-            // Point is not on the arc, return closest endpoint
-            let dist_to_start = (normalized_point - normalized_start)
-                .abs()
-                .min(2.0 * std::f64::consts::PI - (normalized_point - normalized_start).abs());
-            let dist_to_end = (normalized_point - normalized_end)
-                .abs()
-                .min(2.0 * std::f64::consts::PI - (normalized_point - normalized_end).abs());
-            return if dist_to_start < dist_to_end { 0.0 } else { 1.0 };
-        }
-    } else {
-        // Wrap around case
-        if normalized_point >= normalized_start || normalized_point <= normalized_end {
-            if normalized_point >= normalized_start {
-                normalized_point - normalized_start
-            } else {
-                2.0 * std::f64::consts::PI - normalized_start + normalized_point
-            }
-        } else {
-            // Point is not on the arc
-            let dist_to_start = (normalized_point - normalized_start)
-                .abs()
-                .min(2.0 * std::f64::consts::PI - (normalized_point - normalized_start).abs());
-            let dist_to_end = (normalized_point - normalized_end)
-                .abs()
-                .min(2.0 * std::f64::consts::PI - (normalized_point - normalized_end).abs());
-            return if dist_to_start < dist_to_end { 0.0 } else { 1.0 };
-        }
-    };
-
-    // Return parametric position
-    point_arc_length / arc_length
-}
-
-/// Helper to calculate intersection between two arcs (via circle-circle intersection)
-pub fn arc_arc_intersection(
-    arc1_center: Coords2d,
-    arc1_start: Coords2d,
-    arc1_end: Coords2d,
-    arc2_center: Coords2d,
-    arc2_start: Coords2d,
-    arc2_end: Coords2d,
-    epsilon: f64,
-) -> Option<Coords2d> {
-    // Calculate radii
-    let r1 = ((arc1_start.x - arc1_center.x) * (arc1_start.x - arc1_center.x)
-        + (arc1_start.y - arc1_center.y) * (arc1_start.y - arc1_center.y))
-        .sqrt();
-    let r2 = ((arc2_start.x - arc2_center.x) * (arc2_start.x - arc2_center.x)
-        + (arc2_start.y - arc2_center.y) * (arc2_start.y - arc2_center.y))
-        .sqrt();
-
-    // Distance between centers
-    let dx = arc2_center.x - arc1_center.x;
-    let dy = arc2_center.y - arc1_center.y;
-    let d = (dx * dx + dy * dy).sqrt();
-
-    // Check if circles intersect
-    if d > r1 + r2 + epsilon || d < (r1 - r2).abs() - epsilon {
-        // No intersection
-        return None;
-    }
-
-    // Check for degenerate cases
-    if d < EPSILON_PARALLEL {
-        // Concentric circles - no intersection (or infinite if same radius, but we treat as none)
-        return None;
-    }
-
-    // Calculate intersection points
-    // Using the formula from: https://mathworld.wolfram.com/Circle-CircleIntersection.html
-    let a = (r1 * r1 - r2 * r2 + d * d) / (2.0 * d);
-    let h_sq = r1 * r1 - a * a;
-
-    // If h_sq is negative, no intersection
-    if h_sq < 0.0 {
-        return None;
-    }
-
-    let h = h_sq.sqrt();
-
-    // If h is NaN, no intersection
-    if h.is_nan() {
-        return None;
-    }
-
-    // Unit vector from arc1Center to arc2Center
-    let ux = dx / d;
-    let uy = dy / d;
-
-    // Perpendicular vector (rotated 90 degrees)
-    let px = -uy;
-    let py = ux;
-
-    // Midpoint on the line connecting centers
-    let mid_point = Coords2d {
-        x: arc1_center.x + a * ux,
-        y: arc1_center.y + a * uy,
-    };
-
-    // Two intersection points
-    let intersection1 = Coords2d {
-        x: mid_point.x + h * px,
-        y: mid_point.y + h * py,
-    };
-    let intersection2 = Coords2d {
-        x: mid_point.x - h * px,
-        y: mid_point.y - h * py,
-    };
-
-    // Check which intersection point(s) are on both arcs
-    let mut candidates: Vec<Coords2d> = Vec::new();
-
-    if is_point_on_arc(intersection1, arc1_center, arc1_start, arc1_end, epsilon)
-        && is_point_on_arc(intersection1, arc2_center, arc2_start, arc2_end, epsilon)
-    {
-        candidates.push(intersection1);
-    }
-
-    if (intersection1.x - intersection2.x).abs() > epsilon || (intersection1.y - intersection2.y).abs() > epsilon {
-        // Only check second point if it's different from the first
-        if is_point_on_arc(intersection2, arc1_center, arc1_start, arc1_end, epsilon)
-            && is_point_on_arc(intersection2, arc2_center, arc2_start, arc2_end, epsilon)
-        {
-            candidates.push(intersection2);
-        }
-    }
-
-    // Return the first valid intersection (or None if none)
-    candidates.first().copied()
-}
-
-/// Helper to extract coordinates from a point object in JSON format
-#[cfg(any(target_arch = "wasm32", test))]
-// Native type helper - get point coordinates from ObjectId
-fn get_point_coords_from_native(objects: &[Object], point_id: ObjectId) -> Option<Coords2d> {
-    let point_obj = objects.get(point_id.0)?;
-
-    // Check if it's a Point segment
-    let ObjectKind::Segment { segment } = &point_obj.kind else {
-        return None;
-    };
-
-    let Segment::Point(point) = segment else {
-        return None;
-    };
-
-    // Extract position coordinates from Point2d<Number>
-    Some(Coords2d {
-        x: point.position.x.value,
-        y: point.position.y.value,
-    })
-}
-
-// Legacy JSON helper (will be removed)
-fn get_point_coords_from_json(objects: &[serde_json::Value], point_id: usize) -> Option<Coords2d> {
-    // Try array index first
-    let point_obj = objects.get(point_id)?;
-
-    // Check if it's a Point segment
-    let kind = point_obj.get("kind")?;
-    if kind.get("type")?.as_str() != Some("Segment") {
-        return None;
-    }
-
-    let segment = kind.get("segment")?;
-    if segment.get("type")?.as_str() != Some("Point") {
-        return None;
-    }
-
-    // Extract position coordinates
-    let position = segment.get("position")?;
-    let x = position.get("x")?.get("value")?.as_f64()?;
-    let y = position.get("y")?.get("value")?.as_f64()?;
-
-    Some(Coords2d { x, y })
-}
-
-/// Helper to get point coordinates from a Line segment by looking up the point object (native types)
-#[cfg(any(target_arch = "wasm32", test))]
-pub fn get_position_coords_for_line(
-    segment_obj: &Object,
-    which: &str, // "start" or "end"
-    objects: &[Object],
-) -> Option<Coords2d> {
-    let ObjectKind::Segment { segment } = &segment_obj.kind else {
-        return None;
-    };
-
-    let Segment::Line(line) = segment else {
-        return None;
-    };
-
-    // Get the point ID from the segment
-    let point_id = if which == "start" { line.start } else { line.end };
-
-    get_point_coords_from_native(objects, point_id)
-}
-
-/// Helper to check if a point is coincident with a segment (line or arc) via constraints (native types)
-#[cfg(any(target_arch = "wasm32", test))]
-fn is_point_coincident_with_segment_native(point_id: usize, segment_id: usize, objects: &[Object]) -> bool {
-    // Find coincident constraints
-    for obj in objects {
-        let ObjectKind::Constraint { constraint } = &obj.kind else {
-            continue;
-        };
-
-        let Constraint::Coincident(coincident) = constraint else {
-            continue;
-        };
-
-        // Check if both pointId and segmentId are in the segments array
-        let has_point = coincident.segments.iter().any(|id| id.0 == point_id);
-        let has_segment = coincident.segments.iter().any(|id| id.0 == segment_id);
-
-        if has_point && has_segment {
-            return true;
-        }
-    }
-    false
-}
-
-/// Helper to check if a point is coincident with a segment (line or arc) via constraints (legacy JSON version)
-#[cfg(any(target_arch = "wasm32", test))]
-fn is_point_coincident_with_segment(point_id: usize, segment_id: usize, objects: &[serde_json::Value]) -> bool {
-    // Find coincident constraints
-    for obj in objects {
-        let kind = match obj.get("kind") {
-            Some(k) => k,
-            None => continue,
-        };
-
-        if kind.get("type").and_then(|v| v.as_str()) != Some("Constraint") {
-            continue;
-        }
-
-        let constraint = match kind.get("constraint") {
-            Some(c) => c,
-            None => continue,
-        };
-
-        if constraint.get("type").and_then(|v| v.as_str()) != Some("Coincident") {
-            continue;
-        }
-
-        let segments = match constraint.get("segments") {
-            Some(s) => s,
-            None => continue,
-        };
-
-        // Check if both pointId and segmentId are in the segments array
-        let segments_array = match segments.as_array() {
-            Some(arr) => arr,
-            None => continue,
-        };
-
-        let has_point = segments_array
-            .iter()
-            .any(|v| v.as_u64().map(|id| id as usize) == Some(point_id));
-        let has_segment = segments_array
-            .iter()
-            .any(|v| v.as_u64().map(|id| id as usize) == Some(segment_id));
-
-        if has_point && has_segment {
-            return true;
-        }
-    }
-    false
-}
-
-/// Helper to get point coordinates from an Arc segment by looking up the point object (native types)
-#[cfg(any(target_arch = "wasm32", test))]
-pub fn get_position_coords_from_arc(
-    segment_obj: &Object,
-    which: &str, // "start", "end", or "center"
-    objects: &[Object],
-) -> Option<Coords2d> {
-    let ObjectKind::Segment { segment } = &segment_obj.kind else {
-        return None;
-    };
-
-    let Segment::Arc(arc) = segment else {
-        return None;
-    };
-
-    // Get the point ID from the segment
-    let point_id = if which == "start" {
-        arc.start
-    } else if which == "end" {
-        arc.end
-    } else {
-        arc.center
-    };
-
-    get_point_coords_from_native(objects, point_id)
-}
-
-/// Find the next trim spawn (intersection) between trim line and scene segments
-///
-/// Loops through polyline segments starting from startIndex and checks for intersections
-/// with all scene segments (both Line and Arc). Returns the first intersection found.
-#[cfg(any(target_arch = "wasm32", test))]
-pub fn get_next_trim_coords(points: &[Coords2d], start_index: usize, objects: &[Object]) -> NextTrimResult {
-    // Loop through polyline segments starting from startIndex
-    for i in start_index..points.len().saturating_sub(1) {
-        let p1 = points[i];
-        let p2 = points[i + 1];
-
-        // Check this polyline segment against all scene segments
-        for obj in objects.iter() {
-            // Check if it's a Segment
-            let ObjectKind::Segment { segment } = &obj.kind else {
-                continue;
-            };
-
-            // Handle Line segments
-            if let Segment::Line(line) = segment {
-                let start_point = get_position_coords_for_line(obj, "start", objects);
-                let end_point = get_position_coords_for_line(obj, "end", objects);
-
-                if let (Some(start), Some(end)) = (start_point, end_point) {
-                    if let Some(intersection) = line_segment_intersection(p1, p2, start, end, EPSILON_POINT_ON_SEGMENT)
-                    {
-                        // Get segment ID from object
-                        let seg_id = obj.id.0;
-
-                        return NextTrimResult::TrimSpawn {
-                            trim_spawn_seg_id: seg_id,
-                            trim_spawn_coords: intersection,
-                            next_index: i, // Return current index to re-check same polyline segment
-                        };
-                    }
-                }
-            }
-
-            // Handle Arc segments
-            if let Segment::Arc(arc) = segment {
-                let center_point = get_position_coords_from_arc(obj, "center", objects);
-                let start_point = get_position_coords_from_arc(obj, "start", objects);
-                let end_point = get_position_coords_from_arc(obj, "end", objects);
-
-                if let (Some(center), Some(start), Some(end)) = (center_point, start_point, end_point) {
-                    if let Some(intersection) =
-                        line_arc_intersection(p1, p2, center, start, end, EPSILON_POINT_ON_SEGMENT)
-                    {
-                        // Get segment ID from object
-                        let seg_id = obj.id.0;
-
-                        return NextTrimResult::TrimSpawn {
-                            trim_spawn_seg_id: seg_id,
-                            trim_spawn_coords: intersection,
-                            next_index: i, // Return current index to re-check same polyline segment
-                        };
-                    }
-                }
-            }
-        }
-    }
-
-    // No intersection found
-    NextTrimResult::NoTrimSpawn {
-        next_index: points.len().saturating_sub(1),
-    }
-}
-
-/// Find trim terminations for both sides of a trim spawn
-///
-/// For the trim spawn segment and the intersection point on that segment,
-/// finds the "trim terminations" in both directions (left and right from the intersection point).
-/// A termination is the point where trimming should stop in each direction.
-#[cfg(any(target_arch = "wasm32", test))]
-pub fn get_trim_spawn_terminations(
-    trim_spawn_seg_id: usize,
-    trim_spawn_coords: &[Coords2d],
-    objects: &[Object],
-) -> Result<TrimTerminations, String> {
-    // Find the trim spawn segment
-    let trim_spawn_seg = objects.iter().find(|obj| obj.id.0 == trim_spawn_seg_id);
-
-    let trim_spawn_seg = match trim_spawn_seg {
-        Some(seg) => seg,
-        None => {
-            return Err(format!("Trim spawn segment {} not found", trim_spawn_seg_id));
-        }
-    };
-
-    // Get segment coordinates using native types
-    let ObjectKind::Segment { segment } = &trim_spawn_seg.kind else {
-        return Err(format!("Trim spawn segment {} is not a segment", trim_spawn_seg_id));
-    };
-
-    let (segment_start, segment_end, segment_center) = match segment {
-        Segment::Line(_) => {
-            let start = get_position_coords_for_line(trim_spawn_seg, "start", objects)
-                .ok_or_else(|| format!("Could not get start coordinates for line segment {}", trim_spawn_seg_id))?;
-            let end = get_position_coords_for_line(trim_spawn_seg, "end", objects)
-                .ok_or_else(|| format!("Could not get end coordinates for line segment {}", trim_spawn_seg_id))?;
-            (start, end, None)
-        }
-        Segment::Arc(_) => {
-            let start = get_position_coords_from_arc(trim_spawn_seg, "start", objects)
-                .ok_or_else(|| format!("Could not get start coordinates for arc segment {}", trim_spawn_seg_id))?;
-            let end = get_position_coords_from_arc(trim_spawn_seg, "end", objects)
-                .ok_or_else(|| format!("Could not get end coordinates for arc segment {}", trim_spawn_seg_id))?;
-            let center = get_position_coords_from_arc(trim_spawn_seg, "center", objects)
-                .ok_or_else(|| format!("Could not get center coordinates for arc segment {}", trim_spawn_seg_id))?;
-            (start, end, Some(center))
-        }
-        _ => {
-            return Err(format!("Trim spawn segment {} is not a Line or Arc", trim_spawn_seg_id));
-        }
-    };
-
-    // Find intersection point between polyline and trim spawn segment
-    // trimSpawnCoords is a polyline, so we check each segment
-    // We need to find ALL intersections and use a consistent one to avoid
-    // different results for different trim lines in the same area
-    let mut all_intersections: Vec<(Coords2d, usize)> = Vec::new();
-
-    for i in 0..trim_spawn_coords.len().saturating_sub(1) {
-        let p1 = trim_spawn_coords[i];
-        let p2 = trim_spawn_coords[i + 1];
-
-        match segment {
-            Segment::Line(_) => {
-                if let Some(intersection) =
-                    line_segment_intersection(p1, p2, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT)
-                {
-                    all_intersections.push((intersection, i));
-                }
-            }
-            Segment::Arc(_) => {
-                if let Some(center) = segment_center {
-                    if let Some(intersection) =
-                        line_arc_intersection(p1, p2, center, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT)
-                    {
-                        all_intersections.push((intersection, i));
-                    }
-                }
-            }
-            Segment::Point(_) | Segment::Circle(_) => {
-                // Points and circles don't have intersections with line segments in the trim context
-            }
-        }
-    }
-
-    // Use the intersection that's closest to the middle of the polyline
-    // This ensures consistent results regardless of which segment intersects first
-    let intersection_point = if all_intersections.is_empty() {
-        return Err("Could not find intersection point between polyline and trim spawn segment".to_string());
-    } else {
-        // Find the middle of the polyline
-        let mid_index = (trim_spawn_coords.len() - 1) / 2;
-        let mid_point = trim_spawn_coords[mid_index];
-
-        // Find the intersection closest to the middle
-        let mut min_dist = f64::INFINITY;
-        let mut closest_intersection = all_intersections[0].0;
-
-        for (intersection, _) in &all_intersections {
-            let dist = ((intersection.x - mid_point.x) * (intersection.x - mid_point.x)
-                + (intersection.y - mid_point.y) * (intersection.y - mid_point.y))
-                .sqrt();
-            if dist < min_dist {
-                min_dist = dist;
-                closest_intersection = *intersection;
-            }
-        }
-
-        closest_intersection
-    };
-
-    // Project intersection point onto segment to get parametric position
-    let intersection_t = match segment {
-        Segment::Line(_) => project_point_onto_segment(intersection_point, segment_start, segment_end),
-        Segment::Arc(_) => {
-            if let Some(center) = segment_center {
-                project_point_onto_arc(intersection_point, center, segment_start, segment_end)
-            } else {
-                return Err("Arc segment missing center".to_string());
-            }
-        }
-        _ => {
-            return Err("Invalid segment type for trim spawn".to_string());
-        }
-    };
-
-    // Find terminations on both sides
-    let left_termination = find_termination_in_direction(
-        trim_spawn_seg,
-        intersection_point,
-        intersection_t,
-        "left",
-        objects,
-        segment_start,
-        segment_end,
-        segment_center,
-    )?;
-
-    let right_termination = find_termination_in_direction(
-        trim_spawn_seg,
-        intersection_point,
-        intersection_t,
-        "right",
-        objects,
-        segment_start,
-        segment_end,
-        segment_center,
-    )?;
-
-    Ok(TrimTerminations {
-        left_side: left_termination,
-        right_side: right_termination,
-    })
-}
-
-/// Determine the trim strategy based on terminations
-///
-/// Returns a list of trim operations to execute, or an error.
-/// There are three possibilities:
-/// - Simple trim: just delete the entire segment because neither end intersects with anything
-/// - Cut tail: one end intersects with something, so we cut the segment to that point
-/// - Segment split: both ends intersect with something, so we split the segment into two new segments
-#[cfg(any(target_arch = "wasm32", test))]
-pub fn trim_strategy(
-    trim_spawn_id: usize,
-    trim_spawn_segment: &Object,
-    left_side: &TrimTermination,
-    right_side: &TrimTermination,
-    objects: &[Object],
-) -> Result<Vec<TrimOperation>, String> {
-    // Simple trim: both sides are endpoints
-    if matches!(left_side, TrimTermination::SegEndPoint { .. })
-        && matches!(right_side, TrimTermination::SegEndPoint { .. })
-    {
-        return Ok(vec![TrimOperation::SimpleTrim {
-            segment_to_trim_id: trim_spawn_id,
-        }]);
-    }
-
-    // Helper to check if a side is an intersection or coincident
-    let is_intersect_or_coincident = |side: &TrimTermination| -> bool {
-        matches!(
-            side,
-            TrimTermination::Intersection { .. }
-                | TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { .. }
-        )
-    };
-
-    let left_side_needs_tail_cut = is_intersect_or_coincident(left_side) && !is_intersect_or_coincident(right_side);
-    let right_side_needs_tail_cut = is_intersect_or_coincident(right_side) && !is_intersect_or_coincident(left_side);
-
-    // Validate trim spawn segment using native types
-    let ObjectKind::Segment { segment } = &trim_spawn_segment.kind else {
-        return Err("Trim spawn segment is not a segment".to_string());
-    };
-
-    let (segment_type, ctor) = match segment {
-        Segment::Line(line) => ("Line", &line.ctor),
-        Segment::Arc(arc) => ("Arc", &arc.ctor),
-        _ => {
-            return Err("Trim spawn segment is not a Line or Arc".to_string());
-        }
-    };
-
-    // Extract units from the existing ctor's start point
-    let units = match ctor {
-        SegmentCtor::Line(line_ctor) => match &line_ctor.start.x {
-            kcl_lib::front::Expr::Var(v) | kcl_lib::front::Expr::Number(v) => v.units,
-            _ => NumericSuffix::Mm,
-        },
-        SegmentCtor::Arc(arc_ctor) => match &arc_ctor.start.x {
-            kcl_lib::front::Expr::Var(v) | kcl_lib::front::Expr::Number(v) => v.units,
-            _ => NumericSuffix::Mm,
-        },
-        _ => NumericSuffix::Mm,
-    };
-
-    // Helper to convert Coords2d to ApiPoint2d JSON with units
-    let coords_to_api_point = |coords: Coords2d| -> serde_json::Value {
-        // Round to 2 decimal places (matching TypeScript roundOff function)
-        let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
-        serde_json::json!({
-            "x": { "type": "Var", "value": round_off(coords.x), "units": units },
-            "y": { "type": "Var", "value": round_off(coords.y), "units": units },
-        })
-    };
-
-    // Helper to find distance constraints that reference a segment (via owned points)
-    let find_distance_constraints_for_segment = |segment_id: usize| -> Vec<usize> {
-        let mut constraint_ids = Vec::new();
-        for obj in objects {
-            let ObjectKind::Constraint { constraint } = &obj.kind else {
-                continue;
-            };
-
-            let Constraint::Distance(distance) = constraint else {
-                continue;
-            };
-
-            // Only delete distance constraints where BOTH points are owned by this segment.
-            // Distance constraints that reference points on other segments should be preserved,
-            // as they define relationships between this segment and other geometry that remain valid
-            // even when this segment is trimmed. Only constraints that measure distances between
-            // points on the same segment (e.g., segment length constraints) should be deleted.
-            let points_owned_by_segment: Vec<bool> = distance
-                .points
-                .iter()
-                .map(|point_id| {
-                    if let Some(point_obj) = objects.iter().find(|o| o.id.0 == point_id.0) {
-                        if let ObjectKind::Segment { segment } = &point_obj.kind {
-                            if let Segment::Point(point) = segment {
-                                if let Some(owner_id) = point.owner {
-                                    return owner_id.0 == segment_id;
-                                }
-                            }
-                        }
-                    }
-                    false
-                })
-                .collect();
-
-            // Only include if ALL points are owned by this segment
-            if points_owned_by_segment.len() == 2 && points_owned_by_segment.iter().all(|&owned| owned) {
-                constraint_ids.push(obj.id.0);
-            }
-        }
-        constraint_ids
-    };
-
-    // Helper to find existing point-segment coincident constraint (using native types)
-    let find_existing_point_segment_coincident =
-        |trim_seg_id: usize, intersecting_seg_id: usize| -> serde_json::Value {
-            // If the intersecting id itself is a point, try a fast lookup using it directly
-            let lookup_by_point_id = |point_id: usize| -> Option<serde_json::Value> {
-                for obj in objects {
-                    let ObjectKind::Constraint { constraint } = &obj.kind else {
-                        continue;
-                    };
-
-                    let Constraint::Coincident(coincident) = constraint else {
-                        continue;
-                    };
-
-                    let involves_trim_seg = coincident
-                        .segments
-                        .iter()
-                        .any(|id| id.0 == trim_seg_id || id.0 == point_id);
-                    let involves_point = coincident.segments.iter().any(|id| id.0 == point_id);
-
-                    if involves_trim_seg && involves_point {
-                        return Some(serde_json::json!({
-                            "existingPointSegmentConstraintId": obj.id.0,
-                            "intersectingEndpointPointId": point_id,
-                        }));
-                    }
-                }
-                None
-            };
-
-            // Collect trim endpoints using native types
-            let trim_seg = objects.iter().find(|obj| obj.id.0 == trim_seg_id);
-
-            let mut trim_endpoint_ids: Vec<usize> = Vec::new();
-            if let Some(seg) = trim_seg {
-                if let ObjectKind::Segment { segment } = &seg.kind {
-                    match segment {
-                        Segment::Line(line) => {
-                            trim_endpoint_ids.push(line.start.0);
-                            trim_endpoint_ids.push(line.end.0);
-                        }
-                        Segment::Arc(arc) => {
-                            trim_endpoint_ids.push(arc.start.0);
-                            trim_endpoint_ids.push(arc.end.0);
-                        }
-                        _ => {}
-                    }
-                }
-            }
-
-            let intersecting_obj = objects.iter().find(|obj| obj.id.0 == intersecting_seg_id);
-
-            if let Some(obj) = intersecting_obj {
-                if let ObjectKind::Segment { segment } = &obj.kind {
-                    if let Segment::Point(_) = segment {
-                        if let Some(found) = lookup_by_point_id(intersecting_seg_id) {
-                            return found;
-                        }
-                    }
-                }
-            }
-
-            // Collect intersecting endpoint IDs using native types
-            let mut intersecting_endpoint_ids: Vec<usize> = Vec::new();
-            if let Some(obj) = intersecting_obj {
-                if let ObjectKind::Segment { segment } = &obj.kind {
-                    match segment {
-                        Segment::Line(line) => {
-                            intersecting_endpoint_ids.push(line.start.0);
-                            intersecting_endpoint_ids.push(line.end.0);
-                        }
-                        Segment::Arc(arc) => {
-                            intersecting_endpoint_ids.push(arc.start.0);
-                            intersecting_endpoint_ids.push(arc.end.0);
-                        }
-                        _ => {}
-                    }
-                }
-            }
-
-            // Also include the intersecting_seg_id itself (it might already be a point id)
-            intersecting_endpoint_ids.push(intersecting_seg_id);
-
-            // Search for constraints involving trim segment (or trim endpoints) and intersecting endpoints/points
-            for obj in objects {
-                let ObjectKind::Constraint { constraint } = &obj.kind else {
-                    continue;
-                };
-
-                let Constraint::Coincident(coincident) = constraint else {
-                    continue;
-                };
-
-                let constraint_segment_ids: Vec<usize> = coincident.segments.iter().map(|id| id.0).collect();
-
-                // Check if constraint involves the trim segment itself OR any trim endpoint
-                let involves_trim_seg = constraint_segment_ids.contains(&trim_seg_id)
-                    || trim_endpoint_ids.iter().any(|&id| constraint_segment_ids.contains(&id));
-
-                if !involves_trim_seg {
-                    continue;
-                }
-
-                // Check if any intersecting endpoint/point is involved
-                if let Some(&intersecting_endpoint_id) = intersecting_endpoint_ids
-                    .iter()
-                    .find(|&&id| constraint_segment_ids.contains(&id))
-                {
-                    return serde_json::json!({
-                        "existingPointSegmentConstraintId": obj.id.0,
-                        "intersectingEndpointPointId": intersecting_endpoint_id,
-                    });
-                }
-            }
-
-            // No existing constraint found
-            serde_json::json!({
-                "existingPointSegmentConstraintId": serde_json::Value::Null,
-                "intersectingEndpointPointId": serde_json::Value::Null,
-            })
-        };
-
-    // Helper to find point-segment coincident constraints on an endpoint (using native types)
-    let find_point_segment_coincident_constraints = |endpoint_point_id: usize| -> Vec<serde_json::Value> {
-        let mut constraints: Vec<serde_json::Value> = Vec::new();
-        for obj in objects {
-            let ObjectKind::Constraint { constraint } = &obj.kind else {
-                continue;
-            };
-
-            let Constraint::Coincident(coincident) = constraint else {
-                continue;
-            };
-
-            // Check if this constraint involves the endpoint
-            if !coincident.segments.iter().any(|id| id.0 == endpoint_point_id) {
-                continue;
-            }
-
-            // Find the other entity
-            let other_segment_id = coincident.segments.iter().find_map(|seg_id| {
-                if seg_id.0 != endpoint_point_id {
-                    Some(seg_id.0)
-                } else {
-                    None
-                }
-            });
-
-            if let Some(other_id) = other_segment_id {
-                if let Some(other_obj) = objects.get(other_id) {
-                    // Check if other is a segment (not a point)
-                    if matches!(&other_obj.kind, ObjectKind::Segment { segment } if !matches!(segment, Segment::Point(_)))
-                    {
-                        constraints.push(serde_json::json!({
-                            "constraintId": obj.id.0,
-                            "segmentOrPointId": other_id,
-                        }));
-                    }
-                }
-            }
-        }
-        constraints
-    };
-
-    // Helper to find point-point coincident constraints on an endpoint (using native types)
-    // Returns constraint IDs
-    let find_point_point_coincident_constraints = |endpoint_point_id: usize| -> Vec<usize> {
-        let mut constraint_ids = Vec::new();
-        for obj in objects {
-            let ObjectKind::Constraint { constraint } = &obj.kind else {
-                continue;
-            };
-
-            let Constraint::Coincident(coincident) = constraint else {
-                continue;
-            };
-
-            // Check if this constraint involves the endpoint
-            if !coincident.segments.iter().any(|id| id.0 == endpoint_point_id) {
-                continue;
-            }
-
-            // Check if this is a point-point constraint (all segments are points)
-            let is_point_point = coincident.segments.iter().all(|seg_id| {
-                if let Some(seg_obj) = objects.get(seg_id.0) {
-                    matches!(&seg_obj.kind, ObjectKind::Segment { segment } if matches!(segment, Segment::Point(_)))
-                } else {
-                    false
-                }
-            });
-
-            if is_point_point {
-                constraint_ids.push(obj.id.0);
-            }
-        }
-        constraint_ids
-    };
-
-    // Cut tail: one side intersects, one is endpoint
-    if left_side_needs_tail_cut || right_side_needs_tail_cut {
-        let side = if left_side_needs_tail_cut {
-            left_side
-        } else {
-            right_side
-        };
-
-        let intersection_coords = match side {
-            TrimTermination::Intersection {
-                trim_termination_coords,
-                ..
-            }
-            | TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                trim_termination_coords,
-                ..
-            } => *trim_termination_coords,
-            TrimTermination::SegEndPoint { .. } => {
-                return Err("Logic error: side should not be segEndPoint here".to_string());
-            }
-        };
-
-        let endpoint_to_change = if left_side_needs_tail_cut { "end" } else { "start" };
-
-        let intersecting_seg_id = match side {
-            TrimTermination::Intersection {
-                intersecting_seg_id, ..
-            }
-            | TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                intersecting_seg_id, ..
-            } => *intersecting_seg_id,
-            TrimTermination::SegEndPoint { .. } => {
-                return Err("Logic error".to_string());
-            }
-        };
-
-        let coincident_data = if matches!(
-            side,
-            TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { .. }
-        ) {
-            let point_id = match side {
-                TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                    trim_spawn_segment_coincident_with_another_segment_point_id,
-                    ..
-                } => *trim_spawn_segment_coincident_with_another_segment_point_id,
-                _ => return Err("Logic error".to_string()),
-            };
-            let mut data = find_existing_point_segment_coincident(trim_spawn_id, intersecting_seg_id);
-            data["intersectingEndpointPointId"] = serde_json::json!(point_id);
-            data
-        } else {
-            find_existing_point_segment_coincident(trim_spawn_id, intersecting_seg_id)
-        };
-
-        // Find the endpoint that will be trimmed using native types
-        let trim_seg = objects.iter().find(|obj| obj.id.0 == trim_spawn_id);
-
-        let endpoint_point_id = if let Some(seg) = trim_seg {
-            let ObjectKind::Segment { segment } = &seg.kind else {
-                return Err("Trim segment is not a segment".to_string());
-            };
-            match segment {
-                Segment::Line(line) => {
-                    if endpoint_to_change == "start" {
-                        Some(line.start.0)
-                    } else {
-                        Some(line.end.0)
-                    }
-                }
-                Segment::Arc(arc) => {
-                    if endpoint_to_change == "start" {
-                        Some(arc.start.0)
-                    } else {
-                        Some(arc.end.0)
-                    }
-                }
-                _ => None,
-            }
-        } else {
-            None
-        };
-
-        // Find point-point constraints to delete
-        let coincident_end_constraint_to_delete_ids = if let Some(point_id) = endpoint_point_id {
-            find_point_point_coincident_constraints(point_id)
-        } else {
-            Vec::new()
-        };
-
-        let mut operations: Vec<TrimOperation> = Vec::new();
-
-        // Edit the segment - create new ctor with updated endpoint
-        let new_ctor = match ctor {
-            SegmentCtor::Line(line_ctor) => {
-                // Round to 2 decimal places (matching TypeScript roundOff function)
-                let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
-                let new_point = kcl_lib::front::Point2d {
-                    x: kcl_lib::front::Expr::Var(kcl_lib::front::Number {
-                        value: round_off(intersection_coords.x),
-                        units,
-                    }),
-                    y: kcl_lib::front::Expr::Var(kcl_lib::front::Number {
-                        value: round_off(intersection_coords.y),
-                        units,
-                    }),
-                };
-                if endpoint_to_change == "start" {
-                    SegmentCtor::Line(kcl_lib::front::LineCtor {
-                        start: new_point,
-                        end: line_ctor.end.clone(),
-                    })
-                } else {
-                    SegmentCtor::Line(kcl_lib::front::LineCtor {
-                        start: line_ctor.start.clone(),
-                        end: new_point,
-                    })
-                }
-            }
-            SegmentCtor::Arc(arc_ctor) => {
-                // Round to 2 decimal places (matching TypeScript roundOff function)
-                let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
-                let new_point = kcl_lib::front::Point2d {
-                    x: kcl_lib::front::Expr::Var(kcl_lib::front::Number {
-                        value: round_off(intersection_coords.x),
-                        units,
-                    }),
-                    y: kcl_lib::front::Expr::Var(kcl_lib::front::Number {
-                        value: round_off(intersection_coords.y),
-                        units,
-                    }),
-                };
-                if endpoint_to_change == "start" {
-                    SegmentCtor::Arc(kcl_lib::front::ArcCtor {
-                        start: new_point,
-                        end: arc_ctor.end.clone(),
-                        center: arc_ctor.center.clone(),
-                    })
-                } else {
-                    SegmentCtor::Arc(kcl_lib::front::ArcCtor {
-                        start: arc_ctor.start.clone(),
-                        end: new_point,
-                        center: arc_ctor.center.clone(),
-                    })
-                }
-            }
-            _ => {
-                return Err("Unsupported segment type for edit".to_string());
-            }
-        };
-        operations.push(TrimOperation::EditSegment {
-            segment_id: trim_spawn_id,
-            ctor: serde_json::to_value(&new_ctor).map_err(|e| format!("Failed to serialize ctor: {}", e))?,
-            endpoint_changed: endpoint_to_change.to_string(),
-        });
-
-        // Add coincident constraint
-        let add_coincident = TrimOperation::AddCoincidentConstraint {
-            segment_id: trim_spawn_id,
-            endpoint_changed: endpoint_to_change.to_string(),
-            segment_or_point_to_make_coincident_to: intersecting_seg_id,
-            intersecting_endpoint_point_id: coincident_data
-                .get("intersectingEndpointPointId")
-                .and_then(|v| v.as_u64())
-                .map(|id| id as usize),
-        };
-        operations.push(add_coincident);
-
-        // Delete old constraints
-        let mut all_constraint_ids_to_delete: Vec<usize> = Vec::new();
-        if let Some(constraint_id) = coincident_data
-            .get("existingPointSegmentConstraintId")
-            .and_then(|v| v.as_u64())
-            .map(|id| id as usize)
-        {
-            all_constraint_ids_to_delete.push(constraint_id);
-        }
-        all_constraint_ids_to_delete.extend(coincident_end_constraint_to_delete_ids);
-
-        // Delete distance constraints that reference this segment
-        // When trimming an endpoint, the distance constraint no longer makes sense
-        let distance_constraint_ids = find_distance_constraints_for_segment(trim_spawn_id);
-        all_constraint_ids_to_delete.extend(distance_constraint_ids);
-
-        if !all_constraint_ids_to_delete.is_empty() {
-            operations.push(TrimOperation::DeleteConstraints {
-                constraint_ids: all_constraint_ids_to_delete,
-            });
-        }
-
-        return Ok(operations);
-    }
-
-    // Split segment: both sides intersect
-    let left_side_intersects = is_intersect_or_coincident(left_side);
-    let right_side_intersects = is_intersect_or_coincident(right_side);
-
-    if left_side_intersects && right_side_intersects {
-        // This is the most complex case - split segment
-        // Get coincident data for both sides
-        let left_intersecting_seg_id = match left_side {
-            TrimTermination::Intersection {
-                intersecting_seg_id, ..
-            }
-            | TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                intersecting_seg_id, ..
-            } => *intersecting_seg_id,
-            TrimTermination::SegEndPoint { .. } => {
-                return Err("Logic error: left side should not be segEndPoint".to_string());
-            }
-        };
-
-        let right_intersecting_seg_id = match right_side {
-            TrimTermination::Intersection {
-                intersecting_seg_id, ..
-            }
-            | TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                intersecting_seg_id, ..
-            } => *intersecting_seg_id,
-            TrimTermination::SegEndPoint { .. } => {
-                return Err("Logic error: right side should not be segEndPoint".to_string());
-            }
-        };
-
-        let left_coincident_data = if matches!(
-            left_side,
-            TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { .. }
-        ) {
-            let point_id = match left_side {
-                TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                    trim_spawn_segment_coincident_with_another_segment_point_id,
-                    ..
-                } => *trim_spawn_segment_coincident_with_another_segment_point_id,
-                _ => return Err("Logic error".to_string()),
-            };
-            let mut data = find_existing_point_segment_coincident(trim_spawn_id, left_intersecting_seg_id);
-            data["intersectingEndpointPointId"] = serde_json::json!(point_id);
-            data
-        } else {
-            find_existing_point_segment_coincident(trim_spawn_id, left_intersecting_seg_id)
-        };
-
-        let right_coincident_data = if matches!(
-            right_side,
-            TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint { .. }
-        ) {
-            let point_id = match right_side {
-                TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                    trim_spawn_segment_coincident_with_another_segment_point_id,
-                    ..
-                } => *trim_spawn_segment_coincident_with_another_segment_point_id,
-                _ => return Err("Logic error".to_string()),
-            };
-            let mut data = find_existing_point_segment_coincident(trim_spawn_id, right_intersecting_seg_id);
-            data["intersectingEndpointPointId"] = serde_json::json!(point_id);
-            data
-        } else {
-            find_existing_point_segment_coincident(trim_spawn_id, right_intersecting_seg_id)
-        };
-
-        // Find the endpoints of the segment being split using native types
-        let (original_start_point_id, original_end_point_id) = match segment {
-            Segment::Line(line) => (Some(line.start.0), Some(line.end.0)),
-            Segment::Arc(arc) => (Some(arc.start.0), Some(arc.end.0)),
-            _ => (None, None),
-        };
-
-        // Get the original end point coordinates before editing using native types
-        let original_end_point_coords = match segment {
-            Segment::Line(_) => get_position_coords_for_line(trim_spawn_segment, "end", objects),
-            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, "end", objects),
-            _ => None,
-        };
-
-        if original_end_point_coords.is_none() {
-            return Err(
-                "Could not get original end point coordinates before editing - this is required for split trim"
-                    .to_string(),
-            );
-        }
-        let original_end_coords = original_end_point_coords.unwrap();
-
-        // Calculate trim coordinates for both sides
-        let left_trim_coords = match left_side {
-            TrimTermination::SegEndPoint {
-                trim_termination_coords,
-            }
-            | TrimTermination::Intersection {
-                trim_termination_coords,
-                ..
-            }
-            | TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                trim_termination_coords,
-                ..
-            } => *trim_termination_coords,
-        };
-
-        let right_trim_coords = match right_side {
-            TrimTermination::SegEndPoint {
-                trim_termination_coords,
-            }
-            | TrimTermination::Intersection {
-                trim_termination_coords,
-                ..
-            }
-            | TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-                trim_termination_coords,
-                ..
-            } => *trim_termination_coords,
-        };
-
-        // Check if the split point is at the original end point
-        let dist_to_original_end = ((right_trim_coords.x - original_end_coords.x)
-            * (right_trim_coords.x - original_end_coords.x)
-            + (right_trim_coords.y - original_end_coords.y) * (right_trim_coords.y - original_end_coords.y))
-            .sqrt();
-        if dist_to_original_end < EPSILON_POINT_ON_SEGMENT {
-            return Err(
-                "Split point is at original end point - this should be handled as cutTail, not split".to_string(),
-            );
-        }
-
-        // For now, implement a simplified version that creates the split operation
-        // The full constraint migration logic is very complex and can be refined during testing
-        let mut constraints_to_migrate: Vec<ConstraintToMigrate> = Vec::new();
-        let mut constraints_to_delete: Vec<usize> = Vec::new();
-
-        // Use a HashSet to track which constraints we've already added to avoid duplicates
-        use std::collections::HashSet;
-        let mut constraints_to_delete_set: HashSet<usize> = HashSet::new();
-
-        // Add existing point-segment constraints from terminations to delete list
-        if let Some(constraint_id) = left_coincident_data
-            .get("existingPointSegmentConstraintId")
-            .and_then(|v| v.as_u64())
-            .map(|id| id as usize)
-        {
-            if constraints_to_delete_set.insert(constraint_id) {
-                constraints_to_delete.push(constraint_id);
-            }
-        }
-        if let Some(constraint_id) = right_coincident_data
-            .get("existingPointSegmentConstraintId")
-            .and_then(|v| v.as_u64())
-            .map(|id| id as usize)
-        {
-            if constraints_to_delete_set.insert(constraint_id) {
-                constraints_to_delete.push(constraint_id);
-            }
-        }
-
-        // Find point-point constraints on end endpoint to migrate
-        if let Some(end_id) = original_end_point_id {
-            let end_point_point_constraint_ids = find_point_point_coincident_constraints(end_id);
-            for constraint_id in end_point_point_constraint_ids {
-                // Identify the other point in the coincident constraint
-                let other_point_id_opt = objects.iter().find_map(|obj| {
-                    if obj.id.0 != constraint_id {
-                        return None;
-                    }
-                    let ObjectKind::Constraint { constraint } = &obj.kind else {
-                        return None;
-                    };
-                    let Constraint::Coincident(coincident) = constraint else {
-                        return None;
-                    };
-                    coincident
-                        .segments
-                        .iter()
-                        .find_map(|seg_id| if seg_id.0 != end_id { Some(seg_id.0) } else { None })
-                });
-
-                if let Some(other_point_id) = other_point_id_opt {
-                    if constraints_to_delete_set.insert(constraint_id) {
-                        constraints_to_delete.push(constraint_id);
-                    }
-                    // Migrate as point-point constraint to the new end endpoint
-                    constraints_to_migrate.push(ConstraintToMigrate {
-                        constraint_id,
-                        other_entity_id: other_point_id,
-                        is_point_point: true,
-                        attach_to_endpoint: "end".to_string(),
-                    });
-                }
-            }
-        }
-
-        // Find point-segment constraints on end endpoint to migrate
-        if let Some(end_id) = original_end_point_id {
-            let end_point_segment_constraints = find_point_segment_coincident_constraints(end_id);
-            for constraint_json in end_point_segment_constraints {
-                if let Some(constraint_id) = constraint_json
-                    .get("constraintId")
-                    .and_then(|v| v.as_u64())
-                    .map(|id| id as usize)
-                {
-                    if constraints_to_delete_set.insert(constraint_id) {
-                        constraints_to_delete.push(constraint_id);
-                    }
-                    // Add to migrate list (simplified)
-                    if let Some(other_id) = constraint_json
-                        .get("segmentOrPointId")
-                        .and_then(|v| v.as_u64())
-                        .map(|id| id as usize)
-                    {
-                        constraints_to_migrate.push(ConstraintToMigrate {
-                            constraint_id,
-                            other_entity_id: other_id,
-                            is_point_point: false,
-                            attach_to_endpoint: "end".to_string(),
-                        });
-                    }
-                }
-            }
-        }
-
-        // Find point-segment constraints where the point is geometrically at the original end point
-        // These should migrate to [newSegmentEndPointId, pointId] (point-point), not [pointId, newSegmentId] (point-segment)
-        // We need to find these by checking all point-segment constraints involving the segment ID
-        // and checking if the point is at the original end point
-        if let Some(end_id) = original_end_point_id {
-            for obj in objects {
-                let ObjectKind::Constraint { constraint } = &obj.kind else {
-                    continue;
-                };
-
-                let Constraint::Coincident(coincident) = constraint else {
-                    continue;
-                };
-
-                // Only consider constraints that involve the segment ID but NOT the endpoint IDs directly
-                // Note: We want to find constraints like [pointId, segmentId] where pointId is a point
-                // that happens to be at the endpoint geometrically, but the constraint doesn't reference
-                // the endpoint ID directly
-                if !coincident.segments.iter().any(|id| id.0 == trim_spawn_id) {
-                    continue;
-                }
-                // Skip constraints that involve endpoint IDs directly (those are handled by endpoint constraint migration)
-                // But we still want to find constraints where a point (not an endpoint ID) is at the endpoint
-                if let (Some(start_id), Some(end_id_val)) = (original_start_point_id, Some(end_id)) {
-                    if coincident
-                        .segments
-                        .iter()
-                        .any(|id| id.0 == start_id || id.0 == end_id_val)
-                    {
-                        continue; // Skip constraints that involve endpoint IDs directly
-                    }
-                }
-
-                // Find the other entity (should be a point)
-                let other_id = coincident.segments.iter().find_map(|seg_id| {
-                    if seg_id.0 != trim_spawn_id {
-                        Some(seg_id.0)
-                    } else {
-                        None
-                    }
-                });
-
-                if let Some(other_id) = other_id {
-                    // Check if the other entity is a point
-                    if let Some(other_obj) = objects.iter().find(|o| o.id.0 == other_id) {
-                        let ObjectKind::Segment { segment: other_segment } = &other_obj.kind else {
-                            continue;
-                        };
-
-                        let Segment::Point(point) = other_segment else {
-                            continue;
-                        };
-
-                        // Get point coordinates
-                        let point_coords = Coords2d {
-                            x: point.position.x.value,
-                            y: point.position.y.value,
-                        };
-
-                        // Check if point is at original end point (geometrically)
-                        // Use post-solve coordinates for original end point if available, otherwise use the coordinates we have
-                        let original_end_point_post_solve_coords = if let Some(end_id) = original_end_point_id {
-                            if let Some(end_point_obj) = objects.get(end_id) {
-                                if let ObjectKind::Segment { segment } = &end_point_obj.kind {
-                                    if let Segment::Point(end_point) = segment {
-                                        Some(Coords2d {
-                                            x: end_point.position.x.value,
-                                            y: end_point.position.y.value,
-                                        })
-                                    } else {
-                                        None
-                                    }
-                                } else {
-                                    None
-                                }
-                            } else {
-                                None
-                            }
-                        } else {
-                            None
-                        };
-
-                        let reference_coords = original_end_point_post_solve_coords.unwrap_or(original_end_coords);
-                        let dist_to_original_end = ((point_coords.x - reference_coords.x)
-                            * (point_coords.x - reference_coords.x)
-                            + (point_coords.y - reference_coords.y) * (point_coords.y - reference_coords.y))
-                            .sqrt();
-
-                        if dist_to_original_end < EPSILON_POINT_ON_SEGMENT {
-                            // Point is at the original end point - migrate as point-point constraint
-                            // Check if there's already a point-point constraint between this point and the original end point
-                            let has_point_point_constraint = find_point_point_coincident_constraints(end_id)
-                                .iter()
-                                .any(|&constraint_id| {
-                                    if let Some(constraint_obj) = objects.get(constraint_id) {
-                                        if let ObjectKind::Constraint { constraint } = &constraint_obj.kind {
-                                            if let Constraint::Coincident(coincident) = constraint {
-                                                coincident.segments.iter().any(|id| id.0 == other_id)
-                                            } else {
-                                                false
-                                            }
-                                        } else {
-                                            false
-                                        }
-                                    } else {
-                                        false
-                                    }
-                                });
-
-                            if !has_point_point_constraint {
-                                // No existing point-point constraint - migrate as point-point constraint
-                                constraints_to_migrate.push(ConstraintToMigrate {
-                                    constraint_id: obj.id.0,
-                                    other_entity_id: other_id,
-                                    is_point_point: true, // Convert to point-point constraint
-                                    attach_to_endpoint: "end".to_string(), // Attach to new segment's end
-                                });
-                            }
-                            // Always delete the old point-segment constraint (whether we migrate or not)
-                            if constraints_to_delete_set.insert(obj.id.0) {
-                                constraints_to_delete.push(obj.id.0);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Find point-segment constraints on the segment body (not at endpoints)
-        // These are constraints [pointId, segmentId] where the point is on the segment body
-        // They should be migrated to [pointId, newSegmentId] if the point is after the split point
-        let split_point = right_trim_coords; // Use right trim coords as split point
-        let segment_start_coords = match segment {
-            Segment::Line(_) => get_position_coords_for_line(trim_spawn_segment, "start", objects),
-            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, "start", objects),
-            _ => None,
-        };
-        let segment_end_coords = match segment {
-            Segment::Line(_) => get_position_coords_for_line(trim_spawn_segment, "end", objects),
-            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, "end", objects),
-            _ => None,
-        };
-        let segment_center_coords = match segment {
-            Segment::Line(_) => None,
-            Segment::Arc(_) => get_position_coords_from_arc(trim_spawn_segment, "center", objects),
-            _ => None,
-        };
-
-        if let (Some(start_coords), Some(end_coords)) = (segment_start_coords, segment_end_coords) {
-            // Calculate split point parametric position
-            let split_point_t_opt = match segment {
-                Segment::Line(_) => Some(project_point_onto_segment(split_point, start_coords, end_coords)),
-                Segment::Arc(_) => {
-                    if let Some(center) = segment_center_coords {
-                        Some(project_point_onto_arc(split_point, center, start_coords, end_coords))
-                    } else {
-                        None // Can't process without center
-                    }
-                }
-                _ => None,
-            };
-
-            if let Some(split_point_t) = split_point_t_opt {
-                // Find all coincident constraints involving the segment
-                for obj in objects {
-                    let ObjectKind::Constraint { constraint } = &obj.kind else {
-                        continue;
-                    };
-
-                    let Constraint::Coincident(coincident) = constraint else {
-                        continue;
-                    };
-
-                    // Check if constraint involves the segment being split
-                    if !coincident.segments.iter().any(|id| id.0 == trim_spawn_id) {
-                        continue;
-                    }
-
-                    // Skip if constraint also involves endpoint IDs directly (those are handled separately)
-                    if let (Some(start_id), Some(end_id)) = (original_start_point_id, original_end_point_id) {
-                        if coincident.segments.iter().any(|id| id.0 == start_id || id.0 == end_id) {
-                            continue;
-                        }
-                    }
-
-                    // Find the other entity in the constraint
-                    let other_id = coincident.segments.iter().find_map(|seg_id| {
-                        if seg_id.0 != trim_spawn_id {
-                            Some(seg_id.0)
-                        } else {
-                            None
-                        }
-                    });
-
-                    if let Some(other_id) = other_id {
-                        // Check if the other entity is a point
-                        if let Some(other_obj) = objects.get(other_id) {
-                            let ObjectKind::Segment { segment: other_segment } = &other_obj.kind else {
-                                continue;
-                            };
-
-                            let Segment::Point(point) = other_segment else {
-                                continue;
-                            };
-
-                            // Get point coordinates
-                            let point_coords = Coords2d {
-                                x: point.position.x.value,
-                                y: point.position.y.value,
-                            };
-
-                            // Project the point onto the segment to get its parametric position
-                            let point_t = match segment {
-                                Segment::Line(_) => project_point_onto_segment(point_coords, start_coords, end_coords),
-                                Segment::Arc(_) => {
-                                    if let Some(center) = segment_center_coords {
-                                        project_point_onto_arc(point_coords, center, start_coords, end_coords)
-                                    } else {
-                                        continue; // Skip this constraint if no center
-                                    }
-                                }
-                                _ => continue, // Skip non-line/arc segments
-                            };
-
-                            // Check if point is at the original end point (skip if so - already handled above)
-                            // Use post-solve coordinates for original end point if available
-                            let original_end_point_post_solve_coords = if let Some(end_id) = original_end_point_id {
-                                if let Some(end_point_obj) = objects.get(end_id) {
-                                    if let ObjectKind::Segment { segment } = &end_point_obj.kind {
-                                        if let Segment::Point(end_point) = segment {
-                                            Some(Coords2d {
-                                                x: end_point.position.x.value,
-                                                y: end_point.position.y.value,
-                                            })
-                                        } else {
-                                            None
-                                        }
-                                    } else {
-                                        None
-                                    }
-                                } else {
-                                    None
-                                }
-                            } else {
-                                None
-                            };
-
-                            let reference_coords = original_end_point_post_solve_coords.unwrap_or(original_end_coords);
-                            let dist_to_original_end = ((point_coords.x - reference_coords.x)
-                                * (point_coords.x - reference_coords.x)
-                                + (point_coords.y - reference_coords.y) * (point_coords.y - reference_coords.y))
-                                .sqrt();
-
-                            if dist_to_original_end < EPSILON_POINT_ON_SEGMENT {
-                                // This should have been handled in the first loop, but if we find it here,
-                                // make sure it's deleted (it might have been missed due to filtering)
-                                // Also check if we should migrate it as point-point constraint
-                                let has_point_point_constraint = if let Some(end_id) = original_end_point_id {
-                                    find_point_point_coincident_constraints(end_id)
-                                        .iter()
-                                        .any(|&constraint_id| {
-                                            if let Some(constraint_obj) = objects.get(constraint_id) {
-                                                if let ObjectKind::Constraint { constraint } = &constraint_obj.kind {
-                                                    if let Constraint::Coincident(coincident) = constraint {
-                                                        coincident.segments.iter().any(|id| id.0 == other_id)
-                                                    } else {
-                                                        false
-                                                    }
-                                                } else {
-                                                    false
-                                                }
-                                            } else {
-                                                false
-                                            }
-                                        })
-                                } else {
-                                    false
-                                };
-
-                                if !has_point_point_constraint {
-                                    // No existing point-point constraint - migrate as point-point constraint
-                                    constraints_to_migrate.push(ConstraintToMigrate {
-                                        constraint_id: obj.id.0,
-                                        other_entity_id: other_id,
-                                        is_point_point: true, // Convert to point-point constraint
-                                        attach_to_endpoint: "end".to_string(), // Attach to new segment's end
-                                    });
-                                }
-                                // Always delete the old point-segment constraint
-                                if constraints_to_delete_set.insert(obj.id.0) {
-                                    constraints_to_delete.push(obj.id.0);
-                                }
-                                continue; // Already handled as point-point constraint migration above
-                            }
-
-                            // Check if point is at the current start endpoint (skip if so - handled separately)
-                            let dist_to_start = ((point_coords.x - start_coords.x) * (point_coords.x - start_coords.x)
-                                + (point_coords.y - start_coords.y) * (point_coords.y - start_coords.y))
-                                .sqrt();
-                            let is_at_start = (point_t - 0.0).abs() < EPSILON_POINT_ON_SEGMENT
-                                || dist_to_start < EPSILON_POINT_ON_SEGMENT;
-
-                            if is_at_start {
-                                continue; // Handled by endpoint constraint migration
-                            }
-
-                            // Check if point is at the split point (don't migrate - would pull halves together)
-                            let dist_to_split = (point_t - split_point_t).abs();
-                            if dist_to_split < EPSILON_POINT_ON_SEGMENT * 100.0 {
-                                continue; // Too close to split point
-                            }
-
-                            // If point is after split point (closer to end), migrate to new segment
-                            if point_t > split_point_t {
-                                constraints_to_migrate.push(ConstraintToMigrate {
-                                    constraint_id: obj.id.0,
-                                    other_entity_id: other_id,
-                                    is_point_point: false, // Keep as point-segment, but replace the segment
-                                    attach_to_endpoint: "segment".to_string(), // Replace old segment with new segment
-                                });
-                                if constraints_to_delete_set.insert(obj.id.0) {
-                                    constraints_to_delete.push(obj.id.0);
-                                }
-                            }
-                        }
-                    }
-                }
-            } // End of if let Some(split_point_t)
-        } // End of if let (Some(start_coords), Some(end_coords))
-
-        // Find distance constraints that reference the segment being split
-        // These need to be deleted and re-added with new endpoints after split
-        // BUT: For arcs, we need to exclude distance constraints that reference the center point
-        // (those will be migrated separately in the execution code)
-        let distance_constraint_ids_for_split = find_distance_constraints_for_segment(trim_spawn_id);
-
-        // Get the center point ID if this is an arc, so we can exclude center point constraints
-        let arc_center_point_id: Option<usize> = match segment {
-            Segment::Arc(arc) => Some(arc.center.0),
-            _ => None,
-        };
-
-        for constraint_id in distance_constraint_ids_for_split {
-            // Skip if this is a center point constraint for an arc (will be migrated separately)
-            if let Some(center_id) = arc_center_point_id {
-                // Check if this constraint references the center point
-                if let Some(constraint_obj) = objects.get(constraint_id) {
-                    if let ObjectKind::Constraint { constraint } = &constraint_obj.kind {
-                        if let Constraint::Distance(distance) = constraint {
-                            if distance.points.iter().any(|pt| pt.0 == center_id) {
-                                // This is a center point constraint - skip deletion, it will be migrated
-                                continue;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if constraints_to_delete_set.insert(constraint_id) {
-                constraints_to_delete.push(constraint_id);
-            }
-        }
-
-        // Find angle constraints (Parallel, Perpendicular, Horizontal, Vertical) that reference the segment being split
-        // Note: We don't delete these - they still apply to the original (trimmed) segment
-        // We'll add new constraints for the new segment in the execution code
-
-        // Catch-all: Find any remaining point-segment constraints involving the segment
-        // that we might have missed (e.g., due to coordinate precision issues)
-        // This ensures we don't leave orphaned constraints
-        for obj in objects {
-            let ObjectKind::Constraint { constraint } = &obj.kind else {
-                continue;
-            };
-
-            let Constraint::Coincident(coincident) = constraint else {
-                continue;
-            };
-
-            // Only consider constraints that involve the segment ID
-            if !coincident.segments.iter().any(|id| id.0 == trim_spawn_id) {
-                continue;
-            }
-
-            // Skip if already marked for deletion
-            if constraints_to_delete.contains(&obj.id.0) {
-                continue;
-            }
-
-            // Skip if this constraint involves an endpoint directly (handled separately)
-            // BUT: if the other entity is a point that's at the original end point geometrically,
-            // we still want to handle it here even if it's not the same point object
-            // So we'll check this after we verify the other entity is a point and check its coordinates
-
-            // Find the other entity (should be a point)
-            let other_id = coincident.segments.iter().find_map(|seg_id| {
-                if seg_id.0 != trim_spawn_id {
-                    Some(seg_id.0)
-                } else {
-                    None
-                }
-            });
-
-            if let Some(other_id) = other_id {
-                // Check if the other entity is a point
-                if let Some(other_obj) = objects.get(other_id) {
-                    let ObjectKind::Segment { segment: other_segment } = &other_obj.kind else {
-                        continue;
-                    };
-
-                    let Segment::Point(point) = other_segment else {
-                        continue;
-                    };
-
-                    // Skip if this constraint involves an endpoint directly (handled separately)
-                    // BUT: if the point is at the original end point geometrically, we still want to handle it
-                    let _is_endpoint_constraint =
-                        if let (Some(start_id), Some(end_id)) = (original_start_point_id, original_end_point_id) {
-                            coincident.segments.iter().any(|id| id.0 == start_id || id.0 == end_id)
-                        } else {
-                            false
-                        };
-
-                    // Get point coordinates
-                    let point_coords = Coords2d {
-                        x: point.position.x.value,
-                        y: point.position.y.value,
-                    };
-
-                    // Check if point is at original end point (with relaxed tolerance for catch-all)
-                    let original_end_point_post_solve_coords = if let Some(end_id) = original_end_point_id {
-                        if let Some(end_point_obj) = objects.get(end_id) {
-                            if let ObjectKind::Segment { segment } = &end_point_obj.kind {
-                                if let Segment::Point(end_point) = segment {
-                                    Some(Coords2d {
-                                        x: end_point.position.x.value,
-                                        y: end_point.position.y.value,
-                                    })
-                                } else {
-                                    None
-                                }
-                            } else {
-                                None
-                            }
-                        } else {
-                            None
-                        }
-                    } else {
-                        None
-                    };
-
-                    let reference_coords = original_end_point_post_solve_coords.unwrap_or(original_end_coords);
-                    let dist_to_original_end = ((point_coords.x - reference_coords.x)
-                        * (point_coords.x - reference_coords.x)
-                        + (point_coords.y - reference_coords.y) * (point_coords.y - reference_coords.y))
-                        .sqrt();
-
-                    // Use a slightly more relaxed tolerance for catch-all to catch edge cases
-                    // Also handle endpoint constraints that might have been missed
-                    let is_at_original_end = dist_to_original_end < EPSILON_POINT_ON_SEGMENT * 2.0;
-
-                    if is_at_original_end {
-                        // Point is at or very close to original end point - delete the constraint
-                        // Check if we should migrate it as point-point constraint
-                        let has_point_point_constraint = if let Some(end_id) = original_end_point_id {
-                            find_point_point_coincident_constraints(end_id)
-                                .iter()
-                                .any(|&constraint_id| {
-                                    if let Some(constraint_obj) = objects.get(constraint_id) {
-                                        if let ObjectKind::Constraint { constraint } = &constraint_obj.kind {
-                                            if let Constraint::Coincident(coincident) = constraint {
-                                                coincident.segments.iter().any(|id| id.0 == other_id)
-                                            } else {
-                                                false
-                                            }
-                                        } else {
-                                            false
-                                        }
-                                    } else {
-                                        false
-                                    }
-                                })
-                        } else {
-                            false
-                        };
-
-                        if !has_point_point_constraint {
-                            // No existing point-point constraint - migrate as point-point constraint
-                            constraints_to_migrate.push(ConstraintToMigrate {
-                                constraint_id: obj.id.0,
-                                other_entity_id: other_id,
-                                is_point_point: true, // Convert to point-point constraint
-                                attach_to_endpoint: "end".to_string(), // Attach to new segment's end
-                            });
-                        }
-                        // Always delete the old point-segment constraint
-                        if constraints_to_delete_set.insert(obj.id.0) {
-                            constraints_to_delete.push(obj.id.0);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Create split segment operation
-        let operations = vec![TrimOperation::SplitSegment {
-            segment_id: trim_spawn_id,
-            left_trim_coords,
-            right_trim_coords,
-            original_end_coords,
-            left_side: left_side.clone(),
-            right_side: right_side.clone(),
-            left_side_coincident_data: serde_json::json!({
-                "intersectingSegId": left_intersecting_seg_id,
-                "intersectingEndpointPointId": left_coincident_data.get("intersectingEndpointPointId"),
-                "existingPointSegmentConstraintId": left_coincident_data.get("existingPointSegmentConstraintId"),
-            }),
-            right_side_coincident_data: serde_json::json!({
-                "intersectingSegId": right_intersecting_seg_id,
-                "intersectingEndpointPointId": right_coincident_data.get("intersectingEndpointPointId"),
-                "existingPointSegmentConstraintId": right_coincident_data.get("existingPointSegmentConstraintId"),
-            }),
-            constraints_to_migrate,
-            constraints_to_delete,
-        }];
-
-        return Ok(operations);
-    }
-
-    Err("Not implemented".to_string())
-}
-
-/// Helper to find termination in a given direction from the intersection point
-#[cfg(any(target_arch = "wasm32", test))]
-fn find_termination_in_direction(
-    trim_spawn_seg: &Object,
-    _intersection_point: Coords2d,
-    intersection_t: f64,
-    direction: &str,
-    objects: &[Object],
-    segment_start: Coords2d,
-    segment_end: Coords2d,
-    segment_center: Option<Coords2d>,
-) -> Result<TrimTermination, String> {
-    // Use native types
-    let ObjectKind::Segment { segment } = &trim_spawn_seg.kind else {
-        return Err("Trim spawn segment is not a segment".to_string());
-    };
-
-    // Collect all candidate points: intersections, coincident points, and endpoints
-    #[derive(Debug, Clone)]
-    struct Candidate {
-        t: f64,
-        point: Coords2d,
-        candidate_type: String, // "intersection", "coincident", or "endpoint"
-        segment_id: Option<usize>,
-        point_id: Option<usize>,
-    }
-
-    let mut candidates: Vec<Candidate> = Vec::new();
-
-    // Add segment endpoints using native types
-    match segment {
-        Segment::Line(line) => {
-            candidates.push(Candidate {
-                t: 0.0,
-                point: segment_start,
-                candidate_type: "endpoint".to_string(),
-                segment_id: None,
-                point_id: Some(line.start.0),
-            });
-            candidates.push(Candidate {
-                t: 1.0,
-                point: segment_end,
-                candidate_type: "endpoint".to_string(),
-                segment_id: None,
-                point_id: Some(line.end.0),
-            });
-        }
-        Segment::Arc(arc) => {
-            // For arcs, endpoints are at t=0 and t=1 conceptually
-            candidates.push(Candidate {
-                t: 0.0,
-                point: segment_start,
-                candidate_type: "endpoint".to_string(),
-                segment_id: None,
-                point_id: Some(arc.start.0),
-            });
-            candidates.push(Candidate {
-                t: 1.0,
-                point: segment_end,
-                candidate_type: "endpoint".to_string(),
-                segment_id: None,
-                point_id: Some(arc.end.0),
-            });
-        }
-        _ => {}
-    }
-
-    // Get trim spawn segment ID for comparison
-    let trim_spawn_seg_id = trim_spawn_seg.id.0;
-
-    // Find intersections with other segments using native types
-    for other_seg in objects.iter() {
-        // Skip if same segment or not a segment
-        let other_id = other_seg.id.0;
-
-        if other_id == trim_spawn_seg_id {
-            continue;
-        }
-
-        let ObjectKind::Segment { segment: other_segment } = &other_seg.kind else {
-            continue;
-        };
-
-        // Handle Line-Line, Line-Arc, Arc-Line, Arc-Arc intersections
-        match other_segment {
-            Segment::Line(_) => {
-                let other_start = get_position_coords_for_line(other_seg, "start", objects);
-                let other_end = get_position_coords_for_line(other_seg, "end", objects);
-                if let (Some(os), Some(oe)) = (other_start, other_end) {
-                    match segment {
-                        Segment::Line(_) => {
-                            if let Some(intersection) =
-                                line_segment_intersection(segment_start, segment_end, os, oe, EPSILON_POINT_ON_SEGMENT)
-                            {
-                                let t = project_point_onto_segment(intersection, segment_start, segment_end);
-                                candidates.push(Candidate {
-                                    t,
-                                    point: intersection,
-                                    candidate_type: "intersection".to_string(),
-                                    segment_id: Some(other_id),
-                                    point_id: None,
-                                });
-                            }
-                        }
-                        Segment::Arc(_) => {
-                            if let Some(center) = segment_center {
-                                if let Some(intersection) = line_arc_intersection(
-                                    os,
-                                    oe,
-                                    center,
-                                    segment_start,
-                                    segment_end,
-                                    EPSILON_POINT_ON_SEGMENT,
-                                ) {
-                                    let t = project_point_onto_arc(intersection, center, segment_start, segment_end);
-                                    candidates.push(Candidate {
-                                        t,
-                                        point: intersection,
-                                        candidate_type: "intersection".to_string(),
-                                        segment_id: Some(other_id),
-                                        point_id: None,
-                                    });
-                                }
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-            }
-            Segment::Arc(_) => {
-                let other_start = get_position_coords_from_arc(other_seg, "start", objects);
-                let other_end = get_position_coords_from_arc(other_seg, "end", objects);
-                let other_center = get_position_coords_from_arc(other_seg, "center", objects);
-                if let (Some(os), Some(oe), Some(oc)) = (other_start, other_end, other_center) {
-                    match segment {
-                        Segment::Line(_) => {
-                            if let Some(intersection) =
-                                line_arc_intersection(segment_start, segment_end, oc, os, oe, EPSILON_POINT_ON_SEGMENT)
-                            {
-                                let t = project_point_onto_segment(intersection, segment_start, segment_end);
-                                candidates.push(Candidate {
-                                    t,
-                                    point: intersection,
-                                    candidate_type: "intersection".to_string(),
-                                    segment_id: Some(other_id),
-                                    point_id: None,
-                                });
-                            }
-                        }
-                        Segment::Arc(_) => {
-                            if let Some(center) = segment_center {
-                                if let Some(intersection) = arc_arc_intersection(
-                                    center,
-                                    segment_start,
-                                    segment_end,
-                                    oc,
-                                    os,
-                                    oe,
-                                    EPSILON_POINT_ON_SEGMENT,
-                                ) {
-                                    let t = project_point_onto_arc(intersection, center, segment_start, segment_end);
-                                    candidates.push(Candidate {
-                                        t,
-                                        point: intersection,
-                                        candidate_type: "intersection".to_string(),
-                                        segment_id: Some(other_id),
-                                        point_id: None,
-                                    });
-                                }
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-            }
-            _ => {}
-        }
-
-        // Check for coincident points (check BEFORE intersections for priority)
-        // Check Line segment endpoints
-        match other_segment {
-            Segment::Line(line) => {
-                let other_start_id = line.start.0;
-                let other_end_id = line.end.0;
-
-                // Check if other segment's start endpoint is coincident with trim spawn segment
-                if is_point_coincident_with_segment_native(other_start_id, trim_spawn_seg_id, objects) {
-                    if let Some(other_start) = get_position_coords_for_line(other_seg, "start", objects) {
-                        let (t, is_on_segment) = match segment {
-                            Segment::Line(_) => {
-                                let t = project_point_onto_segment(other_start, segment_start, segment_end);
-                                let is_on = t >= 0.0
-                                    && t <= 1.0
-                                    && perpendicular_distance_to_segment(other_start, segment_start, segment_end)
-                                        <= EPSILON_POINT_ON_SEGMENT;
-                                (t, is_on)
-                            }
-                            Segment::Arc(_) => {
-                                if let Some(center) = segment_center {
-                                    let t = project_point_onto_arc(other_start, center, segment_start, segment_end);
-                                    let is_on = is_point_on_arc(
-                                        other_start,
-                                        center,
-                                        segment_start,
-                                        segment_end,
-                                        EPSILON_POINT_ON_SEGMENT,
-                                    );
-                                    (t, is_on)
-                                } else {
-                                    continue;
-                                }
-                            }
-                            _ => continue,
-                        };
-
-                        if is_on_segment {
-                            candidates.push(Candidate {
-                                t,
-                                point: other_start,
-                                candidate_type: "coincident".to_string(),
-                                segment_id: Some(other_id),
-                                point_id: Some(other_start_id),
-                            });
-                        }
-                    }
-                }
-
-                // Check if other segment's end endpoint is coincident with trim spawn segment
-                if is_point_coincident_with_segment_native(other_end_id, trim_spawn_seg_id, objects) {
-                    if let Some(other_end) = get_position_coords_for_line(other_seg, "end", objects) {
-                        let (t, is_on_segment) = match segment {
-                            Segment::Line(_) => {
-                                let t = project_point_onto_segment(other_end, segment_start, segment_end);
-                                let is_on = t >= 0.0
-                                    && t <= 1.0
-                                    && perpendicular_distance_to_segment(other_end, segment_start, segment_end)
-                                        <= EPSILON_POINT_ON_SEGMENT;
-                                (t, is_on)
-                            }
-                            Segment::Arc(_) => {
-                                if let Some(center) = segment_center {
-                                    let t = project_point_onto_arc(other_end, center, segment_start, segment_end);
-                                    let is_on = is_point_on_arc(
-                                        other_end,
-                                        center,
-                                        segment_start,
-                                        segment_end,
-                                        EPSILON_POINT_ON_SEGMENT,
-                                    );
-                                    (t, is_on)
-                                } else {
-                                    continue;
-                                }
-                            }
-                            _ => continue,
-                        };
-
-                        if is_on_segment {
-                            candidates.push(Candidate {
-                                t,
-                                point: other_end,
-                                candidate_type: "coincident".to_string(),
-                                segment_id: Some(other_id),
-                                point_id: Some(other_end_id),
-                            });
-                        }
-                    }
-                }
-            }
-            Segment::Arc(arc) => {
-                let other_start_id = arc.start.0;
-                let other_end_id = arc.end.0;
-
-                // Check if other segment's start endpoint is coincident with trim spawn segment
-                if is_point_coincident_with_segment_native(other_start_id, trim_spawn_seg_id, objects) {
-                    if let Some(other_start) = get_position_coords_from_arc(other_seg, "start", objects) {
-                        let (t, is_on_segment) = match segment {
-                            Segment::Line(_) => {
-                                let t = project_point_onto_segment(other_start, segment_start, segment_end);
-                                let is_on = t >= 0.0
-                                    && t <= 1.0
-                                    && perpendicular_distance_to_segment(other_start, segment_start, segment_end)
-                                        <= EPSILON_POINT_ON_SEGMENT;
-                                (t, is_on)
-                            }
-                            Segment::Arc(_) => {
-                                if let Some(center) = segment_center {
-                                    let t = project_point_onto_arc(other_start, center, segment_start, segment_end);
-                                    let is_on = is_point_on_arc(
-                                        other_start,
-                                        center,
-                                        segment_start,
-                                        segment_end,
-                                        EPSILON_POINT_ON_SEGMENT,
-                                    );
-                                    (t, is_on)
-                                } else {
-                                    continue;
-                                }
-                            }
-                            _ => continue,
-                        };
-
-                        if is_on_segment {
-                            candidates.push(Candidate {
-                                t,
-                                point: other_start,
-                                candidate_type: "coincident".to_string(),
-                                segment_id: Some(other_id),
-                                point_id: Some(other_start_id),
-                            });
-                        }
-                    }
-                }
-
-                // Check if other segment's end endpoint is coincident with trim spawn segment
-                if is_point_coincident_with_segment_native(other_end_id, trim_spawn_seg_id, objects) {
-                    if let Some(other_end) = get_position_coords_from_arc(other_seg, "end", objects) {
-                        let (t, is_on_segment) = match segment {
-                            Segment::Line(_) => {
-                                let t = project_point_onto_segment(other_end, segment_start, segment_end);
-                                let is_on = t >= 0.0
-                                    && t <= 1.0
-                                    && perpendicular_distance_to_segment(other_end, segment_start, segment_end)
-                                        <= EPSILON_POINT_ON_SEGMENT;
-                                (t, is_on)
-                            }
-                            Segment::Arc(_) => {
-                                if let Some(center) = segment_center {
-                                    let t = project_point_onto_arc(other_end, center, segment_start, segment_end);
-                                    let is_on = is_point_on_arc(
-                                        other_end,
-                                        center,
-                                        segment_start,
-                                        segment_end,
-                                        EPSILON_POINT_ON_SEGMENT,
-                                    );
-                                    (t, is_on)
-                                } else {
-                                    continue;
-                                }
-                            }
-                            _ => continue,
-                        };
-
-                        if is_on_segment {
-                            candidates.push(Candidate {
-                                t,
-                                point: other_end,
-                                candidate_type: "coincident".to_string(),
-                                segment_id: Some(other_id),
-                                point_id: Some(other_end_id),
-                            });
-                        }
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
-
-    // Filter candidates to exclude the intersection point itself and those on the wrong side
-    // Use a slightly larger epsilon to account for numerical precision variations
-    let intersection_epsilon = EPSILON_POINT_ON_SEGMENT * 10.0; // 0.0001mm
-    let filtered_candidates: Vec<Candidate> = candidates
-        .into_iter()
-        .filter(|candidate| {
-            let dist_from_intersection = (candidate.t - intersection_t).abs();
-            if dist_from_intersection < intersection_epsilon {
-                return false; // Too close to intersection point
-            }
-
-            if direction == "left" {
-                candidate.t < intersection_t
-            } else {
-                candidate.t > intersection_t
-            }
-        })
-        .collect();
-
-    // Sort candidates by distance from intersection (closest first)
-    // When distances are equal, prioritize: coincident > intersection > endpoint
-    let mut sorted_candidates = filtered_candidates;
-    sorted_candidates.sort_by(|a, b| {
-        let dist_a = (a.t - intersection_t).abs();
-        let dist_b = (b.t - intersection_t).abs();
-        let dist_diff = dist_a - dist_b;
-        if dist_diff.abs() > EPSILON_POINT_ON_SEGMENT {
-            dist_diff.partial_cmp(&0.0).unwrap_or(std::cmp::Ordering::Equal)
-        } else {
-            // Distances are effectively equal - prioritize by type
-            let type_priority = |candidate_type: &str| -> i32 {
-                if candidate_type == "coincident" {
-                    0
-                } else if candidate_type == "intersection" {
-                    1
-                } else {
-                    2 // endpoint
-                }
-            };
-            type_priority(&a.candidate_type).cmp(&type_priority(&b.candidate_type))
-        }
-    });
-
-    // Find the first valid termination
-    let closest_candidate = match sorted_candidates.first() {
-        Some(c) => c,
-        None => {
-            // No termination found, default to segment endpoint
-            let endpoint = if direction == "left" {
-                segment_start
-            } else {
-                segment_end
-            };
-            return Ok(TrimTermination::SegEndPoint {
-                trim_termination_coords: endpoint,
-            });
-        }
-    };
-
-    // Check if the closest candidate is an intersection that is actually another segment's endpoint
-    // According to test case: if another segment's endpoint is on our segment (even without coincident constraint),
-    // we should return segEndPoint, not intersection
-    if closest_candidate.candidate_type == "intersection" {
-        if let Some(seg_id) = closest_candidate.segment_id {
-            let intersecting_seg = objects.iter().find(|obj| obj.id.0 == seg_id);
-
-            if let Some(intersecting_seg) = intersecting_seg {
-                let mut is_other_seg_endpoint = false;
-                // Use a larger epsilon for checking if intersection is at another segment's endpoint
-                let endpoint_epsilon = EPSILON_POINT_ON_SEGMENT * 1000.0; // 0.001mm
-
-                if let ObjectKind::Segment { segment: other_segment } = &intersecting_seg.kind {
-                    match other_segment {
-                        Segment::Line(_) => {
-                            if let (Some(other_start), Some(other_end)) = (
-                                get_position_coords_for_line(intersecting_seg, "start", objects),
-                                get_position_coords_for_line(intersecting_seg, "end", objects),
-                            ) {
-                                let dist_to_start = ((closest_candidate.point.x - other_start.x)
-                                    * (closest_candidate.point.x - other_start.x)
-                                    + (closest_candidate.point.y - other_start.y)
-                                        * (closest_candidate.point.y - other_start.y))
-                                    .sqrt();
-                                let dist_to_end = ((closest_candidate.point.x - other_end.x)
-                                    * (closest_candidate.point.x - other_end.x)
-                                    + (closest_candidate.point.y - other_end.y)
-                                        * (closest_candidate.point.y - other_end.y))
-                                    .sqrt();
-                                is_other_seg_endpoint =
-                                    dist_to_start < endpoint_epsilon || dist_to_end < endpoint_epsilon;
-                            }
-                        }
-                        Segment::Arc(_) => {
-                            if let (Some(other_start), Some(other_end)) = (
-                                get_position_coords_from_arc(intersecting_seg, "start", objects),
-                                get_position_coords_from_arc(intersecting_seg, "end", objects),
-                            ) {
-                                let dist_to_start = ((closest_candidate.point.x - other_start.x)
-                                    * (closest_candidate.point.x - other_start.x)
-                                    + (closest_candidate.point.y - other_start.y)
-                                        * (closest_candidate.point.y - other_start.y))
-                                    .sqrt();
-                                let dist_to_end = ((closest_candidate.point.x - other_end.x)
-                                    * (closest_candidate.point.x - other_end.x)
-                                    + (closest_candidate.point.y - other_end.y)
-                                        * (closest_candidate.point.y - other_end.y))
-                                    .sqrt();
-                                is_other_seg_endpoint =
-                                    dist_to_start < endpoint_epsilon || dist_to_end < endpoint_epsilon;
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-
-                // If the intersection point is another segment's endpoint (even without coincident constraint),
-                // return segEndPoint instead of intersection
-                if is_other_seg_endpoint {
-                    let endpoint = if direction == "left" {
-                        segment_start
-                    } else {
-                        segment_end
-                    };
-                    return Ok(TrimTermination::SegEndPoint {
-                        trim_termination_coords: endpoint,
-                    });
-                }
-            }
-
-            // Also check if intersection is at our arc's endpoint
-            let endpoint_t = if direction == "left" { 0.0 } else { 1.0 };
-            let endpoint = if direction == "left" {
-                segment_start
-            } else {
-                segment_end
-            };
-            let dist_to_endpoint_param = (closest_candidate.t - endpoint_t).abs();
-            let dist_to_endpoint_coords = ((closest_candidate.point.x - endpoint.x)
-                * (closest_candidate.point.x - endpoint.x)
-                + (closest_candidate.point.y - endpoint.y) * (closest_candidate.point.y - endpoint.y))
-                .sqrt();
-
-            let is_at_endpoint =
-                dist_to_endpoint_param < EPSILON_POINT_ON_SEGMENT || dist_to_endpoint_coords < EPSILON_POINT_ON_SEGMENT;
-
-            if is_at_endpoint {
-                // Intersection is at our endpoint -> segEndPoint
-                return Ok(TrimTermination::SegEndPoint {
-                    trim_termination_coords: endpoint,
-                });
-            }
-        }
-    }
-
-    // Check if the closest candidate is an intersection at an endpoint
-    let endpoint_t_for_return = if direction == "left" { 0.0 } else { 1.0 };
-    if closest_candidate.candidate_type == "intersection" {
-        let dist_to_endpoint = (closest_candidate.t - endpoint_t_for_return).abs();
-        if dist_to_endpoint < EPSILON_POINT_ON_SEGMENT {
-            // Intersection is at endpoint - check if there's a coincident constraint
-            // or if it's just a numerical precision issue
-            let endpoint = if direction == "left" {
-                segment_start
-            } else {
-                segment_end
-            };
-            return Ok(TrimTermination::SegEndPoint {
-                trim_termination_coords: endpoint,
-            });
-        }
-    }
-
-    // Check if the closest candidate is an endpoint at the trim spawn segment's endpoint
-    let endpoint = if direction == "left" {
-        segment_start
-    } else {
-        segment_end
-    };
-    if closest_candidate.candidate_type == "endpoint" {
-        let dist_to_endpoint = (closest_candidate.t - endpoint_t_for_return).abs();
-        if dist_to_endpoint < EPSILON_POINT_ON_SEGMENT {
-            // This is our own endpoint, return it
-            return Ok(TrimTermination::SegEndPoint {
-                trim_termination_coords: endpoint,
-            });
-        }
-    }
-
-    // Return appropriate termination type
-    if closest_candidate.candidate_type == "coincident" {
-        // Even if at endpoint, return coincident type because it's a constraint-based termination
-        Ok(TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
-            trim_termination_coords: closest_candidate.point,
-            intersecting_seg_id: closest_candidate
-                .segment_id
-                .ok_or_else(|| "Missing segment_id for coincident".to_string())?,
-            trim_spawn_segment_coincident_with_another_segment_point_id: closest_candidate
-                .point_id
-                .ok_or_else(|| "Missing point_id for coincident".to_string())?,
-        })
-    } else if closest_candidate.candidate_type == "intersection" {
-        Ok(TrimTermination::Intersection {
-            trim_termination_coords: closest_candidate.point,
-            intersecting_seg_id: closest_candidate
-                .segment_id
-                .ok_or_else(|| "Missing segment_id for intersection".to_string())?,
-        })
-    } else {
-        // endpoint
-        Ok(TrimTermination::SegEndPoint {
-            trim_termination_coords: closest_candidate.point,
-        })
-    }
-}
-
-/// WASM export for is_point_on_line_segment
-/// Takes JSON arrays [x, y] for coordinates
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-pub fn is_point_on_line_segment_wasm(
-    point_json: &str,
-    segment_start_json: &str,
-    segment_end_json: &str,
-    epsilon: Option<f64>,
-) -> Result<JsValue, JsValue> {
-    console_error_panic_hook::set_once();
-
-    // Parse [x, y] arrays from JSON
-    let point_arr: [f64; 2] =
-        serde_json::from_str(point_json).map_err(|e| JsValue::from_str(&format!("Failed to parse point: {}", e)))?;
-    let segment_start_arr: [f64; 2] = serde_json::from_str(segment_start_json)
-        .map_err(|e| JsValue::from_str(&format!("Failed to parse segment_start: {}", e)))?;
-    let segment_end_arr: [f64; 2] = serde_json::from_str(segment_end_json)
-        .map_err(|e| JsValue::from_str(&format!("Failed to parse segment_end: {}", e)))?;
-
-    let point = Coords2d {
-        x: point_arr[0],
-        y: point_arr[1],
-    };
-    let segment_start = Coords2d {
-        x: segment_start_arr[0],
-        y: segment_start_arr[1],
-    };
-    let segment_end = Coords2d {
-        x: segment_end_arr[0],
-        y: segment_end_arr[1],
-    };
-
-    let epsilon = epsilon.unwrap_or(EPSILON_POINT_ON_SEGMENT);
-    let result = is_point_on_line_segment(point, segment_start, segment_end, epsilon);
-
-    // Return as [x, y] array or null
-    match result {
-        Some(coords) => {
-            let arr: [f64; 2] = [coords.x, coords.y];
-            Ok(JsValue::from_serde(&arr)
-                .map_err(|e| JsValue::from_str(&format!("Failed to serialize result: {}", e)))?)
-        }
-        None => Ok(JsValue::NULL),
-    }
-}
-
-/// Process the trim loop - finds the next trim spawn and returns the operations needed
-///
-/// This is the core loop extracted from `createOnAreaSelectEndCallback`.
-/// It takes trim points and objects, finds the next intersection, gets terminations,
+/// This function takes trim points and objects, finds the next trim spawn (intersection),
 /// and returns the trim strategy operations that need to be executed.
 ///
 /// The TypeScript side will execute these operations and call this function again
@@ -3415,21 +978,23 @@ pub fn process_trim_loop(input_json: &str) -> Result<JsValue, JsValue> {
         .collect::<Result<Vec<Object>, String>>()
         .map_err(|e| JsValue::from_str(&e))?;
 
-    // Find the next trim spawn (intersection)
-    let next_trim_result = get_next_trim_coords(&input.points, input.start_index, &objects);
+    // Convert WASM Coords2d to core Coords2d
+    let points_core: Vec<Coords2dCore> = input.points.iter().map(|c| (*c).into()).collect();
 
-    // Clone for use in output (needed because we borrow it in the match)
-    let next_trim_result_clone = next_trim_result.clone();
+    // Find the next trim spawn (intersection) using kcl-lib functions
+    let next_trim_result_core = get_next_trim_coords(&points_core, input.start_index, &objects);
 
     // If we found a trim spawn, get terminations
-    let (terminations, trim_strategy) = match &next_trim_result {
-        NextTrimResult::TrimSpawn { trim_spawn_seg_id, .. } => {
-            // Get terminations
-            let terms = match get_trim_spawn_terminations(*trim_spawn_seg_id, &input.points, &objects) {
+    let (terminations, trim_strategy) = match &next_trim_result_core {
+        NextTrimResultCore::TrimSpawn { trim_spawn_seg_id, .. } => {
+            // Get terminations using kcl-lib functions
+            let terms_core = match get_trim_spawn_terminations(*trim_spawn_seg_id, &points_core, &objects) {
                 Ok(t) => t,
                 Err(e) => {
+                    // Convert to WASM type for error output
+                    let next_trim_result: NextTrimResult = next_trim_result_core.clone().into();
                     return Ok(JsValue::from_serde(&TrimLoopOutput {
-                        next_trim_result: next_trim_result_clone.clone(),
+                        next_trim_result,
                         terminations: None,
                         trim_strategy: None,
                         error: Some(e),
@@ -3438,14 +1003,19 @@ pub fn process_trim_loop(input_json: &str) -> Result<JsValue, JsValue> {
                 }
             };
 
+            // Convert to WASM type
+            let terms: TrimTerminations = terms_core.clone().into();
+
             // Find the trim spawn segment object using native types
             let trim_spawn_segment = objects.iter().find(|obj| obj.id.0 == *trim_spawn_seg_id);
 
             let trim_spawn_segment = match trim_spawn_segment {
                 Some(seg) => seg,
                 None => {
+                    // Convert to WASM type for error output
+                    let next_trim_result: NextTrimResult = next_trim_result_core.clone().into();
                     return Ok(JsValue::from_serde(&TrimLoopOutput {
-                        next_trim_result: next_trim_result_clone.clone(),
+                        next_trim_result,
                         terminations: Some(terms.clone()),
                         trim_strategy: None,
                         error: Some(format!("Trim spawn segment {} not found", trim_spawn_seg_id)),
@@ -3454,28 +1024,22 @@ pub fn process_trim_loop(input_json: &str) -> Result<JsValue, JsValue> {
                 }
             };
 
-            // Get trim strategy
-            let left_side = terms.left_side.clone();
-            let right_side = terms.right_side.clone();
-            let strategy = match trim_strategy(
+            // Get trim strategy using kcl-lib functions
+            let left_side_core = terms_core.left_side.clone();
+            let right_side_core = terms_core.right_side.clone();
+            let strategy_core = match trim_strategy(
                 *trim_spawn_seg_id,
                 trim_spawn_segment,
-                &left_side,
-                &right_side,
+                &left_side_core,
+                &right_side_core,
                 &objects,
             ) {
-                Ok(ops) => {
-                    // Convert TrimOperation enum to JSON
-                    let ops_json: Vec<serde_json::Value> = ops
-                        .iter()
-                        .map(|op| serde_json::to_value(op).map_err(|e| format!("Failed to serialize operation: {}", e)))
-                        .collect::<Result<Vec<_>, _>>()
-                        .map_err(|e| format!("Failed to serialize operations: {}", e))?;
-                    Some(ops_json)
-                }
+                Ok(ops) => ops,
                 Err(e) => {
+                    // Convert to WASM type for error output
+                    let next_trim_result: NextTrimResult = next_trim_result_core.clone().into();
                     return Ok(JsValue::from_serde(&TrimLoopOutput {
-                        next_trim_result: next_trim_result_clone.clone(),
+                        next_trim_result,
                         terminations: Some(terms),
                         trim_strategy: None,
                         error: Some(e),
@@ -3484,618 +1048,30 @@ pub fn process_trim_loop(input_json: &str) -> Result<JsValue, JsValue> {
                 }
             };
 
-            (Some(terms), strategy)
+            // Convert TrimOperation enum to JSON
+            let ops_json: Vec<serde_json::Value> = strategy_core
+                .iter()
+                .map(|op| {
+                    let op_wasm: TrimOperation = op.clone().into();
+                    serde_json::to_value(&op_wasm).map_err(|e| format!("Failed to serialize operation: {}", e))
+                })
+                .collect::<Result<Vec<_>, _>>()
+                .map_err(|e| format!("Failed to serialize operations: {}", e))?;
+
+            (Some(terms), Some(ops_json))
         }
-        NextTrimResult::NoTrimSpawn { .. } => (None, None),
+        NextTrimResultCore::NoTrimSpawn { .. } => (None, None),
     };
 
+    // Convert to WASM type for output
+    let next_trim_result: NextTrimResult = next_trim_result_core.into();
+
     let output = TrimLoopOutput {
-        next_trim_result: next_trim_result_clone,
+        next_trim_result,
         terminations,
         trim_strategy,
         error: None,
     };
 
     Ok(JsValue::from_serde(&output).map_err(|e| JsValue::from_str(&format!("Failed to serialize output: {}", e)))?)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_is_point_on_line_segment_exactly_on_segment() {
-        let point = Coords2d { x: 5.0, y: 5.0 };
-        let segment_start = Coords2d { x: 0.0, y: 0.0 };
-        let segment_end = Coords2d { x: 10.0, y: 10.0 };
-        let result = is_point_on_line_segment(point, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT);
-        assert!(result.is_some());
-        if let Some(r) = result {
-            assert!((r.x - 5.0).abs() < 1e-5);
-            assert!((r.y - 5.0).abs() < 1e-5);
-        }
-    }
-
-    #[test]
-    fn test_is_point_on_line_segment_at_start() {
-        let point = Coords2d { x: 0.0, y: 0.0 };
-        let segment_start = Coords2d { x: 0.0, y: 0.0 };
-        let segment_end = Coords2d { x: 10.0, y: 10.0 };
-        let result = is_point_on_line_segment(point, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT);
-        assert!(result.is_some());
-        if let Some(r) = result {
-            assert_eq!(r.x, 0.0);
-            assert_eq!(r.y, 0.0);
-        }
-    }
-
-    #[test]
-    fn test_is_point_on_line_segment_at_end() {
-        let point = Coords2d { x: 10.0, y: 10.0 };
-        let segment_start = Coords2d { x: 0.0, y: 0.0 };
-        let segment_end = Coords2d { x: 10.0, y: 10.0 };
-        let result = is_point_on_line_segment(point, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT);
-        assert!(result.is_some());
-        if let Some(r) = result {
-            assert_eq!(r.x, 10.0);
-            assert_eq!(r.y, 10.0);
-        }
-    }
-
-    #[test]
-    fn test_is_point_on_line_segment_before_start() {
-        let point = Coords2d { x: -1.0, y: -1.0 };
-        let segment_start = Coords2d { x: 0.0, y: 0.0 };
-        let segment_end = Coords2d { x: 10.0, y: 10.0 };
-        let result = is_point_on_line_segment(point, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT);
-        assert!(result.is_none());
-    }
-
-    #[test]
-    fn test_is_point_on_line_segment_after_end() {
-        let point = Coords2d { x: 11.0, y: 11.0 };
-        let segment_start = Coords2d { x: 0.0, y: 0.0 };
-        let segment_end = Coords2d { x: 10.0, y: 10.0 };
-        let result = is_point_on_line_segment(point, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT);
-        assert!(result.is_none());
-    }
-
-    #[test]
-    fn test_is_point_on_line_segment_off_to_side() {
-        let point = Coords2d { x: 5.0, y: 6.0 };
-        let segment_start = Coords2d { x: 0.0, y: 0.0 };
-        let segment_end = Coords2d { x: 10.0, y: 10.0 };
-        let result = is_point_on_line_segment(point, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT);
-        assert!(result.is_none());
-    }
-
-    #[test]
-    fn test_is_point_on_line_segment_horizontal() {
-        let point = Coords2d { x: 5.0, y: 0.0 };
-        let segment_start = Coords2d { x: 0.0, y: 0.0 };
-        let segment_end = Coords2d { x: 10.0, y: 0.0 };
-        let result = is_point_on_line_segment(point, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT);
-        assert!(result.is_some());
-        if let Some(r) = result {
-            assert_eq!(r.x, 5.0);
-            assert_eq!(r.y, 0.0);
-        }
-    }
-
-    #[test]
-    fn test_is_point_on_line_segment_vertical() {
-        let point = Coords2d { x: 0.0, y: 5.0 };
-        let segment_start = Coords2d { x: 0.0, y: 0.0 };
-        let segment_end = Coords2d { x: 0.0, y: 10.0 };
-        let result = is_point_on_line_segment(point, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT);
-        assert!(result.is_some());
-        if let Some(r) = result {
-            assert_eq!(r.x, 0.0);
-            assert_eq!(r.y, 5.0);
-        }
-    }
-
-    #[test]
-    fn test_is_point_on_line_segment_degenerate() {
-        let point = Coords2d { x: 0.0, y: 0.0 };
-        let segment_start = Coords2d { x: 0.0, y: 0.0 };
-        let segment_end = Coords2d { x: 0.0, y: 0.0 };
-        let result = is_point_on_line_segment(point, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT);
-        assert!(result.is_some());
-        if let Some(r) = result {
-            assert_eq!(r.x, 0.0);
-            assert_eq!(r.y, 0.0);
-        }
-    }
-
-    #[test]
-    fn test_is_point_on_line_segment_far_from_degenerate() {
-        let point = Coords2d { x: 1.0, y: 1.0 };
-        let segment_start = Coords2d { x: 0.0, y: 0.0 };
-        let segment_end = Coords2d { x: 0.0, y: 0.0 };
-        let result = is_point_on_line_segment(point, segment_start, segment_end, EPSILON_POINT_ON_SEGMENT);
-        assert!(result.is_none());
-    }
-
-    #[test]
-    fn test_line_segment_intersection_crossing_segments() {
-        let result = line_segment_intersection(
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 10.0, y: 10.0 },
-            Coords2d { x: 0.0, y: 10.0 },
-            Coords2d { x: 10.0, y: 0.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result.is_some());
-        if let Some(r) = result {
-            assert!((r.x - 5.0).abs() < 1e-5);
-            assert!((r.y - 5.0).abs() < 1e-5);
-        }
-    }
-
-    #[test]
-    fn test_line_segment_intersection_shared_endpoint() {
-        let result = line_segment_intersection(
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 5.0, y: 5.0 },
-            Coords2d { x: 5.0, y: 5.0 },
-            Coords2d { x: 10.0, y: 10.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result.is_some());
-        if let Some(r) = result {
-            assert!((r.x - 5.0).abs() < 1e-5);
-            assert!((r.y - 5.0).abs() < 1e-5);
-        }
-    }
-
-    #[test]
-    fn test_line_segment_intersection_parallel() {
-        let result = line_segment_intersection(
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 10.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 5.0 },
-            Coords2d { x: 10.0, y: 5.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result.is_none());
-    }
-
-    #[test]
-    fn test_line_segment_intersection_non_intersecting() {
-        let result = line_segment_intersection(
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 5.0, y: 5.0 },
-            Coords2d { x: 10.0, y: 10.0 },
-            Coords2d { x: 15.0, y: 15.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result.is_none());
-    }
-
-    #[test]
-    fn test_line_segment_intersection_outside_segments() {
-        let result = line_segment_intersection(
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 5.0, y: 5.0 },
-            Coords2d { x: 10.0, y: 10.0 },
-            Coords2d { x: 20.0, y: 20.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result.is_none());
-    }
-
-    #[test]
-    fn test_line_segment_intersection_t_intersection() {
-        let result = line_segment_intersection(
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 10.0, y: 0.0 },
-            Coords2d { x: 5.0, y: -5.0 },
-            Coords2d { x: 5.0, y: 5.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result.is_some());
-        if let Some(r) = result {
-            assert!((r.x - 5.0).abs() < 1e-5);
-            assert!((r.y - 0.0).abs() < 1e-5);
-        }
-    }
-
-    #[test]
-    fn test_project_point_onto_segment_at_start() {
-        let result = project_point_onto_segment(
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 10.0, y: 10.0 },
-        );
-        assert!((result - 0.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_project_point_onto_segment_at_end() {
-        let result = project_point_onto_segment(
-            Coords2d { x: 10.0, y: 10.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 10.0, y: 10.0 },
-        );
-        assert!((result - 1.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_project_point_onto_segment_at_midpoint() {
-        let result = project_point_onto_segment(
-            Coords2d { x: 5.0, y: 5.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 10.0, y: 10.0 },
-        );
-        assert!((result - 0.5).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_project_point_onto_segment_before_start() {
-        let result = project_point_onto_segment(
-            Coords2d { x: -1.0, y: -1.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 10.0, y: 10.0 },
-        );
-        assert!(result < 0.0);
-    }
-
-    #[test]
-    fn test_project_point_onto_segment_after_end() {
-        let result = project_point_onto_segment(
-            Coords2d { x: 11.0, y: 11.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 10.0, y: 10.0 },
-        );
-        assert!(result > 1.0);
-    }
-
-    #[test]
-    fn test_project_point_onto_segment_horizontal() {
-        let result = project_point_onto_segment(
-            Coords2d { x: 5.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 10.0, y: 0.0 },
-        );
-        assert!((result - 0.5).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_project_point_onto_segment_vertical() {
-        let result = project_point_onto_segment(
-            Coords2d { x: 0.0, y: 5.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 10.0 },
-        );
-        assert!((result - 0.5).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_perpendicular_distance_to_segment_on_segment() {
-        let result = perpendicular_distance_to_segment(
-            Coords2d { x: 5.0, y: 5.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 10.0, y: 10.0 },
-        );
-        assert!((result - 0.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_perpendicular_distance_to_segment_perpendicular() {
-        // Point at [5, 5] with segment from [0, 0] to [10, 0]
-        // Perpendicular distance should be 5
-        let result = perpendicular_distance_to_segment(
-            Coords2d { x: 5.0, y: 5.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 10.0, y: 0.0 },
-        );
-        assert!((result - 5.0).abs() < 1e-5);
-    }
-
-    #[test]
-    fn test_is_point_on_arc_on_arc() {
-        // Arc from [1, 0] to [0, 1] with center at [0, 0] (quarter circle)
-        // Use a point that's exactly on the unit circle
-        let angle = std::f64::consts::PI / 4.0; // 45 degrees
-        let point = Coords2d {
-            x: angle.cos(),
-            y: angle.sin(),
-        };
-        let result = is_point_on_arc(
-            point,
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 1.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 1.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result);
-    }
-
-    #[test]
-    fn test_is_point_on_arc_at_start() {
-        let result = is_point_on_arc(
-            Coords2d { x: 1.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 1.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 1.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result);
-    }
-
-    #[test]
-    fn test_is_point_on_arc_at_end() {
-        let result = is_point_on_arc(
-            Coords2d { x: 0.0, y: 1.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 1.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 1.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result);
-    }
-
-    #[test]
-    fn test_is_point_on_arc_off_arc() {
-        // Point on circle but not on the arc (opposite side)
-        let result = is_point_on_arc(
-            Coords2d { x: -1.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 1.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 1.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(!result);
-    }
-
-    #[test]
-    fn test_is_point_on_arc_not_on_circle() {
-        let result = is_point_on_arc(
-            Coords2d { x: 2.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 1.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 1.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(!result);
-    }
-
-    #[test]
-    fn test_is_point_on_arc_wraps_around() {
-        // Arc from 350° to 10° (wraps around)
-        let center = Coords2d { x: 0.0, y: 0.0 };
-        let start = Coords2d {
-            x: (350.0 * std::f64::consts::PI / 180.0).cos(),
-            y: (350.0 * std::f64::consts::PI / 180.0).sin(),
-        };
-        let end = Coords2d {
-            x: (10.0 * std::f64::consts::PI / 180.0).cos(),
-            y: (10.0 * std::f64::consts::PI / 180.0).sin(),
-        };
-        let point = Coords2d {
-            x: (5.0 * std::f64::consts::PI / 180.0).cos(),
-            y: (5.0 * std::f64::consts::PI / 180.0).sin(),
-        };
-        let result = is_point_on_arc(point, center, start, end, EPSILON_POINT_ON_SEGMENT);
-        assert!(result);
-    }
-
-    #[test]
-    fn test_line_arc_intersection_intersects() {
-        // Line from [-2, 0] to [2, 0], arc from [1, 0] to [0, 1] with center at [0, 0]
-        // Should intersect at [1, 0] (arc start)
-        let result = line_arc_intersection(
-            Coords2d { x: -2.0, y: 0.0 },
-            Coords2d { x: 2.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 1.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 1.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result.is_some());
-        if let Some(r) = result {
-            assert!((r.x - 1.0).abs() < 1e-5);
-            assert!((r.y - 0.0).abs() < 1e-5);
-        }
-    }
-
-    #[test]
-    fn test_line_arc_intersection_no_intersection() {
-        // Line that doesn't intersect the arc
-        let result = line_arc_intersection(
-            Coords2d { x: 0.0, y: 2.0 },
-            Coords2d { x: 0.0, y: 3.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 1.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 1.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result.is_none());
-    }
-
-    #[test]
-    fn test_line_arc_intersection_tangent() {
-        // Line tangent to arc (touches at one point)
-        // Line from [0, 1] to [0, 2], arc from [1, 0] to [0, 1] with center at [0, 0]
-        // Should intersect at [0, 1] (arc end)
-        let result = line_arc_intersection(
-            Coords2d { x: 0.0, y: 1.0 },
-            Coords2d { x: 0.0, y: 2.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 1.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 1.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result.is_some());
-        if let Some(r) = result {
-            assert!((r.x - 0.0).abs() < 1e-5);
-            assert!((r.y - 1.0).abs() < 1e-5);
-        }
-    }
-
-    #[test]
-    fn test_line_arc_intersection_horizontal_line() {
-        // Horizontal line at y=0.5 intersecting arc from [1,0] to [0,1] centered at [0,0]
-        let result = line_arc_intersection(
-            Coords2d { x: -1.0, y: 0.5 },
-            Coords2d { x: 1.0, y: 0.5 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 1.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 1.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result.is_some());
-        if let Some(r) = result {
-            // Should intersect at approximately [0.866, 0.5] or [-0.866, 0.5]
-            // But only [0.866, 0.5] is on the arc from [1,0] to [0,1]
-            assert!(r.x.abs() > 0.8);
-            assert!((r.y - 0.5).abs() < 0.1);
-        }
-    }
-
-    #[test]
-    fn test_line_arc_intersection_endpoint() {
-        // Line starts at arc endpoint
-        let result = line_arc_intersection(
-            Coords2d { x: 1.0, y: 0.0 },
-            Coords2d { x: 2.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 0.0 },
-            Coords2d { x: 1.0, y: 0.0 },
-            Coords2d { x: 0.0, y: 1.0 },
-            EPSILON_POINT_ON_SEGMENT,
-        );
-        assert!(result.is_some());
-        if let Some(r) = result {
-            assert!((r.x - 1.0).abs() < 1e-5);
-            assert!((r.y - 0.0).abs() < 1e-5);
-        }
-    }
-
-    #[test]
-    fn test_get_next_trim_coords_line_intersection() {
-        use serde_json::json;
-
-        // Create a simple line segment object
-        let line_obj = json!({
-            "id": 0,
-            "kind": {
-                "type": "Segment",
-                "segment": {
-                    "type": "Line",
-                    "start": 1,
-                    "end": 2
-                }
-            }
-        });
-
-        // Create point objects for start and end
-        let start_point = json!({
-            "id": 1,
-            "kind": {
-                "type": "Segment",
-                "segment": {
-                    "type": "Point",
-                    "position": {
-                        "x": { "value": 0.0 },
-                        "y": { "value": 0.0 }
-                    }
-                }
-            }
-        });
-
-        let end_point = json!({
-            "id": 2,
-            "kind": {
-                "type": "Segment",
-                "segment": {
-                    "type": "Point",
-                    "position": {
-                        "x": { "value": 10.0 },
-                        "y": { "value": 10.0 }
-                    }
-                }
-            }
-        });
-
-        let objects = vec![line_obj, start_point, end_point];
-
-        // Trim line that intersects: from [0, 10] to [10, 0]
-        let points = vec![Coords2d { x: 0.0, y: 10.0 }, Coords2d { x: 10.0, y: 0.0 }];
-
-        let result = get_next_trim_coords(&points, 0, &objects);
-
-        match result {
-            NextTrimResult::TrimSpawn { trim_spawn_coords, .. } => {
-                // Should intersect at [5, 5]
-                assert!((trim_spawn_coords.x - 5.0).abs() < 1e-5);
-                assert!((trim_spawn_coords.y - 5.0).abs() < 1e-5);
-            }
-            NextTrimResult::NoTrimSpawn { .. } => {
-                panic!("Expected intersection but got NoTrimSpawn");
-            }
-        }
-    }
-
-    #[test]
-    fn test_get_next_trim_coords_no_intersection() {
-        use serde_json::json;
-
-        // Create a line segment that won't intersect
-        let line_obj = json!({
-            "id": 0,
-            "kind": {
-                "type": "Segment",
-                "segment": {
-                    "type": "Line",
-                    "start": 1,
-                    "end": 2
-                }
-            }
-        });
-
-        let start_point = json!({
-            "id": 1,
-            "kind": {
-                "type": "Segment",
-                "segment": {
-                    "type": "Point",
-                    "position": {
-                        "x": { "value": 0.0 },
-                        "y": { "value": 0.0 }
-                    }
-                }
-            }
-        });
-
-        let end_point = json!({
-            "id": 2,
-            "kind": {
-                "type": "Segment",
-                "segment": {
-                    "type": "Point",
-                    "position": {
-                        "x": { "value": 10.0 },
-                        "y": { "value": 0.0 }
-                    }
-                }
-            }
-        });
-
-        let objects = vec![line_obj, start_point, end_point];
-
-        // Trim line that doesn't intersect: from [0, 10] to [10, 10]
-        let points = vec![Coords2d { x: 0.0, y: 10.0 }, Coords2d { x: 10.0, y: 10.0 }];
-
-        let result = get_next_trim_coords(&points, 0, &objects);
-
-        match result {
-            NextTrimResult::NoTrimSpawn { .. } => {
-                // Expected
-            }
-            NextTrimResult::TrimSpawn { .. } => {
-                panic!("Expected no intersection but got TrimSpawn");
-            }
-        }
-    }
 }

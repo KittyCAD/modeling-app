@@ -2790,60 +2790,6 @@ fn find_termination_in_direction(
     }
 }
 
-/// WASM export for is_point_on_line_segment
-/// Takes JSON arrays [x, y] for coordinates
-#[cfg(target_arch = "wasm32")]
-pub fn is_point_on_line_segment_wasm(
-    point_json: &str,
-    segment_start_json: &str,
-    segment_end_json: &str,
-    epsilon: Option<f64>,
-) -> Result<JsValue, JsValue> {
-    console_error_panic_hook::set_once();
-
-    // Parse [x, y] arrays from JSON
-    let point_arr: [f64; 2] =
-        serde_json::from_str(point_json).map_err(|e| JsValue::from_str(&format!("Failed to parse point: {}", e)))?;
-    let segment_start_arr: [f64; 2] = serde_json::from_str(segment_start_json)
-        .map_err(|e| JsValue::from_str(&format!("Failed to parse segment_start: {}", e)))?;
-    let segment_end_arr: [f64; 2] = serde_json::from_str(segment_end_json)
-        .map_err(|e| JsValue::from_str(&format!("Failed to parse segment_end: {}", e)))?;
-
-    let point = Coords2d {
-        x: point_arr[0],
-        y: point_arr[1],
-    };
-    let segment_start = Coords2d {
-        x: segment_start_arr[0],
-        y: segment_start_arr[1],
-    };
-    let segment_end = Coords2d {
-        x: segment_end_arr[0],
-        y: segment_end_arr[1],
-    };
-
-    let epsilon = epsilon.unwrap_or(EPSILON_POINT_ON_SEGMENT);
-    let result = is_point_on_line_segment(point, segment_start, segment_end, epsilon);
-
-    // Return as [x, y] array or null
-    match result {
-        Some(coords) => {
-            let arr: [f64; 2] = [coords.x, coords.y];
-            Ok(JsValue::from_serde(&arr)
-                .map_err(|e| JsValue::from_str(&format!("Failed to serialize result: {}", e)))?)
-        }
-        None => Ok(JsValue::NULL),
-    }
-}
-
-/// Process the trim loop - finds the next trim spawn and returns the operations needed
-///
-/// This is the core loop extracted from `createOnAreaSelectEndCallback`.
-/// It takes trim points and objects, finds the next intersection, gets terminations,
-/// and returns the trim strategy operations that need to be executed.
-///
-/// The TypeScript side will execute these operations and call this function again
-/// with updated objects if needed.
 
 #[cfg(test)]
 mod tests {
@@ -3323,20 +3269,29 @@ mod tests {
         use serde_json::json;
 
         // Create a simple line segment object
-        let line_obj = json!({
+        let line_obj_json = json!({
             "id": 0,
             "kind": {
                 "type": "Segment",
                 "segment": {
                     "type": "Line",
                     "start": 1,
-                    "end": 2
+                    "end": 2,
+                    "ctor": {
+                        "type": "Line",
+                        "start": { "x": { "value": 0.0 }, "y": { "value": 0.0 } },
+                        "end": { "x": { "value": 10.0 }, "y": { "value": 10.0 } }
+                    },
+                    "ctorApplicable": false
                 }
-            }
+            },
+            "label": "",
+            "comments": "",
+            "source": { "type": "Simple", "range": { "start": { "line": 0, "column": 0 }, "end": { "line": 0, "column": 0 } } }
         });
 
         // Create point objects for start and end
-        let start_point = json!({
+        let start_point_json = json!({
             "id": 1,
             "kind": {
                 "type": "Segment",
@@ -3347,10 +3302,13 @@ mod tests {
                         "y": { "value": 0.0 }
                     }
                 }
-            }
+            },
+            "label": "",
+            "comments": "",
+            "source": { "type": "Simple", "range": { "start": { "line": 0, "column": 0 }, "end": { "line": 0, "column": 0 } } }
         });
 
-        let end_point = json!({
+        let end_point_json = json!({
             "id": 2,
             "kind": {
                 "type": "Segment",
@@ -3361,8 +3319,16 @@ mod tests {
                         "y": { "value": 10.0 }
                     }
                 }
-            }
+            },
+            "label": "",
+            "comments": "",
+            "source": { "type": "Simple", "range": { "start": { "line": 0, "column": 0 }, "end": { "line": 0, "column": 0 } } }
         });
+
+        // Deserialize JSON into Object types
+        let line_obj: Object = serde_json::from_value(line_obj_json).unwrap();
+        let start_point: Object = serde_json::from_value(start_point_json).unwrap();
+        let end_point: Object = serde_json::from_value(end_point_json).unwrap();
 
         let objects = vec![line_obj, start_point, end_point];
 
@@ -3388,19 +3354,28 @@ mod tests {
         use serde_json::json;
 
         // Create a line segment that won't intersect
-        let line_obj = json!({
+        let line_obj_json = json!({
             "id": 0,
             "kind": {
                 "type": "Segment",
                 "segment": {
                     "type": "Line",
                     "start": 1,
-                    "end": 2
+                    "end": 2,
+                    "ctor": {
+                        "type": "Line",
+                        "start": { "x": { "value": 0.0 }, "y": { "value": 0.0 } },
+                        "end": { "x": { "value": 10.0 }, "y": { "value": 0.0 } }
+                    },
+                    "ctorApplicable": false
                 }
-            }
+            },
+            "label": "",
+            "comments": "",
+            "source": { "type": "Simple", "range": { "start": { "line": 0, "column": 0 }, "end": { "line": 0, "column": 0 } } }
         });
 
-        let start_point = json!({
+        let start_point_json = json!({
             "id": 1,
             "kind": {
                 "type": "Segment",
@@ -3411,10 +3386,13 @@ mod tests {
                         "y": { "value": 0.0 }
                     }
                 }
-            }
+            },
+            "label": "",
+            "comments": "",
+            "source": { "type": "Simple", "range": { "start": { "line": 0, "column": 0 }, "end": { "line": 0, "column": 0 } } }
         });
 
-        let end_point = json!({
+        let end_point_json = json!({
             "id": 2,
             "kind": {
                 "type": "Segment",
@@ -3425,8 +3403,16 @@ mod tests {
                         "y": { "value": 0.0 }
                     }
                 }
-            }
+            },
+            "label": "",
+            "comments": "",
+            "source": { "type": "Simple", "range": { "start": { "line": 0, "column": 0 }, "end": { "line": 0, "column": 0 } } }
         });
+
+        // Deserialize JSON into Object types
+        let line_obj: Object = serde_json::from_value(line_obj_json).unwrap();
+        let start_point: Object = serde_json::from_value(start_point_json).unwrap();
+        let end_point: Object = serde_json::from_value(end_point_json).unwrap();
 
         let objects = vec![line_obj, start_point, end_point];
 
