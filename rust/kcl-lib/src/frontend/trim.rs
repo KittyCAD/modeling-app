@@ -1378,10 +1378,608 @@ async fn execute_trim_operations_simple(
                     .await
                     .map_err(|e| format!("Failed to delete constraints: {}", e.msg))
             }
-            TrimOperation::SplitSegment { .. } => {
-                // SplitSegment is complex and requires special handling
-                // For now, return an error - this will need to be implemented
-                return Err("SplitSegment operation not yet implemented in execute_trim_operations_simple".to_string());
+            TrimOperation::SplitSegment {
+                segment_id,
+                left_trim_coords,
+                right_trim_coords,
+                original_end_coords,
+                left_side,
+                right_side,
+                constraints_to_migrate,
+                constraints_to_delete,
+                ..
+            } => {
+                // SplitSegment is a complex multi-step operation
+                // Ported from kcl-wasm-lib/src/api.rs execute_trim function
+
+                // Step 1: Find and validate original segment
+                let original_segment = current_scene_graph_delta
+                    .new_graph
+                    .objects
+                    .iter()
+                    .find(|obj| obj.id.0 == *segment_id)
+                    .ok_or_else(|| format!("Failed to find original segment {}", segment_id))?;
+
+                // Extract point IDs from original segment
+                let (original_segment_start_point_id, original_segment_end_point_id, original_segment_center_point_id) =
+                    match &original_segment.kind {
+                        crate::frontend::api::ObjectKind::Segment { segment } => match segment {
+                            crate::frontend::sketch::Segment::Line(line) => {
+                                (Some(line.start.0), Some(line.end.0), None)
+                            }
+                            crate::frontend::sketch::Segment::Arc(arc) => {
+                                (Some(arc.start.0), Some(arc.end.0), Some(arc.center.0))
+                            }
+                            _ => (None, None, None),
+                        },
+                        _ => (None, None, None),
+                    };
+
+                // Store center point constraints to migrate BEFORE edit_segments modifies the scene graph
+                let mut center_point_constraints_to_migrate: Vec<(Constraint, usize)> = Vec::new();
+                if let Some(original_center_id) = original_segment_center_point_id {
+                    for obj in &current_scene_graph_delta.new_graph.objects {
+                        let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                            continue;
+                        };
+
+                        // Find coincident constraints that reference the original center point
+                        if let Constraint::Coincident(coincident) = constraint {
+                            if coincident.segments.iter().any(|seg_id| seg_id.0 == original_center_id) {
+                                center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
+                            }
+                        }
+
+                        // Find distance constraints that reference the original center point
+                        if let Constraint::Distance(distance) = constraint {
+                            if distance.points.iter().any(|pt| pt.0 == original_center_id) {
+                                center_point_constraints_to_migrate.push((constraint.clone(), original_center_id));
+                            }
+                        }
+                    }
+                }
+
+                // Extract segment and ctor
+                let (segment_type, original_ctor) = match &original_segment.kind {
+                    crate::frontend::api::ObjectKind::Segment { segment } => match segment {
+                        crate::frontend::sketch::Segment::Line(line) => ("Line", line.ctor.clone()),
+                        crate::frontend::sketch::Segment::Arc(arc) => ("Arc", arc.ctor.clone()),
+                        _ => {
+                            return Err("Original segment is not a Line or Arc".to_string());
+                        }
+                    },
+                    _ => {
+                        return Err("Original object is not a segment".to_string());
+                    }
+                };
+
+                // Extract units from the existing ctor
+                let units = match &original_ctor {
+                    SegmentCtor::Line(line_ctor) => match &line_ctor.start.x {
+                        crate::frontend::api::Expr::Var(v) | crate::frontend::api::Expr::Number(v) => v.units,
+                        _ => crate::pretty::NumericSuffix::Mm,
+                    },
+                    SegmentCtor::Arc(arc_ctor) => match &arc_ctor.start.x {
+                        crate::frontend::api::Expr::Var(v) | crate::frontend::api::Expr::Number(v) => v.units,
+                        _ => crate::pretty::NumericSuffix::Mm,
+                    },
+                    _ => crate::pretty::NumericSuffix::Mm,
+                };
+
+                // Helper to convert Coords2d to Point2d with units
+                let coords_to_point =
+                    |coords: Coords2d| -> crate::frontend::sketch::Point2d<crate::frontend::api::Number> {
+                        // Round to 2 decimal places (matching TypeScript roundOff function)
+                        let round_off = |val: f64| -> f64 { (val * 100.0).round() / 100.0 };
+                        crate::frontend::sketch::Point2d {
+                            x: crate::frontend::api::Number {
+                                value: round_off(coords.x),
+                                units,
+                            },
+                            y: crate::frontend::api::Number {
+                                value: round_off(coords.y),
+                                units,
+                            },
+                        }
+                    };
+
+                // Convert Point2d<Number> to Point2d<Expr> for SegmentCtor
+                let point_to_expr = |point: crate::frontend::sketch::Point2d<crate::frontend::api::Number>| -> crate::frontend::sketch::Point2d<crate::frontend::api::Expr> {
+                    crate::frontend::sketch::Point2d {
+                        x: crate::frontend::api::Expr::Var(point.x),
+                        y: crate::frontend::api::Expr::Var(point.y),
+                    }
+                };
+
+                // Step 2: Create new segment (right side) first to get its IDs
+                let new_segment_ctor = match &original_ctor {
+                    SegmentCtor::Line(_) => SegmentCtor::Line(crate::frontend::sketch::LineCtor {
+                        start: point_to_expr(coords_to_point(*right_trim_coords)),
+                        end: point_to_expr(coords_to_point(*original_end_coords)),
+                    }),
+                    SegmentCtor::Arc(arc_ctor) => SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
+                        start: point_to_expr(coords_to_point(*right_trim_coords)),
+                        end: point_to_expr(coords_to_point(*original_end_coords)),
+                        center: arc_ctor.center.clone(),
+                    }),
+                    _ => {
+                        return Err("Unsupported segment type for new segment".to_string());
+                    }
+                };
+
+                let (add_source_delta, mut add_scene_graph_delta) = frontend
+                    .add_segment(ctx, version, sketch_id, new_segment_ctor, None)
+                    .await
+                    .map_err(|e| format!("Failed to add new segment: {}", e.msg))?;
+
+                // Step 3: Find the newly created segment
+                let new_segment_id = add_scene_graph_delta
+                    .new_objects
+                    .iter()
+                    .find(|&id| {
+                        let id_usize = id.0;
+                        if let Some(obj) = add_scene_graph_delta.new_graph.objects.get(id_usize) {
+                            matches!(
+                                &obj.kind,
+                                crate::frontend::api::ObjectKind::Segment { segment }
+                                    if matches!(segment, crate::frontend::sketch::Segment::Line(_) | crate::frontend::sketch::Segment::Arc(_))
+                            )
+                        } else {
+                            false
+                        }
+                    })
+                    .ok_or_else(|| "Failed to find newly created segment".to_string())?
+                    .0;
+
+                let new_segment = add_scene_graph_delta
+                    .new_graph
+                    .objects
+                    .get(new_segment_id)
+                    .ok_or_else(|| format!("New segment not found at index {}", new_segment_id))?;
+
+                // Extract endpoint IDs
+                let (new_segment_start_point_id, new_segment_end_point_id, new_segment_center_point_id) =
+                    match &new_segment.kind {
+                        crate::frontend::api::ObjectKind::Segment { segment } => match segment {
+                            crate::frontend::sketch::Segment::Line(line) => (line.start.0, line.end.0, None),
+                            crate::frontend::sketch::Segment::Arc(arc) => (arc.start.0, arc.end.0, Some(arc.center.0)),
+                            _ => {
+                                return Err("New segment is not a Line or Arc".to_string());
+                            }
+                        },
+                        _ => {
+                            return Err("New segment is not a segment".to_string());
+                        }
+                    };
+
+                // Step 4: Edit the original segment (trim left side)
+                let edited_ctor = match &original_ctor {
+                    SegmentCtor::Line(line_ctor) => SegmentCtor::Line(crate::frontend::sketch::LineCtor {
+                        start: line_ctor.start.clone(),
+                        end: point_to_expr(coords_to_point(*left_trim_coords)),
+                    }),
+                    SegmentCtor::Arc(arc_ctor) => SegmentCtor::Arc(crate::frontend::sketch::ArcCtor {
+                        start: arc_ctor.start.clone(),
+                        end: point_to_expr(coords_to_point(*left_trim_coords)),
+                        center: arc_ctor.center.clone(),
+                    }),
+                    _ => {
+                        return Err("Unsupported segment type for split".to_string());
+                    }
+                };
+
+                let (edit_source_delta, edit_scene_graph_delta) = frontend
+                    .edit_segments(
+                        ctx,
+                        version,
+                        sketch_id,
+                        vec![ExistingSegmentCtor {
+                            id: ObjectId(*segment_id),
+                            ctor: edited_ctor,
+                        }],
+                    )
+                    .await
+                    .map_err(|e| format!("Failed to edit segment: {}", e.msg))?;
+
+                // Get left endpoint ID from edited segment
+                let edited_segment = edit_scene_graph_delta
+                    .new_graph
+                    .objects
+                    .iter()
+                    .find(|obj| obj.id.0 == *segment_id)
+                    .ok_or_else(|| format!("Failed to find edited segment {}", segment_id))?;
+
+                let left_side_endpoint_point_id = match &edited_segment.kind {
+                    crate::frontend::api::ObjectKind::Segment { segment } => match segment {
+                        crate::frontend::sketch::Segment::Line(line) => line.end.0,
+                        crate::frontend::sketch::Segment::Arc(arc) => arc.end.0,
+                        _ => {
+                            return Err("Edited segment is not a Line or Arc".to_string());
+                        }
+                    },
+                    _ => {
+                        return Err("Edited segment is not a segment".to_string());
+                    }
+                };
+
+                // Step 5: Prepare constraints for batch
+                let mut batch_constraints = Vec::new();
+
+                // Left constraint
+                let left_intersecting_seg_id = match left_side {
+                    TrimTermination::Intersection {
+                        intersecting_seg_id, ..
+                    }
+                    | TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                        intersecting_seg_id, ..
+                    } => intersecting_seg_id,
+                    _ => {
+                        return Err("Left side is not an intersection or coincident".to_string());
+                    }
+                };
+                let left_coincident_segments = match left_side {
+                    TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                        trim_spawn_segment_coincident_with_another_segment_point_id,
+                        ..
+                    } => {
+                        vec![
+                            ObjectId(left_side_endpoint_point_id),
+                            ObjectId(*trim_spawn_segment_coincident_with_another_segment_point_id),
+                        ]
+                    }
+                    _ => {
+                        vec![
+                            ObjectId(left_side_endpoint_point_id),
+                            ObjectId(*left_intersecting_seg_id),
+                        ]
+                    }
+                };
+                batch_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
+                    segments: left_coincident_segments,
+                }));
+
+                // Right constraint - need to check if intersection is at endpoint
+                let right_intersecting_seg_id = match right_side {
+                    TrimTermination::Intersection {
+                        intersecting_seg_id, ..
+                    }
+                    | TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                        intersecting_seg_id, ..
+                    } => intersecting_seg_id,
+                    _ => {
+                        return Err("Right side is not an intersection or coincident".to_string());
+                    }
+                };
+
+                let mut intersection_point_id: Option<usize> = None;
+                if matches!(right_side, TrimTermination::Intersection { .. }) {
+                    let intersecting_seg = edit_scene_graph_delta
+                        .new_graph
+                        .objects
+                        .iter()
+                        .find(|obj| obj.id.0 == *right_intersecting_seg_id);
+
+                    if let Some(seg) = intersecting_seg {
+                        let endpoint_epsilon = 1e-3; // 0.001mm
+                        let right_trim_coords_value = *right_trim_coords;
+
+                        if let crate::frontend::api::ObjectKind::Segment { segment } = &seg.kind {
+                            match segment {
+                                crate::frontend::sketch::Segment::Line(_) => {
+                                    if let (Some(start_coords), Some(end_coords)) = (
+                                        crate::frontend::trim::get_position_coords_for_line(
+                                            seg,
+                                            "start",
+                                            &edit_scene_graph_delta.new_graph.objects,
+                                        ),
+                                        crate::frontend::trim::get_position_coords_for_line(
+                                            seg,
+                                            "end",
+                                            &edit_scene_graph_delta.new_graph.objects,
+                                        ),
+                                    ) {
+                                        let dist_to_start = ((right_trim_coords_value.x - start_coords.x)
+                                            * (right_trim_coords_value.x - start_coords.x)
+                                            + (right_trim_coords_value.y - start_coords.y)
+                                                * (right_trim_coords_value.y - start_coords.y))
+                                            .sqrt();
+                                        if dist_to_start < endpoint_epsilon {
+                                            if let crate::frontend::sketch::Segment::Line(line) = segment {
+                                                intersection_point_id = Some(line.start.0);
+                                            }
+                                        } else {
+                                            let dist_to_end = ((right_trim_coords_value.x - end_coords.x)
+                                                * (right_trim_coords_value.x - end_coords.x)
+                                                + (right_trim_coords_value.y - end_coords.y)
+                                                    * (right_trim_coords_value.y - end_coords.y))
+                                                .sqrt();
+                                            if dist_to_end < endpoint_epsilon {
+                                                if let crate::frontend::sketch::Segment::Line(line) = segment {
+                                                    intersection_point_id = Some(line.end.0);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                crate::frontend::sketch::Segment::Arc(_) => {
+                                    if let (Some(start_coords), Some(end_coords)) = (
+                                        crate::frontend::trim::get_position_coords_from_arc(
+                                            seg,
+                                            "start",
+                                            &edit_scene_graph_delta.new_graph.objects,
+                                        ),
+                                        crate::frontend::trim::get_position_coords_from_arc(
+                                            seg,
+                                            "end",
+                                            &edit_scene_graph_delta.new_graph.objects,
+                                        ),
+                                    ) {
+                                        let dist_to_start = ((right_trim_coords_value.x - start_coords.x)
+                                            * (right_trim_coords_value.x - start_coords.x)
+                                            + (right_trim_coords_value.y - start_coords.y)
+                                                * (right_trim_coords_value.y - start_coords.y))
+                                            .sqrt();
+                                        if dist_to_start < endpoint_epsilon {
+                                            if let crate::frontend::sketch::Segment::Arc(arc) = segment {
+                                                intersection_point_id = Some(arc.start.0);
+                                            }
+                                        } else {
+                                            let dist_to_end = ((right_trim_coords_value.x - end_coords.x)
+                                                * (right_trim_coords_value.x - end_coords.x)
+                                                + (right_trim_coords_value.y - end_coords.y)
+                                                    * (right_trim_coords_value.y - end_coords.y))
+                                                .sqrt();
+                                            if dist_to_end < endpoint_epsilon {
+                                                if let crate::frontend::sketch::Segment::Arc(arc) = segment {
+                                                    intersection_point_id = Some(arc.end.0);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                }
+
+                let right_coincident_segments = if let Some(point_id) = intersection_point_id {
+                    vec![ObjectId(new_segment_start_point_id), ObjectId(point_id)]
+                } else if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                    trim_spawn_segment_coincident_with_another_segment_point_id,
+                    ..
+                } = right_side
+                {
+                    vec![
+                        ObjectId(new_segment_start_point_id),
+                        ObjectId(*trim_spawn_segment_coincident_with_another_segment_point_id),
+                    ]
+                } else {
+                    vec![
+                        ObjectId(new_segment_start_point_id),
+                        ObjectId(*right_intersecting_seg_id),
+                    ]
+                };
+                batch_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
+                    segments: right_coincident_segments,
+                }));
+
+                // Migrate constraints
+                let mut points_constrained_to_new_segment_start = std::collections::HashSet::new();
+                let mut points_constrained_to_new_segment_end = std::collections::HashSet::new();
+
+                if let TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                    trim_spawn_segment_coincident_with_another_segment_point_id,
+                    ..
+                } = right_side
+                {
+                    points_constrained_to_new_segment_start
+                        .insert(trim_spawn_segment_coincident_with_another_segment_point_id);
+                }
+
+                for constraint_to_migrate in constraints_to_migrate.iter() {
+                    if constraint_to_migrate.attach_to_endpoint == "end" && constraint_to_migrate.is_point_point {
+                        points_constrained_to_new_segment_end.insert(constraint_to_migrate.other_entity_id);
+                    }
+                }
+
+                for constraint_to_migrate in constraints_to_migrate.iter() {
+                    // Skip migrating point-segment constraints if the point is already constrained
+                    if constraint_to_migrate.attach_to_endpoint == "segment" {
+                        if points_constrained_to_new_segment_start.contains(&constraint_to_migrate.other_entity_id)
+                            || points_constrained_to_new_segment_end.contains(&constraint_to_migrate.other_entity_id)
+                        {
+                            continue; // Skip redundant constraint
+                        }
+                    }
+
+                    let constraint_segments = if constraint_to_migrate.attach_to_endpoint == "segment" {
+                        vec![
+                            ObjectId(constraint_to_migrate.other_entity_id),
+                            ObjectId(new_segment_id),
+                        ]
+                    } else {
+                        let target_endpoint_id = if constraint_to_migrate.attach_to_endpoint == "start" {
+                            new_segment_start_point_id
+                        } else {
+                            new_segment_end_point_id
+                        };
+                        vec![
+                            ObjectId(target_endpoint_id),
+                            ObjectId(constraint_to_migrate.other_entity_id),
+                        ]
+                    };
+                    batch_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
+                        segments: constraint_segments,
+                    }));
+                }
+
+                // Find distance constraints that reference both endpoints of the original segment
+                let mut distance_constraints_to_re_add: Vec<crate::frontend::api::Number> = Vec::new();
+                if let (Some(original_start_id), Some(original_end_id)) =
+                    (original_segment_start_point_id, original_segment_end_point_id)
+                {
+                    for obj in &edit_scene_graph_delta.new_graph.objects {
+                        let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                            continue;
+                        };
+
+                        let Constraint::Distance(distance) = constraint else {
+                            continue;
+                        };
+
+                        let references_start = distance.points.iter().any(|pt| pt.0 == original_start_id);
+                        let references_end = distance.points.iter().any(|pt| pt.0 == original_end_id);
+
+                        if references_start && references_end {
+                            distance_constraints_to_re_add.push(distance.distance.clone());
+                        }
+                    }
+                }
+
+                // Re-add distance constraints
+                if let Some(original_start_id) = original_segment_start_point_id {
+                    for distance_value in distance_constraints_to_re_add {
+                        batch_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
+                            points: vec![ObjectId(original_start_id), ObjectId(new_segment_end_point_id)],
+                            distance: distance_value,
+                        }));
+                    }
+                }
+
+                // Migrate center point constraints for arcs
+                if let Some(new_center_id) = new_segment_center_point_id {
+                    for (constraint, original_center_id) in center_point_constraints_to_migrate {
+                        match constraint {
+                            Constraint::Coincident(coincident) => {
+                                let new_segments: Vec<ObjectId> = coincident
+                                    .segments
+                                    .iter()
+                                    .map(|seg_id| {
+                                        if seg_id.0 == original_center_id {
+                                            ObjectId(new_center_id)
+                                        } else {
+                                            *seg_id
+                                        }
+                                    })
+                                    .collect();
+
+                                batch_constraints.push(Constraint::Coincident(crate::frontend::sketch::Coincident {
+                                    segments: new_segments,
+                                }));
+                            }
+                            Constraint::Distance(distance) => {
+                                let new_points: Vec<ObjectId> = distance
+                                    .points
+                                    .iter()
+                                    .map(|pt| {
+                                        if pt.0 == original_center_id {
+                                            ObjectId(new_center_id)
+                                        } else {
+                                            *pt
+                                        }
+                                    })
+                                    .collect();
+
+                                batch_constraints.push(Constraint::Distance(crate::frontend::sketch::Distance {
+                                    points: new_points,
+                                    distance: distance.distance.clone(),
+                                }));
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+
+                // Re-add angle constraints (Parallel, Perpendicular, Horizontal, Vertical)
+                for obj in &edit_scene_graph_delta.new_graph.objects {
+                    let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                        continue;
+                    };
+
+                    let should_migrate = match constraint {
+                        Constraint::Parallel(parallel) => parallel.lines.iter().any(|line_id| line_id.0 == *segment_id),
+                        Constraint::Perpendicular(perpendicular) => {
+                            perpendicular.lines.iter().any(|line_id| line_id.0 == *segment_id)
+                        }
+                        Constraint::Horizontal(horizontal) => horizontal.line.0 == *segment_id,
+                        Constraint::Vertical(vertical) => vertical.line.0 == *segment_id,
+                        _ => false,
+                    };
+
+                    if should_migrate {
+                        let migrated_constraint = match constraint {
+                            Constraint::Parallel(parallel) => {
+                                let new_lines: Vec<ObjectId> = parallel
+                                    .lines
+                                    .iter()
+                                    .map(|line_id| {
+                                        if line_id.0 == *segment_id {
+                                            ObjectId(new_segment_id)
+                                        } else {
+                                            *line_id
+                                        }
+                                    })
+                                    .collect();
+                                Constraint::Parallel(crate::frontend::sketch::Parallel { lines: new_lines })
+                            }
+                            Constraint::Perpendicular(perpendicular) => {
+                                let new_lines: Vec<ObjectId> = perpendicular
+                                    .lines
+                                    .iter()
+                                    .map(|line_id| {
+                                        if line_id.0 == *segment_id {
+                                            ObjectId(new_segment_id)
+                                        } else {
+                                            *line_id
+                                        }
+                                    })
+                                    .collect();
+                                Constraint::Perpendicular(crate::frontend::sketch::Perpendicular { lines: new_lines })
+                            }
+                            Constraint::Horizontal(horizontal) => {
+                                if horizontal.line.0 == *segment_id {
+                                    Constraint::Horizontal(crate::frontend::sketch::Horizontal {
+                                        line: ObjectId(new_segment_id),
+                                    })
+                                } else {
+                                    continue;
+                                }
+                            }
+                            Constraint::Vertical(vertical) => {
+                                if vertical.line.0 == *segment_id {
+                                    Constraint::Vertical(crate::frontend::sketch::Vertical {
+                                        line: ObjectId(new_segment_id),
+                                    })
+                                } else {
+                                    continue;
+                                }
+                            }
+                            _ => continue,
+                        };
+                        batch_constraints.push(migrated_constraint);
+                    }
+                }
+
+                // Step 6: Batch all remaining operations
+                let constraint_object_ids: Vec<ObjectId> =
+                    constraints_to_delete.iter().map(|id| ObjectId(*id)).collect();
+
+                frontend
+                    .batch_split_segment_operations(
+                        ctx,
+                        version,
+                        sketch_id,
+                        Vec::new(), // edit_segments already done
+                        batch_constraints,
+                        constraint_object_ids,
+                        ObjectId(new_segment_id),
+                        ObjectId(new_segment_start_point_id),
+                        ObjectId(new_segment_end_point_id),
+                        new_segment_center_point_id.map(|id| ObjectId(id)),
+                    )
+                    .await
+                    .map_err(|e| format!("Failed to batch split segment operations: {}", e.msg))
             }
         };
 

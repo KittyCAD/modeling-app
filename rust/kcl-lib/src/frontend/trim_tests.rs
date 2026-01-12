@@ -51,46 +51,6 @@ beforeEach(async () => {
   rustContextInThisFile = rustContext
 })
 
-describe('Arc-line trim with existing point-segment coincident', () => {
-  it('replaces point-segment coincident with point-point when trimming at coincident endpoint', async () => {
-    const baseKclCode = `@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
-  line1 = sketch2::line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
-  sketch2::coincident([line1.end, arc1])
-}
-`
-
-    const trimPoints: Coords2d[] = [
-      [-2, 2],
-      [2, 2],
-    ]
-
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
-
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
-    }
-
-    const expectedCode = `@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var -0.41mm, var -0.17mm], end = [var 0mm, var -5mm], center = [var 30mm, var -0mm])
-  line1 = sketch2::line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
-  sketch2::coincident([arc1.start, line1.end])
-}
-`
-
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
-})
-
 describe('Split trim - line trimmed between two intersections', () => {
   it('splits line1 into two segments when trimmed between two intersections', async () => {
     const baseKclCode = `@settings(experimentalFeatures = allow)
@@ -1010,14 +970,11 @@ sketch(on = YZ) {
             }
         }
     }
-}
 
-/*/
-
-describe('Multi-segment trim - trim line through multiple segments', () => {
-
-  it("Should remove coincident point from the end of a segment's end that is being trimmed", async () => {
-    const baseKclCode = `@settings(experimentalFeatures = allow)
+    #[tokio::test]
+    async fn test_trim_remove_coincident_point_from_segment_end() {
+        // Should remove coincident point from the end of a segment's end that is being trimmed
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
@@ -1027,41 +984,52 @@ sketch(on = YZ) {
   sketch2::coincident([line2.end, line3.start])
   sketch2::arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
 }
-`
+"#;
 
-    const trimPoints: Coords2d[] = [
-      [-1.5, 5],
-      [-1.5, -5],
-    ]
+        let trim_points = vec![Coords2d { x: -1.5, y: 5.0 }, Coords2d { x: -1.5, y: -5.0 }];
 
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
+        let sketch_id = ObjectId(0);
 
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
-    }
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
-    const expectedCode = `@settings(experimentalFeatures = allow)
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var -5mm, var 5mm], end = [var -3mm, var 2mm])
-  line2 = sketch2::line(start = [var 0mm, var 2mm], end = [var 3mm, var 2mm])
-  line3 = sketch2::line(start = [var 3mm, var 2mm], end = [var 5mm, var 5mm])
+  line2 = sketch2::line(start = [var 0mm, var 2mm], end = [var 3.25mm, var 2mm])
+  line3 = sketch2::line(start = [var 3.25mm, var 2mm], end = [var 5mm, var 5mm])
   sketch2::coincident([line2.end, line3.start])
   arc1 = sketch2::arc(start = [var 1mm, var 5mm], end = [var 1mm, var -1mm], center = [var 5mm, var 2mm])
   sketch2::coincident([line2.start, arc1])
 }
-`
+"#;
 
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
 
-  it('split trim where the end of the trimed segment has a point-line coincident constraint, should move the constraint to the newly created segment', async () => {
-    const baseKclCode = `@settings(experimentalFeatures = allow)
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
+
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn test_split_trim_with_point_line_coincident_constraint() {
+        // split trim where the end of the trimmed segment has a point-line coincident constraint,
+        // should move the constraint to the newly created segment
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   arc9 = sketch2::arc(start = [var -5.648mm, var 6.909mm], end = [var -6.864mm, var 2.472mm], center = [var -0.293mm, var 3.056mm])
@@ -1071,28 +1039,18 @@ sketch(on = YZ) {
   sketch2::coincident([arc9.end, line6])
   sketch2::coincident([line5.end, arc9])
 }
-`
+"#;
 
-    // Trim line that intersects arc9 at two points to cause a split trim
-    const trimPoints: Coords2d[] = [
-      // sketch2::point(at = [var -5.69mm, var 4.67mm])
-      // sketch2::point(at = [var -7.65mm, var 4.83mm])
-      [-5.69, 4.67],
-      [-7.65, 4.83],
-    ]
+        // Trim line that intersects arc9 at two points to cause a split trim
+        let trim_points = vec![Coords2d { x: -5.69, y: 4.67 }, Coords2d { x: -7.65, y: 4.83 }];
 
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
+        let sketch_id = ObjectId(0);
 
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
-    }
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
-    const expectedCode = `@settings(experimentalFeatures = allow)
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   arc9 = sketch2::arc(start = [var -5.65mm, var 6.91mm], end = [var -6.44mm, var 5.46mm], center = [var -0.29mm, var 3.06mm])
@@ -1104,10 +1062,79 @@ sketch(on = YZ) {
   sketch2::coincident([arc1.start, line5.end])
   sketch2::coincident([arc1.end, line6])
 }
-`
+"#;
 
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
+
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
+
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn test_arc_line_trim_replace_point_segment_coincident() {
+        // replaces point-segment coincident with point-point when trimming at coincident endpoint
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  arc1 = sketch2::arc(start = [var 0mm, var 5mm], end = [var 0mm, var -5mm], center = [var 30mm, var 0mm])
+  line1 = sketch2::line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
+  sketch2::coincident([line1.end, arc1])
+}
+"#;
+
+        let trim_points = vec![Coords2d { x: -2.0, y: 2.0 }, Coords2d { x: 2.0, y: 2.0 }];
+
+        let sketch_id = ObjectId(0);
+
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
+
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  arc1 = sketch2::arc(start = [var -0.41mm, var -0.17mm], end = [var 0mm, var -5mm], center = [var 30mm, var -0mm])
+  line1 = sketch2::line(start = [var -5mm, var -2mm], end = [var -0.41mm, var -0.17mm])
+  sketch2::coincident([arc1.start, line1.end])
+}
+"#;
+
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
+
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
+
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
+    }
+}
+
+/*/
+
+describe('Multi-segment trim - trim line through multiple segments', () => {
 
   it('another edge case involving split lines and point-segment coincident points', async () => {
     const baseKclCode = `@settings(experimentalFeatures = allow)
