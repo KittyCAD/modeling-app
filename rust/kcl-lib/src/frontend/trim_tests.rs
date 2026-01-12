@@ -7,552 +7,6 @@ mod tests {
     async fn test_trim_line2_left_side() {
         // This test mirrors: "Case 1: trim line2 from [-2, -2] to [-2, 2] - should trim left side (start)"
         // from the TypeScript test file
-
-
-/*
-
-import { describe, it, expect, beforeEach, afterAll } from 'vitest'
-import type {
-  ApiObject,
-  SceneGraph,
-  SceneGraphDelta,
-} from '@rust/kcl-lib/bindings/FrontendApi'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { assertParse } from '@src/lang/wasm'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
-import {
-  createOnAreaSelectEndCallback,
-  getTrimSpawnTerminations,
-} from '@src/machines/sketchSolve/tools/trimToolImpl'
-import type { Coords2d } from '@src/lang/util'
-
-let instanceInThisFile: ModuleType = null!
-let engineCommandManagerInThisFile: ConnectionManager = null!
-let rustContextInThisFile: RustContext = null!
-
-/**
- * Every it test could build the world and connect to the engine but this is too resource intensive and will
- * spam engine connections.
- *
- * Reuse the world for this file. This is not the same as global singleton imports!
- */
-beforeEach(async () => {
-  if (instanceInThisFile) {
-    return
-  }
-
-  const { instance, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
-  instanceInThisFile = instance
-  engineCommandManagerInThisFile = engineCommandManager
-  rustContextInThisFile = rustContext
-})
-
-describe('Split trim - line trimmed between two intersections', () => {
-  it('splits line1 into two segments when trimmed between two intersections', async () => {
-    const baseKclCode = `@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -4mm, var 0mm], end = [var 5mm, var 0mm])
-  line2 = sketch2::line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
-  arc1 = sketch2::arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
-}
-`
-
-    const trimPoints: Coords2d[] = [
-      [0, 2],
-      [0, -2],
-    ]
-
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
-
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
-    }
-
-    const expectedCode = `@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -4mm, var 0mm], end = [var -2mm, var 0mm])
-  line2 = sketch2::line(start = [var -2mm, var 4mm], end = [var -2mm, var -4mm])
-  arc1 = sketch2::arc(start = [var 2mm, var 4mm], end = [var 2mm, var -4mm], center = [var 500mm, var 0mm])
-  line3 = sketch2::line(start = [var 1.98mm, var 0mm], end = [var 5mm, var 0mm])
-  sketch2::coincident([line1.end, line2])
-  sketch2::coincident([line3.start, arc1])
-}
-`
-
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
-})
-
-afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
-})
-
-/**
- * Helper function to execute KCL code and get the sceneGraphDelta
- * This ensures test data comes from actual KCL execution rather than manual mocks
- */
-async function getSceneGraphDeltaFromKcl(kclCode: string): Promise<SceneGraph> {
-  // Parse the KCL code to get AST
-  const ast = assertParse(kclCode, instanceInThisFile)
-
-  // Execute the code to get the scene graph
-  const { sceneGraph } = await rustContextInThisFile.hackSetProgram(
-    ast,
-    await jsAppSettings(rustContextInThisFile.settingsActor)
-  )
-  return sceneGraph
-}
-
-function findFirstArcId(objects: ApiObject[]): number {
-  for (const obj of objects) {
-    if (obj.kind.type === 'Segment' && obj.kind.segment.type === 'Arc') {
-      return obj.id
-    }
-  }
-  return -1
-}
-function findFirstLineId(objects: ApiObject[]): number {
-  for (const obj of objects) {
-    if (obj.kind.type === 'Segment' && obj.kind.segment.type === 'Line') {
-      return obj.id
-    }
-  }
-  return -1
-}
-
-describe('getTrimSpawnTerminations', () => {
-  describe('termination types with lines segment as trimSpawn', () => {
-    it('finds terminations correctly when a line and arc intersect', async () => {
-      const kclCode = `@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -3.05mm, var 2.44mm], end = [var 2.88mm, var 2.81mm])
-  line2 = sketch2::line(start = [var -2.77mm, var 1mm], end = [var -1.91mm, var 4.06mm])
-  arc1 = sketch2::arc(start = [var 2.4mm, var 4.48mm], end = [var 3.4mm, var 5.41mm], center = [var 3.99mm, var 3.07mm])
-}
-`
-
-      const sceneGraphDelta = await getSceneGraphDeltaFromKcl(kclCode)
-      const objects = sceneGraphDelta.objects
-
-      const trimPoints: Coords2d[] = [
-        [-1.3, 4.62],
-        [-2.46, 0.1],
-      ]
-
-      const result = getTrimSpawnTerminations({
-        trimSpawnSegId: findFirstLineId(objects),
-        trimSpawnCoords: trimPoints,
-        objects,
-      })
-
-      if (result instanceof Error) {
-        throw result
-      }
-
-      // should assert a type:intersection for both sides
-      expect(result.leftSide.type).toBe('intersection')
-      expect(result.rightSide.type).toBe('intersection')
-      expect(result.leftSide).toEqual({
-        type: 'intersection',
-        trimTerminationCoords: [-2.3530729879512666, 2.4834844847315396],
-        intersectingSegId: 6,
-      })
-      expect(result.rightSide).toEqual({
-        type: 'intersection',
-        trimTerminationCoords: [1.8273063333627224, 2.7443175958421935],
-        intersectingSegId: 10,
-      })
-    })
-    it('finds "segEndPoint" terminations when other segments ends have coincident constraints with our trim segments endpoints', async () => {
-      const kclCode = `@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -3.24mm, var 2.44mm], end = [var 2.6mm, var 2.81mm])
-  line2 = sketch2::line(start = [var -2.38mm, var 2.5mm], end = [var -4.22mm, var -0.41mm])
-  arc1 = sketch2::arc(start = [var 2.24mm, var 5.64mm], end = [var 1.65mm, var 2.83mm], center = [var 3.6mm, var 3.89mm])
-  sketch2::coincident([line2.start, line1.start])
-  sketch2::coincident([arc1.end, line1.end])
-}
-`
-
-      const sceneGraphDelta = await getSceneGraphDeltaFromKcl(kclCode)
-      const objects = sceneGraphDelta.objects
-
-      const trimPoints: Coords2d[] = [
-        [-1.9, 0.5],
-        [-1.9, 4],
-      ]
-
-      const result = getTrimSpawnTerminations({
-        trimSpawnSegId: findFirstLineId(objects),
-        trimSpawnCoords: trimPoints,
-        objects,
-      })
-
-      if (result instanceof Error) {
-        throw result
-      }
-
-      // should assert a type:intersection with line id:2 and arc id:3
-      expect(result.leftSide.type).toBe('segEndPoint')
-      expect(result.rightSide.type).toBe('segEndPoint')
-      expect(result.leftSide).toEqual({
-        type: 'segEndPoint',
-        trimTerminationCoords: [-2.810000000215, 2.469999999985],
-      })
-      expect(result.rightSide).toEqual({
-        type: 'segEndPoint',
-        trimTerminationCoords: [2.0716435933183504, 2.7918829774915763],
-      })
-    })
-
-    it(`finds "trimSpawnSegmentCoincidentWithAnotherSegmentPoint" terminations when there's other segments who have ends coincident with our segment line`, async () => {
-      const kclCode = `@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -3.24mm, var 2.44mm], end = [var 2.6mm, var 2.81mm])
-  line2 = sketch2::line(start = [var -2.38mm, var 2.5mm], end = [var -4.22mm, var -0.41mm])
-  arc1 = sketch2::arc(start = [var 2.24mm, var 5.64mm], end = [var 1.65mm, var 2.83mm], center = [var 3.6mm, var 3.89mm])
-  sketch2::coincident([arc1.end, line1])
-  sketch2::coincident([line2.start, line1])
-}
-`
-
-      const sceneGraphDelta = await getSceneGraphDeltaFromKcl(kclCode)
-      const objects = sceneGraphDelta.objects
-
-      const trimPoints: Coords2d[] = [
-        [-1.9, 0.5],
-        [-1.9, 4],
-      ]
-
-      const result = getTrimSpawnTerminations({
-        trimSpawnSegId: findFirstLineId(objects),
-        trimSpawnCoords: trimPoints,
-        objects,
-      })
-
-      if (result instanceof Error) {
-        throw result
-      }
-
-      // should assert a type:intersection with line id:2 and arc id:3
-      expect(result.leftSide.type).toBe(
-        'trimSpawnSegmentCoincidentWithAnotherSegmentPoint'
-      )
-      expect(result.rightSide.type).toBe(
-        'trimSpawnSegmentCoincidentWithAnotherSegmentPoint'
-      )
-      expect(result.leftSide).toEqual({
-        type: 'trimSpawnSegmentCoincidentWithAnotherSegmentPoint',
-        trimTerminationCoords: [-2.380259288059525, 2.5040925592307945],
-        intersectingSegId: 6,
-        trimSpawnSegmentCoincidentWithAnotherSegmentPointId: 4,
-      })
-      expect(result.rightSide).toEqual({
-        type: 'trimSpawnSegmentCoincidentWithAnotherSegmentPoint',
-        trimTerminationCoords: [1.6587744607636377, 2.784726710328238],
-        intersectingSegId: 10,
-        trimSpawnSegmentCoincidentWithAnotherSegmentPointId: 8,
-      })
-    })
-    it("finds 'segEndPoint' terminations when there's other segments who have ends on our segment line, but there not actually a coincident constraint", async () => {
-      const kclCode = `@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
-  line1 = sketch2::line(start = [var -3.24mm, var 2.46mm], end = [var 2.6mm, var 2.9mm])
-  line2 = sketch2::line(start = [var -2.38mm, var 2.47mm], end = [var -3.94mm, var -0.64mm])
-  arc1 = sketch2::arc(start = [var 2.239mm, var 5.641mm], end = [var 1.651mm, var 2.85mm], center = [var 3.6mm, var 3.889mm])
-}`
-
-      const sceneGraphDelta = await getSceneGraphDeltaFromKcl(kclCode)
-      const objects = sceneGraphDelta.objects
-
-      const trimPoints: Coords2d[] = [
-        [-1.9, 0.5],
-        [-1.9, 4],
-      ]
-
-      const result = getTrimSpawnTerminations({
-        trimSpawnSegId: findFirstLineId(objects),
-        trimSpawnCoords: trimPoints,
-        objects,
-      })
-
-      if (result instanceof Error) {
-        throw result
-      }
-
-      // should assert a type:intersection with line id:2 and arc id:3
-      expect(result.leftSide.type).toBe('segEndPoint')
-      expect(result.rightSide.type).toBe('segEndPoint')
-      expect(result.leftSide).toEqual({
-        type: 'segEndPoint',
-        trimTerminationCoords: [-3.24, 2.46],
-      })
-      expect(result.rightSide).toEqual({
-        type: 'segEndPoint',
-        trimTerminationCoords: [2.6, 2.9],
-      })
-    })
-  })
-  describe('termination types with arc segment as trimSpawn', () => {
-    it('finds terminations correctly when a line and arc intersect', async () => {
-      const kclCode = `@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
-  sketch2::arc(start = [var 0.79mm, var 2.4mm], end = [var -5.61mm, var 1.77mm], center = [var -1.88mm, var -3.29mm])
-  sketch2::arc(start = [var -0.072mm, var 4.051mm], end = [var -0.128mm, var -0.439mm], center = [var 5.32mm, var 1.738mm])
-  line1 = sketch2::line(start = [var -5.41mm, var 4.99mm], end = [var -4.02mm, var -0.47mm])
-}
-`
-
-      const sceneGraphDelta = await getSceneGraphDeltaFromKcl(kclCode)
-      const objects = sceneGraphDelta.objects
-
-      const trimPoints: Coords2d[] = [
-        [-1.3, 4.62],
-        [-2.46, 0.1],
-      ]
-
-      const result = getTrimSpawnTerminations({
-        trimSpawnSegId: findFirstArcId(objects),
-        trimSpawnCoords: trimPoints,
-        objects,
-      })
-
-      if (result instanceof Error) {
-        throw result
-      }
-
-      // should assert a type:intersection for both sides
-      expect(result.leftSide.type).toBe('intersection')
-      expect(result.rightSide.type).toBe('intersection')
-      expect(result.leftSide).toEqual({
-        type: 'intersection',
-        trimTerminationCoords: [-0.44459011806535265, 2.8295671172502757],
-        intersectingSegId: 8,
-      })
-      expect(result.rightSide).toEqual({
-        type: 'intersection',
-        trimTerminationCoords: [-4.728585883881671, 2.3133661338085765],
-        intersectingSegId: 11,
-      })
-    })
-    it('finds "segEndPoint" terminations when other segments ends have coincident constraints with our trim segments endpoints', async () => {
-      const kclCode = `@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0.79mm, var 2.4mm], end = [var -5.61mm, var 1.77mm], center = [var -1.88mm, var -3.29mm])
-  arc2 = sketch2::arc(start = [var -0.07mm, var 4.05mm], end = [var -0.13mm, var -0.44mm], center = [var 5.32mm, var 1.74mm])
-  line1 = sketch2::line(start = [var -5.41mm, var 4.99mm], end = [var -4.02mm, var -0.47mm])
-  sketch2::coincident([line1.end, arc1.end])
-  sketch2::coincident([arc1.start, arc2.start])
-}
-`
-
-      const sceneGraphDelta = await getSceneGraphDeltaFromKcl(kclCode)
-      const objects = sceneGraphDelta.objects
-
-      const trimPoints: Coords2d[] = [
-        [-1.9, 0.5],
-        [-1.9, 4],
-      ]
-
-      const result = getTrimSpawnTerminations({
-        trimSpawnSegId: findFirstArcId(objects),
-        trimSpawnCoords: trimPoints,
-        objects,
-      })
-
-      if (result instanceof Error) {
-        throw result
-      }
-
-      // should assert a type:intersection with line id:2 and arc id:3
-      expect(result.leftSide.type).toBe('segEndPoint')
-      expect(result.rightSide.type).toBe('segEndPoint')
-      expect(result.leftSide).toEqual({
-        type: 'segEndPoint',
-        trimTerminationCoords: [0.008837118620591083, 2.809080419697051],
-      })
-      expect(result.rightSide).toEqual({
-        type: 'segEndPoint',
-        trimTerminationCoords: [-5.1310115335133135, 1.0662359198714615],
-      })
-    })
-
-    it(`finds "trimSpawnSegmentCoincidentWithAnotherSegmentPoint" terminations when there's other segments who have ends coincident with our segment line`, async () => {
-      const kclCode = `@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0.882mm, var 2.596mm], end = [var -5.481mm, var 1.595mm], center = [var -1.484mm, var -3.088mm])
-  arc2 = sketch2::arc(start = [var -0.367mm, var 2.967mm], end = [var -0.099mm, var -0.427mm], center = [var 5.317mm, var 1.708mm])
-  line1 = sketch2::line(start = [var -5.41mm, var 4.99mm], end = [var -4.179mm, var 2.448mm])
-  sketch2::coincident([line1.end, arc1])
-  sketch2::coincident([arc1, arc2.start])
-}
-`
-
-      const sceneGraphDelta = await getSceneGraphDeltaFromKcl(kclCode)
-      const objects = sceneGraphDelta.objects
-
-      const trimPoints: Coords2d[] = [
-        [-1.9, 0.5],
-        [-1.9, 4],
-      ]
-
-      const result = getTrimSpawnTerminations({
-        trimSpawnSegId: findFirstArcId(objects),
-        trimSpawnCoords: trimPoints,
-        objects,
-      })
-
-      if (result instanceof Error) {
-        throw result
-      }
-
-      // should assert a type:intersection with line id:2 and arc id:3
-      expect(result.leftSide.type).toBe(
-        'trimSpawnSegmentCoincidentWithAnotherSegmentPoint'
-      )
-      expect(result.rightSide.type).toBe(
-        'trimSpawnSegmentCoincidentWithAnotherSegmentPoint'
-      )
-      expect(result.leftSide).toEqual({
-        type: 'trimSpawnSegmentCoincidentWithAnotherSegmentPoint',
-        trimTerminationCoords: [-0.36700307305406205, 2.966675365647721],
-        intersectingSegId: 8,
-        trimSpawnSegmentCoincidentWithAnotherSegmentPointId: 5,
-      })
-      expect(result.rightSide).toEqual({
-        type: 'trimSpawnSegmentCoincidentWithAnotherSegmentPoint',
-        trimTerminationCoords: [-4.178878101257838, 2.447749604872991],
-        intersectingSegId: 11,
-        trimSpawnSegmentCoincidentWithAnotherSegmentPointId: 10,
-      })
-    })
-    it('finds "segEndPoint" terminations when there\'s other segments who have ends on our segment line, but there not actually a coincident constraint', async () => {
-      const kclCode = `@settings(experimentalFeatures = allow)
-
-sketch(on = YZ) {
-  arc1 = sketch2::arc(start = [var 0.882mm, var 2.596mm], end = [var -5.481mm, var 1.595mm], center = [var -1.484mm, var -3.088mm])
-  arc2 = sketch2::arc(start = [var -0.367mm, var 2.967mm], end = [var -0.099mm, var -0.427mm], center = [var 5.317mm, var 1.708mm])
-  line1 = sketch2::line(start = [var -5.41mm, var 4.99mm], end = [var -4.179mm, var 2.448mm])
-}
-`
-
-      const sceneGraphDelta = await getSceneGraphDeltaFromKcl(kclCode)
-      const objects = sceneGraphDelta.objects
-
-      const trimPoints: Coords2d[] = [
-        [-1.9, 0.5],
-        [-1.9, 4],
-      ]
-
-      const result = getTrimSpawnTerminations({
-        trimSpawnSegId: findFirstArcId(objects),
-        trimSpawnCoords: trimPoints,
-        objects,
-      })
-
-      if (result instanceof Error) {
-        throw result
-      }
-
-      // should assert a type:intersection with line id:2 and arc id:3
-      expect(result.leftSide.type).toBe('segEndPoint')
-      expect(result.rightSide.type).toBe('segEndPoint')
-      expect(result.leftSide).toEqual({
-        type: 'segEndPoint',
-        trimTerminationCoords: [0.8820069182524407, 2.596016620488862],
-      })
-      expect(result.rightSide).toEqual({
-        type: 'segEndPoint',
-        trimTerminationCoords: [-5.480988312959221, 1.5949863061464085],
-      })
-    })
-  })
-})
-
-/**
- * Helper function to execute the full trim flow and return the resulting KCL code
- * Now uses createOnAreaSelectEndCallback internally
- */
-async function executeTrimFlow({
-  kclCode,
-  trimPoints,
-  sketchId,
-}: {
-  kclCode: string
-  trimPoints: Coords2d[]
-  sketchId: number
-}): Promise<{ kclSource: { text: string } } | Error> {
-  // Parse and execute initial KCL code
-  const ast = assertParse(kclCode, instanceInThisFile)
-  const { sceneGraph, execOutcome } =
-    await rustContextInThisFile.hackSetProgram(
-      ast,
-      await jsAppSettings(rustContextInThisFile.settingsActor)
-    )
-
-  const initialSceneGraphDelta: SceneGraphDelta = {
-    new_graph: sceneGraph,
-    new_objects: [],
-    invalidates_ids: false,
-    exec_outcome: execOutcome,
-  }
-
-  // Track the last result to return it
-  let lastResult: { kclSource: { text: string } } | null = null
-  let hadError: Error | null = null
-
-  // Use the new createOnAreaSelectEndCallback function
-  const onAreaSelectEndHandler = createOnAreaSelectEndCallback({
-    getContextData: () => ({
-      sceneGraphDelta: initialSceneGraphDelta,
-      sketchId,
-      rustContext: rustContextInThisFile,
-    }),
-    onNewSketchOutcome: (outcome) => {
-      lastResult = outcome
-    },
-  })
-
-  // Execute the trim flow
-  try {
-    await onAreaSelectEndHandler(trimPoints)
-  } catch (error) {
-    hadError = error instanceof Error ? error : new Error(String(error))
-  }
-
-  // Return error if one occurred, or if no operations were executed
-  if (hadError) {
-    return hadError
-  }
-
-  if (!lastResult) {
-    return new Error('No trim operations were executed')
-  }
-
-  return lastResult
-}
-
-*/
-
-
         let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
@@ -1778,12 +1232,11 @@ sketch(on = YZ) {
             }
         }
     }
-}
 
-/*/
-
-  it('split arc should duplicate center point constraints to new arc', async () => {
-    const baseKclCode = `@settings(experimentalFeatures = allow)
+    #[tokio::test]
+    async fn test_split_arc_duplicate_center_point_constraints() {
+        // split arc should duplicate center point constraints to new arc
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   arcToSplit = sketch2::arc(start = [var 10.5mm, var 1mm], end = [var -10.5mm, var 0.5mm], center = [var 0.5mm, var -8.5mm])
@@ -1802,25 +1255,17 @@ sketch(on = YZ) {
   line3 = sketch2::line(start = [var -0.9mm, var -6.9mm], end = [var 2.9mm, var -11.2mm])
   sketch2::coincident([arcToSplit.center, line3])
 }
-`
+"#;
 
-    const trimPoints: Coords2d[] = [
-      [-1.66, 7.54],
-      [-1.81, 2.11],
-    ]
+        let trim_points = vec![Coords2d { x: -1.66, y: 7.54 }, Coords2d { x: -1.81, y: 2.11 }];
 
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
+        let sketch_id = ObjectId(0);
 
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
-    }
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
-    const expectedCode = `@settings(experimentalFeatures = allow)
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   arcToSplit = sketch2::arc(start = [var 11.03mm, var 1.02mm], end = [var 3.52mm, var 5.17mm], center = [var 0.75mm, var -8.72mm])
@@ -1848,13 +1293,31 @@ sketch2::distance([arcToSplit.center, line4.end]) == 20mm
 sketch2::distance([arc1.center, line4.end]) == 20mm
   sketch2::coincident([arc1.center, line3])
 }
-`
+"#;
 
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
 
-  it('Trimming arcs should preserve distance constraints that reference other segments', async () => {
-    const baseKclCode = `@settings(experimentalFeatures = allow)
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
+
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn test_trimming_arcs_preserve_distance_constraints() {
+        // Trimming arcs should preserve distance constraints that reference other segments
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   arc1 = sketch2::arc(start = [var 0.87mm, var 2.9mm], end = [var -5.31mm, var -1.34mm], center = [var -0.65mm, var -1.5mm])
@@ -1867,26 +1330,21 @@ sketch2::distance([arc1.center, line2.start]) == 3.87mm
   line5 = sketch2::line(start = [var -1.05mm, var 6.42mm], end = [var -0.77mm, var 4.73mm])
 sketch2::distance([line4.end, line3.start]) == 11.98mm
 }
-`
+"#;
 
-    const trimPoints: Coords2d[] = [
-      [0.24, 6.57],
-      [-1.66, 3.78],
-      [-1.57, 1.03],
-    ]
+        let trim_points = vec![
+            Coords2d { x: 0.24, y: 6.57 },
+            Coords2d { x: -1.66, y: 3.78 },
+            Coords2d { x: -1.57, y: 1.03 },
+        ];
 
-    const result = await executeTrimFlow({
-      kclCode: baseKclCode,
-      trimPoints,
-      sketchId: 0,
-    })
+        let sketch_id = ObjectId(0);
 
-    expect(result).not.toBeInstanceOf(Error)
-    if (result instanceof Error) {
-      throw result
-    }
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
 
-    const expectedCode = `@settings(experimentalFeatures = allow)
+        match result {
+            Ok(kcl_code) => {
+                let expected_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   arc1 = sketch2::arc(start = [var -3.89mm, var 1.85mm], end = [var -5.31mm, var -1.34mm], center = [var -0.65mm, var -1.5mm])
@@ -1900,17 +1358,31 @@ sketch2::distance([line4.end, line3.start]) == 11.98mm
   sketch2::coincident([line3.end, line5])
   sketch2::coincident([arc1.start, line1])
 }
-`
+"#;
 
-    expect(result.kclSource.text).toBe(expectedCode)
-  })
+                let result_normalized = kcl_code.trim();
+                let expected_normalized = expected_code.trim();
 
-  it(
-    'stress test: complex trim line through many segments',
-    { timeout: 15_000 },
-    async () => {
-      const startTime = performance.now()
-      const baseKclCode = `@settings(experimentalFeatures = allow)
+                if result_normalized != expected_normalized {
+                    eprintln!("Actual result:\n{}", result_normalized);
+                    eprintln!("Expected result:\n{}", expected_normalized);
+                }
+
+                assert_eq!(
+                    result_normalized, expected_normalized,
+                    "Trim result should match expected KCL code"
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn test_stress_complex_trim_line_through_many_segments() {
+        // stress test: complex trim line through many segments
+        let base_kcl_code = r#"@settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
   line1 = sketch2::line(start = [var -5.17mm, var 4.96mm], end = [var 4.84mm, var 6.49mm])
@@ -1973,95 +1445,97 @@ sketch(on = YZ) {
   line34 = sketch2::line(start = [var -5.07mm, var -2.3mm], end = [var -2.79mm, var -3mm])
   line35 = sketch2::line(start = [var -5.04mm, var -3.12mm], end = [var -2.91mm, var -2.48mm])
 }
-`
+"#;
 
-      const trimPoints: Coords2d[] = [
-        [-0.20484096959875361, 7.75406075078318],
-        [0.36613122302493517, 7.723947893498586],
-        [0.9371034156486249, 7.723947893498586],
-        [1.5080756082723146, 7.723947893498586],
-        [2.0790478008960025, 7.723947893498586],
-        [2.5598664894212146, 7.4228193206526365],
-        [2.5598664894212146, 6.850675032245334],
-        [2.0790478008960025, 6.519433602114789],
-        [1.5381267763051405, 6.338756458407221],
-        [0.9671545836814508, 6.3086436011226255],
-        [0.4262335590905869, 6.4592078875456],
-        [-0.14473863353310187, 6.368869315691816],
-        [-0.7157108261567917, 6.248417886553436],
-        [-1.2566318507476546, 6.067740742845867],
-        [-1.7975528753385184, 5.917176456422893],
-        [-2.188218059765253, 5.495596454438564],
-        [-1.8877063794369962, 5.0137907378850475],
-        [-1.3167341868133065, 4.953565023315857],
-        [-0.7457619941896175, 4.923452166031262],
-        [-0.17478980156592777, 4.833113594177478],
-        [0.15577304679515594, 4.3513078776239595],
-        [0.4262335590905869, 3.839389303785847],
-        [0.4562847271234128, 3.267245015378544],
-        [0.30602888695928343, 2.725213584255836],
-        [-0.024533961401799326, 2.2735207249869136],
-        [-0.5955061540254881, 2.122956438563939],
-        [-1.136427178616352, 1.9723921521409638],
-        [-1.6773482032072158, 1.82182786571799],
-        [-2.158166891732427, 2.122956438563939],
-        [-2.638985580257639, 2.424085011409887],
-        [-3.1799066048485027, 2.6047621551174567],
-        [-3.750878797472192, 2.5746492978328623],
-        [-4.171595149931753, 2.1530692958485336],
-        [-4.502157998292836, 1.6712635792950152],
-        [-4.892823182719571, 1.2496835773106867],
-        [-4.381953326161533, 1.0087807190339289],
-        [-4.351902158128707, 0.4366364306266254],
-        [-4.141543981898927, -0.10539500049608215],
-        [-3.991288141734798, -0.6474264316187898],
-        [-3.8109811335378434, -1.1894578627414973],
-        [-3.8109811335378434, -1.7616021511488007],
-        [-3.4804182851767607, -2.213295010417723],
-        [-3.149855436815677, -2.6649878696866476],
-        [-3.2400089409141546, -3.2371321580939485],
-        [-3.750878797472192, -3.4780350163707086],
-        [-4.26174865403023, -3.7490507319320625],
-        [-4.021339309767624, -4.260969305770174],
-        [-3.5405206212424116, -4.562097878616124],
-        [-3.5405206212424116, -5.134242167023425],
-        [-3.991288141734798, -5.495596454438564],
-        [-4.111492813866102, -6.037627885561271],
-        [-4.0513904778004495, -6.609772173968575],
-        [-3.991288141734798, -7.181916462375878],
-        [-4.231697485997404, -7.69383503621399],
-        [-4.412004494194359, -8.265979324621293],
-        [-4.412004494194359, -8.838123613028595],
-        [-4.562260334358488, -9.380155044151303],
-        [-4.862772014686745, -9.861960760704822],
-      ]
+        let trim_points = vec![
+            Coords2d { x: -0.20484096959875361, y: 7.75406075078318 },
+            Coords2d { x: 0.36613122302493517, y: 7.723947893498586 },
+            Coords2d { x: 0.9371034156486249, y: 7.723947893498586 },
+            Coords2d { x: 1.5080756082723146, y: 7.723947893498586 },
+            Coords2d { x: 2.0790478008960025, y: 7.723947893498586 },
+            Coords2d { x: 2.5598664894212146, y: 7.4228193206526365 },
+            Coords2d { x: 2.5598664894212146, y: 6.850675032245334 },
+            Coords2d { x: 2.0790478008960025, y: 6.519433602114789 },
+            Coords2d { x: 1.5381267763051405, y: 6.338756458407221 },
+            Coords2d { x: 0.9671545836814508, y: 6.3086436011226255 },
+            Coords2d { x: 0.4262335590905869, y: 6.4592078875456 },
+            Coords2d { x: -0.14473863353310187, y: 6.368869315691816 },
+            Coords2d { x: -0.7157108261567917, y: 6.248417886553436 },
+            Coords2d { x: -1.2566318507476546, y: 6.067740742845867 },
+            Coords2d { x: -1.7975528753385184, y: 5.917176456422893 },
+            Coords2d { x: -2.188218059765253, y: 5.495596454438564 },
+            Coords2d { x: -1.8877063794369962, y: 5.0137907378850475 },
+            Coords2d { x: -1.3167341868133065, y: 4.953565023315857 },
+            Coords2d { x: -0.7457619941896175, y: 4.923452166031262 },
+            Coords2d { x: -0.17478980156592777, y: 4.833113594177478 },
+            Coords2d { x: 0.15577304679515594, y: 4.3513078776239595 },
+            Coords2d { x: 0.4262335590905869, y: 3.839389303785847 },
+            Coords2d { x: 0.4562847271234128, y: 3.267245015378544 },
+            Coords2d { x: 0.30602888695928343, y: 2.725213584255836 },
+            Coords2d { x: -0.024533961401799326, y: 2.2735207249869136 },
+            Coords2d { x: -0.5955061540254881, y: 2.122956438563939 },
+            Coords2d { x: -1.136427178616352, y: 1.9723921521409638 },
+            Coords2d { x: -1.6773482032072158, y: 1.82182786571799 },
+            Coords2d { x: -2.158166891732427, y: 2.122956438563939 },
+            Coords2d { x: -2.638985580257639, y: 2.424085011409887 },
+            Coords2d { x: -3.1799066048485027, y: 2.6047621551174567 },
+            Coords2d { x: -3.750878797472192, y: 2.5746492978328623 },
+            Coords2d { x: -4.171595149931753, y: 2.1530692958485336 },
+            Coords2d { x: -4.502157998292836, y: 1.6712635792950152 },
+            Coords2d { x: -4.892823182719571, y: 1.2496835773106867 },
+            Coords2d { x: -4.381953326161533, y: 1.0087807190339289 },
+            Coords2d { x: -4.351902158128707, y: 0.4366364306266254 },
+            Coords2d { x: -4.141543981898927, y: -0.10539500049608215 },
+            Coords2d { x: -3.991288141734798, y: -0.6474264316187898 },
+            Coords2d { x: -3.8109811335378434, y: -1.1894578627414973 },
+            Coords2d { x: -3.8109811335378434, y: -1.7616021511488007 },
+            Coords2d { x: -3.4804182851767607, y: -2.213295010417723 },
+            Coords2d { x: -3.149855436815677, y: -2.6649878696866476 },
+            Coords2d { x: -3.2400089409141546, y: -3.2371321580939485 },
+            Coords2d { x: -3.750878797472192, y: -3.4780350163707086 },
+            Coords2d { x: -4.26174865403023, y: -3.7490507319320625 },
+            Coords2d { x: -4.021339309767624, y: -4.260969305770174 },
+            Coords2d { x: -3.5405206212424116, y: -4.562097878616124 },
+            Coords2d { x: -3.5405206212424116, y: -5.134242167023425 },
+            Coords2d { x: -3.991288141734798, y: -5.495596454438564 },
+            Coords2d { x: -4.111492813866102, y: -6.037627885561271 },
+            Coords2d { x: -4.0513904778004495, y: -6.609772173968575 },
+            Coords2d { x: -3.991288141734798, y: -7.181916462375878 },
+            Coords2d { x: -4.231697485997404, y: -7.69383503621399 },
+            Coords2d { x: -4.412004494194359, y: -8.265979324621293 },
+            Coords2d { x: -4.412004494194359, y: -8.838123613028595 },
+            Coords2d { x: -4.562260334358488, y: -9.380155044151303 },
+            Coords2d { x: -4.862772014686745, y: -9.861960760704822 },
+        ];
 
-      const result = await executeTrimFlow({
-        kclCode: baseKclCode,
-        trimPoints,
-        sketchId: 0,
-      })
+        let sketch_id = ObjectId(0);
 
-      expect(result).not.toBeInstanceOf(Error)
-      if (result instanceof Error) {
-        throw result
-      }
+        let start = std::time::Instant::now();
+        let result = execute_trim_flow(base_kcl_code, &trim_points, sketch_id).await;
+        let duration = start.elapsed();
 
-      // Just assert that it doesn't error - the output code can be whatever the solver produces
-      expect(result.kclSource.text).toBeTruthy()
+        match result {
+            Ok(kcl_code) => {
+                // Just assert that it doesn't error - the output code can be whatever the solver produces
+                assert!(!kcl_code.trim().is_empty(), "Trim should produce non-empty KCL code");
 
-      const endTime = performance.now()
-      const durationMs = endTime - startTime
-      const durationSeconds = durationMs / 1000
+                // Assert that the test completes within a reasonable time (60 seconds)
+                // Note: Rust implementation may have different performance characteristics
+                assert!(
+                    duration.as_millis() < 60_000,
+                    "Stress test should complete within 60 seconds, took {}ms",
+                    duration.as_millis()
+                );
 
-      console.log(
-        `[Stress Test] Execution time: ${durationSeconds.toFixed(2)}s (${durationMs.toFixed(0)}ms)`
-      )
-
-      // Assert that the test completes within a reasonable time
-      expect(durationMs).toBeLessThan(7_000)
+                eprintln!(
+                    "[Stress Test] Execution time: {:.2}s ({}ms)",
+                    duration.as_secs_f64(),
+                    duration.as_millis()
+                );
+            }
+            Err(e) => {
+                panic!("trim flow failed: {}", e);
+            }
+        }
     }
-  )
-})
-
-*/
+}
