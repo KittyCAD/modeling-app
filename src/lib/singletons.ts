@@ -49,6 +49,7 @@ import {
   type Layout,
 } from '@src/lib/layout'
 import type { Project } from '@src/lib/project'
+import { buildFSEffectExtension } from '@src/editor/plugins/fs'
 
 /**
  * THE bundle of WASM, a cornerstone of our app. We use this for:
@@ -387,6 +388,8 @@ export type SystemIOActor = ActorRefFrom<
 >
 
 export const systemIOActor = appActor.system.get(SYSTEM_IO) as SystemIOActor
+// This extension makes it possible to mark FS operations as un/redoable
+buildFSEffectExtension(systemIOActor, kclManager)
 
 // TODO: proper dependency management
 sceneEntitiesManager.commandBarActor = commandBarActor

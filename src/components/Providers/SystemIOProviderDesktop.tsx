@@ -1,5 +1,4 @@
 import { useLspContext } from '@src/components/LspProvider'
-import { buildFSEffectExtension } from '@src/editor/plugins/fs'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { fsManager } from '@src/lang/std/fileSystemManager'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
@@ -49,8 +48,6 @@ export function SystemIOMachineLogicListenerDesktop() {
   const token = useToken()
   const { onFileOpen, onFileClose } = useLspContext()
   const { pathname } = useLocation()
-
-  useEffect(() => buildFSEffectExtension(systemIOActor, kclManager), [])
 
   function safestNavigateToFile({
     requestedPath,
