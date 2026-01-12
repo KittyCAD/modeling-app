@@ -1314,6 +1314,53 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           state.matches('sketchSolveMode') &&
           state.context.sketchSolveToolName === 'centerArcTool',
       },
+      {
+        id: 'rectangles',
+        array: [
+          {
+            id: 'corner-rectangle',
+            onClick: ({ modelingSend, isActive }) =>
+              isActive
+                ? modelingSend({
+                    type: 'unequip tool',
+                  })
+                : modelingSend({
+                    type: 'equip tool',
+                    data: { tool: 'cornerRectTool' },
+                  }),
+            icon: 'rectangle',
+            status: 'available',
+            title: 'Corner Rectangle',
+            hotkey: 'Shift+R',
+            description: 'Start drawing a rectangle',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.sketchSolveToolName === 'cornerRectTool',
+          },
+          {
+            id: 'center-rectangle',
+            onClick: ({ modelingSend, isActive }) =>
+              isActive
+                ? modelingSend({
+                    type: 'unequip tool',
+                  })
+                : modelingSend({
+                    type: 'equip tool',
+                    data: { tool: 'centerRectTool' },
+                  }),
+            icon: 'rectangle',
+            status: 'available',
+            title: 'Center Rectangle',
+            hotkey: 'Alt+R',
+            description: 'Start drawing a rectangle from its center',
+            links: [],
+            isActive: (state) =>
+              state.matches('sketchSolveMode') &&
+              state.context.sketchSolveToolName === 'centerRectTool',
+          },
+        ],
+      },
       'break',
       {
         id: 'coincident',

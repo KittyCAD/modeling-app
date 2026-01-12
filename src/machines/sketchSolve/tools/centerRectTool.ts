@@ -1,23 +1,42 @@
 import { createMachine, setup } from 'xstate'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 type CenterRectToolEvent = BaseToolEvent
 
 export const machine = setup({
   types: {
-    context: {} as Record<string, unknown>,
+    context: {} as {
+      sceneInfra: SceneInfra
+    },
     events: {} as CenterRectToolEvent,
+    input: {} as {
+      sceneInfra: SceneInfra
+    },
   },
   actions: {
-    'add point listener': () => {
-      // Add your action code here
-      // ...
+    'add point listener': ({ self, context }) => {
+      context.sceneInfra.setCallbacks({
+        onMove: () => {},
+        onClick: (args) => {
+          if (!args) return
+          if (args.mouseEvent.which !== 1) return
+          const twoD = args.intersectionPoint?.twoD
+          if (!twoD) return
+          self.send({
+            type: 'add point',
+            data: [twoD.x, twoD.y],
+          })
+        },
+      })
     },
     'show draft geometry': () => {
+      console.log('show draft geometry')
       // Add your action code here
       // ...
     },
     'remove point listener': () => {
+      console.log('remove point listener')
       // Add your action code here
       // ...
     },
@@ -28,7 +47,9 @@ export const machine = setup({
     }),
   },
 }).createMachine({
-  context: {},
+  context: ({ input }) => ({
+    sceneInfra: input.sceneInfra,
+  }),
   id: 'Center Rectangle tool',
   initial: 'awaiting first point',
   on: {
