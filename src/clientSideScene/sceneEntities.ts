@@ -2852,6 +2852,8 @@ export class SceneEntities {
             updateExtraSegments,
           })
         }
+        // TODO: update the `updateCodeEditor` workflow to allow for writes to file
+        // without execution so that we can drop this stray write to disk
         await this.kclManager.writeToFile()
       },
       onDrag: async ({
