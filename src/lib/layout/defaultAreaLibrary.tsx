@@ -40,7 +40,7 @@ function ModelingArea() {
       <Draggable
         containerRef={boundingRef}
         Handle={<Handle />}
-        className="self-end relative z-50 pointer-events-auto w-full max-w-sm m-4 border b-5 rounded shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
+        className="self-end relative z-50 pointer-events-auto w-full max-w-sm m-4 border b-5 rounded shadow-md bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
       >
         <p className="m-2">This is a draggable box</p>
       </Draggable>
