@@ -31,6 +31,7 @@ js-sys = "0.3.72"
 kcl-lib = { path = "../kcl-lib", features = ["artifact-graph"] }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
+serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true, features = ["sync", "rt"] }
 toml = "0.9.10"

@@ -31,6 +31,7 @@ pub(crate) mod api;
 pub(crate) mod modify;
 pub(crate) mod sketch;
 mod traverse;
+pub(crate) mod trim;
 
 const POINT_FN: &str = "point";
 const POINT_AT_PARAM: &str = "at";
