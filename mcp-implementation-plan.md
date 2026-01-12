@@ -78,28 +78,29 @@ The implementation follows a Blender-style architecture:
 ## Phase 4: Query Tools (Phase 1 Features)
 
 ### 4.1 Get Current ArtifactGraph Tool
-- [ ] Create `src/mcp-server/tools/getArtifactGraph.ts`
-- [ ] Implement tool that queries Electron app for current ArtifactGraph
-- [ ] Serialize ArtifactGraph to JSON for MCP response
-- [ ] Add tool description and parameter documentation
-- [ ] Register tool in server
+- [x] Create `src/mcp-server/tools/getArtifactGraph.ts`
+- [x] Implement tool that queries Electron app for current ArtifactGraph
+- [x] Serialize ArtifactGraph to JSON for MCP response
+- [x] Add tool description and parameter documentation
+- [x] Register tool in server
 
 ### 4.2 Get Current FeatureTree Tool
-- [ ] Create `src/mcp-server/tools/getFeatureTree.ts`
-- [ ] Implement tool that queries Electron app for current operations/feature tree
-- [ ] Access operations from rustContext (via bridge)
-- [ ] Format feature tree data appropriately
-- [ ] Add tool description and parameter documentation
-- [ ] Register tool in server
+- [x] Create `src/mcp-server/tools/getFeatureTree.ts`
+- [x] Implement tool that queries Electron app for current operations/feature tree
+- [x] Access operations from kclManager.lastSuccessfulOperations (via bridge)
+- [x] Format feature tree data appropriately
+- [x] Add tool description and parameter documentation
+- [x] Register tool in server
 
 ### 4.3 Get Current Selection Tool
-- [ ] Create `src/mcp-server/tools/getCurrentSelection.ts`
-- [ ] Implement tool that queries Electron app for current selection
-- [ ] Access selectionRanges from kclManager (via bridge)
-- [ ] Format selection data (graphSelections, otherSelections)
-- [ ] Include artifact references and code ranges
-- [ ] Add tool description and parameter documentation
-- [ ] Register tool in server
+- [x] Create `src/mcp-server/tools/getCurrentSelection.ts`
+- [x] Implement tool that queries Electron app for current selection
+- [x] Add getter for selectionRanges in KclManager
+- [x] Access selectionRanges from kclManager (via bridge)
+- [x] Format selection data (graphSelections, otherSelections)
+- [x] Include artifact references and code ranges
+- [x] Add tool description and parameter documentation
+- [x] Register tool in server
 
 ## Phase 5: Testing & Validation
 

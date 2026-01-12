@@ -59,12 +59,10 @@ export function initMcpBridgeHandlers(): void {
     window.electron.mcpBridge.onGetCurrentSelection(
       (data: { requestId: string }) => {
         try {
-          // Access selectionRanges from kclManager
-          // Note: selectionRanges is private, so we'll need to expose it or use a getter
-          // For now, we'll return empty selection - this will be fixed in Phase 4
+          const selectionRanges = kclManager.selectionRanges
           const selectionData = {
-            graphSelections: [],
-            otherSelections: [],
+            graphSelections: selectionRanges.graphSelections,
+            otherSelections: selectionRanges.otherSelections,
           }
           window.electron?.mcpBridge?.sendResponse(data.requestId, {
             data: selectionData,

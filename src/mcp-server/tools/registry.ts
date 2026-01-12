@@ -11,11 +11,28 @@ import {
 } from '@modelcontextprotocol/sdk/types.js'
 
 import { handleHelloWorldTool, helloWorldTool } from './helloWorld.js'
+import {
+  getArtifactGraphTool,
+  handleGetArtifactGraphTool,
+} from './getArtifactGraph.js'
+import {
+  getFeatureTreeTool,
+  handleGetFeatureTreeTool,
+} from './getFeatureTree.js'
+import {
+  getCurrentSelectionTool,
+  handleGetCurrentSelectionTool,
+} from './getCurrentSelection.js'
 
 /**
  * All available tools
  */
-const tools = [helloWorldTool]
+const tools = [
+  helloWorldTool,
+  getArtifactGraphTool,
+  getFeatureTreeTool,
+  getCurrentSelectionTool,
+]
 
 /**
  * Registers all tools with the MCP server
@@ -42,6 +59,18 @@ export async function registerTools(server: Server): Promise<void> {
         return handleHelloWorldTool(args)
       }
 
+      case 'get_artifact_graph': {
+        return handleGetArtifactGraphTool()
+      }
+
+      case 'get_feature_tree': {
+        return handleGetFeatureTreeTool()
+      }
+
+      case 'get_current_selection': {
+        return handleGetCurrentSelectionTool()
+      }
+
       default: {
         // MCP protocol expects errors to be thrown for unknown tools
         // eslint-disable-next-line suggest-no-throw/suggest-no-throw
@@ -50,9 +79,6 @@ export async function registerTools(server: Server): Promise<void> {
     }
   })
 
-  // Future tools will be added to the tools array and handled in the switch statement:
-  // - getArtifactGraph
-  // - getFeatureTree
-  // - getCurrentSelection
+  // Future tools:
   // - filletEdge (Phase 7)
 }

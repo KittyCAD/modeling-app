@@ -1319,6 +1319,9 @@ export class KclManager extends EventTarget {
       return [Math.min(s[0], safeEnd), safeEnd]
     })
   }
+  get selectionRanges(): Selections {
+    return this._selectionRanges
+  }
   set selectionRanges(selectionRanges: Selections) {
     this._selectionRanges = selectionRanges
   }
